@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using FishNet.Object;
+using System.Linq;
 
 public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 {
     
     public override float OxygenConsumptionRate { get => 0.2f; }
 
-    [SerializeField]
-    protected List<INerveSignalTransmitter> ConnectedParentNerveSignalTransmitters;
-
-    [SerializeField]
-    protected List<INerveSignalTransmitter> ConnectedChildNerveSignalTransmitters;
+    public bool IsCentralNervousSystem { get; private set; }
 
     public NerveSignalTransmitterType TransmitterId
     {
@@ -61,16 +58,19 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         }
     }
 
-    private bool _isconnectedToCentralNervousSystem;
-
     public bool IsConnectedToCentralNervousSystem{
-        get { return _isconnectedToCentralNervousSystem; }
-        set
+        get 
         {
-            if(IsConnectedToCentralNervousSystem == value) return;
-            IsConnectedToCentralNervousSystem = value;
-            // add syncing stuff
-        } 
+            if (IsCentralNervousSystem) return true;
+
+            var parent = ParentSignalTransmitter();
+            if (parent == null && !IsCentralNervousSystem)
+            {
+                return false;
+            }
+
+            return parent.CanTransmitSignal() ? parent.IsConnectedToCentralNervousSystem : false;
+        }
     }
 
     public override BodyLayerType LayerType
@@ -79,12 +79,9 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         protected set { LayerType = value; }
     }
 
-    public NerveLayer(BodyPart bodyPart) : base(bodyPart)
+    public NerveLayer(BodyPart bodyPart, bool isCentralNervousSystem) : base(bodyPart)
     {
-        ConnectedParentNerveSignalTransmitters = new List<INerveSignalTransmitter>();
-        ConnectedChildNerveSignalTransmitters = new List<INerveSignalTransmitter>();
-
-        IsConnectedToCentralNervousSystem = false;
+        IsCentralNervousSystem = IsCentralNervousSystem;
     }
 
     protected override void SetSuceptibilities()
@@ -96,83 +93,22 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
     }
 
-
-    /// <summary>
-    /// Disconnect all child nerve signal transmitters as well as this from the CNS.
-    /// </summary>
-    public void DisconnectFromCentralNervousSystem()
+    public INerveSignalTransmitter ParentSignalTransmitter()
     {
-        foreach (INerveSignalTransmitter transmitter in ConnectedChildNerveSignalTransmitters)
+        return BodyPart.ParentBodyPart.CanTransmitNerveSignals() ? (INerveSignalTransmitter) BodyPart.ParentBodyPart.GetBodyLayer<INerveSignalTransmitter>() : null;
+    }
+
+    public List<INerveSignalTransmitter> ChildSignalTransmitters()
+    {
+        var res = new List<INerveSignalTransmitter>();
+        foreach (var bodypart in BodyPart.ChildBodyParts)
         {
-            transmitter.DisconnectFromCentralNervousSystem();
-        }
-        IsConnectedToCentralNervousSystem = false;
-    }
-
-    public void RemoveAllNerveSignalTransmitter()
-    {
-        DisconnectFromCentralNervousSystem();
-        foreach (INerveSignalTransmitter transmitter in ConnectedChildNerveSignalTransmitters)
-        {
-            transmitter.RemoveNerveSignalTransmitter(this);
-        }
-        foreach (INerveSignalTransmitter transmitter in ConnectedParentNerveSignalTransmitters)
-        {
-            transmitter.RemoveNerveSignalTransmitter(this);
-        }
-        ConnectedParentNerveSignalTransmitters.Clear();
-        ConnectedChildNerveSignalTransmitters.Clear();
-    }
-
-    public List<INerveSignalTransmitter> ParentConnectedSignalTransmitters()
-    {
-        return ConnectedParentNerveSignalTransmitters;
-    }
-
-    public List<INerveSignalTransmitter> ChildConnectedSignalTransmitters()
-    {
-        return ConnectedParentNerveSignalTransmitters;
-    }
-
-    public void RemoveNerveSignalTransmitter(INerveSignalTransmitter transmitter)
-    {
-        if (transmitter == null) { return; }
-        ConnectedChildNerveSignalTransmitters.Remove(transmitter);
-        ConnectedParentNerveSignalTransmitters.Remove(transmitter);
-        transmitter.RemoveNerveSignalTransmitter(this);
-    }
-
-    public void AddNerveSignalTransmitter(INerveSignalTransmitter transmitter, bool isChild)
-    {
-        if (transmitter == null) { return; }
-        if(AlreadyAdded(transmitter)) { return; }
-
-        if (isChild)
-        {
-            ConnectedChildNerveSignalTransmitters.Add(transmitter);
-            if (transmitter.IsConnectedToCentralNervousSystem)
+            if (bodypart.CanTransmitNerveSignals())
             {
-                IsConnectedToCentralNervousSystem = true;
+                res.Add((INerveSignalTransmitter) bodypart.GetBodyLayer<INerveSignalTransmitter>());
             }
         }
-        else
-        {
-            ConnectedParentNerveSignalTransmitters.Add(transmitter);
-        }
-
-        transmitter.AddNerveSignalTransmitter(this, !isChild);
-
-        if(BodyPart.BodyPartBehaviour != null)
-        {
-            if(BodyPart.BodyPartBehaviour.IsOwner)
-                BodyPart.BodyPartBehaviour.ServerRpcAddNerveSignalTransmitter(this, transmitter, isChild);
-        }
-    }
-
-    public bool AlreadyAdded(INerveSignalTransmitter transmitter)
-    {
-        return ConnectedChildNerveSignalTransmitters.Contains(transmitter)
-            || ConnectedParentNerveSignalTransmitters.Contains(transmitter);
+        return res;
     }
 
     /// <summary>
@@ -188,6 +124,11 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     public override void OnDamageInflicted(DamageTypeQuantity damageQuantity)
     {
         base.OnDamageInflicted(damageQuantity);
-       RemoveAllNerveSignalTransmitter();
+    }
+
+    public bool CanTransmitSignal()
+    {
+        if(IsDestroyed()) return false;
+        else return true;
     }
 }

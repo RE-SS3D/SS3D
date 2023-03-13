@@ -8,26 +8,21 @@ using UnityEngine;
 
 public class HumanBodypart : BodyPart
 {
-    public bool IsConnectedToCentralNervousSystem { get; set; }
 
-    public HumanBodypart() : base() 
+    public HumanBodypart(bool hasCentralNervousSystem) : base() 
     {
         BodyLayers.Add(new MuscleLayer(this));
         BodyLayers.Add(new BoneLayer(this));
         BodyLayers.Add(new CirculatoryLayer(this));
-
-        var nerverLayer = new NerveLayer(this);
-        BodyLayers.Add(new NerveLayer(this));
+        BodyLayers.Add(new NerveLayer(this, hasCentralNervousSystem));
     }
 
-    public HumanBodypart(BodyPartBehaviour bodyPartBehaviour) : base(bodyPartBehaviour)
+    public HumanBodypart(BodyPartBehaviour bodyPartBehaviour, bool hasCentralNervousSystem) : base(bodyPartBehaviour)
     {
         BodyLayers.Add(new MuscleLayer(this));
         BodyLayers.Add(new BoneLayer(this));
         BodyLayers.Add(new CirculatoryLayer(this));
-
-        var nerverLayer = new NerveLayer(this);
-        BodyLayers.Add(new NerveLayer(this));
+        BodyLayers.Add(new NerveLayer(this, hasCentralNervousSystem));
     }
 
     private void OnNerveDamaged(object sender, DamageEventArgs nerveDamageEventArgs)

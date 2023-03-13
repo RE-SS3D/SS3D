@@ -83,18 +83,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
             return ret;
         }
-        [ShortDescription("Show all entities that have spawned in-game")]
-        [LongDescription("Show all entities that have spawned in-game")]
-        public static string EntityList()
-        {
-            string ret = "";
-            var entities = SystemLocator.Get<EntitySystem>().SpawnedPlayers;
-            foreach (Entity entity in entities)
-            {
-                ret += entity.Ckey + "\t";
-            }
-            return ret;
-        }
+
         [ShortDescription("Change user permission")]
         [LongDescription("changeperms (user ckey) (required role)")]
         public static string ChangePerms(string ckey, string role)
@@ -145,7 +134,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         [ShortDescription("inspect body part")]
         [LongDescription("inspect body part")]
-        public static string AddNerveLayer(string ckey, string bodyPartName)
+        public static string AddNerveLayer(string ckey, string bodyPartName, bool isCentralNervousSystem)
         {
             Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
             if (player == null)
@@ -167,7 +156,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             foreach (var bodyPart in bodyPartsWithName)
             {
-                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart));
+                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
             }
 
             return description;
@@ -175,7 +164,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         [ShortDescription("inspect body part")]
         [LongDescription("inspect body part")]
-        public static string AddConnectedBodyPart(string ckey, string bodyPartName)
+        public static string AddConnectedBodyPart(string ckey, string bodyPartName, bool isCentralNervousSystem)
         {
             Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
             if (player == null)
@@ -197,7 +186,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             foreach (var bodyPart in bodyPartsWithName)
             {
-                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart));
+                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
             }
 
             return description;

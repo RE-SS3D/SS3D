@@ -12,6 +12,7 @@ using UnityEditor;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Health;
+using System.Linq;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -25,26 +26,24 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     [SerializeField] 
     private bool isHuman;
 
-    [SerializeField]
-    [Tooltip("Add all parent body part directly connected to this one (e.g. head for the neck of humans)")]
-    private List<BodyPartBehaviour> InitialConnectedParentBodyPartsBehaviour;
+    [SyncVar]
+    private BodyPartBehaviour _parentBodyPartBehaviour;
 
-    [SerializeField]
-    [Tooltip("Add all child body part directly connected to this one (e.g. neck for the head of humans)")]
-    private List<BodyPartBehaviour> InitialConnectedChildBodyPartsBehaviour;
+    [SyncObject, SerializeField]
+    private readonly SyncList<BodyPartBehaviour> _childBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
 
-    [SerializeField]
-    private List<BodyPartBehaviour> InitialConnectedParentNerveSignalTransmittersBehaviour;
+    /// <summary>
+    /// The parent bodypart is the body part attached to this body part, closest from the brain. 
+    /// For lower left arm, it's higher left arm. For neck, it's head.
+    /// Be careful, it doesn't necessarily match the game object hierarchy
+    /// </summary>
+    public BodyPartBehaviour ParentBodyPartBehaviour => _parentBodyPartBehaviour;
 
-    [SerializeField]
-    private List<BodyPartBehaviour> InitialConnectedChildNerveSignalTransmittersBehaviour;
-
-    [SyncObject]
-    private readonly SyncList<BodyPartBehaviour> ParentConnectedBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
-
-    [SyncObject]
-    private readonly SyncList<BodyPartBehaviour> ChildConnectedBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
-
+    /// <summary>
+    /// The parent bodypart is the body part attached to this body part, furthest from the brain. 
+    /// For higer left arm, it's lower left arm. For head, it's neck.
+    /// </summary>
+    public List<BodyPartBehaviour> ChildBodyPartsBehaviour => (List<BodyPartBehaviour>) _childBodyPartsBehaviour.Collection;
 
     public BodyPart BodyPart;
 
@@ -59,49 +58,22 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-
-        foreach (var bodyPart in InitialConnectedParentBodyPartsBehaviour)
-        {
-            //ObserverRpcAddConnectedBodyPart(bodyPart.NetworkObject, false);
-            ParentConnectedBodyPartsBehaviour.Add(bodyPart);
-        }
-
-        foreach (var bodyPart in InitialConnectedChildBodyPartsBehaviour)
-        {
-            //ObserverRpcAddConnectedBodyPart(bodyPart.NetworkObject, true);
-            ChildConnectedBodyPartsBehaviour.Add(bodyPart);
-        }
-
+        SetUpChild();
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        /*
-        foreach (var connectedBodyPart in InitialConnectedParentNerveSignalTransmittersBehaviour)
-        {
-            var transmitterBodyLayer = BodyPart.GetBodyLayer<INerveSignalTransmitter>();
+    }
 
-            var connectedBodyLayer = connectedBodyPart.BodyPart.GetBodyLayer<INerveSignalTransmitter>();
-            if (connectedBodyLayer != null && transmitterBodyLayer != null)
-            {
-                ((INerveSignalTransmitter)transmitterBodyLayer).
-                    AddNerveSignalTransmitter((INerveSignalTransmitter)connectedBodyLayer, false);
-            }
+
+    [Server]
+    private void SetUpChild()
+    {   
+        if(_parentBodyPartBehaviour != null)
+        {
+            _parentBodyPartBehaviour._childBodyPartsBehaviour.Add(this);
         }
-
-        foreach (var connectedBodyPart in InitialConnectedChildNerveSignalTransmittersBehaviour)
-        {
-            var transmitterBodyLayer = BodyPart.GetBodyLayer<INerveSignalTransmitter>();
-
-            var connectedBodyLayer = connectedBodyPart.BodyPart.GetBodyLayer<INerveSignalTransmitter>();
-            if (connectedBodyLayer != null && transmitterBodyLayer != null)
-            {
-                ((INerveSignalTransmitter)transmitterBodyLayer).
-                    AddNerveSignalTransmitter((INerveSignalTransmitter)connectedBodyLayer, true);
-            }
-        }*/
-
     }
 
     [Server]
@@ -130,36 +102,20 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
 
     
     [ServerRpc]
-    public void ServerRpcAddConnectedBodyPart(NetworkConnection conn, NetworkObject bodyPart, bool isChild)
+    public void ServerRpcAddChildBodyPart(NetworkConnection conn, NetworkObject bodyPart)
     {
         PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
         if (!permissionSystem.HasAdminPermission(conn))
         {
             return;
         }
-        ObserverRpcAddConnectedBodyPart(bodyPart, isChild);
+        ObserverRpcAddChildBodyPart(bodyPart);
     }
 
     [ObserversRpc(RunLocally = true)]
-    public void ObserverRpcAddConnectedBodyPart(NetworkObject bodyPart, bool isChild)
+    public void ObserverRpcAddChildBodyPart(NetworkObject bodyPart)
     {
-        BodyPart.AddConnectedBodyPart(bodyPart.GetComponent<BodyPartBehaviour>().BodyPart, isChild);
-    }
-
-
-    //TODO remove that shit before any merge
-    [ServerRpc]
-    public void ServerRpcAddNerveSignalTransmitter(INerveSignalTransmitter transmitter,
-    INerveSignalTransmitter transmitterToAdd, bool isChild)
-    {
-        ObserverRpcAddNerveSignalTransmitter(transmitter, transmitterToAdd, isChild);
-    }
-
-    [ObserversRpc]
-    public void ObserverRpcAddNerveSignalTransmitter(INerveSignalTransmitter transmitter,
-        INerveSignalTransmitter transmitterToAdd, bool isChild)
-    {
-        transmitter.AddNerveSignalTransmitter(transmitterToAdd, isChild);
+        BodyPart.AddChildBodyPart(bodyPart.GetComponent<BodyPartBehaviour>().BodyPart);
     }
 
     [ServerRpc]
@@ -175,25 +131,6 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     }
 
 
-    public List<BodyPart> GetChildConnectedBodyPartsList()
-    {
-        var bodyParts = new List<BodyPart>();
-        foreach(var part in ChildConnectedBodyPartsBehaviour)
-        {
-            bodyParts.Add(part.BodyPart);
-        }
-        return bodyParts;
-    }
-
-    public List<BodyPart> GetParentConnectedBodyPartsList()
-    {
-        var bodyParts = new List<BodyPart>();
-        foreach (var part in ParentConnectedBodyPartsBehaviour)
-        {
-            bodyParts.Add(part.BodyPart);
-        }
-        return bodyParts;
-    }
 
     /// <summary>
     /// The body part is not destroyed, it's simply detached from the entity.
@@ -203,11 +140,7 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
         //Spawn a detached body part from the entity, and destroy this one with all childs.
         // Maybe better in body part controller.
         //throw new NotImplementedException();
-
-        foreach(var part in ParentConnectedBodyPartsBehaviour)
-        {
-            part.DetachBodyPart();
-        }
+        _parentBodyPartBehaviour.DetachBodyPart();
         Despawn();
     }
 

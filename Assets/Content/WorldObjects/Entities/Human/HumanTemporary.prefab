@@ -51,12 +51,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 4099385748557327658}
   isHuman: 1
-  InitialConnectedParentBodyPartsBehaviour:
-  - {fileID: 7310465603181291587}
-  InitialConnectedChildBodyPartsBehaviour: []
-  InitialConnectedParentNerveSignalTransmittersBehaviour:
-  - {fileID: 7310465603181291587}
-  InitialConnectedChildNerveSignalTransmittersBehaviour: []
+  _initialChildBodyPartsBehaviour:
+  - {fileID: 5578655964063094902}
+  _parentBodyPartBehaviour: {fileID: 7310465603181291587}
 --- !u!114 &4099385748557327658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70,10 +67,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 1
+  <ComponentIndex>k__BackingField: 2
   _networkBehaviours:
   - {fileID: 3793450088331597172}
-  <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
+  <ParentNetworkObject>k__BackingField: {fileID: 8612771767413959111}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 5962771607979234559}
   _isNetworked: 1
@@ -580,12 +577,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 5962771607979234559}
   isHuman: 1
-  InitialConnectedParentBodyPartsBehaviour: []
-  InitialConnectedChildBodyPartsBehaviour:
+  _initialChildBodyPartsBehaviour:
   - {fileID: 3793450088331597172}
-  InitialConnectedParentNerveSignalTransmittersBehaviour: []
-  InitialConnectedChildNerveSignalTransmittersBehaviour:
-  - {fileID: 3793450088331597172}
+  _parentBodyPartBehaviour: {fileID: 0}
 --- !u!114 &5962771607979234559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,7 +593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 2
+  <ComponentIndex>k__BackingField: 3
   _networkBehaviours:
   - {fileID: 7310465603181291587}
   <ParentNetworkObject>k__BackingField: {fileID: 4099385748557327658}
@@ -988,9 +982,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 17
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 8612771767413959111}
   ContainerDescriptor: {fileID: 1667608942592793804}
   _container: {fileID: 396059371930522959}
 --- !u!114 &396059371930522959
@@ -1005,9 +999,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 18
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 8612771767413959111}
   Size: {x: 0, y: 0}
 --- !u!1 &2085819744154837467
 GameObject:
@@ -1225,9 +1219,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 15
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 8612771767413959111}
   ContainerDescriptor: {fileID: 1209055579648204933}
   _container: {fileID: 8411477508438424976}
 --- !u!114 &8411477508438424976
@@ -1242,9 +1236,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 16
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 8612771767413959111}
   Size: {x: 0, y: 0}
 --- !u!1 &2840666209206779409
 GameObject:
@@ -2385,10 +2379,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 0
-  _networkBehaviours: []
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
+  <ComponentIndex>k__BackingField: 1
+  _networkBehaviours:
+  - {fileID: 5578655964063094902}
+  - {fileID: 7994111800386677094}
+  - {fileID: 8411477508438424976}
+  - {fileID: 7653287983538616454}
+  - {fileID: 396059371930522959}
+  <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
+  <ChildNetworkObjects>k__BackingField:
+  - {fileID: 4099385748557327658}
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
@@ -2410,14 +2410,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7a21a2001dc0db4db2f5a7d90a033a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 8612771767413959111}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8612771767413959111}
   isHuman: 1
-  InitialConnectedParentBodyPartsBehaviour: []
-  InitialConnectedChildBodyPartsBehaviour: []
-  InitialConnectedParentNerveSignalTransmittersBehaviour: []
-  InitialConnectedChildNerveSignalTransmittersBehaviour: []
+  _initialChildBodyPartsBehaviour: []
+  _parentBodyPartBehaviour: {fileID: 0}
 --- !u!1 &5528759040543479194
 GameObject:
   m_ObjectHideFlags: 0
@@ -3254,13 +3252,9 @@ MonoBehaviour:
   - {fileID: 6727691960201412867}
   - {fileID: 6294009354521529725}
   - {fileID: 2612312476241916170}
-  - {fileID: 7994111800386677094}
-  - {fileID: 8411477508438424976}
-  - {fileID: 7653287983538616454}
-  - {fileID: 396059371930522959}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
-  - {fileID: 4099385748557327658}
+  - {fileID: 8612771767413959111}
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0

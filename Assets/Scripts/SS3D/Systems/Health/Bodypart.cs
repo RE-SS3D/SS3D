@@ -1,4 +1,5 @@
 using Coimbra;
+using SS3D.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,9 +13,9 @@ public abstract class BodyPart
     /// <summary>
     /// The list of body parts this body part is directly connected to. 
     /// </summary>
-    private List<BodyPart> ChildConnectedBodyParts;
+    public List<BodyPart> ChildBodyParts;
 
-    private List<BodyPart> ParentConnectedBodyParts;
+    public BodyPart ParentBodyPart;
 
     /// <summary>
     /// The list of body layers constituting this body part.
@@ -23,39 +24,37 @@ public abstract class BodyPart
 
     public BodyPartBehaviour BodyPartBehaviour { get; protected set; }
 
-
-    public void Init()
-    {
-        if (BodyPartBehaviour == null)
-        {
-            BodyLayers = new List<BodyLayer>();
-            ChildConnectedBodyParts = new List<BodyPart>();
-            ParentConnectedBodyParts = new List<BodyPart>();
-        }
-        else
-        {
-            BodyLayers = new List<BodyLayer>();
-            ChildConnectedBodyParts = BodyPartBehaviour.GetChildConnectedBodyPartsList();
-            ParentConnectedBodyParts = BodyPartBehaviour.GetParentConnectedBodyPartsList();
-        }
-    }
-
     /// <summary>
     /// Constructor to allow testing without mono/network behaviour script.
     /// </summary>
     public BodyPart()
     {
-        Init();
+        ChildBodyParts= new List<BodyPart>();
+        BodyLayers= new List<BodyLayer>();
     }
 
     public BodyPart(BodyPartBehaviour bodyPartBehaviour) : this()
     {
         BodyPartBehaviour = bodyPartBehaviour;
-        Init();
+        ChildBodyParts = (List<BodyPart>) BodyPartBehaviour.ChildBodyPartsBehaviour.Select(x=> x.BodyPart);
+        ParentBodyPart = BodyPartBehaviour.ParentBodyPartBehaviour.BodyPart;
+    }
+
+    public BodyPart(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers)
+    {
+        ParentBodyPart = parentBodyPart;
+        ChildBodyParts = childBodyParts;
+        BodyLayers = bodyLayers;
     }
 
     public virtual void AddBodyLayer(BodyLayer layer)
     {
+        // Make sure only one nerve signal layer can exist at a time on a bodypart.
+        if (layer is INerveSignalTransmitter && CanTransmitNerveSignals())
+        {
+            Debug.Log("panic");
+            return;
+        }
         BodyLayers.Add(layer);
     }
 
@@ -65,16 +64,9 @@ public abstract class BodyPart
     }
 
 
-    public virtual void AddConnectedBodyPart(BodyPart bodyPart, bool isChild)
+    public virtual void AddChildBodyPart(BodyPart bodyPart)
     {
-        if (isChild)
-        {
-            ChildConnectedBodyParts.Add(bodyPart);
-        }
-        else
-        {
-            ParentConnectedBodyParts.Add(bodyPart);
-        }
+            ChildBodyParts.Add(bodyPart);
     }
 
     public virtual void InflictDamage(DamageTypeQuantity damageTypeQuantity)
@@ -125,15 +117,12 @@ public abstract class BodyPart
             description += "Layer " + layer.GetType().ToString() + "\n";
         }
         description += "Child connected body parts : \n";
-        foreach(var part in ChildConnectedBodyParts)
+        foreach(var part in ChildBodyParts)
         {
             description += part.BodyPartBehaviour.gameObject.name + "\n";
         }
-        description += "Parent connected body parts : \n";
-        foreach (var part in ParentConnectedBodyParts)
-        {
-            description += part.BodyPartBehaviour.gameObject.name + "\n";
-        }
+        description += "Parent body part : \n";
+        description += ParentBodyPart.BodyPartBehaviour.name;
         return description;
     }
 }

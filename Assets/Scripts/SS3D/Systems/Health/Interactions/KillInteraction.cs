@@ -4,7 +4,7 @@ using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Storage.Containers;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Health
@@ -20,7 +20,7 @@ namespace SS3D.Systems.Health
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Discard);
+            return Icon != null ? Icon : Assets.Get(InteractionIcons.Discard);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
