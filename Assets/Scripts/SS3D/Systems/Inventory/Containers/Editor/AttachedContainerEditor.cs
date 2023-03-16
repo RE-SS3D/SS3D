@@ -32,20 +32,18 @@ public class AttachedContainerEditor : Editor
 
         attachedContainer = (AttachedContainer)target;
         var SerializedAutomaticContainerSetUp = serializedObject.FindProperty("_automaticContainerSetUp");
+        
         if (SerializedAutomaticContainerSetUp.boolValue)
         {
             AddBase();
             containerInteractive = attachedContainer.ContainerInteractive;
             containerItemDisplay = attachedContainer.ContainerItemDisplay;
         }
-
-
     }
 
 
     public override void OnInspectorGUI()
     {
-
         EditorGUILayout.LabelField(attachedContainer.ContainerName, TitleStyle);
         serializedObject.Update();
 

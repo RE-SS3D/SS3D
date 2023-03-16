@@ -7,6 +7,7 @@ using SS3D.Systems.Roles;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Inventory.Items.Identification
 {
@@ -24,8 +25,9 @@ namespace SS3D.Systems.Inventory.Items.Identification
         [SerializeField]
         private AttachedContainer _attachedContainer;
 
+        [FormerlySerializedAs("StartingIDCard")]
         [HideInInspector] 
-        public Item StartingIDCard;
+        public Item IDCard;
 
         protected override void OnStart()
         {
@@ -33,9 +35,9 @@ namespace SS3D.Systems.Inventory.Items.Identification
 
             _attachedContainer = GetComponent<AttachedContainer>();
 
-            if (StartingIDCard && _attachedContainer != null)
+            if (IDCard != null && _attachedContainer != null)
             {
-                _attachedContainer.Container.AddItem(StartingIDCard);
+                _attachedContainer.Container.AddItem(IDCard);
             }
         }
 
@@ -48,12 +50,7 @@ namespace SS3D.Systems.Inventory.Items.Identification
 
             IDCard idCard = _attachedContainer.Container.Items.FirstOrDefault() as IDCard;
 
-            if (idCard == null)
-            {
-                return false;
-            }
-
-            return idCard.HasPermission(permission);
+            return idCard != null && idCard.HasPermission(permission);
         }
 
         [NotNull]

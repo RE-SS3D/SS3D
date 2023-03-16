@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
@@ -8,8 +7,6 @@ using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
-using static SS3D.Substances.SubstanceContainer;
-using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -18,44 +15,58 @@ namespace SS3D.Systems.Inventory.Containers
     /// This class is handling the logic part of storing items. 
     /// It checks if items can be added, removed, replace, and does it when possible. 
     /// </summary>
+    [Serializable]
     public sealed class Container
     {
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        public delegate void ObserverHandler(Container container, Entity observer);
+
+        /// <summary>
+        /// Called when the contents of the container change
+        /// </summary>
+        public event ContainerContentsHandler OnContentsChanged;
+        public event ObserverHandler OnNewObserver;
+
         /// <summary>
         /// The size of this container
         /// </summary>
         private Vector2Int _size;
 
-        private string _containerName = "container";
-
-        private Filter _startFilter;
         /// <summary>
-        /// An optional reference to an attached container
+        /// An optional reference to an attached container.
         /// </summary>
         public AttachedContainer AttachedTo { get; set; }
+
         /// <summary>
-        /// The items stored in this container, including information on how they are stored
+        /// The items stored in this container, including information on how they are stored.
         /// </summary>
         private readonly List<StoredItem> _storedItems;
+
         /// <summary>
-        /// Server sole purpose of locking code execution while an operation is outgoing
+        /// Server sole purpose of locking code execution while an operation is outgoing.
         /// </summary>
         private readonly object _modificationLock = new();
+
         /// <summary>
-        /// The last time the contents of this container were changed
+        /// The last time the contents of this container were changed.
         /// </summary>
         public float LastModification { get; private set; }
 
-        public string ContainerName => _containerName;
-
-        public Filter StartFilter => _startFilter;
-
+        /// <summary>
+        /// The size of this container.
+        /// </summary>
         public Vector2Int Size => _size;
 
+        /// <summary>
+        /// If this container disables the item visuals when inserted into.
+        /// </summary>
         public bool HideItems => _hideItems;
 
-        public ContainerType ContainerType => _type;
-
+        /// <summary>
+        /// Gets all stored items.
+        /// </summary>
         public List<StoredItem> StoredItems => _storedItems;
+
         /// <summary>
         /// Is this container empty
         /// </summary>
@@ -67,6 +78,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
+        [NotNull]
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
         /// <summary>
@@ -80,53 +92,38 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private bool _hideItems = true;
 
-        private ContainerType _type = ContainerType.None;
-
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
-        /// <summary>
-        /// Called when the contents of the container change
-        /// </summary>
-        public event ContainerContentsHandler OnContentsChanged;
-
-        public event ObserverHandler OnNewObserver;
-
-        public delegate void ObserverHandler(Container container, Entity observer);
-
+        ~Container()
+        {
+            OnContentsChanged -= HandleContainerContentsChanged;
+        }
 
         public Container()
         {
-            _storedItems = new List<StoredItem>();
-            _size = new Vector2Int(1, 1);
+            _storedItems = new();
+            _size = new(1, 1);
         }
 
         public Container(Vector2Int size)
         {
-            _storedItems = new List<StoredItem>();
+            _storedItems = new();
             _size = size;
+
             OnContentsChanged += HandleContainerContentsChanged;
         }
 
         /// <summary>
         /// Set up the container with an attached container. 
         /// </summary>
-        public Container(AttachedContainer attachedContainer)
+        public Container([NotNull] AttachedContainer attachedContainer)
         {
             AttachedTo = attachedContainer;
-            _size = attachedContainer.Size;
-            _type = attachedContainer.Type;
-            _hideItems = attachedContainer.HideItems;
-            _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
-            _startFilter= attachedContainer.StartFilter;
 
+            _size = attachedContainer.Size;
+            _hideItems = attachedContainer.HideItems;
+            _storedItems = (List<StoredItem>) attachedContainer.StoredItems.Collection;
 
             OnContentsChanged += HandleContainerContentsChanged;
         }
-
-        ~Container()
-        {
-            OnContentsChanged -= HandleContainerContentsChanged;
-        }
-
 
         /// <summary>
         /// Places an item into this container in the first available position
@@ -154,7 +151,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 for (int x = 0; x <= maxX; x++)
                 {
-                    Vector2Int itemPosition = new Vector2Int(x, y);
+                    Vector2Int itemPosition = new(x, y);
                     if (AddItemPosition(item, itemPosition))
                     {
                         return true;
@@ -168,7 +165,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Tries to add an item at the specified position
         /// </summary>
-        /// <param name="storedItem">The item to add</param>
+        /// <param name = "item">The item to add.</param>
         /// <param name="position">The target position in the container</param>
         /// <returns>If the item was added</returns>
         public bool AddItemPosition(Item item, Vector2Int position)
@@ -183,7 +180,8 @@ namespace SS3D.Systems.Inventory.Containers
                     return true;
                 }
 
-                if (!IsAreaFreeExcluding(new RectInt(position, item.Size), item))
+                if (!IsAreaFreeExcluding(new RectInt
+                    (position, item.Size), item))
                 {
                     return false;
                 }
@@ -480,9 +478,10 @@ namespace SS3D.Systems.Inventory.Containers
         public void Dump()
         {
             Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
-            for (int i = 0; i < oldItems.Length; i++)
+            
+            foreach (Item item in oldItems)
             {
-                oldItems[i].Container = null;
+                item.Container = null;
             }
             StoredItems.Clear();
 
@@ -499,10 +498,11 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void Purge()
         {
-            for(int i =0; i < StoredItems.Count; i++)
+            foreach (StoredItem storedItem in StoredItems)
             {
-                StoredItems[i].Item.Delete();
+                storedItem.Delete();
             }
+
             StoredItems.Clear();
 
             if (AttachedTo != null)
@@ -586,7 +586,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <returns></returns>
         public bool CanContainItem(Item item)
         {
-            return (CanStoreItem(item) && CanHoldItem(item));
+            return CanStoreItem(item) && CanHoldItem(item);
         }
 
         /// <summary>

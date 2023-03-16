@@ -43,22 +43,16 @@ namespace SS3D.Interactions.Extensions
                 if (current is IGameObjectProvider gameObjectProvider)
                 {
                     GameObject gameObject = gameObjectProvider.ProvidedGameObject;
-                    if (gameObject == null)
-                    {
-                        Punpun.Error(nameof(InteractionSourceExtension), $"GameObject not found on {current.Source}");
-                    }
 
                     T component = gameObject.GetComponent<T>();
                     if (component == null)
                     {
-                        Punpun.Error(nameof(InteractionSourceExtension), $"Component of type {typeof(T).Name} not found in {gameObject.name}");
+                        provider = null;
+                        return null;
                     }
 
-                    if (component != null)
-                    {
-                        provider = gameObjectProvider;
-                        return component;
-                    }
+                    provider = gameObjectProvider;
+                    return component;
                 }
 
                 current = current.Source;

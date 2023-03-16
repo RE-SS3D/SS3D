@@ -151,7 +151,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item != null)
                 {
-                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand);
+                    ClientTransferItem(item, Vector2Int.zero, Hands.ActiveHand);
                 }
             }
             // If selected hand has an item and there's no item on the slot in the container, transfer it to container slot.

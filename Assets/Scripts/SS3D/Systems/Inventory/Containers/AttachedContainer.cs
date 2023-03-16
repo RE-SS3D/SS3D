@@ -1,16 +1,8 @@
-using FishNet;
-using FishNet.Connection;
 using SS3D.Core.Behaviours;
-using SS3D.Data;
-using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
-using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using SS3D.Systems.Inventory.Items;
 using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
@@ -22,10 +14,13 @@ namespace SS3D.Systems.Inventory.Containers
     /// AttachedContainer manages the networking  aspect of a container attached to a gameObject, and allows the user to set up a container,
     /// including it's size, interaction with it, what it can store and other options.
     /// </summary>
-    public class AttachedContainer : NetworkActor
+    public sealed class AttachedContainer : NetworkActor
     {
+        public event EventHandler<Item> OnItemAttached;
+        public event EventHandler<Item> OnItemDetached;
+
         #region AttachedContainerOnlyFieldsAndProperties
-        
+
         // References toward all container related scripts.
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
@@ -34,46 +29,53 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
         public ContainerUi ContainerUi;
 
-        [Tooltip("The local position of attached items."), SerializeField]
+        [Tooltip("The local position of attached items.")]
+        [SerializeField]
         private Vector3 _attachmentOffset = Vector3.zero;
 
-        [Tooltip("If the container is openable, this defines if things can be stored in the container without opening it."), SerializeField]
+        [Tooltip("If the container is openable, this defines if things can be stored in the container without opening it.")]
+        [SerializeField]
         private bool _onlyStoreWhenOpen;
 
-        [Tooltip("When the container UI is opened, if set true, the animation on the object is triggered."), SerializeField]
+        [Tooltip("When the container UI is opened, if set true, the animation on the object is triggered.")]
+        [SerializeField]
         private bool _openWhenContainerViewed;
 
-        [Tooltip("If items should be attached as children of the container's game object."), SerializeField]
+        [Tooltip("If items should be attached as children of the container's game object.")]
+        [SerializeField]
         private bool _attachItems = true;
 
-        // Initialized should not be displayed, it's only useful for setting up the container in editor.
-        [HideInInspector, SerializeField]
-        private bool _initialized;
-
-        [Tooltip("Max distance at which the container is visible if not hidden."), SerializeField]
+        [Tooltip("Max distance at which the container is visible if not hidden.")]
+        [SerializeField]
         private float _maxDistance = 5f;
 
-        [Tooltip("If the container can be opened/closed, in the sense of having a close/open animation."), SerializeField]
+        [Tooltip("If the container can be opened/closed, in the sense of having a close/open animation.")]
+        [SerializeField]
         private bool _isOpenable;
 
-        [Tooltip("If the container should have the container's default interactions setting script."), SerializeField]
+        [Tooltip("If the container should have the container's default interactions setting script.")]
+        [SerializeField]
         private bool _isInteractive;
 
-        [Tooltip("If stuff inside the container can be seen using an UI."), SerializeField]
+        [Tooltip("If stuff inside the container can be seen using an UI.")]
+        [SerializeField]
         private bool _hasUi;
 
-        [Tooltip("If true, interactions in containerInteractive are ignored, instead, a script on the container's game object should implement IInteractionTarget."), SerializeField]
+        [Tooltip("If true, interactions in containerInteractive are ignored, instead, a script on the container's game object should implement IInteractionTarget.")]
+        [SerializeField]
         private bool _hasCustomInteraction;
 
-        [Tooltip("If the container renders items in custom position on the container."), SerializeField]
+        [Tooltip("If the container renders items in custom position on the container.")]
+        [SerializeField]
         private bool _hasCustomDisplay;
 
-        [Tooltip(" The list of transforms defining where the items are displayed."), SerializeField]
+        [Tooltip(" The list of transforms defining where the items are displayed.")]
+        [SerializeField]
         private Transform[] _displays;
 
-        [Tooltip(" The number of custom displays."), SerializeField]
+        [Tooltip(" The number of custom displays.")]
+        [SerializeField]
         private int _numberDisplay;
-
 
         public Vector3 AttachmentOffset => _attachmentOffset;
 
@@ -98,29 +100,32 @@ namespace SS3D.Systems.Inventory.Containers
         public Transform[] Displays => _displays;
 
         public int NumberDisplay => _numberDisplay;
-
         #endregion
 
         // If you define setters for the properties of this region in the future, be careful and make sure they modify the related container fields as well in Container.cs.
         #region ContainerAndAttachedContainerFieldsAndProperties
-
-        [Tooltip("Name of the container."), SerializeField]
+        [Tooltip("Name of the container.")]
+        [SerializeField]
         private string _containerName = "container";
 
-        [Tooltip("Defines the size of the container, every item takes a defined place inside a container."), SerializeField]
+        [Tooltip("Defines the size of the container, every item takes a defined place inside a container.")]
+        [SerializeField]
         private Vector2Int _size = new(0, 0);
 
         /// <summary>
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
         /// If the container is Hidden, the visibility of items is always off.
         /// </summary>
-        [Tooltip("Set visibility of items in container."), SerializeField]
+        [Tooltip("Set visibility of items in container.")]
+        [SerializeField]
         private bool _hideItems = true;
 
-        [Tooltip("Container type mostly allow to discriminate between different containers on a single prefab."), SerializeField]
+        [Tooltip("Container type mostly allow to discriminate between different containers on a single prefab.")]
+        [SerializeField]
         private ContainerType _type;
 
-        [Tooltip("The filter on the container."), SerializeField]
+        [Tooltip("The filter on the container.")]
+        [SerializeField]
         private Filter _startFilter;
 
         public string ContainerName => _containerName;
@@ -128,13 +133,9 @@ namespace SS3D.Systems.Inventory.Containers
         public Vector2Int Size => _size;
         public bool HideItems => _hideItems;
         public Filter StartFilter => _startFilter;
-
         #endregion
 
         private Container _container;
-
-        public event EventHandler<Item> OnItemAttached;
-        public event EventHandler<Item> OnItemDetached;
 
         /// <summary>
         /// The items stored in this container, including information on how they are stored
@@ -145,6 +146,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
+        [NotNull]
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
         public SyncList<StoredItem> StoredItems => _storedItems;
@@ -153,29 +155,26 @@ namespace SS3D.Systems.Inventory.Containers
         /// The container that is attached
         /// <remarks>Only set this right after creation, as event listener will not update</remarks>
         /// </summary>
+        [NotNull]
         public Container Container
         {
-            get => _container;
+            get => GetContainer();
             set => UpdateContainer(value);
         }
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
-            _container = new Container(this);
+            _container = new(this);
             _storedItems.OnChange += HandleStoredItemsChanged;
+            
             UpdateContainer(_container);
         }
 
         public void OnDestroy()
         {
-            Container?.Purge();
-        }
-
-        public override string ToString()
-        {
-            return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
+            Container.Purge();
         }
 
         public void ProcessItemAttached(Item e)
@@ -192,7 +191,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Replace the current container with a new one and set it up.
         /// </summary>
         /// <param name="newContainer"></param>
-        private void UpdateContainer(Container newContainer)
+        private void UpdateContainer([CanBeNull] Container newContainer)
         {
             if (_container != null)
             {
@@ -206,6 +205,16 @@ namespace SS3D.Systems.Inventory.Containers
 
             newContainer.AttachedTo = this;
             _container = newContainer;
+        }
+
+        /// <summary>
+        /// Gets or creates a container if its null.
+        /// </summary>
+        /// <returns>The AttachedContainer's container.</returns>
+        [NotNull]
+        private Container GetContainer()
+        {
+            return _container ??= new(this);
         }
 
         /// <summary>
@@ -239,7 +248,13 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
+            _container.InvokeOnContentChanged(new[] { oldItem.Item, }, new[] { newItem.Item, }, changeType);
+        }
+
+        [NotNull]
+        public override string ToString()
+        {
+            return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
         }
     }
 }

@@ -193,7 +193,7 @@ namespace SS3D.Systems.Roles
                 Punpun.Information(this, "Added " + permission.Name + " permission to IDCard of " + entity.Ckey);
             }
 
-            pda.StartingIDCard = idCardItem;
+            pda.IDCard = idCardItem;
         }
 
         /// <summary>

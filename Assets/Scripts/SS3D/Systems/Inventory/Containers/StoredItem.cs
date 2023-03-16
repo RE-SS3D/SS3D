@@ -10,6 +10,8 @@ namespace SS3D.Systems.Inventory.Containers
         public readonly Vector2Int Position;
         public readonly bool IsExcludedOfFreeAreaComputation;
 
+        public void Delete() => Item.Delete();
+
         public StoredItem(Item item, Vector2Int position, bool isExcludedOfFreeAreaComputation = false)
         {
             Item = item;
