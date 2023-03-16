@@ -9,4 +9,5 @@ public enum BodyLayerType
     Muscle,
     Nerve,
     Brain,
+    Organ,
 }
