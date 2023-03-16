@@ -40,9 +40,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1508899601519524890}
-  - component: {fileID: 5799235475641549456}
   - component: {fileID: 8518940750606334703}
   - component: {fileID: 57976260605683709}
+  - component: {fileID: 3584607129285960603}
   m_Layer: 0
   m_Name: Container
   m_TagString: Untagged
@@ -65,22 +65,6 @@ Transform:
   m_Father: {fileID: 8833760637642068360}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5799235475641549456
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1570969446840237701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _overrideType: 1
-  _updateHostVisibility: 1
-  _observerConditions:
-  - {fileID: 11400000, guid: f81b5069fe3769d4a8209b27b00502c2, type: 2}
 --- !u!114 &8518940750606334703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,9 +77,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
-  _networkObjectCache: {fileID: 3258417366846669140}
+  _networkObjectCache: {fileID: 57976260605683709}
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 7199567936746149742}
   ContainerItemDisplay: {fileID: 0}
@@ -131,9 +115,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 0
-  _networkBehaviours: []
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ComponentIndex>k__BackingField: 1
+  _networkBehaviours:
+  - {fileID: 8518940750606334703}
+  <ParentNetworkObject>k__BackingField: {fileID: 3258417366846669140}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
@@ -144,6 +129,22 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &3584607129285960603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570969446840237701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 1
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: f81b5069fe3769d4a8209b27b00502c2, type: 2}
 --- !u!1 &2221121822154186424
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,9 +515,9 @@ MonoBehaviour:
   - {fileID: 2884915648782529247}
   - {fileID: 3298710121668139635}
   - {fileID: 7199567936746149742}
-  - {fileID: 8518940750606334703}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
+  <ChildNetworkObjects>k__BackingField:
+  - {fileID: 57976260605683709}
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
