@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
@@ -609,11 +610,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         private void handleItemRemoved(Item item)
         {
-            // Only unfreeze the item if it was not just placed into another container
-            if (item.Container == null)
-            {
-                item.Unfreeze();
-            }
 
             // Restore visibility
             if (HideItems)
@@ -627,6 +623,8 @@ namespace SS3D.Systems.Inventory.Containers
                 item.transform.SetParent(null, true);
                 AttachedTo.ProcessItemDetached(item);
             }
+
+            item.Unfreeze();
         }
 
         private void handleItemAdded(Item item)

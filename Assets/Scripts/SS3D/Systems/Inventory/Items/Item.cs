@@ -42,6 +42,8 @@ namespace SS3D.Systems.Inventory.Items
 
         [SerializeField] private Rigidbody _rigidbody;
 
+        public string Name => _name;
+
         /// <summary>
         /// The item's relative weight in kilograms.
         /// </summary>
@@ -158,6 +160,7 @@ namespace SS3D.Systems.Inventory.Items
             var itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
+                Punpun.Debug(this, "item {item} frozen", Logs.Generic, Name);
                 itemCollider.enabled = false;
             }
         }
@@ -264,8 +267,10 @@ namespace SS3D.Systems.Inventory.Items
 
             _container = newContainer;
             RpcSetContainer(newContainer);
+            
         }
 
+        // It could become an issue that only observers see the container updated...
         [ObserversRpc]
         private void RpcSetContainer(Container newContainer)
         {
