@@ -11,20 +11,30 @@ public static class NerveLayerSerializer
 {
     public static void WriteNerveLayer(this Writer writer, NerveLayer nerve)
     {
-        // write INerveSignalTransmitter simple properties.
-        writer.WriteBoolean(nerve.IsCentralNervousSystem);
-        writer.WriteNetworkBehaviour(nerve.GetNetworkBehaviour);
+        BodyLayerSerializer.WriteDamages(writer, nerve);
+        BodyLayerSerializer.WriteSusceptibilities(writer, nerve);
+        BodyLayerSerializer.WriteResistances(writer, nerve);
+
+        writer.WriteNetworkBehaviour(nerve.BodyPartBehaviour);
+
+        writer.WriteBoolean(nerve.IsCentralNervousSystem);  
     }
 
     public static NerveLayer ReadNerveLayer(this Reader reader)
     {
         NerveLayer nerveLayer;
 
-        var isCentralNervousSystem = reader.ReadBoolean();
+        var damages = BodyLayerSerializer.ReadDamages(reader);
+        var susceptibilities = BodyLayerSerializer.ReadSusceptibilities(reader);
+        var resistances = BodyLayerSerializer.ReadResistances(reader);
+  
         var bodyPartGameObject = reader.ReadGameObject();
         var bodyPartBehaviour = bodyPartGameObject.GetComponent<BodyPartBehaviour>();
         var bodyPart = bodyPartBehaviour.BodyPart;
-        nerveLayer = new NerveLayer(bodyPart, isCentralNervousSystem);
+
+        var isCentralNervousSystem = reader.ReadBoolean();
+
+        nerveLayer = new NerveLayer(bodyPart, isCentralNervousSystem, damages, susceptibilities, resistances);
         return nerveLayer;
     }
 }

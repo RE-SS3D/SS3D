@@ -5,14 +5,19 @@ using UnityEngine;
 using System;
 using FishNet.Object;
 
+
+/// <summary>
+/// Be careful when adding fields to a bodylayer, or when creating a new bodylayer.
+/// They need to be synced and therefore sent over the network, this means that you need to serialize them properly.
+/// </summary>
 public abstract class BodyLayer
 {
-    public abstract BodyLayerType LayerType { get; protected set; }
+    public abstract BodyLayerType LayerType { get; }
 
     /// <summary>
     /// The body part containing this body layer.
     /// </summary>
-    public BodyPart BodyPart { get; protected set; }
+    public BodyPart BodyPart { get; set; }
 
     /// <summary>
     /// Events fired when damages are received on this layer.
@@ -22,17 +27,17 @@ public abstract class BodyLayer
     /// <summary>
     /// Quantity of damages on this bodyLayer
     /// </summary>
-    protected List<DamageTypeQuantity> DamageTypeQuantities;
+    protected List<DamageTypeQuantity> _damageTypeQuantities;
 
     /// <summary>
     /// Minimum amount of damage to do to make any actual damage.
     /// </summary>
-    protected List<DamageTypeQuantity> DamageResistance;
+    protected List<DamageTypeQuantity> _damageResistances;
 
     /// <summary>
     /// Susceptibility to damage, damages are multiplied by this number.
     /// </summary>
-    protected List<DamageTypeQuantity> DamageSuceptibility;
+    protected List<DamageTypeQuantity> _damageSuceptibilities;
 
     protected virtual float MaxDamage => 100;
 
@@ -40,15 +45,36 @@ public abstract class BodyLayer
 
     public float TotalDamage => DamageTypeQuantities.Sum(x => x.quantity);
 
+    public List<DamageTypeQuantity> DamageTypeQuantities => _damageTypeQuantities;
+    public List<DamageTypeQuantity> DamageResistances => _damageResistances;
+    public List<DamageTypeQuantity> DamageSuceptibilities => _damageSuceptibilities;
+
+    public NetworkBehaviour BodyPartBehaviour => BodyPart.BodyPartBehaviour;
+
+    /// <summary>
+    /// TODO : Put default damage suceptibility and resistance into a scriptable object and replace those lists with "damage * modifier".
+    /// They should be empty most of the time as they are modifiers.
+    /// </summary>
+    /// <param name="bodyPart"></param>
     public BodyLayer(BodyPart bodyPart)
     {
-        DamageResistance = new List<DamageTypeQuantity>();
-        DamageSuceptibility= new List<DamageTypeQuantity>();
-        DamageTypeQuantities = new List<DamageTypeQuantity>();
+        _damageResistances = new List<DamageTypeQuantity>();
+        _damageSuceptibilities= new List<DamageTypeQuantity>();
+        _damageTypeQuantities = new List<DamageTypeQuantity>();
         SetResistances();
         SetSuceptibilities();
         BodyPart = bodyPart;    
     }
+
+    public BodyLayer(BodyPart bodyPart, List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
+    {
+        _damageResistances = resistances;
+        _damageSuceptibilities = susceptibilities;
+        _damageTypeQuantities = damages;
+        BodyPart = bodyPart;
+    }
+
+
 
     /// <summary>
     /// Add damage without going above max damage for any given type.
@@ -123,8 +149,8 @@ public abstract class BodyLayer
     /// </summary>
     public float GetDamageTypeSusceptibility(DamageType damageType)
     {
-        int damageTypeIndex = DamageSuceptibility.FindIndex(x => x.damageType == damageType);
-        return damageTypeIndex == -1 ? 1 : DamageSuceptibility[damageTypeIndex].quantity;
+        int damageTypeIndex = _damageSuceptibilities.FindIndex(x => x.damageType == damageType);
+        return damageTypeIndex == -1 ? 1 : _damageSuceptibilities[damageTypeIndex].quantity;
     }
 
     /// <summary>
@@ -133,8 +159,8 @@ public abstract class BodyLayer
     /// </summary>
     public float GetDamageResistance(DamageType damageType)
     {
-        int damageTypeIndex = DamageResistance.FindIndex(x => x.damageType == damageType);
-        return damageTypeIndex == -1 ? 0 : DamageSuceptibility[damageTypeIndex].quantity;
+        int damageTypeIndex = _damageResistances.FindIndex(x => x.damageType == damageType);
+        return damageTypeIndex == -1 ? 0 : _damageSuceptibilities[damageTypeIndex].quantity;
     }
 
     public virtual bool IsDestroyed()

@@ -15,9 +15,24 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     public NerveSignalTransmitterType TransmitterId
     {
         get => NerveSignalTransmitterType.Nerve;
-        set
+    }
+
+    public NetworkBehaviour GetNetworkBehaviour => BodyPartBehaviour;
+
+    public float SignalStrength
+    {
+        get
         {
-            TransmitterId = value;
+            float localSignalStrength = 1f - TotalDamage / MaxDamage;
+            if (IsCentralNervousSystem) return localSignalStrength;
+
+            var parent = ParentSignalTransmitter();
+            if (parent == null && !IsCentralNervousSystem)
+            {
+                return 0f;
+            }
+
+            return localSignalStrength*parent.SignalStrength;
         }
     }
 
@@ -26,19 +41,6 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         get
         {
             return BodyPart.BodyPartBehaviour.NetworkObject;
-        }
-        set
-        {
-
-        }
-    }
-
-
-    public NetworkBehaviour GetNetworkBehaviour
-    {
-        get
-        {
-            return BodyPart.BodyPartBehaviour;
         }
         set
         {
@@ -76,7 +78,6 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     public override BodyLayerType LayerType
     {
         get { return BodyLayerType.Nerve; }
-        protected set { LayerType = value; }
     }
 
     public NerveLayer(BodyPart bodyPart, bool isCentralNervousSystem) : base(bodyPart)
@@ -84,13 +85,20 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         IsCentralNervousSystem = IsCentralNervousSystem;
     }
 
+    public NerveLayer(BodyPart bodyPart, bool isCentralNervousSystem,
+        List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
+        : base(bodyPart, damages, susceptibilities, resistances)
+    {
+        IsCentralNervousSystem = IsCentralNervousSystem;
+    }
+
     protected override void SetSuceptibilities()
     {
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Slash, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Pressure, 0.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Shock, 2f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 1.5f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Pressure, 0.5f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 2f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
     }
 
     public INerveSignalTransmitter ParentSignalTransmitter()
@@ -115,6 +123,7 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     /// Produces a given amount of pain depending on other tissues damages.
     /// It also depends on the state of the never layer.
     /// When nerves are closed to be destroyed, they send less and less pain.
+    /// Should be an average of the state of destruction of each layer on this BodyPart.
     /// </summary>
     public float ProducePain()
     {

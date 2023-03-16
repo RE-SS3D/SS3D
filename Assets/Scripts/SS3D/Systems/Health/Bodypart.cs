@@ -45,6 +45,10 @@ public abstract class BodyPart
         ParentBodyPart = parentBodyPart;
         ChildBodyParts = childBodyParts;
         BodyLayers = bodyLayers;
+        foreach(var bodylayer in BodyLayers)
+        {
+            bodylayer.BodyPart = this;
+        }
     }
 
     public virtual void AddBodyLayer(BodyLayer layer)
@@ -52,21 +56,37 @@ public abstract class BodyPart
         // Make sure only one nerve signal layer can exist at a time on a bodypart.
         if (layer is INerveSignalTransmitter && CanTransmitNerveSignals())
         {
-            Debug.Log("panic");
+            Punpun.Warning(this, "Can't have more than one nerve signal transmitter on a bodypart.");
             return;
         }
-        BodyLayers.Add(layer);
+
+        if (BodyPartBehaviour == null)
+            BodyLayers.Add(layer);
+
+        BodyPartBehaviour.BodyLayers.Add(layer);
+        layer.BodyPart = this;
+
     }
 
     public virtual void RemoveBodyLayer(BodyLayer layer) 
     {
+        if(BodyPartBehaviour == null)
         BodyLayers.Remove(layer);
     }
 
 
     public virtual void AddChildBodyPart(BodyPart bodyPart)
     {
+        if (BodyPartBehaviour == null)
             ChildBodyParts.Add(bodyPart);
+
+        if(bodyPart.BodyPartBehaviour == null)
+        {
+            Punpun.Error(this, "This body part has a reference to a body part behaviour, it should only add to its child bodyParts with references to body part behaviour ");
+            return;
+        }
+        
+        BodyPartBehaviour._childBodyPartsBehaviour.Add(bodyPart.BodyPartBehaviour);
     }
 
     public virtual void InflictDamage(DamageTypeQuantity damageTypeQuantity)

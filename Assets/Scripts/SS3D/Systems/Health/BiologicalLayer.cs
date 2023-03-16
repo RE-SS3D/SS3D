@@ -14,6 +14,13 @@ public abstract class BiologicalLayer : BodyLayer
     {
 
     }
+
+    public BiologicalLayer(BodyPart bodyPart, 
+        List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances) : 
+        base(bodyPart, damages, susceptibilities, resistances)
+    {
+
+    }
     /// <summary>
     /// Get oxygen from CirculatoryLayer if there's one. 
     /// If not enough oxygen is present, inflict OXY type damage to the layer.

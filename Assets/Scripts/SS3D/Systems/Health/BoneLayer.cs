@@ -13,7 +13,6 @@ public class BoneLayer : BiologicalLayer
     public override BodyLayerType LayerType
     {
         get { return BodyLayerType.Bone; }
-        protected set { LayerType = value; } 
     }
 
     public BoneLayer(BodyPart bodyPart) : base(bodyPart)
@@ -21,15 +20,22 @@ public class BoneLayer : BiologicalLayer
 
     }
 
+    public BoneLayer(BodyPart bodyPart,
+    List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
+    : base(bodyPart, damages, susceptibilities, resistances)
+    {
+
+    }
+
     protected override void SetSuceptibilities()
     {
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Crush, 2f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Puncture, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Pressure, 0f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Cold, 0.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Shock, 0.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Toxic, 0.8f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Oxy, 0f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Crush, 2f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Puncture, 1.5f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Pressure, 0f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Cold, 0.5f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 0.5f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 0.8f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Oxy, 0f));
     }
 
     /// <summary>

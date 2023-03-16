@@ -9,18 +9,23 @@ public class CirculatoryLayer : BiologicalLayer
     public override BodyLayerType LayerType
     {
         get { return BodyLayerType.Circulatory; }
-        protected set { LayerType = value; }
     }
     public CirculatoryLayer(BodyPart bodyPart) : base(bodyPart)
+    {
+
+    }
+    public CirculatoryLayer(BodyPart bodyPart,
+    List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
+    : base(bodyPart, damages, susceptibilities, resistances)
     {
 
     }
 
     protected override void SetSuceptibilities()
     {
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Slash, 2f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Puncture, 2f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 2f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Puncture, 2f));
+        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
     }
 
     public void Bleed()

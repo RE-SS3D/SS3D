@@ -29,8 +29,11 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     [SyncVar]
     private BodyPartBehaviour _parentBodyPartBehaviour;
 
-    [SyncObject, SerializeField]
-    private readonly SyncList<BodyPartBehaviour> _childBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
+    [SyncObject]
+    public readonly SyncList<BodyPartBehaviour> _childBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
+
+    [SyncObject]
+    public readonly SyncList<BodyLayer> BodyLayers = new SyncList<BodyLayer>();
 
     /// <summary>
     /// The parent bodypart is the body part attached to this body part, closest from the brain. 
