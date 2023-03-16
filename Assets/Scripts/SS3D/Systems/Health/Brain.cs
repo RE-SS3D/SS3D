@@ -6,35 +6,30 @@ using UnityEngine;
 using System;
 using UnityEditor;
 
-public class Brain : BiologicalLayer
+/// <summary>
+/// TODO : Make an organ bodylayer since that might be useful as all organs will have the same damage susceptibility.
+/// When the brain dies, the player dies.
+/// </summary>
+public class Brain : BodyPart
 {
-    public override float OxygenConsumptionRate { get => 5f; }
 
-    public override BodyLayerType LayerType
+
+    public Brain(bool hasCentralNervousSystem)
     {
-        get { return BodyLayerType.Nerve; }
-        protected set { LayerType = value; }
+        BodyLayers.Add(new CirculatoryLayer(this));
+        BodyLayers.Add(new NerveLayer(this, hasCentralNervousSystem)); 
+        BodyLayers.Add(new OrganLayer(this));
     }
 
-    public Brain(BodyPart bodyPart) : base(bodyPart)
+    public Brain(BodyPartBehaviour bodyPartBehaviour, bool hasCentralNervousSystem) : base(bodyPartBehaviour)
     {
-
-    }
-
-    protected override void SetSuceptibilities()
-    {
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Slash, 2f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Puncture, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Heat, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Cold, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Shock, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
-        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Acid, 1.5f));
+        BodyLayers.Add(new CirculatoryLayer(this));
+        BodyLayers.Add(new NerveLayer(this, hasCentralNervousSystem));
+        BodyLayers.Add(new OrganLayer(this));
     }
 
     /// <summary>
-    /// 
+    /// This takes all the pain in the body and sum it.
     /// </summary>
     public float ProcessPain(BodyPart[] bodyParts)
     {

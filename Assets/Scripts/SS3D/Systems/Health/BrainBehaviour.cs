@@ -8,7 +8,7 @@ using UnityEngine;
 /// Class to handle network and monobehaviour related code for the Brain class.
 /// Put as little logic as possible in there (humble object pattern).
 /// </summary>
-public class BrainBehaviour : NetworkBehaviour
+public class BrainBehaviour : BodyPartBehaviour
 {
     public float PainAmount { get; private set; }
 
