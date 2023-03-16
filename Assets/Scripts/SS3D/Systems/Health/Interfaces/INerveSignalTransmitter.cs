@@ -21,7 +21,7 @@ public interface INerveSignalTransmitter
     /// </summary>
     public List<INerveSignalTransmitter> ChildSignalTransmitters();
 
-    public NerveSignalTransmitterType TransmitterId { get; set; }
+    public NerveSignalTransmitterType TransmitterId { get; }
 
     /// <summary>
     /// The network object related to this nerve signal transmitter
@@ -30,16 +30,25 @@ public interface INerveSignalTransmitter
 
     public GameObject getGameObject { get; set; }
 
-    public NetworkBehaviour GetNetworkBehaviour { get; set; }
+    public NetworkBehaviour GetNetworkBehaviour { get; }
 
     /// <summary>
     /// Is there a continous chain of nerve signal transmitter between this and the central nervous system ?
     /// True if there is and none are destroyed, false otherwise.
     /// </summary>
-    public bool IsConnectedToCentralNervousSystem { get;}
+    public bool IsConnectedToCentralNervousSystem { get; }
 
+    /// <summary>
+    /// The amount of pain produced.
+    /// </summary>
+    /// <returns></returns>
     public float ProducePain();
 
     public bool CanTransmitSignal();
+
+    /// <summary>
+    /// A healthy body send a Strength signal of 1, destroyed signal transmitter send a signal of 0.
+    /// </summary>
+    public float SignalStrength{ get; }
 
 }
