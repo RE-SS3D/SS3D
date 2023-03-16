@@ -11,10 +11,10 @@ namespace SS3D.Interactions
     {
         public InteractionTargetGameObject(GameObject gameObject)
         {
-            GameObject = gameObject;
+            ProvidedGameObject = gameObject;
         }
 
-        public GameObject GameObject { get; }
+        public GameObject ProvidedGameObject { get; }
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {

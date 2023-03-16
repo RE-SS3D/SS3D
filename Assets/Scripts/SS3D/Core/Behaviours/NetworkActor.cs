@@ -154,7 +154,7 @@ namespace SS3D.Core.Behaviours
 
         private void RemoveEventListeners()
         {
-            IEventService eventService = ServiceLocator.Get<IEventService>();
+            IEventService eventService = ServiceLocator.GetChecked<IEventService>();
 
             foreach (EventHandle eventHandle in EventHandles)
             {

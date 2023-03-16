@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
@@ -12,17 +13,22 @@ namespace SS3D.Systems.Inventory.Interactions
     [Serializable]
     public class DropInteraction : Interaction
     {
+        private const string GenericDropInteractionName = "Drop";
+
+        private Sprite GenericDropInteractionSprite => Assets.Get(InteractionIcons.Discard);
+
+        [NotNull]
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return "Drop";
+            return GenericDropInteractionName;
         }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Discard);
+            return IconOverride != null ? IconOverride : GenericDropInteractionSprite;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public override bool CanInteract([NotNull] InteractionEvent interactionEvent)
         {
 	        // if the interaction source's parent is not a hand we return false
             if (interactionEvent.Source.GetRootSource() is not Hands)
@@ -34,7 +40,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return InteractionExtensions.RangeCheck(interactionEvent);
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override bool Start([NotNull] InteractionEvent interactionEvent, InteractionReference reference)
         {
 	        // we check if the source of the interaction is a hand
             if (interactionEvent.Source.GetRootSource() is Hands hands)

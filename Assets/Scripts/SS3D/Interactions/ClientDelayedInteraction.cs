@@ -40,7 +40,7 @@ namespace SS3D.Interactions
                 return true;
             }
 
-            _loadingBarInstance = Object.Instantiate(LoadingBarPrefab, source.GameObject.transform);
+            _loadingBarInstance = Object.Instantiate(LoadingBarPrefab, source.ProvidedGameObject.transform);
             _loadingBarInstance.transform.localPosition = LoadingBarOffset;
             _loadingBarInstance.GetComponent<LoadingBar>().Duration = Delay;
 

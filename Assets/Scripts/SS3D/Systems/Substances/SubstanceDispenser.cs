@@ -5,6 +5,7 @@ using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using SS3D.Core;
 using SS3D.Systems.Screens;
+using SS3D.Systems.Substances.Interactions;
 using static UnityEngine.GraphicsBuffer;
 
 namespace SS3D.Content.Furniture.Generic

@@ -28,34 +28,38 @@ namespace SS3D.Systems.Inventory.Items
     [RequiredLayer("Items")]
     public class Item : InteractionSource, IInteractionTarget
     {
-        [FormerlySerializedAs("_itemId")]
-        [FormerlySerializedAs("_itemIdID")]
-        [FormerlySerializedAs("ItemID")]
         [Header("Item settings")]
         [SerializeField]
         [HideInInspector]
-        public Data.Enums.ItemId _itemId;
+        public ItemId _itemId;
 
-        [SerializeField] private string _name;
+        [SerializeField] 
+        private string _name;
 
-        [SerializeField] private Sprite _sprite;
+        [SerializeField] 
+        private Sprite _sprite;
 
-        [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField] 
+        private Rigidbody _rigidbody;
 
         public string Name => _name;
 
         /// <summary>
         /// The item's relative weight in kilograms.
         /// </summary>
-        [SerializeField] private float _weight;
+        [SerializeField] 
+        private float _weight;
 
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
+
         [Header("Attachment settings")]
         [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
         public Transform AttachmentPoint;
+
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
+
         [Tooltip("The size of the item inside a container")]
         private Vector2Int _size;
         private Container _container;
@@ -77,15 +81,6 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
 
-        // public Item()
-        // {
-        //     frozenItem = new FrozenItem(this);
-        // }
-
-        /// <summary>
-        /// The stack of this item, can be null
-        /// </summary>
-        // public Stackable Stack => stack ? stack : stack = GetComponent<Stackable>();
         /// <summary>
         /// The container this item is in
         /// </summary>
@@ -126,12 +121,12 @@ namespace SS3D.Systems.Inventory.Items
             // Items can't have no size
             if (_size.x == 0)
             {
-                _size = new Vector2Int(1, _size.y);
+                _size = new(1, _size.y);
             }
 
             if (_size.y == 0)
             {
-                _size = new Vector2Int(_size.x, 1);
+                _size = new(_size.x, 1);
             }
         }
 
@@ -142,9 +137,9 @@ namespace SS3D.Systems.Inventory.Items
         {
             Container = null;
 
-            if (GameObjectCache != null)
+            if (GameObject != null)
             {
-                ServerManager.Despawn(GameObjectCache);
+                ServerManager.Despawn(GameObject);
             }
         }
 
@@ -157,7 +152,8 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
-            var itemCollider = GetComponent<Collider>();
+
+            Collider itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
                 Punpun.Debug(this, "item {item} frozen", Logs.Generic, Name);
@@ -173,9 +169,12 @@ namespace SS3D.Systems.Inventory.Items
             if (_rigidbody != null)
             {
                 if (IsServer)
+                {
                     _rigidbody.isKinematic = false;
+                }
             }
-            var itemCollider = GetComponent<Collider>();
+
+            Collider itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
                 itemCollider.enabled = true;
@@ -214,7 +213,7 @@ namespace SS3D.Systems.Inventory.Items
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { Icon = null } };
+            return new IInteraction[] { new PickupInteraction { IconOverride = null, }, };
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction
@@ -223,7 +222,7 @@ namespace SS3D.Systems.Inventory.Items
             base.CreateSourceInteractions(targets, interactions);
             DropInteraction dropInteraction = new();
 
-            interactions.Add(new InteractionEntry(null, dropInteraction));
+            interactions.Add(new(null, dropInteraction));
         }
 
         public bool InContainer()
@@ -238,7 +237,8 @@ namespace SS3D.Systems.Inventory.Items
 
         public bool HasTrait(string name)
         {
-            var hash = Animator.StringToHash(name.ToUpper());
+            int hash = Animator.StringToHash(name.ToUpper());
+
             foreach (Trait trait in traits)
             {
                 if (trait.Hash == hash)
@@ -296,14 +296,18 @@ namespace SS3D.Systems.Inventory.Items
         // if you know anything about it, tell us
         public void GenerateNewIcon()
         {
-            RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
+            RuntimePreviewGenerator.BackgroundColor = new(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
 
             try
             {
-                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
-            Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
-                _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                Shader shader = Shader.Find("Legacy Shaders/Diffuse");
+                Vector2 pivot = new(0.5f, 0.5f);
+
+                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(transform, shader, null, 128, 128, true, true);
+                Rect rect = new(0, 0, texture.width, texture.height);
+
+                _sprite = Sprite.Create(texture, rect, pivot, 100);
                 _sprite.name = transform.name;
             }
             catch (NullReferenceException)

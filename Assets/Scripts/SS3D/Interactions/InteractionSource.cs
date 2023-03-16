@@ -131,7 +131,7 @@ namespace SS3D.Interactions
                     CancelInteraction(instance.Reference);
                 }
             }
-            _interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, Owner));
+            _interactions.Add(new(interaction, interactionEvent, reference, Owner));
 
             return reference;
         }
@@ -146,7 +146,7 @@ namespace SS3D.Interactions
             IClientInteraction clientInteraction = interaction.CreateClient(interactionEvent);
             if (clientInteraction != null)
             {
-                _clientInteractions.Add(new ClientInteractionInstance(clientInteraction, interactionEvent, reference));
+                _clientInteractions.Add(new(clientInteraction, interactionEvent, reference));
             }
 
         }
@@ -173,6 +173,6 @@ namespace SS3D.Interactions
             }
         }
 
-        public GameObject GameObject => GameObjectCache;
+        public GameObject ProvidedGameObject => GameObject;
     }
 }

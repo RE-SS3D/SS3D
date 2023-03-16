@@ -25,7 +25,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             OpenInteraction openInteraction = new()
             {
-                Icon = OverrideOpenIcon
+                IconOverride = OverrideOpenIcon
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
 

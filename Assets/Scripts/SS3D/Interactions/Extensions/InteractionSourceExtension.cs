@@ -1,10 +1,13 @@
-﻿using SS3D.Interactions.Interfaces;
+﻿using JetBrains.Annotations;
+using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using UnityEngine;
 
 namespace SS3D.Interactions.Extensions
 {
     public static class InteractionSourceExtension
     {
+        [NotNull]
         public static IInteractionSource GetRootSource(this IInteractionSource source)
         {
             IInteractionSource current = source;
@@ -16,31 +19,48 @@ namespace SS3D.Interactions.Extensions
             return current;
         }
 
+        [CanBeNull]
         public static T GetComponent<T>(this IInteractionSource source) where T : class
         {
-            GameObject gameObject = (source as IGameObjectProvider)?.GameObject;
+            GameObject gameObject = (source as IGameObjectProvider)?.ProvidedGameObject;
             return gameObject != null ? gameObject.GetComponent<T>() : null;
         }
         
+        [CanBeNull]
         public static T GetComponentInTree<T>(this IInteractionSource source) where T: class
         {
             return GetComponentInTree<T>(source, out IGameObjectProvider _);
         }
         
-        public static T GetComponentInTree<T>(this IInteractionSource source, out IGameObjectProvider provider) where T: class
+        [CanBeNull]
+        public static T GetComponentInTree<T>(this IInteractionSource source, [CanBeNull] out IGameObjectProvider provider) where T: class
         {
             IInteractionSource current = source;
+
+            // TODO: Remove while, as while can cause unexpected issues such as crashes or freezes during execution if used on loop timing calls.
             while (current != null)
             {
                 if (current is IGameObjectProvider gameObjectProvider)
                 {
-                    T component = gameObjectProvider.GameObject.GetComponent<T>();
+                    GameObject gameObject = gameObjectProvider.ProvidedGameObject;
+                    if (gameObject == null)
+                    {
+                        Punpun.Error(nameof(InteractionSourceExtension), $"GameObject not found on {current.Source}");
+                    }
+
+                    T component = gameObject.GetComponent<T>();
+                    if (component == null)
+                    {
+                        Punpun.Error(nameof(InteractionSourceExtension), $"Component of type {typeof(T).Name} not found in {gameObject.name}");
+                    }
+
                     if (component != null)
                     {
                         provider = gameObjectProvider;
                         return component;
                     }
                 }
+
                 current = current.Source;
             }
 
@@ -53,15 +73,5 @@ namespace SS3D.Interactions.Extensions
             IInteractionRangeLimit limit = source.GetComponentInTree<IInteractionRangeLimit>();
             return limit?.GetInteractionRange() ?? RangeLimit.Max;
         }
-
-        // public static Hands GetHands(this IInteractionSource source)
-        // {
-        //     return source.GetComponentInTree<Hands>();
-        // }
-        //
-        // public static Entity GetEntity(this IInteractionSource source)
-        // {
-        //     return source.GetRootSource().GetComponent<Entity>();
-        // }
     }    
 }

@@ -58,7 +58,7 @@ namespace SS3D.Systems.Furniture
             {
                 new DispenseProductInteraction
                 {
-                    Icon = Assets.Get(InteractionIcons.Take)
+                    IconOverride = Assets.Get(InteractionIcons.Take)
                 }
             };
         }

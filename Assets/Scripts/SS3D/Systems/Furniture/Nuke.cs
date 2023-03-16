@@ -1,6 +1,7 @@
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Enums;
@@ -25,7 +26,7 @@ namespace SS3D.Systems.Furniture
         {
             _sprite = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, (int)InteractionIcons.Nuke);
 
-            return new IInteraction[] { new NukeDetonateInteraction { Icon = _sprite } };
+            return new IInteraction[] { new NukeDetonateInteraction { IconOverride = _sprite } };
         }
     }
 }

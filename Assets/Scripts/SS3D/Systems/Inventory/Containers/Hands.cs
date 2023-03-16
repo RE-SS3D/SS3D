@@ -52,19 +52,15 @@ namespace SS3D.Systems.Inventory.Containers
 
         public HandsView HandsView { get; private set; }
 
-        protected override void OnAwake()
-        {
-            base.OnAwake();
-            HandsView = FindObjectOfType<HandsView>(true);
-            HandsView.Hands = this;
-
-            SupportsMultipleInteractions = true;
-        }
-
         protected override void OnStart()
         {
             base.OnStart();
             
+            HandsView = FindObjectOfType<HandsView>(true);
+            HandsView.Hands = this;
+
+            SupportsMultipleInteractions = true;
+
             _controls = Subsystems.Get<InputSubsystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;

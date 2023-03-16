@@ -31,18 +31,18 @@ namespace SS3D.Systems.Inventory.Containers
 
             StoreInteraction storeInteraction = new(attachedContainer)
             {
-                Icon = Assets.Get(InteractionIcons.Take)
+                IconOverride = Assets.Get(InteractionIcons.Take)
         };
             TakeFirstInteraction takeFirstInteraction = new(attachedContainer)
             {
-                Icon = Assets.Get(InteractionIcons.Take)
+                IconOverride = Assets.Get(InteractionIcons.Take)
             };
             ViewContainerInteraction view = new(attachedContainer)
             {
-                MaxDistance = attachedContainer.MaxDistance, Icon = _viewContainerIcon
+                MaxDistance = attachedContainer.MaxDistance, IconOverride = _viewContainerIcon
             };
 
-            view.Icon = Assets.Get(InteractionIcons.Open);
+            view.IconOverride = Assets.Get(InteractionIcons.Open);
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !attachedContainer.OnlyStoreWhenOpen | !attachedContainer.IsOpenable)
@@ -66,7 +66,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             OpenInteraction openInteraction = new(attachedContainer)
             {
-                Icon = Assets.Get(InteractionIcons.Open)
+                IconOverride = Assets.Get(InteractionIcons.Open)
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
             interactions.Add(openInteraction);
@@ -96,7 +96,7 @@ namespace SS3D.Systems.Inventory.Containers
             // We check for each item if they are interactive containers.
             foreach(Item item in attachedContainer.Container.Items)
             {
-                ContainerInteractive[] containerInteractives = item.GameObject.GetComponents<ContainerInteractive>();
+                ContainerInteractive[] containerInteractives = item.ProvidedGameObject.GetComponents<ContainerInteractive>();
                 // If the item is an interactive container, we call this method again on it.
                 if (containerInteractives == null)
                 {

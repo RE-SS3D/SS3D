@@ -27,7 +27,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override string GetName(InteractionEvent interactionEvent)
         {
-            Animator animator = ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>();
+            Animator animator = ((IGameObjectProvider)interactionEvent.Target).ProvidedGameObject.GetComponent<Animator>();
             if (_attachedContainer == null)
             {
                 return animator.GetBool(OpenId) ? "Close" : "Open";
@@ -41,7 +41,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Open);
+            return IconOverride != null ? IconOverride : Assets.Get(InteractionIcons.Open);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
@@ -62,9 +62,9 @@ namespace SS3D.Systems.Inventory.Interactions
             if (interactionEvent.Target is IGameObjectProvider target)
             {
                 // Check that the entity is actually capable of interacting with the target
-                if (entity.GetComponent<Hands>().CanInteract(target.GameObject) && IsFirstContainerOpenable(target))
+                if (entity.GetComponent<Hands>().CanInteract(target.ProvidedGameObject) && IsFirstContainerOpenable(target))
                 {
-                    return target.GameObject.GetComponent<Animator>() != null;
+                    return target.ProvidedGameObject.GetComponent<Animator>() != null;
                 }
             }
             return false;
@@ -77,7 +77,7 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             // Only accept the first Openable container on the GameObject.
             // Note: if you want separately functioning doors etc, they must be on different GameObjects.
-            var attachedContainers = target.GameObject.GetComponents<ContainerInteractive>();
+            var attachedContainers = target.ProvidedGameObject.GetComponents<ContainerInteractive>();
             for (int i = 0; i < attachedContainers.Length; i++)
             {
 
@@ -98,7 +98,7 @@ namespace SS3D.Systems.Inventory.Interactions
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Debug.Log("in OpenInteraction, Start");
-            GameObject target = ((IGameObjectProvider) interactionEvent.Target).GameObject;
+            GameObject target = ((IGameObjectProvider) interactionEvent.Target).ProvidedGameObject;
             Animator animator = target.GetComponent<Animator>();
             bool open = animator.GetBool(OpenId);
             animator.SetBool(OpenId, !open);

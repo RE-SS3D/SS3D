@@ -25,11 +25,8 @@ namespace SS3D.Systems.Inventory.Containers
     public class AttachedContainer : NetworkActor
     {
         #region AttachedContainerOnlyFieldsAndProperties
-
-        [SerializeField]
-        private bool _automaticContainerSetUp = false;
+        
         // References toward all container related scripts.
-
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
 

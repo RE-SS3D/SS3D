@@ -13,8 +13,8 @@ namespace SS3D.Core.Behaviours
     /// </summary>
     public class NetworkActorBase : NetworkBehaviour
     {
-        protected GameObject GameObjectCache;
-        protected Transform TransformCache;
+        internal GameObject GameObjectCache;
+        internal Transform TransformCache;
 
         protected bool Initialized;
 

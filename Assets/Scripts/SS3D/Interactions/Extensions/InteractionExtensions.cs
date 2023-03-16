@@ -37,7 +37,7 @@ namespace SS3D.Interactions.Extensions
             else
             {
                 // Use default game object origin
-                sourcePosition = provider.GameObject.transform.position;
+                sourcePosition = provider.ProvidedGameObject.transform.position;
             }
 
             RangeLimit range = interactionEvent.Source.GetRange();

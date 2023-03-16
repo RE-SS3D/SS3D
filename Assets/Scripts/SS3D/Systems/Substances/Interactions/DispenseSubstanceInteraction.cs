@@ -1,15 +1,15 @@
-﻿using System;
+﻿using JetBrains.Annotations;
 using SS3D.Interactions;
-using SS3D.Interactions.Interfaces;
 using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Substances;
+using System;
 using UnityEngine;
 
-namespace SS3D.Substances
+namespace SS3D.Systems.Substances.Interactions
 {
-    public class DispenseSubstanceInteraction : IInteraction
+    public sealed class DispenseSubstanceInteraction : IInteraction
     {
-        public event Action OnInteractionInvalid;
-
         public string Name { get; set; } = "Dispense";
         /// <summary>
         /// The substance to dispense
@@ -18,26 +18,19 @@ namespace SS3D.Substances
         /// <summary>
         /// Checks if the interaction should be possible
         /// </summary>
-        public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
+        private Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
         /// <summary>
         /// If a range check should be automatically performed
         /// </summary>
         public bool RangeCheck { get; set; }
-        
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
 
-        public string GetName(InteractionEvent interactionEvent)
-        {
-            return Name;
-        }
+        public string GetName(InteractionEvent interactionEvent) => Name;
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
+        [CanBeNull]
+        public IClientInteraction CreateClient(InteractionEvent interactionEvent) => null;
+
+        [CanBeNull]
+        public Sprite GetIcon(InteractionEvent interactionEvent) => null;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -52,7 +45,7 @@ namespace SS3D.Substances
                 return false;
             }
 
-            SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
+            SubstanceContainer container = provider.ProvidedGameObject.GetComponent<SubstanceContainer>();
             if (container == null)
             {
                 return false;
@@ -71,7 +64,7 @@ namespace SS3D.Substances
         {
             if (interactionEvent.Source is IGameObjectProvider provider)
             {
-                SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
+                SubstanceContainer container = provider.ProvidedGameObject.GetComponent<SubstanceContainer>();
                 if (container != null)
                 {
                     container.AddSubstance(Substance.Substance, Substance.Moles);

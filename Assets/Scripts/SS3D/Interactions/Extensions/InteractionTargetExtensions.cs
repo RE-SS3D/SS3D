@@ -8,7 +8,7 @@ namespace SS3D.Interactions.Extensions
         {
             if (target is IGameObjectProvider provider)
             {
-                return provider.GameObject.GetComponent<T>();
+                return provider.ProvidedGameObject.GetComponent<T>();
             }
 
             return null;

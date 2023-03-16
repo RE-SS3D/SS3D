@@ -1,71 +1,66 @@
-﻿using SS3D.Data;
+﻿using JetBrains.Annotations;
+using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
-using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Inventory.Items;
-using System;
 using UnityEngine;
 
-namespace SS3D.Systems.Inventory.Interactions
+namespace SS3D.Systems.Furniture
 {
     public sealed class UnlockLockerInteraction : Interaction
     {
-        private IDPermission permissionToUnlock;
+        private readonly IDPermission _permissionToUnlock;
 
-        public event EventHandler<bool> OnOpenStateChanged;
-        Locker locker;
+        private readonly Locker _locker;
 
         public UnlockLockerInteraction(Locker locker, IDPermission permission)
         {
-            this.locker = locker;
-            this.permissionToUnlock = permission;
+            _locker = locker;
+            _permissionToUnlock = permission;
         }
-        public override string GetName(InteractionEvent interactionEvent)
-        {
-            return "Unlock Locker";
-        }
+
+        [NotNull]
+        public override string GetName(InteractionEvent interactionEvent) => "Unlock Locker";
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Open);
+            return IconOverride != null ? IconOverride : Assets.Get(InteractionIcons.Open);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (!InteractionExtensions.RangeCheck(interactionEvent))
-            {
-                return false;
-            }
-
-            return locker.Locked;
+            return InteractionExtensions.RangeCheck(interactionEvent) && _locker.Locked;
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             IInteractionSource source = interactionEvent.Source;
-            if (source is IGameObjectProvider sourceGameObjectProvider)
-            {
-                Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                
-                if (hands != null)
-                {
-                    if (hands.Inventory.HasPermission(permissionToUnlock))
-                    {
-                        Punpun.Information(this, "Locker has been unlocked!");
-                        locker.Locked = false;
-                    } else
-                    {
-                        Punpun.Information(this, "No permission to unlock Locker!");
-                    }
-                }
 
-                return true;
+            if (source is not IGameObjectProvider sourceGameObjectProvider)
+            {
+                return false;
             }
-            return false;
+
+            Hands hands = sourceGameObjectProvider.ProvidedGameObject.GetComponentInParent<Hands>();
+
+            if (hands == null)
+            {
+                return false;
+            }
+
+            if (hands.Inventory.HasPermission(_permissionToUnlock))
+            {
+                Punpun.Information(this, "Locker has been unlocked!");
+                _locker.Locked = false;
+            } else
+            {
+                Punpun.Information(this, "No permission to unlock Locker!");
+            }
+
+            return true;
         }
     }
 }

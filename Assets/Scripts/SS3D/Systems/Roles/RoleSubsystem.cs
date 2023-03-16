@@ -3,6 +3,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
 using Coimbra.Services.Events;
+using JetBrains.Annotations;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Logging;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Core;
 using SS3D.Data.Enums;
 using SS3D.Systems.Inventory.Items.Generic;
+using SS3D.Systems.Inventory.Items.Identification;
 
 namespace SS3D.Systems.Roles
 {
@@ -99,11 +101,16 @@ namespace SS3D.Systems.Roles
         /// Assign a role to the player after joining the server
         /// </summary>
         /// <param name="soul"></param>
-        private void AssignPlayerRole(Soul soul)
+        private void AssignPlayerRole([NotNull] Soul soul)
         {
-            RoleCounter assistantRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
-            RoleCounter securityRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
+            if (_rolePlayers.TryGetValue(soul, out _))
+            {
+                return;
+            }
 
+            RoleCounter assistantRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
+
+            RoleCounter securityRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
             if (securityRole == null || securityRole.CurrentRoles == securityRole.AvailableRoles)
             {
                 assistantRole.AddPlayer(soul);
@@ -126,6 +133,12 @@ namespace SS3D.Systems.Roles
                 _rolePlayers.FirstOrDefault(rp => rp.Key == soul);
 
             RoleData roleData = rolePlayer.Value.Value;
+
+            if (_roleCounters.All(rc => rc.Role != roleData))
+            {
+                return;
+            }
+
             RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
 
             roleCounter.RemovePlayer(soul);
@@ -167,7 +180,7 @@ namespace SS3D.Systems.Roles
             Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
             Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
 
-            PDA pda = (PDA)pdaItem;
+            Pda pda = (Pda)pdaItem;
             IDCard idCard = (IDCard)idCardItem;
 
 

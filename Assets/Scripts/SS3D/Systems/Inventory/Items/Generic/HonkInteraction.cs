@@ -19,7 +19,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Honk);
+            return IconOverride != null ? IconOverride : Assets.Get(InteractionIcons.Honk);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

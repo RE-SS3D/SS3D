@@ -59,7 +59,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = base.CreateTargetInteractions(interactionEvent).ToList();
-            HonkInteraction honk = new() { Icon = _honkIcon };
+            HonkInteraction honk = new() { IconOverride = _honkIcon };
 
             interactions.Add(honk);
 

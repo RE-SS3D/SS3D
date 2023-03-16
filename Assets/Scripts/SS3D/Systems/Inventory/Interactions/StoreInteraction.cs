@@ -25,7 +25,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Discard);
+            return IconOverride != null ? IconOverride : Assets.Get(InteractionIcons.Discard);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
@@ -39,7 +39,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
             if(source is IGameObjectProvider sourceGameObjectProvider)
             {
-                var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+                var hands = sourceGameObjectProvider.ProvidedGameObject.GetComponentInParent<Hands>();
                 if (hands != null && _attachedContainer != null)
                 {
                     return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), _attachedContainer);
@@ -60,7 +60,7 @@ namespace SS3D.Systems.Inventory.Interactions
             IInteractionSource source = interactionEvent.Source;
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
-                var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+                var hands = sourceGameObjectProvider.ProvidedGameObject.GetComponentInParent<Hands>();
                 _attachedContainer.Container.AddItem(hands.ItemInHand);
                 return true;
             }

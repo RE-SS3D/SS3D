@@ -9,6 +9,6 @@ namespace SS3D.Interactions.Interfaces
     /// </summary>
     public interface IGameObjectProvider
     {
-        GameObject GameObject { get; }
+        GameObject ProvidedGameObject { get; }
     }
 }

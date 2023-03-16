@@ -22,7 +22,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
+            return IconOverride != null ? IconOverride : Assets.Get(InteractionIcons.Take);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
@@ -42,7 +42,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
 		        // we try to get the Item component from the GameObject we just interacted with
 		        // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
-                Item item = targetBehaviour.GameObject.GetComponent<Item>();
+                Item item = targetBehaviour.ProvidedGameObject.GetComponent<Item>();
                 if (item == null)
                 {
                     return false;

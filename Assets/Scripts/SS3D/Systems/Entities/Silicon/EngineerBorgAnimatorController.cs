@@ -42,7 +42,7 @@ namespace SS3D.Systems.Entities.Silicon
         {
             bool isMoving = speed != 0;
             float currentSpeed = _animator.GetFloat(Animations.Humanoid.MovementSpeed);
-            float newLerpModifier = isMoving ? _lerpMultiplier : (_lerpMultiplier * 3);
+            float newLerpModifier = isMoving ? _lerpMultiplier : _lerpMultiplier * 3;
             speed = Mathf.Lerp(currentSpeed, speed, Time.deltaTime * newLerpModifier);
             
             _animator.SetFloat(Animations.Humanoid.MovementSpeed, speed);

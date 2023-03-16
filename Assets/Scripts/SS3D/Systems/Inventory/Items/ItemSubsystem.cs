@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
@@ -20,9 +21,9 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         private readonly Dictionary<ItemId, Item> _itemPrefabs = new();
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
             LoadItemPrefabs();
         }
@@ -62,12 +63,13 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Spawns an Item at a position and rotation.
         ///
-        /// TODO: Create a ItemSpawnOptions struct.
+        /// TODO: Create an ItemSpawnOptions struct.
         /// </summary>
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="position">The desired position to spawn.</param>
         /// <param name="rotation">The desired rotation to apply.</param>
         [Server]
+        [CanBeNull]
         public Item SpawnItem(ItemId id, Vector3 position, Quaternion rotation)
         {
             bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
@@ -79,7 +81,7 @@ namespace SS3D.Systems.Inventory.Items
             }
 
             Item itemInstance = Instantiate(itemPrefab, position, rotation);
-            ServerManager.Spawn(itemInstance.GameObject);
+            ServerManager.Spawn(itemInstance.ProvidedGameObject);
 
             Punpun.Information(this, "Item {itemInstance} spawned at {position}", Logs.ServerOnly, itemInstance.name, position);
             return itemInstance;
@@ -87,12 +89,13 @@ namespace SS3D.Systems.Inventory.Items
 
         /// <summary>
         /// Spawns an Item inside a container.
-        ///
-        /// TODO: Create a ItemSpawnOptions struct.
+        /// 
+        /// TODO: Create an ItemSpawnOptions struct.
         /// </summary>
         /// <param name="id">The item ID to spawn.</param>
-        /// <param name="container">The container to spawn into.</param>
+        /// <param name = "attachedContainer">The container to add the item to.</param>
         [Server]
+        [CanBeNull]
         public Item SpawnItemInContainer(ItemId id, AttachedContainer attachedContainer)
         {
             bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
@@ -110,7 +113,7 @@ namespace SS3D.Systems.Inventory.Items
             }
 
             Item itemInstance = Instantiate(itemPrefab, Vector3.zero, Quaternion.identity);
-            ServerManager.Spawn(itemInstance.GameObject);
+            ServerManager.Spawn(itemInstance.ProvidedGameObject);
             attachedContainer.Container.AddItem(itemInstance);
 
             Punpun.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);

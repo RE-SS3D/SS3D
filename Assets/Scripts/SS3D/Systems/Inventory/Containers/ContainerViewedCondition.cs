@@ -1,5 +1,6 @@
 using FishNet.Connection;
 using FishNet.Observing;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using UnityEngine;
@@ -61,6 +62,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Clones referenced ObserverCondition. This must be populated with your conditions settings.
         /// </summary>
         /// <returns></returns>
+        [NotNull]
         public override ObserverCondition Clone() => this;
     }
 }
