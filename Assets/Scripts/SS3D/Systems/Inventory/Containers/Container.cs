@@ -498,9 +498,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void Purge()
         {
-            foreach (StoredItem item in StoredItems)
+            for(int i =0; i < StoredItems.Count; i++)
             {
-                item.Item.Delete();
+                StoredItems[i].Item.Delete();
             }
             StoredItems.Clear();
 
