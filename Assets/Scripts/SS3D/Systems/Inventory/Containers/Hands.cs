@@ -68,6 +68,8 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStart();
 
+            SelectedHandIndex = 0;
+
             HandsView = FindObjectOfType<HandsView>(true);
             HandsView.Hands = this;
 
@@ -143,6 +145,12 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
+
+            if (SelectedHandIndex == -1)
+            {
+                SelectedHandIndex = 0;
+            }
+
             OnHandChanged?.Invoke(SelectedHandIndex);
             CmdSetActiveHand(SelectedHandIndex);
         }
@@ -161,6 +169,11 @@ namespace SS3D.Systems.Inventory.Containers
 
             SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
 
+            if (SelectedHandIndex == -1)
+            {
+                SelectedHandIndex = 0;
+            }
+                                         
             if (SelectedHandIndex != -1)
             {
                 OnHandChanged?.Invoke(SelectedHandIndex);

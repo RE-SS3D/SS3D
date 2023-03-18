@@ -16,9 +16,16 @@ namespace SS3D.Systems
 
         public bool CanStore(Item item)
         {
+            if (item == null)
+            {
+                return false;
+            }
+
             int traitCount = 0;
             if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
+            {
                 return true;
+            }
 
             foreach (Trait trait in item.traits)
             {

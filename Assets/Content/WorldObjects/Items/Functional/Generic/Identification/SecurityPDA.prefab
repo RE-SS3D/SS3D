@@ -149,7 +149,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 59
+  <PrefabId>k__BackingField: 62
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 15723994467102172900
@@ -251,8 +251,9 @@ MonoBehaviour:
   AttachmentPointAlt: {fileID: 0}
   traits:
   - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
-  testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
-  StartingIDCard: {fileID: 0}
+  Permission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  _attachedContainer: {fileID: -3412952555245330052}
+  IDCard: {fileID: 0}
 --- !u!114 &-3412952555245330052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,15 +269,14 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
-  _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 8691169782362177299}
   ContainerItemDisplay: {fileID: 0}
+  _automaticContainerSetUp: 0
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 0
   _openWhenContainerViewed: 0
   _attachItems: 1
-  _initialized: 0
   _maxDistance: 5
   _isOpenable: 0
   _isInteractive: 1
@@ -285,6 +285,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _initialized: 0
   _containerName: container
   _size: {x: 2, y: 2}
   _hideItems: 1
