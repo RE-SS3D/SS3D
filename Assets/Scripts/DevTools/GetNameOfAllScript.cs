@@ -2,12 +2,15 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-
+using System.Collections.Generic;
+using System.Linq;
 
 class GetNameOfAllScript : EditorWindow
 {
-    private const string filePath = "Assets/Temporary/ScriptsNames.txt";
+    private const string filePath = "Assets/Temp/ScriptsNames.txt";
     private const string scriptsPath = "Assets/Scripts/SS3D";
+    private static List<string> scriptNames;
+
     [MenuItem("Tools/SS3D/Get name of all scripts")]
     public static void ShowWindow()
     {
@@ -15,12 +18,19 @@ class GetNameOfAllScript : EditorWindow
     }
     private void OnGUI()
     {
-        GUILayout.Label("Generate name of all SS3D scripts, write them in file.");
+        GUILayout.Label("Generate name of all SS3D scripts,\n write them in file located at " + filePath + ".");
         if (GUILayout.Button("Generate names"))
         {
+            scriptNames = new List<string>();
             DirectoryInfo rootDir = new DirectoryInfo(scriptsPath);
             File.Delete(filePath);
             WalkDirectoryTree(rootDir);
+            scriptNames.Sort((x,y) => string.Compare(x,y));
+            foreach(string name in scriptNames)
+            {
+                File.AppendAllText(filePath, name);
+            }
+            scriptNames.Clear();
         }
     }
 
@@ -36,7 +46,7 @@ class GetNameOfAllScript : EditorWindow
         {
             foreach (FileInfo fi in files)
             {
-                File.AppendAllText(filePath, fi.Name + "\n");
+                scriptNames.Add(fi.Name + "\n");
             }
 
             // Now find all the subdirectories under this directory.
