@@ -36,8 +36,9 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            // and we do a range check just in case
-            return InteractionExtensions.RangeCheck(interactionEvent);
+            bool inRange = InteractionExtensions.RangeCheck(interactionEvent);
+
+            return inRange;
         }
 
         public override bool Start([NotNull] InteractionEvent interactionEvent, InteractionReference reference)

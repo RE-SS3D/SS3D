@@ -26,7 +26,6 @@ namespace SS3D.Systems.Inventory.UI
         private Outline _outlineInner;
         private Outline _outlineOuter;
 
-
         public Item Item
         {
             get => _item;
