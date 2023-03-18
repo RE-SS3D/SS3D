@@ -629,10 +629,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         private void handleItemAdded(Item item)
         {
-            if (item.gameObject == item.Prefab)
-            {
-                return;
-            }
 
             item.Freeze();
 

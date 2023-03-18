@@ -25,6 +25,9 @@ namespace SS3D.Systems.Inventory.Containers
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
 
+        [SerializeField]
+        private bool _automaticContainerSetUp = false;
+
         // reference towards the container UI linked to this container.
         [Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
         public ContainerUi ContainerUi;
@@ -76,6 +79,9 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip(" The number of custom displays.")]
         [SerializeField]
         private int _numberDisplay;
+
+        [HideInInspector, SerializeField]
+        private bool _initialized;
 
         public Vector3 AttachmentOffset => _attachmentOffset;
 

@@ -73,10 +73,7 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         private void UpdateContainer(AttachedContainer newContainer)
         {
-            if (_container == null)
-            {
-                return;
-            }
+
 
             if (_container == newContainer)
             {
