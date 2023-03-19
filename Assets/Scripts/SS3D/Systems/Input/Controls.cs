@@ -183,7 +183,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""name"": ""Movement"",
                     ""type"": ""Value"",
                     ""id"": ""03279cdf-22e4-4cb9-ab4a-99169adc0c0c"",
-                    ""expectedControlType"": ""Axis"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -202,7 +202,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""6bf42294-8111-4bb7-9d46-8600bba84e15"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=1)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -257,7 +257,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""9c8bfe7e-1820-4fca-9e38-9ba5b12451e2"",
-                    ""path"": ""<Keyboard>/shift"",
+                    ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -691,6 +691,54 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Interactions"",
+            ""id"": ""87b9f9c5-bc89-4bbb-909e-029c755fe7c2"",
+            ""actions"": [
+                {
+                    ""name"": ""Perform Interaction"",
+                    ""type"": ""Button"",
+                    ""id"": ""a5dbf173-d977-4745-b4dd-6216affabb56"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""View Interactions"",
+                    ""type"": ""Button"",
+                    ""id"": ""3ede67cb-d174-4d7a-a71a-c5e6019b27d6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9f370461-d3b7-4f8f-a6f4-ee921a5c474a"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Perform Interaction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ded0d917-1c97-4c2c-b2ff-645cc34edb8f"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""View Interactions"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -732,6 +780,10 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_TileCreator_Place = m_TileCreator.FindAction("Place", throwIfNotFound: true);
         m_TileCreator_Replace = m_TileCreator.FindAction("Replace", throwIfNotFound: true);
         m_TileCreator_Rotate = m_TileCreator.FindAction("Rotate", throwIfNotFound: true);
+        // Interactions
+        m_Interactions = asset.FindActionMap("Interactions", throwIfNotFound: true);
+        m_Interactions_PerformInteraction = m_Interactions.FindAction("Perform Interaction", throwIfNotFound: true);
+        m_Interactions_ViewInteractions = m_Interactions.FindAction("View Interactions", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1137,6 +1189,47 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         }
     }
     public TileCreatorActions @TileCreator => new TileCreatorActions(this);
+
+    // Interactions
+    private readonly InputActionMap m_Interactions;
+    private IInteractionsActions m_InteractionsActionsCallbackInterface;
+    private readonly InputAction m_Interactions_PerformInteraction;
+    private readonly InputAction m_Interactions_ViewInteractions;
+    public struct InteractionsActions
+    {
+        private @Controls m_Wrapper;
+        public InteractionsActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @PerformInteraction => m_Wrapper.m_Interactions_PerformInteraction;
+        public InputAction @ViewInteractions => m_Wrapper.m_Interactions_ViewInteractions;
+        public InputActionMap Get() { return m_Wrapper.m_Interactions; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(InteractionsActions set) { return set.Get(); }
+        public void SetCallbacks(IInteractionsActions instance)
+        {
+            if (m_Wrapper.m_InteractionsActionsCallbackInterface != null)
+            {
+                @PerformInteraction.started -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnPerformInteraction;
+                @PerformInteraction.performed -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnPerformInteraction;
+                @PerformInteraction.canceled -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnPerformInteraction;
+                @ViewInteractions.started -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnViewInteractions;
+                @ViewInteractions.performed -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnViewInteractions;
+                @ViewInteractions.canceled -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnViewInteractions;
+            }
+            m_Wrapper.m_InteractionsActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @PerformInteraction.started += instance.OnPerformInteraction;
+                @PerformInteraction.performed += instance.OnPerformInteraction;
+                @PerformInteraction.canceled += instance.OnPerformInteraction;
+                @ViewInteractions.started += instance.OnViewInteractions;
+                @ViewInteractions.performed += instance.OnViewInteractions;
+                @ViewInteractions.canceled += instance.OnViewInteractions;
+            }
+        }
+    }
+    public InteractionsActions @Interactions => new InteractionsActions(this);
     public interface ICameraActions
     {
         void OnZoom(InputAction.CallbackContext context);
@@ -1179,5 +1272,10 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnPlace(InputAction.CallbackContext context);
         void OnReplace(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+    }
+    public interface IInteractionsActions
+    {
+        void OnPerformInteraction(InputAction.CallbackContext context);
+        void OnViewInteractions(InputAction.CallbackContext context);
     }
 }

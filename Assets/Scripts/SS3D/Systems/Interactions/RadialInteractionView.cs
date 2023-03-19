@@ -39,7 +39,8 @@ namespace SS3D.Systems.Interactions
 
         private List<IInteraction> Interactions { get; set; }
         private InteractionEvent Event { get; set; }
-        private Controls.OtherActions _controls;
+        private Controls.InteractionsActions _controls;
+        private InputSystem _inputSystem;
 
         protected override void OnStart()
         {
@@ -63,15 +64,17 @@ namespace SS3D.Systems.Interactions
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.SecondaryClick.performed += HandleDisappear;
+
+            _inputSystem = SystemLocator.Get<InputSystem>();
+            _controls = _inputSystem.Inputs.Interactions;
+            _controls.ViewInteractions.canceled += HandleDisappear;
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
             
-            _controls.SecondaryClick.performed -= HandleDisappear;
+            _controls.ViewInteractions.canceled -= HandleDisappear;
         }
 
         private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
@@ -177,6 +180,8 @@ namespace SS3D.Systems.Interactions
             _fadeSequence.Play();
 
             _canvasGroup.interactable = true;
+            
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
         }
 
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
@@ -210,6 +215,8 @@ namespace SS3D.Systems.Interactions
             _canvasGroup.interactable = false;
 
             ResetInteractionsMenu();
+            
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
         }
 
         /// <summary>

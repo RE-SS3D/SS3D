@@ -35,25 +35,22 @@ namespace SS3D.Systems.IngameConsoleSystem
         [SerializeField] private List<string> _allPrevCommands = new() {""};
         private int _chosenPrevCommand;
         private Controls _controls;
-        /// <summary>
-        /// Contains actions enabled states before opening the console
-        /// </summary>
-        private Dictionary<InputAction, bool> _actionsStates;
-
         private Controls.ConsoleActions _consoleControls;
+        private InputSystem _inputSystem;
 
         protected override void OnStart()
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
             _commandsController = new CommandsController();
-            _controls = SystemLocator.Get<InputSystem>().Inputs;
+            _inputSystem = SystemLocator.Get<InputSystem>();
+            _controls = _inputSystem.Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;
             _consoleControls.Open.performed += HandleOpen;
             _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
             _consoleControls.Submit.performed += HandleSubmit;
-            _consoleControls.Open.Enable();
+            _inputSystem.ToggleAction(_consoleControls.Open, true);
         }
 
         protected override void OnDestroyed()
@@ -85,16 +82,10 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = Vector2.zero;
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.DeactivateInputField();
-
-            foreach (KeyValuePair<InputAction, bool> _actionState in _actionsStates)
-            {
-                if (_actionState.Value)
-                {
-                    _actionState.Key.Enable();
-                }
-            }
-            _consoleControls.Disable();
-            _consoleControls.Open.Enable();
+            _inputSystem.ToggleActionMap(_consoleControls, false);
+            _inputSystem.ToggleActionMap(_consoleControls, false);
+            _inputSystem.ToggleAllActions(true);
+            _inputSystem.ToggleAction(_consoleControls.Open, true);
         }
         /// <summary>
         /// Move console to screen, enable all controls, disable Open action
@@ -105,15 +96,11 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.ActivateInputField();
-            // Save info for enabling when console is closing
-            _actionsStates = new();
-            foreach (InputAction action in _controls)
-            {
-                _actionsStates.Add(action, action.enabled);
-            }
-            _controls.Disable();
-            _consoleControls.Enable();
-            _consoleControls.Open.Disable();
+            
+            _inputSystem.ToggleAllActions(false);
+            _inputSystem.ToggleActionMap(_consoleControls, true);
+            _inputSystem.ToggleActionMap(_consoleControls, true);
+            _inputSystem.ToggleAction(_consoleControls.Open, false);
         }
         /// <summary>
         /// Put previously used commands in input field
@@ -129,6 +116,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// </summary>
         private void HandleSubmit(InputAction.CallbackContext context)
         {
+            Debug.Log(1);
             ProcessCommand(_inputField.text);
             _inputField.text = "";
             _inputField.ActivateInputField();

@@ -12,11 +12,11 @@ public class InputSystem : SS3D.Core.Behaviours.System
 
     protected override void OnAwake()
     {
+        DontDestroyOnLoad(this);
         base.OnAwake();
         
         Inputs = new Controls();
         _actionDisables = new();
-        // Add actions to the dictionary and disable them
         foreach (InputAction action in Inputs)
         {
             _actionDisables.Add(action, 1);
@@ -24,7 +24,7 @@ public class InputSystem : SS3D.Core.Behaviours.System
         ToggleActionMap(Inputs.Other, true);
     }
     /// <summary>
-    /// Set action to enabled or disabled. If ToggleAction(action, false) was called more time then ToggleAction(action, true), action stays disabled.
+    /// Set action to enabled or disabled. If ToggleAction(action, false) was called more or equal times then ToggleAction(action, true), the action stays disabled.
     /// </summary>
     /// <param name="isEnable">True - enable, false - disable</param>
 
@@ -55,7 +55,6 @@ public class InputSystem : SS3D.Core.Behaviours.System
     /// Perform ToggleAction for every action in ActionMap
     /// </summary>
     /// <param name="isEnable">True - enable, false - disable</param>
-
     public void ToggleActionMap(InputActionMap actionMap, bool isEnable)
     {
         foreach (InputAction action in actionMap)
@@ -104,7 +103,6 @@ public class InputSystem : SS3D.Core.Behaviours.System
 
     public void ToggleCollisions(InputAction[] actions, bool isEnable)
     {
-        List<string> dontToggle = new();
         List<string> paths = new();
         foreach (InputAction action in actions)
         {
@@ -115,16 +113,30 @@ public class InputSystem : SS3D.Core.Behaviours.System
                     paths.Add(binding.path);
                 }
             }
-            dontToggle.Add(action.actionMap.name + '/' + action.name);
         }
-        
-        InputAction[] collisions = _actionDisables.Where(pair => pair.Key.bindings.
-                Any(binding => paths.Contains(binding.path) && !dontToggle.Contains(pair.Key.actionMap.name + '/' + binding.action)))
-            .Select(x => x.Key).ToArray();
-        for (int i = 0; i < collisions.Length; i++)
+
+        KeyValuePair<InputAction, int>[] _disablesArray = _actionDisables.ToArray();
+        for (int i = 0; i < _disablesArray.Length; i++)
         {
-            InputAction collision = collisions[i];
-            ToggleAction(collision, isEnable);
+            KeyValuePair<InputAction, int> pair = _disablesArray[i];
+            InputAction action = pair.Key;
+            if (!actions.Contains(action))
+            {
+                foreach (InputBinding binding in action.bindings)
+                {
+                    if (paths.Contains(binding.path))
+                    {
+                        ToggleAction(action, isEnable);
+                        break;
+                    }
+                    if ((binding.path == "<Keyboard>/leftShift" || binding.path == "<Keyboard>/rightShift") &&
+                             paths.Contains("<Keyboard>/shift"))
+                    {
+                        ToggleAction(action, isEnable);
+                        break;
+                    }
+                }
+            }
         }
     }
     /// <summary>
