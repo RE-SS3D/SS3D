@@ -39,9 +39,9 @@ public abstract class BodyLayer
     /// </summary>
     protected List<DamageTypeQuantity> _damageSuceptibilities;
 
-    protected virtual float MaxDamage => 100;
+    public virtual float MaxDamage => 100;
 
-    protected const float MinDamage = 0;
+    public const float MinDamage = 0;
 
     public float TotalDamage => DamageTypeQuantities.Sum(x => x.quantity);
 
@@ -178,7 +178,8 @@ public abstract class BodyLayer
     public virtual void OnDamageInflicted(DamageTypeQuantity damageQuantity)
     {
         var args = new DamageEventArgs(damageQuantity);
-        DamageReceivedEvent.Invoke(this, args);
+        if(DamageReceivedEvent!= null) DamageReceivedEvent.Invoke(this, args);
+
     }
 
     /// <summary>
