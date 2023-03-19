@@ -80,9 +80,9 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     }
 
     [Server]
-    public void AddBodyLayer(BodyLayer layer)
+    public bool TryAddBodyLayer(BodyLayer layer)
     {
-        BodyPart.AddBodyLayer(layer);
+        return BodyPart.TryAddBodyLayer(layer);
     }
 
     [Server]
@@ -92,9 +92,9 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     }
 
     [Server]
-    public void InflictDamage(DamageTypeQuantity damageTypeQuantity)
+    public bool TryInflictDamage<T>(DamageTypeQuantity damageTypeQuantity)
     {
-        BodyPart.InflictDamage(damageTypeQuantity);
+        return BodyPart.TryInflictDamage<T>(damageTypeQuantity);
     }
 
     [Server]
@@ -130,7 +130,7 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     [ObserversRpc(RunLocally = true)]
     public void ObserversRpcAddNerveLayer(NerveLayer nerveLayer)
     {
-       BodyPart.AddBodyLayer(nerveLayer);
+       BodyPart.TryAddBodyLayer(nerveLayer);
     }
 
 

@@ -1,3 +1,4 @@
+using Codice.CM.SEIDInfo;
 using Coimbra;
 using SS3D.Logging;
 using System;
@@ -15,33 +16,82 @@ public abstract class BodyPart
     /// </summary>
     public List<BodyPart> ChildBodyParts;
 
-    public BodyPart ParentBodyPart;
+    private BodyPart _parentBodyPart;
+
+    public BodyPart ParentBodyPart
+    {
+        get { return _parentBodyPart; }
+        set
+        {
+            if (ChildBodyParts.Contains(value))
+            {
+                Punpun.Error(this, "trying to set up {bodypart} bodypart as both child and" +
+                    " parent of {bodypart} bodypart.", Logs.Generic, value, this);
+                return;
+            }
+                
+            _parentBodyPart = value;
+            _parentBodyPart.ChildBodyParts.Add(this);
+        }
+    }
+
+    public string Name;
 
     /// <summary>
     /// The list of body layers constituting this body part.
     /// </summary>
     public List<BodyLayer> BodyLayers { get; protected set; }
 
+    /// <summary>
+    /// The list of body layers constituting this body part.
+    /// </summary>
+    public List<INerveSignalTransmitter> NerveSignalTransmitters
+    {
+        get
+        {
+            var transmitters = new List<INerveSignalTransmitter>();
+            foreach(var layer in BodyLayers)
+            {
+                if(layer is INerveSignalTransmitter)
+                {
+                    transmitters.Add(layer as INerveSignalTransmitter);
+                }
+            }
+            return transmitters;
+        }
+    }
+
     public BodyPartBehaviour BodyPartBehaviour { get; protected set; }
 
     /// <summary>
     /// Constructor to allow testing without mono/network behaviour script.
     /// </summary>
-    public BodyPart()
+    public BodyPart(string name = "")
     {
+        Name = name;
         ChildBodyParts= new List<BodyPart>();
         BodyLayers= new List<BodyLayer>();
     }
 
-    public BodyPart(BodyPartBehaviour bodyPartBehaviour) : this()
+    public BodyPart(BodyPart parent, string name = "")
     {
+        Name = name;
+        ChildBodyParts = new List<BodyPart>();
+        BodyLayers = new List<BodyLayer>();
+        ParentBodyPart = parent;
+    }
+
+    public BodyPart(BodyPartBehaviour bodyPartBehaviour, string name = "")
+    {
+        Name = name;
         BodyPartBehaviour = bodyPartBehaviour;
         ChildBodyParts = (List<BodyPart>) BodyPartBehaviour.ChildBodyPartsBehaviour.Select(x=> x.BodyPart);
         ParentBodyPart = BodyPartBehaviour.ParentBodyPartBehaviour.BodyPart;
     }
 
-    public BodyPart(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers)
+    public BodyPart(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers, string name = "")
     {
+        Name = name;
         ParentBodyPart = parentBodyPart;
         ChildBodyParts = childBodyParts;
         BodyLayers = bodyLayers;
@@ -51,13 +101,13 @@ public abstract class BodyPart
         }
     }
 
-    public virtual void AddBodyLayer(BodyLayer layer)
+    public virtual bool TryAddBodyLayer(BodyLayer layer)
     {
         // Make sure only one nerve signal layer can exist at a time on a bodypart.
         if (layer is INerveSignalTransmitter && CanTransmitNerveSignals())
         {
             Punpun.Warning(this, "Can't have more than one nerve signal transmitter on a bodypart.");
-            return;
+            return false;
         }
 
         if (BodyPartBehaviour == null)
@@ -65,6 +115,7 @@ public abstract class BodyPart
 
         BodyPartBehaviour.BodyLayers.Add(layer);
         layer.BodyPart = this;
+        return true;
 
     }
 
@@ -89,12 +140,12 @@ public abstract class BodyPart
         BodyPartBehaviour._childBodyPartsBehaviour.Add(bodyPart.BodyPartBehaviour);
     }
 
-    public virtual void InflictDamage(DamageTypeQuantity damageTypeQuantity)
+    public virtual bool TryInflictDamage<T>(DamageTypeQuantity damageTypeQuantity)
     {
-        foreach (var layer in BodyLayers)
-        {
-            layer.InflictDamage(damageTypeQuantity);
-        }
+        var layer = GetBodyLayer<T>();
+        if (!BodyLayers.Contains(layer)) return false ;
+        layer.InflictDamage(damageTypeQuantity);
+        return true;
     }
 
 
@@ -144,5 +195,10 @@ public abstract class BodyPart
         description += "Parent body part : \n";
         description += ParentBodyPart.BodyPartBehaviour.name;
         return description;
+    }
+
+    public override string ToString()
+    {
+        return Name;
     }
 }
