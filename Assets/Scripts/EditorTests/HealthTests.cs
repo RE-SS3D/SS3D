@@ -9,6 +9,7 @@ namespace EditorTests
         [SetUp]
         public void SetUp()
         {
+
         }
 
         [TearDown]
@@ -17,7 +18,7 @@ namespace EditorTests
         }
         #endregion
 
-        #region Tests
+        #region StaminaTests
 
         /// <summary>
         /// Test to confirm that interactions can only be commenced when stamina is greater than zero, and will otherwise fail.
@@ -85,5 +86,112 @@ namespace EditorTests
             Assert.IsTrue(sut.Current == expectedResult);
         }
         #endregion
+
+        #region PainTests
+
+        Brain brain;
+        HumanBodypart head;
+        HumanBodypart torso;
+        HumanBodypart leftArm;
+        HumanBodypart rightArm;
+        HumanBodypart leftLeg;
+        HumanBodypart rightLeg;
+        HumanBodypart leftHand;
+        HumanBodypart rightHand;
+        HumanBodypart leftFoot;
+        HumanBodypart rightFoot;
+
+        [SetUp]
+        public void SetUpSimpleBody()
+        {
+            brain = new Brain("brain");
+            head = new HumanBodypart(brain, "head");
+            torso = new HumanBodypart(head, "torso");
+            leftArm = new HumanBodypart(torso, "leftArm");
+            rightArm = new HumanBodypart(torso, "rightArm");
+            leftLeg = new HumanBodypart(torso, "leftLeg");
+            rightLeg = new HumanBodypart(torso, "rightLeg");
+            leftHand = new HumanBodypart(leftArm, "leftHand");
+            rightHand = new HumanBodypart(rightArm, "rightHand");
+            leftFoot = new HumanBodypart(leftLeg, "leftFoot");
+            rightFoot = new HumanBodypart(rightLeg, "rightFoot");
+        }
+
+        /// <summary>
+        /// Test to confirm that interactions can only be commenced when stamina is greater than zero, and will otherwise fail.
+        /// </summary>
+        [Test]
+        public void PainisZeroInSimpleHealthyBody()
+        {
+            Assert.AreEqual(brain.ComputePain(), 0);
+        }
+
+        /// <summary>
+        /// Test to confirm that interactions can only be commenced when stamina is greater than zero, and will otherwise fail.
+        /// </summary>
+        [Test]
+        public void PainIsCorrectOnSingleBodyPartHurt()
+        {
+            leftFoot.TryInflictDamage<BoneLayer>(new DamageTypeQuantity(DamageType.Crush, 25f));
+            float painInBrain = brain.ComputePain();
+            float painInFoot = ((INerveSignalTransmitter)leftFoot.GetBodyLayer<NerveLayer>()).ProducePain();
+            Assert.AreEqual(painInBrain, painInFoot);
+        }
+
+        /// <summary>
+        /// This check if multiple injuries give the right amount of pain.
+        /// </summary>
+        [Test]
+        [TestCase(0f,0f)]
+        [TestCase(20.47f, 50.12f)]
+        [TestCase(100f, 100f)]
+        [TestCase(47.3f, 68.5f)]
+        [TestCase(47.3f, 125.5f)]
+        public void PainIsCorrectOnLeftFootHurtAndTorsoNerveHalfDestroyed(float footDamage, float torsoDamage)
+        {
+            leftFoot.TryInflictDamage<BoneLayer>(new DamageTypeQuantity(DamageType.Crush, footDamage));
+            torso.TryInflictDamage<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, torsoDamage));
+            float painInBrain = brain.ComputePain();
+            float painInFoot = ((INerveSignalTransmitter)leftFoot.GetBodyLayer<NerveLayer>()).ProducePain();
+            float painInTorso = ((INerveSignalTransmitter)torso.GetBodyLayer<NerveLayer>()).ProducePain();
+            // that looks weird, but that's actually what is expected.
+            // ProducePain takes into account the damages of nerve layers higher in the hierarchy.
+            Assert.AreEqual(painInBrain, painInFoot + painInTorso);
+        }
+
+        /// <summary>
+        /// Check if body hierarchy is constructed as expected.
+        /// </summary>
+        [Test]
+        public void SimpleBodyHierarchyIsCorrect()
+        {
+            // child correctly setup.
+            Assert.Contains(head, brain.ChildBodyParts);
+            Assert.Contains(torso, head.ChildBodyParts);
+            Assert.Contains(leftArm, torso.ChildBodyParts);
+            Assert.Contains(rightArm, torso.ChildBodyParts);
+            Assert.Contains(leftHand, leftArm.ChildBodyParts);
+            Assert.Contains(rightHand, rightArm.ChildBodyParts);
+            Assert.Contains(leftLeg, torso.ChildBodyParts);
+            Assert.Contains(rightLeg, torso.ChildBodyParts);
+            Assert.Contains(leftFoot, leftLeg.ChildBodyParts);
+            Assert.Contains(rightFoot, rightLeg.ChildBodyParts);
+
+            // parent correctly set up.
+            Assert.AreEqual(head.ParentBodyPart, brain);
+            Assert.AreEqual(torso.ParentBodyPart, head);
+            Assert.AreEqual(leftArm.ParentBodyPart, torso);
+            Assert.AreEqual(rightArm.ParentBodyPart, torso);
+            Assert.AreEqual(leftLeg.ParentBodyPart, torso);
+            Assert.AreEqual(rightLeg.ParentBodyPart, torso);
+            Assert.AreEqual(leftHand.ParentBodyPart, leftArm);
+            Assert.AreEqual(rightHand.ParentBodyPart, rightArm);
+            Assert.AreEqual(leftFoot.ParentBodyPart, leftLeg);
+            Assert.AreEqual(rightFoot.ParentBodyPart, rightLeg);
+        }
+
+
+        #endregion
+
     }
 }
