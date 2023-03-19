@@ -9,10 +9,10 @@ namespace SS3D.Systems.Inputs
     {
         public Controls Inputs { get; private set; }
 
-        protected override void OnEnabled()
+        protected override void OnAwake()
         {
-            base.OnEnabled();
-        
+            base.OnAwake();
+
             Inputs = new();
             Inputs.Other.Enable();
         }

@@ -1,35 +1,34 @@
 using Coimbra;
-using System.Collections.Generic;
-using UnityEngine;
+using FishNet.Connection;
+using FishNet.Object;
 using SS3D.Core;
-using UnityEngine.EventSystems;
+using SS3D.Core.Behaviours;
+using SS3D.Logging;
+using SS3D.Systems.Inputs;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using FishNet.Object;
-using FishNet.Connection;
-using SS3D.Logging;
-using SS3D.Core.Behaviours;
-using SS3D.Systems.Inputs;
-using SS3D.Systems.Tile.TileMapCreator;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-namespace SS3D.Systems.Tile.UI
+namespace SS3D.Systems.Tile.Creator
 {
     /// <summary>
     /// In-game editor for placing and deleting items/objects in a tilemap.
     /// </summary>
-    public class TileMapCreator : NetworkSubsystem, IPointerEnterHandler, IPointerExitHandler
+    public sealed class TileMapCreator : NetworkSubsystem, IPointerEnterHandler, IPointerExitHandler
     {
         public GameObject _menuRoot;
         public GameObject _contentRoot;
         public GameObject _slotPrefab;
         public TMP_Dropdown _layerPlacementDropdown;
 
-        private bool _enabled = false;
-        private bool _initalized = false;
-        private bool _isDeleting = false;
-        private bool _itemPlacement = false;
-        private bool _mouseOverUI = false;
+        private bool _enabled;
+        private bool _initialized;
+        private bool _isDeleting;
+        private bool _itemPlacement;
+        private bool _mouseOverUI;
 
         private Vector3 _lastSnappedPosition;
         private GenericObjectSo _selectedObject;
@@ -46,11 +45,13 @@ namespace SS3D.Systems.Tile.UI
             get => _isDeleting;
             set
             {
-                if (_selectedObject != null)
+                if (_selectedObject == null)
                 {
-                    _isDeleting = value;
-                    RefreshGhost();
+                    return;
                 }
+
+                _isDeleting = value;
+                RefreshGhost();
             }
         }
 
@@ -58,14 +59,17 @@ namespace SS3D.Systems.Tile.UI
         private void Start()
         {
             ShowUI(false);
+
             _controls = Subsystems.Get<InputSubsystem>().Inputs.TileCreator;
             _controls.ToggleMenu.Enable();
+
             _controls.ToggleMenu.performed += HandleToggleMenu;
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
             _controls.Place.performed += HandlePlace;
             _controls.Rotate.performed += HandleRotate;
         }
+
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
             if (_enabled)
@@ -77,6 +81,7 @@ namespace SS3D.Systems.Tile.UI
             {
                 _controls.Enable();
             }
+
             _enabled = !_enabled;
             ShowUI(_enabled);
             Initialize();
@@ -99,16 +104,14 @@ namespace SS3D.Systems.Tile.UI
             {
                 return;
             }
-            if (_controls.Replace.IsPressed())
-                HandleMouseClick(_lastSnappedPosition, true);
-            else
-                HandleMouseClick(_lastSnappedPosition, false);
+
+            HandleMouseClick(_lastSnappedPosition, _controls.Replace.IsPressed());
         }
 
         [ServerOrClient]
         private void Initialize()
         {
-            if (!_initalized)
+            if (!_initialized)
             {
                 _tileSubsystem = Subsystems.Get<TileSubsystem>();
                 _ghostManager = GetComponent<GhostManager>();
@@ -116,14 +119,14 @@ namespace SS3D.Systems.Tile.UI
 
                 LoadObjectGrid(new[] { TileLayer.Plenum }, false);
 
-                _initalized = true;
+                _initialized = true;
             }
         }
 
         [ServerOrClient]
         private void Update()
         {
-            if (!_initalized)
+            if (!_initialized)
                 return;
 
             // Clean-up if we are not building
@@ -342,7 +345,6 @@ namespace SS3D.Systems.Tile.UI
                 Punpun.Information(this, "Cannot save the map on a client");
         }
 
-        
         /// <summary>
         /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
         /// </summary>
@@ -391,7 +393,7 @@ namespace SS3D.Systems.Tile.UI
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
-            Subsystems.Get<InputSubsystem>().Inputs.Camera.Zoom.Enable();
+            Subsystems.Get<InputSubsystem>().Inputs.Camera.Zoom.Enable() ;
         }
     }
 }

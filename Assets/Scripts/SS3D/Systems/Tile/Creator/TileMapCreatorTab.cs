@@ -1,16 +1,13 @@
-using SS3D.Systems.Tile;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Systems.Tile.UI
+namespace SS3D.Systems.Tile.Creator
 {
     /// <summary>
     /// Tab that holds information for each item/tile in the TileMapCreator UI.
     /// </summary>
-    public class TileMapCreatorTab : MonoBehaviour
+    public sealed class TileMapCreatorTab : MonoBehaviour
     {
         private Image _image;
         private GenericObjectSo _genericObjectSo;
@@ -29,7 +26,7 @@ namespace SS3D.Systems.Tile.UI
             transform.localScale = Vector3.one;
 
             GetComponentInChildren<TMP_Text>().text = nameString;
-            _menu = GetComponentInParent<TileMapCreator>();
+            _menu = GetComponentInParent<Creator.TileMapCreator>();
             GetComponent<Button>().onClick.AddListener(OnClick);
         }
 

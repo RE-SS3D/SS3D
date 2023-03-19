@@ -2,12 +2,12 @@ using Coimbra;
 using UnityEngine;
 using Actor = SS3D.Core.Behaviours.Actor;
 
-namespace SS3D.Systems.Tile.TileMapCreator
+namespace SS3D.Systems.Tile.Creator
 {
     /// <summary>
     /// Class for creating and managing ghost objects used by the TileMapCreator.
     /// </summary>
-    public class GhostManager: Actor
+    public sealed class GhostManager: Actor
     {
         public Material validConstruction;
         public Material invalidConstruction;
@@ -21,31 +21,36 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Valid,
             Invalid,
             Building,
-            Deleting
+            Deleting,
         }
 
         public Direction Dir { get; private set; } = Direction.North;
 
         public void CreateGhost(GameObject prefab)
         {
-            if (_ghostObject == null)
+            if (_ghostObject != null)
             {
-                _ghostObject = Instantiate(prefab);
+                return;
+            }
 
-                var colliders = _ghostObject.GetComponents<Collider>();
-                foreach (Collider col in colliders)
-                {
-                    col.enabled = false;
-                }
+            _ghostObject = Instantiate(prefab);
+
+            Collider[] colliders = _ghostObject.GetComponents<Collider>();
+
+            foreach (Collider col in colliders)
+            {
+                col.enabled = false;
             }
         }
         public void DestroyGhost()
         {
-            if (_ghostObject != null)
+            if (_ghostObject == null)
             {
-                _ghostObject.Dispose(true);
-                _ghostObject = null;
+                return;
             }
+
+            _ghostObject.Dispose(true);
+            _ghostObject = null;
         }
 
         public void SetTargetPosition(Vector3 target)
