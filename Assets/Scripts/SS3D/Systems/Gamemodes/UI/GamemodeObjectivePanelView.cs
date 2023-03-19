@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Core;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Gamemodes.UI
 {

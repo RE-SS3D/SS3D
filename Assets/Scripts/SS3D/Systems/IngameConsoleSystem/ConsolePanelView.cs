@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Coimbra;
 using SS3D.Core;
+using SS3D.Systems.Inputs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
@@ -82,10 +85,9 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = Vector2.zero;
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.DeactivateInputField();
-            _inputSystem.ToggleActionMap(_consoleControls, false);
-            _inputSystem.ToggleActionMap(_consoleControls, false);
-            _inputSystem.ToggleAllActions(true);
+            _inputSystem.ToggleAllActions(true, ((InputActionMap)_consoleControls).ToArray());
             _inputSystem.ToggleAction(_consoleControls.Open, true);
+            _inputSystem.ToggleActionMap(_consoleControls, false, new []{_consoleControls.Open});
         }
         /// <summary>
         /// Move console to screen, enable all controls, disable Open action
@@ -96,10 +98,8 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.ActivateInputField();
-            
-            _inputSystem.ToggleAllActions(false);
-            _inputSystem.ToggleActionMap(_consoleControls, true);
-            _inputSystem.ToggleActionMap(_consoleControls, true);
+            _inputSystem.ToggleAllActions(false, ((InputActionMap)_consoleControls).ToArray());
+            _inputSystem.ToggleActionMap(_consoleControls, true, new []{_consoleControls.Open});
             _inputSystem.ToggleAction(_consoleControls.Open, false);
         }
         /// <summary>
@@ -116,7 +116,6 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// </summary>
         private void HandleSubmit(InputAction.CallbackContext context)
         {
-            Debug.Log(1);
             ProcessCommand(_inputField.text);
             _inputField.text = "";
             _inputField.ActivateInputField();

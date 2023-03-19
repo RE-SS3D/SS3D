@@ -5,9 +5,11 @@ using DG.Tweening;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inputs;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -187,6 +189,7 @@ namespace SS3D.Systems.Interactions
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
         {
             Disappear();
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
         }
 
         /// <summary>
@@ -215,8 +218,6 @@ namespace SS3D.Systems.Interactions
             _canvasGroup.interactable = false;
 
             ResetInteractionsMenu();
-            
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
         }
 
         /// <summary>

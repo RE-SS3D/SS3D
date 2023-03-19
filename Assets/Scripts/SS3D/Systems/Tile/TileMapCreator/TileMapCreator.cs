@@ -9,8 +9,10 @@ using FishNet.Object;
 using FishNet.Connection;
 using SS3D.Logging;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.UI
 {
@@ -71,13 +73,12 @@ namespace SS3D.Systems.Tile.UI
         {
             if (_enabled)
             {
-                _inputSystem.ToggleActionMap(_controls, false);
-                _inputSystem.ToggleAction(_controls.ToggleMenu, true);
+                _inputSystem.ToggleActionMap(_controls, false, new []{_controls.ToggleMenu});
                 _inputSystem.ToggleCollisions(_controls, true);
             }
             else
             {
-                _inputSystem.ToggleActionMap(_controls, true);
+                _inputSystem.ToggleActionMap(_controls, true, new []{_controls.ToggleMenu});
                 _inputSystem.ToggleCollisions(_controls, false);
             }
             _enabled = !_enabled;
