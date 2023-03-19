@@ -19,6 +19,11 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 
     public NetworkBehaviour GetNetworkBehaviour => BodyPartBehaviour;
 
+    /// <summary>
+    /// The strenght of the pain signal depends on the health of 
+    /// signal transmitter higher up in the hierarchy.
+    /// The more they're harmed, the weaker the signal will be.
+    /// </summary>
     public float SignalStrength
     {
         get
@@ -139,7 +144,7 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         {
             pain += layer.TotalDamage/layer.MaxDamage;
         }
-        return pain / BodyPart.BodyLayers.Count;
+        return SignalStrength * pain / BodyPart.BodyLayers.Count;
     }
 
     public override void OnDamageInflicted(DamageTypeQuantity damageQuantity)
