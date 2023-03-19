@@ -27,19 +27,6 @@ namespace SS3D.Systems.Inputs
             }
             ToggleActionMap(Inputs.Other, true);
         }
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                string res = "";
-                foreach (KeyValuePair<InputAction, int> pair in _actionDisables)
-                {
-                    res += pair.Key.ToString() + " " + pair.Value.ToString() + "\n";
-                }
-                Debug.Log(res);
-            }
-        }
         /// <summary>
         /// Substract one set of actions from another
         /// </summary>
