@@ -156,7 +156,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             foreach (var bodyPart in bodyPartsWithName)
             {
-                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
+                bodyPart.TryAddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
             }
 
             return description;
@@ -186,7 +186,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             foreach (var bodyPart in bodyPartsWithName)
             {
-                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
+                bodyPart.TryAddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
             }
 
             return description;
