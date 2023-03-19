@@ -29,9 +29,11 @@ public class Brain : BodyPart
         BodyLayers.Add(new OrganLayer(this));
     }
 
+
     /// <summary>
-    /// This takes all the pain in the body and sum it.
+    /// This takes all the pain in the body produced by body parts with nerves signal transmitters and sum it.
     /// </summary>
+    /// <returns>a number between 0 and 1.</returns>
     public float ComputePain()
     {
         float pain = ComputePain(this);
