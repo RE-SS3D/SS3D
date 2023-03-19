@@ -18,6 +18,9 @@ public abstract class BodyPart
 
     private BodyPart _parentBodyPart;
 
+    /// <summary>
+    /// Return the parent of this BodyPart if it exists.
+    /// </summary>
     public BodyPart ParentBodyPart
     {
         get { return _parentBodyPart; }
@@ -101,6 +104,11 @@ public abstract class BodyPart
         }
     }
 
+    /// <summary>
+    /// Add a body layer if none of the same type are already present on this body part.
+    /// TODO : use generic to check type, actually check if only one of each kind.
+    /// </summary>
+    /// <returns> The body layer was added.</returns>
     public virtual bool TryAddBodyLayer(BodyLayer layer)
     {
         // Make sure only one nerve signal layer can exist at a time on a bodypart.
@@ -119,13 +127,21 @@ public abstract class BodyPart
 
     }
 
+    /// <summary>
+    /// Remove a body layer from the body part.
+    /// TODO : check if it exists first.
+    /// </summary>
+    /// <param name="layer"></param>
     public virtual void RemoveBodyLayer(BodyLayer layer) 
     {
         if(BodyPartBehaviour == null)
         BodyLayers.Remove(layer);
     }
 
-
+    /// <summary>
+    /// Add a new body part as a child of this one. 
+    /// </summary>
+    /// <param name="bodyPart"></param>
     public virtual void AddChildBodyPart(BodyPart bodyPart)
     {
         if (BodyPartBehaviour == null)
@@ -140,6 +156,10 @@ public abstract class BodyPart
         BodyPartBehaviour._childBodyPartsBehaviour.Add(bodyPart.BodyPartBehaviour);
     }
 
+    /// <summary>
+    /// Inflic damages of a certain kind on a certain body layer type if the layer is present.
+    /// </summary>
+    /// <returns>True if the damage could be inflicted</returns>
     public virtual bool TryInflictDamage<T>(DamageTypeQuantity damageTypeQuantity)
     {
         var layer = GetBodyLayer<T>();
@@ -148,7 +168,22 @@ public abstract class BodyPart
         return true;
     }
 
+    /// <summary>
+    /// inflict same type damages to all layers present on this body part.
+    /// </summary>
+    public virtual void InflictDamageToAllLayer<T>(DamageTypeQuantity damageTypeQuantity)
+    {
+        foreach(var layer in BodyLayers)
+        {
+            layer.InflictDamage(damageTypeQuantity);
+        }
+    }
 
+
+    /// <summary>
+    /// Check if a nerveSignalTransmitter is present on this bodypart.
+    /// TODO : check if nerve signal layer is destroyed too.
+    /// </summary>
     public bool CanTransmitNerveSignals()
     {
         foreach(var layer in BodyLayers)
@@ -167,6 +202,12 @@ public abstract class BodyPart
         return BodyLayers.Any(x => x.LayerType == layerType);
     }
 
+    /// <summary>
+    /// GetBodyLayer of type T on this bodypart.
+    /// Todo : change that with TryGetBody.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public BodyLayer GetBodyLayer<T>()
     {
         foreach (var layer in BodyLayers)
@@ -180,6 +221,10 @@ public abstract class BodyPart
         return null;
     }
 
+    /// <summary>
+    /// Describe extensively the bodypart.
+    /// </summary>
+    /// <returns></returns>
     public string Describe()
     {
         var description = "";
