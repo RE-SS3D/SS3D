@@ -25,9 +25,8 @@ public class BrainBehaviour : BodyPartBehaviour
         
     }
 
-    public float GetPainFromNerves()
+    public float ComputePain()
     {
-        var bodyParts = GetComponentsInChildren<BodyPart>();
-        return Brain.ProcessPain(bodyParts);
+        return Brain.ComputePain();
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using System;
 using UnityEditor;
+using Codice.Client.Common;
 
 /// <summary>
 /// TODO : Make an organ bodylayer since that might be useful as all organs will have the same damage susceptibility.
@@ -14,38 +15,45 @@ public class Brain : BodyPart
 {
 
 
-    public Brain(bool hasCentralNervousSystem)
+    public Brain(string name) : base(name)
     {
         BodyLayers.Add(new CirculatoryLayer(this));
-        BodyLayers.Add(new NerveLayer(this, hasCentralNervousSystem)); 
+        BodyLayers.Add(new NerveLayer(this, true)); 
         BodyLayers.Add(new OrganLayer(this));
     }
 
-    public Brain(BodyPartBehaviour bodyPartBehaviour, bool hasCentralNervousSystem) : base(bodyPartBehaviour)
+    public Brain(BodyPartBehaviour bodyPartBehaviour) : base(bodyPartBehaviour)
     {
         BodyLayers.Add(new CirculatoryLayer(this));
-        BodyLayers.Add(new NerveLayer(this, hasCentralNervousSystem));
+        BodyLayers.Add(new NerveLayer(this, true));
         BodyLayers.Add(new OrganLayer(this));
     }
 
     /// <summary>
     /// This takes all the pain in the body and sum it.
     /// </summary>
-    public float ProcessPain(BodyPart[] bodyParts)
+    public float ComputePain()
     {
-        float painSum = 0;
-        foreach (var bodyPart in bodyParts)
+        float pain = ComputePain(this);
+        return pain;
+    }
+
+    private float ComputePain(BodyPart bodyPart)
+    {
+        float currentPain = 0;
+        foreach (var part in bodyPart.ChildBodyParts)
         {
-            var transmitters = bodyPart.BodyLayers.FindAll(x => x is INerveSignalTransmitter);
-            foreach (var transmitter in transmitters)
+            currentPain += ComputePain(part);
+        }
+
+        var transmitters = bodyPart.NerveSignalTransmitters;
+        foreach (var transmitter in transmitters)
+        {
+            if (transmitter.IsConnectedToCentralNervousSystem)
             {
-                var t = (INerveSignalTransmitter)transmitter;
-                if (t.IsConnectedToCentralNervousSystem)
-                {
-                    painSum += t.ProducePain();
-                }
+                currentPain += transmitter.ProducePain();
             }
         }
-        return painSum;
+        return currentPain;
     }
 }
