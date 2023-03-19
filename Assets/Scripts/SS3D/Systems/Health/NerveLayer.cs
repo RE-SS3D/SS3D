@@ -82,14 +82,14 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 
     public NerveLayer(BodyPart bodyPart, bool isCentralNervousSystem) : base(bodyPart)
     {
-        IsCentralNervousSystem = IsCentralNervousSystem;
+        IsCentralNervousSystem = isCentralNervousSystem;
     }
 
     public NerveLayer(BodyPart bodyPart, bool isCentralNervousSystem,
         List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
         : base(bodyPart, damages, susceptibilities, resistances)
     {
-        IsCentralNervousSystem = IsCentralNervousSystem;
+        IsCentralNervousSystem = isCentralNervousSystem;
     }
 
     protected override void SetSuceptibilities()
@@ -103,7 +103,14 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 
     public INerveSignalTransmitter ParentSignalTransmitter()
     {
-        return BodyPart.ParentBodyPart.CanTransmitNerveSignals() ? (INerveSignalTransmitter) BodyPart.ParentBodyPart.GetBodyLayer<INerveSignalTransmitter>() : null;
+        if(BodyPart.ParentBodyPart == null) return null;
+        INerveSignalTransmitter transmitter; 
+        if (BodyPart.ParentBodyPart.CanTransmitNerveSignals())
+        {
+            transmitter = (INerveSignalTransmitter)BodyPart.ParentBodyPart.GetBodyLayer<INerveSignalTransmitter>();
+            return transmitter;
+        }
+        else return null;
     }
 
     public List<INerveSignalTransmitter> ChildSignalTransmitters()
@@ -127,7 +134,12 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     /// </summary>
     public float ProducePain()
     {
-        throw new NotImplementedException();
+        float pain = 0;
+        foreach(var layer in BodyPart.BodyLayers)
+        {
+            pain += layer.TotalDamage/layer.MaxDamage;
+        }
+        return pain / BodyPart.BodyLayers.Count;
     }
 
     public override void OnDamageInflicted(DamageTypeQuantity damageQuantity)
