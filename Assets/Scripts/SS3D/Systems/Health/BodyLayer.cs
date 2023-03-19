@@ -168,11 +168,15 @@ public abstract class BodyLayer
         return TotalDamage >= MaxDamage;
     }
 
+    /// <summary>
+    /// Modify the quantity of damages taken by applying susceptibility first, and by substracting resistance after.
+    /// </summary>
     protected float ApplyResistanceAndSusceptibility(DamageTypeQuantity damageTypeQuantity)
     {
         float susceptibility = GetDamageTypeSusceptibility(damageTypeQuantity.damageType);
         float resistance = GetDamageResistance(damageTypeQuantity.damageType);
-        return damageTypeQuantity.quantity * susceptibility - resistance;
+        float modifiedDamages = damageTypeQuantity.quantity * susceptibility - resistance;
+        return modifiedDamages < 0 ? 0 : modifiedDamages;
     }
 
     public virtual void OnDamageInflicted(DamageTypeQuantity damageQuantity)
