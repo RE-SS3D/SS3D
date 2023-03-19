@@ -226,6 +226,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            itemContainer.RemoveItem(item);
             container.Container.AddItemPosition(item, position);
         }
 
