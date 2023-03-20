@@ -29,7 +29,7 @@ namespace SS3D.Systems.Screens
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
 
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 

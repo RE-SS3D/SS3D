@@ -63,7 +63,7 @@ namespace SS3D.Systems.Interactions
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.SecondaryClick.performed += HandleDisappear;
         }
 

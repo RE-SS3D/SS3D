@@ -16,7 +16,7 @@ namespace SS3D.Systems.Entities.Debug
         {
             base.OnStart();
             
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.SwapMinds.performed += HandleMindSwap;
         }
 
@@ -35,7 +35,7 @@ namespace SS3D.Systems.Entities.Debug
                 return;
             }
 
-            MindSystem mindSystem = SystemLocator.Get<MindSystem>();
+            MindSystem mindSystem = Subsystems.Get<MindSystem>();
             mindSystem.CmdSwapMinds(Origin, Target);
 
             Origin = Target;

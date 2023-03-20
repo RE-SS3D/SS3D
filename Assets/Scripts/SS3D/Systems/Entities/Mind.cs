@@ -23,7 +23,7 @@ namespace SS3D.Systems.Entities
         {
             base.OnStart();
 
-            Empty = SystemLocator.Get<MindSystem>().EmptyMind;
+            Empty = Subsystems.Get<MindSystem>().EmptyMind;
         }
 
         [Server]
