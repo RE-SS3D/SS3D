@@ -88,8 +88,9 @@ public abstract class BodyPart
     {
         Name = name;
         BodyPartBehaviour = bodyPartBehaviour;
-        ChildBodyParts = (List<BodyPart>) BodyPartBehaviour.ChildBodyPartsBehaviour.Select(x=> x.BodyPart);
-        ParentBodyPart = BodyPartBehaviour.ParentBodyPartBehaviour.BodyPart;
+        ChildBodyParts =  BodyPartBehaviour.ChildBodyPartsBehaviour.Collection.Select(x=> x.BodyPart).ToList();
+        if (BodyPartBehaviour.ParentBodyPartBehaviour != null)
+            ParentBodyPart = BodyPartBehaviour.ParentBodyPartBehaviour.BodyPart;
     }
 
     public BodyPart(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers, string name = "")
@@ -153,7 +154,7 @@ public abstract class BodyPart
             return;
         }
         
-        BodyPartBehaviour._childBodyPartsBehaviour.Add(bodyPart.BodyPartBehaviour);
+        BodyPartBehaviour.ChildBodyPartsBehaviour.Add(bodyPart.BodyPartBehaviour);
     }
 
     /// <summary>

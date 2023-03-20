@@ -30,7 +30,7 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     private BodyPartBehaviour _parentBodyPartBehaviour;
 
     [SyncObject]
-    public readonly SyncList<BodyPartBehaviour> _childBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
+    public readonly SyncList<BodyPartBehaviour> ChildBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
 
     [SyncObject]
     public readonly SyncList<BodyLayer> BodyLayers = new SyncList<BodyLayer>();
@@ -46,7 +46,6 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     /// The parent bodypart is the body part attached to this body part, furthest from the brain. 
     /// For higer left arm, it's lower left arm. For head, it's neck.
     /// </summary>
-    public List<BodyPartBehaviour> ChildBodyPartsBehaviour => (List<BodyPartBehaviour>) _childBodyPartsBehaviour.Collection;
 
     public BodyPart BodyPart;
 
@@ -54,7 +53,7 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     {
         if (isHuman)
         {
-            BodyPart = new HumanBodypart(this);
+            BodyPart = new HumanBodypart(this, name);
         }
     }
 
@@ -75,9 +74,11 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     {   
         if(_parentBodyPartBehaviour != null)
         {
-            _parentBodyPartBehaviour._childBodyPartsBehaviour.Add(this);
+            _parentBodyPartBehaviour.ChildBodyPartsBehaviour.Add(this);
         }
+
     }
+
 
     [Server]
     public bool TryAddBodyLayer(BodyLayer layer)

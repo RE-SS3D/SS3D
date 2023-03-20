@@ -51,8 +51,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 4099385748557327658}
   isHuman: 1
-  _initialChildBodyPartsBehaviour:
-  - {fileID: 5578655964063094902}
   _parentBodyPartBehaviour: {fileID: 7310465603181291587}
 --- !u!114 &4099385748557327658
 MonoBehaviour:
@@ -501,8 +499,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 5962771607979234559}
   isHuman: 1
-  _initialChildBodyPartsBehaviour:
-  - {fileID: 3793450088331597172}
   _parentBodyPartBehaviour: {fileID: 0}
 --- !u!114 &5962771607979234559
 MonoBehaviour:
@@ -863,9 +859,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 16
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 8612771767413959111}
   _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 3043704831697070745}
   ContainerItemDisplay: {fileID: 0}
@@ -1063,7 +1059,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 8612771767413959111}
   _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 5770197026759263291}
   ContainerItemDisplay: {fileID: 0}
@@ -2228,10 +2224,8 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 1
   _networkBehaviours:
   - {fileID: 5578655964063094902}
-  - {fileID: 7994111800386677094}
-  - {fileID: 8411477508438424976}
-  - {fileID: 7653287983538616454}
-  - {fileID: 396059371930522959}
+  - {fileID: 9043833080261862026}
+  - {fileID: 6165860195545991716}
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 4099385748557327658}
@@ -2260,8 +2254,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8612771767413959111}
   _networkObjectCache: {fileID: 8612771767413959111}
   isHuman: 1
-  _initialChildBodyPartsBehaviour: []
-  _parentBodyPartBehaviour: {fileID: 0}
+  _parentBodyPartBehaviour: {fileID: 3793450088331597172}
 --- !u!1 &5528759040543479194
 GameObject:
   m_ObjectHideFlags: 0
@@ -3102,8 +3095,6 @@ MonoBehaviour:
   - {fileID: 1269718494757663163}
   - {fileID: 8309405083333822009}
   - {fileID: 6195053383849332090}
-  - {fileID: 9043833080261862026}
-  - {fileID: 6165860195545991716}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 8612771767413959111}
