@@ -215,7 +215,7 @@ namespace SS3D.Systems.Entities
             foreach (Entity player in SpawnedPlayers)
             {
                 ServerManager.Despawn(player.NetworkObject);
-                player.GameObjectCache.Dispose(true);
+                player.GameObject.Dispose(true);
             }
 
             _hasSpawnedInitialPlayers = false;

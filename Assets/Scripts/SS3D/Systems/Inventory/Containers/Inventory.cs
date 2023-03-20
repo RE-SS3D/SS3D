@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
@@ -82,13 +84,13 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnAwake();
 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+
             Hands.Inventory = this;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             float time = Time.time;
             if (!(time > _nextAccessCheck))
             {

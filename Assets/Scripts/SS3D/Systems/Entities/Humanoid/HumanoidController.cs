@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -70,6 +72,8 @@ namespace SS3D.Systems.Entities.Humanoid
             MovementControls.ToggleRun.performed += HandleToggleRun;
             MovementControls.Enable();
             HotkeysControls.Enable();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -84,10 +88,8 @@ namespace SS3D.Systems.Entities.Humanoid
             OnSpeedChanged(0);
         }
 
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        { 
             if (!IsOwner)
             {
                 return;

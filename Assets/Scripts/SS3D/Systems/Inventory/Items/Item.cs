@@ -142,9 +142,9 @@ namespace SS3D.Systems.Inventory.Items
         {
             Container = null;
 
-            if (GameObjectCache != null)
+            if (GameObject != null)
             {
-                ServerManager.Despawn(GameObjectCache);
+                ServerManager.Despawn(GameObject);
             }
         }
 

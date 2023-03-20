@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
@@ -49,15 +51,15 @@ namespace SS3D.Systems.Interactions
             Disappear();
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             UpdateIndicator();
         }
 
         private void Setup()
         {
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+
             Interactions = new List<IInteraction>();
             foreach (RadialInteractionButton interactionButton in _interactionButtons)
             {
@@ -153,7 +155,7 @@ namespace SS3D.Systems.Interactions
             Vector2 screenPos = Mouse.current.position.ReadValue();
             Position = screenPos;
 
-            _selectedObject = _interactionButtons.First().GameObjectCache;
+            _selectedObject = _interactionButtons.First().GameObject;
 
             UpdateIndicator();
 
@@ -164,7 +166,7 @@ namespace SS3D.Systems.Interactions
             _fadeSequence = DOTween.Sequence();
 
             _scaleSequence
-                .Append(TransformCache
+                .Append(Transform
                 .DOScale(1, ScaleDuration)
                 .SetEase(Ease.OutCirc));
 
@@ -196,7 +198,7 @@ namespace SS3D.Systems.Interactions
             _fadeSequence = DOTween.Sequence();
 
             _scaleSequence
-                .Append(TransformCache
+                .Append(Transform
                 .DOScale(0, ScaleDuration)
                 .SetEase(Ease.OutCirc));
 
