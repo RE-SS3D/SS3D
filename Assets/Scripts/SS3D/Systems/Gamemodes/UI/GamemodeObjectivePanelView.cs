@@ -37,7 +37,7 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.Fade.performed += HandleFadePerformed;
             _controls.Fade.canceled += HandleFadeCanceled;
         }
@@ -98,7 +98,7 @@ namespace SS3D.Systems.Gamemodes.UI
         {
             foreach (KeyValuePair<int,GamemodeObjectiveItemView> view in _gamemodeObjectiveItems)
             {
-                view.Value.GameObjectCache.Dispose(true);
+                view.Value.GameObject.Dispose(true);
             }
 
             _gamemodeObjectiveItems.Clear();

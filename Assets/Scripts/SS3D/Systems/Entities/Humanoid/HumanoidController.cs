@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -65,7 +67,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void Setup()
         {
-            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
+            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingSoulChanged;
             _inputSystem = SystemLocator.Get<InputSystem>();
             Controls controls = _inputSystem.Inputs;
@@ -74,6 +76,14 @@ namespace SS3D.Systems.Entities.Humanoid
             MovementControls.ToggleRun.performed += HandleToggleRun;
             _inputSystem.ToggleActionMap(MovementControls, true);
             _inputSystem.ToggleActionMap(HotkeysControls, true);
+            Controls controls = Subsystems.Get<InputSystem>().Inputs;
+            MovementControls = controls.Movement;
+            HotkeysControls = controls.Hotkeys;
+            MovementControls.ToggleRun.performed += HandleToggleRun;
+            MovementControls.Enable();
+            HotkeysControls.Enable();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -90,10 +100,8 @@ namespace SS3D.Systems.Entities.Humanoid
             OnSpeedChanged(0);
         }
 
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        { 
             if (!IsOwner)
             {
                 return;

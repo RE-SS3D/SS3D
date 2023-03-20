@@ -30,7 +30,7 @@ namespace SS3D.Core
         /// </summary>
         private void InitializeApplicationSettings()
         {
-            CommandLineArgsSystem startArgsSystem = SystemLocator.Get<CommandLineArgsSystem>();
+            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
 
             startArgsSystem.LoadApplicationSettings();
             startArgsSystem.ProcessCommandLineArgs();
@@ -80,7 +80,7 @@ namespace SS3D.Core
         {
             Punpun.Information(this, "Initializing network session", Logs.Important);
 
-            SessionNetworkSystem sessionNetworkSystem = SystemLocator.Get<SessionNetworkSystem>();
+            SessionNetworkSystem sessionNetworkSystem = Subsystems.Get<SessionNetworkSystem>();
             sessionNetworkSystem.InitializeNetworkSession();
         }
     }

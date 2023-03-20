@@ -1,4 +1,6 @@
-﻿using SS3D.Core.Behaviours;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using SS3D.Core.Behaviours;
 using UnityEngine;
 using System;
 using SS3D.Core;
@@ -96,6 +98,13 @@ namespace SS3D.Systems.Screens
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
             _inputSystem.ToggleActionMap(_controls, true);
+            
+            _controls = Subsystems.Get<InputSystem>().Inputs.Camera;
+            _controls.Zoom.performed += HandleZoom;
+            _controls.SnapRight.performed += HandleSnapRight;
+            _controls.SnapLeft.performed += HandleSnapLeft;
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -108,10 +117,8 @@ namespace SS3D.Systems.Screens
             _inputSystem.ToggleActionMap(_controls, false);
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(deltaTime);
-
             ProcessCameraPosition();
         }
         

@@ -8,7 +8,13 @@
         protected override void OnAwake()
         {
             base.OnAwake();
-            SystemLocator.Register(this);
+            Subsystems.Register(this);
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            Subsystems.Unregister(this);
         }
     }
 }
