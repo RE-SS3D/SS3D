@@ -10,9 +10,15 @@ namespace SS3D.Core.Behaviours
     /// Actors are the representation of a GameObject with extra steps. The basic idea is to optimize Transform and GameObject manipulation,
     /// as Unity's getters are a bit slow since they do not cache the Transform and the GameObject. They also used for QOL on code usages,
     /// as the Unity doesn't provide some of them from the get-go.
-    ///
-    /// They will also be used for optimization with the Update calls, as Unity's method is slow and the UpdateEvent event solves that issue and guarantees performance.
     /// </summary>
+    /// 
+    /// <remarks>
+    /// They will also be used for optimization with the Update calls, as Unity's method is slow and the UpdateEvent event solves that issue and guarantees performance.
+    /// Follow this link to read more about PlayerLoopTiming events.
+    ///
+    /// https://github.com/coimbrastudios/framework/blob/master/Documentation~/EventService.md
+    /// </remarks>
+    // TODO: Add a Guide into using PlayerLoopTiming events to GitBook.
     public class NetworkActor : NetworkBehaviour, IActor
     {
         /// <summary>
