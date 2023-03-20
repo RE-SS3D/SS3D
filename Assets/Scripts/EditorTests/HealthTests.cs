@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SS3D.Systems.Health;
+using System.Collections.Generic;
 
 namespace EditorTests
 {
@@ -100,6 +101,7 @@ namespace EditorTests
         HumanBodypart rightHand;
         HumanBodypart leftFoot;
         HumanBodypart rightFoot;
+        List<BodyPart> BodyParts;
 
         [SetUp]
         public void SetUpSimpleBody()
@@ -115,6 +117,8 @@ namespace EditorTests
             rightHand = new HumanBodypart(rightArm, "rightHand");
             leftFoot = new HumanBodypart(leftLeg, "leftFoot");
             rightFoot = new HumanBodypart(rightLeg, "rightFoot");
+            BodyParts = new List<BodyPart>() { brain, head, torso, leftArm, rightArm, leftLeg, rightLeg, 
+            leftHand, rightHand, leftFoot, rightFoot};
         }
 
         /// <summary>
@@ -124,6 +128,25 @@ namespace EditorTests
         public void PainisZeroInSimpleHealthyBody()
         {
             Assert.AreEqual(brain.ComputePain(), 0);
+        }
+
+        /// </summary>
+        [Test]
+        [TestCase(120f)]
+        [TestCase(100f)]
+        [TestCase(98f)]
+        [TestCase(40f)]
+        [TestCase(0f)]
+        [TestCase(-5f)]
+        public void PainIsBetweenZeroAndOne(float pain)
+        {
+            foreach (BodyPart bodyPart in BodyParts)
+            {
+                bodyPart.InflictDamageToAllLayerButOne<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, pain));
+            }
+            float resultingPain = brain.ComputePain();
+            Assert.GreaterOrEqual(resultingPain, 0);
+            Assert.LessOrEqual(resultingPain, 1);
         }
 
         /// <summary>

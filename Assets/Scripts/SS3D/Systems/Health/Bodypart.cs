@@ -26,13 +26,17 @@ public abstract class BodyPart
         get { return _parentBodyPart; }
         set
         {
+            if (value == null)
+                return;
+
             if (ChildBodyParts.Contains(value))
             {
                 Punpun.Error(this, "trying to set up {bodypart} bodypart as both child and" +
                     " parent of {bodypart} bodypart.", Logs.Generic, value, this);
                 return;
             }
-                
+
+            Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
             _parentBodyPart = value;
             _parentBodyPart.ChildBodyParts.Add(this);
         }
@@ -89,6 +93,7 @@ public abstract class BodyPart
         Name = name;
         BodyPartBehaviour = bodyPartBehaviour;
         ChildBodyParts =  BodyPartBehaviour.ChildBodyPartsBehaviour.Collection.Select(x=> x.BodyPart).ToList();
+        BodyLayers = (List<BodyLayer>) BodyPartBehaviour.BodyLayers.Collection;
         if (BodyPartBehaviour.ParentBodyPartBehaviour != null)
             ParentBodyPart = BodyPartBehaviour.ParentBodyPartBehaviour.BodyPart;
     }
@@ -172,11 +177,23 @@ public abstract class BodyPart
     /// <summary>
     /// inflict same type damages to all layers present on this body part.
     /// </summary>
-    public virtual void InflictDamageToAllLayer<T>(DamageTypeQuantity damageTypeQuantity)
+    public virtual void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
     {
         foreach(var layer in BodyLayers)
         {
             layer.InflictDamage(damageTypeQuantity);
+        }
+    }
+
+    /// <summary>
+    /// inflict same type damages to all layers present on this body part.
+    /// </summary>
+    public virtual void InflictDamageToAllLayerButOne<T>(DamageTypeQuantity damageTypeQuantity)
+    {
+        foreach (var layer in BodyLayers)
+        {
+            if(!(layer is T))
+                layer.InflictDamage(damageTypeQuantity);
         }
     }
 

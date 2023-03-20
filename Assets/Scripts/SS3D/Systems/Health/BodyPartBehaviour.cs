@@ -57,10 +57,14 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
         }
     }
 
+    public void Start()
+    {
+        SetUpChild();
+    }
+
     public override void OnStartServer()
     {
         base.OnStartServer();
-        SetUpChild();
     }
 
     public override void OnStartClient()
