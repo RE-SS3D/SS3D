@@ -62,9 +62,9 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void Setup()
         {
-            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
+            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingSoulChanged;
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            Controls controls = Subsystems.Get<InputSystem>().Inputs;
             MovementControls = controls.Movement;
             HotkeysControls = controls.Hotkeys;
             MovementControls.ToggleRun.performed += HandleToggleRun;

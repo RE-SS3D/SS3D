@@ -25,7 +25,7 @@ namespace SS3D.Networking
         protected override void OnStart()
         {
             base.OnStart();
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.SpawnCans.performed += HandleSpawnSodaCans;
         }
 

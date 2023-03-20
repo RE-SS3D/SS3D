@@ -36,9 +36,9 @@ namespace SS3D.Systems.Interactions
         {
             base.OnStartClient();
 
-            _radialView = SystemLocator.Get<RadialInteractionView>();
-            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            _radialView = Subsystems.Get<RadialInteractionView>();
+            _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            Controls controls = Subsystems.Get<InputSystem>().Inputs;
             _otherControls = controls.Other;
             _hotkeysControls = controls.Hotkeys;
             _otherControls.PrimaryClick.performed += HandlePrimaryClick;

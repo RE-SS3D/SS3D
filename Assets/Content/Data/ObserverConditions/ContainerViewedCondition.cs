@@ -35,7 +35,7 @@ public class ContainerViewedCondition : ObserverCondition
         var container = NetworkObject.GetComponent<AttachedContainer>();
         notProcessed= false;
 
-        if (SystemLocator.Get<EntitySystem>().TryGetSpawnedEntity(connection, out Entity entity) 
+        if (Subsystems.Get<EntitySystem>().TryGetSpawnedEntity(connection, out Entity entity) 
             && container.Container.ObservingPlayers.Contains(entity))
         {
             return true;

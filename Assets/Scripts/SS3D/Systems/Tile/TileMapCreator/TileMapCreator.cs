@@ -57,7 +57,7 @@ namespace SS3D.Systems.Tile.UI
         private void Start()
         {
             ShowUI(false);
-            _controls = SystemLocator.Get<InputSystem>().Inputs.TileCreator;
+            _controls = Subsystems.Get<InputSystem>().Inputs.TileCreator;
             _controls.ToggleMenu.Enable();
             _controls.ToggleMenu.performed += HandleToggleMenu;
             _controls.Replace.performed += HandleReplace;
@@ -109,7 +109,7 @@ namespace SS3D.Systems.Tile.UI
         {
             if (!_initalized)
             {
-                _tileSystem = SystemLocator.Get<TileSystem>();
+                _tileSystem = Subsystems.Get<TileSystem>();
                 _ghostManager = GetComponent<GhostManager>();
                 _plane = new Plane(Vector3.up, 0);
 
@@ -218,7 +218,7 @@ namespace SS3D.Systems.Tile.UI
         {
             if (_tileSystem == null)
             {
-                _tileSystem = SystemLocator.Get<TileSystem>();
+                _tileSystem = Subsystems.Get<TileSystem>();
             }
 
             TileObjectSo tileObjectSo = (TileObjectSo) _tileSystem.GetAsset(tileObjectSoName);
@@ -383,14 +383,14 @@ namespace SS3D.Systems.Tile.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
-            SystemLocator.Get<InputSystem>().Inputs.Camera.Zoom.Disable();
+            Subsystems.Get<InputSystem>().Inputs.Camera.Zoom.Disable();
         }
 
         [ServerOrClient]
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
-            SystemLocator.Get<InputSystem>().Inputs.Camera.Zoom.Enable();
+            Subsystems.Get<InputSystem>().Inputs.Camera.Zoom.Enable();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return checkArgsResponse.InvalidArgs;
             
             string ret = "";
-            IEnumerable<Soul> souls = SystemLocator.Get<PlayerSystem>().ServerSouls;
+            IEnumerable<Soul> souls = Subsystems.Get<PlayerSystem>().ServerSouls;
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
