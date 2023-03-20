@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Coimbra;
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.PlayerLoop;
 using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.IngameConsoleSystem
@@ -54,6 +57,8 @@ namespace SS3D.Systems.IngameConsoleSystem
             _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
             _consoleControls.Submit.performed += HandleSubmit;
             _consoleControls.Open.Enable();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -66,10 +71,8 @@ namespace SS3D.Systems.IngameConsoleSystem
             _consoleControls.Submit.performed -= HandleSubmit;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-            
             if (_isSliding)
             {
                 Slide();

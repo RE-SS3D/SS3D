@@ -48,7 +48,7 @@ namespace SS3D.Systems.Entities
                 return;
             }
 
-            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObjectCache);
+            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject);
             localPlayerObjectChanged.Invoke(this);
         }
 

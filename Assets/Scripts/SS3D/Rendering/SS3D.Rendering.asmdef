@@ -1,4 +1,18 @@
 {
-	"name": "SS3D.Rendering",
-	"references":[ "GUID:eb242eaf9f292954eb8c6fbd63c46deb" ]
+    "name": "SS3D.Rendering",
+    "rootNamespace": "",
+    "references": [
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:46e20dca70571ce4e817a6b5874168a0",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

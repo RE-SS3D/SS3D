@@ -74,7 +74,7 @@ namespace SS3D.Systems.Entities
             }
 
             Mind mind = Instantiate(_mindPrefab).GetComponent<Mind>();
-            ServerManager.Spawn(mind.GameObjectCache, soul.Owner);
+            ServerManager.Spawn(mind.GameObject, soul.Owner);
 
             mind.SetSoul(soul);
 
