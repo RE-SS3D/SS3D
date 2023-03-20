@@ -69,11 +69,9 @@ namespace SS3D.Systems.Interactions
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
 
-            _inputSystem = SystemLocator.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.Interactions;
             _controls.ViewInteractions.canceled += HandleDisappear;
-            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
-            _controls.SecondaryClick.performed += HandleDisappear;
         }
 
         protected override void OnDestroyed()

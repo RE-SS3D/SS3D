@@ -69,19 +69,13 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingSoulChanged;
-            _inputSystem = SystemLocator.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSystem>();
             Controls controls = _inputSystem.Inputs;
             MovementControls = controls.Movement;
             HotkeysControls = controls.Hotkeys;
             MovementControls.ToggleRun.performed += HandleToggleRun;
             _inputSystem.ToggleActionMap(MovementControls, true);
             _inputSystem.ToggleActionMap(HotkeysControls, true);
-            Controls controls = Subsystems.Get<InputSystem>().Inputs;
-            MovementControls = controls.Movement;
-            HotkeysControls = controls.Hotkeys;
-            MovementControls.ToggleRun.performed += HandleToggleRun;
-            MovementControls.Enable();
-            HotkeysControls.Enable();
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }

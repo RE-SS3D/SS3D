@@ -49,16 +49,14 @@ namespace SS3D.Systems.IngameConsoleSystem
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
             _commandsController = new CommandsController();
-            _inputSystem = SystemLocator.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs;
-            _controls = Subsystems.Get<InputSystem>().Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;
             _consoleControls.Open.performed += HandleOpen;
             _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
             _consoleControls.Submit.performed += HandleSubmit;
             _inputSystem.ToggleAction(_consoleControls.Open, true);
-            _consoleControls.Open.Enable();
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }

@@ -60,11 +60,10 @@ namespace SS3D.Systems.Tile.UI
         private void Start()
         {
             ShowUI(false);
-            _inputSystem = SystemLocator.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
-            _controls = Subsystems.Get<InputSystem>().Inputs.TileCreator;
-            _controls.ToggleMenu.Enable();
+
             _controls.ToggleMenu.performed += HandleToggleMenu;
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
@@ -394,16 +393,14 @@ namespace SS3D.Systems.Tile.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
-            SystemLocator.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", false);
-            Subsystems.Get<InputSystem>().Inputs.Camera.Zoom.Disable();
+            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", false);
         }
 
         [ServerOrClient]
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
-            SystemLocator.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", true);
-            Subsystems.Get<InputSystem>().Inputs.Camera.Zoom.Enable();
+            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", true);
         }
     }
 }

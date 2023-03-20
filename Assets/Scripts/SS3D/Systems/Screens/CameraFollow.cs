@@ -92,17 +92,12 @@ namespace SS3D.Systems.Screens
         protected override void OnStart()
         {
             base.OnStart();
-            _inputSystem = SystemLocator.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
             _inputSystem.ToggleActionMap(_controls, true);
-            
-            _controls = Subsystems.Get<InputSystem>().Inputs.Camera;
-            _controls.Zoom.performed += HandleZoom;
-            _controls.SnapRight.performed += HandleSnapRight;
-            _controls.SnapLeft.performed += HandleSnapLeft;
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
