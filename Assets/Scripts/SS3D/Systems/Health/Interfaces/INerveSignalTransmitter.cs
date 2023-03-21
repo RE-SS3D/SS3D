@@ -9,6 +9,7 @@ using FishNet.Object;
 /// </summary>
 public interface INerveSignalTransmitter
 {
+    public float SignalStrenghtShapeParameter { get; }
     /// <summary>
     /// All direcly connected parent nerve signal transmitters
     /// (e.g. if this is neck, head is directly connected as parent and transmitting nerve signal for humans).

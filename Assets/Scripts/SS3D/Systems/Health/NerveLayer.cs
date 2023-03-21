@@ -7,7 +7,8 @@ using System.Linq;
 
 public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 {
-    
+    public float SignalStrenghtShapeParameter { get => 20f; }
+
     public override float OxygenConsumptionRate { get => 0.2f; }
 
     public bool IsCentralNervousSystem { get; private set; }
@@ -23,12 +24,15 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     /// The strenght of the pain signal depends on the health of 
     /// signal transmitter higher up in the hierarchy.
     /// The more they're harmed, the weaker the signal will be.
+    /// The power function guarantees that the signal strength will stay between 0 and 1, while 
+    /// increasing very slowly first, and very fast when close to one. This simulate that nerves
+    /// can still transmit nerves signal pretty well, even when badly hurt.
     /// </summary>
     public float SignalStrength
     {
         get
         {
-            float localSignalStrength = 1f - TotalDamage / MaxDamage;
+            float localSignalStrength = 1f - Mathf.Pow(TotalDamage / MaxDamage, SignalStrenghtShapeParameter);
             if (IsCentralNervousSystem) return localSignalStrength;
 
             var parent = ParentSignalTransmitter();
@@ -133,7 +137,7 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 
     /// <summary>
     /// Produces a given amount of pain depending on other tissues damages.
-    /// It also depends on the state of the never layer.
+    /// It also depends on the state of the nerve layer.
     /// When nerves are closed to be destroyed, they send less and less pain.
     /// Should be an average of the state of destruction of each layer on this BodyPart.
     /// </summary>
