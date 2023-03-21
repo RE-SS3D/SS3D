@@ -25,8 +25,8 @@ public class BrainBehaviour : BodyPartBehaviour
         
     }
 
-    public float ComputePain()
+    public float ComputeAveragePain()
     {
-        return Brain.ComputePain();
+        return Brain.ComputeAveragePain();
     }
 }

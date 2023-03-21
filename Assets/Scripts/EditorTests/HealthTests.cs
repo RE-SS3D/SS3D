@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using NUnit.Framework.Internal.Execution;
+using SS3D.Logging;
 using SS3D.Systems.Health;
 using System.Collections.Generic;
 
@@ -127,24 +129,59 @@ namespace EditorTests
         [Test]
         public void PainisZeroInSimpleHealthyBody()
         {
-            Assert.AreEqual(brain.ComputePain(), 0);
+            Assert.AreEqual(brain.ComputeAveragePain(), 0);
         }
 
-        /// </summary>
-        [Test]
+       /*[Test]
         [TestCase(120f)]
         [TestCase(100f)]
         [TestCase(98f)]
         [TestCase(40f)]
         [TestCase(0f)]
         [TestCase(-5f)]
-        public void PainIsBetweenZeroAndOne(float pain)
+        public void SimpleBodyAveragePainWhenAllHurtButNerveIsCorrect(float damage)
+        {
+            var LayersCounts = new List<int>();
+            foreach (BodyPart bodyPart in BodyParts)
+            {
+                bodyPart.InflictDamageToAllLayerButOne<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, damage));
+                LayersCounts.Add(bodyPart.BodyLayers.Count);
+            }
+            float resultingPain = brain.ComputeAveragePain();
+            int expectedPain = 0;
+
+            foreach(BodyPart bodyPart in BodyParts)
+            {
+                expectedPain = bodyPart.
+            }
+            Assert.AreEqual( (damage/100f)*3f/4f, resultingPain, 1f);
+        }*/
+
+        /// </summary>
+        [Test]
+        [TestCase(120f,154f)]
+        [TestCase(100f,100f)]
+        [TestCase(100f, 80f)]
+        [TestCase(100f, 70f)]
+        [TestCase(98f,10f)]
+        [TestCase(40f,96f)]
+        [TestCase(0f,0f)]
+        [TestCase(-5f,-57f)]
+        public void AveragePainIsBetweenZeroAndOne(float damage, float nerveDamage)
         {
             foreach (BodyPart bodyPart in BodyParts)
             {
-                bodyPart.InflictDamageToAllLayerButOne<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, pain));
+                bodyPart.InflictDamageToAllLayerButOne<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, damage));
             }
-            float resultingPain = brain.ComputePain();
+            float resultingPain = brain.ComputeAveragePain();
+            Assert.GreaterOrEqual(resultingPain, 0);
+            Assert.LessOrEqual(resultingPain, 1);
+
+            foreach (BodyPart bodyPart in BodyParts)
+            {
+                bodyPart.TryInflictDamage<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, nerveDamage));
+            }
+            resultingPain = brain.ComputeAveragePain();
             Assert.GreaterOrEqual(resultingPain, 0);
             Assert.LessOrEqual(resultingPain, 1);
         }
@@ -153,12 +190,15 @@ namespace EditorTests
         /// Test to confirm that interactions can only be commenced when stamina is greater than zero, and will otherwise fail.
         /// </summary>
         [Test]
-        public void PainIsCorrectOnSingleBodyPartHurt()
+        [TestCase(25f)]
+        [TestCase(5f)]
+        [TestCase(152f)]
+        public void PainIsCorrectOnSingleBodyPartHurt(float damage)
         {
-            leftFoot.TryInflictDamage<BoneLayer>(new DamageTypeQuantity(DamageType.Crush, 25f));
-            float painInBrain = brain.ComputePain();
+            leftFoot.TryInflictDamage<BoneLayer>(new DamageTypeQuantity(DamageType.Crush, damage));
+            float painInBrain = brain.ComputeAveragePain();
             float painInFoot = ((INerveSignalTransmitter)leftFoot.GetBodyLayer<NerveLayer>()).ProducePain();
-            Assert.AreEqual(painInBrain, painInFoot);
+            Assert.AreEqual(painInBrain, painInFoot / BodyParts.Count, 0.00001f);
         }
 
         /// <summary>
@@ -174,12 +214,12 @@ namespace EditorTests
         {
             leftFoot.TryInflictDamage<BoneLayer>(new DamageTypeQuantity(DamageType.Crush, footDamage));
             torso.TryInflictDamage<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, torsoDamage));
-            float painInBrain = brain.ComputePain();
+            float painInBrain = brain.ComputeAveragePain();
             float painInFoot = ((INerveSignalTransmitter)leftFoot.GetBodyLayer<NerveLayer>()).ProducePain();
             float painInTorso = ((INerveSignalTransmitter)torso.GetBodyLayer<NerveLayer>()).ProducePain();
             // that looks weird, but that's actually what is expected.
             // ProducePain takes into account the damages of nerve layers higher in the hierarchy.
-            Assert.AreEqual(painInBrain, painInFoot + painInTorso);
+            Assert.AreEqual(painInBrain, (painInFoot + painInTorso)/BodyParts.Count, 0.00001f);
         }
 
         /// <summary>
