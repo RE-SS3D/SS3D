@@ -132,7 +132,7 @@ namespace EditorTests
             Assert.AreEqual(brain.ComputeAveragePain(), 0);
         }
 
-       /*[Test]
+        [Test]
         [TestCase(120f)]
         [TestCase(100f)]
         [TestCase(98f)]
@@ -148,14 +148,15 @@ namespace EditorTests
                 LayersCounts.Add(bodyPart.BodyLayers.Count);
             }
             float resultingPain = brain.ComputeAveragePain();
-            int expectedPain = 0;
+            float expectedPain = 0;
 
             foreach(BodyPart bodyPart in BodyParts)
             {
-                expectedPain = bodyPart.
+                expectedPain += (bodyPart.TotalDamage / bodyPart.MaxDamage);
             }
-            Assert.AreEqual( (damage/100f)*3f/4f, resultingPain, 1f);
-        }*/
+            expectedPain = expectedPain / BodyParts.Count ;
+            Assert.AreEqual( expectedPain, resultingPain, 0.001f);
+        }
 
         /// </summary>
         [Test]

@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEditor;
 using UnityEngine;
 
@@ -136,6 +137,10 @@ public abstract class BodyPart
         return true;
 
     }
+
+    public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
+    public float MaxDamage => _bodyLayers.Sum(layer => layer.MaxDamage);
+
 
     /// <summary>
     /// Remove a body layer from the body part.
