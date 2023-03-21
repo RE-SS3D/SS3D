@@ -56,6 +56,12 @@ namespace SS3D.Systems.Entities
             return null;
         }
 
+        public bool TryGetSpawnedEntity(NetworkConnection conn, out Entity entity)
+        {
+            entity = _spawnedPlayers.Find(entity => entity.Mind?.Soul?.Owner == conn);
+            return entity != null;
+        }
+
         /// <summary>
         /// Returns true if the player is controlling an entity.
         /// </summary>
@@ -162,7 +168,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnPlayer(Soul soul)
         {
-            MindSystem mindSystem = SystemLocator.Get<MindSystem>();
+            MindSystem mindSystem = Subsystems.Get<MindSystem>();
             mindSystem.TryCreateMind(soul, out Mind createdMind);
 
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
@@ -173,8 +179,7 @@ namespace SS3D.Systems.Entities
 
             _spawnedPlayers.Add(entity);
 
-            string message = $"Spawning mind {createdMind.name} on {entity.name}";
-            Punpun.Say(this, message, Logs.ServerOnly);
+            Punpun.Information(this, "Spawning mind {createdMind} on {entity}", Logs.ServerOnly, createdMind.name, entity.name);
         }
 
         /// <summary>
@@ -188,7 +193,7 @@ namespace SS3D.Systems.Entities
 
             if (players.Count == 0)
             {
-                Punpun.Say(this, "No players to spawn", Logs.ServerOnly);
+                Punpun.Information(this, "No players to spawn", Logs.ServerOnly);
             }
 
             foreach (Soul ckey in players)
@@ -210,7 +215,7 @@ namespace SS3D.Systems.Entities
             foreach (Entity player in SpawnedPlayers)
             {
                 ServerManager.Despawn(player.NetworkObject);
-                player.GameObjectCache.Dispose(true);
+                player.GameObject.Dispose(true);
             }
 
             _hasSpawnedInitialPlayers = false;

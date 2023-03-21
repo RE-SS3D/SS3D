@@ -4,11 +4,12 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -65,7 +66,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStart();
             
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
         }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
+  - component: {fileID: 5864662064664276516}
   m_Layer: 0
   m_Name: AtmosPipesL4
   m_TagString: Untagged
@@ -110,3 +111,59 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5864662064664276516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a5cd0d46abb6d4d8686d11153009c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -7727686409064562107}
+  _networkObjectCache: {fileID: 0}
+  SelectedAdjacencyType: 0
+  _simpleAdjacency:
+    o: {fileID: 6854876588585920493, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    u: {fileID: 6854876588585920493, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    i: {fileID: 5763238997108834030, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    l: {fileID: 3234200807627564179, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    t: {fileID: 6267177117203792215, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    x: {fileID: -2318244788085852191, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  _advancedAdjacency:
+    o: {fileID: 0}
+    u: {fileID: 0}
+    i: {fileID: 0}
+    lNone: {fileID: 0}
+    lSingle: {fileID: 0}
+    tNone: {fileID: 0}
+    tSingleRight: {fileID: 0}
+    tSingleLeft: {fileID: 0}
+    tDouble: {fileID: 0}
+    xNone: {fileID: 0}
+    xSingle: {fileID: 0}
+    xSide: {fileID: 0}
+    xOpposite: {fileID: 0}
+    xTriple: {fileID: 0}
+    xQuad: {fileID: 0}
+    viewObstacles: []
+    opaque: 0
+  _offsetAdjacency:
+    o: {fileID: 0}
+    uNorth: {fileID: 0}
+    uSouth: {fileID: 0}
+    i: {fileID: 0}
+    lNE: {fileID: 0}
+    lNW: {fileID: 0}
+    lSE: {fileID: 0}
+    lSW: {fileID: 0}
+    tNEW: {fileID: 0}
+    tNSW: {fileID: 0}
+    tNSE: {fileID: 0}
+    tSWE: {fileID: 0}
+    x: {fileID: 0}
+  _syncedConnections: 0

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
@@ -7,11 +6,14 @@ using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -26,9 +28,10 @@ namespace SS3D.Systems.Interactions
         [Tooltip("Mask for physics to use when finding targets")]
         [SerializeField] private LayerMask _selectionMask = 0;
 
-        private Controls.OtherActions _otherControls;
+        private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
-
+        private InputSystem _inputSystem;
+        
         private Camera _camera;
         private RadialInteractionView _radialView;
         
@@ -36,34 +39,64 @@ namespace SS3D.Systems.Interactions
         {
             base.OnStartClient();
 
-            _radialView = SystemLocator.Get<RadialInteractionView>();
-            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            _otherControls = controls.Other;
+            _radialView = Subsystems.Get<RadialInteractionView>();
+            _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            _inputSystem = Subsystems.Get<InputSystem>();
+            Controls controls = _inputSystem.Inputs;
+            _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
-            _otherControls.PrimaryClick.performed += HandlePrimaryClick;
-            _otherControls.SecondaryClick.performed += HandleSecondaryClick;
+            _radialView = Subsystems.Get<RadialInteractionView>();
+            _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            _controls.RunPrimary.performed += HandleRunPrimary;
+            _controls.ViewInteractions.performed += HandleView;
             _hotkeysControls.Use.performed += HandleUse;
+            _inputSystem.ToggleActionMap(_controls, true);
         }
 
         public override void OnStopClient()
         {
             base.OnStopClient();
             
-            _otherControls.PrimaryClick.performed -= HandlePrimaryClick;
-            _otherControls.SecondaryClick.performed -= HandleSecondaryClick;
+            _controls.RunPrimary.performed -= HandleRunPrimary;
+            _controls.ViewInteractions.performed -= HandleView;
             _hotkeysControls.Use.performed -= HandleUse;
+            _inputSystem.ToggleActionMap(_controls, false);
+        }
+
+        /// <summary>
+        /// Runs the most prioritised interaction
+        /// </summary>
+        [Client]
+        private void HandleRunPrimary(InputAction.CallbackContext callbackContext)
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+
+            if (viableInteractions.Count <= 0)
+            {
+                return;
+            }
+
+            InteractionEntry interaction = viableInteractions[0];
+            string interactionName = interaction.Interaction.GetName(interactionEvent);
+            interactionEvent.Target = interaction.Target;
+
+            CmdRunInteraction(ray, interactionName);
         }
 
         [Client]
-        private void HandlePrimaryClick(InputAction.CallbackContext callbackContext)
+        private void HandleView(InputAction.CallbackContext callbackContext)
         {
-            RunPrimaryInteraction();
-        }
-
-        [Client]
-        private void HandleSecondaryClick(InputAction.CallbackContext callbackContext)
-        {
+            // leftButton is enabled in RadialInteractionView HandleDisappear
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
@@ -85,27 +118,6 @@ namespace SS3D.Systems.Interactions
             {
                 InteractInHand(item.gameObject, gameObject);
             }
-        }
-
-        /// <summary>
-        /// Runs the most prioritised action
-        /// </summary>
-        [Client]
-        private void RunPrimaryInteraction()
-        {
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-
-            if (viableInteractions.Count <= 0)
-            {
-                return;
-            }
-
-            InteractionEntry interaction = viableInteractions[0];
-            string interactionName = interaction.Interaction.GetName(interactionEvent);
-            interactionEvent.Target = interaction.Target;
-
-            CmdRunInteraction(ray, interactionName);
         }
 
         /// <summary>
@@ -355,7 +367,7 @@ namespace SS3D.Systems.Interactions
             // Check for valid interaction index
             if (index < 0 || entries.Count <= index)
             {
-                Punpun.Panic(target, $"Inventory interaction with invalid index {index}");
+                Punpun.Error(target, "Inventory interaction with invalid index {index}", Logs.Generic, index);
 
                 return;
             }
@@ -365,8 +377,8 @@ namespace SS3D.Systems.Interactions
 
             if (chosenEntry.Interaction.GetName(interactionEvent) != interactionName)
             {
-                string message = $"Interaction at index {index} did not have the expected name of {interactionName}";
-                Punpun.Panic(target, message);
+                Punpun.Error(target, "Interaction at index {index} did not have the expected name of {interactionName}",
+                    Logs.Generic, index, interactionName);
 
                 return;
             }

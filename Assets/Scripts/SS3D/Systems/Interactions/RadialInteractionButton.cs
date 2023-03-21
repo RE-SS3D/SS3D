@@ -43,7 +43,7 @@ namespace SS3D.Systems.Interactions
                 Reset();
             }
 
-            GameObjectCache.SetActive(true);
+            GameObject.SetActive(true);
             _interactionIcon.enabled = true;
             _interactionIcon.sprite = interactionItem.Icon;
             _interactionNameText.SetText(interactionItem.InteractionName);
@@ -61,7 +61,7 @@ namespace SS3D.Systems.Interactions
 
         public void Reset()
         {
-            GameObjectCache.SetActive(false);
+            GameObject.SetActive(false);
             _interactionIcon.enabled = false;
             _interactionIcon.sprite = null;
             _interactionNameText.SetText(string.Empty);
@@ -74,7 +74,7 @@ namespace SS3D.Systems.Interactions
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            OnHovered?.Invoke(GameObjectCache, _interaction);
+            OnHovered?.Invoke(GameObject, _interaction);
         }
     }
 }

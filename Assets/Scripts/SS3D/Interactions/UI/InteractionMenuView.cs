@@ -92,7 +92,7 @@ namespace SS3D.Interactions.UI
                 button.GetComponentInChildren<TextMeshProUGUI>().text = interaction.GetName(Event);
                 button.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    GameObjectCache.Dispose(true);
+                    GameObject.Dispose(true);
                     OnSelect?.Invoke(interaction);
                 });
             }

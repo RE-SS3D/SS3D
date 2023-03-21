@@ -56,11 +56,11 @@ namespace SS3D.Systems.Inventory.Interactions
                 {
                     if (hands.Inventory.HasPermission(permissionToUnlock))
                     {
-                        Punpun.Say(this, "Locker has been locked!");
+                        Punpun.Information(this, "Locker has been locked!");
                         locker.Locked = true;
                     } else
                     {
-                        Punpun.Say (this, "No permission to lock Locker!");
+                        Punpun.Information(this, "No permission to lock Locker!");
                         return false;
                     }
                 }

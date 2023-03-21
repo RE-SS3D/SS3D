@@ -47,7 +47,7 @@ namespace SS3D.Systems.Roles
         {
             if (_rolesAvailable == null)
             {
-                Punpun.Panic(this, "Initial Available Roles not set!");
+                Punpun.Error(this, "Initial Available Roles not set!");
             }
 
             foreach (RolesData role in _rolesAvailable.Roles)
@@ -146,7 +146,7 @@ namespace SS3D.Systems.Roles
             {
                 RoleData roleData = rolePlayer.Value.Value;
 
-                Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Name);
+                Punpun.Information(this, entity.Ckey + " embarked with role " + roleData.Name);
                 SpawnIdentificationItems(entity, roleData);
 
                 if (roleData.Loadout != null)
@@ -163,7 +163,7 @@ namespace SS3D.Systems.Roles
         /// <param name="role"></param>
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
-            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
             Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
@@ -179,7 +179,7 @@ namespace SS3D.Systems.Roles
             foreach (IDPermission permission in role.Permissions)
             {
                 idCard.AddPermission(permission);
-                Punpun.Say(this, "Added " + permission.Name + " permission to IDCard of " + entity.Ckey);
+                Punpun.Information(this, "Added " + permission.Name + " permission to IDCard of " + entity.Ckey);
             }
 
             pda.StartingIDCard = idCardItem;
@@ -195,8 +195,8 @@ namespace SS3D.Systems.Roles
             Hands hands = entity.GetComponent<Hands>();
             Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
-            SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0].Container);
-            SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1].Container);
+            SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
+            SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);
             SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, inventory.LeftPocketContainer);
             SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, inventory.RightPocketContainer);
         }
@@ -207,14 +207,14 @@ namespace SS3D.Systems.Roles
         /// <param name="itemId">The id of the item to be spawned</param>
         /// <param name="shouldSpawn">Condition indicating if the item should be spawned</param>
         /// <param name="container">Container the item will be spawned in</param>
-        private void SpawnItemInSlot(ItemId itemId, bool shouldSpawn, Container container)
+        private void SpawnItemInSlot(ItemId itemId, bool shouldSpawn, AttachedContainer container)
         {
             if (!shouldSpawn)
             {
                 return;
             }
 
-            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             itemSystem.SpawnItemInContainer(itemId, container);
         }
     }

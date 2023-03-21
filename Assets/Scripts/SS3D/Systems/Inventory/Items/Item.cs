@@ -42,6 +42,8 @@ namespace SS3D.Systems.Inventory.Items
 
         [SerializeField] private Rigidbody _rigidbody;
 
+        public string Name => _name;
+
         /// <summary>
         /// The item's relative weight in kilograms.
         /// </summary>
@@ -101,7 +103,8 @@ namespace SS3D.Systems.Inventory.Items
             // Not really needed any more because of the RequiredLayer attribute.
             if (gameObject.layer != 10)
             {
-                Punpun.Yell(this, $"Item {_name} is on {LayerMask.LayerToName(gameObject.layer)} layer. Should be on Items layer.");
+                Punpun.Warning(this, "Item {item} is on {layer} layer. Should be on Items layer.",
+                    Logs.Generic, _name, LayerMask.LayerToName(gameObject.layer));
             }
         }
 
@@ -139,9 +142,9 @@ namespace SS3D.Systems.Inventory.Items
         {
             Container = null;
 
-            if (GameObjectCache != null)
+            if (GameObject != null)
             {
-                ServerManager.Despawn(GameObjectCache);
+                ServerManager.Despawn(GameObject);
             }
         }
 
@@ -157,6 +160,7 @@ namespace SS3D.Systems.Inventory.Items
             var itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
+                Punpun.Debug(this, "item {item} frozen", Logs.Generic, Name);
                 itemCollider.enabled = false;
             }
         }
@@ -263,8 +267,10 @@ namespace SS3D.Systems.Inventory.Items
 
             _container = newContainer;
             RpcSetContainer(newContainer);
+            
         }
 
+        // It could become an issue that only observers see the container updated...
         [ObserversRpc]
         private void RpcSetContainer(Container newContainer)
         {
