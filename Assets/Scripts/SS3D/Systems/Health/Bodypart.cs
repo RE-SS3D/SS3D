@@ -4,6 +4,7 @@ using SS3D.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -47,25 +48,20 @@ public abstract class BodyPart
     /// <summary>
     /// The list of body layers constituting this body part.
     /// </summary>
-    public List<BodyLayer> BodyLayers { get; protected set; }
+    private List<BodyLayer> _bodyLayers;
+
+    public ReadOnlyCollection<BodyLayer> BodyLayers
+    {
+        get { return _bodyLayers.AsReadOnly(); }
+    }
 
     /// <summary>
     /// The list of body layers constituting this body part.
     /// </summary>
-    public List<INerveSignalTransmitter> NerveSignalTransmitters
+    public INerveSignalTransmitter NerveSignalTransmitter
     {
-        get
-        {
-            var transmitters = new List<INerveSignalTransmitter>();
-            foreach(var layer in BodyLayers)
-            {
-                if(layer is INerveSignalTransmitter)
-                {
-                    transmitters.Add(layer as INerveSignalTransmitter);
-                }
-            }
-            return transmitters;
-        }
+        get;
+        private set;
     }
 
     public BodyPartBehaviour BodyPartBehaviour { get; protected set; }
@@ -77,14 +73,14 @@ public abstract class BodyPart
     {
         Name = name;
         ChildBodyParts= new List<BodyPart>();
-        BodyLayers= new List<BodyLayer>();
+        _bodyLayers= new List<BodyLayer>();
     }
 
     public BodyPart(BodyPart parent, string name = "")
     {
         Name = name;
         ChildBodyParts = new List<BodyPart>();
-        BodyLayers = new List<BodyLayer>();
+        _bodyLayers = new List<BodyLayer>();
         ParentBodyPart = parent;
     }
 
@@ -93,7 +89,7 @@ public abstract class BodyPart
         Name = name;
         BodyPartBehaviour = bodyPartBehaviour;
         ChildBodyParts =  BodyPartBehaviour.ChildBodyPartsBehaviour.Collection.Select(x=> x.BodyPart).ToList();
-        BodyLayers = (List<BodyLayer>) BodyPartBehaviour.BodyLayers.Collection;
+        _bodyLayers = (List<BodyLayer>) BodyPartBehaviour.BodyLayers.Collection;
         if (BodyPartBehaviour.ParentBodyPartBehaviour != null)
             ParentBodyPart = BodyPartBehaviour.ParentBodyPartBehaviour.BodyPart;
     }
@@ -103,7 +99,7 @@ public abstract class BodyPart
         Name = name;
         ParentBodyPart = parentBodyPart;
         ChildBodyParts = childBodyParts;
-        BodyLayers = bodyLayers;
+        _bodyLayers = bodyLayers;
         foreach(var bodylayer in BodyLayers)
         {
             bodylayer.BodyPart = this;
@@ -124,8 +120,16 @@ public abstract class BodyPart
             return false;
         }
 
+        if (layer is INerveSignalTransmitter signalTransmitter)
+        {
+            NerveSignalTransmitter = signalTransmitter;
+        }
+
         if (BodyPartBehaviour == null)
-            BodyLayers.Add(layer);
+        {
+            _bodyLayers.Add(layer);
+            return true;
+        }
 
         BodyPartBehaviour.BodyLayers.Add(layer);
         layer.BodyPart = this;
@@ -141,7 +145,7 @@ public abstract class BodyPart
     public virtual void RemoveBodyLayer(BodyLayer layer) 
     {
         if(BodyPartBehaviour == null)
-        BodyLayers.Remove(layer);
+            _bodyLayers.Remove(layer);
     }
 
     /// <summary>
@@ -209,6 +213,11 @@ public abstract class BodyPart
             if (layer is INerveSignalTransmitter) return true;
         }
         return false;
+    }
+
+    public float ProducePain()
+    {
+        return NerveSignalTransmitter != null ? NerveSignalTransmitter.ProducePain() : 0f; 
     }
 
 
