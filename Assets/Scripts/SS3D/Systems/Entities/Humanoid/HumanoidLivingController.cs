@@ -31,9 +31,9 @@ namespace SS3D.Systems.Entities.Humanoid
 
             _characterController.Move(Physics.gravity);
 
-            if (_input.magnitude != 0)
+            if (Input.magnitude != 0)
             {
-                MoveMovementTarget(_input);
+                MoveMovementTarget(Input);
                 RotatePlayerToMovement();
                 MovePlayer();
             }
@@ -54,7 +54,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            _characterController.Move(_targetMovement * ((_movementSpeed) * Time.deltaTime));
+            _characterController.Move(TargetMovement * ((_movementSpeed) * Time.deltaTime));
         }
     }
 

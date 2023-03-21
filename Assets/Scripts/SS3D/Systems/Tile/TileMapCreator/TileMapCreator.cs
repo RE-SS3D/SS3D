@@ -9,8 +9,10 @@ using FishNet.Object;
 using FishNet.Connection;
 using SS3D.Logging;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.UI
 {
@@ -39,6 +41,7 @@ namespace SS3D.Systems.Tile.UI
 
         private List<GenericObjectSo> _objectDatabase;
         private Controls.TileCreatorActions _controls;
+        private InputSystem _inputSystem;
 
         public bool IsDeleting
         {
@@ -57,8 +60,10 @@ namespace SS3D.Systems.Tile.UI
         private void Start()
         {
             ShowUI(false);
-            _controls = Subsystems.Get<InputSystem>().Inputs.TileCreator;
-            _controls.ToggleMenu.Enable();
+            _inputSystem = Subsystems.Get<InputSystem>();
+            _controls = _inputSystem.Inputs.TileCreator;
+            _inputSystem.ToggleAction(_controls.ToggleMenu, true);
+
             _controls.ToggleMenu.performed += HandleToggleMenu;
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
@@ -69,12 +74,13 @@ namespace SS3D.Systems.Tile.UI
         {
             if (_enabled)
             {
-                _controls.Disable();
-                _controls.ToggleMenu.Enable();
+                _inputSystem.ToggleActionMap(_controls, false, new []{_controls.ToggleMenu});
+                _inputSystem.ToggleCollisions(_controls, true);
             }
             else
             {
-                _controls.Enable();
+                _inputSystem.ToggleActionMap(_controls, true, new []{_controls.ToggleMenu});
+                _inputSystem.ToggleCollisions(_controls, false);
             }
             _enabled = !_enabled;
             ShowUI(_enabled);
@@ -98,7 +104,7 @@ namespace SS3D.Systems.Tile.UI
             {
                 return;
             }
-            if (_controls.Replace.IsPressed())
+            if (_controls.Replace.phase == InputActionPhase.Performed)
                 HandleMouseClick(_lastSnappedPosition, true);
             else
                 HandleMouseClick(_lastSnappedPosition, false);
@@ -158,10 +164,6 @@ namespace SS3D.Systems.Tile.UI
         [ServerOrClient]
         private void HandleMouseClick(Vector3 snappedPosition, bool replaceExisting)
         {
-            if (_selectedObject == null)
-            {
-                return;
-            }
             if (_isDeleting)
             {
                 if (_itemPlacement)
@@ -171,6 +173,10 @@ namespace SS3D.Systems.Tile.UI
             }
             else
             {
+                if (_selectedObject == null)
+                {
+                    return;
+                }
                 _tileSystem.RpcPlaceObject(_selectedObject.nameString, snappedPosition, _ghostManager.Dir, replaceExisting);
                 RefreshGhost();
             }
@@ -292,6 +298,10 @@ namespace SS3D.Systems.Tile.UI
         [ServerOrClient]
         private void RefreshGhost()
         {
+            if (_selectedObject == null)
+            {
+                return;
+            }
             if (_isDeleting)
             {
                 _ghostManager.ChangeGhostColor(GhostManager.BuildMatMode.Deleting);
@@ -383,14 +393,14 @@ namespace SS3D.Systems.Tile.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
-            Subsystems.Get<InputSystem>().Inputs.Camera.Zoom.Disable();
+            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", false);
         }
 
         [ServerOrClient]
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
-            Subsystems.Get<InputSystem>().Inputs.Camera.Zoom.Enable();
+            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", true);
         }
     }
 }

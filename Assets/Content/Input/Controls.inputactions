@@ -161,7 +161,7 @@
                     "name": "Movement",
                     "type": "Value",
                     "id": "03279cdf-22e4-4cb9-ab4a-99169adc0c0c",
-                    "expectedControlType": "Axis",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -180,7 +180,7 @@
                 {
                     "name": "2D Vector",
                     "id": "6bf42294-8111-4bb7-9d46-8600bba84e15",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=1)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -235,7 +235,7 @@
                 {
                     "name": "",
                     "id": "9c8bfe7e-1820-4fca-9e38-9ba5b12451e2",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -665,6 +665,54 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Interactions",
+            "id": "87b9f9c5-bc89-4bbb-909e-029c755fe7c2",
+            "actions": [
+                {
+                    "name": "Run Primary",
+                    "type": "Button",
+                    "id": "a5dbf173-d977-4745-b4dd-6216affabb56",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "View Interactions",
+                    "type": "Button",
+                    "id": "3ede67cb-d174-4d7a-a71a-c5e6019b27d6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9f370461-d3b7-4f8f-a6f4-ee921a5c474a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run Primary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ded0d917-1c97-4c2c-b2ff-645cc34edb8f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "View Interactions",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
