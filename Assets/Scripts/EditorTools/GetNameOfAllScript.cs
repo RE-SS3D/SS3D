@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
+#if UNITY_EDITOR
 namespace EditorTools
 {
     class GetNameOfAllScript : EditorWindow
@@ -64,3 +65,4 @@ namespace EditorTools
     }
 
 }
+#endif
