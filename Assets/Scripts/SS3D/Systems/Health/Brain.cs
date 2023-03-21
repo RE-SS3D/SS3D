@@ -17,45 +17,46 @@ public class Brain : BodyPart
 
     public Brain(string name) : base(name)
     {
-        BodyLayers.Add(new CirculatoryLayer(this));
-        BodyLayers.Add(new NerveLayer(this, true)); 
-        BodyLayers.Add(new OrganLayer(this));
+        AddBrainLayer();
     }
 
     public Brain(BodyPartBehaviour bodyPartBehaviour) : base(bodyPartBehaviour)
     {
-        BodyLayers.Add(new CirculatoryLayer(this));
-        BodyLayers.Add(new NerveLayer(this, true));
-        BodyLayers.Add(new OrganLayer(this));
+        AddBrainLayer();
+    }
+
+    private void AddBrainLayer()
+    {
+        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new NerveLayer(this, true));
+        TryAddBodyLayer(new OrganLayer(this));
     }
 
 
     /// <summary>
     /// This takes all the pain in the body produced by body parts with nerves signal transmitters and sum it.
     /// </summary>
-    /// <returns>a number between 0 and 1.</returns>
-    public float ComputePain()
+    /// <returns> a number between 0 and 1. The number can never be quite 1, since that would mean
+    /// all layers took max damages including nerves (and in that case it would be zero pain).</returns>
+    public float ComputeAveragePain()
     {
-        float pain = ComputePain(this);
+        int bodyPartCount = 0;
+        float pain = ComputeAveragePain(this, ref bodyPartCount)/bodyPartCount;
         return pain;
     }
 
-    private float ComputePain(BodyPart bodyPart)
+    private float ComputeAveragePain(BodyPart bodyPart, ref int bodyPartCount)
     {
         float currentPain = 0;
         foreach (var part in bodyPart.ChildBodyParts)
         {
-            currentPain += ComputePain(part);
+            currentPain += ComputeAveragePain(part, ref bodyPartCount);
         }
 
-        var transmitters = bodyPart.NerveSignalTransmitters;
-        foreach (var transmitter in transmitters)
-        {
-            if (transmitter.IsConnectedToCentralNervousSystem)
-            {
-                currentPain += transmitter.ProducePain();
-            }
-        }
+        var transmitter = bodyPart.NerveSignalTransmitter;
+        currentPain += transmitter.ProducePain();
+
+        bodyPartCount++;
         return currentPain;
     }
 }

@@ -15,31 +15,30 @@ public class HumanBodypart : BodyPart
 
     public HumanBodypart(string name = "") : base(name) 
     {
-        BodyLayers.Add(new MuscleLayer(this));
-        BodyLayers.Add(new BoneLayer(this));
-        BodyLayers.Add(new CirculatoryLayer(this));
-        BodyLayers.Add(new NerveLayer(this, false));
+        AddHumanBodyLayers();
     }
 
     public HumanBodypart(BodyPartBehaviour bodyPartBehaviour, string name = "") : base(bodyPartBehaviour, name)
     {
-        BodyLayers.Add(new MuscleLayer(this));
-        BodyLayers.Add(new BoneLayer(this));
-        BodyLayers.Add(new CirculatoryLayer(this));
-        BodyLayers.Add(new NerveLayer(this, false));
+        AddHumanBodyLayers();
     }
 
     public HumanBodypart(BodyPart parent,string name = "") : base(parent, name)
     {
-        BodyLayers.Add(new MuscleLayer(this));
-        BodyLayers.Add(new BoneLayer(this));
-        BodyLayers.Add(new CirculatoryLayer(this));
-        BodyLayers.Add(new NerveLayer(this, false));
+        AddHumanBodyLayers();
     }
 
     private void OnNerveDamaged(object sender, DamageEventArgs nerveDamageEventArgs)
     {
 
+    }
+
+    private void AddHumanBodyLayers()
+    {
+        TryAddBodyLayer(new MuscleLayer(this));
+        TryAddBodyLayer(new BoneLayer(this));
+        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new NerveLayer(this, false));
     }
    
 }
