@@ -699,7 +699,7 @@ namespace SS3D.Systems.Inputs
             ""id"": ""87b9f9c5-bc89-4bbb-909e-029c755fe7c2"",
             ""actions"": [
                 {
-                    ""name"": ""Perform Interaction"",
+                    ""name"": ""Run Primary"",
                     ""type"": ""Button"",
                     ""id"": ""a5dbf173-d977-4745-b4dd-6216affabb56"",
                     ""expectedControlType"": ""Button"",
@@ -725,7 +725,7 @@ namespace SS3D.Systems.Inputs
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Perform Interaction"",
+                    ""action"": ""Run Primary"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -784,7 +784,7 @@ namespace SS3D.Systems.Inputs
             m_TileCreator_Rotate = m_TileCreator.FindAction("Rotate", throwIfNotFound: true);
             // Interactions
             m_Interactions = asset.FindActionMap("Interactions", throwIfNotFound: true);
-            m_Interactions_PerformInteraction = m_Interactions.FindAction("Perform Interaction", throwIfNotFound: true);
+            m_Interactions_RunPrimary = m_Interactions.FindAction("Run Primary", throwIfNotFound: true);
             m_Interactions_ViewInteractions = m_Interactions.FindAction("View Interactions", throwIfNotFound: true);
         }
 
@@ -1195,13 +1195,13 @@ namespace SS3D.Systems.Inputs
         // Interactions
         private readonly InputActionMap m_Interactions;
         private IInteractionsActions m_InteractionsActionsCallbackInterface;
-        private readonly InputAction m_Interactions_PerformInteraction;
+        private readonly InputAction m_Interactions_RunPrimary;
         private readonly InputAction m_Interactions_ViewInteractions;
         public struct InteractionsActions
         {
             private @Controls m_Wrapper;
             public InteractionsActions(@Controls wrapper) { m_Wrapper = wrapper; }
-            public InputAction @PerformInteraction => m_Wrapper.m_Interactions_PerformInteraction;
+            public InputAction @RunPrimary => m_Wrapper.m_Interactions_RunPrimary;
             public InputAction @ViewInteractions => m_Wrapper.m_Interactions_ViewInteractions;
             public InputActionMap Get() { return m_Wrapper.m_Interactions; }
             public void Enable() { Get().Enable(); }
@@ -1212,9 +1212,9 @@ namespace SS3D.Systems.Inputs
             {
                 if (m_Wrapper.m_InteractionsActionsCallbackInterface != null)
                 {
-                    @PerformInteraction.started -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnPerformInteraction;
-                    @PerformInteraction.performed -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnPerformInteraction;
-                    @PerformInteraction.canceled -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnPerformInteraction;
+                    @RunPrimary.started -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnRunPrimary;
+                    @RunPrimary.performed -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnRunPrimary;
+                    @RunPrimary.canceled -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnRunPrimary;
                     @ViewInteractions.started -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnViewInteractions;
                     @ViewInteractions.performed -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnViewInteractions;
                     @ViewInteractions.canceled -= m_Wrapper.m_InteractionsActionsCallbackInterface.OnViewInteractions;
@@ -1222,9 +1222,9 @@ namespace SS3D.Systems.Inputs
                 m_Wrapper.m_InteractionsActionsCallbackInterface = instance;
                 if (instance != null)
                 {
-                    @PerformInteraction.started += instance.OnPerformInteraction;
-                    @PerformInteraction.performed += instance.OnPerformInteraction;
-                    @PerformInteraction.canceled += instance.OnPerformInteraction;
+                    @RunPrimary.started += instance.OnRunPrimary;
+                    @RunPrimary.performed += instance.OnRunPrimary;
+                    @RunPrimary.canceled += instance.OnRunPrimary;
                     @ViewInteractions.started += instance.OnViewInteractions;
                     @ViewInteractions.performed += instance.OnViewInteractions;
                     @ViewInteractions.canceled += instance.OnViewInteractions;
@@ -1277,7 +1277,7 @@ namespace SS3D.Systems.Inputs
         }
         public interface IInteractionsActions
         {
-            void OnPerformInteraction(InputAction.CallbackContext context);
+            void OnRunPrimary(InputAction.CallbackContext context);
             void OnViewInteractions(InputAction.CallbackContext context);
         }
     }

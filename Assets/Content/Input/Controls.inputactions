@@ -675,7 +675,7 @@
             "id": "87b9f9c5-bc89-4bbb-909e-029c755fe7c2",
             "actions": [
                 {
-                    "name": "Perform Interaction",
+                    "name": "Run Primary",
                     "type": "Button",
                     "id": "a5dbf173-d977-4745-b4dd-6216affabb56",
                     "expectedControlType": "Button",
@@ -701,7 +701,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Perform Interaction",
+                    "action": "Run Primary",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

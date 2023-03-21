@@ -47,7 +47,7 @@ namespace SS3D.Systems.Interactions
             _hotkeysControls = controls.Hotkeys;
             _radialView = Subsystems.Get<RadialInteractionView>();
             _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            _controls.PerformInteraction.performed += HandlePerform;
+            _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
             _hotkeysControls.Use.performed += HandleUse;
             _inputSystem.ToggleActionMap(_controls, true);
@@ -57,17 +57,17 @@ namespace SS3D.Systems.Interactions
         {
             base.OnStopClient();
             
-            _controls.PerformInteraction.performed -= HandlePerform;
+            _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
             _hotkeysControls.Use.performed -= HandleUse;
             _inputSystem.ToggleActionMap(_controls, false);
         }
 
         /// <summary>
-        /// Runs the most prioritised action
+        /// Runs the most prioritised interaction
         /// </summary>
         [Client]
-        private void HandlePerform(InputAction.CallbackContext callbackContext)
+        private void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
             if (EventSystem.current.IsPointerOverGameObject())
             {
@@ -91,6 +91,8 @@ namespace SS3D.Systems.Interactions
         [Client]
         private void HandleView(InputAction.CallbackContext callbackContext)
         {
+            // leftButton is enabled in RadialInteractionView HandleDisappear
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 return;

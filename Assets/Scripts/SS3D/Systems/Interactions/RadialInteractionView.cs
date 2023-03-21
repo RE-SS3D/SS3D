@@ -184,14 +184,13 @@ namespace SS3D.Systems.Interactions
             _fadeSequence.Play();
 
             _canvasGroup.interactable = true;
-            
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
         }
 
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
         {
-            Disappear();
+            // leftButton is disabled in InteractionController HandleView
             _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            Disappear();
         }
 
         /// <summary>
