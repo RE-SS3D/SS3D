@@ -3,6 +3,7 @@ using NUnit.Framework.Internal.Execution;
 using SS3D.Logging;
 using SS3D.Systems.Health;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace EditorTests
 {
@@ -156,6 +157,61 @@ namespace EditorTests
             }
             expectedPain = expectedPain / BodyParts.Count ;
             Assert.AreEqual( expectedPain, resultingPain, 0.001f);
+        }
+
+        [Test]
+        [TestCase(120f)]
+        [TestCase(100f)]
+        [TestCase(98f)]
+        [TestCase(40f)]
+        [TestCase(0f)]
+        [TestCase(-5f)]
+        public void PainOnSingleOrganIsCorrect(float damage)
+        {
+            leftHand.TryInflictDamage<MuscleLayer>(new DamageTypeQuantity(DamageType.Crush, damage));
+            leftHand.TryInflictDamage<CirculatoryLayer>(new DamageTypeQuantity(DamageType.Crush, damage));
+            float resultingPain = leftHand.ProducePain();
+            float muscleMaxDamage = leftHand.GetBodyLayer<MuscleLayer>().MaxDamage;
+            float circulatoryMaxDamage = leftHand.GetBodyLayer<CirculatoryLayer>().MaxDamage;
+
+            if (damage < 0)
+            {
+                Assert.AreEqual(0, resultingPain, 0.001f);
+            }
+            else if(damage > muscleMaxDamage && damage > circulatoryMaxDamage)
+            {
+                Assert.AreEqual((muscleMaxDamage + circulatoryMaxDamage) / leftHand.MaxDamage, resultingPain, 0.001f);
+            }
+            else if (damage > muscleMaxDamage && damage < circulatoryMaxDamage)
+            {
+                Assert.AreEqual((muscleMaxDamage + damage) / leftHand.MaxDamage, resultingPain, 0.001f);
+            }
+            else if (damage > circulatoryMaxDamage && damage < muscleMaxDamage)
+            {
+                Assert.AreEqual((circulatoryMaxDamage + damage) / leftHand.MaxDamage, resultingPain, 0.001f);
+            }
+            else
+            {
+                Assert.AreEqual(damage*2 /leftHand.MaxDamage, resultingPain, 0.001f);
+            }
+        }
+
+        [Test]
+        [TestCase(120f)]
+        [TestCase(99.7f)]
+        public void AveragePainIsWeakWhenCNSNerveIsStronglyHurt(float damage)
+        {
+            var LayersCounts = new List<int>();
+            foreach (BodyPart bodyPart in BodyParts)
+            {
+                bodyPart.InflictDamageToAllLayerButOne<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, bodyPart.MaxDamage/2));
+                LayersCounts.Add(bodyPart.BodyLayers.Count);
+            }
+            brain.TryInflictDamage<NerveLayer>(new DamageTypeQuantity(DamageType.Crush, damage));
+
+            float resultingPain = brain.ComputeAveragePain();
+  
+            Assert.Less(resultingPain, 0.1f);
         }
 
         /// </summary>
