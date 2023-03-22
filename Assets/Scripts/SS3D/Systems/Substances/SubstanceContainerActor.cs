@@ -14,7 +14,7 @@ namespace SS3D.Substances
     /// <summary>
     /// Stores substances
     /// </summary>
-    public class SubstanceContainer : InteractionTargetNetworkBehaviour
+    public class SubstanceContainerActor : InteractionTargetNetworkBehaviour
     {
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SS3D.Substances
         [SyncVar]
         public bool Locked;
         
-        public delegate void OnContentChanged(SubstanceContainer container);
+        public delegate void OnContentChanged(SubstanceContainerActor container);
 
         public event OnContentChanged ContentsChanged;
 
@@ -247,7 +247,7 @@ namespace SS3D.Substances
         /// <param name="other">The other container</param>
         /// <param name="moles">The moles to transfer</param>
         [Server]
-        public void TransferMoles(SubstanceContainer other, float moles)
+        public void TransferMoles(SubstanceContainerActor other, float moles)
         {
             var totalMoles = Substances.Sum(x => x.Moles);
             if (moles > totalMoles)
@@ -283,7 +283,7 @@ namespace SS3D.Substances
         /// <param name="other">The other container</param>
         /// <param name="milliliters">How many milliliters to transfer</param>
         [Server]
-        public void TransferVolume(SubstanceContainer other, float milliliters)
+        public void TransferVolume(SubstanceContainerActor other, float milliliters)
         {
             TransferMoles(other, milliliters / MolesToVolume);
         }
@@ -344,7 +344,7 @@ namespace SS3D.Substances
         /// <summary>
         /// Processes substances in a container
         /// </summary>
-        public void ProcessContainer(SubstanceContainer container)
+        public void ProcessContainer(SubstanceContainerActor container)
         {
             var registry = Subsystems.Get<SubstancesSystem>();
             float temperature = container.Temperature;

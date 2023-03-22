@@ -9,7 +9,7 @@ namespace SS3D.Substances
         /// <summary>
         /// The container to display
         /// </summary>
-        public SubstanceContainer Container;
+        public SubstanceContainerActor Container;
         /// <summary>
         /// The object displaying the fluid level
         /// </summary>

@@ -8,8 +8,6 @@ using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
-using static SS3D.Substances.SubstanceContainer;
-using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
