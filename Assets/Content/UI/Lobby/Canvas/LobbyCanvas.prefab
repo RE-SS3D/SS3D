@@ -93,7 +93,7 @@ MonoBehaviour:
   _pressed: 0
   _disabled: 0
   _highlighted: 0
-  _buttonStyle: {fileID: 11400000, guid: 7a0a1b0726960e84aad968b1c4c6895f, type: 2}
+  _buttonStyle: {fileID: 11400000, guid: f546a2da4d61f4c4a85130328bd34ff8, type: 2}
   _colorMultiplier: 1
   _baseImageColor: {r: 1, g: 1, b: 1, a: 1}
   _baseTextColor: {r: 1, g: 1, b: 1, a: 1}
