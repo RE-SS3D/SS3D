@@ -61,7 +61,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void OnStart()
         {
             base.OnStart();
-            
+            if (!Owner.IsLocalClient) return;
             Setup();
         }
 
