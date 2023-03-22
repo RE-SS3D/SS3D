@@ -150,6 +150,11 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            if (!HandContainers.Contains(selectedContainer))
+            {
+                return;
+            }
+
             SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
             if (SelectedHandIndex != -1)
             {
