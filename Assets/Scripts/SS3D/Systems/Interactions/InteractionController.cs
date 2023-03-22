@@ -38,6 +38,7 @@ namespace SS3D.Systems.Interactions
         public override void OnStartClient()
         {
             base.OnStartClient();
+            if (!Owner.IsLocalClient) return;
 
             _radialView = Subsystems.Get<RadialInteractionView>();
             _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
