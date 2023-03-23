@@ -27,14 +27,16 @@ namespace SS3D.Tests
         //protected Keyboard keyboard;
         //protected Mouse mouse;
         protected InputDevice inputDevice;
+        private List<InputAction> inputActions = new();
 
         public override void Setup()
         {
             UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
             base.Setup();
-            //keyboard = UnityEngine.InputSystem.InputSystem.AddDevice<Keyboard>();
             //mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
-            inputDevice = SetUpMockInputForActions();
+            inputDevice = SetUpMockInputForActions(ref inputActions);
+            UnityEngine.InputSystem.InputSystem.AddDevice(inputDevice);
+
         }
 
         public override void TearDown()
@@ -54,6 +56,20 @@ namespace SS3D.Tests
         {
             // Wait for a bit, to get some temporal separation.
             yield return new WaitForSeconds(1f);
+        }
+
+        protected InputAction GetAction(string name)
+        {
+            foreach (InputAction action in inputActions)
+            {
+                UnityEngine.Debug.Log(action.name);
+                if (action.name == name)
+                {
+                    return action;
+                }
+            }
+            UnityEngine.Debug.Log($"ERROR! No action of name {name} found!");
+            return null;
         }
 
         protected void SetApplicationSettings(NetworkType type)
@@ -170,10 +186,10 @@ namespace SS3D.Tests
         /// https://rene-damm.github.io/HowDoI.html#set-an-actions-value-programmatically
         /// </summary>
         /// <returns>A mock device for use in testing.</returns>
-        public static InputDevice SetUpMockInputForActions()
+        public static InputDevice SetUpMockInputForActions(ref List<InputAction> inputActions)
         {
             UnityEngine.Debug.Log("Entering SetUpMockInput");
-            InputActionAsset actions = SystemLocator.Get<InputSystem>().Inputs.asset;
+            InputActionAsset actions = Subsystems.Get<SS3D.Systems.Inputs.InputSystem>().Inputs.asset;
             UnityEngine.Debug.Log(actions.ToString());
 
             var layoutName = actions.name;
@@ -205,6 +221,7 @@ namespace SS3D.Tests
             // Bind the actions in the newly added control scheme.
             foreach (var action in actions)
             {
+                inputActions.Add(action);
                 action.AddBinding($"<{layoutName}>/{action.name}", groups: "MockInput");
                 UnityEngine.Debug.Log($"Added binding <{layoutName}>/{action.name}");
             }

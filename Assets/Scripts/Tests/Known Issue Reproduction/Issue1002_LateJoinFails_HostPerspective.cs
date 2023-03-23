@@ -128,7 +128,7 @@ namespace SS3D.Tests
 
         protected IEnumerator WaitForClientSoulToAppearInLobby(string ckey, float timeout = 15f)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             float startTime = Time.time;
 
             while (playerSystem.OnlineSouls.ToList().Find(soul => soul.Ckey == ckey) == null)

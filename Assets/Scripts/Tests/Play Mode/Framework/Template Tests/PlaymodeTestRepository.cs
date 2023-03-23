@@ -160,7 +160,7 @@ namespace SS3D.Tests
         {
             // ARRANGE
             // Check the number of players currently ready in the game
-            ReadyPlayersSystem readyPlayersSystem = SystemLocator.Get<ReadyPlayersSystem>();
+            ReadyPlayersSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSystem>();
             int originalReadyPlayers = readyPlayersSystem.Count;
 
             // Check the colour of the ready button

@@ -13,7 +13,8 @@ namespace SS3D.Tests
     public static class LoadFileHelpers
     {
         public const string ExecutableName = "SS3D.exe";
-        public const string LocalHost = "localhost";
+        public const string IpAddress = "127.0.0.1";
+        public const string Port = "1974";
         public const int MaxExpectedServerLoadTimeMillis = 10000;
 
         /// <summary>
@@ -26,7 +27,7 @@ namespace SS3D.Tests
         public static Process OpenCompiledBuild(NetworkType networkType = NetworkType.ServerOnly, string Ckey = "client", ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
         {
             // Confirm all arguments
-            string arguments = $"{CommandLineArgs.Ip}{LocalHost} {CommandLineArgs.SkipIntro} ";
+            string arguments = $"{CommandLineArgs.Ip}{IpAddress} {CommandLineArgs.Port}{Port} {CommandLineArgs.SkipIntro} ";
             switch (networkType)
             {
                 case NetworkType.ServerOnly: arguments += CommandLineArgs.ServerOnly; break;
