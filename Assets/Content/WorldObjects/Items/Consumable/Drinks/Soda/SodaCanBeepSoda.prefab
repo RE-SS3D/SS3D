@@ -1,16 +1,12 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &6066814870742820668
+--- !u!1001 &7325624409774336486
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -223446033233190104, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 5134585307755180686, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
     - target: {fileID: 335986122166755333, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -57,11 +53,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4209774006926015456, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
       propertyPath: m_Name
-      value: SodaCanCannedAir
+      value: SodaCanBeepSoda
       objectReference: {fileID: 0}
     - target: {fileID: 8626439720175416957, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
-      value: 10633208656232743867
+      value: 2415337786272489387
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
