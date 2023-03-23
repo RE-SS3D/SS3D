@@ -9,6 +9,8 @@ public class SubstanceContainerTests
 {
 
     private SubstanceContainerActor.SubstanceContainer _container;
+    private Substance _beer; 
+    
     /// <summary>
     /// Test to confirm that interactions can only be commenced when stamina is greater than zero, and will otherwise fail.
     /// </summary>
@@ -17,6 +19,10 @@ public class SubstanceContainerTests
     public void SetUp()
     {
         _container = new SubstanceContainerActor.SubstanceContainer(200f);
+        _beer = ScriptableObject.CreateInstance<Substance>();
+        _beer.Color = Color.red;
+        _beer.MillilitersPerMole = 50;
+        _beer.Type = SubstanceType.Beer;
     }
 
     [TearDown]
@@ -28,57 +34,29 @@ public class SubstanceContainerTests
     [Test]
     public void CantAddMoreWhenSubstanceContainerIsFull()
     {
-        _container.AddSubstance(new Substance(), );
+        _container.AddSubstance(_beer, int.MaxValue );
+        float currentVolume = _container.CurrentVolume;
+        Assert.AreEqual(currentVolume, _container.Volume );
     }
 
-    /// <summary>
-    /// Test to confirm that interactions can be continued when negative. However, they will not continue beyond 10% of the max
-    /// stamina in deficit.
-    /// </summary>
     [Test]
-    [TestCase(10.99f, true)]
-    [TestCase(11.01f, false)]
-    public void CanContinueInteractionWithNegativeStaminaUntilNegativeTenPercent(float staminaToDeplete, bool expectedResult)
+    public void CantRemoveMoreWhenSubstanceContainerIsEmpty()
     {
-        IStamina sut = StaminaFactory.Create(10f);
-
-        sut.ConsumeStamina(staminaToDeplete);
-
-        Assert.IsTrue(sut.CanContinueInteraction == expectedResult);
+        _container.RemoveSubstance(_beer, int.MaxValue );
+        float currentVolume = _container.CurrentVolume;
+        Assert.AreEqual(currentVolume, 0);
     }
 
-    /// <summary>
-    /// Test to confirm that reducing stamina will result in the correct value for Current property being returned.
-    /// Note that Current should always be in the range of 0 to 1 (inclusive).
-    /// </summary>
     [Test]
-    [TestCase(0f, 1f)]
-    [TestCase(7f, 0.3f)]
-    [TestCase(100f, 0f)]
-    public void ConsumeStaminaCorrectlyReducesTheStaminaValue(float staminaToDeplete, float expectedResult)
+    public void CantAddSubstanceWhenLocked()
     {
-        IStamina sut = StaminaFactory.Create(10f);
-
-        sut.ConsumeStamina(staminaToDeplete);
-
-        Assert.IsTrue(sut.Current == expectedResult);
+        var containerLocked = new SubstanceContainerActor.SubstanceContainer(200f, true);
+        _container.AddSubstance(_beer, int.MaxValue);
+        float currentVolume = _container.CurrentVolume;
+        Assert.AreEqual(currentVolume, 0);
     }
 
-    /// <summary>
-    /// Test to confirm that recharging stamina will result in the correct value for Current property being returned.
-    /// Note that Current should always be in the range of 0 to 1 (inclusive).
-    /// </summary>
-    [Test]
-    [TestCase(0f, 0f)]
-    [TestCase(0.7f, 0.7f)]
-    [TestCase(100f, 1f)]
-    public void RechargingStaminaCorrectlyReducesTheStaminaValue(float secondsToRecharge, float expectedResult)
-    {
-        IStamina sut = StaminaFactory.Create(10f, 1f);   // Set up stamina to fully recharge after 1 second.
-        sut.ConsumeStamina(10f);                        // Deplete all of the stamina
 
-        sut.RechargeStamina(secondsToRecharge);
 
-        Assert.IsTrue(sut.Current == expectedResult);
-    }
+
 }
