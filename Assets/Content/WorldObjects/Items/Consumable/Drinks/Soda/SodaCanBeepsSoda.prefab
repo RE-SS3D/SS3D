@@ -53,7 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4209774006926015456, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
       propertyPath: m_Name
-      value: SodaCanBeepSoda
+      value: SodaCanBeepsSoda
       objectReference: {fileID: 0}
     - target: {fileID: 7164390462122581677, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
       propertyPath: InitialSubstances.Array.size
@@ -61,7 +61,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8626439720175416957, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
-      value: 2415337786272489387
+      value: 16447123462401280169
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37616b8daf3dd0d4fa5889d4d7cfb398, type: 3}
