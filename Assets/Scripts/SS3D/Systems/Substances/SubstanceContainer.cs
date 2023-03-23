@@ -9,12 +9,16 @@ using UnityEngine;
 
 public class SubstanceContainer
 {
-
+    /// <summary>
+    /// do not modify directly, use the property setter Volume instead.
+    /// </summary>
     private float _volume;
 
     private float _currentVolume;
 
     [SerializeField] private List<SubstanceEntry> substances;
+
+    private SubstanceContainerActor _actor;
 
     /// <summary>
     /// Is the container locked?
@@ -65,7 +69,18 @@ public class SubstanceContainer
     /// <summary>
     /// The filled volume in ml
     /// </summary>
-    public float CurrentVolume => _currentVolume;
+    public float CurrentVolume
+    {
+        get => _currentVolume;
+        set
+        {
+            _currentVolume = value;
+            if (_actor != null)
+            {
+                _actor.currentVolume = value;
+            }
+        }
+    } 
 
 
     /// <summary>
@@ -90,12 +105,15 @@ public class SubstanceContainer
     public SubstanceContainer(float volume)
     {
         _volume = volume;
+        RecalculateAndSyncVolume();
     }
 
-    public SubstanceContainer(float volume, List<SubstanceEntry> initialSubstances)
+    public SubstanceContainer(float volume, List<SubstanceEntry> initialSubstances, SubstanceContainerActor actor)
     {
         _volume = volume;
         substances = initialSubstances;
+        _actor = actor;
+        RecalculateAndSyncVolume();
     }
 
 
@@ -134,6 +152,7 @@ public class SubstanceContainer
             entry.Moles += moles;
             Substances[index] = entry;
         }
+        RecalculateAndSyncVolume();
         Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
     }
 
@@ -176,6 +195,7 @@ public class SubstanceContainer
             entry.Moles = newAmount;
             Substances[index] = entry;
         }
+        RecalculateAndSyncVolume();
     }
 
     /// <summary>
@@ -217,6 +237,7 @@ public class SubstanceContainer
                 Substances[i] = entry;
             }
         }
+        RecalculateAndSyncVolume();
     }
 
     /// <summary>
@@ -224,13 +245,16 @@ public class SubstanceContainer
     /// </summary>
     /// <param name="other">The other container</param>
     /// <param name="moles">The moles to transfer</param>
-    public void TransferMoles(SubstanceContainerActor other, float moles)
+    public void TransferMoles(SubstanceContainer other, float moles)
     {
+        // Only transfer what's left.
         var totalMoles = Substances.Sum(x => x.Moles);
         if (moles > totalMoles)
         {
             moles = totalMoles;
         }
+
+        // TODO : Only transfer what can be transferred.
 
         float relativeMoles = moles / totalMoles;
 
@@ -250,6 +274,7 @@ public class SubstanceContainer
                 Substances[i] = entry;
             }
         }
+        RecalculateAndSyncVolume();
     }
 
     /// <summary>
@@ -257,7 +282,7 @@ public class SubstanceContainer
     /// </summary>
     /// <param name="other">The other container</param>
     /// <param name="milliliters">How many milliliters to transfer</param>
-    public void TransferVolume(SubstanceContainerActor other, float milliliters)
+    public void TransferVolume(SubstanceContainer other, float milliliters)
     {
         TransferMoles(other, milliliters / MolesToVolume);
     }
@@ -278,6 +303,11 @@ public class SubstanceContainer
         }
 
         return -1;
+    }
+
+    private void RecalculateAndSyncVolume()
+    {
+        CurrentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
     }
 
     /// <summary>

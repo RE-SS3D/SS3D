@@ -19,13 +19,12 @@ namespace SS3D.Substances
 
 
         [SyncVar]
-        private float currentVolume;
+        public float currentVolume;
 
+        [SyncVar]
+        public float volume;
 
-        [SyncVar, SerializeField]
-        private float volume;
-
-        private SubstanceContainer substanceContainer;
+        public SubstanceContainer substanceContainer;
 
         /// <summary>
         /// A list of all substances in this container
@@ -76,13 +75,7 @@ namespace SS3D.Substances
 
         private void Start()
         {
-            substanceContainer = new SubstanceContainer(volume, InitialSubstances);
-
-
-            if (IsServer)
-            {
-                RecalculateAndSyncVolume();
-            }
+            substanceContainer = new SubstanceContainer(volume, InitialSubstances, this);
         }
 
         public bool IsEmpty()
@@ -104,7 +97,6 @@ namespace SS3D.Substances
         public void AddSubstance(Substance substance, float moles)
         {
             substanceContainer.AddSubstance(substance, moles);
-            RecalculateAndSyncVolume();
         }
 
         /// <summary>
@@ -127,7 +119,6 @@ namespace SS3D.Substances
         public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
         {
             substanceContainer.RemoveSubstance(substance, moles);
-            RecalculateAndSyncVolume();
         }
 
         /// <summary>
@@ -156,8 +147,7 @@ namespace SS3D.Substances
         [Server]
         public void TransferMoles(SubstanceContainerActor other, float moles)
         {
-            substanceContainer.TransferMoles(other, moles);
-            RecalculateAndSyncVolume();
+            substanceContainer.TransferMoles(other.substanceContainer, moles);
         }
 
         /// <summary>
@@ -168,7 +158,7 @@ namespace SS3D.Substances
         [Server]
         public void TransferVolume(SubstanceContainerActor other, float milliliters)
         {
-            substanceContainer.TransferVolume(other,milliliters);
+            substanceContainer.TransferVolume(other.substanceContainer, milliliters);
         }
 
         /// <summary>
@@ -189,16 +179,6 @@ namespace SS3D.Substances
         public void MarkDirty()
         {
             OnContentsChanged();
-        }
-
-        /// <summary>
-        /// Recalculates the current and remaining volume of the container.
-        /// Because these variables are SyncVar, they will propagate to the client.
-        /// </summary>
-        [Server]
-        private void RecalculateAndSyncVolume()
-        {
-            currentVolume = substanceContainer.Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
         }
 
         [Server]
