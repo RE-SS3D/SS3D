@@ -8,6 +8,7 @@ using FishNet.Object.Synchronizing;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Interactions.Interfaces;
 using SS3D.Core;
+using System.Collections.ObjectModel;
 
 namespace SS3D.Substances
 {
@@ -48,7 +49,7 @@ namespace SS3D.Substances
 
         public float TotalMoles => substanceContainer.TotalMoles;
 
-        public List<SubstanceEntry> Substances => substanceContainer.Substances;
+        public ReadOnlyCollection<SubstanceEntry> Substances => substanceContainer.Substances;
 
         /// <summary>
         /// The capacity of this container in milliliters
@@ -74,7 +75,7 @@ namespace SS3D.Substances
 
         public bool IsEmpty()
         {
-            return substanceContainer.IsEmpty();
+            return substanceContainer.IsEmpty;
         }
 
         public bool CanTransfer()
@@ -209,7 +210,12 @@ namespace SS3D.Substances
 
             private float _currentVolume;
 
-            [SerializeField] private List<SubstanceEntry> substances;
+            /// <summary>
+            /// A list of all substances in this container
+            /// </summary>
+            private List<SubstanceEntry> _substances;
+
+            public ReadOnlyCollection<SubstanceEntry> Substances => _substances.AsReadOnly();
 
             private SubstanceContainerActor _actor;
 
@@ -219,13 +225,10 @@ namespace SS3D.Substances
             private bool _locked;
 
             /// <summary>
-            /// A list of all substances in this container
+            /// The temperature of the container
             /// </summary>
-            public List<SubstanceEntry> Substances
-            {
-                get => substances;
-                private set => substances = value;
-            }
+            private float _temperature;
+
 
             /// <summary>
             /// Multiplier to convert moles in this container to volume
@@ -243,11 +246,6 @@ namespace SS3D.Substances
                     return val;
                 }
             }
-
-            /// <summary>
-            /// The temperature of the container
-            /// </summary>
-            public float Temperature;
 
             /// <summary>
             /// The total number of moles
@@ -275,19 +273,15 @@ namespace SS3D.Substances
                 }
             }
 
+            public float Temperature => _temperature;
+
 
             /// <summary>
             /// The capacity of this container in milliliters
             /// </summary>
-            public float Volume
-            {
-                get => _volume;
-            }
+            public float Volume => _volume;
 
-            public bool IsEmpty()
-            {
-                return _currentVolume == 0f;
-            }
+            public bool IsEmpty => _currentVolume == 0f;
 
             /// <summary>
             /// Can this container hold an additional amount of milliliters
@@ -302,7 +296,7 @@ namespace SS3D.Substances
 
             public SubstanceContainer(float volume, bool locked = false)
             {
-                substances = new List<SubstanceEntry>();
+                _substances = new List<SubstanceEntry>();
                 _volume = volume;
                 _locked = locked;
                 RecalculateAndSyncVolume();
@@ -311,7 +305,7 @@ namespace SS3D.Substances
             public SubstanceContainer(float volume, List<SubstanceEntry> initialSubstances, SubstanceContainerActor actor)
             {
                 _volume = volume;
-                substances = initialSubstances;
+                _substances = initialSubstances;
                 _actor = actor;
                 RecalculateAndSyncVolume();
             }
@@ -341,16 +335,16 @@ namespace SS3D.Substances
                     moles = remainingCapacity / substance.MillilitersPerMole;
                 }
 
-                int index = Substances.FindIndex(x => x.Substance == substance);
+                int index = _substances.FindIndex(x => x.Substance == substance);
                 if (index == -1)
                 {
-                    Substances.Add(new SubstanceEntry(substance, moles));
+                    _substances.Add(new SubstanceEntry(substance, moles));
                 }
                 else
                 {
                     SubstanceEntry entry = Substances[index];
                     entry.Moles += moles;
-                    Substances[index] = entry;
+                    _substances[index] = entry;
                 }
                 RecalculateAndSyncVolume();
                 Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
@@ -388,12 +382,12 @@ namespace SS3D.Substances
                 float newAmount = entry.Moles - moles;
                 if (newAmount <= 0.000001)
                 {
-                    Substances.RemoveAt(index);
+                    _substances.RemoveAt(index);
                 }
                 else
                 {
                     entry.Moles = newAmount;
-                    Substances[index] = entry;
+                    _substances[index] = entry;
                 }
                 RecalculateAndSyncVolume();
             }
@@ -403,7 +397,7 @@ namespace SS3D.Substances
             /// </summary>
             public void Empty()
             {
-                Substances.Clear();
+                _substances.Clear();
             }
 
 
@@ -415,7 +409,7 @@ namespace SS3D.Substances
             /// <param name="moles">The amount of moles</param>
             public void RemoveMoles(float moles)
             {
-                var totalMoles = Substances.Sum(x => x.Moles);
+                var totalMoles = _substances.Sum(x => x.Moles);
                 if (moles > totalMoles)
                 {
                     moles = totalMoles;
@@ -432,12 +426,12 @@ namespace SS3D.Substances
                     entry.Moles -= entry.Moles / totalMoles * moles;
                     if (entry.Moles <= 0.0001)
                     {
-                        Substances.RemoveAt(i);
+                        _substances.RemoveAt(i);
                         i--;
                     }
                     else
                     {
-                        Substances[i] = entry;
+                        _substances[i] = entry;
                     }
                 }
                 RecalculateAndSyncVolume();
@@ -469,12 +463,12 @@ namespace SS3D.Substances
                     other.AddSubstance(entry.Substance, entryMoles);
                     if (entry.Moles <= 0.0000001)
                     {
-                        Substances.RemoveAt(i);
+                        _substances.RemoveAt(i);
                         i--;
                     }
                     else
                     {
-                        Substances[i] = entry;
+                        _substances[i] = entry;
                     }
                 }
                 RecalculateAndSyncVolume();
@@ -519,7 +513,7 @@ namespace SS3D.Substances
             public void ProcessContainer(SubstanceContainer container)
             {
                 var registry = Subsystems.Get<SubstancesSystem>();
-                float temperature = container.Temperature;
+                float temperature = container._temperature;
 
                 // Process recipes
                 // TODO : Highly inefficient as most recipes won't be achievable given the substances in the substance container.
@@ -539,7 +533,7 @@ namespace SS3D.Substances
                     for (var i = 0; i < recipe.Ingredients.Length; i++)
                     {
                         ingredientsPresent = false;
-                        foreach (var entry in container.substances)
+                        foreach (var entry in container._substances)
                         {
                             if (entry.Substance.Type == recipe.Ingredients[i].Type)
                             {

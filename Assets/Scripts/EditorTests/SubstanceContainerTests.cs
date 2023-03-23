@@ -3,6 +3,7 @@ using SS3D.Substances;
 using SS3D.Systems.Health;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SubstanceContainerTests
@@ -68,8 +69,8 @@ public class SubstanceContainerTests
         _container.AddSubstance(_beer, 10);
         _container.AddSubstance(_water, 5);
         _container.RemoveMoles(1.5f);
-        float waterMole = _container.Substances.Find(x => x.Substance.Type == _water.Type).Moles;
-        float beerMole = _container.Substances.Find(x => x.Substance.Type == _beer.Type).Moles;
+        float waterMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _water.Type).Moles;
+        float beerMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _beer.Type).Moles;
         Assert.AreEqual(9f, beerMole);
         Assert.AreEqual(4.5f, waterMole);
     }
