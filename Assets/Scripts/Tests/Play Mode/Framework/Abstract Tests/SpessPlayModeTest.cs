@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Coimbra;
 using NUnit.Framework;
+using SS3D.Core;
 using SS3D.Core.Settings;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Layouts;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
@@ -22,15 +24,17 @@ namespace SS3D.Tests
         protected bool emptySceneLoaded = false;
 
         // Used to simulate input
-        protected Keyboard keyboard;
-        protected Mouse mouse;
+        //protected Keyboard keyboard;
+        //protected Mouse mouse;
+        protected InputDevice inputDevice;
 
         public override void Setup()
         {
             UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
             base.Setup();
-            keyboard = UnityEngine.InputSystem.InputSystem.AddDevice<Keyboard>();
-            mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
+            //keyboard = UnityEngine.InputSystem.InputSystem.AddDevice<Keyboard>();
+            //mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
+            inputDevice = SetUpMockInputForActions();
         }
 
         public override void TearDown()
@@ -131,6 +135,16 @@ namespace SS3D.Tests
             }
         }
 
+        protected void EnableInput()
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+
+            }
+
+        }
+
 
         /// <summary>
         /// A simple means of running a UnityTest multiple times to see if it consistently works.
@@ -148,6 +162,61 @@ namespace SS3D.Tests
                 result[i] = i;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Take a set of actions and create an InputDevice for it that has a control for each
+        /// of the actions. Also binds the actions to that those controls. Gratefully adapted from
+        /// https://rene-damm.github.io/HowDoI.html#set-an-actions-value-programmatically
+        /// </summary>
+        /// <returns>A mock device for use in testing.</returns>
+        public static InputDevice SetUpMockInputForActions()
+        {
+            UnityEngine.Debug.Log("Entering SetUpMockInput");
+            InputActionAsset actions = SystemLocator.Get<InputSystem>().Inputs.asset;
+            UnityEngine.Debug.Log(actions.ToString());
+
+            var layoutName = actions.name;
+
+            // Build a device layout that simply has one control for each action in the asset.
+            UnityEngine.InputSystem.InputSystem.RegisterLayoutBuilder(() =>
+            {
+                var builder = new InputControlLayout.Builder()
+                    .WithName(layoutName);
+
+                foreach (var action in actions)
+                {
+                    builder.AddControl(action.name) // Must not have actions in separate maps with the same name.
+                        .WithLayout(action.expectedControlType);
+                }
+
+                return builder.Build();
+            }, name: layoutName);
+
+            // Create the device.
+            var device = UnityEngine.InputSystem.InputSystem.AddDevice(layoutName);
+            UnityEngine.Debug.Log(device.ToString());
+
+
+            // Add a control scheme for it to the actions.
+            actions.AddControlScheme("MockInput")
+                .WithRequiredDevice($"<{layoutName}>");
+
+            // Bind the actions in the newly added control scheme.
+            foreach (var action in actions)
+            {
+                action.AddBinding($"<{layoutName}>/{action.name}", groups: "MockInput");
+                UnityEngine.Debug.Log($"Added binding <{layoutName}>/{action.name}");
+            }
+
+            // Restrict the actions to bind only to our newly created
+            // device using the bindings we just added.
+            actions.bindingMask = InputBinding.MaskByGroup("MockInput");
+            actions.devices = new[] { device };
+
+            UnityEngine.Debug.Log("Returning device.");
+
+            return device;
         }
     }
 }

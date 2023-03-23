@@ -8,6 +8,9 @@ using UnityEngine.TestTools;
 using UnityEngine.UI;
 using System.Diagnostics;
 using SS3D.Systems.Entities.Humanoid;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Layouts;
+using SS3D.Core;
 
 namespace SS3D.Tests
 {
@@ -36,8 +39,10 @@ namespace SS3D.Tests
             // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();
 
-            // We need to do the base method call last because it needs to wait until StartUp scene loaded.
-            base.UnitySetUp();
+            // We need to do the base method after StartUp scene loaded.
+            yield return base.UnitySetUp();
+
+            yield return new WaitForSeconds(3f);
         }
 
         public override void TearDown()

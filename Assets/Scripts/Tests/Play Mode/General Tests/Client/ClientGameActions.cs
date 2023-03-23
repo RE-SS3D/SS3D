@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using NUnit.Framework;
 using SS3D.Systems.Entities.Humanoid;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.TestTools;
 
 namespace SS3D.Tests
@@ -30,9 +33,9 @@ namespace SS3D.Tests
         */
 
         [UnityTest]
-        public IEnumerator PlayerCanMoveInEachDirectionCorrectly()
+        public IEnumerator PlayerCanMoveInEachDirectionCorrectly_AsClientWithHost()
         {
-            yield return PlaymodeTestRepository.PlayerCanMoveInEachDirectionCorrectly(controller);
+            yield return PlayerCanMoveInEachDirectionCorrectly(controller);
         }
 
         public IEnumerator PlayerCanMoveInEachDirectionCorrectly(HumanoidController controller)
@@ -42,9 +45,37 @@ namespace SS3D.Tests
 
             // Move West.
             originalPosition = controller.Position;
-            Press(keyboard.aKey);
+            //Debug.Log(inputDevice.allControls);
+            //foreach (var control in inputDevice.allControls)
+            //{
+            //    Debug.Log($"Name = {control.name}, ValueType = {control.valueType}, Variants = {control.variants}, Layout = {control.layout}, Path = {control.path}");
+                
+            //}
+
+            //Set(inputDevice, )
+            //Press((ButtonControl)inputDevice["Movement/up"]);
+            //Set((AxisControl)inputDevice["Movement"], 1);
+            //Set((AxisControl)inputDevice["gobbledygook"], 1);
+
+
+            //Set((AxisControl)inputDevice, "/Controls/Movement", 1f);
+            //Press(keyboard.aKey);
+            //yield return new WaitForSeconds(1f);
+            //Release(keyboard.aKey);
+
+            //Press(keyboard.wKey);
             yield return new WaitForSeconds(1f);
-            Release(keyboard.aKey);
+            //Release(keyboard.wKey);
+
+            //Press(keyboard.sKey);
+            yield return new WaitForSeconds(1f);
+            //Release(keyboard.sKey);
+
+            //Press(keyboard.dKey);
+            yield return new WaitForSeconds(1f);
+            //Release(keyboard.dKey);
+
+            //Release((ButtonControl)inputDevice["up"]);
             newPosition = controller.Position;
             Assert.IsTrue(newPosition.x < originalPosition.x);
             Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
