@@ -34,7 +34,7 @@ namespace SS3D.Content.Furniture.Generic
 
         private void Start()
         {
-            registry = SystemLocator.Get<SubstancesSystem>();
+            registry = Subsystems.Get<SubstancesSystem>();
             if (registry == null)
             {
                 Debug.LogError("SubstanceRegistry not found. Substances will be disabled.");

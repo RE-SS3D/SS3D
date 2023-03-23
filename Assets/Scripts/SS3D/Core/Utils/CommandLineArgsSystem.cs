@@ -56,6 +56,7 @@ namespace SS3D.Core.Utils
 
             if (arg.Contains(CommandLineArgs.Ip))
             {
+                _applicationSettings.NetworkType = NetworkType.Client;
                 _applicationSettings.ServerAddress = arg.Replace(CommandLineArgs.Ip, "");
             }
 
@@ -64,6 +65,13 @@ namespace SS3D.Core.Utils
                 string ckey = arg.Replace(CommandLineArgs.Ckey, "");
 
                 _applicationSettings.Ckey = ckey;
+            }
+
+            if (arg.Contains(CommandLineArgs.Port))
+            {
+                string port = arg.Replace(CommandLineArgs.Port, "");
+
+                _applicationSettings.ServerPort = Convert.ToUInt16(port);
             }
 
             if (arg.Contains(CommandLineArgs.SkipIntro))
@@ -82,7 +90,6 @@ namespace SS3D.Core.Utils
             }
 
             LocalPlayer.UpdateCkey(_applicationSettings.Ckey);
-
         }
 
         /// <summary>
@@ -96,7 +103,7 @@ namespace SS3D.Core.Utils
             }
             catch (Exception e)
             {
-                Punpun.Say(this, $"Failed to load command line arguments: {e}");
+                Punpun.Information(this,e,$"Failed to load command line arguments");
                 throw;
             }
         }

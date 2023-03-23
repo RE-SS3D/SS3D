@@ -1,13 +1,19 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
+using SS3D.Systems.Roles;
 using UnityEngine;
+using System.Collections;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -17,7 +23,7 @@ namespace SS3D.Systems.Inventory.Containers
     ///  - Aggregating all containers on the player and accessible to the player.
     ///  - The moving of items from one item-slot to another.
     /// </summary>
-    public sealed class Inventory : NetworkActor
+    public sealed class Inventory : NetworkActor, IIdentification
     {
         public delegate void ContainerEventHandler(AttachedContainer container);
 
@@ -30,6 +36,21 @@ namespace SS3D.Systems.Inventory.Containers
         public Hands Hands;
 
         /// <summary>
+        /// The container that has the IDCard with permissions
+        /// </summary>
+        public AttachedContainer IDContainer;
+
+        /// <summary>
+        /// The container of the left pocket
+        /// </summary>
+        public AttachedContainer LeftPocketContainer;
+
+        /// <summary>
+        /// The container of the right pocket
+        /// </summary>
+        public AttachedContainer RightPocketContainer;
+
+        /// <summary>
         /// The controllable body of the owning player
         /// </summary>
         public Entity Body;
@@ -39,6 +60,7 @@ namespace SS3D.Systems.Inventory.Containers
         private float _nextAccessCheck;
 
         public InventoryView InventoryView { get; private set; }
+
 
         public override void OnStartClient()
         {
@@ -54,19 +76,21 @@ namespace SS3D.Systems.Inventory.Containers
 
             InventoryView.Setup();
             InventoryView.Enable(true);
+
+            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
         }
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+
             Hands.Inventory = this;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             float time = Time.time;
             if (!(time > _nextAccessCheck))
             {
@@ -88,6 +112,17 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             _nextAccessCheck = time + 0.5f;
+        }
+
+        public bool HasPermission(IDPermission permission)
+        {
+            IIdentification id = IDContainer.Items.FirstOrDefault() as IIdentification;
+            if (id == null)
+            {
+                return false;
+            }
+
+            return id.HasPermission(permission);
         }
 
         /// <summary>
@@ -193,21 +228,22 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            itemContainer.RemoveItem(item);
             container.Container.AddItemPosition(item, position);
         }
 
         /// <summary>
         /// Make this inventory open an container.
         /// </summary>
-        public void OpenContainer(AttachedContainer container)
+        public void OpenContainer(AttachedContainer attachedContainer)
         {
-            container.AddObserver(GetComponent<Entity>());
-            _openedContainers.Add(container);
-            SetOpenState(container.gameObject, true);
+            attachedContainer.Container.AddObserver(GetComponent<Entity>());
+            _openedContainers.Add(attachedContainer);
+            SetOpenState(attachedContainer.gameObject, true);
             NetworkConnection client = Owner;
             if (client != null)
             {
-                TargetOpenContainer(client, container);
+                TargetOpenContainer(client, attachedContainer);
             }
         }
 
@@ -216,6 +252,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void RemoveContainer(AttachedContainer container)
         {
+            container.Container.RemoveObserver(GetComponent<Entity>());
             if (_openedContainers.Remove(container))
             {
                 Debug.Log("client call remove");
@@ -272,7 +309,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// On containers having OpenWhenContainerViewed set true in ContainerDescriptor, this set the containers state appropriately.
+        /// On containers having OpenWhenContainerViewed set true in AttachedContainer, this set the containers state appropriately.
         /// If the container belongs to another Inventory, it's already opened, and therefore it does nothing.
         /// If this Inventory is the first to have it, it triggers the open animation of the object.
         /// If this Inventory is the last to have it, it closes the container.
@@ -282,15 +319,15 @@ namespace SS3D.Systems.Inventory.Containers
         [Server]
         private void SetOpenState(GameObject containerObject, bool state)
         {
-            AttachedContainer container = containerObject.GetComponent<AttachedContainer>();
+            var container = containerObject.GetComponent<AttachedContainer>();
 
-            if (!container.ContainerDescriptor.OpenWhenContainerViewed)
+            if (!container.OpenWhenContainerViewed)
             {
                 return;
             }
 
             Hands hands = GetComponent<Hands>();
-            foreach (Entity observer in container.ObservingPlayers)
+            foreach (Entity observer in container.Container.ObservingPlayers)
             {
                 // checks if the container is already viewed by another entity
                 if (hands.Inventory.HasContainer(container) && observer != hands)
@@ -299,7 +336,7 @@ namespace SS3D.Systems.Inventory.Containers
                 }
             }
 
-            container.ContainerDescriptor.ContainerInteractive.SetOpenState(state);
+            container.ContainerInteractive.SetOpenState(state);
         }
 
 

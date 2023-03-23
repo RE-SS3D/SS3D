@@ -18,8 +18,11 @@ namespace SS3D.Interactions
 
         // Server only
         private readonly List<InteractionInstance> _interactions = new();
+
         // Client only
         private readonly List<ClientInteractionInstance> _clientInteractions = new();
+
+        public new GameObject GameObject => base.GameObject;
 
         public virtual void Update()
         {
@@ -45,6 +48,7 @@ namespace SS3D.Interactions
                 {
                     instance.FirstTick = false;
 
+                    // Runs the first tick of the interaction
                     if (instance.Interaction != null && instance.Interaction.Start(instance.Event, instance.Reference))
                     {
                         continue;
@@ -52,6 +56,7 @@ namespace SS3D.Interactions
                 }
                 else
                 {
+                    // Continue running the interaction until it's done
                     if (instance.Interaction != null && instance.Interaction.Update(instance.Event, instance.Reference))
                     {
                         continue;
@@ -170,7 +175,5 @@ namespace SS3D.Interactions
                 _clientInteractions.Remove(instance);
             }
         }
-
-        public GameObject GameObject => GameObjectCache;
     }
 }

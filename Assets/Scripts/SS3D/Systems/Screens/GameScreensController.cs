@@ -2,10 +2,12 @@ using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -13,27 +15,30 @@ namespace SS3D.Systems.Screens
     {
         [SerializeField] private bool _blockNone;
         [SerializeField] private bool _menuOpen;
+
         private PlayerSpawnedState _spawnedState;
         private Controls.OtherActions _controls;
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
             _menuOpen = true;
             _blockNone = true;
             _spawnedState = PlayerSpawnedState.IsNotSpawned;
+
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other; 
-            _controls.ToggleMenu.performed += HandleToggleMenu; 
+
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            
+
             _controls.ToggleMenu.performed -= HandleToggleMenu;
         }
 
@@ -92,7 +97,7 @@ namespace SS3D.Systems.Screens
                 _menuOpen = true;
             }
         }
-        
+
 
         private void UpdateScreen()
         {

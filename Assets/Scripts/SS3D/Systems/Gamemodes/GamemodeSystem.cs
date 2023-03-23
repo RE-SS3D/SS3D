@@ -72,8 +72,8 @@ namespace SS3D.Systems.Gamemodes
             _gamemode.OnFinished += HandleGamemodeFinalized;
 
             // Get systems we need to load player data
-            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 
             // Get list of players ready to spawn (by Ckey).
             List<Entity> playersToAssign = entitySystem.SpawnedPlayers;
@@ -142,7 +142,7 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void SendObjectiveToClients(GamemodeObjective objective)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 
             NetworkConnection author = playerSystem.GetSoul(objective.AssigneeCkey).Owner;
             GamemodeObjectiveUpdatedMessage message = new(objective);
@@ -169,7 +169,7 @@ namespace SS3D.Systems.Gamemodes
                 return;
             }
 
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 
             List<GamemodeObjective> gamemodeObjectives = _gamemode.GetPlayerObjectives(playerSystem.GetCkey(sender));
 
@@ -206,8 +206,8 @@ namespace SS3D.Systems.Gamemodes
             }
 
             // Retrieve the Ckey of the newly spawned player.
-            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
-            string newPlayerCkey = SystemLocator.Get<PlayerSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
+            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            string newPlayerCkey = Subsystems.Get<PlayerSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
 
             // Assign late join objectives to the new player
             if (newPlayerCkey != null)

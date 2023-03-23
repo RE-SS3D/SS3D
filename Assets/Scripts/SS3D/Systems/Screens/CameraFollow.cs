@@ -1,8 +1,12 @@
-﻿using SS3D.Core.Behaviours;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using SS3D.Core.Behaviours;
 using UnityEngine;
 using System;
 using SS3D.Core;
+using SS3D.Systems.Inputs;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -56,7 +60,10 @@ namespace SS3D.Systems.Screens
         /// Offset of target transform position to camera focus point.
         /// </summary>
         private Vector3 _playerOffset;
+        
         private Controls.CameraActions _controls;
+        private InputSystem _inputSystem;
+
         // Sensitivities and Accelerations
         private const float DistanceAcceleration = 10.0f;
         private const float AngleAcceleration = 8f;
@@ -85,11 +92,14 @@ namespace SS3D.Systems.Screens
         protected override void OnStart()
         {
             base.OnStart();
-            
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Camera;
+            _inputSystem = Subsystems.Get<InputSystem>();
+            _controls = _inputSystem.Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
+            _inputSystem.ToggleActionMap(_controls, true);
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -99,12 +109,11 @@ namespace SS3D.Systems.Screens
             _controls.Zoom.performed -= HandleZoom;
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
+            _inputSystem.ToggleActionMap(_controls, false);
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(deltaTime);
-
             ProcessCameraPosition();
         }
         
@@ -116,12 +125,12 @@ namespace SS3D.Systems.Screens
         // There are two button-type actions for snap, because MultiTap actions don't return values when performed
         private void HandleSnapLeft(InputAction.CallbackContext context) 
         {
-           Snap(-1); 
+           Snap(1); 
         }
         
         private void HandleSnapRight(InputAction.CallbackContext context) 
         {
-           Snap(1); 
+           Snap(-1); 
         }
         
         private void Snap(float direction)
@@ -188,7 +197,7 @@ namespace SS3D.Systems.Screens
             if (Vector3.Distance(Position, newPosition) <= _endTransitionDistance)
             {
                 _inTransition = false;
-                _controls.Enable();
+                _inputSystem.ToggleActionMap(_controls, true);
                 return;
             }
             //The lower the offset, the more transition slows down at the end
@@ -213,7 +222,7 @@ namespace SS3D.Systems.Screens
             // Smoothes movement at the end
             _endTransitionDistance = 0.05f / _transitionSpeed;
             _prevTargetPosition = targetPosition;
-            _controls.Disable();
+            _inputSystem.ToggleActionMap(_controls, false);
         }
 
         /// <summary>
@@ -222,7 +231,6 @@ namespace SS3D.Systems.Screens
         /// <param name="newTarget">The target for the camera to follow</param>
         public void SetTarget(GameObject newTarget)
         {
-            _controls.Enable();
             // Set the player height based on the character controller, if one is found
             CharacterController character = newTarget.GetComponent<CharacterController>();
             if (character)

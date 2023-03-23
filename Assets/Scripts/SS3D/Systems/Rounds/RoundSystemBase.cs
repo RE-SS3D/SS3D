@@ -107,8 +107,8 @@ namespace SS3D.Systems.Rounds
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
-            PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
             string userCkey = playerSystem.GetCkey(conn);
@@ -116,13 +116,11 @@ namespace SS3D.Systems.Rounds
             // Checks if player can call a round start
             if (!permissionSystem.IsAtLeast(userCkey, requiredRole))
             {
-                string message = $"User {userCkey} doesn't have {requiredRole} permission";
-                Punpun.Say(this, message, Logs.ServerOnly);
+                Punpun.Information(this, "User {ckey} doesn't have {requiredRole} permission", Logs.ServerOnly, userCkey, requiredRole);
             }
             else
             {
-                string message = $"User {userCkey} has started the round";
-                Punpun.Say(this, message, Logs.ServerOnly);
+                Punpun.Information(this, "User {ckey} has started the round", Logs.ServerOnly, userCkey);
 
                 #pragma warning disable CS4014
                 ProcessChangeRoundState(m);
@@ -184,7 +182,7 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            Punpun.Say(this, _roundState.ToString(), Logs.ServerOnly);
+            Punpun.Information(this, _roundState.ToString(), Logs.ServerOnly);
 
             RoundStateUpdated roundStateUpdated = new(newValue);
             roundStateUpdated.Invoke(this);

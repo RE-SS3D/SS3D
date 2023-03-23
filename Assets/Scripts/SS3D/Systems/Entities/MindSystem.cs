@@ -32,7 +32,7 @@ namespace SS3D.Systems.Entities
         /// <returns></returns>
         public bool TryGetMind(Soul player, out Mind mind)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             Soul soul = playerSystem.GetSoul(player.Owner);
 
             mind = _spawnedMinds.Find(mind => mind.Soul == soul);
@@ -74,7 +74,7 @@ namespace SS3D.Systems.Entities
             }
 
             Mind mind = Instantiate(_mindPrefab).GetComponent<Mind>();
-            ServerManager.Spawn(mind.GameObjectCache, soul.Owner);
+            ServerManager.Spawn(mind.GameObject, soul.Owner);
 
             mind.SetSoul(soul);
 

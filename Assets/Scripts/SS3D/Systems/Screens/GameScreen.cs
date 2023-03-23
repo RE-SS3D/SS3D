@@ -31,7 +31,7 @@ namespace SS3D.Systems.Screens
             Setup();
         }
 
-        [Client]
+        [ServerOrClient]
         private void Setup()
         {
             LastScreen = ScreenType.None;
@@ -39,7 +39,7 @@ namespace SS3D.Systems.Screens
             if (_canvasGroup != null)
             {
                 bool foundCanvas = TryGetComponent(out CanvasGroup canvasGroup);
-                _canvasGroup = foundCanvas ? canvasGroup : GameObjectCache.AddComponent<CanvasGroup>();
+                _canvasGroup = foundCanvas ? canvasGroup : GameObject.AddComponent<CanvasGroup>();
             }
 
             SetScreenState(ScreenType.Lobby, true);
@@ -48,7 +48,7 @@ namespace SS3D.Systems.Screens
             AddHandle(CameraTargetChanged.AddListener(HandleChangeCamera));
         }
 
-        [Client]
+        [ServerOrClient]
         private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
         {
             ScreenType screenType = e.Screen;
@@ -56,14 +56,14 @@ namespace SS3D.Systems.Screens
             SetScreenState(screenType);
         }
 
-        [Client]
+        [ServerOrClient]
         private void HandleChangeCamera(ref EventContext context, in CameraTargetChanged e)
         {
             ChangeGameScreenEvent changeGameScreenEvent = new(ScreenType.None);
             changeGameScreenEvent.Invoke(this);
         }
 
-        [Client]
+        [ServerOrClient]
         private void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
         {
             _sequence?.Kill();

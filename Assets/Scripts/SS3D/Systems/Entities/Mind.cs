@@ -14,13 +14,16 @@ namespace SS3D.Systems.Entities
         [SyncVar(OnChange = nameof(SyncSoul))]
         public Soul Soul;
 
+        [SyncVar]
+        public Entity Entity;
+
         public static Mind Empty { get; private set; }
 
         protected override void OnStart()
         {
             base.OnStart();
 
-            Empty = SystemLocator.Get<MindSystem>().EmptyMind;
+            Empty = Subsystems.Get<MindSystem>().EmptyMind;
         }
 
         [Server]

@@ -4,6 +4,9 @@ using SS3D.Systems.Inventory.Items;
 
 namespace SS3D.Systems
 {
+    /// <summary>
+    /// An inventory filter that only allows items with certain traits
+    /// </summary>
     [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
     public class Filter : ScriptableObject
     {
@@ -39,8 +42,7 @@ namespace SS3D.Systems
                 return traitCount > 0;
             }
         }
-
-        [SerializeField]
+        
         //Hash for identification
         protected int hash;
         [HideInInspector] public int Hash => hash;
@@ -55,12 +57,5 @@ namespace SS3D.Systems
         {
             return Animator.StringToHash(str.ToUpper());
         }
-    }
-
-    public class Filters
-    {
-        public static readonly int LeftHand = Filter.GetHash("LeftHand");
-        public static readonly int RightHand = Filter.GetHash("RightHand");
-        public static readonly int General = Filter.GetHash("General");
     }
 }

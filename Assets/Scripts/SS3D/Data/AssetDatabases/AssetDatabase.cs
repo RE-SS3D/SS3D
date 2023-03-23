@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Object = UnityEngine.Object;
 using SS3D.Attributes;
-using SS3D.Logging;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -51,6 +50,7 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public void LoadAssetsFromAssetGroup()
         {
+            if (Assets == null) return;
             Assets.Clear();
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)
@@ -72,5 +72,38 @@ namespace SS3D.Data.AssetDatabases
         {
             return Assets[index] as T;
         }
+
+        /// <summary>
+        /// Adds abd asset to the asset database. Should be used only for additional content or runtime stuff.
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <typeparam name="TAsset"></typeparam>
+        public void Add<TAsset>(Object asset) where TAsset : Object
+        {
+            Assets.Add(asset as TAsset);
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Initializes all asset databases in the project and adds to the databases list.
+        /// </summary>
+        public static List<AssetDatabase> FindAllAssetDatabases()
+        {
+            string[] assets = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(AssetDatabase)}");
+
+            List<AssetDatabase> databases = new();
+
+            for (int index = 0; index < assets.Length; index++)
+            {
+                string database = assets[index];
+                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(database);
+                AssetDatabase assetDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<AssetDatabase>(assetPath);
+
+                databases.Add(assetDatabase);
+            }
+
+            return databases;
+        }
+#endif
     }
 }

@@ -18,12 +18,14 @@ namespace SS3D.Systems.Furniture
         public void Detonate()
         {
             // Ends the round, regardless of how many objectives were completed
-            SystemLocator.Get<GamemodeSystem>().EndRound();
+            Subsystems.Get<GamemodeSystem>().EndRound();
         }
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new NukeDetonateInteraction { Icon = Assets.Get(InteractionIcons.Nuke) } };
+            _sprite = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, (int)InteractionIcons.Nuke);
+
+            return new IInteraction[] { new NukeDetonateInteraction { Icon = _sprite } };
         }
     }
 }

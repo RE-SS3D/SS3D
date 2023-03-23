@@ -11,13 +11,15 @@ namespace SS3D.Systems.PlayerControl.Events
         public ChangeType ChangeType;
         public readonly Soul ChangedSoul;
         public readonly string ChangedCkey;
+        public readonly bool AsServer;
 
-        public OnlineSoulsChanged(List<Soul> onlineSouls, ChangeType changeType, Soul changed, string ckey)
+        public OnlineSoulsChanged(List<Soul> onlineSouls, ChangeType changeType, Soul changed, string ckey, bool asServer)
         {
             OnlineSouls = onlineSouls;
             ChangeType = changeType;
             ChangedSoul = changed;
             ChangedCkey = ckey;
+            AsServer = asServer;
         }
     }
 }

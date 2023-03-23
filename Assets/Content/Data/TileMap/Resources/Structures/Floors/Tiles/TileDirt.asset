@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: TileDirt
   m_EditorClassIdentifier: 
   nameString: tile_dirt
-  layer: 1
   prefab: {fileID: 6767447678079105841, guid: 0ef9cea3bb74e6c4788f77e711f92d4d, type: 3}
   icon: {fileID: 0}
-  genericType: 0
+  layer: 1
+  genericType: 9
   specificType: 0
   width: 1
   height: 1

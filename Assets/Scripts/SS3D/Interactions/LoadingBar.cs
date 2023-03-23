@@ -1,5 +1,6 @@
 ﻿using Coimbra;
-using SS3D.Core.Behaviours;
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using UnityEngine;
 using UnityEngine.UI;
 using Actor = SS3D.Core.Behaviours.Actor;
@@ -19,13 +20,12 @@ namespace SS3D.Interactions
         {
             base.OnStart();
 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
             Setup();
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             UpdateLoadingProgressTask();
         }
 
@@ -44,7 +44,7 @@ namespace SS3D.Interactions
         {
             if (StartTime + Duration < Time.time)
             {
-                GameObjectCache.Destroy();
+                GameObject.Dispose(true);
                 return;
             }
 

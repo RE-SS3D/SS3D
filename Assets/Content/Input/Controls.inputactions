@@ -161,7 +161,7 @@
                     "name": "Movement",
                     "type": "Value",
                     "id": "03279cdf-22e4-4cb9-ab4a-99169adc0c0c",
-                    "expectedControlType": "Axis",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -180,7 +180,7 @@
                 {
                     "name": "2D Vector",
                     "id": "6bf42294-8111-4bb7-9d46-8600bba84e15",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=1)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -235,7 +235,7 @@
                 {
                     "name": "",
                     "id": "9c8bfe7e-1820-4fca-9e38-9ba5b12451e2",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -577,6 +577,142 @@
                     "processors": "",
                     "groups": "",
                     "action": "Spawn Cans",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Tile Creator",
+            "id": "f09dab6d-d07b-4287-8d9b-d0063c3232e3",
+            "actions": [
+                {
+                    "name": "Toggle Menu",
+                    "type": "Button",
+                    "id": "33c0c58f-fde8-4c73-ac8f-b8bfb2d98356",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Place",
+                    "type": "Button",
+                    "id": "fb428f7f-c99e-4c81-b825-65cea417ee0d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Replace",
+                    "type": "Button",
+                    "id": "f49d6ece-3eb7-4e55-9e29-a95eadff8a64",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "3d66fa43-e646-40a5-9c1c-a7cd6fbf765b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9da0c76e-68b2-4fec-a5d3-fcd559c221bf",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Place",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "78cc14e5-d0e3-4503-949c-e1a9a26f70db",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Replace",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "90e9bf7e-63bd-45ae-8d5f-8bf929ac9883",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25bca2ed-74c2-46ad-bc12-12738567e0e8",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Interactions",
+            "id": "87b9f9c5-bc89-4bbb-909e-029c755fe7c2",
+            "actions": [
+                {
+                    "name": "Run Primary",
+                    "type": "Button",
+                    "id": "a5dbf173-d977-4745-b4dd-6216affabb56",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "View Interactions",
+                    "type": "Button",
+                    "id": "3ede67cb-d174-4d7a-a71a-c5e6019b27d6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9f370461-d3b7-4f8f-a6f4-ee921a5c474a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run Primary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ded0d917-1c97-4c2c-b2ff-645cc34edb8f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "View Interactions",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
