@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: 8626439720175416957}
   - component: {fileID: -6241983665000650722}
   - component: {fileID: 986817846381609317}
-  m_Layer: 0
+  - component: {fileID: 7164390462122581677}
+  m_Layer: 10
   m_Name: GenericSodaCan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -142,7 +143,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 70
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17368657515221950523
@@ -213,6 +214,27 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 311596206430783871}
   AttachmentPointAlt: {fileID: 311596206430783871}
   traits: []
+--- !u!114 &7164390462122581677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4209774006926015456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 8626439720175416957}
+  _networkObjectCache: {fileID: 0}
+  currentVolume: 0
+  volume: 150
+  InitialSubstances:
+  - Substance: {fileID: 11400000, guid: e1163ff5257b4c04aa9df8bb85fa6188, type: 2}
+    Moles: 50
+  Locked: 0
 --- !u!1 &5228435979178398469
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,7 +244,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 311596206430783871}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AttachmentPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

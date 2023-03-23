@@ -49,6 +49,34 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Substances/Mug.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 77b2780a36a039c4dbc20e488cbda0cb
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepSoda.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1410ffb7dce6725459e2007e32bfd9d7
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6934bd3a87ff0c94e9497cd0e7dfecf5
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedAir.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5863b5cdce37afe4991dcfb3b1c4f0c9
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedLaughter.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7421ca188ed112d4eba0520bee5abd75
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCola.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b7765e4821975654599e4924531cd699
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanDukePurpleTea.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2dd04de1654317245a3d3c872bec661f
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanTonic.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
