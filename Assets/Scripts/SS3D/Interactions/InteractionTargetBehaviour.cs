@@ -9,7 +9,7 @@ namespace SS3D.Interactions
     /// </summary>
     public abstract class InteractionTargetBehaviour : Actor, IInteractionTarget, IGameObjectProvider
     {
-        public GameObject GameObject => GameObjectCache;
+        public new GameObject GameObject => base.GameObject;
         public abstract IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent);
     }
 }

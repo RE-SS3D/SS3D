@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 using Random = UnityEngine.Random;
 
 namespace SS3D.Networking
@@ -25,8 +29,10 @@ namespace SS3D.Networking
         protected override void OnStart()
         {
             base.OnStart();
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.SpawnCans.performed += HandleSpawnSodaCans;
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -59,10 +65,8 @@ namespace SS3D.Networking
             }
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             if (!EnableForceField)
             {
                 return;

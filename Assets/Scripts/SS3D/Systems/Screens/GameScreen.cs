@@ -39,7 +39,7 @@ namespace SS3D.Systems.Screens
             if (_canvasGroup != null)
             {
                 bool foundCanvas = TryGetComponent(out CanvasGroup canvasGroup);
-                _canvasGroup = foundCanvas ? canvasGroup : GameObjectCache.AddComponent<CanvasGroup>();
+                _canvasGroup = foundCanvas ? canvasGroup : GameObject.AddComponent<CanvasGroup>();
             }
 
             SetScreenState(ScreenType.Lobby, true);

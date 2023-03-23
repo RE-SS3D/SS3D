@@ -20,9 +20,9 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             ProcessPlayerInput();
 
-            if (_input.magnitude != 0)
+            if (Input.magnitude != 0)
             {
-                MoveMovementTarget(_input);
+                MoveMovementTarget(Input);
                 RotatePlayerToMovement();
                 MovePlayer();
             }
@@ -38,7 +38,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            transform.position += _targetMovement * ((_movementSpeed) * Time.deltaTime);
+            transform.position += TargetMovement * ((_movementSpeed) * Time.deltaTime);
         }
     }
 
