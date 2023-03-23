@@ -22,7 +22,7 @@ namespace SS3D.Substances
         private float currentVolume;
 
 
-        [SyncVar]
+        [SyncVar, SerializeField]
         private float volume;
 
         private SubstanceContainer substanceContainer;
@@ -76,7 +76,9 @@ namespace SS3D.Substances
 
         private void Start()
         {
-            
+            substanceContainer = new SubstanceContainer(volume, InitialSubstances);
+
+
             if (IsServer)
             {
                 RecalculateAndSyncVolume();

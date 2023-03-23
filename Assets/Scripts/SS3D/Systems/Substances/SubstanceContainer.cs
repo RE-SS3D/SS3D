@@ -87,12 +87,12 @@ public class SubstanceContainer
     }
 
 
-    SubstanceContainer(float volume)
+    public SubstanceContainer(float volume)
     {
         _volume = volume;
     }
 
-    SubstanceContainer(float volume, List<SubstanceEntry> initialSubstances)
+    public SubstanceContainer(float volume, List<SubstanceEntry> initialSubstances)
     {
         _volume = volume;
         substances = initialSubstances;
