@@ -69,7 +69,7 @@ namespace SS3D.Substances
                 if (container != null)
                 {
                     var targetContainer = interactionEvent.Target.GetComponent<SubstanceContainerActor>();
-                    container.TransferVolume(targetContainer.substanceContainer, 25);
+                    container.TransferVolume(targetContainer, 25);
                     container.MarkDirty();
                     targetContainer.MarkDirty();
                 }
