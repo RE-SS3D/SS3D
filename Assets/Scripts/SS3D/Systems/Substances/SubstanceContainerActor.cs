@@ -18,6 +18,7 @@ namespace SS3D.Substances
     /// </summary>
     public class SubstanceContainerActor : InteractionTargetNetworkBehaviour
     {
+        #region substanceContainerActor
         /// <summary>
         /// A list of initial substances in this container
         /// </summary>
@@ -200,6 +201,8 @@ namespace SS3D.Substances
             container.MarkDirty();
         }
 
+        #endregion
+
         #region SubstanceContainer
         public class SubstanceContainer
         {
@@ -229,6 +232,27 @@ namespace SS3D.Substances
             /// </summary>
             private float _temperature;
 
+            /// <summary>
+            /// The total number of moles
+            /// </summary>
+            public float TotalMoles => Substances.Sum(x => x.Moles);
+
+            /// <summary>
+            /// The remaining volume in milliliters that fit in this container
+            /// </summary>
+            public float RemainingVolume => _volume - _currentVolume;
+
+            public float Temperature => _temperature;
+
+
+            /// <summary>
+            /// The capacity of this container in milliliters
+            /// </summary>
+            public float Volume => _volume;
+
+            public bool IsEmpty => _currentVolume == 0f;
+
+            public bool CanTransfer => !_locked;
 
             /// <summary>
             /// Multiplier to convert moles in this container to volume
@@ -247,15 +271,6 @@ namespace SS3D.Substances
                 }
             }
 
-            /// <summary>
-            /// The total number of moles
-            /// </summary>
-            public float TotalMoles => Substances.Sum(x => x.Moles);
-
-            /// <summary>
-            /// The remaining volume in milliliters that fit in this container
-            /// </summary>
-            public float RemainingVolume => _volume - _currentVolume;
 
             /// <summary>
             /// The filled volume in ml
@@ -271,26 +286,6 @@ namespace SS3D.Substances
                         _actor.currentVolume = value;
                     }
                 }
-            }
-
-            public float Temperature => _temperature;
-
-
-            /// <summary>
-            /// The capacity of this container in milliliters
-            /// </summary>
-            public float Volume => _volume;
-
-            public bool IsEmpty => _currentVolume == 0f;
-
-            /// <summary>
-            /// Can this container hold an additional amount of milliliters
-            /// </summary>
-            /// <param name="milliliters">The amount of additional milliliters</param>
-            /// <returns>If it fits the container</returns>
-            public bool CanFitUnits(uint milliliters)
-            {
-                return RemainingVolume >= milliliters;
             }
 
 
@@ -310,10 +305,14 @@ namespace SS3D.Substances
                 RecalculateAndSyncVolume();
             }
 
-
-            public bool CanTransfer()
+            /// <summary>
+            /// Can this container hold an additional amount of milliliters
+            /// </summary>
+            /// <param name="milliliters">The amount of additional milliliters</param>
+            /// <returns>If it fits the container</returns>
+            public bool CanFitUnits(uint milliliters)
             {
-                return !_locked;
+                return RemainingVolume >= milliliters;
             }
 
             /// <summary>
@@ -325,7 +324,7 @@ namespace SS3D.Substances
             public void AddSubstance(Substance substance, float moles)
             {
 
-                if (!CanTransfer())
+                if (!CanTransfer)
                     return;
 
                 var remainingCapacity = RemainingVolume;
@@ -369,7 +368,7 @@ namespace SS3D.Substances
             [Server]
             public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
             {
-                if (!CanTransfer())
+                if (!CanTransfer)
                     return;
 
                 int index = IndexOfSubstance(substance);
@@ -451,7 +450,7 @@ namespace SS3D.Substances
                     moles = totalMoles;
                 }
 
-                // TODO : Only transfer what can be transferred.
+                // TODO : Only transfer what can be transferred ?
 
                 float relativeMoles = moles / totalMoles;
 
