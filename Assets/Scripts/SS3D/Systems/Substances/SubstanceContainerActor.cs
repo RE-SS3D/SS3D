@@ -300,9 +300,11 @@ namespace SS3D.Substances
             }
 
 
-            public SubstanceContainer(float volume)
+            public SubstanceContainer(float volume, bool locked = false)
             {
+                substances = new List<SubstanceEntry>();
                 _volume = volume;
+                _locked = locked;
                 RecalculateAndSyncVolume();
             }
 
@@ -355,7 +357,7 @@ namespace SS3D.Substances
             }
 
             /// <summary>
-            /// Checks if this container contains the desired substance
+            /// Checks if this container contains the desired substance.
             /// </summary>
             /// <param name="substance">The desired substance</param>
             /// <param name="moles">The desired amount</param>
@@ -366,7 +368,7 @@ namespace SS3D.Substances
             }
 
             /// <summary>
-            /// Removes the specified amount of substance
+            /// Removes the specified amount of a given substance.
             /// </summary>
             /// <param name="substance">The substance to remove</param>
             /// <param name="moles">The amount of substance</param>
@@ -404,8 +406,11 @@ namespace SS3D.Substances
                 Substances.Clear();
             }
 
+
             /// <summary>
-            /// Removes moles from the container
+            /// Removes moles from the container. For each substance present in the container,
+            /// remove a proportionnal amount of mole. If it contains 50 moles of alcohol and 100 moles of water,
+            /// removing 15 moles will remove 5 moles of alcohol, and 10 of water.
             /// </summary>
             /// <param name="moles">The amount of moles</param>
             public void RemoveMoles(float moles)
