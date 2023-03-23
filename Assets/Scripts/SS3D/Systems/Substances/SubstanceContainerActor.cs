@@ -30,6 +30,12 @@ namespace SS3D.Substances
         [SyncVar]
         private float volume;
 
+        /// <summary>
+        /// Is the container locked?
+        /// </summary>
+        [SyncVar]
+        private bool _locked;
+
         private SubstanceContainer substanceContainer;
 
         /// <summary>
@@ -55,12 +61,6 @@ namespace SS3D.Substances
         /// The capacity of this container in milliliters
         /// </summary>
         public float Volume => substanceContainer.Volume;
-
-        /// <summary>
-        /// Is the container locked?
-        /// </summary>
-        [SyncVar]
-        private bool _locked;
 
         public bool Locked => _locked;
 
@@ -179,7 +179,7 @@ namespace SS3D.Substances
         [Server]
         protected virtual void OnContentsChanged()
         {
-            //SystemLocator.Get<SubstancesSystem>().ProcessContainer(this);
+             ProcessContainer(this);
             ContentsChanged?.Invoke(this);
         }
 
@@ -194,9 +194,9 @@ namespace SS3D.Substances
         /// <summary>
         /// Processes substances in a container
         /// </summary>
-        public void ProcessContainer(SubstanceContainerActor container)
+        public static void ProcessContainer(SubstanceContainerActor container)
         {
-            substanceContainer.ProcessContainer(container.substanceContainer);
+            SubstanceContainer.ProcessContainer(container.substanceContainer);
             container.MarkDirty();
         }
 
@@ -510,7 +510,7 @@ namespace SS3D.Substances
             /// <summary>
             /// Processes substances in a container
             /// </summary>
-            public void ProcessContainer(SubstanceContainer container)
+            public static void ProcessContainer(SubstanceContainer container)
             {
                 var registry = Subsystems.Get<SubstancesSystem>();
                 float temperature = container._temperature;
@@ -614,9 +614,6 @@ namespace SS3D.Substances
                 }
             }
             #endregion
-
-
-
         }
     }
 }
