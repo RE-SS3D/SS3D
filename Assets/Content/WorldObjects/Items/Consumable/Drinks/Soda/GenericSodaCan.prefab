@@ -137,6 +137,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: -6241983665000650722}
   - {fileID: 986817846381609317}
+  - {fileID: 7164390462122581677}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -226,14 +227,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 8626439720175416957}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8626439720175416957}
   currentVolume: 0
   volume: 150
   InitialSubstances:
   - Substance: {fileID: 11400000, guid: e1163ff5257b4c04aa9df8bb85fa6188, type: 2}
-    Moles: 50
+    Moles: 3
   Locked: 0
 --- !u!1 &5228435979178398469
 GameObject:
