@@ -247,7 +247,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8423412686940963211}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 2
@@ -255,7 +255,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 5958074810027370513}
   _startingName: Beep's Soda
   _startingWeight: 1
+  _startingTraits: []
   _rigidbody: {fileID: 751568336328987408}
   Prefab: {fileID: 8423412686940963211}
   AttachmentPoint: {fileID: 6123520057549092640}
-  AttachmentPointAlt: {fileID: 6123520057549092640}
+  AttachmentPointAlt: {fileID: 0}

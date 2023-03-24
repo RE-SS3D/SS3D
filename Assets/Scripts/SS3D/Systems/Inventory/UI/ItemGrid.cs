@@ -73,7 +73,7 @@ namespace SS3D.Systems.Inventory.UI
             // For some reason, has to be delayed to end of frame to work.
             yield return new WaitForEndOfFrame();
             Container container = AttachedContainer.Container;
-            foreach (Item item in container.Items)
+            foreach (ItemActor item in container.Items)
             {
                 Vector2Int position = container.PositionOf(item);
                 CreateItemDisplay(item, position);
@@ -84,19 +84,19 @@ namespace SS3D.Systems.Inventory.UI
         /// When the container change, change the display of items inside it.
         /// Either add a display, remove a display or move a display to another slot.
         /// </summary>
-        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerOnContentsChanged(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type)
         {
             switch (type)
             {
                 case ContainerChangeType.Add:
-                    foreach (Item item in newItems)
+                    foreach (ItemActor item in newItems)
                     {
                         Vector2Int position = container.PositionOf(item);
                         CreateItemDisplay(item, position);
                     }
                     break;
                 case ContainerChangeType.Remove:
-                    foreach (Item item in oldItems)
+                    foreach (ItemActor item in oldItems)
                     {
                         for (var i = 0; i < _gridItems.Count; i++)
                         {
@@ -113,7 +113,7 @@ namespace SS3D.Systems.Inventory.UI
                     }
                     break;
                 case ContainerChangeType.Move:
-                    foreach (Item item in newItems)
+                    foreach (ItemActor item in newItems)
                     {
                         foreach (ItemGridItem gridItem in _gridItems)
                         {
@@ -198,7 +198,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <param name="display"></param>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
-            Item item = display.Item;
+            ItemActor item = display.Item;
             Vector2Int size = item.Size;
             Vector3 dragPosition = display.transform.position;
             
@@ -234,7 +234,7 @@ namespace SS3D.Systems.Inventory.UI
             objectToMove.localPosition = slot.localPosition;
         }
 
-        private void CreateItemDisplay(Item item, Vector2Int position, bool ItemMovedInsideGrid = false)
+        private void CreateItemDisplay(ItemActor item, Vector2Int position, bool ItemMovedInsideGrid = false)
         {
             // avoid creating the same item sprite multiple times. Except when it's moved around in the container.
             // In this case two instances need to exist on the same frame so we allow it.

@@ -3,7 +3,7 @@
     /// <summary>
     /// The syndies love to use this to blow up the place
     /// </summary>
-    public class NukeCard : Item
+    public class NukeCard : ItemActor
     {
         // Nothing
     }

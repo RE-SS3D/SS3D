@@ -14,7 +14,7 @@ namespace SS3D.Systems
         public List<Trait> acceptedTraits;
         public List<Trait> deniedTraits;
 
-        public bool CanStore(Item item)
+        public bool CanStore(ItemActor item)
         {
             int traitCount = 0;
             if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)

@@ -146,7 +146,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Item item = container.Container.ItemAt(position);
+            ItemActor item = container.Container.ItemAt(position);
             // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
             if (Hands.SelectedHandEmpty)
             {
@@ -176,7 +176,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to transfer</param>
         /// <param name="targetContainer">Into which container to move the item</param>
-        public void ClientTransferItem(Item item, Vector2Int position, AttachedContainer targetContainer)
+        public void ClientTransferItem(ItemActor item, Vector2Int position, AttachedContainer targetContainer)
         {
             CmdTransferItem(item.gameObject, position, targetContainer);
         }
@@ -185,7 +185,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Requests the server to drop an item out of a container
         /// </summary>
         /// <param name="item">The item to drop</param>
-        public void ClientDropItem(Item item)
+        public void ClientDropItem(ItemActor item)
         {
             CmdDropItem(item.gameObject);
         }
@@ -193,7 +193,7 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, AttachedContainer container)
         {
-            Item item = itemObject.GetComponent<Item>();
+            ItemActor item = itemObject.GetComponent<ItemActor>();
             if (item == null)
             {
                 return;
@@ -282,7 +282,7 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdDropItem(GameObject gameObject)
         {
-            Item item = gameObject.GetComponent<Item>();
+            ItemActor item = gameObject.GetComponent<ItemActor>();
             if (item == null)
             {
                 return;

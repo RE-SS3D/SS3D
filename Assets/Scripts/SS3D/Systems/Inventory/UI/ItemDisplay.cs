@@ -18,7 +18,7 @@ namespace SS3D.Systems.Inventory.UI
 
         protected InventoryDisplayElement InventoryDisplayElement;
         
-        [SerializeField] private Item _item;
+        [SerializeField] private ItemActor _item;
         private Transform _oldParent;
         private Vector3 _startMousePosition;
         private Vector3 _startPosition;
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Inventory.UI
         private Outline _outlineOuter;
 
 
-        public Item Item
+        public ItemActor Item
         {
             get => _item;
             set

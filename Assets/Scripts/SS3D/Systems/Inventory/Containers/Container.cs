@@ -67,7 +67,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
-        public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
+        public IEnumerable<ItemActor> Items => StoredItems.Select(x => x.Item);
 
         /// <summary>
         /// The creatures looking at this container
@@ -82,7 +82,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         private ContainerType _type = ContainerType.None;
 
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type);
         /// <summary>
         /// Called when the contents of the container change
         /// </summary>
@@ -133,7 +133,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to place</param>
         /// <returns>If the item was added</returns>
-        public bool AddItem(Item item)
+        public bool AddItem(ItemActor item)
         {
             if (ContainsItem(item))
             {
@@ -171,7 +171,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <param name="storedItem">The item to add</param>
         /// <param name="position">The target position in the container</param>
         /// <returns>If the item was added</returns>
-        public bool AddItemPosition(Item item, Vector2Int position)
+        public bool AddItemPosition(ItemActor item, Vector2Int position)
         {
             int itemIndex = FindItem(item);
             if (itemIndex != -1)
@@ -225,7 +225,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to add</param>
         /// <param name="position">Where the item should go, make sure this position is valid and free!</param>
-        private void AddItemUnchecked(Item item, Vector2Int position)
+        private void AddItemUnchecked(ItemActor item, Vector2Int position)
         {
             StoredItem newItem = new(item, position);
 
@@ -357,7 +357,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <param name="area">The area to check</param>
         /// <param name="item">The item to exclude from the check</param>
         /// <returns>If the given area is free</returns>
-        public bool IsAreaFreeExcluding(RectInt area, Item item)
+        public bool IsAreaFreeExcluding(RectInt area, ItemActor item)
         {
             int itemIndex = FindItem(item);
             StoredItem storedItem = default;
@@ -382,7 +382,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Removes an item from the container
         /// </summary>
         /// <param name="item">The item to remove</param>
-        public void RemoveItem(Item item)
+        public void RemoveItem(ItemActor item)
         {
             for (int i = 0; i < StoredItems.Count; i++)
             {
@@ -430,7 +430,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="position">The position to check</param>
         /// <returns>The item at the position, or null if there is none</returns>
-        public Item ItemAt(Vector2Int position)
+        public ItemActor ItemAt(Vector2Int position)
         {
             foreach (StoredItem storedItem in StoredItems)
             {
@@ -449,7 +449,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to look for</param>
         /// <returns>The item's position or (-1, -1)</returns>
-        public Vector2Int PositionOf(Item item)
+        public Vector2Int PositionOf(ItemActor item)
         {
             foreach (StoredItem storedItem in StoredItems)
             {
@@ -479,7 +479,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void Dump()
         {
-            Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
+            ItemActor[] oldItems = StoredItems.Select(x => x.Item).ToArray();
             for (int i = 0; i < oldItems.Length; i++)
             {
                 oldItems[i].Container = null;
@@ -518,7 +518,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to search for</param>
         /// <returns>If it is in this container</returns>
-        public bool ContainsItem(Item item)
+        public bool ContainsItem(ItemActor item)
         {
             foreach (StoredItem storedItem in StoredItems)
             {
@@ -536,10 +536,10 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CanStoreItem(Item item)
+        public bool CanStoreItem(ItemActor item)
         {
             // Do not store if the item is the container itself
-            if (AttachedTo.GetComponent<Item>() == item)
+            if (AttachedTo.GetComponent<ItemActor>() == item)
             {
                 return false;
             }
@@ -558,7 +558,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CanHoldItem(Item item)
+        public bool CanHoldItem(ItemActor item)
         {
             Vector2Int itemSize = item.Size;
             int maxX = Size.x - itemSize.x;
@@ -584,7 +584,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CanContainItem(Item item)
+        public bool CanContainItem(ItemActor item)
         {
             return (CanStoreItem(item) && CanHoldItem(item));
         }
@@ -594,7 +594,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to look for</param>
         /// <returns>The index of the item or -1 if not found</returns>
-        public int FindItem(Item item)
+        public int FindItem(ItemActor item)
         {
             for (int i = 0; i < StoredItems.Count; i++)
             {
@@ -608,7 +608,7 @@ namespace SS3D.Systems.Inventory.Containers
             return -1;
         }
 
-        private void handleItemRemoved(Item item)
+        private void handleItemRemoved(ItemActor item)
         {
 
             // Restore visibility
@@ -627,7 +627,7 @@ namespace SS3D.Systems.Inventory.Containers
             item.Unfreeze();
         }
 
-        private void handleItemAdded(Item item)
+        private void handleItemAdded(ItemActor item)
         {
             item.Freeze();
 
@@ -646,12 +646,12 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void HandleContainerContentsChanged(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type)
         {
             switch (type)
             {
                 case ContainerChangeType.Add:
-                    foreach (Item item in newItems)
+                    foreach (ItemActor item in newItems)
                     {
                         if (item == null)
                         {
@@ -664,7 +664,7 @@ namespace SS3D.Systems.Inventory.Containers
                     break;
                 case ContainerChangeType.Move:
                     {
-                        foreach (Item item in newItems)
+                        foreach (ItemActor item in newItems)
                         {
                             if (item == null)
                             {
@@ -679,7 +679,7 @@ namespace SS3D.Systems.Inventory.Containers
                     }
                 case ContainerChangeType.Remove:
                     {
-                        foreach (Item item in oldItems)
+                        foreach (ItemActor item in oldItems)
                         {
                             if (item == null)
                             {
@@ -694,7 +694,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
+        public void InvokeOnContentChanged(ItemActor[] oldItems, ItemActor[] newItems, ContainerChangeType changeType)
         {
             OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
         }

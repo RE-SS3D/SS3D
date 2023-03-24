@@ -212,6 +212,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 4819234911439508660}
   _startingName: Nuclear Authentication Disk
   _startingWeight: 1
+  _startingTraits: []
   _rigidbody: {fileID: 6351433192589740835}
   Prefab: {fileID: 6891363543938182813}
   AttachmentPoint: {fileID: 4619531351315044860}

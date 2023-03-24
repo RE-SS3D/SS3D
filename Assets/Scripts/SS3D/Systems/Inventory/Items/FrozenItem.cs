@@ -15,9 +15,9 @@ namespace SS3D.Systems.Inventory.Items
         
         public int FreezeCount { get; private set; }
         public bool IsFrozen { get; private set; }
-        public Item Item { get; }
+        public ItemActor Item { get; }
 
-        public FrozenItem(Item item)
+        public FrozenItem(ItemActor item)
         {
             Item = item;
         }

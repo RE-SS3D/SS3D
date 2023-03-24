@@ -166,8 +166,8 @@ namespace SS3D.Systems.Roles
             ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
-            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
-            Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
+            ItemActor pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
+            ItemActor idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
 
             PDA pda = (PDA)pdaItem;
             IDCard idCard = (IDCard)idCardItem;

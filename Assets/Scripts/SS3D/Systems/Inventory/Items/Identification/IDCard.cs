@@ -15,7 +15,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// <summary>
     /// The honking device used by the clown on honking purposes
     /// </summary>
-    public class IDCard : Item, IIdentification
+    public class IDCard : ItemActor, IIdentification
     {
         private string ownerName;
         private string roleName;

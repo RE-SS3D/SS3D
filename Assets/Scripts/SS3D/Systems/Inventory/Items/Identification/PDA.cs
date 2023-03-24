@@ -12,12 +12,12 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// <summary>
     /// The honking device used by the clown on honking purposes
     /// </summary>
-    public class PDA : Item, IIdentification
+    public class PDA : ItemActor, IIdentification
     {
         public IDPermission testPermission;
         private AttachedContainer attachedContainer;
 
-        [HideInInspector] public Item StartingIDCard;
+        [HideInInspector] public ItemActor StartingIDCard;
 
         protected override void OnStart()
         {

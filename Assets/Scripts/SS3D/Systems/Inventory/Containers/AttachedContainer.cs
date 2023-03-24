@@ -136,8 +136,8 @@ namespace SS3D.Systems.Inventory.Containers
 
         private Container _container;
 
-        public event EventHandler<Item> OnItemAttached;
-        public event EventHandler<Item> OnItemDetached;
+        public event EventHandler<ItemActor> OnItemAttached;
+        public event EventHandler<ItemActor> OnItemDetached;
 
         /// <summary>
         /// The items stored in this container, including information on how they are stored
@@ -148,7 +148,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
-        public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
+        public IEnumerable<ItemActor> Items => StoredItems.Select(x => x.Item);
 
         public SyncList<StoredItem> StoredItems => _storedItems;
 
@@ -181,12 +181,12 @@ namespace SS3D.Systems.Inventory.Containers
             return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
         }
 
-        public void ProcessItemAttached(Item e)
+        public void ProcessItemAttached(ItemActor e)
         {
             OnItemAttached?.Invoke(this, e);
         }
 
-        public void ProcessItemDetached(Item e)
+        public void ProcessItemDetached(ItemActor e)
         {
             OnItemDetached?.Invoke(this, e);
         }

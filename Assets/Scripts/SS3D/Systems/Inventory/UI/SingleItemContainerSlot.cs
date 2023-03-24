@@ -87,7 +87,7 @@ namespace SS3D.Systems.Inventory.UI
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerContentsChanged(Container _, IEnumerable<ItemActor> items, IEnumerable<ItemActor> newItems, ContainerChangeType type)
         {
             if (type != ContainerChangeType.Move)
             {

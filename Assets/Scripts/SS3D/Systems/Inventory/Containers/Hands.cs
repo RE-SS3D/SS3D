@@ -37,7 +37,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The item held in the active hand
         /// </summary>
-        public Item ItemInHand => SelectedHandContainer.Items.FirstOrDefault();
+        public ItemActor ItemInHand => SelectedHandContainer.Items.FirstOrDefault();
         /// <summary>
         /// The currently active hand
         /// </summary>
@@ -80,7 +80,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         [Server]
-        public void Pickup(Item item)
+        public void Pickup(ItemActor item)
         {
             if (!SelectedHandEmpty)
             {
@@ -122,7 +122,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Item item = ItemInHand;
+            ItemActor item = ItemInHand;
             item.Container = null;
             ItemUtility.Place(item, position, rotation, transform);
         }
@@ -192,7 +192,7 @@ namespace SS3D.Systems.Inventory.Containers
         
         public IInteractionSource GetActiveTool()
         {
-            Item itemInHand = ItemInHand;
+            ItemActor itemInHand = ItemInHand;
             if (itemInHand == null)
             {
                 return null;

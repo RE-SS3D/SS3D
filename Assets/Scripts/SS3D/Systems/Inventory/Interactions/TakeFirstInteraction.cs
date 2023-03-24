@@ -48,7 +48,7 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             Hands hands = (Hands) interactionEvent.Source;
             int index = _attachedContainer.Container.StoredItems.Count - 1;
-            Item pickupItem = _attachedContainer.Container.StoredItems[index].Item;
+            ItemActor pickupItem = _attachedContainer.Container.StoredItems[index].Item;
             if (pickupItem != null)
             {
                 hands.Pickup(pickupItem);
