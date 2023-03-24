@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using SS3D.Attributes;
@@ -37,6 +38,9 @@ namespace SS3D.Systems.Inventory.Items
         [FormerlySerializedAs("Weight")]
         [SerializeField] private float _startingWeight;
 
+        [FormerlySerializedAs("Size")]
+        [SerializeField] private Vector2Int _startingSize;
+
         [FormerlySerializedAs("Traits")]
         [SerializeField] private List<Trait> _startingTraits;
 
@@ -53,12 +57,12 @@ namespace SS3D.Systems.Inventory.Items
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
 
-        private Item item = new Item();
+        private Item item;
 
         public string Name => item.Name;
         public ItemId ItemId => item.ItemId;
         public Vector2Int Size => item.Size;
-        public List<Trait> traits => item.Traits;
+        public ReadOnlyCollection<Trait> traits => item.Traits;
 
         public Sprite InventorySprite
         {
@@ -88,11 +92,7 @@ namespace SS3D.Systems.Inventory.Items
 
         public new void Awake()
         {
-            item.Name = _startingName;
-            item.Weight = _startingWeight;
-            item.Traits = _startingTraits;
-
-            item.Sprite = null;
+            item = new Item(_startingName, _startingWeight, _startingSize, _startingTraits);
 
             // Add a warning if an item is not on the Items layer (layer 10).
             // Not really needed any more because of the RequiredLayer attribute.
@@ -116,17 +116,6 @@ namespace SS3D.Systems.Inventory.Items
             if (_rigidbody != null && IsClientOnly)
             {
                 _rigidbody.isKinematic = true;
-            }
-
-            // Items can't have no size
-            if (item.Size.x == 0)
-            {
-                item.Size = new Vector2Int(1, item.Size.y);
-            }
-
-            if (item.Size.y == 0)
-            {
-                item.Size = new Vector2Int(item.Size.x, 1);
             }
         }
 
@@ -356,28 +345,16 @@ namespace SS3D.Systems.Inventory.Items
             /// </summary>
             private Container _container;
 
+            public string Name => _name;
+
+            public float Weight => _weight;
+
+            public Vector2Int Size => _size;
+
             public ItemId ItemId
             {
                 get => _itemId;
                 set => _itemId = value;
-            }
-
-            public string Name
-            {
-                get => _name;
-                set => _name = value;
-            }
-
-            public float Weight
-            {
-                get => _weight;
-                set => _weight = value;
-            }
-
-            public Vector2Int Size
-            {
-                get => _size;
-                set => _size = value;
             }
 
             public Sprite Sprite
@@ -386,10 +363,35 @@ namespace SS3D.Systems.Inventory.Items
                 set => _sprite = value;
             }
 
-            public List<Trait> Traits
+            public ReadOnlyCollection<Trait> Traits => ((List<Trait>)_traits).AsReadOnly();
+
+            public Item(ItemId itemId, string name, float weight, Vector2Int size, Sprite sprite, List<Trait> traits)
             {
-                get => _traits;
-                set => _traits = value;
+                _itemId = itemId;
+                _name = name;
+                _weight = weight;
+                _size = size;
+                _sprite = sprite;
+                _traits = traits;
+                ValidateItem();
+            }
+
+            public Item(string name, float weight, Vector2Int size, List<Trait> traits)
+            {
+                _name = name;
+                _weight = weight;
+                _size = size;
+                _traits = traits;
+                ValidateItem();
+            }
+
+            public Item()
+            {
+                _traits = new List<Trait>();
+                _size = new Vector2Int(1, 1);
+                _weight = 1f;
+                _sprite = null;
+                ValidateItem();
             }
 
             public Container Container
@@ -406,6 +408,23 @@ namespace SS3D.Systems.Inventory.Items
             public bool HasTrait(Trait trait)
             {
                 return _traits.Contains(trait);
+            }
+
+            /// <summary>
+            /// Validates the Item's properties
+            /// </summary>
+            private void ValidateItem()
+            {
+                // Items can't have no size
+                if (_size.x == 0)
+                {
+                    _size = new Vector2Int(1, _size.y);
+                }
+
+                if (_size.y == 0)
+                {
+                    _size = new Vector2Int(_size.x, 1);
+                }
             }
         }
         #endregion
