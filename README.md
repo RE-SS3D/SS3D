@@ -1,4 +1,4 @@
-[<p align="center"><img src="Documents/Images/SS3D_ReadmeBanner1.png" alt="SS3D" align="center"></p>](https://ss3d.space/)
+[<p align="center"><img src="Documents/Images/SS3D_ReadmeBanner2.png" alt="SS3D" align="center"></p>](https://ss3d.space/)
 
 <h3 align="center"> SS3D is an open-source resurrection of <a href="https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av">*beep's SS3D demo</a>, which was an impressive demo attempting to give the infamous <a href="https://spacestation13.com/"><img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="ss13"></a> an extra dimension.</h3>
 
