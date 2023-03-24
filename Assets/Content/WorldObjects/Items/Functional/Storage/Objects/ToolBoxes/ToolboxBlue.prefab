@@ -93,9 +93,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
-  _networkObjectCache: {fileID: 3258417366846669140}
+  _networkObjectCache: {fileID: 57976260605683709}
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 7199567936746149742}
   ContainerItemDisplay: {fileID: 0}
@@ -131,9 +131,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 0
-  _networkBehaviours: []
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ComponentIndex>k__BackingField: 1
+  _networkBehaviours:
+  - {fileID: 8518940750606334703}
+  <ParentNetworkObject>k__BackingField: {fileID: 3258417366846669140}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
@@ -425,15 +426,12 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  _itemId: 0
-  _name: 
-  _sprite: {fileID: 0}
+  _startingName: Blue Toolbox
+  _startingWeight: 1
   _rigidbody: {fileID: 2081909342595332650}
-  _weight: 1
   Prefab: {fileID: 5533951594911835035}
   AttachmentPoint: {fileID: 6311512130502363032}
   AttachmentPointAlt: {fileID: 2809404673239714095}
-  traits: []
 --- !u!95 &5206759755089209485
 Animator:
   serializedVersion: 4
@@ -514,14 +512,14 @@ MonoBehaviour:
   - {fileID: 2884915648782529247}
   - {fileID: 3298710121668139635}
   - {fileID: 7199567936746149742}
-  - {fileID: 8518940750606334703}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
+  <ChildNetworkObjects>k__BackingField:
+  - {fileID: 57976260605683709}
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 16
+  <PrefabId>k__BackingField: 47
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11478259988983769400

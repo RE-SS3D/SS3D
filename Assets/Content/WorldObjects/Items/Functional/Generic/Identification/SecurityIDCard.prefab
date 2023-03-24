@@ -144,7 +144,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 43
+  <PrefabId>k__BackingField: 7
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 2931723549521892322
@@ -236,16 +236,14 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
-  _itemId: 11
-  _name: IDCard
-  _sprite: {fileID: 0}
+  _startingName: Security ID Card
+  _startingWeight: 1
+  _startingTraits:
+  - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
   _rigidbody: {fileID: 3483542684610536844}
-  _weight: 0
   Prefab: {fileID: 5261116577612792016}
   AttachmentPoint: {fileID: 7149383022180600066}
   AttachmentPointAlt: {fileID: 0}
-  traits:
-  - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
 --- !u!1 &8188033368034612119
 GameObject:
   m_ObjectHideFlags: 0

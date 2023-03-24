@@ -28,59 +28,49 @@ namespace SS3D.Systems.Inventory.Items
     [RequiredLayer("Items")]
     public class Item : InteractionSource, IInteractionTarget
     {
-        [FormerlySerializedAs("_itemId")]
-        [FormerlySerializedAs("_itemIdID")]
-        [FormerlySerializedAs("ItemID")]
         [Header("Item settings")]
-        [SerializeField]
-        [HideInInspector]
-        public Data.Enums.ItemId _itemId;
 
-        [SerializeField] private string _name;
+        [FormerlySerializedAs("Name")]
+        [SerializeField] private string _startingName;
 
-        [SerializeField] private Sprite _sprite;
+        [FormerlySerializedAs("Weight")]
+        [SerializeField] private float _startingWeight;
+
+        [FormerlySerializedAs("Traits")]
+        [SerializeField] private List<Trait> _startingTraits;
 
         [SerializeField] private Rigidbody _rigidbody;
 
-        public string Name => _name;
-
-        /// <summary>
-        /// The item's relative weight in kilograms.
-        /// </summary>
-        [SerializeField] private float _weight;
-
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
+
         [Header("Attachment settings")]
+
         [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
         public Transform AttachmentPoint;
+
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
-        [Tooltip("The size of the item inside a container")]
-        private Vector2Int _size;
-        private Container _container;
 
-        public Vector2Int Size => _size;
+        private ItemActor itemActor { get; } = new ItemActor();
 
-        public List<Trait> traits;
+        public string Name => itemActor.Name;
+        public ItemId ItemId => itemActor.ItemId;
+        public Vector2Int Size => itemActor.Size;
+        public List<Trait> traits => itemActor.Traits;
 
         public Sprite InventorySprite
         {
             get
             {
-                if (_sprite == null)
+                if (itemActor.Sprite == null)
                 {
                     GenerateNewIcon();
                 }
 
-                return _sprite;
+                return itemActor.Sprite;
             }
         }
-
-        // public Item()
-        // {
-        //     frozenItem = new FrozenItem(this);
-        // }
 
         /// <summary>
         /// The stack of this item, can be null
@@ -91,20 +81,24 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         public Container Container
         {
-            get => _container;
+            get => itemActor.Container;
             set => SetContainer(value, false, false);
         }
 
-        public void Awake()
+        public new void Awake()
         {
-            _sprite = null;
+            itemActor.Name = _startingName;
+            itemActor.Weight = _startingWeight;
+            itemActor.Traits = _startingTraits;
+
+            itemActor.Sprite = null;
 
             // Add a warning if an item is not on the Items layer (layer 10).
             // Not really needed any more because of the RequiredLayer attribute.
             if (gameObject.layer != 10)
             {
                 Punpun.Warning(this, "Item {item} is on {layer} layer. Should be on Items layer.",
-                    Logs.Generic, _name, LayerMask.LayerToName(gameObject.layer));
+                    Logs.Generic, itemActor.Name, LayerMask.LayerToName(gameObject.layer));
             }
         }
 
@@ -124,15 +118,24 @@ namespace SS3D.Systems.Inventory.Items
             }
 
             // Items can't have no size
-            if (_size.x == 0)
+            if (itemActor.Size.x == 0)
             {
-                _size = new Vector2Int(1, _size.y);
+                itemActor.Size = new Vector2Int(1, itemActor.Size.y);
             }
 
-            if (_size.y == 0)
+            if (itemActor.Size.y == 0)
             {
-                _size = new Vector2Int(_size.x, 1);
+                itemActor.Size = new Vector2Int(itemActor.Size.x, 1);
             }
+        }
+
+        /// <summary>
+        /// Changes the item actor's item id
+        /// </summary>
+        /// <param name="id">AssetDatabase's ItemId</param>
+        public void SetId(ItemId id)
+        {
+            itemActor.ItemId = id;
         }
 
         /// <summary>
@@ -207,9 +210,9 @@ namespace SS3D.Systems.Inventory.Items
             return component != null && component.enabled;
         }
 
-        private void OnDestroy()
+        private new void OnDestroy()
         {
-            _container = null;
+            Container = null;
         }
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -226,38 +229,36 @@ namespace SS3D.Systems.Inventory.Items
             interactions.Add(new InteractionEntry(null, dropInteraction));
         }
 
-        public bool InContainer()
+        /// <summary>
+        /// Checks if the item is currently stored in a container
+        /// </summary>
+        /// <returns></returns>
+        public bool InOnContainer()
         {
-            return _container != null;
+            return itemActor.IsOnContainer();
         }
 
+        /// <summary>
+        /// Checks if the item has an specific trait
+        /// </summary>
+        /// <param name="trait"></param>
+        /// <returns></returns>
         public bool HasTrait(Trait trait)
         {
-            return traits.Contains(trait);
-        }
-
-        public bool HasTrait(string name)
-        {
-            var hash = Animator.StringToHash(name.ToUpper());
-            foreach (Trait trait in traits)
-            {
-                if (trait.Hash == hash)
-                    return true;
-            }
-            return false;
+            return itemActor.HasTrait(trait);
         }
 
         [Server]
         public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
         {
-            if (_container == newContainer)
+            if (Container == newContainer)
             {
                 return;
             }
 
-            if (_container != null)
+            if (Container != null)
             {
-                _container.RemoveItem(this);
+                Container.RemoveItem(this);
             }
 
             if (!alreadyAdded && newContainer != null)
@@ -265,7 +266,7 @@ namespace SS3D.Systems.Inventory.Items
                 newContainer.AddItem(this);
             }
 
-            _container = newContainer;
+            itemActor.Container = newContainer;
             RpcSetContainer(newContainer);
             
         }
@@ -279,7 +280,7 @@ namespace SS3D.Systems.Inventory.Items
                 return;
             }
 
-            _container = newContainer;
+            itemActor.Container = newContainer;
         }
 
         /// <summary>
@@ -288,7 +289,7 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         public void SetContainerUnchecked(Container newContainer)
         {
-            _container = newContainer;
+            Container = newContainer;
         }
 
         // TODO: Improve this
@@ -303,8 +304,8 @@ namespace SS3D.Systems.Inventory.Items
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
             Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
-                _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-                _sprite.name = transform.name;
+                itemActor.Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                itemActor.Sprite.name = transform.name;
             }
             catch (NullReferenceException)
             {

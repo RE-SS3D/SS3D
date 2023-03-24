@@ -149,7 +149,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 58
+  <PrefabId>k__BackingField: 28
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 6837217039410231428
@@ -241,16 +241,14 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
-  _itemId: 12
-  _name: PDA
-  _sprite: {fileID: 0}
+  _startingName: PDA
+  _startingWeight: 1
+  _startingTraits:
+  - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
   _rigidbody: {fileID: 3483542684610536844}
-  _weight: 0
   Prefab: {fileID: 5261116577612792016}
   AttachmentPoint: {fileID: 7149383022180600066}
   AttachmentPointAlt: {fileID: 0}
-  traits:
-  - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
   testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
   StartingIDCard: {fileID: 0}
 --- !u!114 &-3412952555245330052

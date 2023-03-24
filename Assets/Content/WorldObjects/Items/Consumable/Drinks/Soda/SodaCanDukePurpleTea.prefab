@@ -215,7 +215,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 60
+  <PrefabId>k__BackingField: 34
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 8549654076861159179
@@ -235,12 +235,9 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: -5714630671653109526}
   _networkObjectCache: {fileID: -5714630671653109526}
-  _itemId: 5
-  _name: 
-  _sprite: {fileID: 0}
+  _startingName: Duke Purple Tea
+  _startingWeight: 1
   _rigidbody: {fileID: 751568336328987408}
-  _weight: 1
   Prefab: {fileID: 8423412686940963211}
   AttachmentPoint: {fileID: 8184554023770655363}
   AttachmentPointAlt: {fileID: 8184554023770655363}
-  traits: []
