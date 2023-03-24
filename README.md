@@ -4,39 +4,35 @@
 
 <br>
 
-<h1 align="center">DOWNLOADS</h1>
-
-[<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
-
-[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic&color=9cf" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of SS3D. It's working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic&color=blue" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-
-[<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
-
-[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic&color=blue" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&logo=github&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
-
-*Note: SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are not many systems, content, or even interactions. What you see in the current project is just the beginning to something much, much greater.*
-
-<br>
-
 <h1 align="center">INFO</h1>
 
 [<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
 
 <br>
 
-<h1 align="center">CONTRIBUTING</h1>
+<h1 align="center">DOWNLOADS</h1>
 
-[<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) outlines the basics for contributing, and [our GitBook](https://ss3d.gitbook.io/programming/introduction/contributing-to-ss3d) goes into details with various guides & documents.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
+[<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-[<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)[https://ss3d.space/contribute/](https://ss3d.space/contribute/) outlines other contribution types (art assets) with links to helpful guides and to-do boards.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic&color=9cf" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of SS3D. Working on Windows, needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic&color=blue" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
+
+[<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
+
+[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic&color=blue" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of SS3D (every commit) in a .zip. You'll need to build the game in Unity.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&logo=github&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
+
+***Note:*** *SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, and core work. As such, there are not many systems, content, or even interactions at the moment. What you see currently is just the beginning to something much, much greater.*
 
 <br>
 
-<h1 align="center">LICENSING</h1>
+<h1 align="center">DONATE</h1>
 
-All **code** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
+[<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
-All **art assets** (music & sfx, 3d models & animations, 2d textures & graphics, and vfx) fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
+PayPal is where all our donations go before distribution to development costs. Use the link or send to our email (ress3d.project@gmail.com).
+
+[<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
+
+Patreon is our primary subscription-based donation platform with tiers (currently no extra benefit for different tiers).
 
 <br>
 
@@ -60,7 +56,11 @@ All **art assets** (music & sfx, 3d models & animations, 2d textures & graphics,
 
 <br>
 
-<h1 align="center">BOARDS</h1>
+<h1 align="center">CONTRIBUTING</h1>
+
+[<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) outlines some basics for contributing, but our [Dev Guide](https://ss3d.gitbook.io/dev-guide/) on GitBook goes into more detail with various guides & documents.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
+
+[<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)We also have an [Art Guide](https://ss3d.gitbook.io/art-guide/) on GitBook which outlines asset contributions with links and helpful guides.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
 
 [<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/issues)
 
@@ -72,12 +72,8 @@ Trello hosts all our other boards, including the task boards for our various ass
 
 <br>
 
-<h1 align="center">DONATE</h1>
+<h1 align="center">LICENSING</h1>
 
-[<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
+All **CODE** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
-PayPal is where all our donations go before distribution to development costs. Use the link or send to our email (ress3d.project@gmail.com).
-
-[<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
-
-Patreon is our primary subscription-based donation platform with tiers (currently no extra benefit for different tiers).
+All **ART ASSETS** (3d assets, 2d assets, & sounds) fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
