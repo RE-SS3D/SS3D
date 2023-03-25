@@ -98,9 +98,11 @@ namespace SS3D.Tests
             filePath = filePath.Substring(0, filePath.Length - 6);     // Needed to remove the "Assets" folder.
             filePath += "Builds";                                      // Needed to add the "Builds" folder.
 
-            if (Directory.Exists($"{filePath}/StandaloneWindows"))
+            const string expectedFolderNameForContinuousIntegrationTesting = "StandaloneLinux64";
+
+            if (Directory.Exists($"{filePath}/{expectedFolderNameForContinuousIntegrationTesting}"))
             {
-                filePath += "/StandaloneWindows";
+                filePath += $"/{expectedFolderNameForContinuousIntegrationTesting}";
             }
             else
             {
