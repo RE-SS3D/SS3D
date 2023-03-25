@@ -19,7 +19,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           buildName: SS3D
-          targetPlatform: StandaloneWindows
+          targetPlatform: StandaloneLinux64
           buildsPath: Builds
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
