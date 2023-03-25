@@ -7,6 +7,7 @@
 //ObserverCondition is a scriptable object, so also create an asset
 //menu to create a new scriptable object of your condition.
 using FishNet.Connection;
+using FishNet.Object;
 using FishNet.Observing;
 using SS3D.Core;
 using SS3D.Systems.Entities;
@@ -35,13 +36,24 @@ public class ContainerViewedCondition : ObserverCondition
         var container = NetworkObject.GetComponent<AttachedContainer>();
         notProcessed= false;
 
-        if (Subsystems.Get<EntitySystem>().TryGetSpawnedEntity(connection, out Entity entity) 
-            && container.Container.ObservingPlayers.Contains(entity))
+        float sqrMaximumDistance = (container.MaxDistance * container.MaxDistance);
+
+        Vector3 thisPosition = NetworkObject.transform.position;
+        foreach (NetworkObject nob in connection.Objects)
         {
-            return true;
+            //If within distance.
+            if (Vector3.SqrMagnitude(nob.transform.position - thisPosition) <= sqrMaximumDistance)
+            {
+                // Must be opened for it's content to be visible.
+                if (container.IsOpenable && container.ContainerInteractive.IsOpen())
+                    return true;
+                else if (!container.IsOpenable) return true;
+            }
+
         }
+
+        /* If here no client objects are within distance. */
         return false;
-         
     }
 
     /// <summary>
