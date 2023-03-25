@@ -4,6 +4,7 @@ using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using System.Runtime.InteropServices;
 using System;
+using System.IO;
 
 namespace SS3D.Tests
 {
@@ -96,11 +97,15 @@ namespace SS3D.Tests
             string filePath = Application.dataPath;
             filePath = filePath.Substring(0, filePath.Length - 6);     // Needed to remove the "Assets" folder.
             filePath += "Builds";                                      // Needed to add the "Builds" folder.
-#if UNITY_STANDALONE_LINUX
-            filePath += "/StandaloneWindows";
-#elif UNITY_EDITOR
-            filePath += "/Game";
-#endif
+
+            if (Directory.Exists($"{filePath}/StandaloneWindows"))
+            {
+                filePath += "/StandaloneWindows";
+            }
+            else
+            {
+                filePath += "/Game";
+            }
             return filePath;
         }
         #endregion
