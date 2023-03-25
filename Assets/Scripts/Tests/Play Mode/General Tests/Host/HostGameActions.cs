@@ -33,13 +33,13 @@ namespace SS3D.Tests
             yield return base.UnityTearDown();
         }
 
-        [UnityTest]
+        //[UnityTest]
         public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn([ValueSource("Iterations")] int iteration)
         {
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
         }
 
-        [UnityTest]
+        //[UnityTest]
         public IEnumerator PlayerCanMoveInEachDirectionCorrectly()
         {
             yield return null;

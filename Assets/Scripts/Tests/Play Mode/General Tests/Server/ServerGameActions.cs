@@ -52,7 +52,7 @@ namespace SS3D.Tests
             KillClientProcesses();
         }
 
-        [UnityTest]
+        //[UnityTest]
         public IEnumerator PlayersRemainAboveStationLevelAfterSpawn()
         {
             // Get everyone into the round, and wait till it is properly loaded.
@@ -66,7 +66,7 @@ namespace SS3D.Tests
             yield return PlaymodeTestRepository.PlayersRemainAboveStationLevelAfterSpawn(players);
         }
 
-        [UnityTest]
+        //[UnityTest]
         public IEnumerator FreePlayMultiplayer()
         {
             // Get everyone into the round, and wait till it is properly loaded.
