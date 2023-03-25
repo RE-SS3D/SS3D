@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using FishNet.Component.Transforming;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
@@ -62,7 +63,7 @@ namespace SS3D.Systems.Inventory.Items
         public string Name => item.Name;
         public ItemId ItemId => item.ItemId;
         public Vector2Int Size => item.Size;
-        public ReadOnlyCollection<Trait> traits => item.Traits;
+        public ReadOnlyCollection<Trait> Traits => item.Traits;
 
         public Sprite InventorySprite
         {
@@ -116,6 +117,19 @@ namespace SS3D.Systems.Inventory.Items
             if (_rigidbody != null && IsClientOnly)
             {
                 _rigidbody.isKinematic = true;
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                foreach (Trait trait in Traits)
+                {
+                    Punpun.Debug(this, $"Item {Name} has trait {trait.Name}");
+                }
             }
         }
 
@@ -338,7 +352,8 @@ namespace SS3D.Systems.Inventory.Items
             /// <summary>
             /// The list of characteristics this Item has
             /// </summary>
-            private List<Trait> _traits;
+            [SyncObject]
+            private readonly SyncList<Trait> _traits = new();
 
             /// <summary>
             /// The container the item is currently stored on
@@ -363,7 +378,7 @@ namespace SS3D.Systems.Inventory.Items
                 set => _sprite = value;
             }
 
-            public ReadOnlyCollection<Trait> Traits => ((List<Trait>)_traits).AsReadOnly();
+            public ReadOnlyCollection<Trait> Traits => ((List<Trait>)_traits.Collection).AsReadOnly();
 
             public Item(ItemId itemId, string name, float weight, Vector2Int size, Sprite sprite, List<Trait> traits)
             {
@@ -372,7 +387,8 @@ namespace SS3D.Systems.Inventory.Items
                 _weight = weight;
                 _size = size;
                 _sprite = sprite;
-                _traits = traits;
+                _traits.AddRange(traits);
+
                 ValidateItem();
             }
 
@@ -381,16 +397,12 @@ namespace SS3D.Systems.Inventory.Items
                 _name = name;
                 _weight = weight;
                 _size = size;
-                _traits = traits;
+                _traits.AddRange(traits);
                 ValidateItem();
             }
 
             public Item()
             {
-                _traits = new List<Trait>();
-                _size = new Vector2Int(1, 1);
-                _weight = 1f;
-                _sprite = null;
                 ValidateItem();
             }
 
