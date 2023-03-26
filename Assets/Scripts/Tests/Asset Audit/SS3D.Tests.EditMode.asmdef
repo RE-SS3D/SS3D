@@ -1,9 +1,8 @@
 {
-    "name": "EditorTests",
+    "name": "SS3D.Tests.AssetAudit",
     "rootNamespace": "",
     "references": [
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
+        "Tests.Common",
         "SS3D.Core",
         "FishNet.Runtime",
         "SS3D.Attributes",
