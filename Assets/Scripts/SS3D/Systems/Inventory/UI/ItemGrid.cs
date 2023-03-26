@@ -13,6 +13,7 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.Inventory.UI
 {
+    using Item = ItemActor.Item;
     public class ItemGrid : InventoryDisplayElement, IPointerClickHandler, IDropHandler, ISlotProvider
     {
         /// <summary>
@@ -83,24 +84,26 @@ namespace SS3D.Systems.Inventory.UI
         /// When the container change, change the display of items inside it.
         /// Either add a display, remove a display or move a display to another slot.
         /// </summary>
-        private void ContainerOnContentsChanged(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type)
+        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {
                 case ContainerChangeType.Add:
-                    foreach (ItemActor item in newItems)
+                    foreach (Item item in newItems)
                     {
-                        Vector2Int position = container.PositionOf(item.GetItem);
-                        CreateItemDisplay(item, position);
+                        if (item == null) continue;
+                        Vector2Int position = container.PositionOf(item);
+                        CreateItemDisplay(item.Actor, position);
                     }
                     break;
                 case ContainerChangeType.Remove:
-                    foreach (ItemActor item in oldItems)
+                    foreach (Item item in oldItems)
                     {
+                        if (item == null) continue;
                         for (var i = 0; i < _gridItems.Count; i++)
                         {
                             ItemGridItem gridItem = _gridItems[i];
-                            if (gridItem.Item != item)
+                            if (gridItem.Item != item.Actor)
                             {
                                 continue;
                             }
@@ -112,13 +115,14 @@ namespace SS3D.Systems.Inventory.UI
                     }
                     break;
                 case ContainerChangeType.Move:
-                    foreach (ItemActor item in newItems)
+                    foreach (Item item in newItems)
                     {
+                        if (item == null) continue;
                         foreach (ItemGridItem gridItem in _gridItems)
                         {
-                            if (gridItem.Item == item)
+                            if (gridItem.Item == item.Actor)
                             {
-                                Vector2Int position = container.PositionOf(item.GetItem);
+                                Vector2Int position = container.PositionOf(item);
                                 MoveToSlot(gridItem.transform, position);
                                 break;
                             }

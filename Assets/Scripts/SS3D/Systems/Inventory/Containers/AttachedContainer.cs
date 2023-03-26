@@ -19,6 +19,7 @@ using static SS3D.Substances.SubstanceContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    using Item = ItemActor.Item;
     /// <summary>
     /// AttachedContainer manages the networking  aspect of a container attached to a gameObject, and allows the user to set up a container,
     /// including it's size, interaction with it, what it can store and other options.
@@ -243,7 +244,7 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            _container.InvokeOnContentChanged(new[] { oldItem.Item.Actor }, new[] { newItem.Item.Actor }, changeType);
+            _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
 
         private void handleItemRemoved(ItemActor item)
@@ -284,47 +285,47 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        private void HandleContainerContentsChanged(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type)
+        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {
                 case ContainerChangeType.Add:
-                    foreach (ItemActor item in newItems)
+                    foreach (Item item in newItems)
                     {
                         if (item == null)
                         {
                             continue;
                         }
 
-                        handleItemAdded(item);
+                        handleItemAdded(item.Actor);
                     }
 
                     break;
                 case ContainerChangeType.Move:
                     {
-                        foreach (ItemActor item in newItems)
+                        foreach (Item item in newItems)
                         {
                             if (item == null)
                             {
                                 continue;
                             }
 
-                            handleItemRemoved(item);
-                            handleItemAdded(item);
+                            handleItemRemoved(item.Actor);
+                            handleItemAdded(item.Actor);
                         }
 
                         break;
                     }
                 case ContainerChangeType.Remove:
                     {
-                        foreach (ItemActor item in oldItems)
+                        foreach (Item item in oldItems)
                         {
                             if (item == null)
                             {
                                 continue;
                             }
 
-                            handleItemRemoved(item);
+                            handleItemRemoved(item.Actor);
                         }
 
                         break;

@@ -83,7 +83,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         private ContainerType _type = ContainerType.None;
 
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type);
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
         /// <summary>
         /// Called when the contents of the container change
         /// </summary>
@@ -595,7 +595,7 @@ namespace SS3D.Systems.Inventory.Containers
             return -1;
         }
 
-        public void InvokeOnContentChanged(ItemActor[] oldItems, ItemActor[] newItems, ContainerChangeType changeType)
+        public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
         {
             OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
         }
