@@ -15,6 +15,7 @@ using SS3D.Systems.Inventory.Items;
 using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
+using static SS3D.Substances.SubstanceContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -165,10 +166,10 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnAwake()
         {
             base.OnAwake();
-
             _container = new Container(this);
             _storedItems.OnChange += HandleStoredItemsChanged;
             UpdateContainer(_container);
+            _container.OnContentsChanged += HandleContainerContentsChanged;
         }
 
         public void OnDestroy()
@@ -244,5 +245,93 @@ namespace SS3D.Systems.Inventory.Containers
 
             _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
+
+        private void handleItemRemoved(ItemActor item)
+        {
+
+            // Restore visibility
+            if (HideItems)
+            {
+                item.SetVisibility(true);
+            }
+
+            // Remove parent if child of this
+            if (item.transform.parent == transform)
+            {
+                item.transform.SetParent(null, true);
+                ProcessItemDetached(item);
+            }
+
+            item.Unfreeze();
+        }
+
+        private void handleItemAdded(ItemActor item)
+        {
+            item.Freeze();
+
+            // Make invisible
+            if (HideItems)
+            {
+                item.SetVisibility(false);
+            }
+
+            if (AttachItems)
+            {
+                Transform itemTransform = item.transform;
+                itemTransform.SetParent(transform, false);
+                itemTransform.localPosition = AttachmentOffset;
+                ProcessItemAttached(item);
+            }
+        }
+
+        private void HandleContainerContentsChanged(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type)
+        {
+            switch (type)
+            {
+                case ContainerChangeType.Add:
+                    foreach (ItemActor item in newItems)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        handleItemAdded(item);
+                    }
+
+                    break;
+                case ContainerChangeType.Move:
+                    {
+                        foreach (ItemActor item in newItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                            handleItemAdded(item);
+                        }
+
+                        break;
+                    }
+                case ContainerChangeType.Remove:
+                    {
+                        foreach (ItemActor item in oldItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                        }
+
+                        break;
+                    }
+            }
+        }
     }
+
+
 }

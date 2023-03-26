@@ -103,7 +103,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             _storedItems = new List<StoredItem>();
             _size = size;
-            OnContentsChanged += HandleContainerContentsChanged;
         }
 
         /// <summary>
@@ -117,14 +116,6 @@ namespace SS3D.Systems.Inventory.Containers
             _hideItems = attachedContainer.HideItems;
             _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
             _startFilter= attachedContainer.StartFilter;
-
-
-            OnContentsChanged += HandleContainerContentsChanged;
-        }
-
-        ~Container()
-        {
-            OnContentsChanged -= HandleContainerContentsChanged;
         }
 
 
@@ -606,92 +597,6 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             return -1;
-        }
-
-        private void handleItemRemoved(ItemActor item)
-        {
-
-            // Restore visibility
-            if (HideItems)
-            {
-                item.SetVisibility(true);
-            }
-
-            // Remove parent if child of this
-            if (AttachedTo != null && item.transform.parent == AttachedTo.transform)
-            {
-                item.transform.SetParent(null, true);
-                AttachedTo.ProcessItemDetached(item);
-            }
-
-            item.Unfreeze();
-        }
-
-        private void handleItemAdded(ItemActor item)
-        {
-            item.Freeze();
-
-            // Make invisible
-            if (HideItems)
-            {
-                item.SetVisibility(false);
-            }
-
-            if(AttachedTo != null && AttachedTo.AttachItems)
-            {
-                Transform itemTransform = item.transform;
-                itemTransform.SetParent(AttachedTo.transform, false);
-                itemTransform.localPosition = AttachedTo.AttachmentOffset;
-               AttachedTo.ProcessItemAttached(item);
-            }
-        }
-
-        private void HandleContainerContentsChanged(Container container, IEnumerable<ItemActor> oldItems, IEnumerable<ItemActor> newItems, ContainerChangeType type)
-        {
-            switch (type)
-            {
-                case ContainerChangeType.Add:
-                    foreach (ItemActor item in newItems)
-                    {
-                        if (item == null)
-                        {
-                            continue;
-                        }
-
-                        handleItemAdded(item);
-                    }
-
-                    break;
-                case ContainerChangeType.Move:
-                    {
-                        foreach (ItemActor item in newItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                            handleItemAdded(item);
-                        }
-
-                        break;
-                    }
-                case ContainerChangeType.Remove:
-                    {
-                        foreach (ItemActor item in oldItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                        }
-
-                        break;
-                    }
-            }
         }
 
         public void InvokeOnContentChanged(ItemActor[] oldItems, ItemActor[] newItems, ContainerChangeType changeType)
