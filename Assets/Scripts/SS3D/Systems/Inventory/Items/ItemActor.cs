@@ -75,10 +75,9 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// The list of characteristics this Item has
         /// </summary>
-        [SyncObject]
-        private readonly SyncList<Trait> _traits;
+        private readonly List<Trait> _traits = new();
 
-        public ReadOnlyCollection<Trait> Traits => (ReadOnlyCollection<Trait>)_traits.Collection;
+        public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
 
         public Sprite Sprite
         {
@@ -116,7 +115,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.Awake();
             _traits.AddRange(_startingTraits);
-            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits.Collection);
+            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits);
 
             // Add a warning if an item is not on the Items layer (layer 10).
             // Not really needed any more because of the RequiredLayer attribute.
