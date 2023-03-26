@@ -13,6 +13,7 @@ using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    using Item = ItemActor.Item;
     [RequireComponent(typeof(Inventory))]
     public class Hands : InteractionSource, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
@@ -37,7 +38,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The item held in the active hand
         /// </summary>
-        public ItemActor ItemInHand => SelectedHandContainer.Items.FirstOrDefault().Actor;
+        public Item ItemInHand => SelectedHandContainer.Items.FirstOrDefault();
+            
+           
         /// <summary>
         /// The currently active hand
         /// </summary>
@@ -122,9 +125,9 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            ItemActor item = ItemInHand;
+            Item item = ItemInHand;
             item.Container = null;
-            ItemUtility.Place(item, position, rotation, transform);
+            ItemUtility.Place(item.Actor, position, rotation, transform);
         }
         
         private void HandleSwapHands(InputAction.CallbackContext context)
@@ -192,13 +195,13 @@ namespace SS3D.Systems.Inventory.Containers
         
         public IInteractionSource GetActiveTool()
         {
-            ItemActor itemInHand = ItemInHand;
+            Item itemInHand = ItemInHand;
             if (itemInHand == null)
             {
                 return null;
             }
 
-            IInteractionSource interactionSource = itemInHand.Prefab.GetComponent<IInteractionSource>();
+            IInteractionSource interactionSource = itemInHand.Actor.Prefab.GetComponent<IInteractionSource>();
             if (interactionSource != null)
             {
                 interactionSource.Source = this;

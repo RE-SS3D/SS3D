@@ -114,10 +114,10 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            ItemActor item = hands.ItemInHand;
+            ItemActor.Item item = hands.ItemInHand;
             if (item != null)
             {
-                InteractInHand(item.gameObject, gameObject);
+                InteractInHand(item.Actor.gameObject, gameObject);
             }
         }
 

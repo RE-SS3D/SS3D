@@ -63,7 +63,7 @@ namespace SS3D.Systems.Inventory.Items
         public Item GetItem => item ;
 
         public string Name => item.Name;
-        public ItemId ItemId => item.ItemId;
+        public ItemId ItemId { get; set; }
         public Vector2Int Size => item.Size;
 
         /// <summary>
@@ -112,8 +112,9 @@ namespace SS3D.Systems.Inventory.Items
             set => SetContainer(value, false, false);
         }
 
-        public void Awake()
+        public new void Awake()
         {
+            base.Awake();
             _traits.AddRange(_startingTraits);
             item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits.Collection);
 
@@ -161,11 +162,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">AssetDatabase's ItemId</param>
         public void SetId(ItemId id)
         {
-            if(item == null)
-            {
-                item = new Item();
-            }
-            item.ItemId = id;
+            ItemId = id;
         }
 
         /// <summary>
@@ -351,8 +348,6 @@ namespace SS3D.Systems.Inventory.Items
 
             public readonly ItemActor Actor; 
 
-            private ItemId _itemId;
-
             /// <summary>
             /// The item's name in the UI
             /// </summary>
@@ -384,28 +379,11 @@ namespace SS3D.Systems.Inventory.Items
 
             public Vector2Int Size => _size;
 
-            public ItemId ItemId
-            {
-                get => _itemId;
-                set => _itemId = value;
-            }
-
             public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
 
             public Item()
             {
 
-            }
-
-            public Item(ItemId itemId, string name, float weight, Vector2Int size, List<Trait> traits)
-            {
-                _itemId = itemId;
-                _name = name;
-                _weight = weight;
-                _size = size;
-                _traits = new List<Trait>();
-                _traits.AddRange(traits);
-                ValidateItem();
             }
 
             public Item(string name, float weight, Vector2Int size, List<Trait> traits)

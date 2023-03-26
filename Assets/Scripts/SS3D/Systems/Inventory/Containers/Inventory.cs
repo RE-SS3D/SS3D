@@ -161,7 +161,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item == null)
                 {
-                    ClientTransferItem(Hands.ItemInHand, position, container);
+                    ClientTransferItem(Hands.ItemInHand.Actor, position, container);
                 }
             }
         }

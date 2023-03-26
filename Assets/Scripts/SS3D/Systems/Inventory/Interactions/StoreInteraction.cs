@@ -61,7 +61,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                _attachedContainer.Container.AddItem(hands.ItemInHand.GetItem);
+                _attachedContainer.Container.AddItem(hands.ItemInHand);
                 return true;
             }
             return false;
