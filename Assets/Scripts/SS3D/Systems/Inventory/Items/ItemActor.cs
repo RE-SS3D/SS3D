@@ -63,7 +63,14 @@ namespace SS3D.Systems.Inventory.Items
         public string Name => item.Name;
         public ItemId ItemId => item.ItemId;
         public Vector2Int Size => item.Size;
-        public ReadOnlyCollection<Trait> Traits => item.Traits;
+
+        /// <summary>
+        /// The list of characteristics this Item has
+        /// </summary>
+        [SyncObject]
+        private readonly SyncList<Trait> _traits;
+
+        public ReadOnlyCollection<Trait> Traits => (ReadOnlyCollection<Trait>)_traits.Collection;
 
         public Sprite InventorySprite
         {
@@ -93,7 +100,8 @@ namespace SS3D.Systems.Inventory.Items
 
         public new void Awake()
         {
-            item = new Item(_startingName, _startingWeight, _startingSize, _startingTraits);
+            _traits.AddRange(_startingTraits);
+            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits.Collection);
 
             // Add a warning if an item is not on the Items layer (layer 10).
             // Not really needed any more because of the RequiredLayer attribute.
@@ -139,11 +147,6 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">AssetDatabase's ItemId</param>
         public void SetId(ItemId id)
         {
-            if (item == null)
-            {
-                item = new Item();
-            }
-
             item.ItemId = id;
         }
 
@@ -327,6 +330,9 @@ namespace SS3D.Systems.Inventory.Items
         #region Item
         public class Item
         {
+
+            public readonly ItemActor Actor; 
+
             private ItemId _itemId;
 
             /// <summary>
@@ -352,8 +358,7 @@ namespace SS3D.Systems.Inventory.Items
             /// <summary>
             /// The list of characteristics this Item has
             /// </summary>
-            [SyncObject]
-            private readonly SyncList<Trait> _traits = new();
+            private readonly List<Trait> _traits;
 
             /// <summary>
             /// The container the item is currently stored on
@@ -378,7 +383,7 @@ namespace SS3D.Systems.Inventory.Items
                 set => _sprite = value;
             }
 
-            public ReadOnlyCollection<Trait> Traits => ((List<Trait>)_traits.Collection).AsReadOnly();
+            public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
 
             public Item(ItemId itemId, string name, float weight, Vector2Int size, Sprite sprite, List<Trait> traits)
             {
@@ -387,8 +392,8 @@ namespace SS3D.Systems.Inventory.Items
                 _weight = weight;
                 _size = size;
                 _sprite = sprite;
+                _traits = new List<Trait>();
                 _traits.AddRange(traits);
-
                 ValidateItem();
             }
 
@@ -397,12 +402,18 @@ namespace SS3D.Systems.Inventory.Items
                 _name = name;
                 _weight = weight;
                 _size = size;
+                _traits = new List<Trait>();
                 _traits.AddRange(traits);
                 ValidateItem();
             }
 
-            public Item()
+            public Item(ItemActor actor, string name, float weight, Vector2Int size, List<Trait> initialTraits)
             {
+                Actor = actor;
+                _name = name;
+                _weight = weight;
+                _size = size;
+                _traits = initialTraits;
                 ValidateItem();
             }
 
