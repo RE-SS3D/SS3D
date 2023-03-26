@@ -23,7 +23,7 @@ jobs:
         with:
           severity: error
           details: Test runner failed!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_TEST_RESULTS }}
       - name: Upload test results
         uses: actions/upload-artifact@v2
         if: always()
