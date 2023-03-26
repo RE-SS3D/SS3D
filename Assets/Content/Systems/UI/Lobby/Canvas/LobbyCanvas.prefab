@@ -2201,7 +2201,7 @@ GameObject:
   - component: {fileID: 3736358311423732342}
   - component: {fileID: 3736358311423732345}
   - component: {fileID: 3736358311423732340}
-  m_Layer: 5
+  m_Layer: 11
   m_Name: Chat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
