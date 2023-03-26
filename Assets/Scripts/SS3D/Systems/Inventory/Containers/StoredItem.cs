@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    using Item = ItemActor.Item;
     public readonly struct StoredItem : IEquatable<StoredItem>
     {
-        public readonly ItemActor Item;
+        public readonly Item Item;
         public readonly Vector2Int Position;
         public readonly bool IsExcludedOfFreeAreaComputation;
 
-        public StoredItem(ItemActor item, Vector2Int position, bool isExcludedOfFreeAreaComputation = false)
+        public StoredItem(Item item, Vector2Int position, bool isExcludedOfFreeAreaComputation = false)
         {
             Item = item;
             Position = position;

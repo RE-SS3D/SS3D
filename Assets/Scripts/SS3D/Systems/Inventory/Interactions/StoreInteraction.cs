@@ -52,7 +52,7 @@ namespace SS3D.Systems.Inventory.Interactions
         private bool CanStore(ItemActor item, AttachedContainer target)
         {
             Container container = target.Container;
-            return container.CanStoreItem(item) && container.CanHoldItem(item);
+            return container.CanStoreItem(item.GetItem) && container.CanHoldItem(item.GetItem);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
@@ -61,7 +61,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                _attachedContainer.Container.AddItem(hands.ItemInHand);
+                _attachedContainer.Container.AddItem(hands.ItemInHand.GetItem);
                 return true;
             }
             return false;

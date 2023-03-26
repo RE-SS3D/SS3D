@@ -37,7 +37,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The item held in the active hand
         /// </summary>
-        public ItemActor ItemInHand => SelectedHandContainer.Items.FirstOrDefault();
+        public ItemActor ItemInHand => SelectedHandContainer.Items.FirstOrDefault().Actor;
         /// <summary>
         /// The currently active hand
         /// </summary>
@@ -89,10 +89,10 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (item.Container != SelectedHandContainer && item.Container != null)
             {
-                item.Container.RemoveItem(item);
+                item.Container.RemoveItem(item.GetItem);
             }
 
-            SelectedHandContainer.AddItem(item);
+            SelectedHandContainer.AddItem(item.GetItem);
         }
 
         public bool IsEmpty()

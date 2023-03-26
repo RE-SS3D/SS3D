@@ -111,7 +111,7 @@ namespace SS3D.Systems.Inventory.Items
 
             ItemActor itemInstance = Instantiate(itemPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(itemInstance.GameObject);
-            attachedContainer.Container.AddItem(itemInstance);
+            attachedContainer.Container.AddItem(itemInstance.GetItem);
 
             Punpun.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
             return itemInstance;

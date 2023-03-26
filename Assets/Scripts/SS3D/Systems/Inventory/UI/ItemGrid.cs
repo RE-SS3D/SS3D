@@ -72,10 +72,9 @@ namespace SS3D.Systems.Inventory.UI
         {
             // For some reason, has to be delayed to end of frame to work.
             yield return new WaitForEndOfFrame();
-            Container container = AttachedContainer.Container;
-            foreach (ItemActor item in container.Items)
+            foreach (ItemActor item in AttachedContainer.Items)
             {
-                Vector2Int position = container.PositionOf(item);
+                Vector2Int position = AttachedContainer.Container.PositionOf(item.GetItem);
                 CreateItemDisplay(item, position);
             }
         }
@@ -91,7 +90,7 @@ namespace SS3D.Systems.Inventory.UI
                 case ContainerChangeType.Add:
                     foreach (ItemActor item in newItems)
                     {
-                        Vector2Int position = container.PositionOf(item);
+                        Vector2Int position = container.PositionOf(item.GetItem);
                         CreateItemDisplay(item, position);
                     }
                     break;
@@ -119,7 +118,7 @@ namespace SS3D.Systems.Inventory.UI
                         {
                             if (gridItem.Item == item)
                             {
-                                Vector2Int position = container.PositionOf(item);
+                                Vector2Int position = container.PositionOf(item.GetItem);
                                 MoveToSlot(gridItem.transform, position);
                                 break;
                             }
@@ -211,7 +210,7 @@ namespace SS3D.Systems.Inventory.UI
             Vector2Int slot = new( Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
             
             // Check if the area of drop is free, if not, don't transfer.
-            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item))
+            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item.GetItem))
             {
                 return;
             }
@@ -260,7 +259,7 @@ namespace SS3D.Systems.Inventory.UI
 		{
 			Vector2Int slotPosition = GetSlotPosition(Mouse.current.position.ReadValue());
 			Container container = AttachedContainer.Container;
-			return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).gameObject;
+			return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).Actor.gameObject;
 		}
 		
     }

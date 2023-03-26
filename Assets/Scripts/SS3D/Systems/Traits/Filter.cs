@@ -4,6 +4,7 @@ using SS3D.Systems.Inventory.Items;
 
 namespace SS3D.Systems
 {
+    using Item = ItemActor.Item;
     /// <summary>
     /// An inventory filter that only allows items with certain traits
     /// </summary>
@@ -14,7 +15,7 @@ namespace SS3D.Systems
         public List<Trait> acceptedTraits;
         public List<Trait> deniedTraits;
 
-        public bool CanStore(ItemActor item)
+        public bool CanStore(Item item)
         {
             int traitCount = 0;
             if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)

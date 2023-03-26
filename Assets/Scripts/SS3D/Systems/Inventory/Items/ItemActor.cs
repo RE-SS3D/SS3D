@@ -60,9 +60,17 @@ namespace SS3D.Systems.Inventory.Items
 
         private Item item;
 
+        public Item GetItem => item ;
+
         public string Name => item.Name;
         public ItemId ItemId => item.ItemId;
         public Vector2Int Size => item.Size;
+
+        /// <summary>
+        /// The sprite that is shown in the container slot
+        /// </summary>
+        private Sprite _sprite;
+
 
         /// <summary>
         /// The list of characteristics this Item has
@@ -72,16 +80,22 @@ namespace SS3D.Systems.Inventory.Items
 
         public ReadOnlyCollection<Trait> Traits => (ReadOnlyCollection<Trait>)_traits.Collection;
 
+        public Sprite Sprite
+        {
+            get => _sprite;
+            set => _sprite = value;
+        }
+
         public Sprite InventorySprite
         {
             get
             {
-                if (item.Sprite == null)
+                if (Sprite == null)
                 {
                     GenerateNewIcon();
                 }
 
-                return item.Sprite;
+                return Sprite;
             }
         }
 
@@ -98,7 +112,7 @@ namespace SS3D.Systems.Inventory.Items
             set => SetContainer(value, false, false);
         }
 
-        public new void Awake()
+        public void Awake()
         {
             _traits.AddRange(_startingTraits);
             item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits.Collection);
@@ -147,6 +161,10 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">AssetDatabase's ItemId</param>
         public void SetId(ItemId id)
         {
+            if(item == null)
+            {
+                item = new Item();
+            }
             item.ItemId = id;
         }
 
@@ -270,12 +288,12 @@ namespace SS3D.Systems.Inventory.Items
 
             if (Container != null)
             {
-                Container.RemoveItem(this);
+                Container.RemoveItem(this.GetItem);
             }
 
             if (!alreadyAdded && newContainer != null)
             {
-                newContainer.AddItem(this);
+                newContainer.AddItem(this.GetItem);
             }
 
             item.Container = newContainer;
@@ -316,8 +334,8 @@ namespace SS3D.Systems.Inventory.Items
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
             Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
-                item.Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-                item.Sprite.name = transform.name;
+                Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                Sprite.name = transform.name;
             }
             catch (NullReferenceException)
             {
@@ -351,11 +369,6 @@ namespace SS3D.Systems.Inventory.Items
             private Vector2Int _size;
 
             /// <summary>
-            /// The sprite that is shown in the container slot
-            /// </summary>
-            private Sprite _sprite;
-
-            /// <summary>
             /// The list of characteristics this Item has
             /// </summary>
             private readonly List<Trait> _traits;
@@ -377,21 +390,19 @@ namespace SS3D.Systems.Inventory.Items
                 set => _itemId = value;
             }
 
-            public Sprite Sprite
-            {
-                get => _sprite;
-                set => _sprite = value;
-            }
-
             public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
 
-            public Item(ItemId itemId, string name, float weight, Vector2Int size, Sprite sprite, List<Trait> traits)
+            public Item()
+            {
+
+            }
+
+            public Item(ItemId itemId, string name, float weight, Vector2Int size, List<Trait> traits)
             {
                 _itemId = itemId;
                 _name = name;
                 _weight = weight;
                 _size = size;
-                _sprite = sprite;
                 _traits = new List<Trait>();
                 _traits.AddRange(traits);
                 ValidateItem();
@@ -448,6 +459,41 @@ namespace SS3D.Systems.Inventory.Items
                 {
                     _size = new Vector2Int(_size.x, 1);
                 }
+            }
+
+            public void Delete()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetContainerUnchecked(Container container)
+            {
+                throw new NotImplementedException();
+            }
+
+            [Server]
+            public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
+            {
+                if (Container == newContainer)
+                {
+                    return;
+                }
+
+                if (Container != null)
+                {
+                    Container.RemoveItem(this);
+                }
+
+                if (!alreadyAdded && newContainer != null)
+                {
+                    newContainer.AddItem(this);
+                }
+
+                Container = newContainer;
+
+                if(Actor != null)
+                    Actor.RpcSetContainer(newContainer);
+
             }
         }
         #endregion

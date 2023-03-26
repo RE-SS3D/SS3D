@@ -149,7 +149,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
-        public IEnumerable<ItemActor> Items => StoredItems.Select(x => x.Item);
+        public IEnumerable<ItemActor> Items => StoredItems.Select(x => x.Item.Actor);
 
         public SyncList<StoredItem> StoredItems => _storedItems;
 
@@ -243,7 +243,7 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
+            _container.InvokeOnContentChanged(new[] { oldItem.Item.Actor }, new[] { newItem.Item.Actor }, changeType);
         }
 
         private void handleItemRemoved(ItemActor item)

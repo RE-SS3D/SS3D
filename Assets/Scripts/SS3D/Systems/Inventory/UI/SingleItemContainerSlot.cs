@@ -50,7 +50,7 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            if (!_container.Container.CanContainItem(display.Item))
+            if (!_container.Container.CanContainItem(display.Item.GetItem))
             {
                 return;
             }
@@ -65,7 +65,7 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         private void UpdateDisplay()
         {
-            ItemDisplay.Item = _container.Container.Items.FirstOrDefault();
+            ItemDisplay.Item = _container.Container.Items.FirstOrDefault().Actor;
         }
 
         /// <summary>

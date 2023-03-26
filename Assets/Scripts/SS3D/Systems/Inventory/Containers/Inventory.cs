@@ -17,6 +17,7 @@ using System.Collections;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    using Item = ItemActor.Item;
     /// <summary>
     /// This is the basic inventory system. Any inventory-capable creature should have this component.
     /// The basic inventory system has to handle:
@@ -146,13 +147,13 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            ItemActor item = container.Container.ItemAt(position);
+            Item item = container.Container.ItemAt(position);
             // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
             if (Hands.SelectedHandEmpty)
             {
                 if (item != null)
                 {
-                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand);
+                    ClientTransferItem(item.Actor, Vector2Int.zero, Hands.SelectedHand);
                 }
             }
             // If selected hand has an item and there's no item on the slot in the container, transfer it to container slot.
@@ -228,8 +229,8 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            itemContainer.RemoveItem(item);
-            container.Container.AddItemPosition(item, position);
+            itemContainer.RemoveItem(item.GetItem);
+            container.Container.AddItemPosition(item.GetItem, position);
         }
 
         /// <summary>

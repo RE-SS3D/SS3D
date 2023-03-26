@@ -13,6 +13,7 @@ using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    using Item = ItemActor.Item;
     /// <summary>
     /// Stores items in a 2 dimensional container. 
     /// This class is handling the logic part of storing items. 
@@ -67,7 +68,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
-        public IEnumerable<ItemActor> Items => StoredItems.Select(x => x.Item);
+        public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
         /// <summary>
         /// The creatures looking at this container
@@ -124,7 +125,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to place</param>
         /// <returns>If the item was added</returns>
-        public bool AddItem(ItemActor item)
+        public bool AddItem(Item item)
         {
             if (ContainsItem(item))
             {
@@ -162,7 +163,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <param name="storedItem">The item to add</param>
         /// <param name="position">The target position in the container</param>
         /// <returns>If the item was added</returns>
-        public bool AddItemPosition(ItemActor item, Vector2Int position)
+        public bool AddItemPosition(Item item, Vector2Int position)
         {
             int itemIndex = FindItem(item);
             if (itemIndex != -1)
@@ -216,7 +217,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to add</param>
         /// <param name="position">Where the item should go, make sure this position is valid and free!</param>
-        private void AddItemUnchecked(ItemActor item, Vector2Int position)
+        private void AddItemUnchecked(Item item, Vector2Int position)
         {
             StoredItem newItem = new(item, position);
 
@@ -348,7 +349,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <param name="area">The area to check</param>
         /// <param name="item">The item to exclude from the check</param>
         /// <returns>If the given area is free</returns>
-        public bool IsAreaFreeExcluding(RectInt area, ItemActor item)
+        public bool IsAreaFreeExcluding(RectInt area, Item item)
         {
             int itemIndex = FindItem(item);
             StoredItem storedItem = default;
@@ -373,7 +374,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Removes an item from the container
         /// </summary>
         /// <param name="item">The item to remove</param>
-        public void RemoveItem(ItemActor item)
+        public void RemoveItem(Item item)
         {
             for (int i = 0; i < StoredItems.Count; i++)
             {
@@ -421,7 +422,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="position">The position to check</param>
         /// <returns>The item at the position, or null if there is none</returns>
-        public ItemActor ItemAt(Vector2Int position)
+        public Item ItemAt(Vector2Int position)
         {
             foreach (StoredItem storedItem in StoredItems)
             {
@@ -440,7 +441,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to look for</param>
         /// <returns>The item's position or (-1, -1)</returns>
-        public Vector2Int PositionOf(ItemActor item)
+        public Vector2Int PositionOf(Item item)
         {
             foreach (StoredItem storedItem in StoredItems)
             {
@@ -470,7 +471,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void Dump()
         {
-            ItemActor[] oldItems = StoredItems.Select(x => x.Item).ToArray();
+            Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
             for (int i = 0; i < oldItems.Length; i++)
             {
                 oldItems[i].Container = null;
@@ -509,7 +510,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to search for</param>
         /// <returns>If it is in this container</returns>
-        public bool ContainsItem(ItemActor item)
+        public bool ContainsItem(Item item)
         {
             foreach (StoredItem storedItem in StoredItems)
             {
@@ -527,13 +528,8 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CanStoreItem(ItemActor item)
+        public bool CanStoreItem(Item item)
         {
-            // Do not store if the item is the container itself
-            if (AttachedTo.GetComponent<ItemActor>() == item)
-            {
-                return false;
-            }
 
             Filter filter = AttachedTo.StartFilter;
             if (filter != null)
@@ -549,7 +545,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CanHoldItem(ItemActor item)
+        public bool CanHoldItem(Item item)
         {
             Vector2Int itemSize = item.Size;
             int maxX = Size.x - itemSize.x;
@@ -575,7 +571,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CanContainItem(ItemActor item)
+        public bool CanContainItem(Item item)
         {
             return (CanStoreItem(item) && CanHoldItem(item));
         }
@@ -585,7 +581,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to look for</param>
         /// <returns>The index of the item or -1 if not found</returns>
-        public int FindItem(ItemActor item)
+        public int FindItem(Item item)
         {
             for (int i = 0; i < StoredItems.Count; i++)
             {
