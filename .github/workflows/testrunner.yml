@@ -1,6 +1,6 @@
 #https://game.ci/docs/github/test-runner
 name: Run Tests
-on: [pull_request]
+on: [push, workflow_dispatch]
 jobs:
   run_tests:
     name: Run tests
