@@ -445,7 +445,7 @@ namespace SS3D.Systems.Inventory.Items
 
             public void SetContainerUnchecked(Container container)
             {
-                throw new NotImplementedException();
+                _container = null;
             }
 
             [Server]
