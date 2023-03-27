@@ -9,7 +9,7 @@ namespace SS3D.Systems
     public class Trait : ScriptableObject
     {
         // Hash used for identification
-        protected int hash;
+        public int hash;
         public int Hash
         {
             get
@@ -32,7 +32,7 @@ namespace SS3D.Systems
         }
 
         // Categories, used for checking specific types of Traits
-        protected TraitCategories _category;
+        public TraitCategories _category;
         public TraitCategories Category
         {
             get => _category;

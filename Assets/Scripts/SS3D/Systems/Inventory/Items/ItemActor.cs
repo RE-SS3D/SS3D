@@ -75,12 +75,13 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// The list of characteristics this Item has
         /// </summary>
-        private readonly List<Trait> _traits = new();
+        [SyncObject]
+        private readonly SyncList<Trait> _traits = new();
 
         [SyncVar]
-        public Container container;
+        private Container _container;
 
-        public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
+        public ReadOnlyCollection<Trait> Traits => ((List<Trait>)_traits.Collection).AsReadOnly();
 
         public Sprite Sprite
         {
@@ -101,19 +102,19 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
 
-        /// <summary>
-        /// The stack of this item, can be null
-        /// </summary>
-        // public Stackable Stack => stack ? stack : stack = GetComponent<Stackable>();
-        /// <summary>
-        /// The container this item is in
-        /// </summary>
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            _traits.AddRange(_startingTraits);
+        }
+
 
         public new void Awake()
         {
             base.Awake();
-            _traits.AddRange(_startingTraits);
-            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits, ref container);
+
+            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>)_traits.Collection, ref _container);
 
             // Add a warning if an item is not on the Items layer (layer 10).
             // Not really needed any more because of the RequiredLayer attribute.
@@ -154,6 +155,17 @@ namespace SS3D.Systems.Inventory.Items
             if (Input.GetKeyDown(KeyCode.L))
             {
                 Debug.Log(item.Describe());
+            }
+
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                if (IsServer)
+                {
+                    Trait trait = (Trait)ScriptableObject.CreateInstance("Trait");
+                    trait.Name = "coco";
+                    item.AddTrait(trait);
+                }
+                   
             }
         }
 
@@ -236,11 +248,6 @@ namespace SS3D.Systems.Inventory.Items
             // TODO: Make this handle multiple renderers
             Renderer component = GetComponent<Renderer>();
             return component != null && component.enabled;
-        }
-
-        private new void OnDestroy()
-        {
-            item.SetContainer(null);
         }
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -391,6 +398,18 @@ namespace SS3D.Systems.Inventory.Items
                 return _traits.Contains(trait);
             }
 
+            public void AddTrait(Trait trait)
+            {
+                if(Actor != null) Actor._traits.Add(trait);
+                else _traits.Add(trait);
+            }
+
+            public void RemoveTraits(Trait trait)
+            {
+                if (Actor != null) Actor._traits.Add(trait);
+                else _traits.Remove(trait);
+            }
+
             /// <summary>
             /// Validates the Item's properties
             /// </summary>
@@ -449,7 +468,12 @@ namespace SS3D.Systems.Inventory.Items
 
             public string Describe()
             {
-                return $"{_name}, size = {_size}, weight = {_weight}, container is {Container?.ContainerName}";
+                string traits = "";
+                foreach(var trait in _traits)
+                {
+                    traits += trait.Name + " ";
+                }
+                return $"{_name}, size = {_size}, weight = {_weight}, traits = {traits}, container is {Container?.ContainerName}";
             }
         }
 
