@@ -105,11 +105,6 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// The container this item is in
         /// </summary>
-        public Container Container
-        {
-            get => item.Container;
-            set => SetContainer(value, false, false);
-        }
 
         public new void Awake()
         {
@@ -169,7 +164,7 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         public void Delete()
         {
-            Container = null;
+            item.SetContainer(null);
 
             if (GameObject != null)
             {
@@ -238,7 +233,7 @@ namespace SS3D.Systems.Inventory.Items
 
         private new void OnDestroy()
         {
-            Container = null;
+            item.SetContainer(null);
         }
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -274,29 +269,6 @@ namespace SS3D.Systems.Inventory.Items
             return item.HasTrait(trait);
         }
 
-        [Server]
-        public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
-        {
-            if (Container == newContainer)
-            {
-                return;
-            }
-
-            if (Container != null)
-            {
-                Container.RemoveItem(this.GetItem);
-            }
-
-            if (!alreadyAdded && newContainer != null)
-            {
-                newContainer.AddItem(this.GetItem);
-            }
-
-            item.Container = newContainer;
-            RpcSetContainer(newContainer);
-            
-        }
-
         // It could become an issue that only observers see the container updated...
         [ObserversRpc]
         private void RpcSetContainer(Container newContainer)
@@ -306,16 +278,7 @@ namespace SS3D.Systems.Inventory.Items
                 return;
             }
 
-            item.Container = newContainer;
-        }
-
-        /// <summary>
-        /// Simply sets the container variable of this item, without doing anything
-        /// <remarks>Make sure the item is only listed in the new container, or weird bugs will occur</remarks>
-        /// </summary>
-        public void SetContainerUnchecked(Container newContainer)
-        {
-            Container = newContainer;
+            item.SetContainer(newContainer);
         }
 
         // TODO: Improve this
@@ -408,7 +371,6 @@ namespace SS3D.Systems.Inventory.Items
             public Container Container
             {
                 get => _container;
-                set => _container = value;
             }
 
             public bool IsOnContainer()
@@ -443,33 +405,28 @@ namespace SS3D.Systems.Inventory.Items
                 throw new NotImplementedException();
             }
 
-            public void SetContainerUnchecked(Container container)
-            {
-                _container = null;
-            }
-
             [Server]
-            public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
+            public void SetContainer(Container newContainer)
             {
                 if (Container == newContainer)
                 {
                     return;
                 }
 
-                if (Container != null)
+                if (Container != null && Container.ContainsItem(this))
                 {
                     Container.RemoveItem(this);
                 }
 
-                if (!alreadyAdded && newContainer != null)
+                if (newContainer != null && !newContainer.ContainsItem(this))
                 {
                     newContainer.AddItem(this);
                 }
 
-                Container = newContainer;
+                _container = newContainer;
 
-                if(Actor != null)
-                    Actor.RpcSetContainer(newContainer);
+                //if(Actor != null)
+                //    Actor.RpcSetContainer(newContainer);
 
             }
         }

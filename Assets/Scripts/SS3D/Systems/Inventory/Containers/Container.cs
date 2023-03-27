@@ -207,7 +207,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
 
-            item.SetContainer(this, true, false);
+            item.SetContainer(this);
 
             return true;
         }
@@ -463,7 +463,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             LastModification = Time.time;
-            storedItem.Item.SetContainerUnchecked(null);
+            storedItem.Item.SetContainer(null);
         }
 
         /// <summary>
@@ -474,7 +474,7 @@ namespace SS3D.Systems.Inventory.Containers
             Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
             for (int i = 0; i < oldItems.Length; i++)
             {
-                oldItems[i].Container = null;
+                oldItems[i].SetContainer(null);
             }
             StoredItems.Clear();
 

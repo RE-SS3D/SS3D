@@ -200,7 +200,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Container itemContainer = item.Container;
+            Container itemContainer = item.GetItem.Container;
             if (itemContainer == null)
             {
                 return;
@@ -289,7 +289,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            AttachedContainer attachedTo = item.Container?.AttachedTo;
+            AttachedContainer attachedTo = item.GetItem.Container?.AttachedTo;
             if (attachedTo == null)
             {
                 return;
@@ -300,7 +300,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            item.Container = null;
+            item.GetItem.SetContainer(null);
         }
 
         [TargetRpc]

@@ -90,9 +90,9 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            if (item.Container != SelectedHandContainer && item.Container != null)
+            if (item.GetItem.Container != SelectedHandContainer && item.GetItem.Container != null)
             {
-                item.Container.RemoveItem(item.GetItem);
+                item.GetItem.Container.RemoveItem(item.GetItem);
             }
 
             SelectedHandContainer.AddItem(item.GetItem);
@@ -126,7 +126,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Item item = ItemInHand;
-            item.Actor.Container = null;
+            item.SetContainer(null);
             ItemUtility.Place(item.Actor, position, rotation, transform);
         }
         
