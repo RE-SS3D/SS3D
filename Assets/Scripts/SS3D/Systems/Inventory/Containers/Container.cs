@@ -445,7 +445,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             foreach (StoredItem storedItem in StoredItems)
             {
-                if (storedItem.Item == item)
+                if (storedItem.Item.Equals(item))
                 {
                     return storedItem.Position;
                 }

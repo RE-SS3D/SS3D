@@ -429,6 +429,15 @@ namespace SS3D.Systems.Inventory.Items
                 //    Actor.RpcSetContainer(newContainer);
 
             }
+
+            public override bool Equals(object obj)
+            {
+                if(obj is Item item)
+                {
+                    return item.Actor == Actor;
+                }
+                return false;
+            }
         }
         #endregion
 
