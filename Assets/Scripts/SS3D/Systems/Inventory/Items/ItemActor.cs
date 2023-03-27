@@ -258,7 +258,7 @@ namespace SS3D.Systems.Inventory.Items
         /// Checks if the item is currently stored in a container
         /// </summary>
         /// <returns></returns>
-        public bool InOnContainer()
+        public bool ISOnContainer()
         {
             return item.IsOnContainer();
         }
@@ -282,7 +282,7 @@ namespace SS3D.Systems.Inventory.Items
                 return;
             }
 
-            item.SetContainer(newContainer);
+            item._container = newContainer;
         }
 
         // TODO: Improve this
@@ -337,7 +337,7 @@ namespace SS3D.Systems.Inventory.Items
             /// <summary>
             /// The container the item is currently stored on
             /// </summary>
-            private Container _container;
+            public Container _container;
 
             public string Name => _name;
 
@@ -429,8 +429,8 @@ namespace SS3D.Systems.Inventory.Items
 
                 _container = newContainer;
 
-                //if(Actor != null)
-                //    Actor.RpcSetContainer(newContainer);
+                if(Actor != null)
+                    Actor.RpcSetContainer(newContainer);
 
             }
 
