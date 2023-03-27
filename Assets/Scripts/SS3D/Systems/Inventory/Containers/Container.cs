@@ -116,7 +116,8 @@ namespace SS3D.Systems.Inventory.Containers
             _type = attachedContainer.Type;
             _hideItems = attachedContainer.HideItems;
             _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
-            _startFilter= attachedContainer.StartFilter;
+            _startFilter = attachedContainer.StartFilter;
+            _containerName = attachedContainer.ContainerName;
         }
 
 
@@ -514,7 +515,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             foreach (StoredItem storedItem in StoredItems)
             {
-                if (storedItem.Item == item)
+                if (storedItem.Item.Equals(item))
                 {
                     return true;
                 }
