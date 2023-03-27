@@ -126,7 +126,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Item item = ItemInHand;
-            item.Container = null;
+            item.Actor.Container = null;
             ItemUtility.Place(item.Actor, position, rotation, transform);
         }
         
