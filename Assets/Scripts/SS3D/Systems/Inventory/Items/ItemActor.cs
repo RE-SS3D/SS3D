@@ -148,6 +148,10 @@ namespace SS3D.Systems.Inventory.Items
                     Punpun.Debug(this, $"Item {Name} has trait {trait.Name}");
                 }
             }
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                Debug.Log(item.Describe());
+            }
         }
 
         /// <summary>
@@ -438,7 +442,13 @@ namespace SS3D.Systems.Inventory.Items
                 }
                 return false;
             }
+
+            public string Describe()
+            {
+                return $"{_name}, size = {_size}, weight = {_weight}, container is {Container?.ContainerName}";
+            }
         }
+
         #endregion
 
         #region Editor
