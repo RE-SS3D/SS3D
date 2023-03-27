@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Coimbra;
 using NUnit.Framework;
 using SS3D.Data.AssetDatabases;
 using UnityEngine;
 
-namespace EditorTests
+namespace AssetAudit
 {
     public class AssetDataTests
     {
@@ -18,17 +17,12 @@ namespace EditorTests
         }
 
         /// <summary>
-        /// Test to confirm all databases are not null.
+        /// Test to confirm all included asset databases are not null.
         /// </summary>
-        [Test]
-        public void IncludedAssetDatabasesAreNotNull()
+        [Test, TestCaseSource(nameof(AllAssetDatabases))]
+        public void IncludedAssetDatabasesAreNotNull(AssetDatabase database)
         {
-            List<AssetDatabase> databases = _assetDatabaseSettings.IncludedAssetDatabases;
-
-            bool allDatabasesAreNotNull = databases.All(database => database != null);
-            bool databasesAreEmpty = databases.Count == 0;
-
-            Assert.IsTrue(allDatabasesAreNotNull && !databasesAreEmpty);
+            Assert.IsTrue(database != null);
         }
 
         /// <summary>
@@ -80,31 +74,26 @@ namespace EditorTests
         /// <summary>
         /// Test to see if there is any null references on any database assets.
         /// </summary>
-        [Test] 
-        public void IncludedAssetDatabasesDoNotContainNullObjects()
+        [Test, TestCaseSource(nameof(AllAssetDatabases))]
+        public void IncludedAssetDatabasesDoNotContainNullObjects(AssetDatabase assetDatabase)
         {
-            List<AssetDatabase> loadedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
-
             bool hasNullAssets = false;
             Dictionary<AssetDatabase, List<int>> assetDatabasesNullRefIndexes = new();
 
-            foreach (AssetDatabase assetDatabase in loadedAssetDatabases)
+            for (int index = 0; index < assetDatabase.Assets.Count; index++)
             {
-                for (int index = 0; index < assetDatabase.Assets.Count; index++)
+                Object asset = assetDatabase.Assets[index];
+
+                if (asset != null)
                 {
-                    Object asset = assetDatabase.Assets[index];
-
-                    if (asset != null)
-                    {
-                        continue;
-                    }
-
-                    hasNullAssets = true;
-                    assetDatabasesNullRefIndexes.Add(assetDatabase, new List<int>());
-
-                    assetDatabasesNullRefIndexes.TryGetValue(assetDatabase, out List<int> assetIndexes);
-                    assetIndexes!.Add(index);
+                    continue;
                 }
+
+                hasNullAssets = true;
+                assetDatabasesNullRefIndexes.Add(assetDatabase, new List<int>());
+
+                assetDatabasesNullRefIndexes.TryGetValue(assetDatabase, out List<int> assetIndexes);
+                assetIndexes!.Add(index);
             }
 
             if (hasNullAssets)
@@ -135,6 +124,11 @@ namespace EditorTests
                     Debug.Log($"Asset is null on {assetDatabase.name} at index {assetIndex}");
                 }
             }
+        }
+
+        public static List<AssetDatabase> AllAssetDatabases()
+        {
+            return ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
         }
     }
 }
