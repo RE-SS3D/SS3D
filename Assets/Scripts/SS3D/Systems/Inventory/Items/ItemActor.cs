@@ -77,6 +77,9 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         private readonly List<Trait> _traits = new();
 
+        [SyncVar]
+        public Container container;
+
         public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
 
         public Sprite Sprite
@@ -110,7 +113,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.Awake();
             _traits.AddRange(_startingTraits);
-            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits);
+            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>) _traits, ref container);
 
             // Add a warning if an item is not on the Items layer (layer 10).
             // Not really needed any more because of the RequiredLayer attribute.
@@ -362,13 +365,14 @@ namespace SS3D.Systems.Inventory.Items
                 ValidateItem();
             }
 
-            public Item(ItemActor actor, string name, float weight, Vector2Int size, List<Trait> initialTraits)
+            public Item(ItemActor actor, string name, float weight, Vector2Int size, List<Trait> initialTraits, ref Container container)
             {
                 Actor = actor;
                 _name = name;
                 _weight = weight;
                 _size = size;
                 _traits = initialTraits;
+                _container = container;
                 ValidateItem();
             }
 
