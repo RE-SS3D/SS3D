@@ -14,6 +14,7 @@ using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
+    /// Say no to drugs kids
     /// Stores items in a 2 dimensional container. 
     /// This class is handling the logic part of storing items. 
     /// It checks if items can be added, removed, replace, and does it when possible. 
