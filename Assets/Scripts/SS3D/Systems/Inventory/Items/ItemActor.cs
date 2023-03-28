@@ -49,6 +49,10 @@ namespace SS3D.Systems.Inventory.Items
 
         [SerializeField] private Rigidbody _rigidbody;
 
+        private Sprite _sprite;
+
+        private Item _item;
+
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
 
@@ -60,20 +64,6 @@ namespace SS3D.Systems.Inventory.Items
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
 
-        private Item item;
-
-        public Item GetItem => item ;
-
-        public string Name => item.Name;
-        public ItemId ItemId { get; set; }
-        public Vector2Int Size => item.Size;
-
-        /// <summary>
-        /// The sprite that is shown in the container slot
-        /// </summary>
-        private Sprite _sprite;
-
-
         /// <summary>
         /// The list of characteristics this Item has
         /// </summary>
@@ -83,45 +73,26 @@ namespace SS3D.Systems.Inventory.Items
         [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(OnContainerSync))]
         private Container _container;
 
-        public ReadOnlyCollection<Trait> Traits => ((List<Trait>)_traits.Collection).AsReadOnly();
+        public Item GetItem => _item;
 
+        public string Name => _item.Name;
+        public ItemId ItemId { get; set; }
+        public Vector2Int Size => _item.Size;
+        public ReadOnlyCollection<Trait> Traits => _item.Traits;
+
+        /// <summary>
+        /// The sprite that is shown in the container slot
+        /// </summary>
         public Sprite Sprite
         {
-            get => _sprite;
+            get => InventorySprite();
             set => _sprite = value;
         }
-
-        public Sprite InventorySprite
-        {
-            get
-            {
-                if (Sprite == null)
-                {
-                    GenerateNewIcon();
-                }
-
-                return Sprite;
-            }
-        }
-
-
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-            _traits.AddRange(_startingTraits);
-        }
-
-        private void OnContainerSync(Container prev, Container next, bool asServer)
-        {
-            if (asServer || IsHost) return;
-            item._container = next;
-        }
-
 
         public new void Awake()
         {
             base.Awake();
-            item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>)_traits.Collection, ref _container);
+            _item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>)_traits.Collection, ref _container);
         }
 
         protected override void OnStart()
@@ -140,13 +111,24 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
 
-        /// <summary>
-        /// Changes the item actor's item id
-        /// </summary>
-        /// <param name="id">AssetDatabase's ItemId</param>
-        public void SetId(ItemId id)
+        public override void OnStartServer()
         {
-            ItemId = id;
+            base.OnStartServer();
+            _traits.AddRange(_startingTraits);
+        }
+
+
+
+        public Sprite InventorySprite()
+        {
+            return _sprite == null ? GenerateNewIcon() : Sprite;
+        }
+
+
+        private void OnContainerSync(Container prev, Container next, bool asServer)
+        {
+            if (asServer || IsHost) return;
+            _item.UnsafeSetContainer(next);
         }
 
         /// <summary>
@@ -154,7 +136,7 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         public void Delete()
         {
-            item.SetContainer(null);
+            _item.SetContainer(null);
 
             if (GameObject != null)
             {
@@ -241,7 +223,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <returns></returns>
         public bool ISOnContainer()
         {
-            return item.IsOnContainer();
+            return _item.IsOnContainer();
         }
 
         /// <summary>
@@ -251,19 +233,19 @@ namespace SS3D.Systems.Inventory.Items
         /// <returns></returns>
         public bool HasTrait(Trait trait)
         {
-            return item.HasTrait(trait);
+            return _item.HasTrait(trait);
         }
 
         [Server]
         public void SetContainer(Container newContainer)
         {
-            item.SetContainer(newContainer);
+            _item.SetContainer(newContainer);
         }
 
         // TODO: Improve this
         // we have this to generate icons at start, I do not know how bad it is for performance
         // if you know anything about it, tell us
-        public void GenerateNewIcon()
+        public Sprite GenerateNewIcon()
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
@@ -272,12 +254,14 @@ namespace SS3D.Systems.Inventory.Items
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
             Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
-                Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-                Sprite.name = transform.name;
+                var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                sprite.name = transform.name;
+                return sprite;
             }
             catch (NullReferenceException)
             {
                 Debug.LogError("Null reference exception, reverting to default sprite for item " + name + ".");
+                return null;
             }
 
         }
@@ -287,22 +271,22 @@ namespace SS3D.Systems.Inventory.Items
         public class Item
         {
 
-            public readonly ItemActor Actor; 
+            public readonly ItemActor Actor;
 
             /// <summary>
             /// The item's name in the UI
             /// </summary>
-            private readonly string _name;
+            public readonly string Name;
 
             /// <summary>
             /// The item's relative weight in kilograms.
             /// </summary>
-            private readonly float _weight;
+            public readonly float Weight;
 
             /// <summary>
             /// The amount of slots the item will take in a container
             /// </summary>
-            private readonly Vector2Int _size;
+            public readonly Vector2Int Size;
 
             /// <summary>
             /// The list of characteristics this Item has
@@ -312,30 +296,24 @@ namespace SS3D.Systems.Inventory.Items
             /// <summary>
             /// The container the item is currently stored on
             /// </summary>
-            public Container _container;
-
-            public string Name => _name;
-
-            public float Weight => _weight;
-
-            public Vector2Int Size => _size;
+            private Container _container;
 
             public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
 
             private Item(string name, float weight, Vector2Int size)
             {
-                _name = name;
-                _weight = weight;
-                _size = size;
+                Name = name;
+                Weight = weight;
+                Size = size;
                 // Items can't have no size
-                if (_size.x == 0)
+                if (Size.x == 0)
                 {
-                    _size = new Vector2Int(1, _size.y);
+                    Size = new Vector2Int(1, Size.y);
                 }
 
-                if (_size.y == 0)
+                if (Size.y == 0)
                 {
-                    _size = new Vector2Int(_size.x, 1);
+                    Size = new Vector2Int(Size.x, 1);
                 }
             }
 
@@ -386,7 +364,16 @@ namespace SS3D.Systems.Inventory.Items
                 if (Actor != null) Actor.Delete(); 
             }
 
-            
+            /// <summary>
+            /// Do not use this unless you know what you're doing ! It will not sync stuff properly.
+            /// </summary>
+            /// <param name="newContainer"></param>
+            public void UnsafeSetContainer(Container newContainer)
+            {
+                _container = newContainer;
+            }
+
+
             /// <summary>
             /// Don't call this with client ! This should all be done server side.
             /// </summary>
@@ -428,7 +415,7 @@ namespace SS3D.Systems.Inventory.Items
                 {
                     traits += trait.Name + " ";
                 }
-                return $"{_name}, size = {_size}, weight = {_weight}, traits = {traits}, container is {Container?.ContainerName}";
+                return $"{Name}, size = {Size}, weight = {Weight}, traits = {traits}, container is {Container?.ContainerName}";
             }
         }
 

@@ -41,7 +41,7 @@ namespace SS3D.Systems.Inventory.Items
                 GameObject itemObject = Assets.Get(id);
                 ItemActor item = itemObject.GetComponent<ItemActor>();
 
-                item.SetId(id);
+                item.ItemId = id ;
 
                 _itemPrefabs.Add(id, item);
             }

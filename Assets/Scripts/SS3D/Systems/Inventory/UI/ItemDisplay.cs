@@ -132,7 +132,7 @@ namespace SS3D.Systems.Inventory.UI
         
         private void UpdateDisplay()
         {
-            ItemImage.sprite = Item != null ? Item.InventorySprite : null;
+            ItemImage.sprite = Item != null ? Item.Sprite : null;
             
             Color imageColor = ItemImage.color;
             imageColor.a = ItemImage.sprite != null ? 255 : 0;
