@@ -121,16 +121,7 @@ namespace SS3D.Systems.Inventory.Items
         public new void Awake()
         {
             base.Awake();
-
             item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>)_traits.Collection, ref _container);
-
-            // Add a warning if an item is not on the Items layer (layer 10).
-            // Not really needed any more because of the RequiredLayer attribute.
-            if (gameObject.layer != 10)
-            {
-                Punpun.Warning(this, "Item {item} is on {layer} layer. Should be on Items layer.",
-                    Logs.Generic, item.Name, LayerMask.LayerToName(gameObject.layer));
-            }
         }
 
         protected override void OnStart()
