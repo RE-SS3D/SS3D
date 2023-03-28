@@ -145,27 +145,9 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.Update();
 
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                foreach (Trait trait in Traits)
-                {
-                    Punpun.Debug(this, $"Item {Name} has trait {trait.Name}");
-                }
-            }
             if (Input.GetKeyDown(KeyCode.L))
             {
                 Debug.Log(item.Describe());
-            }
-
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                if (IsServer)
-                {
-                    Trait trait = (Trait)ScriptableObject.CreateInstance("Trait");
-                    trait.Name = "coco";
-                    item.AddTrait(trait);
-                }
-                   
             }
         }
 
