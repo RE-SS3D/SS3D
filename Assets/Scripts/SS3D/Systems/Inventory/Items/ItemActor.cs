@@ -327,17 +327,17 @@ namespace SS3D.Systems.Inventory.Items
             /// <summary>
             /// The item's name in the UI
             /// </summary>
-            private string _name;
+            private readonly string _name;
 
             /// <summary>
             /// The item's relative weight in kilograms.
             /// </summary>
-            private float _weight;
+            private readonly float _weight;
 
             /// <summary>
             /// The amount of slots the item will take in a container
             /// </summary>
-            private Vector2Int _size;
+            private readonly Vector2Int _size;
 
             /// <summary>
             /// The list of characteristics this Item has
@@ -357,30 +357,36 @@ namespace SS3D.Systems.Inventory.Items
 
             public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
 
-            public Item()
-            {
-
-            }
-
-            public Item(string name, float weight, Vector2Int size, List<Trait> traits)
+            private Item(string name, float weight, Vector2Int size)
             {
                 _name = name;
                 _weight = weight;
                 _size = size;
+                // Items can't have no size
+                if (_size.x == 0)
+                {
+                    _size = new Vector2Int(1, _size.y);
+                }
+
+                if (_size.y == 0)
+                {
+                    _size = new Vector2Int(_size.x, 1);
+                }
+            }
+
+            public Item(string name, float weight, Vector2Int size, List<Trait> traits, Container container) 
+                : this(name, weight, size)
+            {
                 _traits = new List<Trait>();
                 _traits.AddRange(traits);
-                ValidateItem();
             }
 
-            public Item(ItemActor actor, string name, float weight, Vector2Int size, List<Trait> initialTraits, ref Container container)
+            public Item(ItemActor actor, string name, float weight, Vector2Int size, List<Trait> traits, ref Container container)
+                : this(name, weight, size)
             {
                 Actor = actor;
-                _name = name;
-                _weight = weight;
-                _size = size;
-                _traits = initialTraits;
+                _traits = traits;
                 _container = container;
-                ValidateItem();
             }
 
             public Container Container
@@ -408,23 +414,6 @@ namespace SS3D.Systems.Inventory.Items
             {
                 if (Actor != null) Actor._traits.Add(trait);
                 else _traits.Remove(trait);
-            }
-
-            /// <summary>
-            /// Validates the Item's properties
-            /// </summary>
-            private void ValidateItem()
-            {
-                // Items can't have no size
-                if (_size.x == 0)
-                {
-                    _size = new Vector2Int(1, _size.y);
-                }
-
-                if (_size.y == 0)
-                {
-                    _size = new Vector2Int(_size.x, 1);
-                }
             }
 
             public void Delete()
