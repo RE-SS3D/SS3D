@@ -418,7 +418,7 @@ namespace SS3D.Systems.Inventory.Items
 
             public void Delete()
             {
-                throw new NotImplementedException();
+                if (Actor != null) Actor.Delete(); 
             }
 
             [Server]
