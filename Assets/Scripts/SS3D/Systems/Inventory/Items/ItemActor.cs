@@ -267,7 +267,6 @@ namespace SS3D.Systems.Inventory.Items
         public void SetContainer(Container newContainer)
         {
             item.SetContainer(newContainer);
-            _container = newContainer;
         }
 
         // TODO: Improve this
@@ -402,7 +401,7 @@ namespace SS3D.Systems.Inventory.Items
             /// </summary>
             /// <param name="newContainer"></param>
             public void SetContainer(Container newContainer)
-            {
+            { 
                 if (Container == newContainer)
                 {
                     return;
@@ -419,6 +418,7 @@ namespace SS3D.Systems.Inventory.Items
                 }
 
                 _container = newContainer;
+                if(Actor != null) Actor._container = newContainer;
             }
 
             public override bool Equals(object obj)
