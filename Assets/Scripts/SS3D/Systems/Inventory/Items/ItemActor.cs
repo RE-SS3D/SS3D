@@ -266,6 +266,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void SetContainer(Container newContainer)
         {
+            item.SetContainer(newContainer);
             _container = newContainer;
         }
 
@@ -418,7 +419,6 @@ namespace SS3D.Systems.Inventory.Items
                 }
 
                 _container = newContainer;
-                if (Actor != null) Actor.SetContainer(newContainer);
             }
 
             public override bool Equals(object obj)

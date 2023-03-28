@@ -300,7 +300,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            item.GetItem.SetContainer(null);
+            item.SetContainer(null);
         }
 
         [TargetRpc]
