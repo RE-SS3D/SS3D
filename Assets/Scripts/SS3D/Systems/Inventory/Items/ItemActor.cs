@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using FishNet;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using FishNet.Transporting;
 using SS3D.Attributes;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
@@ -78,7 +80,7 @@ namespace SS3D.Systems.Inventory.Items
         [SyncObject]
         private readonly SyncList<Trait> _traits = new();
 
-        [SyncVar]
+        [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(OnContainerSync))]
         private Container _container;
 
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>)_traits.Collection).AsReadOnly();
@@ -107,6 +109,12 @@ namespace SS3D.Systems.Inventory.Items
         {
             base.OnStartServer();
             _traits.AddRange(_startingTraits);
+        }
+
+        private void OnContainerSync(Container prev, Container next, bool asServer)
+        {
+            if (asServer || IsHost) return;
+            item._container = next;
         }
 
 
@@ -255,16 +263,10 @@ namespace SS3D.Systems.Inventory.Items
             return item.HasTrait(trait);
         }
 
-        // It could become an issue that only observers see the container updated...
-        [ObserversRpc]
-        private void RpcSetContainer(Container newContainer)
+        [Server]
+        public void SetContainer(Container newContainer)
         {
-            if (IsServer)
-            {
-                return;
-            }
-
-            item._container = newContainer;
+            _container = newContainer;
         }
 
         // TODO: Improve this
@@ -393,7 +395,11 @@ namespace SS3D.Systems.Inventory.Items
                 if (Actor != null) Actor.Delete(); 
             }
 
-            [Server]
+            
+            /// <summary>
+            /// Don't call this with client ! This should all be done server side.
+            /// </summary>
+            /// <param name="newContainer"></param>
             public void SetContainer(Container newContainer)
             {
                 if (Container == newContainer)
@@ -412,10 +418,7 @@ namespace SS3D.Systems.Inventory.Items
                 }
 
                 _container = newContainer;
-
-                if(Actor != null)
-                    Actor.RpcSetContainer(newContainer);
-
+                if (Actor != null) Actor.SetContainer(newContainer);
             }
 
             public override bool Equals(object obj)
