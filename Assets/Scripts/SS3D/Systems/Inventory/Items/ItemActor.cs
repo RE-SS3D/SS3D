@@ -141,16 +141,6 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
 
-        public override void Update()
-        {
-            base.Update();
-
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                Debug.Log(item.Describe());
-            }
-        }
-
         /// <summary>
         /// Changes the item actor's item id
         /// </summary>

@@ -59,7 +59,20 @@ namespace IngameDebugConsole.Commands
 			Debug.Log(debugString);
         }
 
-		private static ItemActor.Item GetItemInHand()
+        [ConsoleMethod("item.describe", "Describes the item in hand"), UnityEngine.Scripting.Preserve]
+        public static void DescribeItem()
+        {
+            ItemActor.Item item = GetItemInHand();
+            if (item == null)
+            {
+                Debug.Log("No item in hand");
+                return;
+            }
+
+			Debug.Log(item.Describe());
+        }
+
+        private static ItemActor.Item GetItemInHand()
 		{
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 			Soul playerSoul = playerSystem.GetSoul(LocalPlayer.Ckey);
