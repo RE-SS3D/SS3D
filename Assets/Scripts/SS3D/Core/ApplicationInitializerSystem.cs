@@ -5,13 +5,14 @@ using SS3D.Core.Utils;
 using SS3D.Data;
 using SS3D.Logging;
 using UDiscord;
+using UnityEngine;
 
 namespace SS3D.Core
 {
     /// <summary>
     /// Initializes all the core information needed, subsystems and assets pre-loading.
     /// </summary>
-    public sealed class ApplicationStateSystem : Behaviours.System
+    public sealed class ApplicationInitializerSystem : Behaviours.System
     {
         /// <summary>
         /// Initializes all required systems for the application.
@@ -20,26 +21,38 @@ namespace SS3D.Core
         {
             Punpun.Information(this, "Initializing application", Logs.Important);
 
-            InitializeSubsystems();
-            InitializeApplicationSettings();
+            InitializeSystems();
+            InitializeSettings();
             InitializeNetworkSession();
         }
 
         /// <summary>
-        /// Initializes the application settings based on the command line args or the Project Settings if in Editor.
+        /// Initialize the application settings.
+        ///
+        /// First it resets the settings if its in the a Built executable.
+        /// Then it loads the network settings from the JSON file.
+        /// Then it loads the command line args.
         /// </summary>
-        private void InitializeApplicationSettings()
+        private void InitializeSettings()
         {
-            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
+            if (Application.isEditor)
+            {
+                return;
+            }
 
-            startArgsSystem.LoadApplicationSettings();
+            NetworkSettings.ResetOnBuiltApplication();
+            ApplicationSettings.ResetOnBuiltApplication();
+
+            NetworkSettings.LoadFromJson();
+
+            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
             startArgsSystem.ProcessCommandLineArgs();
         }
 
         /// <summary>
         /// Initializes the subsystems, like pre-loading assets and integrations.
         /// </summary>
-        private void InitializeSubsystems()
+        private void InitializeSystems()
         {
             DOTween.Init();
 
@@ -48,7 +61,7 @@ namespace SS3D.Core
         }
 
         /// <summary>
-        /// Initializes all the assets from the AssetData.
+        /// Initializes all the assets from the asset data.
         /// </summary>
         private void InitializeAssetData()
         {
@@ -61,9 +74,8 @@ namespace SS3D.Core
         private void InitializeDiscordIntegration()
         {
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
-            bool enableDiscordIntegration = applicationSettings.EnableDiscord;
 
-            if (enableDiscordIntegration)
+            if (applicationSettings.EnableDiscord)
             {
                 DiscordManager.Initialize();
             }

@@ -11,23 +11,12 @@ namespace SS3D.Core.Utils
     /// <summary>
     /// Loads the command line args and processes them for the application settings.
     /// </summary>
-    public class CommandLineArgsSystem : Behaviours.System
+    public sealed class CommandLineArgsSystem : Behaviours.System
     {
         private List<string> _commandLineArgs;
+
+        private NetworkSettings _networkSettings;
         private ApplicationSettings _applicationSettings;
-
-        /// <summary>
-        /// Loads the application settings data, doing appropriate changes depending on play mode.
-        /// </summary>
-        public void LoadApplicationSettings()
-        {
-            _applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
-
-            if (!Application.isEditor)
-            {
-                _applicationSettings.ResetOnBuildApplication();
-            }
-        }
 
         /// <summary>
         /// Loads and processes all command line args
@@ -36,6 +25,7 @@ namespace SS3D.Core.Utils
         {
             LoadCommandLineArgs();
 
+            _networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
             _applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
             foreach (string arg in _commandLineArgs)
@@ -51,27 +41,27 @@ namespace SS3D.Core.Utils
         {
             if (arg.Contains(CommandLineArgs.Host))
             {
-                _applicationSettings.NetworkType = NetworkType.Host;
+                _networkSettings.NetworkType = NetworkType.Host;
             }
 
             if (arg.Contains(CommandLineArgs.Ip))
             {
-                _applicationSettings.NetworkType = NetworkType.Client;
-                _applicationSettings.ServerAddress = arg.Replace(CommandLineArgs.Ip, "");
+                _networkSettings.NetworkType = NetworkType.Client;
+                _networkSettings.ServerAddress = arg.Replace(CommandLineArgs.Ip, "");
             }
 
             if (arg.Contains(CommandLineArgs.Ckey))
             {
                 string ckey = arg.Replace(CommandLineArgs.Ckey, "");
 
-                _applicationSettings.Ckey = ckey;
+                _networkSettings.Ckey = ckey;
             }
 
             if (arg.Contains(CommandLineArgs.Port))
             {
                 string port = arg.Replace(CommandLineArgs.Port, "");
 
-                _applicationSettings.ServerPort = Convert.ToUInt16(port);
+                _networkSettings.ServerPort = Convert.ToUInt16(port);
             }
 
             if (arg.Contains(CommandLineArgs.SkipIntro))
@@ -86,10 +76,8 @@ namespace SS3D.Core.Utils
 
             if (arg.Contains(CommandLineArgs.ServerOnly))
             {
-                _applicationSettings.NetworkType = NetworkType.ServerOnly;
+                _networkSettings.NetworkType = NetworkType.ServerOnly;
             }
-
-            LocalPlayer.UpdateCkey(_applicationSettings.Ckey);
         }
 
         /// <summary>

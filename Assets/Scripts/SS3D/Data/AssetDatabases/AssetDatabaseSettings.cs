@@ -5,7 +5,7 @@ using SS3D.Attributes;
 namespace SS3D.Data.AssetDatabases
 {
     [ProjectSettings("SS3D")]
-    public class AssetDatabaseSettings : ScriptableSettings
+    public sealed class AssetDatabaseSettings : ScriptableSettings
     {
         /// <summary>
         /// Included databases on the game.

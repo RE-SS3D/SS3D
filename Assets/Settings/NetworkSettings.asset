@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 890a57b29b24482196b55e1ac5de1b43, type: 3}
-  m_Name: ApplicationSettings
+  m_Script: {fileID: 11500000, guid: 43e0e025bf014220908cf2bd735d292d, type: 3}
+  m_Name: NetworkSettings
   m_EditorClassIdentifier: 
   _preload: 1
   _type: 2
-  EnableDiscord: 0
-  SkipIntro: 1
+  NetworkType: 0
+  Ckey: editorUser
+  ServerAddress: 127.0.0.1
+  ServerPort: 2158
