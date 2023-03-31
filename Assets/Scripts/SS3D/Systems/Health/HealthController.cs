@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using Coimbra;
 using SS3D.Systems.Health;
-using FishNet.Connection;
-using SS3D.Core;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Containers;
 
 public class HealthController : NetworkBehaviour
 {
-
     public GameObject Ghost;
+    private GameObject _spawnedGhost;
 
     [Server]
     private void BecomeGhost(GameObject player, GameObject ghost)
@@ -23,17 +21,28 @@ public class HealthController : NetworkBehaviour
         Mind originMind = originEntity.Mind;
 
         ghostEntity.SetMind(originMind);
-        destroyObjects(originEntity, ghostEntity);
+        RpcDestroyObjects(originEntity);
+        RpcUpdateGhostPosition(originEntity, ghostEntity);
     }
 
     [ObserversRpc]
-    private void destroyObjects(Entity originEntity, Entity ghostEntity)
+    private void RpcDestroyObjects(Entity originEntity)
     {
-        originEntity.gameObject.GetComponent<StaminaController>().Dispose(true);
-        originEntity.gameObject.GetComponent<HumanoidController>().Dispose(true);
-        originEntity.gameObject.transform.Rotate(new Vector3(90, 0, 0));
-        ghostEntity.transform.position = originEntity.transform.position;
-        ghostEntity.transform.rotation = originEntity.transform.rotation;
+        GameObject originEntityGameObject = originEntity.gameObject;
+        originEntityGameObject.GetComponent<Hands>().Dispose(true);
+        originEntityGameObject.GetComponent<Inventory>().Dispose(true);
+        originEntityGameObject.GetComponent<InteractionController>().Dispose(true);
+        originEntityGameObject.GetComponent<StaminaController>().Dispose(true);
+        originEntityGameObject.GetComponent<HumanoidController>().Dispose(true);
+        
+    }
+
+    [ObserversRpc]
+    private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
+    {
+        Transform originEntityTransform = originEntity.transform;
+        ghostEntity.transform.SetPositionAndRotation(originEntityTransform.position, originEntityTransform.rotation);
+        originEntityTransform.Rotate(new Vector3(90, 0, 0));
     }
 
     [Client]
@@ -45,9 +54,9 @@ public class HealthController : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void CmdKill(GameObject obj)
     {
-        GameObject ghost = Instantiate(obj);
-        ServerManager.Spawn(ghost);
-        BecomeGhost(gameObject, ghost);
+        _spawnedGhost = Instantiate(obj);
+        ServerManager.Spawn(_spawnedGhost);
+        BecomeGhost(gameObject, _spawnedGhost);
     }
 }
 
