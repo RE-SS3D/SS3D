@@ -29,6 +29,7 @@ public class HealthController : NetworkBehaviour
     private void RpcDestroyObjects(Entity originEntity)
     {
         GameObject originEntityGameObject = originEntity.gameObject;
+        // TODO: Optimize these GetComponents, this is a temporary solution.
         originEntityGameObject.GetComponent<Hands>().Dispose(true);
         originEntityGameObject.GetComponent<Inventory>().Dispose(true);
         originEntityGameObject.GetComponent<InteractionController>().Dispose(true);
@@ -40,9 +41,8 @@ public class HealthController : NetworkBehaviour
     [ObserversRpc]
     private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
     {
-        Transform originEntityTransform = originEntity.transform;
-        ghostEntity.transform.SetPositionAndRotation(originEntityTransform.position, originEntityTransform.rotation);
-        originEntityTransform.Rotate(new Vector3(90, 0, 0));
+        ghostEntity.Transform.SetPositionAndRotation(originEntity.Transform.position, originEntity.Transform.rotation);
+        originEntity.Transform.Rotate(new Vector3(90, 0, 0));
     }
 
     [Client]

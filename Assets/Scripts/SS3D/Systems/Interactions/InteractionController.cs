@@ -62,7 +62,10 @@ namespace SS3D.Systems.Interactions
 
         private void UnsubscribeFromEvents()
         {
-            if (!Owner.IsLocalClient) return;
+            if (!Owner.IsLocalClient)
+            {
+                return;
+            }
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
             _hotkeysControls.Use.performed -= HandleUse;
