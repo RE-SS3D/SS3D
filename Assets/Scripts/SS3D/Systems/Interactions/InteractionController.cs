@@ -57,11 +57,25 @@ namespace SS3D.Systems.Interactions
         public override void OnStopClient()
         {
             base.OnStopClient();
-            
+            UnsubscribeFromEvents();
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            if (!Owner.IsLocalClient)
+            {
+                return;
+            }
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
             _hotkeysControls.Use.performed -= HandleUse;
             _inputSystem.ToggleActionMap(_controls, false);
+        }
+        
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            UnsubscribeFromEvents();
         }
 
         /// <summary>
