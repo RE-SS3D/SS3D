@@ -317,7 +317,7 @@ namespace SS3D.Systems.Inventory.Items
                 }
             }
 
-            public Item(string name, float weight, Vector2Int size, List<Trait> traits, Container container) 
+            public Item(string name, float weight, Vector2Int size, List<Trait> traits) 
                 : this(name, weight, size)
             {
                 _traits = new List<Trait>();
@@ -403,7 +403,13 @@ namespace SS3D.Systems.Inventory.Items
             {
                 if(obj is Item item)
                 {
-                    return item.Actor == Actor;
+                    if (item.Actor != null)
+                    {
+                        // If there is an actor, the item will be the same if they have the same actor
+                        return item.Actor == Actor;
+                    }
+                    // Otherwise fallback to checking the Item's name, useful for unit testing
+                    return item.Name == Name;
                 }
                 return false;
             }

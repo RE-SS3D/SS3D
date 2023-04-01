@@ -69,7 +69,10 @@ namespace SS3D.Systems.Inventory.Containers
         /// The items stored in this container
         /// </summary>
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
-
+        /// <summary>
+        /// The filter this container is currently using
+        /// </summary>
+        private Filter _filter => AttachedTo == null ? StartFilter : AttachedTo.StartFilter;
         /// <summary>
         /// The creatures looking at this container
         /// </summary>
@@ -104,6 +107,13 @@ namespace SS3D.Systems.Inventory.Containers
         {
             _storedItems = new List<StoredItem>();
             _size = size;
+        }
+
+        public Container(Vector2Int size, Filter startFilter)
+        {
+            _storedItems = new List<StoredItem>();
+            _size = size;
+            _startFilter = startFilter;
         }
 
         /// <summary>
@@ -531,11 +541,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// <returns></returns>
         public bool CanStoreItem(Item item)
         {
-
-            Filter filter = AttachedTo.StartFilter;
-            if (filter != null)
+            if (_filter != null)
             {
-                return filter.CanStore(item);
+                return _filter.CanStore(item);
             }
 
             return true;
