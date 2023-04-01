@@ -21,6 +21,7 @@ namespace SS3D.Systems
 
                 return hash;
             }
+            set => hash = value;
         }
 
         [HideInInspector]
@@ -35,6 +36,7 @@ namespace SS3D.Systems
         public TraitCategories Category
         {
             get => _category;
+            set => _category = value;
         }
 
         //Two different object can have the same hash, it's usually a bad idea to test for equality with hash.

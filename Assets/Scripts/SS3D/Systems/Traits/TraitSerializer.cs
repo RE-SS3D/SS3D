@@ -1,4 +1,6 @@
 using FishNet.Serializing;
+using SS3D.Data;
+using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using SS3D.Systems.Inventory.Items;
 using System.Collections;
@@ -7,12 +9,12 @@ using UnityEngine;
 
 namespace SS3D.Systems
 {
-    public class TraitSerializer
+    public static class TraitSerializer
     {
         public static void WriteTrait(this Writer writer, Trait value)
         {
             writer.WriteInt32((int) value.Category);
-            writer.WriteArray(value.Name.ToCharArray());
+            writer.WriteString(value.Name);
         }
 
         /// <summary>
@@ -20,8 +22,13 @@ namespace SS3D.Systems
         /// </summary>
         public static Trait ReadTrait(this Reader reader)
         {
-            var actor = (ItemActor)reader.ReadNetworkBehaviour();
-            return actor.GetItem;
+            var category = (TraitCategories) reader.ReadInt32();
+            var name = reader.ReadString();
+            // Should that really create a new instance or get from an asset database a trait scriptable object.
+            var trait = ScriptableObject.CreateInstance<Trait>();
+            trait.Name = name;
+            trait.Category = category;
+            return trait;
         }
     }
 
