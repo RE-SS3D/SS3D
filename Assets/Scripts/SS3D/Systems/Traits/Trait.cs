@@ -9,7 +9,7 @@ namespace SS3D.Systems
     public class Trait : ScriptableObject
     {
         // Hash used for identification
-        public int hash;
+        private int hash;
         public int Hash
         {
             get
@@ -21,7 +21,6 @@ namespace SS3D.Systems
 
                 return hash;
             }
-            set => hash = value;
         }
 
         [HideInInspector]
@@ -32,12 +31,13 @@ namespace SS3D.Systems
         }
 
         // Categories, used for checking specific types of Traits
-        public TraitCategories _category;
+        private TraitCategories _category;
         public TraitCategories Category
         {
             get => _category;
         }
 
+        //Two different object can have the same hash, it's usually a bad idea to test for equality with hash.
         protected bool Equals(Trait other)
         {
             // Use Hash instead of hash to prevent uninitialized hashes in clients
