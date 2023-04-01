@@ -72,13 +72,17 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            SetupView();
+            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+        }
+
+        private void SetupView()
+        {
             InventoryView = ViewLocator.Get<InventoryView>().First();
             InventoryView.Inventory = this;
 
             InventoryView.Setup();
             InventoryView.Enable(true);
-
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
         }
 
         protected override void OnAwake()
@@ -88,6 +92,12 @@ namespace SS3D.Systems.Inventory.Containers
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
 
             Hands.Inventory = this;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            InventoryView.Enable(false);
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
