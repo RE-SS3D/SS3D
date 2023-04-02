@@ -426,8 +426,9 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  _startingName: Blue Toolbox
-  _startingWeight: 1
+  _name: 
+  _weight: 1
+  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 2081909342595332650}
   Prefab: {fileID: 5533951594911835035}

@@ -234,8 +234,9 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 564570081198347949}
   _networkObjectCache: {fileID: 0}
-  _startingName: Beepy Lime
-  _startingWeight: 1
+  _name: 
+  _weight: 1
+  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 751568336328987408}
   Prefab: {fileID: 8423412686940963211}
