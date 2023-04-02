@@ -21,13 +21,13 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The list of items displayed in the container;
         /// </summary>
-        private ItemActor[] _displayedItems;
+        private Item[] _displayedItems;
 
         public void Start()
         {
             Assert.IsNotNull(attachedContainer);
             
-            _displayedItems = new ItemActor[attachedContainer.Displays.Length];
+            _displayedItems = new Item[attachedContainer.Displays.Length];
             attachedContainer.OnItemAttached += ContainerOnItemAttached;
             attachedContainer.OnItemDetached += ContainerOnItemDetached;
         }
@@ -38,7 +38,7 @@ namespace SS3D.Systems.Inventory.Containers
             attachedContainer.OnItemDetached -= ContainerOnItemDetached;
         }
 
-        private void ContainerOnItemAttached(object sender, ItemActor item)
+        private void ContainerOnItemAttached(object sender, Item item)
         {
             // Defines the transform of the item to be the first available position.
             int index = -1;
@@ -92,7 +92,7 @@ namespace SS3D.Systems.Inventory.Containers
             _displayedItems[index] = item;
         }
         
-        private void ContainerOnItemDetached(object sender, ItemActor item)
+        private void ContainerOnItemDetached(object sender, Item item)
         {
             int index = -1;
             for (int i = 0; i < attachedContainer.Displays.Length; i++)

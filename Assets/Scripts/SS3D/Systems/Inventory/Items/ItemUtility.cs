@@ -4,7 +4,7 @@ namespace SS3D.Systems.Inventory.Items
 {
     public static class ItemUtility
     {
-        public static void Place(ItemActor item, Vector3 position, Quaternion rotation, Transform lookTarget = null)
+        public static void Place(Item item, Vector3 position, Quaternion rotation, Transform lookTarget = null)
         {
             Vector3 itemDimensions = item.GetComponentInChildren<Collider>().bounds.size;
             float itemSize = 0;

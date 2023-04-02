@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    using Item = ItemActor.Item;
     public readonly struct StoredItem : IEquatable<StoredItem>
     {
         public readonly Item Item;

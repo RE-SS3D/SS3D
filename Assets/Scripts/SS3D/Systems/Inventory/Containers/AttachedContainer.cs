@@ -19,7 +19,6 @@ using static SS3D.Substances.SubstanceContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    using Item = ItemActor.Item;
     /// <summary>
     /// AttachedContainer manages the networking  aspect of a container attached to a gameObject, and allows the user to set up a container,
     /// including it's size, interaction with it, what it can store and other options.
@@ -138,8 +137,8 @@ namespace SS3D.Systems.Inventory.Containers
 
         private Container _container;
 
-        public event EventHandler<ItemActor> OnItemAttached;
-        public event EventHandler<ItemActor> OnItemDetached;
+        public event EventHandler<Item> OnItemAttached;
+        public event EventHandler<Item> OnItemDetached;
 
         /// <summary>
         /// The items stored in this container, including information on how they are stored
@@ -150,7 +149,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
-        public IEnumerable<ItemActor> Items => StoredItems.Select(x => x.Item.Actor);
+        public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
         public SyncList<StoredItem> StoredItems => _storedItems;
 
@@ -183,12 +182,12 @@ namespace SS3D.Systems.Inventory.Containers
             return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
         }
 
-        public void ProcessItemAttached(ItemActor e)
+        public void ProcessItemAttached(Item e)
         {
             OnItemAttached?.Invoke(this, e);
         }
 
-        public void ProcessItemDetached(ItemActor e)
+        public void ProcessItemDetached(Item e)
         {
             OnItemDetached?.Invoke(this, e);
         }
@@ -247,7 +246,7 @@ namespace SS3D.Systems.Inventory.Containers
             _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
 
-        private void handleItemRemoved(ItemActor item)
+        private void handleItemRemoved(Item item)
         {
 
             // Restore visibility
@@ -266,7 +265,7 @@ namespace SS3D.Systems.Inventory.Containers
             item.Unfreeze();
         }
 
-        private void handleItemAdded(ItemActor item)
+        private void handleItemAdded(Item item)
         {
             item.Freeze();
 
@@ -297,7 +296,7 @@ namespace SS3D.Systems.Inventory.Containers
                             continue;
                         }
 
-                        handleItemAdded(item.Actor);
+                        handleItemAdded(item);
                     }
 
                     break;
@@ -310,8 +309,8 @@ namespace SS3D.Systems.Inventory.Containers
                                 continue;
                             }
 
-                            handleItemRemoved(item.Actor);
-                            handleItemAdded(item.Actor);
+                            handleItemRemoved(item);
+                            handleItemAdded(item);
                         }
 
                         break;
@@ -325,7 +324,7 @@ namespace SS3D.Systems.Inventory.Containers
                                 continue;
                             }
 
-                            handleItemRemoved(item.Actor);
+                            handleItemRemoved(item);
                         }
 
                         break;

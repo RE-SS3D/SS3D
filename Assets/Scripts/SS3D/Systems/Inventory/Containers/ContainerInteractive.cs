@@ -94,7 +94,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             // We check for each item if they are interactive containers.
-            foreach(ItemActor item in attachedContainer.Items)
+            foreach(Item item in attachedContainer.Items)
             {
                 ContainerInteractive[] containerInteractives = item.GameObject.GetComponents<ContainerInteractive>();
                 // If the item is an interactive container, we call this method again on it.

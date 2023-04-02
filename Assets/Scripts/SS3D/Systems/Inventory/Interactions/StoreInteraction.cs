@@ -42,17 +42,17 @@ namespace SS3D.Systems.Inventory.Interactions
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
                 if (hands != null && _attachedContainer != null)
                 {
-                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<ItemActor>(), _attachedContainer);
+                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), _attachedContainer);
                 }
             }
 
             return false;
         }
 
-        private bool CanStore(ItemActor item, AttachedContainer target)
+        private bool CanStore(Item item, AttachedContainer target)
         {
             Container container = target.Container;
-            return container.CanStoreItem(item.GetItem) && container.CanHoldItem(item.GetItem);
+            return container.CanStoreItem(item) && container.CanHoldItem(item);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)

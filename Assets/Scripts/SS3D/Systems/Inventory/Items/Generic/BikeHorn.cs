@@ -10,7 +10,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// <summary>
     /// The honking device used by the clown on honking purposes
     /// </summary>
-    public class BikeHorn : ItemActor
+    public class BikeHorn : Item
     {
         [Header("Bike horn settings")]
         [SerializeField] private AudioClip _honkSound;

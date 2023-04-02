@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using SS3D.Systems;
-using Item = SS3D.Systems.Inventory.Items.ItemActor.Item;
 using SS3D.Systems.Inventory.Containers;
 using System.Linq;
+using SS3D.Systems.Inventory.Items;
 
 namespace EditorTests
 {
@@ -96,7 +96,9 @@ namespace EditorTests
         /// <returns></returns>
         private static Item createItemWithTrait(Trait trait)
         {
-            Item item = new Item(trait.Name, 1f, Vector2Int.one, new List<Trait>() { trait });
+            var go = new GameObject();
+            var item = go.AddComponent<Item>();
+            item.Init(trait.Name, 1f, Vector2Int.one, new List<Trait>() { trait });
             return item;
         }
 
@@ -107,7 +109,9 @@ namespace EditorTests
         /// <returns></returns>
         private static Item createItem()
         {
-            Item item = new Item("TestItem", 1f, Vector2Int.one, new List<Trait>());
+            var go = new GameObject();
+            var item = go.AddComponent<Item>();
+            item.Init("TestItem", 1f, Vector2Int.one, new List<Trait>());
             return item;
         }
         #endregion

@@ -17,7 +17,6 @@ using System.Collections;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    using Item = ItemActor.Item;
     /// <summary>
     /// This is the basic inventory system. Any inventory-capable creature should have this component.
     /// The basic inventory system has to handle:
@@ -163,7 +162,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item != null)
                 {
-                    ClientTransferItem(item.Actor, Vector2Int.zero, Hands.SelectedHand);
+                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand);
                 }
             }
             // If selected hand has an item and there's no item on the slot in the container, transfer it to container slot.
@@ -171,7 +170,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item == null)
                 {
-                    ClientTransferItem(Hands.ItemInHand.Actor, position, container);
+                    ClientTransferItem(Hands.ItemInHand, position, container);
                 }
             }
         }
@@ -187,7 +186,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to transfer</param>
         /// <param name="targetContainer">Into which container to move the item</param>
-        public void ClientTransferItem(ItemActor item, Vector2Int position, AttachedContainer targetContainer)
+        public void ClientTransferItem(Item item, Vector2Int position, AttachedContainer targetContainer)
         {
             CmdTransferItem(item.gameObject, position, targetContainer);
         }
@@ -196,7 +195,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Requests the server to drop an item out of a container
         /// </summary>
         /// <param name="item">The item to drop</param>
-        public void ClientDropItem(ItemActor item)
+        public void ClientDropItem(Item item)
         {
             CmdDropItem(item.gameObject);
         }
@@ -204,13 +203,13 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, AttachedContainer container)
         {
-            ItemActor item = itemObject.GetComponent<ItemActor>();
+            Item item = itemObject.GetComponent<Item>();
             if (item == null)
             {
                 return;
             }
 
-            Container itemContainer = item.GetItem.Container;
+            Container itemContainer = item.Container;
             if (itemContainer == null)
             {
                 return;
@@ -239,8 +238,8 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            itemContainer.RemoveItem(item.GetItem);
-            container.Container.AddItemPosition(item.GetItem, position);
+            itemContainer.RemoveItem(item);
+            container.Container.AddItemPosition(item, position);
         }
 
         /// <summary>
@@ -293,13 +292,13 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdDropItem(GameObject gameObject)
         {
-            ItemActor item = gameObject.GetComponent<ItemActor>();
+            Item item = gameObject.GetComponent<Item>();
             if (item == null)
             {
                 return;
             }
 
-            AttachedContainer attachedTo = item.GetItem.Container?.AttachedTo;
+            AttachedContainer attachedTo = item.Container?.AttachedTo;
             if (attachedTo == null)
             {
                 return;

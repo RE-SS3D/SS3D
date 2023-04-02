@@ -14,7 +14,7 @@ namespace IngameDebugConsole.Commands
 		[ConsoleMethod( "item.addtrait", "Adds a trait to the item in hand" ), UnityEngine.Scripting.Preserve]
 		public static void AddTraitToItem( string traitName )
 		{
-			ItemActor.Item item = GetItemInHand();
+			Item item = GetItemInHand();
 			if (item == null)
 			{
 				Debug.Log("No item in hand");
@@ -31,7 +31,7 @@ namespace IngameDebugConsole.Commands
 		[ConsoleMethod( "item.traits", "Get all traits from item in hand" ), UnityEngine.Scripting.Preserve]
 		public static void GetTraitsFromItem()
 		{
-            ItemActor.Item item = GetItemInHand();
+            Item item = GetItemInHand();
             if (item == null)
             {
                 Debug.Log("No item in hand");
@@ -62,7 +62,7 @@ namespace IngameDebugConsole.Commands
         [ConsoleMethod("item.describe", "Describes the item in hand"), UnityEngine.Scripting.Preserve]
         public static void DescribeItem()
         {
-            ItemActor.Item item = GetItemInHand();
+            Item item = GetItemInHand();
             if (item == null)
             {
                 Debug.Log("No item in hand");
@@ -72,7 +72,7 @@ namespace IngameDebugConsole.Commands
 			Debug.Log(item.Describe());
         }
 
-        private static ItemActor.Item GetItemInHand()
+        private static Item GetItemInHand()
 		{
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 			Soul playerSoul = playerSystem.GetSoul(LocalPlayer.Ckey);

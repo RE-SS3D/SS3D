@@ -13,7 +13,6 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.Inventory.UI
 {
-    using Item = ItemActor.Item;
     public class ItemGrid : InventoryDisplayElement, IPointerClickHandler, IDropHandler, ISlotProvider
     {
         /// <summary>
@@ -73,9 +72,9 @@ namespace SS3D.Systems.Inventory.UI
         {
             // For some reason, has to be delayed to end of frame to work.
             yield return new WaitForEndOfFrame();
-            foreach (ItemActor item in AttachedContainer.Items)
+            foreach (Item item in AttachedContainer.Items)
             {
-                Vector2Int position = AttachedContainer.Container.PositionOf(item.GetItem);
+                Vector2Int position = AttachedContainer.Container.PositionOf(item);
                 CreateItemDisplay(item, position);
             }
         }
@@ -93,7 +92,7 @@ namespace SS3D.Systems.Inventory.UI
                     {
                         if (item == null) continue;
                         Vector2Int position = container.PositionOf(item);
-                        CreateItemDisplay(item.Actor, position);
+                        CreateItemDisplay(item, position);
                     }
                     break;
                 case ContainerChangeType.Remove:
@@ -103,7 +102,7 @@ namespace SS3D.Systems.Inventory.UI
                         for (var i = 0; i < _gridItems.Count; i++)
                         {
                             ItemGridItem gridItem = _gridItems[i];
-                            if (gridItem.Item != item.Actor)
+                            if (gridItem.Item != item)
                             {
                                 continue;
                             }
@@ -120,7 +119,7 @@ namespace SS3D.Systems.Inventory.UI
                         if (item == null) continue;
                         foreach (ItemGridItem gridItem in _gridItems)
                         {
-                            if (gridItem.Item == item.Actor)
+                            if (gridItem.Item == item)
                             {
                                 Vector2Int position = container.PositionOf(item);
                                 MoveToSlot(gridItem.transform, position);
@@ -201,7 +200,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <param name="display"></param>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
-            ItemActor item = display.Item;
+            Item item = display.Item;
             Vector2Int size = item.Size;
             Vector3 dragPosition = display.transform.position;
             
@@ -214,7 +213,7 @@ namespace SS3D.Systems.Inventory.UI
             Vector2Int slot = new( Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
             
             // Check if the area of drop is free, if not, don't transfer.
-            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item.GetItem))
+            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item))
             {
                 return;
             }
@@ -237,7 +236,7 @@ namespace SS3D.Systems.Inventory.UI
             objectToMove.localPosition = slot.localPosition;
         }
 
-        private void CreateItemDisplay(ItemActor item, Vector2Int position, bool ItemMovedInsideGrid = false)
+        private void CreateItemDisplay(Item item, Vector2Int position, bool ItemMovedInsideGrid = false)
         {
             // avoid creating the same item sprite multiple times. Except when it's moved around in the container.
             // In this case two instances need to exist on the same frame so we allow it.
@@ -263,7 +262,7 @@ namespace SS3D.Systems.Inventory.UI
 		{
 			Vector2Int slotPosition = GetSlotPosition(Mouse.current.position.ReadValue());
 			Container container = AttachedContainer.Container;
-			return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).Actor.gameObject;
+			return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).gameObject;
 		}
 		
     }

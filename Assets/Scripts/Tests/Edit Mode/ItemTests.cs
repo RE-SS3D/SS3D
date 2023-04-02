@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using SS3D.Systems;
-using Item = SS3D.Systems.Inventory.Items.ItemActor.Item;
+using SS3D.Systems.Inventory.Items;
 
 namespace EditorTests
 {
@@ -88,7 +88,9 @@ namespace EditorTests
             traits = new List<Trait>() { trait1, trait2 };
 
             // Apply the traits to the item and return it
-            Item item = new Item("TestItem", 1f, Vector2Int.one, traits);
+            var go = new GameObject();
+            var item = go.AddComponent<Item>();
+            item.Init("TestItem", 1f, Vector2Int.one, traits);
             return item;
         }
 
@@ -99,7 +101,9 @@ namespace EditorTests
         /// <returns></returns>
         private static Item createItemWithTraits(List<Trait> traits)
         {
-            Item item = new Item("TestItem", 1f, Vector2Int.one, traits);
+            var go = new GameObject();
+            var item = go.AddComponent<Item>();
+            item.Init("TestItem", 1f, Vector2Int.one, traits);
             return item;
         }
 
@@ -110,7 +114,9 @@ namespace EditorTests
         /// <returns></returns>
         private static Item createItem()
         {
-            Item item = new Item("TestItem", 1f, Vector2Int.one, new List<Trait>());
+            var go = new GameObject();
+            var item = go.AddComponent<Item>();
+            item.Init("TestItem", 1f, Vector2Int.one, new List<Trait>());
             return item;
         }
         #endregion

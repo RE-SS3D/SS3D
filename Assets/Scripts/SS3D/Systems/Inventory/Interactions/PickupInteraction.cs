@@ -42,7 +42,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
 		        // we try to get the Item component from the GameObject we just interacted with
 		        // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
-                ItemActor item = targetBehaviour.GameObject.GetComponent<ItemActor>();
+                Item item = targetBehaviour.GameObject.GetComponent<Item>();
                 if (item == null)
                 {
                     return false;
@@ -62,7 +62,7 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             // remember that when we call this Start, we are starting the interaction per se
             // so we check if the source of the interaction is a Hand, and if the target is an Item
-            if (interactionEvent.Source is Hands hands && interactionEvent.Target is ItemActor target)
+            if (interactionEvent.Source is Hands hands && interactionEvent.Target is Item target)
             {
                 // and then we run the function that adds it to the container
                 hands.Pickup(target);

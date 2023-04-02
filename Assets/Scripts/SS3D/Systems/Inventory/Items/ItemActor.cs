@@ -30,19 +30,19 @@ namespace SS3D.Systems.Inventory.Items
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
     [RequiredLayer("Items")]
-    public class ItemActor : InteractionSource, IInteractionTarget
+    public class Item : InteractionSource, IInteractionTarget
     {
-        #region ItemActor
+        #region Item
         [Header("Item settings")]
 
         [FormerlySerializedAs("Name")]
-        [SerializeField] private string _startingName;
+        [SerializeField] private string _name;
 
         [FormerlySerializedAs("Weight")]
-        [SerializeField] private float _startingWeight;
+        [SerializeField] private float _weight;
 
         [FormerlySerializedAs("Size")]
-        [SerializeField] private Vector2Int _startingSize;
+        [SerializeField] private Vector2Int _size;
 
         [FormerlySerializedAs("Traits")]
         [SerializeField] private List<Trait> _startingTraits;
@@ -50,8 +50,6 @@ namespace SS3D.Systems.Inventory.Items
         [SerializeField] private Rigidbody _rigidbody;
 
         private Sprite _sprite;
-
-        private Item _item;
 
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
@@ -70,15 +68,23 @@ namespace SS3D.Systems.Inventory.Items
         [SyncObject]
         private readonly SyncList<Trait> _traits = new();
 
-        [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(OnContainerSync))]
+        [SyncVar]
         private Container _container;
 
-        public Item GetItem => _item;
-
-        public string Name => _item.Name;
+        public string Name => _name;
         public ItemId ItemId { get; set; }
-        public Vector2Int Size => _item.Size;
-        public ReadOnlyCollection<Trait> Traits => _item.Traits;
+        public Vector2Int Size => _size;
+        public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
+
+        public Container Container => _container;
+
+        public void Init(string name, float weight, Vector2Int size,  List<Trait> traits)
+        {
+            _name = name ?? string.Empty;
+            _weight = weight;
+            _size = size;
+            _traits.AddRange(traits);
+        }
 
         /// <summary>
         /// The sprite that is shown in the container slot
@@ -92,7 +98,6 @@ namespace SS3D.Systems.Inventory.Items
         public new void Awake()
         {
             base.Awake();
-            _item = new Item(this, _startingName, _startingWeight, _startingSize, (List<Trait>)_traits.Collection, ref _container);
         }
 
         protected override void OnStart()
@@ -124,19 +129,12 @@ namespace SS3D.Systems.Inventory.Items
             return _sprite == null ? GenerateNewIcon() : Sprite;
         }
 
-
-        private void OnContainerSync(Container prev, Container next, bool asServer)
-        {
-            if (asServer || IsHost) return;
-            _item.UnsafeSetContainer(next);
-        }
-
         /// <summary>
         /// Destroys this item
         /// </summary>
         public void Delete()
         {
-            _item.SetContainer(null);
+            SetContainer(null);
 
             if (GameObject != null)
             {
@@ -223,7 +221,17 @@ namespace SS3D.Systems.Inventory.Items
         /// <returns></returns>
         public bool ISOnContainer()
         {
-            return _item.IsOnContainer();
+            return _container != null;
+        }
+
+        public string Describe()
+        {
+            string traits = "";
+            foreach (var trait in _traits)
+            {
+                traits += trait.Name + " ";
+            }
+            return $"{Name}, size = {Size}, weight = {_weight}, traits = {traits}, container is {_container?.ContainerName}";
         }
 
         /// <summary>
@@ -233,13 +241,13 @@ namespace SS3D.Systems.Inventory.Items
         /// <returns></returns>
         public bool HasTrait(Trait trait)
         {
-            return _item.HasTrait(trait);
+            return _traits.Contains(trait);
         }
 
         [Server]
         public void SetContainer(Container newContainer)
         {
-            _item.SetContainer(newContainer);
+            SetContainer(this, newContainer);
         }
 
         // TODO: Improve this
@@ -265,165 +273,54 @@ namespace SS3D.Systems.Inventory.Items
             }
 
         }
-        #endregion
 
-        #region Item
-        public class Item
+        /// <summary>
+        /// Don't call this with client ! This should all be done server side.
+        /// </summary>
+        /// <param name="newContainer"></param>
+        public void SetContainer(Item item, Container newContainer)
         {
-
-            public readonly ItemActor Actor;
-
-            /// <summary>
-            /// The item's name in the UI
-            /// </summary>
-            public readonly string Name;
-
-            /// <summary>
-            /// The item's relative weight in kilograms.
-            /// </summary>
-            public readonly float Weight;
-
-            /// <summary>
-            /// The amount of slots the item will take in a container
-            /// </summary>
-            public readonly Vector2Int Size;
-
-            /// <summary>
-            /// The list of characteristics this Item has
-            /// </summary>
-            private readonly List<Trait> _traits;
-
-            /// <summary>
-            /// The container the item is currently stored on
-            /// </summary>
-            private Container _container;
-
-            public ReadOnlyCollection<Trait> Traits => _traits.AsReadOnly();
-
-            private Item(string name, float weight, Vector2Int size)
+            if (_container == newContainer)
             {
-                Name = name;
-                Weight = weight;
-                Size = size;
-                // Items can't have no size
-                if (Size.x == 0)
-                {
-                    Size = new Vector2Int(1, Size.y);
-                }
-
-                if (Size.y == 0)
-                {
-                    Size = new Vector2Int(Size.x, 1);
-                }
+                return;
             }
 
-            public Item(string name, float weight, Vector2Int size, List<Trait> traits) 
-                : this(name, weight, size)
+            if (_container != null && _container.ContainsItem(this))
             {
-                _traits = new List<Trait>();
-                _traits.AddRange(traits);
+                Container.RemoveItem(this);
             }
 
-            public Item(ItemActor actor, string name, float weight, Vector2Int size, List<Trait> traits, ref Container container)
-                : this(name, weight, size)
+            if (newContainer != null && !newContainer.ContainsItem(this))
             {
-                Actor = actor;
-                _traits = traits;
-                _container = container;
+                newContainer.AddItem(this);
             }
 
-            public Container Container
+            _container = newContainer;
+        }
+
+        public void ValidateSize()
+        {
+            // Items can't have no size
+            if (Size.x == 0)
             {
-                get => _container;
+                _size = new Vector2Int(1, Size.y);
             }
 
-            public bool IsOnContainer()
+            if (Size.y == 0)
             {
-                return _container != null;
-            }
-
-            public bool HasTrait(Trait trait)
-            {
-                return _traits.Contains(trait);
-            }
-
-            public void AddTrait(Trait trait)
-            {
-                if(Actor != null) Actor._traits.Add(trait);
-                else _traits.Add(trait);
-            }
-
-            public void RemoveTraits(Trait trait)
-            {
-                if (Actor != null) Actor._traits.Add(trait);
-                else _traits.Remove(trait);
-            }
-
-            public void Delete()
-            {
-                if (Actor != null) Actor.Delete(); 
-            }
-
-            /// <summary>
-            /// Do not use this unless you know what you're doing ! It will not sync stuff properly.
-            /// </summary>
-            /// <param name="newContainer"></param>
-            public void UnsafeSetContainer(Container newContainer)
-            {
-                _container = newContainer;
-            }
-
-
-            /// <summary>
-            /// Don't call this with client ! This should all be done server side.
-            /// </summary>
-            /// <param name="newContainer"></param>
-            public void SetContainer(Container newContainer)
-            { 
-                if (Container == newContainer)
-                {
-                    return;
-                }
-
-                if (Container != null && Container.ContainsItem(this))
-                {
-                    Container.RemoveItem(this);
-                }
-
-                if (newContainer != null && !newContainer.ContainsItem(this))
-                {
-                    newContainer.AddItem(this);
-                }
-
-                _container = newContainer;
-                if(Actor != null) Actor._container = newContainer;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if(obj is Item item)
-                {
-                    if (item.Actor != null)
-                    {
-                        // If there is an actor, the item will be the same if they have the same actor
-                        return item.Actor == Actor;
-                    }
-                    // Otherwise fallback to checking the Item's name, useful for unit testing
-                    return item.Name == Name;
-                }
-                return false;
-            }
-
-            public string Describe()
-            {
-                string traits = "";
-                foreach(var trait in _traits)
-                {
-                    traits += trait.Name + " ";
-                }
-                return $"{Name}, size = {Size}, weight = {Weight}, traits = {traits}, container is {Container?.ContainerName}";
+                _size = new Vector2Int(Size.x, 1);
             }
         }
+        public void AddTrait(Trait trait)
+        {
+             _traits.Add(trait);
+        }
+
+        public void RemoveTraits(Trait trait)
+        {
+             _traits.Remove(trait);
+        }
+
 
         #endregion
 

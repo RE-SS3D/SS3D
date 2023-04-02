@@ -13,7 +13,6 @@ using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    using Item = ItemActor.Item;
     /// <summary>
     /// Stores items in a 2 dimensional container. 
     /// This class is handling the logic part of storing items. 

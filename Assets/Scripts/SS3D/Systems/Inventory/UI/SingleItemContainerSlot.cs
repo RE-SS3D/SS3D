@@ -9,7 +9,6 @@ using UnityEngine.EventSystems;
 
 namespace SS3D.Systems.Inventory.UI
 {
-    using Item = ItemActor.Item;
     /// <summary>
     /// SingleItemContainerSlot allows displaying the content of a container that contain a single item in the UI.
     /// It handles updating the inventory when an item is dropped on it, and it changes the displayed sprite accordingly.
@@ -51,7 +50,7 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            if (!_container.Container.CanContainItem(display.Item.GetItem))
+            if (!_container.Container.CanContainItem(display.Item))
             {
                 return;
             }
@@ -67,9 +66,7 @@ namespace SS3D.Systems.Inventory.UI
         private void UpdateDisplay()
         {
             var item = _container.Container.Items.FirstOrDefault();
-            if(item != null)
-                ItemDisplay.Item = item.Actor;
-            else ItemDisplay.Item = null;
+            ItemDisplay.Item = item;
         }
 
         /// <summary>

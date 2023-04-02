@@ -13,7 +13,6 @@ using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    using Item = ItemActor.Item;
     [RequireComponent(typeof(Inventory))]
     public class Hands : InteractionSource, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
@@ -83,19 +82,19 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         [Server]
-        public void Pickup(ItemActor item)
+        public void Pickup(Item item)
         {
             if (!SelectedHandEmpty)
             {
                 return;
             }
 
-            if (item.GetItem.Container != SelectedHandContainer && item.GetItem.Container != null)
+            if (item.Container != SelectedHandContainer && item.Container != null)
             {
-                item.GetItem.Container.RemoveItem(item.GetItem);
+                item.Container.RemoveItem(item);
             }
 
-            SelectedHandContainer.AddItem(item.GetItem);
+            SelectedHandContainer.AddItem(item);
         }
 
         public bool IsEmpty()
@@ -127,7 +126,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             Item item = ItemInHand;
             item.SetContainer(null);
-            ItemUtility.Place(item.Actor, position, rotation, transform);
+            ItemUtility.Place(item, position, rotation, transform);
         }
         
         private void HandleSwapHands(InputAction.CallbackContext context)
@@ -201,7 +200,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return null;
             }
 
-            IInteractionSource interactionSource = itemInHand.Actor.Prefab.GetComponent<IInteractionSource>();
+            IInteractionSource interactionSource = itemInHand.Prefab.GetComponent<IInteractionSource>();
             if (interactionSource != null)
             {
                 interactionSource.Source = this;
