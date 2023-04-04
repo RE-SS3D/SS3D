@@ -226,7 +226,7 @@ namespace SS3D.Systems.Inventory.Items
         /// Checks if the item is currently stored in a container
         /// </summary>
         /// <returns></returns>
-        public bool ISOnContainer()
+        public bool InContainer()
         {
             return _container != null;
         }
