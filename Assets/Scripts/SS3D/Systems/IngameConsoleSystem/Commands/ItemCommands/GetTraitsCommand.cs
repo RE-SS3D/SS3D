@@ -3,6 +3,9 @@ using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
+    /// <summary>
+    /// Command to get all traits in console on an item held in hand.
+    /// </summary>
     public class GetTraitCommand : Command
     {
         public override string LongDescription => "Get all traits from item in hand";

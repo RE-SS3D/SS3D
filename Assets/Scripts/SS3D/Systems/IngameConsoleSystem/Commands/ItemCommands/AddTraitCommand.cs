@@ -4,7 +4,10 @@ using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
-	public class AddTraitCommand : Command
+    /// <summary>
+    /// Command to add a new trait with a chosen name on an item held in hand.
+    /// </summary>
+    public class AddTraitCommand : Command
     {
         public override string LongDescription => "Adds a trait to the item in hand";
         public override string ShortDescription => "item.addtrait";

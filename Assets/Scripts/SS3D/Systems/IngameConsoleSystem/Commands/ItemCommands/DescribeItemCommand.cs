@@ -3,6 +3,9 @@ using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
+    /// <summary>
+    /// Command to describe an item held in hand.
+    /// </summary>
     public class DescribeItemCommand : Command
     {
         public override string LongDescription => "Describes the item in hand";
