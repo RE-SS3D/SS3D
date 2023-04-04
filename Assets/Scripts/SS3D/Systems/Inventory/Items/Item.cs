@@ -80,11 +80,15 @@ namespace SS3D.Systems.Inventory.Items
 
         private bool _initialised = false;
 
+        /// <summary>
+        /// Initialise this item fields. Can only be called once.
+        /// </summary>
         public void Init(string name, float weight, Vector2Int size,  List<Trait> traits)
         {
             if (_initialised)
             {
                 Punpun.Error(this, "Item already initialised, returning");
+                return;
             }
             _name = name ?? string.Empty;
             _weight = weight;
