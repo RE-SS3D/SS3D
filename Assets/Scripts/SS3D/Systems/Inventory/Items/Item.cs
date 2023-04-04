@@ -78,11 +78,11 @@ namespace SS3D.Systems.Inventory.Items
 
         public Container Container => _container;
 
-        private bool initialised = false;
+        private bool _initialised = false;
 
         public void Init(string name, float weight, Vector2Int size,  List<Trait> traits)
         {
-            if (initialised)
+            if (_initialised)
             {
                 Punpun.Error(this, "Item already initialised, returning");
             }
@@ -90,7 +90,7 @@ namespace SS3D.Systems.Inventory.Items
             _weight = weight;
             _size = size;
             _traits.AddRange(traits);
-            initialised = true;
+            _initialised = true;
         }
 
         /// <summary>
