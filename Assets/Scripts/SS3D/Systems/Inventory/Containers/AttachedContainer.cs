@@ -16,6 +16,7 @@ using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
 using static SS3D.Substances.SubstanceContainer;
+using FishNet.Object;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -196,6 +197,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Replace the current container with a new one and set it up.
         /// </summary>
         /// <param name="newContainer"></param>
+        [Server]
         private void UpdateContainer(Container newContainer)
         {
             if (_container != null)
@@ -246,6 +248,7 @@ namespace SS3D.Systems.Inventory.Containers
             _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
 
+        [Server]
         private void handleItemRemoved(Item item)
         {
 
@@ -265,6 +268,7 @@ namespace SS3D.Systems.Inventory.Containers
             item.Unfreeze();
         }
 
+        [Server]
         private void handleItemAdded(Item item)
         {
             item.Freeze();
@@ -284,6 +288,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+        [Server]
         private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)

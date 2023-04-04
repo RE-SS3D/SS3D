@@ -191,6 +191,7 @@ namespace SS3D.Systems.Inventory.Items
         /// Sets if this item is visible or not
         /// </summary>
         /// <param name="visible">Should the item be visible</param>
+        [Server]
         public void SetVisibility(bool visible)
         {
             // TODO: Make this handle multiple renderers, with different states
