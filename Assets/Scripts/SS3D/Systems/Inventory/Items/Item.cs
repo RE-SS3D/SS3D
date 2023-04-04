@@ -311,6 +311,11 @@ namespace SS3D.Systems.Inventory.Items
         }
         public void AddTrait(Trait trait)
         {
+            if (_traits.Contains(trait))
+            {
+                Punpun.Warning(this, "item already contains trait {trait}", Logs.Generic, trait.Name);
+                return;
+            }
              _traits.Add(trait);
         }
 
