@@ -78,12 +78,19 @@ namespace SS3D.Systems.Inventory.Items
 
         public Container Container => _container;
 
+        private bool initialised = false;
+
         public void Init(string name, float weight, Vector2Int size,  List<Trait> traits)
         {
+            if (initialised)
+            {
+                Punpun.Error(this, "Item already initialised, returning");
+            }
             _name = name ?? string.Empty;
             _weight = weight;
             _size = size;
             _traits.AddRange(traits);
+            initialised = true;
         }
 
         /// <summary>
@@ -247,7 +254,22 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void SetContainer(Container newContainer)
         {
-            SetContainer(this, newContainer);
+            if (_container == newContainer)
+            {
+                return;
+            }
+
+            if (_container != null && _container.ContainsItem(this))
+            {
+                Container.RemoveItem(this);
+            }
+
+            if (newContainer != null && !newContainer.ContainsItem(this))
+            {
+                newContainer.AddItem(this);
+            }
+
+            _container = newContainer;
         }
 
         // TODO: Improve this
@@ -272,30 +294,6 @@ namespace SS3D.Systems.Inventory.Items
                 return null;
             }
 
-        }
-
-        /// <summary>
-        /// Don't call this with client ! This should all be done server side.
-        /// </summary>
-        /// <param name="newContainer"></param>
-        public void SetContainer(Item item, Container newContainer)
-        {
-            if (_container == newContainer)
-            {
-                return;
-            }
-
-            if (_container != null && _container.ContainsItem(this))
-            {
-                Container.RemoveItem(this);
-            }
-
-            if (newContainer != null && !newContainer.ContainsItem(this))
-            {
-                newContainer.AddItem(this);
-            }
-
-            _container = newContainer;
         }
 
         public void ValidateSize()
