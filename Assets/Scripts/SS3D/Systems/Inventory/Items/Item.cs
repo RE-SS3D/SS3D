@@ -103,11 +103,6 @@ namespace SS3D.Systems.Inventory.Items
             set => _sprite = value;
         }
 
-        public new void Awake()
-        {
-            base.Awake();
-        }
-
         protected override void OnStart()
         {
             base.OnStart();
@@ -132,7 +127,7 @@ namespace SS3D.Systems.Inventory.Items
 
 
         [ServerOrClient]
-        public Sprite InventorySprite()
+        private Sprite InventorySprite()
         {
             return _sprite == null ? GenerateNewIcon() : Sprite;
         }
@@ -318,14 +313,16 @@ namespace SS3D.Systems.Inventory.Items
         public void ValidateSize()
         {
             // Items can't have no size
-            if (Size.x == 0)
+            if (Size.x <= 0)
             {
                 _size = new Vector2Int(1, Size.y);
+                Punpun.Warning(this, "item size in x lesser or equal zero, reverting it to 1");
             }
 
-            if (Size.y == 0)
+            if (Size.y <= 0)
             {
                 _size = new Vector2Int(Size.x, 1);
+                Punpun.Warning(this, "item size in y lesser or equal zero, reverting it to 1");
             }
         }
 
