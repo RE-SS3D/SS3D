@@ -96,6 +96,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// The sprite that is shown in the container slot
         /// </summary>
+
         public Sprite Sprite
         {
             get => InventorySprite();
@@ -130,7 +131,7 @@ namespace SS3D.Systems.Inventory.Items
         }
 
 
-
+        [ServerOrClient]
         public Sprite InventorySprite()
         {
             return _sprite == null ? GenerateNewIcon() : Sprite;
@@ -139,6 +140,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Destroys this item
         /// </summary>
+        [Server]
         public void Delete()
         {
             SetContainer(null);
@@ -226,11 +228,16 @@ namespace SS3D.Systems.Inventory.Items
         /// Checks if the item is currently stored in a container
         /// </summary>
         /// <returns></returns>
+        [ServerOrClient]
         public bool InContainer()
         {
             return _container != null;
         }
 
+        /// <summary>
+        /// Describe this item properties.
+        /// </summary>
+        [ServerOrClient]
         public string Describe()
         {
             string traits = "";
@@ -246,11 +253,15 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         /// <param name="trait"></param>
         /// <returns></returns>
+        [ServerOrClient]
         public bool HasTrait(Trait trait)
         {
             return _traits.Contains(trait);
         }
 
+        /// <summary>
+        /// Modify the container of this item, can pass null to make this item not depending on any container.
+        /// </summary>
         [Server]
         public void SetContainer(Container newContainer)
         {
@@ -275,6 +286,7 @@ namespace SS3D.Systems.Inventory.Items
         // TODO: Improve this
         // we have this to generate icons at start, I do not know how bad it is for performance
         // if you know anything about it, tell us
+        [ServerOrClient]
         public Sprite GenerateNewIcon()
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
@@ -296,6 +308,10 @@ namespace SS3D.Systems.Inventory.Items
 
         }
 
+        /// <summary>
+        /// Check if size is correctly defined, and if not set it as (1,1).
+        /// </summary>
+        [ServerOrClient]
         public void ValidateSize()
         {
             // Items can't have no size
@@ -309,6 +325,11 @@ namespace SS3D.Systems.Inventory.Items
                 _size = new Vector2Int(Size.x, 1);
             }
         }
+
+        /// <summary>
+        /// Add a new trait to this and sync it
+        /// </summary>
+        [Server]
         public void AddTrait(Trait trait)
         {
             if (_traits.Contains(trait))
@@ -319,6 +340,10 @@ namespace SS3D.Systems.Inventory.Items
              _traits.Add(trait);
         }
 
+        /// <summary>
+        /// Remove a trait from this item.
+        /// </summary>
+        [Server]
         public void RemoveTraits(Trait trait)
         {
              _traits.Remove(trait);
