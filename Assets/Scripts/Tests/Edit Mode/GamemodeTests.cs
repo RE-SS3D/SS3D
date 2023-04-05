@@ -16,18 +16,6 @@ namespace EditorTests
         private bool SHOW_DEBUG = false;
         #endregion
 
-        #region Test set up
-        [SetUp]
-        public void SetUp()
-        {
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-        }
-        #endregion
-
         #region Tests
 
         /// <summary>

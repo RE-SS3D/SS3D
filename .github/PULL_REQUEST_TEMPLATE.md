@@ -4,7 +4,7 @@
 
 ## Summary
 
-<!-- Provide a general summary of your change here and in the title. -->
+<!-- Provide a general summary of your change here. -->
 
 <!-- Follow with a more concise explanation of your change here. -->
 
