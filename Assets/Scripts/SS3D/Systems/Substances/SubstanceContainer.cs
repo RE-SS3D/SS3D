@@ -9,12 +9,12 @@ using SS3D.Systems.Inventory.Containers;
 using SS3D.Interactions.Interfaces;
 using SS3D.Core;
 using System.Collections.ObjectModel;
+using SS3D.Logging;
 
 namespace SS3D.Substances
 {
     /// <summary>
-    /// Stores substances. Put all network logic in this, and all substance container logic
-    /// in the nested class to respect humble object pattern.
+    /// Stores substances, allows transfer between different containers. 
     /// </summary>
     public class SubstanceContainer : InteractionTargetNetworkBehaviour
     {
@@ -22,7 +22,6 @@ namespace SS3D.Substances
         /// <summary>
         /// A list of initial substances in this container
         /// </summary>
-        [SerializeField]
         public List<SubstanceEntry> InitialSubstances;
 
         [SyncVar]
@@ -38,8 +37,6 @@ namespace SS3D.Substances
         /// </summary>
         [SyncVar]
         private bool _locked;
-
-        private SubstanceContainer substanceContainer;
 
         /// <summary>
         /// A list of all substances in this container
@@ -85,6 +82,9 @@ namespace SS3D.Substances
         /// </summary>
         public float TotalMoles => Substances.Sum(x => x.Moles);
 
+        [SyncVar]
+        private bool _initialised = false;
+
         /// <summary>
         /// Multiplier to convert moles in this container to volume
         /// </summary>
@@ -108,12 +108,19 @@ namespace SS3D.Substances
             {
                 AddSubstance(substance.Substance, substance.Moles);
             }
+            if (IsServer) _initialised = true;
         }
 
         public void Init(float volume, bool locked)
         {
+            if (_initialised)
+            {
+                Punpun.Warning(this, "already initialised, returning");
+                return;
+            }
             _volume = volume;
             _locked = locked;
+            _initialised = true;
         }
         /// <summary>
         /// Removes the specified amount of substance
