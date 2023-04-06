@@ -76,7 +76,7 @@ namespace SS3D.Substances
         /// <summary>
         /// The filled volume in ml
         /// </summary>
-        public float CurrentVolume { get; set; }
+        public float CurrentVolume => _currentVolume;
 
         public bool CanTransfer => !_locked;
 
@@ -148,7 +148,7 @@ namespace SS3D.Substances
 
         private void RecalculateAndSyncVolume()
         {
-            CurrentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
+            _currentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
         }
 
         /// <summary>
@@ -174,7 +174,6 @@ namespace SS3D.Substances
         [Server]
         protected virtual void OnContentsChanged()
         {
-             ProcessContainer(this);
             ContentsChanged?.Invoke(this);
         }
 
