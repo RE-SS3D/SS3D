@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Set of tests for the substanceContainer class
+/// </summary>
 public class SubstanceContainerTests
 {
 
@@ -14,10 +17,6 @@ public class SubstanceContainerTests
     private Substance _beer;
     private Substance _water;
 
-    /// <summary>
-    /// Test to confirm that interactions can only be commenced when stamina is greater than zero, and will otherwise fail.
-    /// </summary>
-    /// 
     [SetUp]
     public void SetUp()
     {
@@ -39,14 +38,6 @@ public class SubstanceContainerTests
         _water.Color = Color.yellow;
         _water.MillilitersPerMole = 35;
         _water.Type = SubstanceType.Water;
-
-
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-
     }
 
     [Test]
