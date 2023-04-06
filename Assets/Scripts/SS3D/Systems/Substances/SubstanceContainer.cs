@@ -18,7 +18,7 @@ namespace SS3D.Substances
     /// </summary>
     public class SubstanceContainer : InteractionTargetNetworkBehaviour
     {
-        #region substanceContainerActor
+        #region substanceContainer
         /// <summary>
         /// A list of initial substances in this container
         /// </summary>
@@ -99,6 +99,14 @@ namespace SS3D.Substances
                     val += entry.Substance.MillilitersPerMole * (entry.Moles / total);
                 }
                 return val;
+            }
+        }
+
+        protected override void OnStart()
+        {
+            foreach(var substance in InitialSubstances)
+            {
+                AddSubstance(substance.Substance, substance.Moles);
             }
         }
 
