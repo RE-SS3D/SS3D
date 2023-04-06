@@ -16,7 +16,7 @@ namespace SS3D.Substances
     /// Stores substances. Put all network logic in this, and all substance container logic
     /// in the nested class to respect humble object pattern.
     /// </summary>
-    public class SubstanceContainerActor : InteractionTargetNetworkBehaviour
+    public class SubstanceContainer : InteractionTargetNetworkBehaviour
     {
         #region substanceContainerActor
         /// <summary>
@@ -26,10 +26,12 @@ namespace SS3D.Substances
         public List<SubstanceEntry> InitialSubstances;
 
         [SyncVar]
-        private float currentVolume;
+        private float _currentVolume;
 
         [SyncVar]
-        private float volume;
+        private float _volume;
+
+        private float _temperature;
 
         /// <summary>
         /// Is the container locked?
@@ -40,72 +42,71 @@ namespace SS3D.Substances
         private SubstanceContainer substanceContainer;
 
         /// <summary>
-        /// The remaining volume in milliliters that fit in this container
+        /// A list of all substances in this container
         /// </summary>
-        public float RemainingVolume => substanceContainer.RemainingVolume;
+        private List<SubstanceEntry> _substances = new List<SubstanceEntry>();
 
-        /// <summary>
-        /// The filled volume in ml
-        /// </summary>
-        public float CurrentVolume => substanceContainer.CurrentVolume;
 
         /// <summary>
         /// The temperature of the container
         /// </summary>
-        public float Temperature => substanceContainer.Temperature;
+        public float Temperature => _temperature;
 
-        public float TotalMoles => substanceContainer.TotalMoles;
-
-        public ReadOnlyCollection<SubstanceEntry> Substances => substanceContainer.Substances;
+        public ReadOnlyCollection<SubstanceEntry> Substances => _substances.AsReadOnly();
 
         /// <summary>
         /// The capacity of this container in milliliters
         /// </summary>
-        public float Volume => substanceContainer.Volume;
+        public float Volume => _volume;
 
         public bool Locked => _locked;
 
-        public delegate void OnContentChanged(SubstanceContainerActor container);
+        public delegate void OnContentChanged(SubstanceContainer container);
 
         public event OnContentChanged ContentsChanged;
 
-        private void Start()
-        {
-            substanceContainer = new SubstanceContainer(volume, InitialSubstances, this);
-        }
+        /// <summary>
+        /// The remaining volume in milliliters that fit in this container
+        /// </summary>
+        public float RemainingVolume => _volume - _currentVolume;
 
-        public bool IsEmpty()
-        {
-            return substanceContainer.IsEmpty;
-        }
+        public bool IsEmpty => CurrentVolume == 0f;
 
-        public bool CanTransfer()
-        {
-            return !Locked;
-        }
 
         /// <summary>
-        /// Adds an amount of an substance to the container.
+        /// The filled volume in ml
         /// </summary>
-        /// <param name="substance">The substance to add</param>
-        /// <param name="moles">How many moles should be added</param>
-        [Server]
-        public void AddSubstance(Substance substance, float moles)
-        {
-            substanceContainer.AddSubstance(substance, moles);
-        }
+        public float CurrentVolume { get; set; }
+
+        public bool CanTransfer => !_locked;
 
         /// <summary>
-        /// Checks if this container contains the desired substance
+        /// The total number of moles
         /// </summary>
-        /// <param name="substance">The desired substance</param>
-        /// <param name="moles">The desired amount</param>
-        [Server]
-        public bool ContainsSubstance(Substance substance, float moles = 0.0001f)
+        public float TotalMoles => Substances.Sum(x => x.Moles);
+
+        /// <summary>
+        /// Multiplier to convert moles in this container to volume
+        /// </summary>
+        public float MolesToVolume
         {
-            return substanceContainer.ContainsSubstance(substance, moles);
+            get
+            {
+                float val = 0;
+                float total = TotalMoles;
+                foreach (var entry in Substances)
+                {
+                    val += entry.Substance.MillilitersPerMole * (entry.Moles / total);
+                }
+                return val;
+            }
         }
 
+        public void Init(float volume, bool locked)
+        {
+            _volume = volume;
+            _locked = locked;
+        }
         /// <summary>
         /// Removes the specified amount of substance
         /// </summary>
@@ -114,36 +115,32 @@ namespace SS3D.Substances
         [Server]
         public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
         {
-            substanceContainer.RemoveSubstance(substance, moles);
+            if (!CanTransfer)
+                return;
+
+            int index = IndexOfSubstance(substance);
+            if (index < 0)
+            {
+                return;
+            }
+
+            SubstanceEntry entry = Substances[index];
+            float newAmount = entry.Moles - moles;
+            if (newAmount <= 0.000001)
+            {
+                _substances.RemoveAt(index);
+            }
+            else
+            {
+                entry.Moles = newAmount;
+                _substances[index] = entry;
+            }
+            RecalculateAndSyncVolume();
         }
 
-        /// <summary>
-        /// Empties the container
-        /// </summary>
-        public void Empty()
+        private void RecalculateAndSyncVolume()
         {
-            substanceContainer.Empty();
-        }
-
-        /// <summary>
-        /// Removes moles from the container
-        /// </summary>
-        /// <param name="moles">The amount of moles</param>
-        [Server]
-        public void RemoveMoles(float moles)
-        {
-            substanceContainer.RemoveMoles(moles);
-        }
-
-        /// <summary>
-        /// Transfers moles to a different container
-        /// </summary>
-        /// <param name="other">The other container</param>
-        /// <param name="moles">The moles to transfer</param>
-        [Server]
-        public void TransferMoles(SubstanceContainerActor other, float moles)
-        {
-            substanceContainer.TransferMoles(other.substanceContainer, moles);
+            CurrentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
         }
 
         /// <summary>
@@ -151,22 +148,11 @@ namespace SS3D.Substances
         /// </summary>
         /// <param name="other">The other container</param>
         /// <param name="milliliters">How many milliliters to transfer</param>
-        [Server]
-        public void TransferVolume(SubstanceContainerActor other, float milliliters)
+        public void TransferVolume(SubstanceContainer other, float milliliters)
         {
-            substanceContainer.TransferVolume(other.substanceContainer, milliliters);
+            TransferMoles(other, milliliters / MolesToVolume);
         }
 
-        /// <summary>
-        /// Returns the index of an substance
-        /// </summary>
-        /// <param name="substance">The substance to look for</param>
-        /// <returns>The index or -1 if it is not found</returns>
-        [Server]
-        public int IndexOfSubstance(Substance substance)
-        {
-            return substanceContainer.IndexOfSubstance(substance);
-        }
 
         /// <summary>
         /// Informs the system that the contents of this container have changed
@@ -193,426 +179,269 @@ namespace SS3D.Substances
         }
 
         /// <summary>
-        /// Processes substances in a container
+        /// Transfers moles to a different container
         /// </summary>
-        public static void ProcessContainer(SubstanceContainerActor container)
+        /// <param name="other">The other container</param>
+        /// <param name="moles">The moles to transfer</param>
+        public void TransferMoles(SubstanceContainer other, float moles)
         {
-            SubstanceContainer.ProcessContainer(container.substanceContainer);
-            container.MarkDirty();
+            // Only transfer what's left.
+            var totalMoles = Substances.Sum(x => x.Moles);
+            if (moles > totalMoles)
+            {
+                moles = totalMoles;
+            }
+
+            // TODO : Only transfer what can be transferred ?
+
+            float relativeMoles = moles / totalMoles;
+
+            for (var i = 0; i < Substances.Count; i++)
+            {
+                SubstanceEntry entry = Substances[i];
+                float entryMoles = entry.Moles * relativeMoles;
+                entry.Moles -= entryMoles;
+                other.AddSubstance(entry.Substance, entryMoles);
+                if (entry.Moles <= 0.0000001)
+                {
+                    _substances.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    _substances[i] = entry;
+                }
+            }
+            RecalculateAndSyncVolume();
         }
 
-        #endregion
-
-        #region SubstanceContainer
-        public class SubstanceContainer
+        /// <summary>
+        /// Returns the index of an substance
+        /// </summary>
+        /// <param name="substance">The substance to look for</param>
+        /// <returns>The index or -1 if it is not found</returns>
+        public int IndexOfSubstance(Substance substance)
         {
-            /// <summary>
-            /// do not modify directly, use the property setter Volume instead.
-            /// </summary>
-            private float _volume;
-
-            private float _currentVolume;
-
-            /// <summary>
-            /// A list of all substances in this container
-            /// </summary>
-            private List<SubstanceEntry> _substances;
-
-            public ReadOnlyCollection<SubstanceEntry> Substances => _substances.AsReadOnly();
-
-            private SubstanceContainerActor _actor;
-
-            /// <summary>
-            /// Is the container locked?
-            /// </summary>
-            private bool _locked;
-
-            /// <summary>
-            /// The temperature of the container
-            /// </summary>
-            private float _temperature;
-
-            /// <summary>
-            /// The total number of moles
-            /// </summary>
-            public float TotalMoles => Substances.Sum(x => x.Moles);
-
-            /// <summary>
-            /// The remaining volume in milliliters that fit in this container
-            /// </summary>
-            public float RemainingVolume => _volume - _currentVolume;
-
-            public float Temperature => _temperature;
-
-
-            /// <summary>
-            /// The capacity of this container in milliliters
-            /// </summary>
-            public float Volume => _volume;
-
-            public bool IsEmpty => _currentVolume == 0f;
-
-            public bool CanTransfer => !_locked;
-
-            /// <summary>
-            /// Multiplier to convert moles in this container to volume
-            /// </summary>
-            public float MolesToVolume
+            for (int i = 0; i < Substances.Count; i++)
             {
-                get
+                if (Substances[i].Substance == substance)
                 {
-                    float val = 0;
-                    float total = TotalMoles;
-                    foreach (var entry in Substances)
-                    {
-                        val += entry.Substance.MillilitersPerMole * (entry.Moles / total);
-                    }
-                    return val;
+                    return i;
                 }
             }
 
+            return -1;
+        }
 
-            /// <summary>
-            /// The filled volume in ml
-            /// </summary>
-            public float CurrentVolume
+        /// <summary>
+        /// Adds an amount of an substance to the container.
+        /// </summary>
+        /// <param name="substance">The substance to add</param>
+        /// <param name="moles">How many moles should be added</param>
+        [Server]
+        public void AddSubstance(Substance substance, float moles)
+        {
+
+            if (!CanTransfer)
+                return;
+
+            var remainingCapacity = RemainingVolume;
+            var additionalVolume = moles * substance.MillilitersPerMole;
+            if (additionalVolume > remainingCapacity)
             {
-                get => _currentVolume;
-                set
-                {
-                    _currentVolume = value;
-                    if (_actor != null)
-                    {
-                        _actor.currentVolume = value;
-                    }
-                }
+                moles = remainingCapacity / substance.MillilitersPerMole;
             }
 
-
-            public SubstanceContainer(float volume, bool locked = false)
+            int index = _substances.FindIndex(x => x.Substance == substance);
+            if (index == -1)
             {
-                _substances = new List<SubstanceEntry>();
-                _volume = volume;
-                _locked = locked;
-                RecalculateAndSyncVolume();
+                _substances.Add(new SubstanceEntry(substance, moles));
             }
-
-            public SubstanceContainer(float volume, List<SubstanceEntry> initialSubstances, SubstanceContainerActor actor)
+            else
             {
-                _volume = volume;
-                _substances = initialSubstances;
-                _actor = actor;
-                RecalculateAndSyncVolume();
-            }
-
-            /// <summary>
-            /// Can this container hold an additional amount of milliliters
-            /// </summary>
-            /// <param name="milliliters">The amount of additional milliliters</param>
-            /// <returns>If it fits the container</returns>
-            public bool CanFitUnits(uint milliliters)
-            {
-                return RemainingVolume >= milliliters;
-            }
-
-            /// <summary>
-            /// Adds an amount of an substance to the container.
-            /// </summary>
-            /// <param name="substance">The substance to add</param>
-            /// <param name="moles">How many moles should be added</param>
-            [Server]
-            public void AddSubstance(Substance substance, float moles)
-            {
-
-                if (!CanTransfer)
-                    return;
-
-                var remainingCapacity = RemainingVolume;
-                var additionalVolume = moles * substance.MillilitersPerMole;
-                if (additionalVolume > remainingCapacity)
-                {
-                    moles = remainingCapacity / substance.MillilitersPerMole;
-                }
-
-                int index = _substances.FindIndex(x => x.Substance == substance);
-                if (index == -1)
-                {
-                    _substances.Add(new SubstanceEntry(substance, moles));
-                }
-                else
-                {
-                    SubstanceEntry entry = Substances[index];
-                    entry.Moles += moles;
-                    _substances[index] = entry;
-                }
-                RecalculateAndSyncVolume();
-                Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
-            }
-
-            /// <summary>
-            /// Checks if this container contains the desired substance.
-            /// </summary>
-            /// <param name="substance">The desired substance</param>
-            /// <param name="moles">The desired amount</param>
-            [Server]
-            public bool ContainsSubstance(Substance substance, float moles = 0.0001f)
-            {
-                return Substances.FirstOrDefault(x => x.Substance == substance).Moles >= moles;
-            }
-
-            /// <summary>
-            /// Removes the specified amount of a given substance.
-            /// </summary>
-            /// <param name="substance">The substance to remove</param>
-            /// <param name="moles">The amount of substance</param>
-            [Server]
-            public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
-            {
-                if (!CanTransfer)
-                    return;
-
-                int index = IndexOfSubstance(substance);
-                if (index < 0)
-                {
-                    return;
-                }
-
                 SubstanceEntry entry = Substances[index];
-                float newAmount = entry.Moles - moles;
-                if (newAmount <= 0.000001)
+                entry.Moles += moles;
+                _substances[index] = entry;
+            }
+            RecalculateAndSyncVolume();
+            Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
+        }
+
+        /// <summary>
+        /// Removes moles from the container. For each substance present in the container,
+        /// remove a proportionnal amount of mole. If it contains 50 moles of alcohol and 100 moles of water,
+        /// removing 15 moles will remove 5 moles of alcohol, and 10 of water.
+        /// </summary>
+        /// <param name="moles">The amount of moles</param>
+        public void RemoveMoles(float moles)
+        {
+            var totalMoles = _substances.Sum(x => x.Moles);
+            if (moles > totalMoles)
+            {
+                moles = totalMoles;
+            }
+
+            if (moles <= 0)
+            {
+                return;
+            }
+
+            for (var i = 0; i < Substances.Count; i++)
+            {
+                SubstanceEntry entry = Substances[i];
+                entry.Moles -= entry.Moles / totalMoles * moles;
+                if (entry.Moles <= 0.0001)
                 {
-                    _substances.RemoveAt(index);
+                    _substances.RemoveAt(i);
+                    i--;
                 }
                 else
                 {
-                    entry.Moles = newAmount;
-                    _substances[index] = entry;
+                    _substances[i] = entry;
                 }
-                RecalculateAndSyncVolume();
             }
+            RecalculateAndSyncVolume();
+        }
 
-            /// <summary>
-            /// Empties the container
-            /// </summary>
-            public void Empty()
+        /// <summary>
+        /// Can this container hold an additional amount of milliliters
+        /// </summary>
+        /// <param name="milliliters">The amount of additional milliliters</param>
+        /// <returns>If it fits the container</returns>
+        public bool CanFitUnits(uint milliliters)
+        {
+            return RemainingVolume >= milliliters;
+        }
+
+        /// <summary>
+        /// Empties the container
+        /// </summary>
+        public void Empty()
+        {
+            _substances.Clear();
+        }
+
+        /// <summary>
+        /// Checks if this container contains the desired substance.
+        /// </summary>
+        /// <param name="substance">The desired substance</param>
+        /// <param name="moles">The desired amount</param>
+        [Server]
+        public bool ContainsSubstance(Substance substance, float moles = 0.0001f)
+        {
+            return Substances.FirstOrDefault(x => x.Substance == substance).Moles >= moles;
+        }
+
+
+        /// <summary>
+        /// Processes substances in a container
+        /// </summary>
+        public static void ProcessContainer(SubstanceContainer container)
+        {
+            var registry = Subsystems.Get<SubstancesSystem>();
+            float temperature = container.Temperature;
+
+            // Process recipes
+            // TODO : Highly inefficient as most recipes won't be achievable given the substances in the substance container.
+            // Instead, find a good data structure able to search through a small set of recipes, based on number of 
+            // ingredients or even ingredient types.
+            foreach (Recipe recipe in registry.Recipes)
             {
-                _substances.Clear();
-            }
-
-
-            /// <summary>
-            /// Removes moles from the container. For each substance present in the container,
-            /// remove a proportionnal amount of mole. If it contains 50 moles of alcohol and 100 moles of water,
-            /// removing 15 moles will remove 5 moles of alcohol, and 10 of water.
-            /// </summary>
-            /// <param name="moles">The amount of moles</param>
-            public void RemoveMoles(float moles)
-            {
-                var totalMoles = _substances.Sum(x => x.Moles);
-                if (moles > totalMoles)
+                // Check temperature limits
+                if (temperature < recipe.MinimalTemperature || temperature > recipe.MaximalTemperature)
                 {
-                    moles = totalMoles;
-                }
-
-                if (moles <= 0)
-                {
-                    return;
-                }
-
-                for (var i = 0; i < Substances.Count; i++)
-                {
-                    SubstanceEntry entry = Substances[i];
-                    entry.Moles -= entry.Moles / totalMoles * moles;
-                    if (entry.Moles <= 0.0001)
-                    {
-                        _substances.RemoveAt(i);
-                        i--;
-                    }
-                    else
-                    {
-                        _substances[i] = entry;
-                    }
-                }
-                RecalculateAndSyncVolume();
-            }
-
-            /// <summary>
-            /// Transfers moles to a different container
-            /// </summary>
-            /// <param name="other">The other container</param>
-            /// <param name="moles">The moles to transfer</param>
-            public void TransferMoles(SubstanceContainer other, float moles)
-            {
-                // Only transfer what's left.
-                var totalMoles = Substances.Sum(x => x.Moles);
-                if (moles > totalMoles)
-                {
-                    moles = totalMoles;
+                    continue;
                 }
 
-                // TODO : Only transfer what can be transferred ?
-
-                float relativeMoles = moles / totalMoles;
-
-                for (var i = 0; i < Substances.Count; i++)
+                // Gather the mole amount of every substance
+                float[] moles = new float[recipe.Ingredients.Length];
+                bool ingredientsPresent = true;
+                for (var i = 0; i < recipe.Ingredients.Length; i++)
                 {
-                    SubstanceEntry entry = Substances[i];
-                    float entryMoles = entry.Moles * relativeMoles;
-                    entry.Moles -= entryMoles;
-                    other.AddSubstance(entry.Substance, entryMoles);
-                    if (entry.Moles <= 0.0000001)
+                    ingredientsPresent = false;
+                    foreach (var entry in container.Substances)
                     {
-                        _substances.RemoveAt(i);
-                        i--;
-                    }
-                    else
-                    {
-                        _substances[i] = entry;
-                    }
-                }
-                RecalculateAndSyncVolume();
-            }
-
-            /// <summary>
-            /// Transfers volume (ml) to a different container
-            /// </summary>
-            /// <param name="other">The other container</param>
-            /// <param name="milliliters">How many milliliters to transfer</param>
-            public void TransferVolume(SubstanceContainer other, float milliliters)
-            {
-                TransferMoles(other, milliliters / MolesToVolume);
-            }
-
-            /// <summary>
-            /// Returns the index of an substance
-            /// </summary>
-            /// <param name="substance">The substance to look for</param>
-            /// <returns>The index or -1 if it is not found</returns>
-            public int IndexOfSubstance(Substance substance)
-            {
-                for (int i = 0; i < Substances.Count; i++)
-                {
-                    if (Substances[i].Substance == substance)
-                    {
-                        return i;
-                    }
-                }
-
-                return -1;
-            }
-
-            private void RecalculateAndSyncVolume()
-            {
-                CurrentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
-            }
-
-            /// <summary>
-            /// Processes substances in a container
-            /// </summary>
-            public static void ProcessContainer(SubstanceContainer container)
-            {
-                var registry = Subsystems.Get<SubstancesSystem>();
-                float temperature = container._temperature;
-
-                // Process recipes
-                // TODO : Highly inefficient as most recipes won't be achievable given the substances in the substance container.
-                // Instead, find a good data structure able to search through a small set of recipes, based on number of 
-                // ingredients or even ingredient types.
-                foreach (Recipe recipe in registry.Recipes)
-                {
-                    // Check temperature limits
-                    if (temperature < recipe.MinimalTemperature || temperature > recipe.MaximalTemperature)
-                    {
-                        continue;
-                    }
-
-                    // Gather the mole amount of every substance
-                    float[] moles = new float[recipe.Ingredients.Length];
-                    bool ingredientsPresent = true;
-                    for (var i = 0; i < recipe.Ingredients.Length; i++)
-                    {
-                        ingredientsPresent = false;
-                        foreach (var entry in container._substances)
+                        if (entry.Substance.Type == recipe.Ingredients[i].Type)
                         {
-                            if (entry.Substance.Type == recipe.Ingredients[i].Type)
-                            {
-                                moles[i] = entry.Moles;
-                                ingredientsPresent = true;
-                                break;
-                            }
-                        }
-
-                        if (!ingredientsPresent)
-                        {
+                            moles[i] = entry.Moles;
+                            ingredientsPresent = true;
                             break;
                         }
                     }
 
-                    // Substance missing
                     if (!ingredientsPresent)
                     {
-                        continue;
-                    }
-
-                    // Calculate the maximum amount of ingredients
-                    float totalIngredients = recipe.Ingredients.Sum(x => x.RelativeAmount);
-                    float maxConversion = float.MaxValue;
-                    for (var i = 0; i < moles.Length; i++)
-                    {
-                        float relativeAmount = recipe.Ingredients[i].RelativeAmount;
-                        float part = relativeAmount / totalIngredients;
-                        float maxProduced = moles[i] / part;
-                        if (maxProduced < maxConversion)
-                        {
-                            maxConversion = maxProduced;
-                        }
-                    }
-
-                    // Calculate relative volume of ingredients
-                    Substance[] ingredientSubstances = new Substance[moles.Length];
-                    float ingredientsToVolume = 0;
-                    for (var i = 0; i < moles.Length; i++)
-                    {
-                        var component = recipe.Ingredients[i];
-                        var substance = ingredientSubstances[i] = registry.FromType(component.Type);
-                        ingredientsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
-                    }
-                    ingredientsToVolume /= totalIngredients;
-
-                    // Calculate relative volume of results
-                    float totalResults = recipe.Results.Sum(x => x.RelativeAmount);
-                    Substance[] resultSubstances = new Substance[recipe.Results.Length];
-                    float resultsToVolume = 0;
-                    for (var i = 0; i < recipe.Results.Length; i++)
-                    {
-                        var component = recipe.Results[i];
-                        var substance = resultSubstances[i] = registry.FromType(component.Type);
-                        resultsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
-                    }
-                    resultsToVolume /= totalResults;
-
-                    // Limit the reaction to prevent spill
-                    // TODO: Spill container into surroundings
-                    float remainingVolume = container.RemainingVolume;
-                    if (maxConversion * totalResults * resultsToVolume - maxConversion * ingredientsToVolume > remainingVolume)
-                    {
-                        maxConversion = remainingVolume / resultsToVolume / totalResults;
-                    }
-
-                    // Remove ingredients
-                    for (var i = 0; i < moles.Length; i++)
-                    {
-                        container.RemoveSubstance(ingredientSubstances[i], maxConversion * (recipe.Ingredients[i].RelativeAmount / totalIngredients));
-                    }
-
-                    // Add results
-                    foreach (var component in recipe.Results)
-                    {
-                        container.AddSubstance(registry.FromType(component.Type), maxConversion * (component.RelativeAmount / totalResults));
+                        break;
                     }
                 }
+
+                // Substance missing
+                if (!ingredientsPresent)
+                {
+                    continue;
+                }
+
+                // Calculate the maximum amount of ingredients
+                float totalIngredients = recipe.Ingredients.Sum(x => x.RelativeAmount);
+                float maxConversion = float.MaxValue;
+                for (var i = 0; i < moles.Length; i++)
+                {
+                    float relativeAmount = recipe.Ingredients[i].RelativeAmount;
+                    float part = relativeAmount / totalIngredients;
+                    float maxProduced = moles[i] / part;
+                    if (maxProduced < maxConversion)
+                    {
+                        maxConversion = maxProduced;
+                    }
+                }
+
+                // Calculate relative volume of ingredients
+                Substance[] ingredientSubstances = new Substance[moles.Length];
+                float ingredientsToVolume = 0;
+                for (var i = 0; i < moles.Length; i++)
+                {
+                    var component = recipe.Ingredients[i];
+                    var substance = ingredientSubstances[i] = registry.FromType(component.Type);
+                    ingredientsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
+                }
+                ingredientsToVolume /= totalIngredients;
+
+                // Calculate relative volume of results
+                float totalResults = recipe.Results.Sum(x => x.RelativeAmount);
+                Substance[] resultSubstances = new Substance[recipe.Results.Length];
+                float resultsToVolume = 0;
+                for (var i = 0; i < recipe.Results.Length; i++)
+                {
+                    var component = recipe.Results[i];
+                    var substance = resultSubstances[i] = registry.FromType(component.Type);
+                    resultsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
+                }
+                resultsToVolume /= totalResults;
+
+                // Limit the reaction to prevent spill
+                // TODO: Spill container into surroundings
+                float remainingVolume = container.RemainingVolume;
+                if (maxConversion * totalResults * resultsToVolume - maxConversion * ingredientsToVolume > remainingVolume)
+                {
+                    maxConversion = remainingVolume / resultsToVolume / totalResults;
+                }
+
+                // Remove ingredients
+                for (var i = 0; i < moles.Length; i++)
+                {
+                    container.RemoveSubstance(ingredientSubstances[i], maxConversion * (recipe.Ingredients[i].RelativeAmount / totalIngredients));
+                }
+
+                // Add results
+                foreach (var component in recipe.Results)
+                {
+                    container.AddSubstance(registry.FromType(component.Type), maxConversion * (component.RelativeAmount / totalResults));
+                }
             }
-            #endregion
+
+            container.MarkDirty();
         }
+
+        #endregion
     }
 }
