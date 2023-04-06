@@ -10,13 +10,13 @@ namespace SS3D.Data.Enums
         PDA = 5, 
         IDCard = 6, 
         Mug = 7, 
-        SodaCanBeepSoda = 8, 
-        SodaCanBeepyLime = 9, 
+        SodaCanCola = 8, 
+        SodaCanCannedLaughter = 9, 
         SodaCanCannedAir = 10, 
-        SodaCanCannedLaughter = 11, 
-        SodaCanCola = 12, 
-        SodaCanDukePurpleTea = 13, 
-        SodaCanTonic = 14, 
+        SodaCanTonic = 11, 
+        SodaCanBeepyLime = 12, 
+        SodaCanBeepsSoda = 13, 
+        SodaCanDukePurpleTea = 14, 
     }
 }
 
