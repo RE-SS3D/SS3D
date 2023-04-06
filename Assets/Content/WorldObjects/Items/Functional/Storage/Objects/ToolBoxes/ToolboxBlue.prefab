@@ -420,21 +420,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 5533951594911835035}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  _itemId: 0
   _name: 
-  _sprite: {fileID: 0}
-  _rigidbody: {fileID: 2081909342595332650}
   _weight: 1
+  _size: {x: 1, y: 1}
+  _startingTraits: []
+  _rigidbody: {fileID: 2081909342595332650}
   Prefab: {fileID: 5533951594911835035}
   AttachmentPoint: {fileID: 6311512130502363032}
   AttachmentPointAlt: {fileID: 2809404673239714095}
-  traits: []
 --- !u!95 &5206759755089209485
 Animator:
   serializedVersion: 4
@@ -522,7 +521,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 16
+  <PrefabId>k__BackingField: 47
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11478259988983769400

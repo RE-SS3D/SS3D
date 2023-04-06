@@ -1,0 +1,16 @@
+name: 'Task Assignment'
+description: 'Allows a contributor to assign or unassign themselves from an issue.'
+author: Ryan Puth
+branding:
+  icon: 'thumbs-up'
+  color: 'white'
+
+inputs:
+  token:
+    description: 'The GitHub PAT used to authenticate when updating the Issue'
+    required: true
+    default: ${{ github.token }}
+
+runs:
+  using: 'node16'
+  main: 'index.js'

@@ -72,10 +72,9 @@ namespace SS3D.Systems.Inventory.UI
         {
             // For some reason, has to be delayed to end of frame to work.
             yield return new WaitForEndOfFrame();
-            Container container = AttachedContainer.Container;
-            foreach (Item item in container.Items)
+            foreach (Item item in AttachedContainer.Items)
             {
-                Vector2Int position = container.PositionOf(item);
+                Vector2Int position = AttachedContainer.Container.PositionOf(item);
                 CreateItemDisplay(item, position);
             }
         }
@@ -91,6 +90,7 @@ namespace SS3D.Systems.Inventory.UI
                 case ContainerChangeType.Add:
                     foreach (Item item in newItems)
                     {
+                        if (item == null) continue;
                         Vector2Int position = container.PositionOf(item);
                         CreateItemDisplay(item, position);
                     }
@@ -98,6 +98,7 @@ namespace SS3D.Systems.Inventory.UI
                 case ContainerChangeType.Remove:
                     foreach (Item item in oldItems)
                     {
+                        if (item == null) continue;
                         for (var i = 0; i < _gridItems.Count; i++)
                         {
                             ItemGridItem gridItem = _gridItems[i];
@@ -115,6 +116,7 @@ namespace SS3D.Systems.Inventory.UI
                 case ContainerChangeType.Move:
                     foreach (Item item in newItems)
                     {
+                        if (item == null) continue;
                         foreach (ItemGridItem gridItem in _gridItems)
                         {
                             if (gridItem.Item == item)

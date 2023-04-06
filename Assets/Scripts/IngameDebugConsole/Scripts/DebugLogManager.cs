@@ -416,8 +416,10 @@ namespace IngameDebugConsole
 			}
 			else if( Instance != this )
 			{
-				Destroy( gameObject );
-				return;
+#pragma warning disable COIMBRA0008 // Object.Destroy should not be used with Objects that can be an Actor.
+                Destroy( gameObject );
+#pragma warning restore COIMBRA0008 // Object.Destroy should not be used with Objects that can be an Actor.
+                return;
 			}
 
 			pooledLogEntries = new List<DebugLogEntry>( 16 );
