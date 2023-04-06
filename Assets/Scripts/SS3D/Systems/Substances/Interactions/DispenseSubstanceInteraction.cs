@@ -52,7 +52,7 @@ namespace SS3D.Substances
                 return false;
             }
 
-            SubstanceContainerActor container = provider.GameObject.GetComponent<SubstanceContainerActor>();
+            var container = provider.GameObject.GetComponent<SubstanceContainer>();
             if (container == null)
             {
                 return false;
@@ -71,7 +71,7 @@ namespace SS3D.Substances
         {
             if (interactionEvent.Source is IGameObjectProvider provider)
             {
-                SubstanceContainerActor container = provider.GameObject.GetComponent<SubstanceContainerActor>();
+                var container = provider.GameObject.GetComponent<SubstanceContainer>();
                 if (container != null)
                 {
                     container.AddSubstance(Substance.Substance, Substance.Moles);

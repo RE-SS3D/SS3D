@@ -42,7 +42,7 @@ namespace SS3D.Substances
                 return false;
             }
 
-            var container = provider.GameObject.GetComponent<SubstanceContainerActor>();
+            var container = provider.GameObject.GetComponent<SubstanceContainer>();
             if (container == null)
             {
                 return false;
@@ -53,7 +53,7 @@ namespace SS3D.Substances
                 return false;
             }
 
-            if (container.IsEmpty())
+            if (container.IsEmpty)
             {
                 return false;
             }
@@ -65,10 +65,10 @@ namespace SS3D.Substances
         {
             if (interactionEvent.Source is IGameObjectProvider provider)
             {
-                var container = provider.GameObject.GetComponent<SubstanceContainerActor>();
+                var container = provider.GameObject.GetComponent<SubstanceContainer>();
                 if (container != null)
                 {
-                    var targetContainer = interactionEvent.Target.GetComponent<SubstanceContainerActor>();
+                    var targetContainer = interactionEvent.Target.GetComponent<SubstanceContainer>();
                     container.TransferVolume(targetContainer, 25);
                     container.MarkDirty();
                     targetContainer.MarkDirty();
