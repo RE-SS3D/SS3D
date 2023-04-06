@@ -9,7 +9,8 @@ using UnityEngine;
 public class SubstanceContainerTests
 {
 
-    private SubstanceContainerActor.SubstanceContainer _container;
+    private SubstanceContainer _container;
+    private SubstanceContainer _containerLocked;
     private Substance _beer;
     private Substance _water;
 
@@ -20,7 +21,15 @@ public class SubstanceContainerTests
     [SetUp]
     public void SetUp()
     {
-        _container = new SubstanceContainerActor.SubstanceContainer(10000f);
+        GameObject go = new GameObject();
+        _container = go.AddComponent<SubstanceContainer>();
+        _container.Init(10000f, false);
+
+        GameObject go2 = new GameObject();
+        _containerLocked = go2.AddComponent<SubstanceContainer>();
+        _containerLocked.Init(10000f, true);
+
+
         _beer = ScriptableObject.CreateInstance<Substance>();
         _beer.Color = Color.red;
         _beer.MillilitersPerMole = 50;
@@ -30,6 +39,8 @@ public class SubstanceContainerTests
         _water.Color = Color.yellow;
         _water.MillilitersPerMole = 35;
         _water.Type = SubstanceType.Water;
+
+
     }
 
     [TearDown]
@@ -57,9 +68,9 @@ public class SubstanceContainerTests
     [Test]
     public void CantAddSubstanceWhenLocked()
     {
-        var containerLocked = new SubstanceContainerActor.SubstanceContainer(200f, true);
-        containerLocked.AddSubstance(_beer, int.MaxValue);
-        float currentVolume = containerLocked.CurrentVolume;
+       
+        _containerLocked.AddSubstance(_beer, int.MaxValue);
+        float currentVolume = _containerLocked.CurrentVolume;
         Assert.AreEqual(currentVolume, 0);
     }
 
