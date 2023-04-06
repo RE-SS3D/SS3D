@@ -167,15 +167,14 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
-  _itemId: 1
-  _name: Nuke card
-  _sprite: {fileID: 0}
-  _rigidbody: {fileID: 6351433192589740835}
+  _name: 
   _weight: 1
+  _size: {x: 1, y: 1}
+  _startingTraits: []
+  _rigidbody: {fileID: 6351433192589740835}
   Prefab: {fileID: 6891363543938182813}
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
-  traits: []
 --- !u!114 &4819234911439508660
 MonoBehaviour:
   m_ObjectHideFlags: 0

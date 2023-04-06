@@ -42,7 +42,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
                 return false;
             }
 
-            var idCard = attachedContainer.Container.Items.FirstOrDefault() as IDCard;
+            var idCard = attachedContainer.Items.FirstOrDefault() as IDCard;
             if (idCard == null)
             {
                 return false;

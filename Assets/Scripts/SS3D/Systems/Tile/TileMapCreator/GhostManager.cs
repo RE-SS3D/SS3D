@@ -37,7 +37,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     ghostRigidbody.useGravity = false;
                     ghostRigidbody.isKinematic = true;
                 }
-                var colliders = _ghostObject.GetComponents<Collider>();
+                var colliders = _ghostObject.GetComponentsInChildren<Collider>();
                 foreach (Collider col in colliders)
                 {
                     col.enabled = false;

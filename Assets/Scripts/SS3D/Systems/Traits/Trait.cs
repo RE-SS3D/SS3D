@@ -36,8 +36,10 @@ namespace SS3D.Systems
         public TraitCategories Category
         {
             get => _category;
+            set => _category = value;
         }
 
+        //Two different object can have the same hash, it's usually a bad idea to test for equality with hash.
         protected bool Equals(Trait other)
         {
             // Use Hash instead of hash to prevent uninitialized hashes in clients

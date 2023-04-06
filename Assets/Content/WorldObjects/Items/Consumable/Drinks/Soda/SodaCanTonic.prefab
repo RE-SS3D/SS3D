@@ -208,14 +208,13 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 6689642842741819103}
-  - {fileID: -7007685733641965699}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 12
+  <PrefabId>k__BackingField: 57
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 13791699602270059499
@@ -229,18 +228,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8423412686940963211}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: 5177083059232030249}
-  _networkObjectCache: {fileID: 5177083059232030249}
-  _itemId: 0
+  _networkObjectCache: {fileID: 0}
   _name: 
-  _sprite: {fileID: 0}
-  _rigidbody: {fileID: 751568336328987408}
   _weight: 1
+  _size: {x: 1, y: 1}
+  _startingTraits: []
+  _rigidbody: {fileID: 751568336328987408}
   Prefab: {fileID: 8423412686940963211}
   AttachmentPoint: {fileID: 1446752186737625211}
-  AttachmentPointAlt: {fileID: 1446752186737625211}
-  traits: []
+  AttachmentPointAlt: {fileID: 0}
