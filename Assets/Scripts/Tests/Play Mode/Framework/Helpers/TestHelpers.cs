@@ -22,37 +22,6 @@ namespace SS3D.Tests
         private const string StartRoundButtonName = "Start Round";
         #endregion
 
-        public static IEnumerator Move(string axis, float value, float duration = 1f)
-        {
-            yield return Move(new[] { axis }, new[] { value }, duration);
-        }
-
-        public static IEnumerator Move(string[] axis, float[] value, float duration = 1f)
-        {
-            // TODO: replace: ScriptedInput input = UserInput.GetInputService() as ScriptedInput; 
-
-            // Initial minor delay to enforce separation of commands
-            yield return new WaitForSeconds(0.25f);
-
-            // Start holding down the appropriate keys.
-            for (int i = 0; i < axis.Length; i++)
-            {
-                //TODO: input.SetAxisRaw(axis[i], value[i]);
-            }
-
-            // Wait for a little, then release the key.
-            yield return new WaitForSeconds(duration);
-
-            // Release the keys.
-            for (int i = 0; i < axis.Length; i++)
-            {
-                // TODO: input.SetAxisRaw(axis[i], 0);
-            }
-
-            // Wait for a little more, to add clear separation from the next move command.
-            yield return new WaitForSeconds(0.25f);
-        }
-
         /// <summary>
         /// Checks whether two floats are approximately equal, disregarding minor floating point imprecisions.
         /// </summary>
