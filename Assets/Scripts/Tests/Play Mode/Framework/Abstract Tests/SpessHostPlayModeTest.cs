@@ -72,53 +72,6 @@ namespace SS3D.Tests
                 yield return null;
                 controller = GameObject.Find(characterName)?.GetComponent<HumanoidController>();
             }
-        }
-
-        public bool ApproximatelyEqual(float a, float b)
-        {
-            bool result = ((a - b) * (a - b)) < 0.001f;
-            return result;
-        }
-
-        public IEnumerator Move(string axis, float value, float duration = 1f)
-        {
-            yield return Move(new[] {axis }, new [] {value }, duration);
-        }
-
-        public IEnumerator Move(string[] axis, float[] value, float duration = 1f)
-        {
-            // Initial minor delay to enforce separation of commands
-            yield return new WaitForSeconds(0.25f);
-
-            // Start holding down the appropriate keys.
-            for (int i = 0; i < axis.Length; i++)
-            {
-                // TODO: Set up fake input
-                //input.SetAxisRaw(axis[i], value[i]);
-            }
-
-            // Wait for a little, then release the key.
-            yield return new WaitForSeconds(duration);
-
-            // Release the keys.
-            for (int i = 0; i < axis.Length; i++)
-            {
-                //input.SetAxisRaw(axis[i], 0);
-            }
-
-            // Wait for a little more, to add clear separation from the next move command.
-            yield return new WaitForSeconds(0.25f);
-        }
-
-
-        public void PressButton(string buttonName)
-        {
-            GameObject.Find(buttonName)?.GetComponent<LabelButton>().Press();
-        }
-
-        public void SetTabActive(string tabName)
-        {
-            GameObject.Find(tabName)?.GetComponent<Button>().onClick.Invoke();
-        }
+        }      
     }
 }
