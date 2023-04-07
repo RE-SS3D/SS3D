@@ -19,7 +19,7 @@ namespace SS3D.Tests
 {
     public class ClientLobbyActions : SpessClientPlayModeTest
     {
-        //[UnityTest]
+        [UnityTest]
         public IEnumerator ReadyToggleButtonCorrectlyFunctionsWhenClicked()
         {
             yield return PlaymodeTestRepository.ReadyToggleButtonCorrectlyFunctionsWhenClicked();
