@@ -9,7 +9,8 @@
         "SS3D.Tests.Common",
         "Coimbra",
         "SS3D.Data",
-        "SS3D.Logging"
+        "SS3D.Logging",
+        "SS3D.Interactions"
     ],
     "includePlatforms": [
         "Editor"

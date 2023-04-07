@@ -1,0 +1,23 @@
+name: Task Assignment
+run-name: Checking comment in issue ${{ github.event.issue.number }} for task assignment request.
+on:
+  issue_comment:
+    types: [created]
+jobs:
+    task-assignment:
+      name: Task Assignment
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+        - name: Setup node
+          uses: actions/setup-node@v3
+          with:
+            node-version: '16'
+        - run: npm install @actions/core
+        - run: npm install @actions/github
+        - run: npm install @octokit/core
+        - name: Unassign
+          uses: ./.github/actions/task-assignment
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}

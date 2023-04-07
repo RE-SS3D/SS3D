@@ -4,7 +4,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace EditorTests
+namespace AssetAudit
 {
     public class TileMapTests
     {

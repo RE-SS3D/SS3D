@@ -8,7 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace EditorTests
+namespace AssetAudit
 {
     public class PrefabTests
     {

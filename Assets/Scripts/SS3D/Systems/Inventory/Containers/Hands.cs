@@ -38,6 +38,8 @@ namespace SS3D.Systems.Inventory.Containers
         /// The item held in the active hand
         /// </summary>
         public Item ItemInHand => SelectedHandContainer.Items.FirstOrDefault();
+            
+           
         /// <summary>
         /// The currently active hand
         /// </summary>
@@ -123,7 +125,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Item item = ItemInHand;
-            item.Container = null;
+            item.SetContainer(null);
             ItemUtility.Place(item, position, rotation, transform);
         }
         

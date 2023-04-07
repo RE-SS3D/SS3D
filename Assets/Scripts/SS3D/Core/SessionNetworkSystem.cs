@@ -59,10 +59,25 @@ namespace SS3D.Core
             applicationStartedEvent.Invoke(this);
         }
 
-        public void OnDestroy()
+        private void OnApplicationQuit()
+        {
+            CloseNetworkSession();
+        }
+
+        /// <summary>
+        ///Shuts down client and server to ensure no lingering connections
+        /// </summary>
+        public void CloseNetworkSession()
         {
             NetworkManager networkManager = InstanceFinder.NetworkManager;
-            networkManager.ServerManager.StopConnection(true);
+            if (networkManager == null)
+            {
+                Punpun.Warning(this, "No NetworkManager found", Logs.Important);
+                return;
+            }
+
+            Punpun.Information(this, "Closing network session", Logs.Important);
+            networkManager.TransportManager.Transport.Shutdown();
         }
     }
 }
