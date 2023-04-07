@@ -34,7 +34,7 @@ namespace SS3D.Tests
             yield return base.UnityTearDown();
         }
 
-        //[UnityTest]
+        [UnityTest]
         public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
         {
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);

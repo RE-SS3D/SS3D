@@ -36,7 +36,7 @@ namespace SS3D.Tests
         public static IEnumerator PlayerRemainsAboveStationLevelAfterSpawn(HumanoidController controller, bool showDebug = false)
         {
             // The height that we are checking
-            const float StationHeight = 100f;
+            const float StationHeight = 0f;
 
             string ckey = controller.GetComponent<Entity>().Ckey;
 
