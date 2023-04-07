@@ -10,16 +10,20 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     using Inventory = Inventory.Containers.Inventory;
     public static class ItemCommandUtilities
     {
-        public static Item GetItemInHand()
+        public static bool TryGetLocalPlayerEntity(out Entity entity)
         {
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             Soul playerSoul = playerSystem.GetSoul(LocalPlayer.Ckey);
-            Entity playerEntity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerSoul);
-            if (playerEntity == null)
-            {
+            entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerSoul);
+            if (entity != null) return true;
+            return false;
+        }
+        public static Item GetItemInHand()
+        {
+            if(!TryGetLocalPlayerEntity(out Entity playerEntity))
+            { 
                 return null;
             }
-
             Hands hands = playerEntity.GetComponentInParent<Inventory>().Hands;
             return hands.ItemInHand;
         }
