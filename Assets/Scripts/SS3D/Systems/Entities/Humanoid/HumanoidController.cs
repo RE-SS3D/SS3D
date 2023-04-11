@@ -167,10 +167,7 @@ namespace SS3D.Systems.Entities.Humanoid
             float y = MovementControls.Movement.ReadValue<Vector2>().y;
             float inputFilteredSpeed = FilterSpeed();
 
-            x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
-            y = Mathf.Clamp(y, -inputFilteredSpeed, inputFilteredSpeed);
-
-            Input = new Vector2(x, y);
+            Input = Vector2.ClampMagnitude(new Vector2(x, y), inputFilteredSpeed);
             SmoothedInput = Vector2.Lerp(SmoothedInput, Input, Time.deltaTime * (_lerpMultiplier / 10));
 
             OnSpeedChanged(Input.magnitude != 0 ? inputFilteredSpeed : 0);
