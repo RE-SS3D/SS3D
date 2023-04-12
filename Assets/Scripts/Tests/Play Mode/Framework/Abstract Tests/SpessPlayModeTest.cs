@@ -191,13 +191,13 @@ namespace SS3D.Tests
         public static InputDevice SetUpMockInputForActions(ref List<InputAction> inputActions)
         {
             UnityEngine.Debug.Log("Entering SetUpMockInput");
-            InputActionAsset actions = Subsystems.Get<SS3D.Systems.Inputs.InputSystem>().Inputs.asset;
+            InputActionAsset actions = Subsystems.Get<Systems.Inputs.InputSystem>().Inputs.asset;
             UnityEngine.Debug.Log(actions.ToString());
 
             var layoutName = actions.name;
 
             // Build a device layout that simply has one control for each action in the asset.
-            UnityEngine.InputSystem.InputSystem.RegisterLayoutBuilder(() =>
+            InputSystem.RegisterLayoutBuilder(() =>
             {
                 var builder = new InputControlLayout.Builder()
                     .WithName(layoutName);
@@ -212,7 +212,7 @@ namespace SS3D.Tests
             }, name: layoutName);
 
             // Create the device.
-            var device = UnityEngine.InputSystem.InputSystem.AddDevice(layoutName);
+            var device = InputSystem.AddDevice(layoutName);
             UnityEngine.Debug.Log(device.ToString());
 
 
