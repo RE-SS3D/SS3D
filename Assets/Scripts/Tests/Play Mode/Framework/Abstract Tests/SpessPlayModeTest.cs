@@ -29,6 +29,8 @@ namespace SS3D.Tests
         protected InputDevice inputDevice;
         private List<InputAction> inputActions = new();
 
+        public InputDevice InputDevice => inputDevice;
+
         public override void Setup()
         {
             UnityEngine.Debug.Log("Calling InputTestFixture.Setup");

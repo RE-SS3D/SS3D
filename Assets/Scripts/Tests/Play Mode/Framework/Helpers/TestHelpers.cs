@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using SS3D.UI.Buttons;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
 namespace SS3D.Tests
@@ -140,6 +142,20 @@ namespace SS3D.Tests
         public static void SetTabActive(string tabName)
         {
             GameObject.Find(tabName)?.GetComponent<Button>().onClick.Invoke();
+        }
+
+        public static IEnumerator MoveInDirection(SpessPlayModeTest fixture, float xInput = 0, float yInput = 0, float time = 1f)
+        {
+            // Apply the movement input
+            fixture.Set((AxisControl)fixture.InputDevice["Movement/x"], xInput);
+            fixture.Set((AxisControl)fixture.InputDevice["Movement/y"], yInput);
+
+            // Wait for a bit to give player time to move
+            yield return new WaitForSeconds(time);
+
+            // Remove the applied input
+            fixture.Set((AxisControl)fixture.InputDevice["Movement/x"], 0);
+            fixture.Set((AxisControl)fixture.InputDevice["Movement/y"], 0);
         }
     }
 }

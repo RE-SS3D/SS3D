@@ -5,7 +5,9 @@ using SS3D.Systems.Entities.Humanoid;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.TestTools;
+using UnityEngine.Windows;
 
 namespace SS3D.Tests
 {
@@ -52,17 +54,7 @@ namespace SS3D.Tests
             // Record the original position
             Vector3 originalPosition = controller.Position;
 
-            // Apply the movement input
-            Set((AxisControl)inputDevice["Movement/x"], xInput);
-            Set((AxisControl)inputDevice["Movement/y"], yInput);
-
-            // Wait for a bit to give player time to move
-            yield return new WaitForSeconds(1f);
-
-            // Remove the applied input
-            Set((AxisControl)inputDevice["Movement/x"], 0);
-            Set((AxisControl)inputDevice["Movement/y"], 0);
-
+            yield return TestHelpers.MoveInDirection(this, xInput, yInput);
             // Record the final position
             Vector3 newPosition = controller.Position;
 
