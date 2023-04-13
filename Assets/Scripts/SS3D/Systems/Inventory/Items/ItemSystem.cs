@@ -88,6 +88,20 @@ namespace SS3D.Systems.Inventory.Items
             return itemInstance;
         }
 
+
+        /// <summary>
+        /// Requests to spawn an item in a given container.
+        /// </summary>
+        /// <param name="id">The item ID to spawn.</param>
+        /// <param name="position">The desired position to spawn.</param>
+        /// <param name="rotation">The desired rotation to apply.</param>
+        [ServerRpc(RequireOwnership = false)]
+        public void CmdSpawnItemInContainer(ItemId id, AttachedContainer attachedContainer)
+        {
+            SpawnItemInContainer(id, attachedContainer);
+        }
+
+
         /// <summary>
         /// Spawns an Item inside a container.
         ///

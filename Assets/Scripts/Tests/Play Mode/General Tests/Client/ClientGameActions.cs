@@ -1,13 +1,21 @@
 using System;
 using System.Collections;
 using NUnit.Framework;
+using SS3D.Core;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.IngameConsoleSystem.Commands;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Screens;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.TestTools;
 using UnityEngine.Windows;
+using SS3D.Systems.Inventory.Containers;
 
 namespace SS3D.Tests
 {
@@ -87,6 +95,62 @@ namespace SS3D.Tests
                 Assert.IsTrue(newPointOnAxis < originalPointOnAxis,
                     $"Expected new position {newPointOnAxis} to be less than old position {originalPointOnAxis}, but it was not.");
             }
+        }
+
+
+
+        /// <summary>
+        /// Test that spawn an item and check if the player can pick it up with primary interaction.
+        [UnityTest]
+        public IEnumerator PlayerCanPickUpItemAndHasItInHand()
+        {
+            var command = new SpawnItemCommand();
+            Debug.Log(command.Perform(new string[] { "BikeHorn" }));
+            yield return new WaitForSeconds(1f);
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            var itemPosition = entity.Position;
+            var camera =  Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            var target = camera.WorldToScreenPoint(itemPosition);
+            var mouse = InputSystem.AddDevice<Mouse>();
+            Set(mouse.position, target);
+
+            // Can also step input manually in tests. In a [UnityTest], this
+            // happens automatically whenever Unity advances by a frame.
+            InputSystem.Update();
+            Debug.Log("target is " + target);
+            Press(mouse.rightButton);
+            yield return new WaitForSeconds(1f);
+            Debug.Log("button pressed and released");
+
+        }
+
+        /// <summary>
+        /// Test that spawn an item and check if the player can pick it up with primary interaction.
+        [UnityTest]
+        public IEnumerator PlayerCanDropItem()
+        {
+            var itemSystem = Subsystems.Get<ItemSystem>(); 
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            var inventory = entity.gameObject.GetComponent<Inventory>();
+            itemSystem.CmdSpawnItemInContainer(Data.Enums.ItemId.BikeHorn, inventory.Hands.HandContainers[0]);
+            var itemPosition = entity.Position;
+            var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            var target = camera.WorldToScreenPoint(itemPosition);
+            var mouse = InputSystem.AddDevice<Mouse>();
+            Set(mouse.position, itemPosition);
+
+            yield return new WaitForSeconds(3f);
+
+            // Can also step input manually in tests. In a [UnityTest], this
+            // happens automatically whenever Unity advances by a frame.
+            InputSystem.Update();
+            Debug.Log("target is " + target);
+            Press(mouse.leftButton);
+            yield return new WaitForSeconds(1f);
+            Debug.Log("button pressed and released");
+
         }
     }
 }
