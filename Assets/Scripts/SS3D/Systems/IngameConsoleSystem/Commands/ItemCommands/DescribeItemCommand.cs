@@ -1,3 +1,5 @@
+using SS3D.Core;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Permissions;
 
@@ -18,7 +20,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
 
-            Item item = ItemCommandUtilities.GetItemInHand();
+            var itemSystem = Subsystems.Get<ItemSystem>();
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out Entity entity);
+            Item item = itemSystem.GetItemInHand(entity);
             if (item == null)
             {
                 return "No item in hand";

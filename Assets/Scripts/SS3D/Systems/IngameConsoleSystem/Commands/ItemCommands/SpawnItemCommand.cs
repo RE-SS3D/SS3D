@@ -27,13 +27,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
             string itemName = args[0];
-            Assets.TryGet((int)AssetDatabases.Items, (int)itemName.ToEnum<ItemId>(), out GameObject itemPrefab);
-
-            ItemCommandUtilities.TryGetLocalPlayerEntity(out Entity entity);
-
-            var itemInstance = Object.Instantiate(itemPrefab, entity.transform.position , Quaternion.identity);
-            InstanceFinder.ServerManager.Spawn(itemInstance);
-
+            var itemSystem = Subsystems.Get<ItemSystem>();
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            itemSystem.CmdSpawnItem(itemName.ToEnum<ItemId>(), entity.transform.position, Quaternion.identity);
             return $"item {itemName} spawned at position {entity.transform.position}";
         }
         protected override CheckArgsResponse CheckArgs(string[] args)

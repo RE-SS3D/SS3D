@@ -5,11 +5,14 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Logging;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Items
 {
+
+    using Inventory = Containers.Inventory;
     /// <summary>
     /// System used to spawn items.
     /// </summary>
@@ -116,5 +119,13 @@ namespace SS3D.Systems.Inventory.Items
             Punpun.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
             return itemInstance;
         }
+
+        public Item GetItemInHand(Entity playerEntity)
+        {
+            Hands hands = playerEntity.GetComponentInParent<Inventory>().Hands;
+            return hands.ItemInHand;
+        }
+
+
     }
 }

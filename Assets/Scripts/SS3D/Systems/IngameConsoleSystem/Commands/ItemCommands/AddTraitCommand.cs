@@ -1,6 +1,8 @@
 ﻿using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using SS3D.Systems.Permissions;
+using SS3D.Core;
+using SS3D.Systems.Entities;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -20,7 +22,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return checkArgsResponse.InvalidArgs;
             string traitName = args[0];
 
-            Item item = ItemCommandUtilities.GetItemInHand();
+            var itemSystem = Subsystems.Get<ItemSystem>();
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out Entity entity);
+            Item item = itemSystem.GetItemInHand(entity);
             if (item == null)
             {
                 return "No item in hand";
