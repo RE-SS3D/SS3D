@@ -130,24 +130,33 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerCanDropItem()
         {
+            // Get local player and put bikehorn in first hand available.
             var itemSystem = Subsystems.Get<ItemSystem>(); 
             var entitySystem = Subsystems.Get<EntitySystem>();
             entitySystem.TryGetLocalPlayerEntity(out var entity);
             var inventory = entity.gameObject.GetComponent<Inventory>();
             itemSystem.CmdSpawnItemInContainer(Data.Enums.ItemId.BikeHorn, inventory.Hands.HandContainers[0]);
+
+            yield return new WaitForSeconds(1f);
+
+            // Drop item at same position as local player
             var itemPosition = entity.Position;
             var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
             var target = camera.WorldToScreenPoint(itemPosition);
             var mouse = InputSystem.AddDevice<Mouse>();
-            Set(mouse.position, itemPosition);
+            var target2D = new Vector2(target.x, target.y);
+            Set(mouse.position, target2D);
 
             yield return new WaitForSeconds(3f);
+            Press(mouse.leftButton);
+            yield return new WaitForSeconds(0.5f);
+            Release(mouse.leftButton);
 
             // Can also step input manually in tests. In a [UnityTest], this
             // happens automatically whenever Unity advances by a frame.
             InputSystem.Update();
             Debug.Log("target is " + target);
-            Press(mouse.leftButton);
+            
             yield return new WaitForSeconds(1f);
             Debug.Log("button pressed and released");
 
