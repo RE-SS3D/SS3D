@@ -1,0 +1,61 @@
+name: Close Project When Milestone Closed
+on:
+  milestone:
+    types: [closed]
+jobs:
+  CloseProjectWhenMilestoneClosed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - run: npm install @actions/core
+      - run: npm install @actions/github
+      - name: Get list of projects
+        uses: octokit/graphql-action@v2.2.24
+        id: get-project-title
+        with:
+          query: |
+            query getTitle( $org:String!) {
+              organization(login:$org) {
+                projectsV2(first:100) {
+                  nodes {
+                    id
+                    title
+                    number
+                    template
+                    closed
+                    owner {
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          org: RE-SS3D
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Check for existence of milestone project
+        uses: ./.github/actions/check-milestone-exists
+        id: check-milestone-exists
+        with:
+          JSON_LIST_OF_PROJECTS: ${{ steps.get-project-title.outputs.data }}
+          PROJECT_NAME: ${{ github.event.milestone.title }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Close Project
+        uses: octokit/graphql-action@v2.2.24
+        id: close-project
+        if: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID != ''}}
+        with:
+          query: |
+            mutation CloseTheProject {
+              updateProjectV2(input: {projectId:"${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID }}", closed:true }) {
+                clientMutationId
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
