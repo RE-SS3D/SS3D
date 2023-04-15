@@ -16,6 +16,7 @@ using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.TestTools;
 using UnityEngine.Windows;
 using SS3D.Systems.Inventory.Containers;
+using System.Security.Cryptography;
 
 namespace SS3D.Tests
 {
@@ -137,10 +138,13 @@ namespace SS3D.Tests
             var inventory = entity.gameObject.GetComponent<Inventory>();
             itemSystem.CmdSpawnItemInContainer(Data.Enums.ItemId.BikeHorn, inventory.Hands.HandContainers[0]);
 
-
-
-            //var action1 = new InputAction("action1", binding: "<Mouse>/Primary Click");
-            //action1.Enable();
+            InputAction leftMouseClick = new InputAction();
+            leftMouseClick.AddBinding(mouse.leftButton);
+            leftMouseClick.performed += LeftMouseClicked;
+            mouse.MakeCurrent();
+            var controller = entity.gameObject.GetComponent<InteractionController>();
+            leftMouseClick.performed += controller.HandleRunPrimary;
+            leftMouseClick.Enable();
 
             yield return new WaitForSeconds(1f);
 
@@ -149,11 +153,13 @@ namespace SS3D.Tests
             var itemPosition = entity.Position;
             var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
             var target = camera.WorldToScreenPoint(itemPosition);
+
             
             var target2D = new Vector2(target.x, target.y);
             Set(mouse.position, target2D);
-
-            yield return new WaitForSeconds(3f);
+            mouse.WarpCursorPosition(target2D);
+            yield return new WaitForSeconds(0.1f);
+            Debug.Log("pressing left button " + target2D);
             Press(mouse.leftButton);
             yield return new WaitForSeconds(2f);
             Release(mouse.leftButton);
@@ -161,10 +167,8 @@ namespace SS3D.Tests
             // Can also step input manually in tests. In a [UnityTest], this
             // happens automatically whenever Unity advances by a frame.
             InputSystem.Update();
-            Debug.Log("target is " + target);
             
             yield return new WaitForSeconds(1f);
-            Debug.Log("button pressed and released");
 
         }
     }

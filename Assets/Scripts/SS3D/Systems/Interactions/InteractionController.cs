@@ -84,6 +84,7 @@ namespace SS3D.Systems.Interactions
         [Client]
         public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
+            Debug.Log("run primary : " + Input.mousePosition);
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 return;

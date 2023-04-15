@@ -42,17 +42,11 @@ namespace SS3D.Tests
             UnityEngine.InputSystem.InputSystem.AddDevice(inputDevice);
             
             mouse = InputSystem.AddDevice<Mouse>();
-            mouse.MakeCurrent();
-            var res = inputActions.Find(x => x.name == "Run Primary");
-            res.AddBinding("<Mouse>/leftButton");
-            res.Enable();
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out var entity);
-            var controller = entity.gameObject.GetComponent<InteractionController>();
-            res.performed += controller.HandleRunPrimary;
-
         }
-
+        public void LeftMouseClicked(InputAction.CallbackContext context)
+        {
+            UnityEngine.Debug.Log("LeftMouseClicked");
+        }
         public override void TearDown()
         {
             base.TearDown();
