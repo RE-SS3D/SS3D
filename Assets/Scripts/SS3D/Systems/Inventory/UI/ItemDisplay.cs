@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -20,7 +21,7 @@ namespace SS3D.Systems.Inventory.UI
         
         [SerializeField] private Item _item;
         private Transform _oldParent;
-        private Vector3 _startMousePosition;
+        private Vector2 _startMousePosition;
         private Vector3 _startPosition;
         private Image _slotImage;
         private Outline _outlineInner;
