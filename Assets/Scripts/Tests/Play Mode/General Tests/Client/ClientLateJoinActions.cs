@@ -24,7 +24,7 @@ namespace SS3D.Tests
         {
             yield return base.UnitySetUp();
             yield return TestHelpers.LateJoinRound();
-            yield return GetController();
+            yield return GetHumanoidController();
         }
 
         [UnityTearDown]
@@ -37,7 +37,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
         {
-            yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
+            yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(HumanoidController);
         }
     }
 }

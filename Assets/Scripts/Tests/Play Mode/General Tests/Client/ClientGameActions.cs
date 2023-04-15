@@ -26,7 +26,8 @@ namespace SS3D.Tests
         {
             yield return base.UnitySetUp();
             yield return TestHelpers.StartAndEnterRound();
-            yield return GetController();
+            yield return GetHumanoidController();
+            yield return GetInteractionController();
         }
 
         public override IEnumerator UnityTearDown()
@@ -38,7 +39,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerCanMoveInEachDirectionCorrectly_AsClientWithHost()
         {
-            yield return PlayerCanMoveInEachDirectionCorrectly(controller);
+            yield return PlayerCanMoveInEachDirectionCorrectly(HumanoidController);
         }
 
         /// <summary>
@@ -108,11 +109,12 @@ namespace SS3D.Tests
             var controller = TestHelpers.GetLocalInteractionController();
             var playerPosition = TestHelpers.GetLocalPlayerPosition();
 
+
             InputAction leftMouseClick = new InputAction();
-            leftMouseClick.AddBinding(mouse.leftButton);       
-            leftMouseClick.performed += controller.HandleRunPrimary;
+            leftMouseClick.AddBinding(mouse.leftButton);
+            leftMouseClick.performed += InteractionController.HandleRunPrimary;
             leftMouseClick.Enable();
-            
+
             yield return new WaitForSeconds(0.2f);
 
             // Drop item at a close position from local player

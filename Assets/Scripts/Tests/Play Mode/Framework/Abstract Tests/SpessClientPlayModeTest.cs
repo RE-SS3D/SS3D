@@ -11,6 +11,7 @@ using SS3D.Systems.Entities.Humanoid;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using SS3D.Core;
+using SS3D.Systems.Interactions;
 
 namespace SS3D.Tests
 {
@@ -24,7 +25,8 @@ namespace SS3D.Tests
         protected const string StartRoundButtonName = "Start Round";
 
         protected Process cmdLineProcess;
-        protected HumanoidController controller;
+        protected HumanoidController HumanoidController;
+        protected InteractionController InteractionController;
 
         public override IEnumerator UnitySetUp()
         {
@@ -54,13 +56,24 @@ namespace SS3D.Tests
 
 
         //TODO: Add timeout
-        public IEnumerator GetController()
+        public IEnumerator GetHumanoidController()
         {
-            controller = null;
-            while (controller == null)
+            HumanoidController = null;
+            while (HumanoidController == null)
             {
                 yield return null;
-                controller = GameObject.FindWithTag("Player")?.GetComponent<HumanoidController>();
+                HumanoidController = GameObject.FindWithTag("Player")?.GetComponent<HumanoidController>();
+            }
+        }
+
+        //TODO: Add timeout
+        public IEnumerator GetInteractionController()
+        {
+            InteractionController = null;
+            while (InteractionController == null)
+            {
+                yield return null;
+                InteractionController = TestHelpers.GetLocalInteractionController();
             }
         }
 

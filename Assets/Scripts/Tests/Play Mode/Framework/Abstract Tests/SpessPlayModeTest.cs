@@ -40,10 +40,10 @@ namespace SS3D.Tests
             //mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
             inputDevice = SetUpMockInputForActions(ref inputActions);
             UnityEngine.InputSystem.InputSystem.AddDevice(inputDevice);
-            
             mouse = InputSystem.AddDevice<Mouse>();
             mouse.MakeCurrent();
         }
+
         public void LeftMouseClicked(InputAction.CallbackContext context)
         {
             UnityEngine.Debug.Log("LeftMouseClicked");
