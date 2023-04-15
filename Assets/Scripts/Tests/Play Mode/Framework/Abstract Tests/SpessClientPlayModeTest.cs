@@ -47,6 +47,16 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(3f);
         }
 
+        public override void Setup()
+        {
+            base.Setup();
+            InputAction leftMouseClick = new InputAction();
+            leftMouseClick.AddBinding(mouse.leftButton);
+            leftMouseClick.performed += InteractionController.HandleRunPrimary;
+            leftMouseClick.Enable();
+        }
+
+
         public override void TearDown()
         {
             base.TearDown();

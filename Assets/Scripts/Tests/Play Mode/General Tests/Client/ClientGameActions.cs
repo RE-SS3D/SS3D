@@ -110,10 +110,7 @@ namespace SS3D.Tests
             var playerPosition = TestHelpers.GetLocalPlayerPosition();
 
 
-            InputAction leftMouseClick = new InputAction();
-            leftMouseClick.AddBinding(mouse.leftButton);
-            leftMouseClick.performed += InteractionController.HandleRunPrimary;
-            leftMouseClick.Enable();
+
 
             yield return new WaitForSeconds(0.2f);
 
