@@ -127,12 +127,12 @@ namespace SS3D.Tests
         }
 
         /// <summary>
-        /// Test that spawn an item and check if the player can pick it up with primary interaction.
+        /// Test that spawn an item and check if the player can drop it and pick it up with primary interaction.
         [UnityTest]
-        public IEnumerator PlayerCanDropItem()
+        public IEnumerator PlayerCanDropAndPickUpItem()
         {
             // Get local player position, interaction controller and put bikehorn in first hand available.
-            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable();
+            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId.PDA);
             var controller = TestHelpers.GetLocalInteractionController();
             var playerPosition = TestHelpers.GetLocalPlayerPosition();
 

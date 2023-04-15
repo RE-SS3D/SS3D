@@ -163,7 +163,7 @@ namespace SS3D.Tests
             fixture.Set((AxisControl)fixture.InputDevice["Movement/y"], 0);
         }
 
-        public static Container LocalPlayerSpawnItemInFirstHandAvailable()
+        public static Container LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId item)
         {
             var itemSystem = Subsystems.Get<ItemSystem>();
             var entitySystem = Subsystems.Get<EntitySystem>();
@@ -174,7 +174,7 @@ namespace SS3D.Tests
                 if (!hand.Container.Empty) continue;
                 else
                 {
-                    itemSystem.CmdSpawnItemInContainer(Data.Enums.ItemId.PDA, hand);
+                    itemSystem.CmdSpawnItemInContainer(item, hand);
                     return hand.Container;
                 }
             }
