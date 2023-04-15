@@ -13,10 +13,7 @@ jobs:
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          testMode: EditMode
+          UNITY_LICENSE: ../Documents/UnityLicense.ulf
       - name: Notify discord if tests fail
         uses: rjstone/discord-webhook-notify@v1
         if: failure() && github.event_name != 'pull_request'
