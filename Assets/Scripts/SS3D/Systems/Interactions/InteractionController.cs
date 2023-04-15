@@ -82,7 +82,7 @@ namespace SS3D.Systems.Interactions
         /// Runs the most prioritised interaction
         /// </summary>
         [Client]
-        private void HandleRunPrimary(InputAction.CallbackContext callbackContext)
+        public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
             if (EventSystem.current.IsPointerOverGameObject())
             {

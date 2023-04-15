@@ -6,6 +6,8 @@ using Coimbra;
 using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Core.Settings;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Interactions;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
@@ -25,7 +27,7 @@ namespace SS3D.Tests
 
         // Used to simulate input
         //protected Keyboard keyboard;
-        //protected Mouse mouse;
+        protected Mouse mouse;
         protected InputDevice inputDevice;
         private List<InputAction> inputActions = new();
 
@@ -38,6 +40,16 @@ namespace SS3D.Tests
             //mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
             inputDevice = SetUpMockInputForActions(ref inputActions);
             UnityEngine.InputSystem.InputSystem.AddDevice(inputDevice);
+            
+            mouse = InputSystem.AddDevice<Mouse>();
+            mouse.MakeCurrent();
+            var res = inputActions.Find(x => x.name == "Run Primary");
+            res.AddBinding("<Mouse>/leftButton");
+            res.Enable();
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            var controller = entity.gameObject.GetComponent<InteractionController>();
+            res.performed += controller.HandleRunPrimary;
 
         }
 
@@ -228,9 +240,10 @@ namespace SS3D.Tests
                 UnityEngine.Debug.Log($"Added binding <{layoutName}>/{action.name}");
             }
 
+
             // Restrict the actions to bind only to our newly created
             // device using the bindings we just added.
-            actions.bindingMask = InputBinding.MaskByGroup("MockInput");
+            //actions.bindingMask = InputBinding.MaskByGroup("MockInput");
             actions.devices = new[] { device };
 
             UnityEngine.Debug.Log("Returning device.");
