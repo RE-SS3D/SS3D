@@ -69,7 +69,33 @@ jobs:
         with:
           query: |
             mutation setupTheProject {
-              updateProjectV2(input: {projectId:"${{ fromJSON(steps.duplicate-template-project.outputs.data).copyProjectV2.projectV2.id }}", title:"${{ github.event.milestone.title }}" }) {
+              updateProjectV2(input: {projectId:"${{ fromJSON(steps.duplicate-template-project.outputs.data).copyProjectV2.projectV2.id }}", title:"${{ github.event.milestone.title }}", public:true}) {
+                clientMutationId
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Get repo ID
+        uses: octokit/graphql-action@v2.2.24
+        id: get-repo-id
+        with:
+          query: |
+            query getRepo( $org:String!) {
+              repository(name:"SS3D", owner:$org) {
+                id
+              }
+            }
+          org: RE-SS3D
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Link SS3D Repository to new Project
+        uses: octokit/graphql-action@v2.2.24
+        id: link-project
+        if: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID == ''}}
+        with:
+          query: |
+            mutation LinkTheProject {
+              linkProjectV2ToRepository(input: {projectId:"${{ fromJSON(steps.duplicate-template-project.outputs.data).copyProjectV2.projectV2.id }}", repositoryId:"${{ fromJSON(steps.get-repo-id.outputs.data).repository.id }}" }) {
                 clientMutationId
               }
             }
