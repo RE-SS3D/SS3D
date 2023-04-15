@@ -42,6 +42,7 @@ namespace SS3D.Tests
             UnityEngine.InputSystem.InputSystem.AddDevice(inputDevice);
             
             mouse = InputSystem.AddDevice<Mouse>();
+            mouse.MakeCurrent();
         }
         public void LeftMouseClicked(InputAction.CallbackContext context)
         {

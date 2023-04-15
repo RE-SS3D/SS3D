@@ -1,4 +1,9 @@
 using NUnit.Framework;
+using SS3D.Core;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 using SS3D.UI.Buttons;
 using System.Collections;
 using UnityEditor;
@@ -156,6 +161,39 @@ namespace SS3D.Tests
             // Remove the applied input
             fixture.Set((AxisControl)fixture.InputDevice["Movement/x"], 0);
             fixture.Set((AxisControl)fixture.InputDevice["Movement/y"], 0);
+        }
+
+        public static Container LocalPlayerSpawnItemInFirstHandAvailable()
+        {
+            var itemSystem = Subsystems.Get<ItemSystem>();
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            var inventory = entity.gameObject.GetComponent<Inventory>();
+            foreach(var hand in inventory.Hands.HandContainers)
+            {
+                if (!hand.Container.Empty) continue;
+                else
+                {
+                    itemSystem.CmdSpawnItemInContainer(Data.Enums.ItemId.PDA, hand);
+                    return hand.Container;
+                }
+            }
+            Debug.Log("No free hands.");
+            return null;
+        }
+
+        public static InteractionController GetLocalInteractionController()
+        {
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            return entity.gameObject.GetComponent<InteractionController>();
+        }
+
+        public static Vector3 GetLocalPlayerPosition()
+        {
+            var entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            return entity.gameObject.transform.position;
         }
     }
 }

@@ -131,43 +131,38 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerCanDropItem()
         {
-            // Get local player and put bikehorn in first hand available.
-            var itemSystem = Subsystems.Get<ItemSystem>(); 
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out var entity);
-            var inventory = entity.gameObject.GetComponent<Inventory>();
-            itemSystem.CmdSpawnItemInContainer(Data.Enums.ItemId.BikeHorn, inventory.Hands.HandContainers[0]);
+            // Get local player position, interaction controller and put bikehorn in first hand available.
+            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable();
+            var controller = TestHelpers.GetLocalInteractionController();
+            var playerPosition = TestHelpers.GetLocalPlayerPosition();
 
             InputAction leftMouseClick = new InputAction();
-            leftMouseClick.AddBinding(mouse.leftButton);
-            leftMouseClick.performed += LeftMouseClicked;
-            mouse.MakeCurrent();
-            var controller = entity.gameObject.GetComponent<InteractionController>();
+            leftMouseClick.AddBinding(mouse.leftButton);       
             leftMouseClick.performed += controller.HandleRunPrimary;
             leftMouseClick.Enable();
+            
+            yield return new WaitForSeconds(0.2f);
 
-            yield return new WaitForSeconds(1f);
-
-
-            // Drop item at same position as local player
-            var itemPosition = entity.Position;
+            // Drop item at a close position from local player
+            var itemPosition = playerPosition;
             var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
             var target = camera.WorldToScreenPoint(itemPosition);
-
             
-            var target2D = new Vector2(target.x, target.y);
+            var target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);
             Set(mouse.position, target2D);
-            mouse.WarpCursorPosition(target2D);
-            yield return new WaitForSeconds(0.1f);
-            Debug.Log("pressing left button " + target2D);
-            Press(mouse.leftButton);
-            yield return new WaitForSeconds(2f);
-            Release(mouse.leftButton);
 
-            // Can also step input manually in tests. In a [UnityTest], this
-            // happens automatically whenever Unity advances by a frame.
-            InputSystem.Update();
-            
+            // Check that player can drop and pick up item again.
+            Assert.That(!hand.Empty);
+            yield return new WaitForSeconds(0.2f);
+            Debug.Log("pressing left button " + target2D);
+            PressAndRelease(mouse.leftButton);
+            yield return new WaitForSeconds(0.2f);
+            Assert.That(hand.Empty);
+            yield return new WaitForSeconds(0.2f);
+            PressAndRelease(mouse.leftButton);
+            yield return new WaitForSeconds(0.1f);
+            Assert.That(!hand.Empty);
+
             yield return new WaitForSeconds(1f);
 
         }
