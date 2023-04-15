@@ -63,7 +63,7 @@ namespace SS3D.Systems.Inventory.UI
         public void OnPointerDown(PointerEventData eventData)
         {
             _startPosition = transform.position;
-            _startMousePosition = Input.mousePosition;
+            _startMousePosition = Mouse.current.position.ReadValue();
         }
         
         public void OnPointerClick(PointerEventData eventData)
@@ -102,7 +102,7 @@ namespace SS3D.Systems.Inventory.UI
             // Only allow to drag with a left click.
             if (eventData.button != PointerEventData.InputButton.Left) return;
 
-            Vector3 diff = Input.mousePosition - _startMousePosition;
+            Vector3 diff = Mouse.current.position.ReadValue() - _startMousePosition;
             transform.position = _startPosition + diff;
         }
         

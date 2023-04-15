@@ -185,7 +185,7 @@ namespace SS3D.Systems.Tile.UI
         [ServerOrClient]
         private void FindAndDeleteItem(Vector3 worldPosition)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
@@ -201,7 +201,7 @@ namespace SS3D.Systems.Tile.UI
         [ServerOrClient]
         private Vector3 GetMousePosition()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (_plane.Raycast(ray, out float distance))
             {
