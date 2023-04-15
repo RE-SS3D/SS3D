@@ -106,11 +106,7 @@ namespace SS3D.Tests
         {
             // Get local player position, interaction controller and put bikehorn in first hand available.
             var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId.PDA);
-            var controller = TestHelpers.GetLocalInteractionController();
             var playerPosition = TestHelpers.GetLocalPlayerPosition();
-
-
-
 
             yield return new WaitForSeconds(0.2f);
 
