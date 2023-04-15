@@ -98,34 +98,6 @@ namespace SS3D.Tests
             }
         }
 
-
-
-        /// <summary>
-        /// Test that spawn an item and check if the player can pick it up with primary interaction.
-        [UnityTest]
-        public IEnumerator PlayerCanPickUpItemAndHasItInHand()
-        {
-            var command = new SpawnItemCommand();
-            Debug.Log(command.Perform(new string[] { "BikeHorn" }));
-            yield return new WaitForSeconds(1f);
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out var entity);
-            var itemPosition = entity.Position;
-            var camera =  Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            var target = camera.WorldToScreenPoint(itemPosition);
-            var mouse = InputSystem.AddDevice<Mouse>();
-            Set(mouse.position, target);
-
-            // Can also step input manually in tests. In a [UnityTest], this
-            // happens automatically whenever Unity advances by a frame.
-            InputSystem.Update();
-            Debug.Log("target is " + target);
-            Press(mouse.rightButton);
-            yield return new WaitForSeconds(1f);
-            Debug.Log("button pressed and released");
-
-        }
-
         /// <summary>
         /// Test that spawn an item and check if the player can drop it and pick it up with primary interaction.
         [UnityTest]
