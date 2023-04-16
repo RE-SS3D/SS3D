@@ -40,12 +40,16 @@ namespace SS3D.Core
                 return;
             }
 
+            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
+
+            if (!startArgsSystem.HasCommandLineArgs())
+            {
+                return;
+            }
+
             NetworkSettings.ResetOnBuiltApplication();
             ApplicationSettings.ResetOnBuiltApplication();
 
-            NetworkSettings.LoadFromJson();
-
-            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
             startArgsSystem.ProcessCommandLineArgs();
         }
 

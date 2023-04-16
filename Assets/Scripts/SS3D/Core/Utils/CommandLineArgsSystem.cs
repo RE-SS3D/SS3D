@@ -4,6 +4,7 @@ using System.Linq;
 using Coimbra;
 using SS3D.Core.Settings;
 using SS3D.Logging;
+using SS3D.Utils;
 using UnityEngine;
 
 namespace SS3D.Core.Utils
@@ -32,6 +33,13 @@ namespace SS3D.Core.Utils
             {
                 ProcessCommandArg(arg);
             }
+        }
+
+        public bool HasCommandLineArgs()
+        {
+            LoadCommandLineArgs();
+
+            return !_commandLineArgs.IsNullOrEmpty();
         }
 
         /// <summary>
@@ -76,7 +84,7 @@ namespace SS3D.Core.Utils
 
             if (arg.Contains(CommandLineArgs.ServerOnly))
             {
-                _networkSettings.NetworkType = NetworkType.ServerOnly;
+                _networkSettings.NetworkType = NetworkType.DedicatedServer;
             }
         }
 

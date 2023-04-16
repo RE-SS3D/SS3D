@@ -67,7 +67,7 @@ namespace SS3D.Core.Settings
 		/// <summary>
 		/// Saves the network settings into a file.
 		/// </summary>
-		private void SaveNetworkSettingsJsonFile()
+		public void SaveNetworkSettingsJsonFile()
 		{
 			string json = JsonUtility.ToJson(this, true);
 

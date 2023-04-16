@@ -34,7 +34,7 @@ namespace SS3D.Core
 
             switch (networkType)
             {
-                case NetworkType.ServerOnly:
+                case NetworkType.DedicatedServer:
                     Punpun.Information(this, "Hosting a new headless server on port {port}", Logs.Important, port);
                     networkManager.ServerManager.StartConnection(port);
                     break;
