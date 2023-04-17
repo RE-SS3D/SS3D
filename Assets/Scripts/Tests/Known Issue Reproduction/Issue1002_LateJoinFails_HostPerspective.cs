@@ -48,7 +48,7 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(1f);
         }
 
-        //[UnityTest]
+        [UnityTest]
         public IEnumerator ClientCanEmbarkAfterRoundStartWhenNoOneElseHasEmbarked()
         {
             string clientCkey = "client";
@@ -72,7 +72,7 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(1f);
         }
 
-        //[UnityTest]
+        [UnityTest]
         public IEnumerator ClientCanEmbarkAfterRoundStartWhenHostHasAlreadyEmbarked()
         {
             string clientCkey = "client";
@@ -96,7 +96,7 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(1f);
         }
 
-        //[UnityTest]
+        [UnityTest]
         public IEnumerator ClientCanJoinAfterRoundStartWhenHostHasAlreadyEmbarked()
         {
             string clientCkey = "client";
@@ -111,7 +111,7 @@ namespace SS3D.Tests
             yield return WaitForClientSoulToAppearInLobby(clientCkey);
         }
 
-        //[UnityTest]
+        [UnityTest]
         public IEnumerator ClientCanJoinAfterRoundStartWhenNoOneHasEmbarked()
         {
             string clientCkey = "client";

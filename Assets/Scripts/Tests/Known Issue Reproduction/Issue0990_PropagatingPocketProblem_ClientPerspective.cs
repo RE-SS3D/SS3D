@@ -21,7 +21,7 @@ namespace SS3D.Tests
             yield return base.UnityTearDown();
         }
 
-        //[UnityTest]
+        [UnityTest]
         public IEnumerator PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne()
         {
             yield return IssueReproduction.Issue0990_PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne();
