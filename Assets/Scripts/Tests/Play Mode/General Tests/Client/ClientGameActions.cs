@@ -30,6 +30,14 @@ namespace SS3D.Tests
             yield return GetInteractionController();
         }
 
+        public override void Setup()
+        {
+            base.Setup();
+
+            leftMouseClick.performed += InteractionController.HandleRunPrimary;
+            leftMouseClick.Enable();
+        }
+
         public override IEnumerator UnityTearDown()
         {
             yield return TestHelpers.FinishAndExitRound();

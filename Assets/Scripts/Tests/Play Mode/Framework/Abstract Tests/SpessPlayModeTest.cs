@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Coimbra;
 using NUnit.Framework;
 using SS3D.Core;
@@ -28,6 +29,8 @@ namespace SS3D.Tests
         // Used to simulate input
         //protected Keyboard keyboard;
         protected Mouse mouse;
+        protected InputAction leftMouseClick = new InputAction();
+
         protected InputDevice inputDevice;
         private List<InputAction> inputActions = new();
 
@@ -37,17 +40,18 @@ namespace SS3D.Tests
         {
             UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
             base.Setup();
-            //mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
-            inputDevice = SetUpMockInputForActions(ref inputActions);
-            UnityEngine.InputSystem.InputSystem.AddDevice(inputDevice);
+            // Don't set up a new input device when running multiple tests in a row
+            if (inputDevice == null)
+            {
+                inputDevice = SetUpMockInputForActions(ref inputActions);
+                InputSystem.AddDevice(inputDevice);
+            }
+            // TODO : find a better way to set up the mouse device (not with a free action like this).
             mouse = InputSystem.AddDevice<Mouse>();
             mouse.MakeCurrent();
+            leftMouseClick.AddBinding(mouse.leftButton);
         }
 
-        public void LeftMouseClicked(InputAction.CallbackContext context)
-        {
-            UnityEngine.Debug.Log("LeftMouseClicked");
-        }
         public override void TearDown()
         {
             base.TearDown();

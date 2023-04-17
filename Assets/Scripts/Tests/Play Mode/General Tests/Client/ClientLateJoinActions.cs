@@ -17,6 +17,10 @@ using FishNet;
 
 namespace SS3D.Tests
 {
+    /// <summary>
+    /// Set up client to late join the server, necessary as some functionnalities behave 
+    /// differently when late joining.
+    /// </summary>
     public class ClientLateJoinActions : SpessClientPlayModeTest
     {
         [UnitySetUp]
@@ -25,6 +29,15 @@ namespace SS3D.Tests
             yield return base.UnitySetUp();
             yield return TestHelpers.LateJoinRound();
             yield return GetHumanoidController();
+            yield return GetInteractionController();
+        }
+
+        public override void Setup()
+        {
+            base.Setup();
+
+            leftMouseClick.performed += InteractionController.HandleRunPrimary;
+            leftMouseClick.Enable();
         }
 
         [UnityTearDown]

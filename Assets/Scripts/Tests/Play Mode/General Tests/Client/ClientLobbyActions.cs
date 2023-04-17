@@ -17,6 +17,8 @@ using FishNet;
 
 namespace SS3D.Tests
 {
+
+
     public class ClientLobbyActions : SpessClientPlayModeTest
     {
         [UnityTest]
@@ -25,4 +27,6 @@ namespace SS3D.Tests
             yield return PlaymodeTestRepository.ReadyToggleButtonCorrectlyFunctionsWhenClicked();
         }
     }
+
+
 }

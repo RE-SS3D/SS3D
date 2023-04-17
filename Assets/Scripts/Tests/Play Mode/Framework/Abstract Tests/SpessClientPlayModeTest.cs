@@ -50,10 +50,6 @@ namespace SS3D.Tests
         public override void Setup()
         {
             base.Setup();
-            InputAction leftMouseClick = new InputAction();
-            leftMouseClick.AddBinding(mouse.leftButton);
-            leftMouseClick.performed += InteractionController.HandleRunPrimary;
-            leftMouseClick.Enable();
         }
 
 
