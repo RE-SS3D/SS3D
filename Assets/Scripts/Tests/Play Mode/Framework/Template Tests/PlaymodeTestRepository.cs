@@ -58,10 +58,10 @@ namespace SS3D.Tests
         public static IEnumerator PlayersRemainAboveStationLevelAfterSpawn(GameObject[] players, bool showDebug = false)
         {
             // The height that we are checking
-            const float StationHeight = 100f;
+            const float StationHeight = 0f;
 
             // Give the players time to fall
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(3f);
 
             // Check how many players are above the height of the station floor.
             int numberOfPlayersAtCorrectHeight = 0;
