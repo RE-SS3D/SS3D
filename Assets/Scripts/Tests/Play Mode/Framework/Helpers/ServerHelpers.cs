@@ -28,14 +28,14 @@ namespace SS3D.Tests
             // Get relevant executable file path
             filePath = Application.dataPath;
             filePath = filePath.Substring(0, filePath.Length - 6);     // Needed to remove the "Assets" folder.
-            filePath += "Builds";                                    // Needed to add the "Builds" folder.
+            filePath += "Builds/Game";                                    // Needed to add the "Builds" folder.
 
             for (int i = 0; i < amount; i++)
             {
                 // Fire up the client.
                 result[i] = new Process();
                 result[i].StartInfo.WindowStyle = windowStyle;
-                result[i].StartInfo.Arguments = $"-ip=localhost -skipintro -ckey=player_{i}";
+                result[i].StartInfo.Arguments = $"-ip=localhost -ckey=player_{i} -port=1974 -skipintro";
                 result[i].StartInfo.FileName = "SS3D.exe";
                 result[i].StartInfo.WorkingDirectory = filePath;
                 result[i].Start();
