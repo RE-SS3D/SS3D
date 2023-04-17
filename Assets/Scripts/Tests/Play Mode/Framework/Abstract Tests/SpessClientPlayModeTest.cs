@@ -56,8 +56,6 @@ namespace SS3D.Tests
         public override void Setup()
         {
             base.Setup();
-            leftMouseClick.performed += InteractionController.HandleRunPrimary;
-            leftMouseClick.Enable();
         }
 
 

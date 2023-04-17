@@ -31,9 +31,6 @@ namespace SS3D.Tests
         //protected Keyboard keyboard;
         protected Mouse mouse;
         protected InputAction leftMouseClick = new InputAction();
-        protected InputAction rightMouseClick = new InputAction();
-        protected InputAction middleMouseClick = new InputAction();
-
 
         protected InputDevice inputDevice;
         private List<InputAction> inputActions = new();
@@ -56,12 +53,7 @@ namespace SS3D.Tests
                 inputDevice = SetUpMockInputForActions(ref inputActions);
                 InputSystem.AddDevice(inputDevice);
             }
-            // TODO : find a better way to set up the mouse device (not with a free action like this).
-            mouse = InputSystem.AddDevice<Mouse>();
-            mouse.MakeCurrent();
-            leftMouseClick.AddBinding(mouse.leftButton);
-            rightMouseClick.AddBinding(mouse.rightButton);
-            middleMouseClick.AddBinding(mouse.middleButton);
+            SetUpMouse();
         }
 
         /// <summary>
@@ -87,14 +79,15 @@ namespace SS3D.Tests
 
         /// <summary>
         /// TODO : find a better way to set up the mouse device (not with free actions like this).
+        /// Only handle left click currently.
         /// </summary>
         private void SetUpMouse()
         {
             mouse = InputSystem.AddDevice<Mouse>();
             mouse.MakeCurrent();
             leftMouseClick.AddBinding(mouse.leftButton);
-            rightMouseClick.AddBinding(mouse.rightButton);
-            middleMouseClick.AddBinding(mouse.middleButton);
+            leftMouseClick.performed += InteractionController.HandleRunPrimary;
+            leftMouseClick.Enable();
         }
 
         //TODO: Add timeout
