@@ -204,7 +204,7 @@ namespace SS3D.Systems.Inputs
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""6bf42294-8111-4bb7-9d46-8600bba84e15"",
-                    ""path"": ""2DVector(mode=1)"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
