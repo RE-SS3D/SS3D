@@ -161,7 +161,17 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
+
+
+
+            bool existsInOnlineSouls = _onlineSouls.TryGetValue(ckey, out Soul onlineSoul);
+            if (existsInOnlineSouls)
+            {
+                return;
+            }
+
             bool hasSoul = _serverSouls.TryGetValue(ckey, out Soul soul);
+
 
             if (!hasSoul)
             {
