@@ -20,7 +20,6 @@ namespace SS3D.Tests
         protected const string StartRoundButtonName = "Start Round";
         protected const string StartClientCommand = "Start SS3D Server.bat";
 
-        protected HumanoidController controller;
         protected Process[] clientProcess;
 
 
@@ -32,18 +31,6 @@ namespace SS3D.Tests
 
             // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();
-        }
-
-        public IEnumerator GetController()
-        {
-            const string characterName = "HumanTemporary(Clone)";
-            controller = null;
-
-            while (controller == null)
-            {
-                yield return null;
-                controller = GameObject.Find(characterName)?.GetComponent<HumanoidController>();
-            }
         }
 
         public void PressButton(string buttonName)

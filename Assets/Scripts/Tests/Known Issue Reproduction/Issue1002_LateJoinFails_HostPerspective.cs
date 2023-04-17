@@ -16,7 +16,6 @@ namespace SS3D.Tests
 {
     public class Issue1002_LateJoinFails_HostPerspective : SpessPlayModeTest
     {
-        protected HumanoidController controller;
 
         protected Process clientProcess;
 

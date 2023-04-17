@@ -11,7 +11,7 @@ namespace SS3D.Tests
 {
     public abstract class SpessHostPlayModeTest : SpessPlayModeTest
     {
-        protected HumanoidController controller;
+        
 
         [OneTimeSetUp]
         public virtual void OneTimeSetUp()
@@ -33,7 +33,7 @@ namespace SS3D.Tests
         protected IEnumerator StartAndEnterRound()
         {
             yield return TestHelpers.StartAndEnterRound();
-            yield return GetController();
+            yield return GetHumanoidController();
         }
 
         protected IEnumerator FinishAndExitRound()
@@ -60,18 +60,6 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(1f);
 
             yield return base.UnityTearDown();
-        }
-
-        public IEnumerator GetController()
-        {
-            const string characterName = "HumanTemporary(Clone)";
-            controller = null;
-
-            while (controller == null)
-            {
-                yield return null;
-                controller = GameObject.Find(characterName)?.GetComponent<HumanoidController>();
-            }
-        }      
+        }  
     }
 }

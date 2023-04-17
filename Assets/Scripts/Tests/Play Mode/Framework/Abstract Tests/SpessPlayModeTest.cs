@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Core.Settings;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Interactions;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -30,11 +31,17 @@ namespace SS3D.Tests
         //protected Keyboard keyboard;
         protected Mouse mouse;
         protected InputAction leftMouseClick = new InputAction();
+        protected InputAction rightMouseClick = new InputAction();
+        protected InputAction middleMouseClick = new InputAction();
+
 
         protected InputDevice inputDevice;
         private List<InputAction> inputActions = new();
 
         public InputDevice InputDevice => inputDevice;
+
+        protected HumanoidController HumanoidController;
+        protected InteractionController InteractionController;
 
         /// <summary>
         /// Set up input system and virtual devices for input. Should not contain anything else.
@@ -53,6 +60,8 @@ namespace SS3D.Tests
             mouse = InputSystem.AddDevice<Mouse>();
             mouse.MakeCurrent();
             leftMouseClick.AddBinding(mouse.leftButton);
+            rightMouseClick.AddBinding(mouse.rightButton);
+            middleMouseClick.AddBinding(mouse.middleButton);
         }
 
         /// <summary>
@@ -73,9 +82,41 @@ namespace SS3D.Tests
         [UnityTearDown]
         public virtual IEnumerator UnityTearDown()
         {
+            yield return new WaitForSeconds(3f);    
+        }
 
-            yield return new WaitForSeconds(3f);
-            
+        /// <summary>
+        /// TODO : find a better way to set up the mouse device (not with free actions like this).
+        /// </summary>
+        private void SetUpMouse()
+        {
+            mouse = InputSystem.AddDevice<Mouse>();
+            mouse.MakeCurrent();
+            leftMouseClick.AddBinding(mouse.leftButton);
+            rightMouseClick.AddBinding(mouse.rightButton);
+            middleMouseClick.AddBinding(mouse.middleButton);
+        }
+
+        //TODO: Add timeout
+        public IEnumerator GetHumanoidController()
+        {
+            HumanoidController = null;
+            while (HumanoidController == null)
+            {
+                yield return null;
+                HumanoidController = GameObject.FindWithTag("Player")?.GetComponent<HumanoidController>();
+            }
+        }
+
+        //TODO: Add timeout
+        public IEnumerator GetInteractionController()
+        {
+            InteractionController = null;
+            while (InteractionController == null)
+            {
+                yield return null;
+                InteractionController = TestHelpers.GetLocalInteractionController();
+            }
         }
 
         protected InputAction GetAction(string name)

@@ -25,8 +25,7 @@ namespace SS3D.Tests
         protected const string StartRoundButtonName = "Start Round";
 
         protected Process cmdLineProcess;
-        protected HumanoidController HumanoidController;
-        protected InteractionController InteractionController;
+
 
         public override IEnumerator UnitySetUp()
         {
@@ -57,6 +56,8 @@ namespace SS3D.Tests
         public override void Setup()
         {
             base.Setup();
+            leftMouseClick.performed += InteractionController.HandleRunPrimary;
+            leftMouseClick.Enable();
         }
 
 
@@ -65,29 +66,6 @@ namespace SS3D.Tests
             base.TearDown();
         }
 
-
-
-        //TODO: Add timeout
-        public IEnumerator GetHumanoidController()
-        {
-            HumanoidController = null;
-            while (HumanoidController == null)
-            {
-                yield return null;
-                HumanoidController = GameObject.FindWithTag("Player")?.GetComponent<HumanoidController>();
-            }
-        }
-
-        //TODO: Add timeout
-        public IEnumerator GetInteractionController()
-        {
-            InteractionController = null;
-            while (InteractionController == null)
-            {
-                yield return null;
-                InteractionController = TestHelpers.GetLocalInteractionController();
-            }
-        }
 
         public void PressButton(string buttonName)
         {
