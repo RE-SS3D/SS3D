@@ -38,8 +38,7 @@ namespace SS3D.Tests
             clientProcess.CloseMainWindow();
             clientProcess.Close();
 
-            // Shut down the host
-            yield return UnloadAllScenes();
+            TestHelpers.FinishAndExitRound();
 
             // Shut down any other test fixtures
             yield return base.UnityTearDown();
@@ -109,6 +108,7 @@ namespace SS3D.Tests
             // This contains assertion with timeout to confirm the soul has connected.
             clientProcess = LoadFileHelpers.OpenCompiledBuild(NetworkType.Client, clientCkey);
             yield return WaitForClientSoulToAppearInLobby(clientCkey);
+            yield return new WaitForSeconds(1f);
         }
 
         [UnityTest]
@@ -124,6 +124,8 @@ namespace SS3D.Tests
             // This contains assertion with timeout to confirm the soul has connected.
             clientProcess = LoadFileHelpers.OpenCompiledBuild(NetworkType.Client, clientCkey);
             yield return WaitForClientSoulToAppearInLobby(clientCkey);
+            yield return new WaitForSeconds(1f);
+
         }
 
         protected IEnumerator WaitForClientSoulToAppearInLobby(string ckey, float timeout = 15f)
@@ -155,14 +157,6 @@ namespace SS3D.Tests
             yield return base.UnitySetUp();
         }
 
-        private IEnumerator UnloadAllScenes()
-        {
-            LoadEmptyScene();
-            yield return WaitForEmptySceneLoaded();
-        }
-
-
-
         public IEnumerator CheckMindIsInScene(string ckey, float timeout = 10f)
         {
             string mind_prefix = "Mind - ";
@@ -179,8 +173,6 @@ namespace SS3D.Tests
                     throw new Exception($"{mind_prefix}{ckey} not found within timeout of {timeout} seconds.");
                 }
             }
-
-
         }
 
         public void PressButton(string buttonName)
