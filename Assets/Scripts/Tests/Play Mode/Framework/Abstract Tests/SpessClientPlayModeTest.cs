@@ -47,6 +47,13 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(3f);
         }
 
+        public override IEnumerator UnityTearDown()
+        {
+            KillAllBuiltExecutables();
+            yield return new WaitForSeconds(3f);
+            yield return base.UnityTearDown();
+        }
+
         public override void Setup()
         {
             base.Setup();
@@ -56,7 +63,6 @@ namespace SS3D.Tests
         public override void TearDown()
         {
             base.TearDown();
-            KillAllBuiltExecutables();
         }
 
 

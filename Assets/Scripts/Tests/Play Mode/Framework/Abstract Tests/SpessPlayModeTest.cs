@@ -36,6 +36,9 @@ namespace SS3D.Tests
 
         public InputDevice InputDevice => inputDevice;
 
+        /// <summary>
+        /// Set up input system and virtual devices for input. Should not contain anything else.
+        /// </summary>
         public override void Setup()
         {
             UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
@@ -52,6 +55,9 @@ namespace SS3D.Tests
             leftMouseClick.AddBinding(mouse.leftButton);
         }
 
+        /// <summary>
+        /// Put input system back to it's original state. Should not contain anything else.
+        /// </summary>
         public override void TearDown()
         {
             base.TearDown();
@@ -67,8 +73,9 @@ namespace SS3D.Tests
         [UnityTearDown]
         public virtual IEnumerator UnityTearDown()
         {
-            // Wait for a bit, to get some temporal separation.
-            yield return new WaitForSeconds(1f);
+
+            yield return new WaitForSeconds(3f);
+            
         }
 
         protected InputAction GetAction(string name)
