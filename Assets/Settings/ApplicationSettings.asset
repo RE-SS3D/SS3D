@@ -16,3 +16,4 @@ MonoBehaviour:
   _type: 2
   EnableDiscord: 0
   SkipIntro: 1
+  ForceLauncher: 0

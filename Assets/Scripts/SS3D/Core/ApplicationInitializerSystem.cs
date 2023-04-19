@@ -3,7 +3,9 @@ using DG.Tweening;
 using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using SS3D.Data;
+using SS3D.Data.Enums;
 using SS3D.Logging;
+using SS3D.SceneManagement;
 using UDiscord;
 using UnityEngine;
 
@@ -14,6 +16,28 @@ namespace SS3D.Core
     /// </summary>
     public sealed class ApplicationInitializerSystem : Behaviours.System
     {
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            InitializeLauncher();
+        }
+
+        private void InitializeLauncher()
+        {
+            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
+            ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+
+            Scenes sceneToLoad = startArgsSystem.HasCommandLineArgs() ? Scenes.Intro : Scenes.Launcher;
+
+            if (applicationSettings.ForceLauncher && !startArgsSystem.HasCommandLineArgs())
+            {
+                sceneToLoad = Scenes.Launcher;
+            }                                  
+
+            Scene.LoadAsync(sceneToLoad);
+        }
+
         /// <summary>
         /// Initializes all required systems for the application.
         /// </summary>
@@ -21,28 +45,24 @@ namespace SS3D.Core
         {
             Punpun.Information(this, "Initializing application", Logs.Important);
 
-            InitializeSystems();
+            DOTween.Init();
+
+            InitializeDiscordIntegration();
+            InitializeAssetData();
+
             InitializeSettings();
             InitializeNetworkSession();
         }
 
         /// <summary>
         /// Initialize the application settings.
-        ///
-        /// First it resets the settings if its in the a Built executable.
-        /// Then it loads the network settings from the JSON file.
-        /// Then it loads the command line args.
         /// </summary>
         private void InitializeSettings()
         {
-            if (Application.isEditor)
-            {
-                return;
-            }
-
             CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
+            ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            if (!startArgsSystem.HasCommandLineArgs())
+            if (!startArgsSystem.HasCommandLineArgs() ||applicationSettings.ForceLauncher || Application.isEditor)
             {
                 return;
             }
@@ -51,17 +71,6 @@ namespace SS3D.Core
             ApplicationSettings.ResetOnBuiltApplication();
 
             startArgsSystem.ProcessCommandLineArgs();
-        }
-
-        /// <summary>
-        /// Initializes the subsystems, like pre-loading assets and integrations.
-        /// </summary>
-        private void InitializeSystems()
-        {
-            DOTween.Init();
-
-            InitializeDiscordIntegration();
-            InitializeAssetData();
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace SS3D.Data
 		/// <summary>
 		/// The path to the config folder on the built project.
 		/// </summary>
-		private const string BuiltConfigFilePath = "/Game/Config/";
+		private const string BuiltConfigFilePath = "/Config/";
 
 		/// <summary>
 		/// Gets a path in the game folder.

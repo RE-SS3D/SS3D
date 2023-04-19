@@ -39,7 +39,7 @@ namespace SS3D.Core.Utils
         {
             LoadCommandLineArgs();
 
-            return !_commandLineArgs.IsNullOrEmpty();
+            return !_commandLineArgs.OneElementOnly();
         }
 
         /// <summary>
@@ -85,6 +85,11 @@ namespace SS3D.Core.Utils
             if (arg.Contains(CommandLineArgs.ServerOnly))
             {
                 _networkSettings.NetworkType = NetworkType.DedicatedServer;
+            }
+
+            if (arg.Contains(CommandLineArgs.ForceLauncher))
+            {
+                _applicationSettings.ForceLauncher = true;
             }
         }
 

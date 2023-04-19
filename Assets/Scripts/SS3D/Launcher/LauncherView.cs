@@ -1,5 +1,6 @@
-﻿using System;
-using Coimbra;
+﻿using Coimbra;
+using SS3D.Core;
+using System;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Settings;
 using UnityEngine;
@@ -10,7 +11,9 @@ namespace SS3D.Launcher
     public class LauncherView : View
     {
         [SerializeField]
-        private VisualTreeAsset _visualTreeAsset;
+        private UIDocument _document;
+
+        private VisualElement _root;
 
         private RadioButtonGroup _networkModeSelectionGroup;
 
@@ -35,10 +38,9 @@ namespace SS3D.Launcher
 
         private void CreateUI()
         {
-            VisualElement root = new();
-            _visualTreeAsset.CloneTree(root);
+            _root = _document.rootVisualElement;
 
-            _networkModeSelectionGroup = root.Q<RadioButtonGroup>("network-mode-radio-button-group");
+            _networkModeSelectionGroup = _root.Q<RadioButtonGroup>("network-mode-radio-button-group");
 
             _networkModeSelectionGroup.choices = new[]
             {
@@ -47,11 +49,11 @@ namespace SS3D.Launcher
                 NetworkType.Host.ToString(),
             };
 
-            _usernameTextField = root.Q<TextField>("username-text-field");
-            _ipAddressTextField = root.Q<TextField>("ip-text-field");
-            _portTextField = root.Q<TextField>("port-text-field");
+            _usernameTextField = _root.Q<TextField>("username-text-field");
+            _ipAddressTextField = _root.Q<TextField>("ip-text-field");
+            _portTextField = _root.Q<TextField>("port-text-field");
 
-            _startGameButton = root.Q<Button>("start-game-button");
+            _startGameButton = _root.Q<Button>("start-game-button");
         }
 
         private void HandleStartGameButtonPressed()
@@ -67,19 +69,7 @@ namespace SS3D.Launcher
             string ip = _ipAddressTextField.value;
             string port = _portTextField.value;
 
-            if (!Application.isEditor)
-            {
-                NetworkSettings.ResetOnBuiltApplication();
-            }
-
-            NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
-
-            networkSettings.NetworkType = networkType;
-            networkSettings.Ckey = ckey;
-            networkSettings.ServerAddress = ip;
-            networkSettings.ServerPort = Convert.ToUInt16(port);
-
-            networkSettings.SaveNetworkSettingsJsonFile();
+            Subsystems.Get<LauncherSystem>().LaunchGame(networkType, ckey, ip, port);
         }
     }
 }

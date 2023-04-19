@@ -61,11 +61,6 @@ namespace SS3D.Core
             InstanceFinder.ServerManager.StopConnection(true);
         }
 
-        private void OnDisable()
-        {
-            InstanceFinder.ServerManager.StopConnection(true);
-        }
-
         /// <summary>
         ///Shuts down client and server to ensure no lingering connections
         /// </summary>

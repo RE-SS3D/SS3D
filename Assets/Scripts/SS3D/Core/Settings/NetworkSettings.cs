@@ -40,15 +40,6 @@ namespace SS3D.Core.Settings
 		/// </summary>
 		public ushort ServerPort = 2222;
 
-#if UNITY_EDITOR
-		protected override void OnValidate()
-		{
-			base.OnValidate();
-
-			SaveNetworkSettingsJsonFile();
-		}
-  #endif
-
 		/// <summary>
 		/// Resets the configurations to what a Client should initially be like, then we load it from the JSON file, followed by the overrides from the command line args.
 		/// </summary>
@@ -62,42 +53,6 @@ namespace SS3D.Core.Settings
 			networkSettings.ServerAddress = string.Empty;
 			networkSettings.Ckey = string.Empty;
 			networkSettings.ServerPort = ushort.MinValue;
-		}
-
-		/// <summary>
-		/// Saves the network settings into a file.
-		/// </summary>
-		public void SaveNetworkSettingsJsonFile()
-		{
-			string json = JsonUtility.ToJson(this, true);
-
-			Paths.WriteOrCreateIfNotExistsFile(NetworkSettingsPath, json);
-
-			Punpun.Information(this, $"Saved network settings under {NetworkSettingsPath}");
-		}
-
-		/// <summary>
-		/// Loads the JSON data from the file path.
-		/// </summary>
-		/// <returns></returns>
-		public static void LoadFromJson()
-		{
-			string jsonFile = ReadOrCreateNetworkSettingsJsonFile();
-
-			NetworkSettings currentSettings = GetOrFind<NetworkSettings>();
-			NetworkSettings jsonSettings = JsonUtility.FromJson<NetworkSettings>(jsonFile);
-
-			NetworkSettings networkSettings = string.IsNullOrEmpty(jsonFile) ? currentSettings : jsonSettings;
-
-			Punpun.Information(nameof(NetworkSettings), $"Loading network settings from JSON file");
-
-			Set(networkSettings);
-		}
-
-		[NotNull]
-		private static string ReadOrCreateNetworkSettingsJsonFile()
-		{
-			return Paths.ReadOrCreateIfNotExistsFile(NetworkSettingsPath);
 		}
 	}
 }

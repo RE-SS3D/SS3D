@@ -24,6 +24,12 @@ namespace SS3D.Core.Settings
         public bool SkipIntro;
 
         /// <summary>
+        /// Forces the launcher UI to initialize.
+        /// </summary>
+        [Tooltip("If enabled, the launcher UI will be forced to open")]
+        public bool ForceLauncher;
+
+        /// <summary>
         /// Resets our settings if we are ona built executable.
         /// </summary>
         public static void ResetOnBuiltApplication()
@@ -32,6 +38,7 @@ namespace SS3D.Core.Settings
 
             applicationSettings.SkipIntro = false;
             applicationSettings.EnableDiscord = false;
+            applicationSettings.ForceLauncher = false;
         }
     }
 }
