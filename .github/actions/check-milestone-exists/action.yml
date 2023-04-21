@@ -1,0 +1,14 @@
+name: 'Check milestone exists'
+inputs:
+  JSON_LIST_OF_PROJECTS:
+    description: 'Results of a GraphQL query returning all ProjectV2 owned by RE-SS3D.'
+    required: true
+  PROJECT_NAME:
+    description: 'The name of the project to search for.'
+    required: true
+outputs:
+  EXISTING_PROJECT_ID:
+    description: 'String containing the project ID that matches the provided project name. Blank string if not found.'
+runs:
+  using: 'node16'
+  main: 'index.js'
