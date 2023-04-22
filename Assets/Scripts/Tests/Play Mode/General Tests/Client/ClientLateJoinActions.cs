@@ -52,5 +52,13 @@ namespace SS3D.Tests
         {
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(HumanoidController);
         }
+
+        /// <summary>
+        /// Test that spawn an item and check if the player can drop it and pick it up with primary interaction.
+        [UnityTest]
+        public IEnumerator PlayerCanDropAndPickUpItem()
+        {
+            yield return PlaymodeTestRepository.PlayerCanDropAndPickUpItem(this);
+        }
     }
 }

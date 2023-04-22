@@ -3,10 +3,12 @@ using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Rounds;
+using SS3D.Systems.Screens;
 using SS3D.UI.Buttons;
 using System.Collections;
 using System.Text;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace SS3D.Tests
@@ -109,5 +111,38 @@ namespace SS3D.Tests
             // Check: The ready button color should have changed back to the original.
             Assert.IsTrue(originalButtonColor == button.GetComponent<Image>().color, $"The button colour did not change when the button was clicked");
         }
+
+        public static IEnumerator PlayerCanDropAndPickUpItem(SpessPlayModeTest fixture)
+        {
+            // Get local player position, interaction controller and put bikehorn in first hand available.
+            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId.PDA);
+            var playerPosition = TestHelpers.GetLocalPlayerPosition();
+
+            yield return new WaitForSeconds(0.2f);
+
+            // Drop item at a close position from local player
+            var itemPosition = playerPosition;
+            var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            var target = camera.WorldToScreenPoint(itemPosition);
+
+            var target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);
+            fixture.Set(fixture.Mouse.position, target2D);
+
+            // Check that player can drop and pick up item again.
+            Assert.That(!hand.Empty);
+            yield return new WaitForSeconds(0.2f);
+            Debug.Log("pressing left button " + target2D);
+            fixture.PressAndRelease(fixture.Mouse.leftButton);
+            yield return new WaitForSeconds(0.2f);
+            Assert.That(hand.Empty);
+            yield return new WaitForSeconds(0.2f);
+            fixture.PressAndRelease(fixture.Mouse.leftButton);
+            yield return new WaitForSeconds(0.1f);
+            Assert.That(!hand.Empty);
+
+            yield return new WaitForSeconds(1f);
+        }
+
+
     }
 }

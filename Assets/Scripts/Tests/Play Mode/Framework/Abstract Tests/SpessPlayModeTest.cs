@@ -37,6 +37,8 @@ namespace SS3D.Tests
 
         public InputDevice InputDevice => inputDevice;
 
+        public Mouse Mouse => mouse;
+
         protected HumanoidController HumanoidController;
         protected InteractionController InteractionController;
 

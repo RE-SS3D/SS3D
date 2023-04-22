@@ -109,34 +109,8 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerCanDropAndPickUpItem()
         {
-            // Get local player position, interaction controller and put bikehorn in first hand available.
-            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId.PDA);
-            var playerPosition = TestHelpers.GetLocalPlayerPosition();
-
-            yield return new WaitForSeconds(0.2f);
-
-            // Drop item at a close position from local player
-            var itemPosition = playerPosition;
-            var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            var target = camera.WorldToScreenPoint(itemPosition);
-            
-            var target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);
-            Set(mouse.position, target2D);
-
-            // Check that player can drop and pick up item again.
-            Assert.That(!hand.Empty);
-            yield return new WaitForSeconds(0.2f);
-            Debug.Log("pressing left button " + target2D);
-            PressAndRelease(mouse.leftButton);
-            yield return new WaitForSeconds(0.2f);
-            Assert.That(hand.Empty);
-            yield return new WaitForSeconds(0.2f);
-            PressAndRelease(mouse.leftButton);
-            yield return new WaitForSeconds(0.1f);
-            Assert.That(!hand.Empty);
-
-            yield return new WaitForSeconds(1f);
-
+            Debug.Log("player can drop and pick up item beginning");
+            yield return PlaymodeTestRepository.PlayerCanDropAndPickUpItem(this);
         }
     }
 }
