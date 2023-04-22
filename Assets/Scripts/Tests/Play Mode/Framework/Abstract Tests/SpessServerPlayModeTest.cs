@@ -10,6 +10,9 @@ using SS3D.Systems.Entities.Humanoid;
 
 namespace SS3D.Tests
 {
+    /// <summary>
+    /// This should be run to test server only in the Unity editor, and for all tests that necessitates one or multiple clients only.
+    /// </summary>
     public abstract class SpessServerPlayModeTest : SpessPlayModeTest
     {
         protected const string HorizontalAxis = "Horizontal";

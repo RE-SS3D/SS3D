@@ -18,6 +18,9 @@ using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
+    /// <summary>
+    /// All play mode tests should inherit from this class. This class set up the mock up controls, contains some utilities for all play tests.
+    /// </summary>
     [TestFixture]
     public abstract class SpessPlayModeTest : InputTestFixture
     {

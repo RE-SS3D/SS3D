@@ -18,7 +18,9 @@ using FishNet;
 namespace SS3D.Tests
 {
 
-
+    /// <summary>
+    /// All tests related to doing stuff in the lobby as a client.
+    /// </summary>
     public class ClientLobbyActions : SpessClientPlayModeTest
     {
         [UnityTest]

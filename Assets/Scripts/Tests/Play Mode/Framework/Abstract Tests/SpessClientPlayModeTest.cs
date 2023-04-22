@@ -15,6 +15,9 @@ using SS3D.Systems.Interactions;
 
 namespace SS3D.Tests
 {
+    /// <summary>
+    /// Inherit from this for each test that need to test something on client only, with a standalone server.
+    /// </summary>
     public abstract class SpessClientPlayModeTest : SpessPlayModeTest
     {
         protected const string HorizontalAxis = "Horizontal";

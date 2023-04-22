@@ -9,6 +9,9 @@ using SS3D.Systems.Entities.Humanoid;
 
 namespace SS3D.Tests
 {
+    /// <summary>
+    /// Inherit from this for each test that need to test the host, with no clients other than the host.
+    /// </summary>
     public abstract class SpessHostPlayModeTest : SpessPlayModeTest
     {
         

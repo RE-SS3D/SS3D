@@ -279,6 +279,10 @@ namespace SS3D.Systems.Entities
             }
         }
 
+        /// <summary>
+        /// Get the entity of local player if possible.
+        /// Return true if the entity was found, false if not.
+        /// </summary>
         public bool TryGetLocalPlayerEntity(out Entity entity)
         {
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();

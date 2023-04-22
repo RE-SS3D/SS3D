@@ -134,6 +134,9 @@ namespace SS3D.Systems.Inventory.Items
             return itemInstance;
         }
 
+        /// <summary>
+        /// Return the item in the active hand of the given player entity.
+        /// </summary>
         public Item GetItemInHand(Entity playerEntity)
         {
             Hands hands = playerEntity.GetComponentInParent<Inventory>().Hands;
