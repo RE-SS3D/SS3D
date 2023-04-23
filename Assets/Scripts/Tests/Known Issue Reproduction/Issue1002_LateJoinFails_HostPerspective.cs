@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace SS3D.Tests
 {
-    public class Issue1002_LateJoinFails_HostPerspective : SpessHostPlayModeTest
+    public class Issue1002_LateJoinFails_HostPerspective : SpessPlayModeTest
     {
 
         protected Process clientProcess;
@@ -22,9 +22,12 @@ namespace SS3D.Tests
         [UnitySetUp]
         public override IEnumerator UnitySetUp()
         {
+            useController = false;
+
             // Load the host in the Editor. They should appear in the Lobby Screen.
             yield return LoadInEditor(NetworkType.Host);
             yield return new WaitForSeconds(2f);
+
         }
 
         [UnityTearDown]

@@ -45,20 +45,26 @@ namespace SS3D.Tests
         protected HumanoidController HumanoidController;
         protected InteractionController InteractionController;
 
+        protected bool useController = true;
+
         /// <summary>
         /// Set up input system and virtual devices for input. Should not contain anything else.
         /// </summary>
         public override void Setup()
         {
-            UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
-            base.Setup();
-            // Don't set up a new input device when running multiple tests in a row
-            if (inputDevice == null)
+            if (useController)
             {
-                inputDevice = SetUpMockInputForActions(ref inputActions);
-                InputSystem.AddDevice(inputDevice);
+                UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
+                base.Setup();
+                // Don't set up a new input device when running multiple tests in a row
+                if (inputDevice == null)
+                {
+                    inputDevice = SetUpMockInputForActions(ref inputActions);
+                    InputSystem.AddDevice(inputDevice);
+                }
+                SetUpMouse();
+
             }
-            SetUpMouse();
         }
 
         /// <summary>
