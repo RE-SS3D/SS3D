@@ -5,6 +5,8 @@ jobs:
   run_tests:
     name: Run tests
     runs-on: ubuntu-latest
+    testMode:
+          - editmode
     steps:
       - name: Checkout project code
         uses: actions/checkout@v2
