@@ -17,7 +17,6 @@ jobs:
           lfs: true
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
-        with: 
         env:
           UNITY_LICENSE_FILE: ../Documents/UnityLicense.ulf
       - name: Notify discord if tests fail
