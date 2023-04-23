@@ -5,6 +5,8 @@ jobs:
   run_tests:
     name: Run tests
     runs-on: ubuntu-latest
+    testMode:
+          - editmode
     steps:
       - name: Checkout project code
         uses: actions/checkout@v2
@@ -13,7 +15,6 @@ jobs:
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
         with: 
-          customParameters: -testMode EditMode
         env:
           UNITY_LICENSE_FILE: ../Documents/UnityLicense.ulf
       - name: Notify discord if tests fail
