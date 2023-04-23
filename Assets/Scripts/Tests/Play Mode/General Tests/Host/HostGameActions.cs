@@ -23,6 +23,7 @@ namespace SS3D.Tests
         {
             yield return base.UnitySetUp();
             yield return TestHelpers.StartAndEnterRound();
+            yield return new WaitForSeconds(2);
             yield return GetHumanoidController();
             yield return GetInteractionController();
         }
@@ -43,7 +44,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerCanMoveInEachDirectionCorrectly()
         {
-            yield return null;
+            yield return PlaymodeTestRepository.PlayerCanMoveInEachDirectionCorrectly(this, HumanoidController);
         }
     }
 }
