@@ -24,6 +24,7 @@ namespace SS3D.Tests
             yield return base.UnitySetUp();
             yield return TestHelpers.StartAndEnterRound();
             yield return GetHumanoidController();
+            yield return GetInteractionController();
         }
 
         [UnityTearDown]

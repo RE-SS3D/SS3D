@@ -37,20 +37,18 @@ namespace SS3D.Tests
         {
             yield return TestHelpers.StartAndEnterRound();
             yield return GetHumanoidController();
+            yield return GetInteractionController();
         }
 
         protected IEnumerator FinishAndExitRound()
         {
             yield return TestHelpers.FinishAndExitRound();
-
         }
 
         [UnitySetUp]
         public override IEnumerator UnitySetUp()
         {
             yield return base.UnitySetUp();
-
-            // TODO: Create our fake input and assign it to the player
 
             // We need to wait until the lobby scene is loaded before anything can be done.
             while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);

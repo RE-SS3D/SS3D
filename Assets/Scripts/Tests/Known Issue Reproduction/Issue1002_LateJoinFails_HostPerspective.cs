@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace SS3D.Tests
 {
-    public class Issue1002_LateJoinFails_HostPerspective : SpessPlayModeTest
+    public class Issue1002_LateJoinFails_HostPerspective : SpessHostPlayModeTest
     {
 
         protected Process clientProcess;
