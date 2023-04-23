@@ -4,11 +4,6 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   run_tests:
     name: Run tests
-    strategy:
-      fail-fast: false
-      matrix:
-        testMode:
-          - editmode
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project code
@@ -18,7 +13,7 @@ jobs:
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
         with:
-          testMode: ${{ matrix.testMode }}
+          testMode: editmode
         env:
           UNITY_LICENSE_FILE: ../Documents/UnityLicense.ulf
       - name: Notify discord if tests fail
