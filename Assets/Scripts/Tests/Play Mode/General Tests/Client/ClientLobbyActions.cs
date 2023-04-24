@@ -23,7 +23,7 @@ namespace SS3D.Tests
     /// </summary>
     public class ClientLobbyActions : SpessPlayModeTest
     {
-
+        [UnitySetUp]
         public IEnumerator UnitySetUp()
         {
             yield return LoadAndSetInLobby(NetworkType.Client);
