@@ -21,12 +21,23 @@ namespace SS3D.Tests
     /// <summary>
     /// All tests related to doing stuff in the lobby as a client.
     /// </summary>
-    public class ClientLobbyActions : SpessClientPlayModeTest
+    public class ClientLobbyActions : SpessPlayModeTest
     {
+
+        public IEnumerator UnitySetUp()
+        {
+            yield return LoadAndSetInLobby(NetworkType.Client);
+        }
+
         [UnityTest]
         public IEnumerator ReadyToggleButtonCorrectlyFunctionsWhenClicked()
         {
             yield return PlaymodeTestRepository.ReadyToggleButtonCorrectlyFunctionsWhenClicked();
+        }
+
+        protected override bool UseMockUpInputs()
+        {
+            return false;
         }
     }
 

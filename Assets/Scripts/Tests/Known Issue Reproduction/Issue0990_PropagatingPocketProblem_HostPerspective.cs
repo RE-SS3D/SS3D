@@ -1,35 +1,39 @@
+using NUnit.Framework;
+using SS3D.Core.Settings;
 using System.Collections;
 using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
-    public class Issue0990_PropagatingPocketProblem_HostPerspective : SpessHostPlayModeTest
+    public class Issue0990_PropagatingPocketProblem_HostPerspective : SpessPlayModeTest
     {
-        public override void OneTimeSetUp()
-        {
-            base.OneTimeSetUp();
-
-        }
 
         [UnitySetUp]
-        public override IEnumerator UnitySetUp()
+        public IEnumerator UnitySetUp()
         {
-            yield return base.UnitySetUp();
-            yield return TestHelpers.StartAndEnterRound();
-            yield return GetHumanoidController();
+            if (!setUpOnce)
+            {
+                yield return LoadAndSetInLobby(NetworkType.Host);
+                setUpOnce = true;
+            }
+            yield return SetInGame();
         }
 
         [UnityTearDown]
-        public override IEnumerator UnityTearDown()
+        public IEnumerator UnityTearDown()
         {
             yield return TestHelpers.FinishAndExitRound();
-            yield return base.UnityTearDown();
         }
 
         [UnityTest]
         public IEnumerator PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne()
         {
             yield return IssueReproduction.Issue0990_PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne();
+        }
+
+        protected override bool UseMockUpInputs()
+        {
+            return false;
         }
     }
 }

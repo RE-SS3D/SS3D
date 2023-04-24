@@ -21,30 +21,18 @@ namespace SS3D.Tests
     /// Set up client to late join the server, necessary as some functionnalities behave 
     /// differently when late joining.
     /// </summary>
-    public class ClientLateJoinActions : SpessClientPlayModeTest
+    public class ClientLateJoinActions : SpessPlayModeTest
     {
         [UnitySetUp]
-        public override IEnumerator UnitySetUp()
+        public IEnumerator UnitySetUp()
         {
-            yield return base.UnitySetUp();
-            yield return TestHelpers.LateJoinRound();
-            yield return GetHumanoidController();
-            yield return GetInteractionController();
-        }
-
-        public override void Setup()
-        {
-            base.Setup();
-
-            leftMouseClick.performed += InteractionController.HandleRunPrimary;
-            leftMouseClick.Enable();
+            yield return LoadAndSetInGame(NetworkType.Client, 8f);
         }
 
         [UnityTearDown]
-        public override IEnumerator UnityTearDown()
+        public IEnumerator UnityTearDown()
         {
             yield return TestHelpers.FinishAndExitRound();
-            yield return base.UnityTearDown();
         }
 
         [UnityTest]
@@ -59,6 +47,11 @@ namespace SS3D.Tests
         public IEnumerator PlayerCanDropAndPickUpItem()
         {
             yield return PlaymodeTestRepository.PlayerCanDropAndPickUpItem(this);
+        }
+
+        protected override bool UseMockUpInputs()
+        {
+            return true;
         }
     }
 }

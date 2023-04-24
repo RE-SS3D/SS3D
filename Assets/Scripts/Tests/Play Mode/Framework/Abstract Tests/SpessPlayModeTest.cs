@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Coimbra;
 using NUnit.Framework;
 using SS3D.Core;
@@ -25,16 +26,23 @@ namespace SS3D.Tests
     public abstract class SpessPlayModeTest : InputTestFixture
     {
         protected const string ExecutableName = "SS3D";
+        protected const string CancelButton = "Cancel";
+        protected const string ReadyButtonName = "Ready";
+        protected const string ServerSettingsTabName = "Server Settings";
+        protected const string StartRoundButtonName = "Start Round";
+        protected const string StartClientCommand = "Start SS3D Server.bat";
+
+        // Use it in [UnitySetUp] method if you want to do special stuff during the first call to such method.
+        protected bool setUpOnce = false;
 
         // Whether the lobby scene has been loaded
         protected bool lobbySceneLoaded = false;
-        protected bool emptySceneLoaded = false;
 
-        // Used to simulate input
-        //protected Keyboard keyboard;
+        // Used to simulate mouse input
         protected Mouse mouse;
         protected InputAction leftMouseClick = new InputAction();
 
+        // Used to simulate all possible actions defined in SS3D
         protected InputDevice inputDevice;
         private List<InputAction> inputActions = new();
 
@@ -45,14 +53,15 @@ namespace SS3D.Tests
         protected HumanoidController HumanoidController;
         protected InteractionController InteractionController;
 
-        protected bool useController = true;
+        protected abstract bool UseMockUpInputs();
 
         /// <summary>
         /// Set up input system and virtual devices for input. Should not contain anything else.
+        /// TODO : determine precisely the timing of this method call, as calling it too soon can lead to issues with controllers not set up.
         /// </summary>
         public override void Setup()
         {
-            if (useController)
+            if (UseMockUpInputs())
             {
                 UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
                 base.Setup();
@@ -63,7 +72,6 @@ namespace SS3D.Tests
                     InputSystem.AddDevice(inputDevice);
                 }
                 SetUpMouse();
-
             }
         }
 
@@ -75,52 +83,50 @@ namespace SS3D.Tests
             base.TearDown();
         }
 
-        [UnitySetUp]
-        public virtual IEnumerator UnitySetUp()
-        {
-            // We need to wait until the lobby scene is loaded before anything can be done.
-            while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
-        }
-
-        [UnityTearDown]
-        public virtual IEnumerator UnityTearDown()
-        {
-            yield return new WaitForSeconds(3f);    
-        }
-
         /// <summary>
         /// TODO : find a better way to set up the mouse device (not with free actions like this).
-        /// Only handle left click currently.
+        /// Only handle left click currently, and only does primary interaction when left clicking.
         /// </summary>
         private void SetUpMouse()
         {
             mouse = InputSystem.AddDevice<Mouse>();
             mouse.MakeCurrent();
             leftMouseClick.AddBinding(mouse.leftButton);
-            leftMouseClick.performed += InteractionController.HandleRunPrimary;
-            leftMouseClick.Enable();
         }
 
-        //TODO: Add timeout
-        public IEnumerator GetHumanoidController()
+
+        public IEnumerator GetHumanoidController(float timeout = 3f)
         {
+            float startTime = Time.time;
             HumanoidController = null;
             while (HumanoidController == null)
             {
                 yield return null;
                 HumanoidController = GameObject.FindWithTag("Player")?.GetComponent<HumanoidController>();
+                if (Time.time - startTime > timeout)
+                {
+                    throw new Exception($"Humanoid controller not found within timeout of {timeout} seconds.");
+                }
             }
         }
 
-        //TODO: Add timeout
-        public IEnumerator GetInteractionController()
+        public IEnumerator GetInteractionController(float timeout = 3f)
         {
+            float startTime = Time.time;
             InteractionController = null;
             while (InteractionController == null)
             {
                 yield return null;
                 InteractionController = TestHelpers.GetLocalInteractionController();
+                if (Time.time - startTime > timeout)
+                {
+                    throw new Exception($"Interaction controller not found within timeout of {timeout} seconds.");
+                }
             }
+
+            // Set up mouse click so it performs the primary interaction when pressed.
+            leftMouseClick.performed += InteractionController.HandleRunPrimary;
+            leftMouseClick.Enable();
         }
 
         protected InputAction GetAction(string name)
@@ -156,12 +162,6 @@ namespace SS3D.Tests
                 lobbySceneLoaded = true;
                 SceneManager.sceneLoaded -= ClientSceneLoaded;
             }
-
-            if (scene.name.Equals("Empty"))
-            {
-                emptySceneLoaded = true;
-                SceneManager.sceneLoaded -= ClientSceneLoaded;
-            }
         }
 
         protected IEnumerator WaitForLobbyLoaded(float timeout = 20f)
@@ -178,34 +178,12 @@ namespace SS3D.Tests
             }
         }
 
-        protected IEnumerator WaitForEmptySceneLoaded(float timeout = 10f)
-        {
-            float startTime = Time.time;
-            while (!emptySceneLoaded)
-            {
-                yield return new WaitForSeconds(1f);
-
-                if (Time.time - startTime > timeout)
-                {
-                    throw new Exception($"Empty scene not loaded within timeout of {timeout} seconds.");
-                }
-            }
-        }
-
         protected void LoadStartupScene()
         {
             // Start up the game.
             lobbySceneLoaded = false;
             SceneManager.sceneLoaded += ClientSceneLoaded;
             SceneManager.LoadScene("Startup", LoadSceneMode.Single);
-        }
-
-        protected void LoadEmptyScene()
-        {
-            // Close down the game.
-            emptySceneLoaded = false;
-            SceneManager.sceneLoaded += ClientSceneLoaded;
-            SceneManager.LoadScene("Empty", LoadSceneMode.Single);
         }
 
         protected void KillAllBuiltExecutables()
@@ -216,16 +194,11 @@ namespace SS3D.Tests
             }
         }
 
-        protected void EnableInput()
+        private IEnumerator GetControllers()
         {
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
-            {
-
-            }
-
+            yield return GetHumanoidController();
+            yield return GetInteractionController();
         }
-
 
         /// <summary>
         /// A simple means of running a UnityTest multiple times to see if it consistently works.
@@ -300,6 +273,62 @@ namespace SS3D.Tests
             UnityEngine.Debug.Log("Returning device.");
 
             return device;
+        }
+
+        /// <summary>
+        /// As host, simply open the game and wait for host to be correctly loaded in lobby.
+        /// As client, does the same, but open a dedicated server to connect to before.
+        /// </summary>
+        /// <param name="type"> The network type we want to load in lobby.</param>
+        /// <returns></returns>
+        protected IEnumerator LoadAndSetInLobby(NetworkType type)
+        {
+            if(type is NetworkType.Client)
+            {
+                LoadFileHelpers.OpenCompiledBuild();
+
+                // Force wait for 10 seconds - this should be long enough for the server to load
+                yield return new WaitForSeconds(10f);
+                // Set to run as client
+                SetApplicationSettings(NetworkType.Client);
+            }
+
+            SetApplicationSettings(type);
+
+            // Load the startup scene (which will subsequently load the lobby once connected)
+            LoadStartupScene();
+
+            WaitForLobbyLoaded();
+
+            // Wait a bit to make sure UI is correctly Loaded
+            yield return new WaitForSeconds(3f);
+        }
+
+        /// <summary>
+        /// This load player (either client or host) in lobby and then in game.
+        /// </summary>
+        /// <param name="joinDelay"> Time between starting the game and joining it</param>
+        /// <returns></returns>
+        protected IEnumerator LoadAndSetInGame(NetworkType type, float joinDelay = 0f)
+        {
+            yield return LoadAndSetInLobby(type);
+            yield return SetInGame(joinDelay);
+        }
+
+        /// <summary>
+        /// Assume the player is in lobby, then launch a round, embark and get the controllers.
+        /// </summary>
+        /// <param name="joinDelay"> Time between starting the game and joining it.</param>
+        /// <returns></returns>
+        protected IEnumerator SetInGame(float joinDelay = 0f)
+        {
+            if (!lobbySceneLoaded)
+            {
+                throw new Exception("Don't try to get in game without loading the lobby scene first !");
+            }
+            yield return TestHelpers.StartAndEnterRound(joinDelay);
+            yield return GetControllers();
+            yield return new WaitForSeconds(1f);
         }
     }
 }

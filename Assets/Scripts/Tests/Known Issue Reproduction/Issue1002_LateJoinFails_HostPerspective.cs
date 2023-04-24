@@ -20,30 +20,22 @@ namespace SS3D.Tests
         protected Process clientProcess;
 
         [UnitySetUp]
-        public override IEnumerator UnitySetUp()
+        public IEnumerator UnitySetUp()
         {
-            useController = false;
-
-            // Load the host in the Editor. They should appear in the Lobby Screen.
-            yield return LoadInEditor(NetworkType.Host);
-            yield return new WaitForSeconds(2f);
-
+           yield return LoadAndSetInLobby(NetworkType.Host);
         }
 
         [UnityTearDown]
-        public override IEnumerator UnityTearDown()
+        public IEnumerator UnityTearDown()
         {
             // Wait for a bit, to get some temporal separation.
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
 
             // Shut down the client
             clientProcess.CloseMainWindow();
             clientProcess.Close();
 
             TestHelpers.FinishAndExitRound();
-
-            // Shut down any other test fixtures
-            yield return base.UnityTearDown();
 
             // Wait for a bit more
             yield return new WaitForSeconds(1f);
@@ -142,23 +134,6 @@ namespace SS3D.Tests
             }
         }
 
-        protected IEnumerator LoadInEditor(NetworkType networkType)
-        {
-            // Set to run as client, host or 
-            SetApplicationSettings(networkType);
-
-            // Load the startup scene (which will subsequently load the lobby once connected)
-            LoadStartupScene();
-
-            // TODO: Create our fake input
-
-            // Wait until Lobby is fully loaded.
-            yield return WaitForLobbyLoaded();
-
-            // Do any other stuff we need.
-            yield return base.UnitySetUp();
-        }
-
         public IEnumerator CheckMindIsInScene(string ckey, float timeout = 10f)
         {
             string mind_prefix = "Mind - ";
@@ -177,14 +152,9 @@ namespace SS3D.Tests
             }
         }
 
-        public void PressButton(string buttonName)
+        protected override bool UseMockUpInputs()
         {
-            GameObject.Find(buttonName)?.GetComponent<LabelButton>().Press();
-        }
-
-        public void SetTabActive(string tabName)
-        {
-            GameObject.Find(tabName)?.GetComponent<Button>().onClick.Invoke();
+            return false;
         }
     }
 }

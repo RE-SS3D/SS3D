@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Threading;
 using NUnit.Framework;
+using SS3D.Core.Settings;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
@@ -7,32 +9,23 @@ using UnityEngine.TestTools;
 namespace SS3D.Tests
 {
 
-    public class HostGameActions : SpessHostPlayModeTest
+    public class HostGameActions : SpessPlayModeTest
     {
-        private const string HorizontalAxis = "Horizontal";
-        private const string VerticalAxis = "Vertical";
-
-        public override void OneTimeSetUp()
-        {
-            base.OneTimeSetUp();
-
-        }
-
         [UnitySetUp]
-        public override IEnumerator UnitySetUp()
+        public IEnumerator UnitySetUp()
         {
-            yield return base.UnitySetUp();
-            yield return TestHelpers.StartAndEnterRound();
-            yield return new WaitForSeconds(2);
-            yield return GetHumanoidController();
-            yield return GetInteractionController();
+            if(!setUpOnce)
+            {
+                yield return LoadAndSetInLobby(NetworkType.Host);
+                setUpOnce = true;
+            }
+            yield return SetInGame();
         }
 
         [UnityTearDown]
-        public override IEnumerator UnityTearDown()
+        public IEnumerator UnityTearDown()
         {
             yield return TestHelpers.FinishAndExitRound();
-            yield return base.UnityTearDown();
         }
 
         [UnityTest]
@@ -45,6 +38,11 @@ namespace SS3D.Tests
         public IEnumerator PlayerCanMoveInEachDirectionCorrectly()
         {
             yield return PlaymodeTestRepository.PlayerCanMoveInEachDirectionCorrectly(this, HumanoidController);
+        }
+
+        protected override bool UseMockUpInputs()
+        {
+            return true;
         }
     }
 }

@@ -41,16 +41,11 @@ namespace SS3D.Tests
             return result;
         }
 
-        public static IEnumerator StartAndEnterRound()
+        public static IEnumerator StartAndEnterRound(float delay = 0f)
         {
-            yield return PressButtonWhenAvailable(ReadyButtonName);
             yield return StartRound();
-        }
-
-        public static IEnumerator ClickButton(string buttonName, float delay = 1f)
-        {
-            PressButton(buttonName);
             yield return new WaitForSeconds(delay);
+            yield return PressButtonWhenAvailable(EmbarkButtonName);
         }
 
         /// <summary>

@@ -19,37 +19,38 @@ using System.Text;
 
 namespace SS3D.Tests
 {
-    public class ServerGameActions : SpessServerPlayModeTest
+    public class ServerGameActions : SpessPlayModeTest
     {
-        public override void OneTimeSetUp()
-        {
-            base.OneTimeSetUp();
 
+        protected Process[] clientProcess;
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            // Set to run as server
+            SetApplicationSettings(NetworkType.ServerOnly);
+
+            // Load the startup scene (which will subsequently load the lobby once connected)
+            LoadStartupScene();
         }
 
         [UnitySetUp]
-        public override IEnumerator UnitySetUp()
+        public IEnumerator UnitySetUp()
         {
-            // Set up the test itself
-            yield return base.UnitySetUp();
-            yield return new WaitForSeconds(3f);
-
             // Make several clients
             const int clientsToCreate = 8;
             clientProcess = ServerHelpers.CreateClients(clientsToCreate, ProcessWindowStyle.Normal);
             yield return ServerHelpers.SetWindowPositions(clientProcess);
             yield return ServerHelpers.SetWindowPositions(clientProcess);
             yield return ServerHelpers.WaitUntilClientsLoaded(clientsToCreate);
-
         }
 
         [UnityTearDown]
-        public override IEnumerator UnityTearDown()
+        public IEnumerator UnityTearDown()
         {
             ServerHelpers.ChangeRoundState(false);
-            yield return base.UnityTearDown();
-
             KillClientProcesses();
+            yield return null;
         }
 
         [UnityTest]
@@ -76,6 +77,20 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(5f);
 
             yield return TestHelpers.ContinueFreePlayUntilControlAltBackspacePressed();
+        }
+
+        protected void KillClientProcesses()
+        {
+            foreach (Process process in clientProcess)
+            {
+                process.CloseMainWindow();
+                process.Close();
+            }
+        }
+
+        protected override bool UseMockUpInputs()
+        {
+            return false;
         }
     }
 }

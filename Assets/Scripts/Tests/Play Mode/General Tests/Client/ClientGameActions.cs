@@ -17,31 +17,24 @@ using UnityEngine.TestTools;
 using UnityEngine.Windows;
 using SS3D.Systems.Inventory.Containers;
 using System.Security.Cryptography;
+using SS3D.Core.Settings;
 
 namespace SS3D.Tests
 {
-    public class ClientGameActions : SpessClientPlayModeTest
+    public class ClientGameActions : SpessPlayModeTest
     {
-        public override IEnumerator UnitySetUp()
+        [UnitySetUp]
+        public IEnumerator UnitySetUp()
         {
-            yield return base.UnitySetUp();
-            yield return TestHelpers.StartAndEnterRound();
-            yield return GetHumanoidController();
-            yield return GetInteractionController();
+            yield return LoadAndSetInGame(NetworkType.Client);
         }
 
-        public override void Setup()
-        {
-            base.Setup();
-        }
-
-        public override IEnumerator UnityTearDown()
+        [UnityTearDown]
+        public IEnumerator UnityTearDown()
         {
             yield return TestHelpers.FinishAndExitRound();
-            yield return base.UnityTearDown();
+            KillAllBuiltExecutables();
         }
-
-
 
         /// <summary>
         /// Test which confirms that the player can correctly move in each of the eight directions.
@@ -59,8 +52,12 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerCanDropAndPickUpItem()
         {
-            Debug.Log("player can drop and pick up item beginning");
             yield return PlaymodeTestRepository.PlayerCanDropAndPickUpItem(this);
+        }
+
+        protected override bool UseMockUpInputs()
+        {
+            return true;
         }
     }
 }
