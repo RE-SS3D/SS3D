@@ -18,7 +18,6 @@ namespace SS3D.Substances
     /// </summary>
     public class SubstanceContainer : InteractionTargetNetworkBehaviour
     {
-        #region substanceContainer
         /// <summary>
         /// A list of initial substances in this container
         /// </summary>
@@ -42,7 +41,6 @@ namespace SS3D.Substances
         /// A list of all substances in this container
         /// </summary>
         private List<SubstanceEntry> _substances = new List<SubstanceEntry>();
-
 
         /// <summary>
         /// The temperature of the container
@@ -69,7 +67,6 @@ namespace SS3D.Substances
 
         public bool IsEmpty => CurrentVolume == 0f;
 
-
         /// <summary>
         /// The filled volume in ml
         /// </summary>
@@ -84,23 +81,6 @@ namespace SS3D.Substances
 
         [SyncVar]
         private bool _initialised = false;
-
-        /// <summary>
-        /// Multiplier to convert moles in this container to volume
-        /// </summary>
-        public float MolesToVolume
-        {
-            get
-            {
-                float val = 0;
-                float total = TotalMoles;
-                foreach (var entry in Substances)
-                {
-                    val += entry.Substance.MillilitersPerMole * (entry.Moles / total);
-                }
-                return val;
-            }
-        }
 
         protected override void OnStart()
         {
@@ -122,6 +102,21 @@ namespace SS3D.Substances
             _locked = locked;
             _initialised = true;
         }
+
+        /// <summary>
+        /// Multiplier to convert moles in this container to volume
+        /// </summary>
+        public float MolesToVolume()
+        {
+            float val = 0;
+            float total = TotalMoles;
+            foreach (var entry in Substances)
+            {
+                val += entry.Substance.MillilitersPerMole * (entry.Moles / total);
+            }
+            return val;
+        }
+
         /// <summary>
         /// Removes the specified amount of substance
         /// </summary>
@@ -165,9 +160,8 @@ namespace SS3D.Substances
         /// <param name="milliliters">How many milliliters to transfer</param>
         public void TransferVolume(SubstanceContainer other, float milliliters)
         {
-            TransferMoles(other, milliliters / MolesToVolume);
+            TransferMoles(other, milliliters / MolesToVolume());
         }
-
 
         /// <summary>
         /// Informs the system that the contents of this container have changed
@@ -455,7 +449,5 @@ namespace SS3D.Substances
 
             container.SetDirty();
         }
-
-        #endregion
     }
 }
