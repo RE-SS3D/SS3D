@@ -173,7 +173,7 @@ namespace SS3D.Substances
         /// Informs the system that the contents of this container have changed
         /// </summary>
         [Server]
-        public void MarkDirty()
+        public void SetDirty()
         {
             OnContentsChanged();
         }
@@ -453,7 +453,7 @@ namespace SS3D.Substances
                 }
             }
 
-            container.MarkDirty();
+            container.SetDirty();
         }
 
         #endregion

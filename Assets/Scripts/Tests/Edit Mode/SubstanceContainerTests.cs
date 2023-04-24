@@ -11,7 +11,6 @@ using UnityEngine;
 /// </summary>
 public class SubstanceContainerTests
 {
-
     private SubstanceContainer _container;
     private SubstanceContainer _containerLocked;
     private Substance _beer;
@@ -76,8 +75,4 @@ public class SubstanceContainerTests
         Assert.AreEqual(9f, beerMole);
         Assert.AreEqual(4.5f, waterMole);
     }
-
-
-
-
 }
