@@ -2,11 +2,14 @@
 
 <br>
 
-<h1 align="center">INFO</h1>
+<details>
+<summary><h1 align="center">INFO</h1></summary>
 
 **[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
 [<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)
 [<img src="https://img.shields.io/github/milestones/open/RE-SS3D/SS3D?color=blueviolet&label=Milestones&logo=github&style=plastic" alt="GitHub Milestones" align="right">](https://github.com/RE-SS3D/SS3D/milestones)
+
+</details>
 
 <br>
 
@@ -28,7 +31,7 @@
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
-PayPal is where all our donations go before distribution to development costs. Use the link or send to our [email](mailto:ress3d.project@gmail.com).
+PayPal is where our donations go before distribution to development costs. Use link or send to our [email](mailto:ress3d.project@gmail.com).
 
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
@@ -40,7 +43,7 @@ Patreon is our subscription-based donation platform (currently no unique benefit
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Our primary communication (devs & community). Includes helpful people, polls, & more.
+[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Primary communication (devs & community). Includes helpful people, polls, & more.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
