@@ -35,10 +35,18 @@ namespace SS3D.Tests
             yield return PlaymodeTestRepository.ReadyToggleButtonCorrectlyFunctionsWhenClicked();
         }
 
+        [UnityTearDown]
+        public IEnumerator UnityTearDown()
+        {
+            yield return TestHelpers.FinishAndExitRound();
+            KillAllBuiltExecutables();
+        }
+
         protected override bool UseMockUpInputs()
         {
             return false;
         }
+
     }
 
 

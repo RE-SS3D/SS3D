@@ -33,6 +33,7 @@ namespace SS3D.Tests
         public IEnumerator UnityTearDown()
         {
             yield return TestHelpers.FinishAndExitRound();
+            KillAllBuiltExecutables();
         }
 
         [UnityTest]
