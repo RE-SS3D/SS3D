@@ -4,7 +4,7 @@
 
 <h1 align="center">INFO</h1>
 
-[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
+[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)[<img src="https://img.shields.io/github/milestones/open/RE-SS3D/SS3D?color=blueviolet&logo=github&style=plastic" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/milestones)**[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
 
 <br>
 
@@ -38,7 +38,7 @@ Patreon is our subscription-based donation platform (currently no unique benefit
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Our primary communication for (devs & community). Includes helpful people, community polls, & more.
+[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Our primary communication (devs & community). Includes helpful people, polls, & more.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
@@ -46,7 +46,7 @@ Patreon is our subscription-based donation platform (currently no unique benefit
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/@spacestation3d)
 
-[<img src="https://img.shields.io/youtube/channel/subscribers/@spacestation3d?style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/@spacestation3d)Where we upload many of our videos including animations, trailers, and gameplay tests.
+[<img src="https://img.shields.io/youtube/channel/subscribers/@spacestation3d?style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/@spacestation3d)Where we upload many videos including animations, trailers, and gameplay tests.
 
 [<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
 
@@ -66,7 +66,7 @@ GitHub hosts our [issues board](https://github.com/RE-SS3D/SS3D/issues) and [mil
 
 [<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
 
-Trello hosts our other boards, including the task boards for asset types (3D, 2D, audio, etc.) and our management board.
+Trello hosts our task boards for asset types (3D, 2D, audio, etc.) and our management board.
 
 <br>
 
