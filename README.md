@@ -13,6 +13,7 @@
 
 </details>
 
+<details>
 <summary align="center"><h1>DOWNLOADS</h1></summary>
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
@@ -29,6 +30,7 @@
 
 </details>
 
+<details>
 <summary align="center"><h1>DONATE</h1></summary>
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
@@ -43,6 +45,7 @@ Patreon is our subscription-based donation platform (currently no unique benefit
 
 </details>
 
+<details>
 <summary align="center"><h1>COMMUNITY</h1></summary>
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
@@ -65,6 +68,7 @@ Patreon is our subscription-based donation platform (currently no unique benefit
 
 </details>
 
+<details>
 <summary align="center"><h1>CONTRIBUTING</h1></summary>
 
 [<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)Our [Dev Guide](https://ss3d.gitbook.io/dev-guide/) outlines setting up the project and contributing to it with various tips and guidelines.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
@@ -83,6 +87,7 @@ Trello hosts our task boards for asset types (3D, 2D, audio, etc.) and our manag
 
 </details>
 
+<details>
 <summary align="center"><h1>LICENSING</h1></summary>
 
 All **CODE** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
