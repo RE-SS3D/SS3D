@@ -1,20 +1,16 @@
 <h3 align="center"><img src="Documents/Images/SS3DBanner1.png" alt="SS3D">Space Station 3D is an open-source resurrection of <a href="https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av">*beep's original SS3D</a>, which was an impressive demo attempting to give the infamous <a href="https://spacestation13.com/"><img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="ss13"></a> an extra dimension.</h3>
 
-<br><hr>
+<br>
 
-<details>
-<summary align="center"><h1>INFO</h1></summary>
+<h1 align="center">INFO</h1>
 
 **[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
 [<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)
 [<img src="https://img.shields.io/github/milestones/open/RE-SS3D/SS3D?color=blueviolet&label=Milestones&logo=github&style=plastic" alt="GitHub Milestones" align="right">](https://github.com/RE-SS3D/SS3D/milestones)
 
-<br><hr>
+<br>
 
-</details>
-
-<details>
-<summary align="center"><h1>DOWNLOADS</h1></summary>
+<h1 align="center">DOWNLOADS</h1>
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
@@ -26,12 +22,9 @@
 
 ***Note:*** *SS3D is still in a 'pre-alpha' phase while we concentrate on core mechanics. So, there isn't much content, systems, or even interactions currently. What you see now is just the beginning to something much, much greater.*
 
-<br><hr>
+<br>
 
-</details>
-
-<details>
-<summary align="center"><h1>DONATE</h1></summary>
+<h1 align="center">DONATE</h1>
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
@@ -41,12 +34,9 @@ PayPal is where our donations go before distribution to development costs. Use l
 
 Patreon is our subscription-based donation platform (currently no unique benefits for different tiers).
 
-<br><hr>
+<br>
 
-</details>
-
-<details>
-<summary align="center"><h1>COMMUNITY</h1></summary>
+<h1 align="center">COMMUNITY</h1>
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
@@ -64,12 +54,9 @@ Patreon is our subscription-based donation platform (currently no unique benefit
 
 [<img src="https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FSpaceStation3D" alt="Twitter Followers" align="right">](https://twitter.com/SpaceStation3D)Used for announcements & memes but we will start using it more for other posts eventually.
 
-<br><hr>
+<br>
 
-</details>
-
-<details>
-<summary align="center"><h1>CONTRIBUTING</h1></summary>
+<h1 align="center">CONTRIBUTING</h1>
 
 [<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)Our [Dev Guide](https://ss3d.gitbook.io/dev-guide/) outlines setting up the project and contributing to it with various tips and guidelines.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
 
@@ -83,17 +70,10 @@ GitHub hosts our [issues board](https://github.com/RE-SS3D/SS3D/issues) and [mil
 
 Trello hosts our task boards for asset types (3D, 2D, audio, etc.) and our management board.
 
-<br><hr>
+<br>
 
-</details>
-
-<details>
-<summary align="center"><h1>LICENSING</h1></summary>
+<h1 align="center">LICENSING</h1>
 
 All **CODE** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
 All **ASSETS** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
-
-<br><hr>
-
-</details>
