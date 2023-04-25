@@ -48,7 +48,7 @@ Patreon is our subscription-based donation platform (currently no unique benefit
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/@spacestation3d)
 
-[<img src="https://img.shields.io/youtube/channel/subscribers/@spacestation3d?style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/@spacestation3d)Where we upload many videos including animations, trailers, and gameplay tests.
+[<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/@spacestation3d)Where we upload many videos including animations, trailers, and gameplay tests.
 
 [<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
 
