@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
@@ -69,26 +71,36 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            SetupView();
+            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+        }
+
+        private void SetupView()
+        {
             InventoryView = ViewLocator.Get<InventoryView>().First();
             InventoryView.Inventory = this;
 
             InventoryView.Setup();
             InventoryView.Enable(true);
-
-            SystemLocator.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
         }
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+
             Hands.Inventory = this;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        protected override void OnDestroyed()
         {
-            base.HandleUpdate(in deltaTime);
+            base.OnDestroyed();
+            InventoryView.Enable(false);
+        }
 
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        {
             float time = Time.time;
             if (!(time > _nextAccessCheck))
             {
@@ -297,7 +309,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            item.Container = null;
+            item.SetContainer(null);
         }
 
         [TargetRpc]

@@ -15,6 +15,8 @@ using SS3D.Systems.Inventory.Items;
 using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
+using static SS3D.Substances.SubstanceContainer;
+using FishNet.Object;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -165,10 +167,10 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnAwake()
         {
             base.OnAwake();
-
             _container = new Container(this);
             _storedItems.OnChange += HandleStoredItemsChanged;
             UpdateContainer(_container);
+            _container.OnContentsChanged += HandleContainerContentsChanged;
         }
 
         public void OnDestroy()
@@ -195,6 +197,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Replace the current container with a new one and set it up.
         /// </summary>
         /// <param name="newContainer"></param>
+        [Server]
         private void UpdateContainer(Container newContainer)
         {
             if (_container != null)
@@ -244,5 +247,96 @@ namespace SS3D.Systems.Inventory.Containers
 
             _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
+
+        [Server]
+        private void handleItemRemoved(Item item)
+        {
+
+            // Restore visibility
+            if (HideItems)
+            {
+                item.SetVisibility(true);
+            }
+
+            // Remove parent if child of this
+            if (item.transform.parent == transform)
+            {
+                item.transform.SetParent(null, true);
+                ProcessItemDetached(item);
+            }
+
+            item.Unfreeze();
+        }
+
+        [Server]
+        private void handleItemAdded(Item item)
+        {
+            item.Freeze();
+
+            // Make invisible
+            if (HideItems)
+            {
+                item.SetVisibility(false);
+            }
+
+            if (AttachItems)
+            {
+                Transform itemTransform = item.transform;
+                itemTransform.SetParent(transform, false);
+                itemTransform.localPosition = AttachmentOffset;
+                ProcessItemAttached(item);
+            }
+        }
+
+        [Server]
+        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        {
+            switch (type)
+            {
+                case ContainerChangeType.Add:
+                    foreach (Item item in newItems)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        handleItemAdded(item);
+                    }
+
+                    break;
+                case ContainerChangeType.Move:
+                    {
+                        foreach (Item item in newItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                            handleItemAdded(item);
+                        }
+
+                        break;
+                    }
+                case ContainerChangeType.Remove:
+                    {
+                        foreach (Item item in oldItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                        }
+
+                        break;
+                    }
+            }
+        }
     }
+
+
 }

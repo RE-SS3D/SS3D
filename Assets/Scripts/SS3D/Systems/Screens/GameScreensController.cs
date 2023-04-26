@@ -2,10 +2,12 @@ using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -29,7 +31,7 @@ namespace SS3D.Systems.Screens
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
 
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 

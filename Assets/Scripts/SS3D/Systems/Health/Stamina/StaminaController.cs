@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -57,6 +59,13 @@ namespace SS3D.Systems.Health
         /// </summary>
         public bool CanContinueInteraction => IsServerOnly ? _stamina.CanContinueInteraction : _currentStamina > 0f;
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -77,13 +86,11 @@ namespace SS3D.Systems.Health
             SubscribeToEvents();
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             if (IsServer)
             {
-                _stamina.RechargeStamina(deltaTime);
+                _stamina.RechargeStamina(updateEvent.DeltaTime);
             }
         }
 

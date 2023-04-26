@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Attributes;
 using SS3D.Core.Behaviours;
 using UnityEngine;
@@ -18,6 +20,13 @@ namespace SS3D.Systems.Health
         /// </summary>
         private StaminaController _controller;
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
         /// <summary>
         /// Set the slider to the correct value
         /// </summary>
@@ -27,7 +36,7 @@ namespace SS3D.Systems.Health
             _slider.value = stamina;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             SetStamina(_controller ? _controller.CurrentStamina : 0f);
         }

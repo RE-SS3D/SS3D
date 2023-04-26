@@ -1,9 +1,14 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Entities.Silicon
 {
@@ -49,15 +54,15 @@ namespace SS3D.Systems.Entities.Silicon
 
         private void Setup()
         {
-            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Movement;
+            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Movement;
             _entity.OnMindChanged += HandleControllingSoulChanged;
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             if (!IsOwner)
             {
                 return;
@@ -76,14 +81,14 @@ namespace SS3D.Systems.Entities.Silicon
 
             if (_input.magnitude != 0)
             {
-                MoveMovementTarget(_input);
+                MoveTarget(_input);
                 RotatePlayerToMovement();
                 MovePlayer();
             }
             else
             {
                 MovePlayer();
-                MoveMovementTarget(Vector2.zero, 5);
+                MoveTarget(Vector2.zero, 5);
             }
         }
 
@@ -91,7 +96,7 @@ namespace SS3D.Systems.Entities.Silicon
         /// Moves the movement targets with the given input
         /// </summary>
         /// <param name="movementInput"></param>
-        private void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
+        private void MoveTarget(Vector2 movementInput, float multiplier = 1)
         {
             //makes the movement align to the camera view
             Vector3 newTargetMovement =
@@ -130,9 +135,13 @@ namespace SS3D.Systems.Entities.Silicon
         /// <returns></returns>
         private void ProcessPlayerInput()
         {
-            float x = _controls.Movement.ReadValue<Vector2>().x;
-            float y = _controls.Movement.ReadValue<Vector2>().y;
-
+            float x = 0;
+            float y = 0;
+            if (_controls.Movement.phase == InputActionPhase.Performed)
+            {
+                x = _controls.Movement.ReadValue<Vector2>().x;
+                y = _controls.Movement.ReadValue<Vector2>().y;
+            }
             _input = new Vector2(x, y);
             OnSpeedChanged?.Invoke(_input.magnitude != 0 ? _input.magnitude : 0);
 

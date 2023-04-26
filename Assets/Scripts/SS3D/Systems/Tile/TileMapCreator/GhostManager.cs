@@ -32,7 +32,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 _ghostObject = Instantiate(prefab);
 
-                var colliders = _ghostObject.GetComponents<Collider>();
+                if (_ghostObject.TryGetComponent<Rigidbody>(out var ghostRigidbody))
+                {
+                    ghostRigidbody.useGravity = false;
+                    ghostRigidbody.isKinematic = true;
+                }
+                var colliders = _ghostObject.GetComponentsInChildren<Collider>();
                 foreach (Collider col in colliders)
                 {
                     col.enabled = false;

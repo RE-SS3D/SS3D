@@ -169,7 +169,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnPlayer(Soul soul)
         {
-            MindSystem mindSystem = SystemLocator.Get<MindSystem>();
+            MindSystem mindSystem = Subsystems.Get<MindSystem>();
             mindSystem.TryCreateMind(soul, out Mind createdMind);
 
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
@@ -216,7 +216,7 @@ namespace SS3D.Systems.Entities
             foreach (Entity player in SpawnedPlayers)
             {
                 ServerManager.Despawn(player.NetworkObject);
-                player.GameObjectCache.Dispose(true);
+                player.GameObject.Dispose(true);
             }
 
             _hasSpawnedInitialPlayers = false;

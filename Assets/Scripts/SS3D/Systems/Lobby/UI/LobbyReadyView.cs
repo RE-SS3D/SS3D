@@ -48,7 +48,7 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessSpawnedPlayers()
         {
-            EntitySystem system = SystemLocator.Get<EntitySystem>();
+            EntitySystem system = Subsystems.Get<EntitySystem>();
 
             bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
 
@@ -63,7 +63,7 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessRoundState(RoundState roundState)
         {
-            EntitySystem system = SystemLocator.Get<EntitySystem>();
+            EntitySystem system = Subsystems.Get<EntitySystem>();
 
             bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
 
@@ -99,8 +99,8 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleEmbarkButtonPressed(bool pressed)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
-            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
 
             Soul soul = playerSystem.GetSoul(LocalConnection);
             entitySystem.CmdSpawnLatePlayer(soul);
@@ -108,7 +108,7 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleReadyButtonPressed(bool pressed)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 
             string ckey = playerSystem.GetCkey(LocalConnection);
             ChangePlayerReadyMessage playerReadyMessage = new(ckey, pressed);
