@@ -49,7 +49,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         public static string PlayerList()
         {
             string ret = "";
-            List<Soul> souls = SystemLocator.Get<PlayerSystem>().OnlineSouls.ToList();
+            List<Soul> souls = Subsystems.Get<PlayerSystem>().OnlineSouls.ToList();
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
@@ -61,7 +61,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         [LongDescription("Show all entity online")]
         public static string EntityList()
         {
-            var entities = SystemLocator.Get<EntitySystem>().SpawnedPlayers;
+            var entities = Subsystems.Get<EntitySystem>().SpawnedPlayers;
             string ret = "";
             foreach (Entity i in entities)
             {
@@ -76,7 +76,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         public static string SoulList()
         {
             string ret = "";
-            IEnumerable<Soul> souls = SystemLocator.Get<PlayerSystem>().ServerSouls;
+            IEnumerable<Soul> souls = Subsystems.Get<PlayerSystem>().ServerSouls;
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
@@ -93,7 +93,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             if (foundRoleName != null)
             {
                 ServerRoleTypes.TryParse(foundRoleName, out ServerRoleTypes foundRole);
-                SystemLocator.Get<PermissionSystem>().ChangeUserPermission(ckey, foundRole);
+                Subsystems.Get<PermissionSystem>().ChangeUserPermission(ckey, foundRole);
                 return "Done";
             }
             else
@@ -106,11 +106,11 @@ namespace SS3D.Systems.IngameConsoleSystem
         [LongDescription("inspect body part")]
         public static string LogBodyPart(string ckey, string bodyPartName)
         {
-            Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            Soul player = Subsystems.Get<PlayerSystem>().GetSoul(ckey);
             if (player == null)
                 return "This player doesn't exist";
 
-            var entity = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(player);
+            var entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
             if (entity == null)
                 return "This player doesn't exist";
 
@@ -136,11 +136,11 @@ namespace SS3D.Systems.IngameConsoleSystem
         [LongDescription("inspect body part")]
         public static string AddNerveLayer(string ckey, string bodyPartName, bool isCentralNervousSystem)
         {
-            Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            Soul player = Subsystems.Get<PlayerSystem>().GetSoul(ckey);
             if (player == null)
                 return "This player doesn't exist";
 
-            var entity = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(player);
+            var entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
             if (entity == null)
                 return "This player doesn't exist";
 
@@ -166,11 +166,11 @@ namespace SS3D.Systems.IngameConsoleSystem
         [LongDescription("inspect body part")]
         public static string AddConnectedBodyPart(string ckey, string bodyPartName, bool isCentralNervousSystem)
         {
-            Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            Soul player = Subsystems.Get<PlayerSystem>().GetSoul(ckey);
             if (player == null)
                 return "This player doesn't exist";
 
-            var entity = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(player);
+            var entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
             if (entity == null)
                 return "This player doesn't exist";
 
@@ -197,11 +197,11 @@ namespace SS3D.Systems.IngameConsoleSystem
         [LongDescription("Kill player (user ckey)")]
         public static string Kill(string ckey)
         {
-            Soul PlayerToKill = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            Soul PlayerToKill = Subsystems.Get<PlayerSystem>().GetSoul(ckey);
             if(PlayerToKill == null)
                 return "This player doesn't exist";
 
-            var entityToKill = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(PlayerToKill);
+            var entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(PlayerToKill);
             if(entityToKill == null)
                 return "This player doesn't exist";
 

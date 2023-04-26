@@ -63,7 +63,7 @@ namespace SS3D.Systems.Permissions
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
             string userCkey = playerSystem.GetCkey(conn);

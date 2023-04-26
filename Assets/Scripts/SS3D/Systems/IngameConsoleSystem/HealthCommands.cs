@@ -15,7 +15,7 @@ namespace SS3D.Systems.IngameConsoleSystem
     {
         public static string InspectBodypart(string ckey, string bodyPartName)
         {
-            Soul Player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            Soul Player = Subsystems.Get<PlayerSystem>().GetSoul(ckey);
             var connection = Player.NetworkObject.Owner;
             var bodyParts = Player.gameObject.GetComponentsInChildren<BodyPartBehaviour>();
             var bodyPartsWithName = bodyParts.Where(x => x.gameObject.name == bodyPartName).ToList();

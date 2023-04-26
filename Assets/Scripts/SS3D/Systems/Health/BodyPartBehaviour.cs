@@ -112,7 +112,7 @@ public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
     [ServerRpc]
     public void ServerRpcAddChildBodyPart(NetworkConnection conn, NetworkObject bodyPart)
     {
-        PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
+        PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
         if (!permissionSystem.HasAdminPermission(conn))
         {
             return;
