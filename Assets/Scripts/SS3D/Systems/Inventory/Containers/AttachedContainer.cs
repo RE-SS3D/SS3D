@@ -15,7 +15,6 @@ using SS3D.Systems.Inventory.Items;
 using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
-using static SS3D.Substances.SubstanceContainer;
 using FishNet.Object;
 
 namespace SS3D.Systems.Inventory.Containers
