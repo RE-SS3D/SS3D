@@ -11,7 +11,7 @@ public static class OrganLayerSerializer
         BodyLayerSerializer.WriteSusceptibilities(writer, layer);
         BodyLayerSerializer.WriteResistances(writer, layer);
 
-        writer.WriteNetworkBehaviour(layer.BodyPartBehaviour);
+        writer.WriteNetworkBehaviour(layer.BodyPart);
     }
 
     public static OrganLayer ReadOrganLayer(this Reader reader)
@@ -23,8 +23,7 @@ public static class OrganLayerSerializer
         var resistances = BodyLayerSerializer.ReadResistances(reader);
 
         var bodyPartGameObject = reader.ReadGameObject();
-        var bodyPartBehaviour = bodyPartGameObject.GetComponent<BodyPartBehaviour>();
-        var bodyPart = bodyPartBehaviour.BodyPart;
+        var bodyPart= bodyPartGameObject.GetComponent<BodyPart>();
         layer = new OrganLayer(bodyPart, damages, susceptibilities, resistances);
         return layer;
     }

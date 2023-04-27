@@ -13,15 +13,11 @@ using Codice.Client.Common;
 /// </summary>
 public class Brain : BodyPart
 {
+    public float PainAmount { get; private set; }
 
-
-    public Brain(string name) : base(name)
+    public override void Init(string name = "Brain")
     {
-        AddBrainLayer();
-    }
-
-    public Brain(BodyPartBehaviour bodyPartBehaviour) : base(bodyPartBehaviour)
-    {
+        base.Init(name);
         AddBrainLayer();
     }
 

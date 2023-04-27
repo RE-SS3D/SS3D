@@ -11,7 +11,7 @@ public static class BoneLayerSerializer
         BodyLayerSerializer.WriteSusceptibilities(writer, bone);
         BodyLayerSerializer.WriteResistances(writer, bone);
 
-        writer.WriteNetworkBehaviour(bone.BodyPartBehaviour);
+        writer.WriteNetworkBehaviour(bone.BodyPart);
     }
 
     public static BoneLayer ReadBoneLayer(this Reader reader)
@@ -25,8 +25,7 @@ public static class BoneLayerSerializer
 
         var isCentralNervousSystem = reader.ReadBoolean();
         var bodyPartGameObject = reader.ReadGameObject();
-        var bodyPartBehaviour = bodyPartGameObject.GetComponent<BodyPartBehaviour>();
-        var bodyPart = bodyPartBehaviour.BodyPart;
+        var bodyPart = bodyPartGameObject.GetComponent<BodyPart>();
         boneLayer = new BoneLayer(bodyPart, damages, susceptibilities, resistances);
         return boneLayer;
     }

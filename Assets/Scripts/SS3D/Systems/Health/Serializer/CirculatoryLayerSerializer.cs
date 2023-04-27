@@ -11,7 +11,7 @@ public static class CirculatoryLayerSerializer
         BodyLayerSerializer.WriteSusceptibilities(writer, layer);
         BodyLayerSerializer.WriteResistances(writer, layer);
 
-        writer.WriteNetworkBehaviour(layer.BodyPartBehaviour);
+        writer.WriteNetworkBehaviour(layer.BodyPart);
     }
 
     public static CirculatoryLayer ReadCirculatoryLayer(this Reader reader)
@@ -25,8 +25,7 @@ public static class CirculatoryLayerSerializer
 
         var isCentralNervousSystem = reader.ReadBoolean();
         var bodyPartGameObject = reader.ReadGameObject();
-        var bodyPartBehaviour = bodyPartGameObject.GetComponent<BodyPartBehaviour>();
-        var bodyPart = bodyPartBehaviour.BodyPart;
+        var bodyPart = bodyPartGameObject.GetComponent<BodyPart>();
         layer = new CirculatoryLayer(bodyPart, damages, susceptibilities, resistances);
         return layer;
     }

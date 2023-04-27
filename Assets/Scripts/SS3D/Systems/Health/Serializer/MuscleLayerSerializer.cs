@@ -11,7 +11,7 @@ public static class MuscleLayerSerializer
         BodyLayerSerializer.WriteSusceptibilities(writer, muscle);
         BodyLayerSerializer.WriteResistances(writer, muscle);
 
-        writer.WriteNetworkBehaviour(muscle.BodyPartBehaviour);
+        writer.WriteNetworkBehaviour(muscle.BodyPart);
     }
 
     public static MuscleLayer ReadMuscleLayer(this Reader reader)
@@ -23,8 +23,7 @@ public static class MuscleLayerSerializer
         var resistances = BodyLayerSerializer.ReadResistances(reader);
 
         var bodyPartGameObject = reader.ReadGameObject();
-        var bodyPartBehaviour = bodyPartGameObject.GetComponent<BodyPartBehaviour>();
-        var bodyPart = bodyPartBehaviour.BodyPart;
+        var bodyPart = bodyPartGameObject.GetComponent<BodyPart>();
         muscleLayer = new MuscleLayer(bodyPart, damages, susceptibilities, resistances);
         return muscleLayer;
     }

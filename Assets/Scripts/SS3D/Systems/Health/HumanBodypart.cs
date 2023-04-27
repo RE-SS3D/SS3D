@@ -13,18 +13,14 @@ using UnityEngine;
 public class HumanBodypart : BodyPart
 {
 
-    public HumanBodypart(string name = "") : base(name) 
+    public override void Init(string name = "")
     {
-        AddHumanBodyLayers();
+        base.Init(name);
     }
 
-    public HumanBodypart(BodyPartBehaviour bodyPartBehaviour, string name = "") : base(bodyPartBehaviour, name)
+    public override void Init(BodyPart parent,string name = "")
     {
-        AddHumanBodyLayers();
-    }
-
-    public HumanBodypart(BodyPart parent,string name = "") : base(parent, name)
-    {
+        base.Init(parent, name);
         AddHumanBodyLayers();
     }
 

@@ -114,7 +114,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             if (entity == null)
                 return "This player doesn't exist";
 
-            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPartBehaviour>();
+            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPart>();
             var bodyPartsWithName = bodyParts.Where(x => x.gameObject.name == bodyPartName).ToList();
 
             string description = "";
@@ -126,7 +126,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             foreach (var bodyPart in bodyPartsWithName)
             {
-                description = bodyPart.DescribeBodyPart();
+                description = bodyPart.Describe();
             }
 
             return description;
@@ -144,7 +144,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             if (entity == null)
                 return "This player doesn't exist";
 
-            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPartBehaviour>();
+            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPart>();
             var bodyPartsWithName = bodyParts.Where(x => x.gameObject.name == bodyPartName).ToList();
 
             string description = "";
@@ -156,7 +156,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             foreach (var bodyPart in bodyPartsWithName)
             {
-                bodyPart.TryAddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
+                bodyPart.TryAddBodyLayer(new NerveLayer(bodyPart, isCentralNervousSystem));
             }
 
             return description;
@@ -174,7 +174,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             if (entity == null)
                 return "This player doesn't exist";
 
-            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPartBehaviour>();
+            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPart>();
             var bodyPartsWithName = bodyParts.Where(x => x.gameObject.name == bodyPartName).ToList();
 
             string description = "";
@@ -186,7 +186,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             foreach (var bodyPart in bodyPartsWithName)
             {
-                bodyPart.TryAddBodyLayer(new NerveLayer(bodyPart.BodyPart, isCentralNervousSystem));
+                bodyPart.TryAddBodyLayer(new NerveLayer(bodyPart, isCentralNervousSystem));
             }
 
             return description;

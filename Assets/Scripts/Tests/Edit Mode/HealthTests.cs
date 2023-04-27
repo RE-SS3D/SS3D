@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using NUnit.Framework.Internal.Execution;
 using SS3D.Logging;
+using SS3D.Systems;
 using SS3D.Systems.Health;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 namespace EditorTests
 {
@@ -109,17 +111,30 @@ namespace EditorTests
         [SetUp]
         public void SetUpSimpleBody()
         {
-            brain = new Brain("brain");
-            head = new HumanBodypart(brain, "head");
-            torso = new HumanBodypart(head, "torso");
-            leftArm = new HumanBodypart(torso, "leftArm");
-            rightArm = new HumanBodypart(torso, "rightArm");
-            leftLeg = new HumanBodypart(torso, "leftLeg");
-            rightLeg = new HumanBodypart(torso, "rightLeg");
-            leftHand = new HumanBodypart(leftArm, "leftHand");
-            rightHand = new HumanBodypart(rightArm, "rightHand");
-            leftFoot = new HumanBodypart(leftLeg, "leftFoot");
-            rightFoot = new HumanBodypart(rightLeg, "rightFoot");
+            brain = CreateBodyPart<Brain>();
+            head = CreateBodyPart<HumanBodypart>();
+            torso = CreateBodyPart<HumanBodypart>();
+            leftArm = CreateBodyPart<HumanBodypart>();
+            rightArm = CreateBodyPart<HumanBodypart>();
+            leftLeg = CreateBodyPart<HumanBodypart>();
+            rightLeg = CreateBodyPart<HumanBodypart>();
+            leftHand = CreateBodyPart<HumanBodypart>();
+            rightHand = CreateBodyPart<HumanBodypart>();
+            leftFoot = CreateBodyPart<HumanBodypart>();
+            rightFoot = CreateBodyPart<HumanBodypart>();
+
+            brain.Init();
+            head.Init(brain,"head");
+            torso.Init(head, "torso");
+            leftArm.Init(torso, "leftArm");
+            rightArm.Init(torso, "rightArm");
+            leftLeg.Init(torso, "leftLeg");
+            rightLeg.Init(torso, "rightLeg");
+            leftHand.Init(leftArm, "leftHand");
+            rightHand.Init(rightArm, "rightHand");
+            leftFoot.Init(leftLeg, "leftFoot");
+            rightFoot.Init(rightLeg, "rightFoot");
+
             BodyParts = new List<BodyPart>() { brain, head, torso, leftArm, rightArm, leftLeg, rightLeg, 
             leftHand, rightHand, leftFoot, rightFoot};
         }
@@ -276,7 +291,7 @@ namespace EditorTests
             float painInTorso = ((INerveSignalTransmitter)torso.GetBodyLayer<NerveLayer>()).ProducePain();
             // that looks weird, but that's actually what is expected.
             // ProducePain takes into account the damages of nerve layers higher in the hierarchy.
-            Assert.AreEqual(painInBrain, (painInFoot + painInTorso)/BodyParts.Count, 0.00001f);
+            Assert.AreEqual((painInFoot + painInTorso)/BodyParts.Count, painInBrain, 0.00001f);
         }
 
         /// <summary>
@@ -311,6 +326,19 @@ namespace EditorTests
         }
 
 
+        /// <summary>
+        /// Creates an Item without traits
+        /// </summary>
+        /// <param name="traits"></param>
+        /// <returns></returns>
+        private static T CreateBodyPart<T>() where T : UnityEngine.Component
+        {
+            var go = new GameObject();
+            var component = go.AddComponent<T>();
+            return component;
+        }
+
+                      
         #endregion
 
     }

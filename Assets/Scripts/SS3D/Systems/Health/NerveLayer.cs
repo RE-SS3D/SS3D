@@ -18,7 +18,7 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         get => NerveSignalTransmitterType.Nerve;
     }
 
-    public NetworkBehaviour GetNetworkBehaviour => BodyPartBehaviour;
+    public NetworkBehaviour GetNetworkBehaviour => BodyPart;
 
     /// <summary>
     /// The strenght of the pain signal depends on the health of 
@@ -49,7 +49,7 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     {
         get
         {
-            return BodyPart.BodyPartBehaviour.NetworkObject;
+            return BodyPart.NetworkObject;
         }
         set
         {
@@ -61,7 +61,7 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     {
         get
         {
-            return BodyPart.BodyPartBehaviour.gameObject;
+            return BodyPart.gameObject;
         }
         set
         {

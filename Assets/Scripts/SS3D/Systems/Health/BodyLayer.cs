@@ -49,8 +49,6 @@ public abstract class BodyLayer
     public List<DamageTypeQuantity> DamageResistances => _damageResistances;
     public List<DamageTypeQuantity> DamageSuceptibilities => _damageSuceptibilities;
 
-    public NetworkBehaviour BodyPartBehaviour => BodyPart.BodyPartBehaviour;
-
     /// <summary>
     /// TODO : Put default damage suceptibility and resistance into a scriptable object and replace those lists with "damage * modifier".
     /// They should be empty most of the time as they are modifiers.

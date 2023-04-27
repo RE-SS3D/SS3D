@@ -1,59 +1,56 @@
-using Codice.CM.SEIDInfo;
-using Coimbra;
-using SS3D.Logging;
-using System;
-using System.Collections;
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using FishNet.Connection;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Unity.IO.LowLevel.Unsafe;
-using UnityEditor;
 using UnityEngine;
+using SS3D.Core;
+using SS3D.Logging;
+using SS3D.Systems.Permissions;
+using Cysharp.Threading.Tasks;
+using UnityEditor;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Health;
+using System.Linq;
+using System.Collections.ObjectModel;
 
-public abstract class BodyPart
+/// <summary>
+/// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
+/// There should always be a network object component everywhere this component is.
+/// </summary>
+[RequireComponent(typeof(NetworkObject))]
+public class BodyPart : InteractionTargetNetworkBehaviour
 {
 
-    /// <summary>
-    /// The list of body parts this body part is directly connected to. 
-    /// </summary>
-    public List<BodyPart> ChildBodyParts;
 
+    [SerializeField] 
+    private bool isHuman;
+
+    [SyncVar]
     private BodyPart _parentBodyPart;
 
-    /// <summary>
-    /// Return the parent of this BodyPart if it exists.
-    /// </summary>
-    public BodyPart ParentBodyPart
-    {
-        get { return _parentBodyPart; }
-        set
-        {
-            if (value == null)
-                return;
+    [SyncObject]
+    private readonly SyncList<BodyPart> _childBodyParts = new SyncList<BodyPart>();
 
-            if (ChildBodyParts.Contains(value))
-            {
-                Punpun.Error(this, "trying to set up {bodypart} bodypart as both child and" +
-                    " parent of {bodypart} bodypart.", Logs.Generic, value, this);
-                return;
-            }
-
-            Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
-            _parentBodyPart = value;
-            _parentBodyPart.ChildBodyParts.Add(this);
-        }
-    }
+    [SyncObject]
+    public readonly SyncList<BodyLayer> _bodyLayers = new SyncList<BodyLayer>();
 
     public string Name;
 
-    /// <summary>
-    /// The list of body layers constituting this body part.
-    /// </summary>
-    private List<BodyLayer> _bodyLayers;
-
     public ReadOnlyCollection<BodyLayer> BodyLayers
     {
-        get { return _bodyLayers.AsReadOnly(); }
+        get { return ((List<BodyLayer>)_bodyLayers.Collection).AsReadOnly(); }
+    }
+
+    public ReadOnlyCollection<BodyPart> ChildBodyParts
+    {
+        get { return ((List<BodyPart>)_childBodyParts.Collection).AsReadOnly(); }
+    }
+
+
+    public void Start()
+    {
+        SetUpChild();
     }
 
     /// <summary>
@@ -65,46 +62,141 @@ public abstract class BodyPart
         private set;
     }
 
-    public BodyPartBehaviour BodyPartBehaviour { get; protected set; }
+
+    /// <summary>
+    /// The parent bodypart is the body part attached to this body part, closest from the brain. 
+    /// For lower left arm, it's higher left arm. For neck, it's head.
+    /// Be careful, it doesn't necessarily match the game object hierarchy
+    /// </summary>
+    public BodyPart ParentBodyPart
+    {
+        get { return _parentBodyPart; }
+        set
+        {
+            if (value == null)
+                return;
+
+            if (_childBodyParts.Contains(value))
+            {
+                Punpun.Error(this, "trying to set up {bodypart} bodypart as both child and" +
+                    " parent of {bodypart} bodypart.", Logs.Generic, value, this);
+                return;
+            }
+
+            Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
+            _parentBodyPart = value;
+            _parentBodyPart._childBodyParts.Add(this);
+        }
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+    }
 
     /// <summary>
     /// Constructor to allow testing without mono/network behaviour script.
     /// </summary>
-    public BodyPart(string name = "")
+    public virtual void Init(string name = "")
     {
-        Name = name;
-        ChildBodyParts= new List<BodyPart>();
-        _bodyLayers= new List<BodyLayer>();
+        Name = name; 
     }
 
-    public BodyPart(BodyPart parent, string name = "")
+    public virtual void Init(BodyPart parent, string name = "")
     {
         Name = name;
-        ChildBodyParts = new List<BodyPart>();
-        _bodyLayers = new List<BodyLayer>();
         ParentBodyPart = parent;
     }
 
-    public BodyPart(BodyPartBehaviour bodyPartBehaviour, string name = "")
-    {
-        Name = name;
-        BodyPartBehaviour = bodyPartBehaviour;
-        ChildBodyParts =  BodyPartBehaviour.ChildBodyPartsBehaviour.Collection.Select(x=> x.BodyPart).ToList();
-        _bodyLayers = (List<BodyLayer>) BodyPartBehaviour.BodyLayers.Collection;
-        if (BodyPartBehaviour.ParentBodyPartBehaviour != null)
-            ParentBodyPart = BodyPartBehaviour.ParentBodyPartBehaviour.BodyPart;
-    }
 
-    public BodyPart(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers, string name = "")
+    public virtual void Init(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers, string name = "")
     {
         Name = name;
         ParentBodyPart = parentBodyPart;
-        ChildBodyParts = childBodyParts;
-        _bodyLayers = bodyLayers;
-        foreach(var bodylayer in BodyLayers)
+        _childBodyParts.AddRange(childBodyParts);
+        _bodyLayers.AddRange(bodyLayers);
+        foreach (var bodylayer in BodyLayers)
         {
             bodylayer.BodyPart = this;
         }
+    }
+
+    [Server]
+    private void SetUpChild()
+    {   
+        if(_parentBodyPart != null)
+        {
+            _parentBodyPart._childBodyParts.Add(this);
+        }
+    }
+
+    
+    [ServerRpc]
+    public void ServerRpcAddChildBodyPart(NetworkConnection conn, NetworkObject bodyPart)
+    {
+        PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
+        if (!permissionSystem.HasAdminPermission(conn))
+        {
+            return;
+        }
+        ObserverRpcAddChildBodyPart(bodyPart);
+    }
+
+    [ObserversRpc(RunLocally = true)]
+    public void ObserverRpcAddChildBodyPart(NetworkObject bodyPart)
+    {
+        AddChildBodyPart(bodyPart.GetComponent<BodyPart>());
+    }
+
+    [ServerRpc]
+    public void ServerRpcAddNerveLayer(NerveLayer nerveLayer)
+    {
+        ObserversRpcAddNerveLayer(nerveLayer);
+    }
+
+    [ObserversRpc(RunLocally = true)]
+    public void ObserversRpcAddNerveLayer(NerveLayer nerveLayer)
+    {
+       TryAddBodyLayer(nerveLayer);
+    }
+
+
+
+    /// <summary>
+    /// The body part is not destroyed, it's simply detached from the entity.
+    /// </summary>
+    public void DetachBodyPart()
+    {
+        //Spawn a detached body part from the entity, and destroy this one with all childs.
+        // Maybe better in body part controller.
+        //throw new NotImplementedException();
+        _parentBodyPart.DetachBodyPart();
+        Despawn();
+    }
+
+    /// <summary>
+    /// The body part took so much damages that it's simply destroyed.
+    /// Think complete crushing, burning to dust kind of stuff.
+    /// All child body parts are detached.
+    /// </summary>
+    /// <exception cref="NotImplementedException"></exception>
+    public void DestroyBodyPart()
+    {
+        // destroy this body part with all childs on the entity, detach all childs.
+        // Maybe better in body part controller.
+        //throw new NotImplementedException();
+    }
+
+
+
+    public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
+    {
+        return new IInteraction[] { new KillInteraction() };
     }
 
     /// <summary>
@@ -126,13 +218,8 @@ public abstract class BodyPart
             NerveSignalTransmitter = signalTransmitter;
         }
 
-        if (BodyPartBehaviour == null)
-        {
-            _bodyLayers.Add(layer);
-            return true;
-        }
 
-        BodyPartBehaviour.BodyLayers.Add(layer);
+        _bodyLayers.Add(layer);
         layer.BodyPart = this;
         return true;
 
@@ -147,10 +234,9 @@ public abstract class BodyPart
     /// TODO : check if it exists first.
     /// </summary>
     /// <param name="layer"></param>
-    public virtual void RemoveBodyLayer(BodyLayer layer) 
+    public virtual void RemoveBodyLayer(BodyLayer layer)
     {
-        if(BodyPartBehaviour == null)
-            _bodyLayers.Remove(layer);
+         _bodyLayers.Remove(layer);
     }
 
     /// <summary>
@@ -159,16 +245,7 @@ public abstract class BodyPart
     /// <param name="bodyPart"></param>
     public virtual void AddChildBodyPart(BodyPart bodyPart)
     {
-        if (BodyPartBehaviour == null)
-            ChildBodyParts.Add(bodyPart);
-
-        if(bodyPart.BodyPartBehaviour == null)
-        {
-            Punpun.Error(this, "This body part has a reference to a body part behaviour, it should only add to its child bodyParts with references to body part behaviour ");
-            return;
-        }
-        
-        BodyPartBehaviour.ChildBodyPartsBehaviour.Add(bodyPart.BodyPartBehaviour);
+        _childBodyParts.Add(bodyPart);
     }
 
     /// <summary>
@@ -178,7 +255,7 @@ public abstract class BodyPart
     public virtual bool TryInflictDamage<T>(DamageTypeQuantity damageTypeQuantity)
     {
         var layer = GetBodyLayer<T>();
-        if (!BodyLayers.Contains(layer)) return false ;
+        if (!BodyLayers.Contains(layer)) return false;
         layer.InflictDamage(damageTypeQuantity);
         return true;
     }
@@ -188,7 +265,7 @@ public abstract class BodyPart
     /// </summary>
     public virtual void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
     {
-        foreach(var layer in BodyLayers)
+        foreach (var layer in BodyLayers)
         {
             layer.InflictDamage(damageTypeQuantity);
         }
@@ -201,7 +278,7 @@ public abstract class BodyPart
     {
         foreach (var layer in BodyLayers)
         {
-            if(!(layer is T))
+            if (!(layer is T))
                 layer.InflictDamage(damageTypeQuantity);
         }
     }
@@ -213,7 +290,7 @@ public abstract class BodyPart
     /// </summary>
     public bool CanTransmitNerveSignals()
     {
-        foreach(var layer in BodyLayers)
+        foreach (var layer in BodyLayers)
         {
             if (layer is INerveSignalTransmitter) return true;
         }
@@ -222,7 +299,7 @@ public abstract class BodyPart
 
     public float ProducePain()
     {
-        return NerveSignalTransmitter != null ? NerveSignalTransmitter.ProducePain() : 0f; 
+        return NerveSignalTransmitter != null ? NerveSignalTransmitter.ProducePain() : 0f;
     }
 
 
@@ -244,7 +321,7 @@ public abstract class BodyPart
     {
         foreach (var layer in BodyLayers)
         {
-            if(layer is T)
+            if (layer is T)
             {
                 return layer;
             }
@@ -260,17 +337,17 @@ public abstract class BodyPart
     public string Describe()
     {
         var description = "";
-        foreach(var layer in BodyLayers)
+        foreach (var layer in BodyLayers)
         {
             description += "Layer " + layer.GetType().ToString() + "\n";
         }
         description += "Child connected body parts : \n";
-        foreach(var part in ChildBodyParts)
+        foreach (var part in _childBodyParts)
         {
-            description += part.BodyPartBehaviour.gameObject.name + "\n";
+            description += part.gameObject.name + "\n";
         }
         description += "Parent body part : \n";
-        description += ParentBodyPart.BodyPartBehaviour.name;
+        description += ParentBodyPart.name;
         return description;
     }
 
@@ -278,4 +355,6 @@ public abstract class BodyPart
     {
         return Name;
     }
+
+
 }
