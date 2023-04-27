@@ -1,0 +1,14 @@
+name: 'Get Single Select Field Id'
+inputs:
+  JSON_FIELD_OPTIONS:
+    description: 'Results of a GraphQL query returning all options in a single select field.'
+    required: true
+  TARGET_OPTION:
+    description: 'The name of the option to search for.'
+    required: true
+outputs:
+  OPTION_ID:
+    description: 'ID for the specific single select field option.'
+runs:
+  using: 'node16'
+  main: 'index.js'
