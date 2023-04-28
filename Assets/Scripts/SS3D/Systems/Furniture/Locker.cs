@@ -14,6 +14,7 @@ namespace SS3D.Systems.Furniture
     {
         [SyncVar] public bool Locked;
         [SerializeField, SyncVar] private IDPermission permissionToUnlock;
+        [SyncVar] public GameObject LockLight;
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
