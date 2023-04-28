@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 36466129}
   - component: {fileID: 36466130}
   m_Layer: 0
-  m_Name: MindSwapDebug
+  m_Name: CharacterSwapDebug
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: 3ff29757271c123469abba61cb4790ea, type: 3}
   m_NavMeshLayer: 0
@@ -1548,7 +1548,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 616353825}
   _networkObjectCache: {fileID: 616353825}
   _unauthorizedUserPrefab: {fileID: 8203177977882359099, guid: 6ab4ce7059d374a4498481e1385c222e, type: 3}
-  _soulPrefab: {fileID: -3683743083778642796, guid: 59f05e8a3a1d4b94eb5222aed605e260, type: 3}
+  playerPrefab: {fileID: -3683743083778642796, guid: 59f05e8a3a1d4b94eb5222aed605e260, type: 3}
 --- !u!114 &616353825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2120,7 +2120,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8103066686919155798, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
       propertyPath: m_Name
-      value: Empty Mind
+      value: Empty Character
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
@@ -2712,7 +2712,7 @@ GameObject:
   - component: {fileID: 1000564558}
   - component: {fileID: 1000564557}
   m_Layer: 0
-  m_Name: MindSystem
+  m_Name: CharacterSystem
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: 4d92845251442a542933ea1c7502d8d9, type: 3}
   m_NavMeshLayer: 0
@@ -2749,8 +2749,8 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1000564558}
   _networkObjectCache: {fileID: 1000564558}
-  _mindPrefab: {fileID: 8103066686919155798, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
-  _emptyMind: {fileID: 1256239026443271520, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
+  _characterPrefab: {fileID: 8103066686919155798, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
+  _emptyCharacter: {fileID: 1256239026443271520, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
 --- !u!114 &1000564558
 MonoBehaviour:
   m_ObjectHideFlags: 0

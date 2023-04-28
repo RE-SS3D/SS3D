@@ -13,19 +13,19 @@ namespace SS3D.Systems.Entities
     [Serializable]
     public class Entity : NetworkActor
     {
-        public event Action<Mind> OnMindChanged;
+        public event Action<Character> OnCharacterChanged;
 
         [SerializeField]
-        [SyncVar(OnChange = nameof(SyncMind))]
-        private Mind _mind = Mind.Empty;
+        [SyncVar(OnChange = nameof(SyncCharacter))]
+        private Character character = Character.Empty;
 
-        public Mind Mind
+        public Character Character
         {
-            get => _mind;
-            set => _mind = value;
+            get => character;
+            set => character = value;
         }
 
-        public string Ckey => _mind.Soul.Ckey;
+        public string Ckey => character.player.Ckey;
 
         protected override void OnStart()
         {
@@ -36,14 +36,14 @@ namespace SS3D.Systems.Entities
 
         private void OnSpawn()
         {
-            OnMindChanged?.Invoke(Mind);
+            OnCharacterChanged?.Invoke(Character);
         }
 
         private void InvokeLocalPlayerObjectChanged()
         {
-            if (Mind == null) return;
+            if (Character == null) return;
 
-            if (!Mind.Soul.IsLocalConnection)
+            if (!Character.player.IsLocalConnection)
             {
                 return;
             }
@@ -53,32 +53,32 @@ namespace SS3D.Systems.Entities
         }
 
         /// <summary>
-        /// Called by FishNet when the value of _mind is synced.
+        /// Called by FishNet when the value of _character is synced.
         /// </summary>
-        /// <param name="oldMind">Value before sync</param>
-        /// <param name="newSoul">Value after sync</param>
+        /// <param name="oldCharacter">Value before sync</param>
+        /// <param name="newCharacter">Value after sync</param>
         /// <param name="asServer">Is the sync is being called as the server (host and server only)</param>
-        public void SyncMind(Mind oldMind, Mind newSoul, bool asServer)
+        public void SyncCharacter(Character oldCharacter, Character newCharacter, bool asServer)
         {
             if (!asServer && IsHost)
             {
                 return;
             }
 
-            OnMindChanged?.Invoke(_mind);
+            OnCharacterChanged?.Invoke(character);
             InvokeLocalPlayerObjectChanged();
         }
 
         /// <summary>
-        /// Updates the mind of this entity.
+        /// Updates the character of this entity.
         /// </summary>
-        /// <param name="mind">The new mind.</param>
+        /// <param name="character">The new character.</param>
         [Server]
-        public void SetMind(Mind mind)
+        public void SetCharacter(Character character)
         {
-            _mind = mind;
+            this.character = character;
 
-            GiveOwnership(mind.Owner);
+            GiveOwnership(character.Owner);
         }
     }
 }

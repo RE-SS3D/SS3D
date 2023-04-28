@@ -13,8 +13,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public static Item GetItemInHand()
         {
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            Soul playerSoul = playerSystem.GetSoul(LocalPlayer.Ckey);
-            Entity playerEntity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerSoul);
+            Player playerPlayer = playerSystem.GetPlayer(LocalPlayer.Ckey);
+            Entity playerEntity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerPlayer);
             if (playerEntity == null)
             {
                 return null;

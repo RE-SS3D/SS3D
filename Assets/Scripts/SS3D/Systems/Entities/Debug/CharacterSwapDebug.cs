@@ -1,4 +1,3 @@
-using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
@@ -8,7 +7,7 @@ using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Entities.Debug
 {
-    public class MindSwapDebug : NetworkActor
+    public class CharacterSwapDebug : NetworkActor
     {
         public Entity Origin;
         public Entity Target;
@@ -19,26 +18,26 @@ namespace SS3D.Systems.Entities.Debug
             base.OnStart();
             
             _controls = Subsystems.Get<InputSystem>().Inputs.Other;
-            _controls.SwapMinds.performed += HandleMindSwap;
+            _controls.SwapCharacters.performed += HandleCharacterSwap;
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
             
-            _controls.SwapMinds.performed -= HandleMindSwap;
+            _controls.SwapCharacters.performed -= HandleCharacterSwap;
         }
 
-        [ContextMenu("Request Mind Swap")]
-        public void HandleMindSwap(InputAction.CallbackContext callbackContext)
+        [ContextMenu("Request Character Swap")]
+        public void HandleCharacterSwap(InputAction.CallbackContext callbackContext)
         {
             if (Origin == null || Target == null)
             {
                 return;
             }
 
-            MindSystem mindSystem = Subsystems.Get<MindSystem>();
-            mindSystem.CmdSwapMinds(Origin, Target);
+            CharacterSystem characterSystem = Subsystems.Get<CharacterSystem>();
+            characterSystem.CmdSwapCharacters(Origin, Target);
 
             Origin = Target;
             Target = Origin;

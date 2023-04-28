@@ -79,7 +79,7 @@ namespace SS3D.Systems.Health
             base.OnStartClient();
 
             _staminaBarView = ViewLocator.Get<StaminaBarView>().First();
-            _entity.OnMindChanged += AssignViewToControllable;
+            _entity.OnCharacterChanged += AssignViewToControllable;
 
             // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
             SubscribeToEvents();
@@ -101,20 +101,20 @@ namespace SS3D.Systems.Health
         private void SubscribeToEvents()
         {
             _player.SpeedChangeEvent += DepleteStamina;
-            _entity.OnMindChanged += AssignViewToControllable;
+            _entity.OnCharacterChanged += AssignViewToControllable;
         }
 
         private void UnsubscribeFromEvents()
         {
             _player.SpeedChangeEvent -= DepleteStamina;
-            _entity.OnMindChanged -= AssignViewToControllable;
+            _entity.OnCharacterChanged -= AssignViewToControllable;
 
         }
 
         [Client]
-        private void AssignViewToControllable(Mind mind)
+        private void AssignViewToControllable(Character character)
         {
-            if (mind == null || !mind.IsOwner)
+            if (character == null || !character.IsOwner)
             {
                 _staminaBarView.UnassignViewFromPlayer(this);
             }

@@ -56,7 +56,7 @@ namespace SS3D.Systems.Entities.Silicon
         {
             _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
             _controls = Subsystems.Get<InputSystem>().Inputs.Movement;
-            _entity.OnMindChanged += HandleControllingSoulChanged;
+            _entity.OnCharacterChanged += HandleControllingPlayerChanged;
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -148,9 +148,9 @@ namespace SS3D.Systems.Entities.Silicon
             _smoothedInput = Vector2.Lerp(_smoothedInput, _input, Time.deltaTime * (_lerpMultiplier / 10));
         }
 
-        private void HandleControllingSoulChanged(Mind mind)
+        private void HandleControllingPlayerChanged(Character character)
         {
-            OnPowerChanged?.Invoke(mind != null);
+            OnPowerChanged?.Invoke(character != null);
         }
     }
 }

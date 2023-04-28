@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3363661164123955675}
   - component: {fileID: 1256239026443271520}
   m_Layer: 0
-  m_Name: Mind
+  m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 10433723855968063874
+  <AssetPathHash>k__BackingField: 4025005490116740666
   _sceneNetworkObjects: []
 --- !u!114 &3486636391395698902
 MonoBehaviour:
@@ -135,4 +135,5 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 562230263738288595}
   _networkObjectCache: {fileID: 0}
-  Soul: {fileID: 0}
+  player: {fileID: 0}
+  Entity: {fileID: 0}
