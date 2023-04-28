@@ -1,4 +1,4 @@
-<h3 align="center"><img src="Documents/Images/SS3DBanner1.png" alt="SS3D">Space Station 3D is an open-source resurrection of <a href="https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av">*beep's original SS3D</a>, which was an impressive demo attempting to give the infamous <a href="https://spacestation13.com/"><img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="ss13" align="center"></a> an extra dimension.</h3>
+<h3 align="center"><img src="https://raw.githubusercontent.com/RE-SS3D/SS3D-Art/main/Artwork/Banners/BorderedBanners/SS3DBanner1.png" alt="SS3D">Space Station 3D is an open-source resurrection of <a href="https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av">*beep's original SS3D</a>, which was an impressive demo attempting to give the infamous <a href="https://spacestation13.com/"><img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="ss13" align="center"></a> an extra dimension.</h3>
 
 <br>
 
