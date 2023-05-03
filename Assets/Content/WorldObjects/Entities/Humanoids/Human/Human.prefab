@@ -354,6 +354,138 @@ Transform:
   m_Father: {fileID: 4908349270791636862}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &994863475445513409
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3497788496039931768}
+  - component: {fileID: 2008617276292905932}
+  m_Layer: 0
+  m_Name: Human Whole
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &3497788496039931768
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994863475445513409}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 0.9940853, y: 0.53959715, z: 3.1387618}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 498654123859477456}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &2008617276292905932
+SkinnedMeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994863475445513409}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 3
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 4835078630258379571, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: 0}
+  m_Bones:
+  - {fileID: 8247551964949321683}
+  - {fileID: 2192732558977931665}
+  - {fileID: 6677780512064486251}
+  - {fileID: 2440385423409930415}
+  - {fileID: 1652623545961001137}
+  - {fileID: 4071627662581663271}
+  - {fileID: 6496232436753109286}
+  - {fileID: 6474305260886811497}
+  - {fileID: 8780346616286361667}
+  - {fileID: 5341644507390086264}
+  - {fileID: 5305436667393303306}
+  - {fileID: 4496831591723140980}
+  - {fileID: 2287007974327345926}
+  - {fileID: 3121222039504924683}
+  - {fileID: 827820449248224476}
+  - {fileID: 6950540247522285329}
+  - {fileID: 6389263547329055427}
+  - {fileID: 3386839980560826712}
+  - {fileID: 7235316430792748449}
+  - {fileID: 6002043465689332374}
+  - {fileID: 1884758836639654395}
+  - {fileID: 664039088507960428}
+  - {fileID: 5306134729055237864}
+  - {fileID: 8847020293094413141}
+  - {fileID: 1872312682002511911}
+  - {fileID: 1709101481319323308}
+  - {fileID: 5427457281709316255}
+  - {fileID: 7680762714332484051}
+  - {fileID: 8257413455046883968}
+  - {fileID: 2631760629834190360}
+  - {fileID: 4908349270791636862}
+  - {fileID: 5263948990465363295}
+  - {fileID: 607861239453431540}
+  - {fileID: 578484933472209177}
+  - {fileID: 7218882584069294001}
+  - {fileID: 8746421248047242906}
+  - {fileID: 8517969326498044842}
+  - {fileID: 6667921297265363651}
+  - {fileID: 6776528641048910965}
+  - {fileID: 6722831226940943369}
+  - {fileID: 4041212547359646870}
+  - {fileID: 2105909220873747426}
+  - {fileID: 4611919107088402743}
+  - {fileID: 1042154980404470968}
+  - {fileID: 5311120312399184418}
+  - {fileID: 6117331855522370309}
+  - {fileID: 1553176467565449329}
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 8247551964949321683}
+  m_AABB:
+    m_Center: {x: 0.000000059604645, y: 0.5879549, z: -0.024717052}
+    m_Extent: {x: 0.10535497, y: 0.16734734, z: 0.13802585}
+  m_DirtyAABB: 0
 --- !u!1 &1533221837388215845
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +516,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &5873933947271444358
 SkinnedMeshRenderer:
@@ -566,9 +698,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 1102649397651674798}
   ContainerItemDisplay: {fileID: 0}
@@ -875,7 +1007,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &2018534851297972897
 SkinnedMeshRenderer:
@@ -1053,7 +1185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 16
+  _componentIndexCache: 17
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -1352,7 +1484,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &1243922419437832913
 SkinnedMeshRenderer:
@@ -1630,7 +1762,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &5626640404870434692
 SkinnedMeshRenderer:
@@ -2285,7 +2417,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &318064759979550785
 SkinnedMeshRenderer:
@@ -2596,7 +2728,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &4224043903821764551
 SkinnedMeshRenderer:
@@ -2729,7 +2861,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &4444671133638451754
 SkinnedMeshRenderer:
@@ -3171,7 +3303,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &3482300155025230674
 SkinnedMeshRenderer:
@@ -3304,7 +3436,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &6255264340772866377
 SkinnedMeshRenderer:
@@ -3515,7 +3647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 15
+  _componentIndexCache: 16
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -3800,11 +3932,12 @@ MonoBehaviour:
   - {fileID: 3398448322784601453}
   - {fileID: 5770197026759263291}
   - {fileID: 3043704831697070745}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1102649397651674798}
+  - {fileID: 1536610336919686559}
+  - {fileID: 7842256547875649284}
+  - {fileID: 6521396632807123496}
+  - {fileID: 5007217904645373195}
+  - {fileID: 7181559568759380253}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -4132,9 +4265,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 12
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 1536610336919686559}
@@ -4215,7 +4348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 14
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -4370,7 +4503,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &3911526950407743346
 SkinnedMeshRenderer:
@@ -4535,7 +4668,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &5486059322040345773
 SkinnedMeshRenderer:
@@ -4846,6 +4979,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3497788496039931768}
   - {fileID: 3476328692361798586}
   - {fileID: 9087276985616009779}
   - {fileID: 5623039072784720311}
@@ -5035,7 +5169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 13
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -5090,7 +5224,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &8542132697042208540
 SkinnedMeshRenderer:
@@ -5287,7 +5421,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &2617506868821671874
 SkinnedMeshRenderer:
@@ -5600,7 +5734,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 498654123859477456}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &6307821101362465258
 SkinnedMeshRenderer:
