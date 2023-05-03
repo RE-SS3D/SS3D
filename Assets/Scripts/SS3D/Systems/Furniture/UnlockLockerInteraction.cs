@@ -55,8 +55,6 @@ namespace SS3D.Systems.Inventory.Interactions
                 {
                     if (hands.Inventory.HasPermission(permissionToUnlock))
                     {
-                        Material lockMaterial = ((Locker)interactionEvent.Target).LockLight.GetComponent<Renderer>().material;
-                        lockMaterial.color = Color.green;
                         Punpun.Information(this, "Locker has been unlocked!");
                         locker.Locked = false;
                     } else
