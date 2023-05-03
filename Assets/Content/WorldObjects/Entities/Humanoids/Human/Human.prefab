@@ -4133,8 +4133,8 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   HandContainers:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 5007217904645373195}
+  - {fileID: 7181559568759380253}
   handRange: 5
   range:
     Horizontal: 1.5
