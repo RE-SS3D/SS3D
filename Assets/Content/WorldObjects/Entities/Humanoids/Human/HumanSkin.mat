@@ -96,10 +96,10 @@ Material:
     - _Glossiness: 0.119
     - _GlossyReflections: 0
     - _LightingEnabled: 1
-    - _Lumin: 1
+    - _Lumin: 0.3
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.711
+    - _MinLight: 0.6
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 0.737
