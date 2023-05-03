@@ -3581,7 +3581,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3190277376374425235}
   m_Layer: 0
-  m_Name: 00 Armature
+  m_Name: Armature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3874,7 +3874,6 @@ GameObject:
   - component: {fileID: 3788807725072305327}
   - component: {fileID: 571479044043330787}
   - component: {fileID: 5857269694861021747}
-  - component: {fileID: 3398448322784601453}
   - component: {fileID: 5770197026759263291}
   - component: {fileID: 3043704831697070745}
   - component: {fileID: 1102649397651674798}
@@ -3929,7 +3928,7 @@ MonoBehaviour:
   - {fileID: 3788807725072305327}
   - {fileID: 571479044043330787}
   - {fileID: 5857269694861021747}
-  - {fileID: 3398448322784601453}
+  - {fileID: 0}
   - {fileID: 5770197026759263291}
   - {fileID: 3043704831697070745}
   - {fileID: 1102649397651674798}
@@ -4115,9 +4114,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Hands: {fileID: 3989715289005515527}
-  IDContainer: {fileID: 0}
-  LeftPocketContainer: {fileID: 0}
-  RightPocketContainer: {fileID: 0}
+  IDContainer: {fileID: 1536610336919686559}
+  LeftPocketContainer: {fileID: 7842256547875649284}
+  RightPocketContainer: {fileID: 6521396632807123496}
   Body: {fileID: 8336170331735268562}
 --- !u!114 &3989715289005515527
 MonoBehaviour:
@@ -4199,24 +4198,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
---- !u!114 &3398448322784601453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 9
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 0}
 --- !u!114 &5770197026759263291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4234,7 +4215,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 0}
+  attachedContainer: {fileID: 5007217904645373195}
 --- !u!114 &3043704831697070745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4252,7 +4233,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 0}
+  attachedContainer: {fileID: 7181559568759380253}
 --- !u!114 &1102649397651674798
 MonoBehaviour:
   m_ObjectHideFlags: 0
