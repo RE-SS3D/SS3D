@@ -15,12 +15,28 @@ namespace SS3D.Systems.Furniture
         [SyncVar(OnChange = nameof(OnLocked))] public bool Locked;
         [SerializeField, SyncVar] private IDPermission permissionToUnlock;
         public GameObject LockLight;
+        private MaterialPropertyBlock propertyBlock;
+        private Renderer renderer;
 
         private void OnLocked(bool prev, bool next, bool asServer)
         {
-            Material lockMaterial = LockLight.GetComponent<Renderer>().material;
-            if(next) lockMaterial.color = Color.green;
-            else lockMaterial.color = Color.red;
+            if(next)
+            {
+                propertyBlock.SetColor("_Color", Color.red);
+                renderer.SetPropertyBlock(propertyBlock);
+            }
+            else
+            {
+                propertyBlock.SetColor("_Color", Color.green);
+                renderer.SetPropertyBlock(propertyBlock);
+            }
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            propertyBlock = new MaterialPropertyBlock();
+            renderer = LockLight.GetComponent<Renderer>();
         }
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
