@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f553c8289710b5e4dab99c3bcbbb802e
+guid: 76ba5420c179bb841858ed042df97ba2
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,23 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Eye
-    second: {fileID: 2100000, guid: 5003e6577566f0748b94899aefcc5569, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Meat
-    second: {fileID: 2100000, guid: 1f8078dee7dfc354ebc752f6c3c8e0db, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
       name: Palette05
     second: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Skin
-    second: {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
