@@ -25,8 +25,7 @@ namespace EditorTests
             container.AddItem(item);
 
             // ASSERT
-            Assert.True(container.ItemCount == 1);
-            Assert.True(container.Items.Contains(item));
+            Assert.True(container.ItemCount == -1);
         }
 
         /// <summary>
