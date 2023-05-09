@@ -97,7 +97,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 7704857477098505510, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+  m_Mesh: {fileID: -267458497630100801, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
 --- !u!1 &5774385816057912484
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,7 +242,7 @@ MonoBehaviour:
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
   Prefab: {fileID: 5774385816057912484}
-  AttachmentPoint: {fileID: 0}
+  AttachmentPoint: {fileID: 5000622523273975387}
   AttachmentPointAlt: {fileID: 0}
 --- !u!23 &4081087857378720118
 MeshRenderer:

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9092168884592295084}
   - component: {fileID: 1810788163902625152}
   m_Layer: 0
-  m_Name: HandLeft
+  m_Name: EarRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2957167503393607793}
-  m_Mesh: {fileID: 779107774233065848, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+  m_Mesh: {fileID: 3111722850488922510, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
 --- !u!23 &9092168884592295084
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -62,8 +62,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: 2100000, guid: 1f8078dee7dfc354ebc752f6c3c8e0db, type: 2}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -98,7 +98,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 779107774233065848, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+  m_Mesh: {fileID: 3111722850488922510, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
 --- !u!1 &4030553588348042605
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 8532088199163376958}
   - component: {fileID: 103478066480505861}
   m_Layer: 10
-  m_Name: HumanHandLeft
+  m_Name: HumanEarRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -251,7 +251,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 41
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 63366572448909465
+  <AssetPathHash>k__BackingField: 5804301114441444125
   _sceneNetworkObjects: []
 --- !u!114 &103478066480505861
 MonoBehaviour:
