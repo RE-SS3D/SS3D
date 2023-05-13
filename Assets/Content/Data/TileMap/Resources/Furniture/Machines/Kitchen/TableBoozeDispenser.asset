@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TableBoozeDispenser
   m_EditorClassIdentifier: 
-  nameString: table_boozedispenser
+  nameString: boozedispenser_table
   prefab: {fileID: 1918783493706165866, guid: 7b74e45100446b440b4b0a12cd6d05ef, type: 3}
   icon: {fileID: 0}
   layer: 7
