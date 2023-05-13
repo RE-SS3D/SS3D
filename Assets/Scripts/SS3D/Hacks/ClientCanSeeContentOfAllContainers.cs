@@ -1,9 +1,9 @@
-using SS3D.Data;
+
 using SS3D.Systems.Inventory.Containers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace SS3D.Systems.Inventory.Containers
+namespace SS3D.Hacks
 {
     public class ClientCanSeeContentOfAllContainers : MonoBehaviour
     {

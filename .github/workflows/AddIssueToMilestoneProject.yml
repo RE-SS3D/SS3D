@@ -1,0 +1,125 @@
+name: Add Issue To Milestone Project
+on:
+  issues:
+    types: [milestoned]
+jobs:
+  AddIssueToProject:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - run: npm install @actions/core
+      - run: npm install @actions/github
+      - name: Get list of projects
+        uses: octokit/graphql-action@v2.2.24
+        id: get-project-title
+        with:
+          query: |
+            query getTitle( $org:String!) {
+              organization(login:$org) {
+                projectsV2(first:100) {
+                  nodes {
+                    id
+                    title
+                    number
+                    template
+                    closed
+                    owner {
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          org: RE-SS3D
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Check for existence of milestone project
+        uses: ./.github/actions/check-milestone-exists
+        id: check-milestone-exists
+        with:
+          JSON_LIST_OF_PROJECTS: ${{ steps.get-project-title.outputs.data }}
+          PROJECT_NAME: ${{ github.event.milestone.title }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - run: "echo 'Existing project ID: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID }}'"
+      - run: "echo 'Project information: ${{ steps.get-project-title.outputs.data }}'"
+      - name: Add Issue to Milestone Project
+        uses: octokit/graphql-action@v2.2.24
+        id: add-issue-to-milestone-project
+        if: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID != ''}}
+        with:
+          query: |
+            mutation AddToMilestone {
+              addProjectV2ItemById(input: {projectId:"${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID }}", contentId:"${{ github.event.issue.node_id }}" }) {
+                clientMutationId
+                item {
+                  id
+                }
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Locate Status Column
+        uses: octokit/graphql-action@v2.2.24
+        id: locate-status-column
+        if: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID != ''}}
+        with:
+          query: |
+            query getStatusColumn {
+              node(id:"${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID }}") {
+                ... on ProjectV2 {
+                  field(name: "Status") {
+                    ... on ProjectV2SingleSelectField {
+                      id
+                    }
+                  }
+                }
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Get Backlog Id
+        uses: octokit/graphql-action@v2.2.24
+        id: get-backlog-id
+        if: ${{ fromJSON(steps.locate-status-column.outputs.data).node.field.id != ''}}
+        with:
+          query: |
+            query getStatusColumn {
+              node(id:"${{ fromJSON(steps.locate-status-column.outputs.data).node.field.id }}") {
+                ... on ProjectV2SingleSelectField {
+                  options {
+                    id
+                    name
+                  }
+                }
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - run: "echo 'Field options: ${{ steps.get-backlog-id.outputs.data }}'"
+      - name: Get target field ID
+        uses: ./.github/actions/get-single-select-field-id
+        id: get-single-select-field-id
+        with:
+          JSON_FIELD_OPTIONS: ${{ steps.get-backlog-id.outputs.data }}
+          TARGET_OPTION: Backlog
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
+      - name: Add To Backlog
+        uses: octokit/graphql-action@v2.2.24
+        id: add-issue-to-backlog-column
+        if: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID != ''}}
+        with:
+          query: |
+            mutation AddToBacklog {
+              updateProjectV2ItemFieldValue(input: {projectId:"${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID }}", itemId:"${{ fromJSON(steps.add-issue-to-milestone-project.outputs.data).addProjectV2ItemById.item.id }}", fieldId: "${{ fromJSON(steps.locate-status-column.outputs.data).node.field.id }}", value: { singleSelectOptionId: "${{steps.get-single-select-field-id.outputs.OPTION_ID}}" }}) {
+                clientMutationId
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}

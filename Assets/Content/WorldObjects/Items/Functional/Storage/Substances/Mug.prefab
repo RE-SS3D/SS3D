@@ -149,7 +149,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 61
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 15477425834962603031
@@ -209,7 +209,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 1f6a51ff914835744af4df4e1d477104, type: 2}
+  m_Mesh: {fileID: -7219886339314900476, guid: f2e09c49a35ed014b911729c7e30ec61, type: 3}
 --- !u!114 &874141704920938506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,21 +349,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 5261116577612792016}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
-  _itemId: 0
-  _name: Mug
-  _sprite: {fileID: 0}
+  _startingName: Mug
+  _startingWeight: 1
+  _startingTraits: []
   _rigidbody: {fileID: 3483542684610536844}
-  _weight: 1
   Prefab: {fileID: 5261116577612792016}
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 0}
-  traits: []
 --- !u!1 &6067700979317892856
 GameObject:
   m_ObjectHideFlags: 0

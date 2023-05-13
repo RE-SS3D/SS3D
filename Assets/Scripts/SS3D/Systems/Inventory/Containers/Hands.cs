@@ -4,11 +4,12 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -37,6 +38,8 @@ namespace SS3D.Systems.Inventory.Containers
         /// The item held in the active hand
         /// </summary>
         public Item ItemInHand => SelectedHandContainer.Items.FirstOrDefault();
+            
+           
         /// <summary>
         /// The currently active hand
         /// </summary>
@@ -65,7 +68,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStart();
             
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
         }
@@ -122,7 +125,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Item item = ItemInHand;
-            item.Container = null;
+            item.SetContainer(null);
             ItemUtility.Place(item, position, rotation, transform);
         }
         
@@ -145,6 +148,11 @@ namespace SS3D.Systems.Inventory.Containers
         public void SetActiveHand(AttachedContainer selectedContainer)
         {
             if (selectedContainer == SelectedHand)
+            {
+                return;
+            }
+
+            if (!HandContainers.Contains(selectedContainer))
             {
                 return;
             }

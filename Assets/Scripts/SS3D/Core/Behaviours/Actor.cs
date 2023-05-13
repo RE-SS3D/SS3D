@@ -1,187 +1,276 @@
-﻿using System.Collections.Generic;
-using Coimbra.Services;
+﻿using Coimbra.Services;
 using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used to optimize all GameObjects, avoid MonoBehaviours
+    /// Actors are the representation of a GameObject with extra steps. The basic idea is to optimize Transform and GameObject manipulation,
+    /// as Unity's getters are a bit slow since they do not cache the Transform and the GameObject. They also used for QOL on code usages,
+    /// as the Unity doesn't provide some of them from the get-go.
     /// </summary>
-    [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
-    public class Actor : MonoBehaviour
+    /// 
+    /// <remarks>
+    /// They will also be used for optimization with the Update calls, as Unity's method is slow and the UpdateEvent event solves that issue and guarantees performance.
+    /// Follow this link to read more about PlayerLoopTiming events.
+    ///
+    /// https://github.com/coimbrastudios/framework/blob/master/Documentation~/EventService.md
+    /// </remarks>
+    // TODO: Add a Guide into using PlayerLoopTiming events to GitBook.
+    public class Actor : MonoBehaviour, IActor
     {
+        /// <summary>
+        /// Internal cached game object.
+        /// </summary>
         private GameObject _gameObjectCache;
+
+        /// <summary>
+        /// Internal cached transform.
+        /// </summary>
         private Transform _transformCache;
 
+        /// <summary>
+        /// If this Actor is initialized or not.
+        /// </summary>
         private bool _initialized;
 
+        /// <summary>
+        /// The event bus listeners added to this object, cleared on OnDestroy
+        /// </summary>
         private readonly List<EventHandle> _eventHandles = new();
 
-        public Transform TransformCache
-        {
-            get
-            {
-                if (!_initialized)
-                {
-                    _transformCache = transform;
-                }
+        /// <inheritdoc />
+        public int Id => GameObject.GetInstanceID();
 
-                return _transformCache;
-            }
-            private set => _transformCache = value;
-        }
+        /// <inheritdoc />
+        public Transform Transform => GetTransform();
+        /// <inheritdoc />
+        public GameObject GameObject => GetGameObject();
+        /// <inheritdoc />
+        public RectTransform RectTransform => (RectTransform)Transform;
 
-        public GameObject GameObjectCache
-        {
-            get
-            {
-                if (!_initialized)
-                {
-                    _gameObjectCache = gameObject;
+        /// <inheritdoc/>
+        public bool ActiveSelf => GameObject.activeSelf;
+        /// <inheritdoc/>
+        public bool ActiveInHierarchy => GameObject.activeInHierarchy;
 
-                }
+        /// <inheritdoc/>
+        public Transform Parent => Transform.parent;
 
-                return _gameObjectCache;
-            }
-            private set => _gameObjectCache = value;
-        }
+        /// <inheritdoc/>
+        public Vector3 Forward => Transform.forward;
 
-        #region ACCESSORS
-        public RectTransform RectTransform => (RectTransform)TransformCache;
+        /// <inheritdoc/>
+        public Vector3 Backward => -Transform.forward;
 
+        /// <inheritdoc/>
+        public Vector3 Right => Transform.right;
+
+        /// <inheritdoc/>
+        public Vector3 Left => -Transform.right;
+
+        /// <inheritdoc/>
+        public Vector3 Up => Transform.up;
+
+        /// <inheritdoc/>
+        public Vector3 Down => -Transform.up;
+
+        /// <inheritdoc/>
+        public Transform Root => Transform.root;
+
+        /// <inheritdoc/>
+        public Vector3 Scale => Transform.lossyScale;
+
+        /// <inheritdoc/>
+        public Matrix4x4 LocalToWorldMatrix => Transform.localToWorldMatrix;
+
+        /// <inheritdoc/>
+        public Matrix4x4 WorldToLocalMatrix => Transform.worldToLocalMatrix;
+
+        /// <inheritdoc/>
         public Vector3 Position
         {
-            get => TransformCache.position;
-            set => TransformCache.position = value;
+            get => Transform.position;
+            set => Transform.position = value;
         }
 
-        public Vector3 RotationEuler
-        {
-            get => TransformCache.eulerAngles;
-            set => TransformCache.eulerAngles = value;
-        }
-
-        public Quaternion Rotation
-        {
-            get => TransformCache.rotation;
-            set => TransformCache.rotation = value;
-        }
-
-        public bool ActiveSelf => GameObjectCache.activeSelf;
-        public bool ActiveInHierarchy => GameObjectCache.activeInHierarchy;
-
-        public Transform Parent => TransformCache.parent;
-
-        public Vector3 Forward => TransformCache.forward;
-        public Vector3 Backward => -TransformCache.forward;
-        public Vector3 Right => TransformCache.right;
-        public Vector3 Left => -TransformCache.right;
-        public Vector3 Up => TransformCache.up;
-        public Vector3 Down => -TransformCache.up;
-
-        public Transform Root => TransformCache.root;
-
-        public void SetActive(bool state) => GameObjectCache.SetActive(state);
-        public void SetParent(Transform parent) => TransformCache.SetParent(parent);
-        public void LookAt(Transform target) => TransformCache.LookAt(target);
-        public void LookAt(Vector3 target) => TransformCache.LookAt(target);
-
-        public void AddHandle(EventHandle handle) => _eventHandles.Add(handle);
-
+        /// <inheritdoc/>
         public Vector3 LocalPosition
         {
-            get => TransformCache.localPosition;
-            set => TransformCache.localPosition = value;
+            get => Transform.localPosition;
+            set => Transform.localPosition = value;
         }
 
+        /// <inheritdoc/>
+        public Vector3 RotationEuler
+        {
+            get => Transform.eulerAngles;
+            set => Transform.eulerAngles = value;
+        }
+
+        /// <inheritdoc/>
+        public Quaternion Rotation
+        {
+            get => Transform.rotation;
+            set => Transform.rotation = value;
+        }
+
+        /// <inheritdoc/>
         public Quaternion LocalRotation
         {
-            get => TransformCache.localRotation;
-            set => TransformCache.localRotation = value;
+            get => Transform.localRotation;
+            set => Transform.localRotation = value;
         }
 
+        /// <inheritdoc/>
         public Vector3 LocalEuler
         {
-            get => TransformCache.localEulerAngles;
-            set => TransformCache.localEulerAngles = value;
+            get => Transform.localEulerAngles;
+            set => Transform.localEulerAngles = value;
         }
 
+        /// <inheritdoc/>
         public Vector3 LocalScale
         {
-            get => TransformCache.localScale;
-            set => TransformCache.localScale = value;
+            get => Transform.localScale;
+            set => Transform.localScale = value;
         }
 
-        public Vector3 Scale => TransformCache.lossyScale;
+        /// <inheritdoc/>
+        public void SetActive(bool state)
+        {
+            GameObject.SetActive(state);
+        }
 
-        public Matrix4x4 LocalToWorldMatrix => TransformCache.localToWorldMatrix;
-        public Matrix4x4 WorldToLocalMatrix => TransformCache.worldToLocalMatrix;
-        #endregion
+        /// <inheritdoc/>
+        public void SetParent(Transform parent)
+        {
+            Transform.SetParent(parent);
+        }
 
-        #region SETUP
-        private void Awake()
+        /// <inheritdoc/>
+        public void LookAt(Transform target)
+        {
+            Transform.LookAt(target);
+        }
+
+        /// <inheritdoc/>
+        public void LookAt(Vector3 target)
+        {
+            Transform.LookAt(target);
+        }
+
+        /// <inheritdoc/>
+        public void AddHandle(EventHandle handle)
+        {
+            _eventHandles.Add(handle);
+        }
+
+        protected void OnEnable()
+        {
+            OnEnabled();
+        }
+
+        protected void OnDisable()
+        {
+            OnDisabled();
+        }
+
+        protected void Awake()
         {
             Initialize();
+
             OnAwake();
         }
 
-        private void Start()
+        protected void Start()
         {
-            AddEventListeners();
             OnStart();
         }
 
-        private void OnDestroy()
+        protected void OnDestroy()
         {
+            RemoveEventListeners();
+
             OnDestroyed();
         }
 
+        /// <summary>
+        /// Called once the script is loaded and registered on ActorLocator.
+        /// </summary>
+        protected virtual void OnAwake() { }
+
+        /// <summary>
+        /// Called once the start function is called.
+        /// </summary>
+        protected virtual void OnStart() { }
+
+        /// <summary>
+        /// Called once the Actor is destroyed, after removing the Actor from the ActorLocator and all event listeners.
+        /// </summary>
+        protected virtual void OnDestroyed() { }
+
+        /// <summary>
+        /// Called when the Actor's GameObject is enabled. 
+        /// </summary>
+        protected virtual void OnEnabled() { }
+
+        /// <summary>
+        /// Called when the Actor's GameObject is disabled.
+        /// </summary>
+        protected virtual void OnDisabled() { }
+
+        /// <summary>
+        /// Initializes the Actor, caching the Transform and the GameObject.
+        /// </summary>
         private void Initialize()
         {
-            TransformCache = transform;
-            GameObjectCache = gameObject;
+            _transformCache = transform;
+            _gameObjectCache = gameObject;
 
             _initialized = true;
         }
 
-        private void AddEventListeners()
-        {
-            _eventHandles.Add(LastPreUpdateEvent.AddListener(OnPreUpdate));
-            _eventHandles.Add(UpdateEvent.AddListener(OnUpdate));
-            _eventHandles.Add(LateUpdateEvent.AddListener(OnLateUpdate));
-        }
-
+        /// <summary>
+        /// Removes all subscribed event listeners, to avoid null refs and CPU usage.
+        /// </summary>
         private void RemoveEventListeners()
         {
-            IEventService eventService = ServiceLocator.Get<IEventService>();
+            IEventService eventService = ServiceLocator.GetChecked<IEventService>();
+
             foreach (EventHandle eventHandle in _eventHandles)
             {
-                eventService?.RemoveListener(eventHandle);
-            } 
+                eventService.RemoveListener(eventHandle);
+            }
         }
 
-        #endregion
-
-        #region EVENT_CALLS
-        private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
-        private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
-        private void OnLateUpdate(ref EventContext context, in LateUpdateEvent e) { HandleLateUpdate(e.DeltaTime); }
-        #endregion
-
-        #region EVENT_CALLBACKS
-        protected virtual void OnAwake() { }
-        protected virtual void OnStart() { }
-
-        protected virtual void OnDestroyed()
+        /// <summary>
+        /// Tries to get the Transform, and if the Actor is not initialized we initialize it.
+        /// </summary>
+        /// <returns>Returns the Cached Transform</returns>
+        private Transform GetTransform()
         {
-            RemoveEventListeners();
+            if (!_initialized)
+            {
+                Initialize();
+            }
+
+            return _transformCache;
         }
 
-        protected virtual void HandlePreUpdate(in float deltaTime) { }
-        protected virtual void HandleLateUpdate(float deltaTime) { }
-        protected virtual void HandleUpdate(in float deltaTime) { }
-        #endregion
+        /// <summary>
+        /// Tries to get the GameObject, and if the Actor is not initialized we initialize it.
+        /// </summary>
+        /// <returns>Returns the Cached Game Object</returns>
+        private GameObject GetGameObject()
+        {
+            if (!_initialized)
+            {
+                Initialize();
+            }
+
+            return _gameObjectCache;
+        }
     }
 }

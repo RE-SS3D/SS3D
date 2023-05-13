@@ -1,0 +1,13 @@
+name: 'Interpret Test Results'
+inputs:
+  XML_PATH:
+    description: 'String containing the path of the test results (i.e. editmode-results.xml).'
+    required: true
+outputs:
+  DISPLAY_STRING:
+    description: 'String containing truncated output suitable for display.'
+  ALL_TESTS_PASSED:
+    description: 'Boolean indicating whether all test cases had passed.'  
+runs:
+  using: 'node16'
+  main: 'index.js'

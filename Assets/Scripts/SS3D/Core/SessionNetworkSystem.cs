@@ -2,6 +2,7 @@ using System;
 using Coimbra;
 using FishNet;
 using FishNet.Managing;
+using FishNet.Managing.Server;
 using SS3D.Core.Events;
 using SS3D.Core.Settings;
 using SS3D.Logging;
@@ -56,6 +57,27 @@ namespace SS3D.Core
 
             ApplicationStartedEvent applicationStartedEvent = new(ckey, networkType);
             applicationStartedEvent.Invoke(this);
+        }
+
+        private void OnApplicationQuit()
+        {
+            CloseNetworkSession();
+        }
+
+        /// <summary>
+        ///Shuts down client and server to ensure no lingering connections
+        /// </summary>
+        public void CloseNetworkSession()
+        {
+            NetworkManager networkManager = InstanceFinder.NetworkManager;
+            if (networkManager == null)
+            {
+                Punpun.Warning(this, "No NetworkManager found", Logs.Important);
+                return;
+            }
+
+            Punpun.Information(this, "Closing network session", Logs.Important);
+            networkManager.TransportManager.Transport.Shutdown();
         }
     }
 }

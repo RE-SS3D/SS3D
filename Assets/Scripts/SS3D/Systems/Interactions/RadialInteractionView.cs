@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inputs;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -39,7 +43,8 @@ namespace SS3D.Systems.Interactions
 
         private List<IInteraction> Interactions { get; set; }
         private InteractionEvent Event { get; set; }
-        private Controls.OtherActions _controls;
+        private Controls.InteractionsActions _controls;
+        private InputSystem _inputSystem;
 
         protected override void OnStart()
         {
@@ -49,29 +54,31 @@ namespace SS3D.Systems.Interactions
             Disappear();
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             UpdateIndicator();
         }
 
         private void Setup()
         {
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+
             Interactions = new List<IInteraction>();
             foreach (RadialInteractionButton interactionButton in _interactionButtons)
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.SecondaryClick.performed += HandleDisappear;
+
+            _inputSystem = Subsystems.Get<InputSystem>();
+            _controls = _inputSystem.Inputs.Interactions;
+            _controls.ViewInteractions.canceled += HandleDisappear;
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
             
-            _controls.SecondaryClick.performed -= HandleDisappear;
+            _controls.ViewInteractions.canceled -= HandleDisappear;
         }
 
         private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
@@ -153,7 +160,7 @@ namespace SS3D.Systems.Interactions
             Vector2 screenPos = Mouse.current.position.ReadValue();
             Position = screenPos;
 
-            _selectedObject = _interactionButtons.First().GameObjectCache;
+            _selectedObject = _interactionButtons.First().GameObject;
 
             UpdateIndicator();
 
@@ -164,7 +171,7 @@ namespace SS3D.Systems.Interactions
             _fadeSequence = DOTween.Sequence();
 
             _scaleSequence
-                .Append(TransformCache
+                .Append(Transform
                 .DOScale(1, ScaleDuration)
                 .SetEase(Ease.OutCirc));
 
@@ -181,6 +188,8 @@ namespace SS3D.Systems.Interactions
 
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
         {
+            // leftButton is disabled in InteractionController HandleView
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
             Disappear();
         }
 
@@ -196,7 +205,7 @@ namespace SS3D.Systems.Interactions
             _fadeSequence = DOTween.Sequence();
 
             _scaleSequence
-                .Append(TransformCache
+                .Append(Transform
                 .DOScale(0, ScaleDuration)
                 .SetEase(Ease.OutCirc));
 

@@ -65,7 +65,8 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         private void UpdateDisplay()
         {
-            ItemDisplay.Item = _container.Container.Items.FirstOrDefault();
+            var item = _container.Container.Items.FirstOrDefault();
+            ItemDisplay.Item = item;
         }
 
         /// <summary>

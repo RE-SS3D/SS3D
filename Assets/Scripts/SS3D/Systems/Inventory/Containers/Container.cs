@@ -4,11 +4,10 @@ using System.Drawing;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
-using static SS3D.Substances.SubstanceContainer;
-using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -67,7 +66,10 @@ namespace SS3D.Systems.Inventory.Containers
         /// The items stored in this container
         /// </summary>
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
-
+        /// <summary>
+        /// The filter this container is currently using
+        /// </summary>
+        private Filter _filter => AttachedTo == null ? StartFilter : AttachedTo.StartFilter;
         /// <summary>
         /// The creatures looking at this container
         /// </summary>
@@ -102,7 +104,13 @@ namespace SS3D.Systems.Inventory.Containers
         {
             _storedItems = new List<StoredItem>();
             _size = size;
-            OnContentsChanged += HandleContainerContentsChanged;
+        }
+
+        public Container(Vector2Int size, Filter startFilter)
+        {
+            _storedItems = new List<StoredItem>();
+            _size = size;
+            _startFilter = startFilter;
         }
 
         /// <summary>
@@ -115,15 +123,8 @@ namespace SS3D.Systems.Inventory.Containers
             _type = attachedContainer.Type;
             _hideItems = attachedContainer.HideItems;
             _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
-            _startFilter= attachedContainer.StartFilter;
-
-
-            OnContentsChanged += HandleContainerContentsChanged;
-        }
-
-        ~Container()
-        {
-            OnContentsChanged -= HandleContainerContentsChanged;
+            _startFilter = attachedContainer.StartFilter;
+            _containerName = attachedContainer.ContainerName;
         }
 
 
@@ -214,7 +215,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
 
-            item.SetContainer(this, true, false);
+            item.SetContainer(this);
 
             return true;
         }
@@ -452,7 +453,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             foreach (StoredItem storedItem in StoredItems)
             {
-                if (storedItem.Item == item)
+                if (storedItem.Item.Equals(item))
                 {
                     return storedItem.Position;
                 }
@@ -470,7 +471,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             LastModification = Time.time;
-            storedItem.Item.SetContainerUnchecked(null);
+            storedItem.Item.SetContainer(null);
         }
 
         /// <summary>
@@ -481,7 +482,7 @@ namespace SS3D.Systems.Inventory.Containers
             Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
             for (int i = 0; i < oldItems.Length; i++)
             {
-                oldItems[i].Container = null;
+                oldItems[i].SetContainer(null);
             }
             StoredItems.Clear();
 
@@ -498,9 +499,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void Purge()
         {
-            foreach (StoredItem item in StoredItems)
+            for(int i =0; i < StoredItems.Count; i++)
             {
-                item.Item.Delete();
+                StoredItems[i].Item.Delete();
             }
             StoredItems.Clear();
 
@@ -521,7 +522,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             foreach (StoredItem storedItem in StoredItems)
             {
-                if (storedItem.Item == item)
+                if (storedItem.Item.Equals(item))
                 {
                     return true;
                 }
@@ -537,16 +538,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// <returns></returns>
         public bool CanStoreItem(Item item)
         {
-            // Do not store if the item is the container itself
-            if (AttachedTo.GetComponent<Item>() == item)
+            if (_filter != null)
             {
-                return false;
-            }
-
-            Filter filter = AttachedTo.StartFilter;
-            if (filter != null)
-            {
-                return filter.CanStore(item);
+                return _filter.CanStore(item);
             }
 
             return true;
@@ -605,95 +599,6 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             return -1;
-        }
-
-        private void handleItemRemoved(Item item)
-        {
-            // Only unfreeze the item if it was not just placed into another container
-            if (item.Container == null)
-            {
-                item.Unfreeze();
-            }
-
-            // Restore visibility
-            if (HideItems)
-            {
-                item.SetVisibility(true);
-            }
-
-            // Remove parent if child of this
-            if (AttachedTo != null && item.transform.parent == AttachedTo.transform)
-            {
-                item.transform.SetParent(null, true);
-                AttachedTo.ProcessItemDetached(item);
-            }
-        }
-
-        private void handleItemAdded(Item item)
-        {
-            item.Freeze();
-
-            // Make invisible
-            if (HideItems)
-            {
-                item.SetVisibility(false);
-            }
-
-            if(AttachedTo != null && AttachedTo.AttachItems)
-            {
-                Transform itemTransform = item.transform;
-                itemTransform.SetParent(AttachedTo.transform, false);
-                itemTransform.localPosition = AttachedTo.AttachmentOffset;
-               AttachedTo.ProcessItemAttached(item);
-            }
-        }
-
-        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
-        {
-            switch (type)
-            {
-                case ContainerChangeType.Add:
-                    foreach (Item item in newItems)
-                    {
-                        if (item == null)
-                        {
-                            continue;
-                        }
-
-                        handleItemAdded(item);
-                    }
-
-                    break;
-                case ContainerChangeType.Move:
-                    {
-                        foreach (Item item in newItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                            handleItemAdded(item);
-                        }
-
-                        break;
-                    }
-                case ContainerChangeType.Remove:
-                    {
-                        foreach (Item item in oldItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                        }
-
-                        break;
-                    }
-            }
         }
 
         public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)

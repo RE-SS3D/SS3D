@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using FishNet;
 using FishNet.Component.Transforming;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using FishNet.Transporting;
 using SS3D.Attributes;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
@@ -28,82 +32,79 @@ namespace SS3D.Systems.Inventory.Items
     [RequiredLayer("Items")]
     public class Item : InteractionSource, IInteractionTarget
     {
-        [FormerlySerializedAs("_itemId")]
-        [FormerlySerializedAs("_itemIdID")]
-        [FormerlySerializedAs("ItemID")]
+        #region Item
         [Header("Item settings")]
-        [SerializeField]
-        [HideInInspector]
-        public Data.Enums.ItemId _itemId;
 
+        [FormerlySerializedAs("Name")]
         [SerializeField] private string _name;
 
-        [SerializeField] private Sprite _sprite;
+        [FormerlySerializedAs("Weight")]
+        [SerializeField] private float _weight;
+
+        [FormerlySerializedAs("Size")]
+        [SerializeField] private Vector2Int _size;
+
+        [FormerlySerializedAs("Traits")]
+        [SerializeField] private List<Trait> _startingTraits;
 
         [SerializeField] private Rigidbody _rigidbody;
 
-        /// <summary>
-        /// The item's relative weight in kilograms.
-        /// </summary>
-        [SerializeField] private float _weight;
+        private Sprite _sprite;
 
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
+
         [Header("Attachment settings")]
+
         [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
         public Transform AttachmentPoint;
+
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
-        [Tooltip("The size of the item inside a container")]
-        private Vector2Int _size;
+
+        /// <summary>
+        /// The list of characteristics this Item has
+        /// </summary>
+        [SyncObject]
+        private readonly SyncList<Trait> _traits = new();
+
+        [SyncVar]
         private Container _container;
 
+        public string Name => _name;
+        public ItemId ItemId { get; set; }
         public Vector2Int Size => _size;
+        public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
-        public List<Trait> traits;
+        public Container Container => _container;
 
-        public Sprite InventorySprite
-        {
-            get
-            {
-                if (_sprite == null)
-                {
-                    GenerateNewIcon();
-                }
-
-                return _sprite;
-            }
-        }
-
-        // public Item()
-        // {
-        //     frozenItem = new FrozenItem(this);
-        // }
+        private bool _initialised = false;
 
         /// <summary>
-        /// The stack of this item, can be null
+        /// Initialise this item fields. Can only be called once.
         /// </summary>
-        // public Stackable Stack => stack ? stack : stack = GetComponent<Stackable>();
-        /// <summary>
-        /// The container this item is in
-        /// </summary>
-        public Container Container
+        public void Init(string name, float weight, Vector2Int size,  List<Trait> traits)
         {
-            get => _container;
-            set => SetContainer(value, false, false);
+            if (_initialised)
+            {
+                Punpun.Error(this, "Item already initialised, returning");
+                return;
+            }
+            _name = name ?? string.Empty;
+            _weight = weight;
+            _size = size;
+            _traits.AddRange(traits);
+            _initialised = true;
         }
 
-        public void Awake()
-        {
-            _sprite = null;
+        /// <summary>
+        /// The sprite that is shown in the container slot
+        /// </summary>
 
-            // Add a warning if an item is not on the Items layer (layer 10).
-            // Not really needed any more because of the RequiredLayer attribute.
-            if (gameObject.layer != 10)
-            {
-                Punpun.Warning(this, "Item {item} is on {layer} layer. Should be on Items layer.",
-                    Logs.Generic, _name, LayerMask.LayerToName(gameObject.layer));
-            }
+        public Sprite Sprite
+        {
+            get => InventorySprite();
+            set => _sprite = value;
         }
 
         protected override void OnStart()
@@ -120,35 +121,39 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
+        }
 
-            // Items can't have no size
-            if (_size.x == 0)
-            {
-                _size = new Vector2Int(1, _size.y);
-            }
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            _traits.AddRange(_startingTraits);
+        }
 
-            if (_size.y == 0)
-            {
-                _size = new Vector2Int(_size.x, 1);
-            }
+
+        [ServerOrClient]
+        private Sprite InventorySprite()
+        {
+            return _sprite == null ? GenerateNewIcon() : Sprite;
         }
 
         /// <summary>
         /// Destroys this item
         /// </summary>
+        [Server]
         public void Delete()
         {
-            Container = null;
+            SetContainer(null);
 
-            if (GameObjectCache != null)
+            if (GameObject != null)
             {
-                ServerManager.Despawn(GameObjectCache);
+                ServerManager.Despawn(GameObject);
             }
         }
 
         /// <summary>
         /// Freezes the item, making it not move or collide
         /// </summary>
+        [Server]
         public void Freeze()
         {
             if (_rigidbody != null)
@@ -158,6 +163,7 @@ namespace SS3D.Systems.Inventory.Items
             var itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
+                Punpun.Debug(this, "item {item} frozen", Logs.Generic, Name);
                 itemCollider.enabled = false;
             }
         }
@@ -165,6 +171,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Unfreezes the item, restoring normal functionality
         /// </summary>
+        [Server]
         public void Unfreeze()
         {
             if (_rigidbody != null)
@@ -183,6 +190,7 @@ namespace SS3D.Systems.Inventory.Items
         /// Sets if this item is visible or not
         /// </summary>
         /// <param name="visible">Should the item be visible</param>
+        [Server]
         public void SetVisibility(bool visible)
         {
             // TODO: Make this handle multiple renderers, with different states
@@ -204,11 +212,6 @@ namespace SS3D.Systems.Inventory.Items
             return component != null && component.enabled;
         }
 
-        private void OnDestroy()
-        {
-            _container = null;
-        }
-
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             return new IInteraction[] { new PickupInteraction { Icon = null } };
@@ -223,73 +226,70 @@ namespace SS3D.Systems.Inventory.Items
             interactions.Add(new InteractionEntry(null, dropInteraction));
         }
 
+        /// <summary>
+        /// Checks if the item is currently stored in a container
+        /// </summary>
+        /// <returns></returns>
+        [ServerOrClient]
         public bool InContainer()
         {
             return _container != null;
         }
 
+        /// <summary>
+        /// Describe this item properties.
+        /// </summary>
+        [ServerOrClient]
+        public string Describe()
+        {
+            string traits = "";
+            foreach (var trait in _traits)
+            {
+                traits += trait.Name + " ";
+            }
+            return $"{Name}, size = {Size}, weight = {_weight}, traits = {traits}, container is {_container?.ContainerName}";
+        }
+
+        /// <summary>
+        /// Checks if the item has an specific trait
+        /// </summary>
+        /// <param name="trait"></param>
+        /// <returns></returns>
+        [ServerOrClient]
         public bool HasTrait(Trait trait)
         {
-            return traits.Contains(trait);
+            return _traits.Contains(trait);
         }
 
-        public bool HasTrait(string name)
-        {
-            var hash = Animator.StringToHash(name.ToUpper());
-            foreach (Trait trait in traits)
-            {
-                if (trait.Hash == hash)
-                    return true;
-            }
-            return false;
-        }
-
+        /// <summary>
+        /// Modify the container of this item, can pass null to make this item not depending on any container.
+        /// </summary>
         [Server]
-        public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
+        public void SetContainer(Container newContainer)
         {
             if (_container == newContainer)
             {
                 return;
             }
 
-            if (_container != null)
+            if (_container != null && _container.ContainsItem(this))
             {
-                _container.RemoveItem(this);
+                Container.RemoveItem(this);
             }
 
-            if (!alreadyAdded && newContainer != null)
+            if (newContainer != null && !newContainer.ContainsItem(this))
             {
                 newContainer.AddItem(this);
             }
 
-            _container = newContainer;
-            RpcSetContainer(newContainer);
-        }
-
-        [ObserversRpc]
-        private void RpcSetContainer(Container newContainer)
-        {
-            if (IsServer)
-            {
-                return;
-            }
-
-            _container = newContainer;
-        }
-
-        /// <summary>
-        /// Simply sets the container variable of this item, without doing anything
-        /// <remarks>Make sure the item is only listed in the new container, or weird bugs will occur</remarks>
-        /// </summary>
-        public void SetContainerUnchecked(Container newContainer)
-        {
             _container = newContainer;
         }
 
         // TODO: Improve this
         // we have this to generate icons at start, I do not know how bad it is for performance
         // if you know anything about it, tell us
-        public void GenerateNewIcon()
+        [ServerOrClient]
+        public Sprite GenerateNewIcon()
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
@@ -298,16 +298,65 @@ namespace SS3D.Systems.Inventory.Items
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
             Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
-                _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-                _sprite.name = transform.name;
+                var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                sprite.name = transform.name;
+                return sprite;
             }
             catch (NullReferenceException)
             {
                 Debug.LogError("Null reference exception, reverting to default sprite for item " + name + ".");
+                return null;
             }
 
         }
 
+        /// <summary>
+        /// Check if size is correctly defined, and if not set it as (1,1).
+        /// </summary>
+        [ServerOrClient]
+        public void ValidateSize()
+        {
+            // Items can't have no size
+            if (Size.x <= 0)
+            {
+                _size = new Vector2Int(1, Size.y);
+                Punpun.Warning(this, "item size in x lesser or equal zero, reverting it to 1");
+            }
+
+            if (Size.y <= 0)
+            {
+                _size = new Vector2Int(Size.x, 1);
+                Punpun.Warning(this, "item size in y lesser or equal zero, reverting it to 1");
+            }
+        }
+
+        /// <summary>
+        /// Add a new trait to this and sync it
+        /// </summary>
+        [Server]
+        public void AddTrait(Trait trait)
+        {
+            if (_traits.Contains(trait))
+            {
+                Punpun.Warning(this, "item already contains trait {trait}", Logs.Generic, trait.Name);
+                return;
+            }
+             _traits.Add(trait);
+        }
+
+        /// <summary>
+        /// Remove a trait from this item.
+        /// </summary>
+        [Server]
+        public void RemoveTraits(Trait trait)
+        {
+             _traits.Remove(trait);
+        }
+
+
+        #endregion
+
+        #region Editor
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
@@ -353,5 +402,6 @@ namespace SS3D.Systems.Inventory.Items
             return Quaternion.Euler(angles) * (point - pivot);
         }
 #endif
+        #endregion
     }
 }

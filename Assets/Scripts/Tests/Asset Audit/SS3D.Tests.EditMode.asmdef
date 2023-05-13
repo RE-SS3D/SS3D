@@ -1,0 +1,29 @@
+{
+    "name": "SS3D.Tests.AssetAudit",
+    "rootNamespace": "",
+    "references": [
+        "Tests.Common",
+        "SS3D.Core",
+        "FishNet.Runtime",
+        "SS3D.Attributes",
+        "SS3D.Systems",
+        "SS3D.Data",
+        "Coimbra",
+        "SS3D.Logging"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

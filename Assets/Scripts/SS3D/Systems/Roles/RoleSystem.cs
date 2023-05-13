@@ -163,7 +163,7 @@ namespace SS3D.Systems.Roles
         /// <param name="role"></param>
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
-            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
             Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
@@ -214,7 +214,7 @@ namespace SS3D.Systems.Roles
                 return;
             }
 
-            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             itemSystem.SpawnItemInContainer(itemId, container);
         }
     }

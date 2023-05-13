@@ -1,10 +1,14 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
@@ -35,14 +39,15 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _isRunning;
 
         [Header("Debug Info")]
-        protected Vector3 _absoluteMovement;
-        protected Vector2 _input;
-        protected Vector2 _smoothedInput;
-        protected Vector3 _targetMovement;
+        protected Vector3 AbsoluteMovement;
+        protected Vector2 Input;
+        protected Vector2 SmoothedInput;
+        protected Vector3 TargetMovement;
 
         private Actor _camera;
         protected Controls.MovementActions MovementControls;
         protected Controls.HotkeysActions HotkeysControls;
+        private InputSystem _inputSystem;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -56,20 +61,23 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void OnStart()
         {
             base.OnStart();
-            
+            if (!Owner.IsLocalClient) return;
             Setup();
         }
 
         protected void Setup()
         {
-            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
+            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingSoulChanged;
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            _inputSystem = Subsystems.Get<InputSystem>();
+            Controls controls = _inputSystem.Inputs;
             MovementControls = controls.Movement;
             HotkeysControls = controls.Hotkeys;
             MovementControls.ToggleRun.performed += HandleToggleRun;
-            MovementControls.Enable();
-            HotkeysControls.Enable();
+            _inputSystem.ToggleActionMap(MovementControls, true);
+            _inputSystem.ToggleActionMap(HotkeysControls, true);
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -77,6 +85,8 @@ namespace SS3D.Systems.Entities.Humanoid
             base.OnDestroyed();
             
             MovementControls.ToggleRun.performed -= HandleToggleRun;
+            _inputSystem.ToggleActionMap(MovementControls, false);
+            _inputSystem.ToggleActionMap(HotkeysControls, false);
         }
 
         private void HandleControllingSoulChanged(Mind mind)
@@ -84,10 +94,8 @@ namespace SS3D.Systems.Entities.Humanoid
             OnSpeedChanged(0);
         }
 
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        { 
             if (!IsOwner)
             {
                 return;
@@ -126,12 +134,12 @@ namespace SS3D.Systems.Entities.Humanoid
                  movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
 
              // smoothly changes the target movement
-             _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
+             TargetMovement = Vector3.Lerp(TargetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
 
-             Vector3 resultingMovement = _targetMovement + Position;
-            _absoluteMovement = resultingMovement;
+             Vector3 resultingMovement = TargetMovement + Position;
+            AbsoluteMovement = resultingMovement;
 
-             _movementTarget.position = _absoluteMovement;
+             _movementTarget.position = AbsoluteMovement;
          }
 
         /// <summary>
@@ -139,10 +147,9 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected void RotatePlayerToMovement()
         {
-            Quaternion lookRotation = Quaternion.LookRotation(_targetMovement);
+            Quaternion lookRotation = Quaternion.LookRotation(TargetMovement);
 
-            transform.rotation =
-                Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
+            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
         }
 
         /// <summary>
@@ -160,13 +167,10 @@ namespace SS3D.Systems.Entities.Humanoid
             float y = MovementControls.Movement.ReadValue<Vector2>().y;
             float inputFilteredSpeed = FilterSpeed();
 
-            x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
-            y = Mathf.Clamp(y, -inputFilteredSpeed, inputFilteredSpeed);
+            Input = Vector2.ClampMagnitude(new Vector2(x, y), inputFilteredSpeed);
+            SmoothedInput = Vector2.Lerp(SmoothedInput, Input, Time.deltaTime * (_lerpMultiplier / 10));
 
-            _input = new Vector2(x, y);
-            _smoothedInput = Vector2.Lerp(_smoothedInput, _input, Time.deltaTime * (_lerpMultiplier / 10));
-
-            OnSpeedChanged(_input.magnitude != 0 ? inputFilteredSpeed : 0);
+            OnSpeedChanged(Input.magnitude != 0 ? inputFilteredSpeed : 0);
         }
 
         protected virtual float FilterSpeed()
