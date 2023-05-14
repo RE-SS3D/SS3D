@@ -104,10 +104,10 @@ jobs:
       - run: "echo 'Field options: ${{ steps.get-backlog-id.outputs.data }}'"
       - name: Determine status column
         uses: ./.github/actions/determine-status-column
-        id: status
+        id: determine-status-column
         with:
-          GITHUB_EVENT_NAME: github.event_name
-          ISSUE_TITLE: github.event.issue.title        
+          GITHUB_EVENT_NAME: $github.event_name
+          ISSUE_TITLE: $github.event.issue.title        
       - name: Get target field ID
         uses: ./.github/actions/get-single-select-field-id
         id: get-single-select-field-id
