@@ -1,5 +1,7 @@
 name: Add Issues and Pull Requests To Milestone Project
 on:
+  pull_request:
+    types: [milestoned]
   issues:
     types: [milestoned]
 jobs:
