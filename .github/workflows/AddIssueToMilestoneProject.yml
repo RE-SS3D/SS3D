@@ -106,8 +106,8 @@ jobs:
         uses: ./.github/actions/determine-status-column
         id: determine-status-column
         with:
-          GITHUB_EVENT_NAME: $github.event_name
-          ISSUE_TITLE: $github.event.issue.title        
+          GITHUB_EVENT_NAME: github.event_name
+          ISSUE_TITLE: github.event.issue.title        
       - name: Get target field ID
         uses: ./.github/actions/get-single-select-field-id
         id: get-single-select-field-id
