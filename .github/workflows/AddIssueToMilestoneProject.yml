@@ -2,8 +2,6 @@ name: Add Issues and Pull Requests To Milestone Project
 on:
   issues:
     types: [milestoned]
-  pull_request:
-    types: [milestoned]
 jobs:
   AddIssueToProject:
     runs-on: ubuntu-latest
