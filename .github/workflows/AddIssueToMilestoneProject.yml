@@ -1,4 +1,4 @@
-name: Add Issue To Milestone Project
+name: Add Issues and Pull Requests To Milestone Project
 on:
   issues:
     types: [milestoned]
