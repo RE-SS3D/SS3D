@@ -1,0 +1,14 @@
+name: 'Determine Status Column'
+inputs:
+  GITHUB_EVENT_NAME:
+    description: 'Name of the event triggering this (i.e. "Pull request" or "Issue").'
+    required: true
+  ISSUE_TITLE:
+    description: 'Title of the Issue or Pull Request'
+    required: true
+outputs:
+  COLUMN:
+    description: 'The appropriate column to place the issue in.'
+runs:
+  using: 'node16'
+  main: 'index.js'

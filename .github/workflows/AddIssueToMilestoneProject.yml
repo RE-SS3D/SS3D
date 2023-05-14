@@ -2,6 +2,8 @@ name: Add Issue To Milestone Project
 on:
   issues:
     types: [milestoned]
+  pull_request:
+    types: [milestoned]
 jobs:
   AddIssueToProject:
     runs-on: ubuntu-latest
@@ -102,6 +104,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
       - run: "echo 'Field options: ${{ steps.get-backlog-id.outputs.data }}'"
+      - name: Determine status column
+        uses: ./.github/actions/determine-status-column
+        id: status
+        with:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}        
       - name: Get target field ID
         uses: ./.github/actions/get-single-select-field-id
         id: get-single-select-field-id
