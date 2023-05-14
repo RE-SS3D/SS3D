@@ -6,7 +6,7 @@ var column = null
 console.log(event);
 console.log(title);
 
-if (event == "issue") {
+if (event == "issues") {
     column = "Backlog";
 }
 else if (event == "pull_request")
