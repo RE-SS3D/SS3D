@@ -16,7 +16,7 @@ namespace SS3D.Systems.Furniture
         [SerializeField, SyncVar] private IDPermission permissionToUnlock;
         public GameObject LockLight;
         private MaterialPropertyBlock propertyBlock;
-        private Renderer renderer;
+        private new Renderer renderer;
 
         private void OnLocked(bool prev, bool next, bool asServer)
         {

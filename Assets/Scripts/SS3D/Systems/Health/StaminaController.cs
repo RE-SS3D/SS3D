@@ -93,8 +93,9 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroyed()
         {
+            base.OnDestroyed();
             UnsubscribeFromEvents();
         }
 

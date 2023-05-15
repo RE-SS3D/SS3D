@@ -37,8 +37,9 @@ namespace SS3D.Systems.Inventory.Containers
             return _openState;
         }
 
-        protected virtual void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
             Animator = GetComponent<Animator>();
         }
 
