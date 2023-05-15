@@ -6,7 +6,7 @@ var column = null
 console.log(url);
 console.log(title);
 
-if (url == null) {          // If Pull Request URL is null, the event must be an issue.
+if (url == "") {          // If Pull Request URL is empty, the event must be an issue.
     column = "Backlog";
 }
 else                        // Otherwise, it's a pull request.
