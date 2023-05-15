@@ -113,16 +113,16 @@ jobs:
         id: get-single-select-field-id
         with:
           JSON_FIELD_OPTIONS: ${{ steps.get-backlog-id.outputs.data }}
-          TARGET_OPTION: Backlog
+          TARGET_OPTION: ${{ steps.determine-status-column.outputs.COLUMN }}
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
-      - name: Add To Backlog
+      - name: Add To correct column
         uses: octokit/graphql-action@v2.2.24
-        id: add-issue-to-backlog-column
+        id: add-issue-to-correct-column
         if: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID != ''}}
         with:
           query: |
-            mutation AddToBacklog {
+            mutation AddToCorrectColumn {
               updateProjectV2ItemFieldValue(input: {projectId:"${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID }}", itemId:"${{ fromJSON(steps.add-issue-to-milestone-project.outputs.data).addProjectV2ItemById.item.id }}", fieldId: "${{ fromJSON(steps.locate-status-column.outputs.data).node.field.id }}", value: { singleSelectOptionId: "${{steps.get-single-select-field-id.outputs.OPTION_ID}}" }}) {
                 clientMutationId
               }
