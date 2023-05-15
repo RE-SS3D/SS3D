@@ -1,0 +1,14 @@
+name: 'Determine Status Column'
+inputs:
+  ISSUE_TITLE:
+    description: 'Title of the Issue or Pull Request'
+    required: true
+  PULL_REQUEST_URL:
+    description: 'Pull request URL (existence used to confirm whether pull request or issue)'
+    required: true
+outputs:
+  COLUMN:
+    description: 'The appropriate column to place the issue in.'
+runs:
+  using: 'node16'
+  main: 'index.js'
