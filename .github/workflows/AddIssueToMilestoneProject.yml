@@ -1,7 +1,5 @@
 name: Add Issues and Pull Requests To Milestone Project
 on:
-  pull_request:
-    types: [milestoned]
   issues:
     types: [milestoned]
 jobs:
@@ -108,7 +106,7 @@ jobs:
         uses: ./.github/actions/determine-status-column
         id: determine-status-column
         with:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          PULL_REQUEST_URL: ${{ github.event.issue.pull_request.url }}
           ISSUE_TITLE: ${{ github.event.issue.title }}       
       - name: Get target field ID
         uses: ./.github/actions/get-single-select-field-id

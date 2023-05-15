@@ -1,15 +1,15 @@
 const core = require('@actions/core');
-const event = core.getInput('GITHUB_EVENT_NAME')
+const url = core.getInput('PULL_REQUEST_URL')
 const title = core.getInput('ISSUE_TITLE')
 
 var column = null
-console.log(event);
+console.log(url);
 console.log(title);
 
-if (event == "issues") {
+if (url == null) {          // If Pull Request URL is null, the event must be an issue.
     column = "Backlog";
 }
-else if (event == "pull_request")
+else                        // Otherwise, it's a pull request.
 {
     var potentialPrefix = title.toUpperCase().slice(0, 5);
     console.log(potentialPrefix);
