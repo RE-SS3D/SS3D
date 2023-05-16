@@ -1076,7 +1076,7 @@ namespace SS3D.Systems.Inputs
             private @Controls m_Wrapper;
             public OtherActions(@Controls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Fade => m_Wrapper.m_Other_Fade;
-            public InputAction SwapMinds => m_Wrapper.m_Other_SwapMinds;
+            public InputAction @SwapMinds => m_Wrapper.m_Other_SwapMinds;
             public InputAction @PrimaryClick => m_Wrapper.m_Other_PrimaryClick;
             public InputAction @SecondaryClick => m_Wrapper.m_Other_SecondaryClick;
             public InputAction @ToggleMenu => m_Wrapper.m_Other_ToggleMenu;
@@ -1093,9 +1093,9 @@ namespace SS3D.Systems.Inputs
                     @Fade.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnFade;
                     @Fade.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnFade;
                     @Fade.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnFade;
-                    SwapMinds.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
-                    SwapMinds.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
-                    SwapMinds.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
+                    @SwapMinds.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
+                    @SwapMinds.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
+                    @SwapMinds.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
                     @PrimaryClick.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnPrimaryClick;
                     @PrimaryClick.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnPrimaryClick;
                     @PrimaryClick.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnPrimaryClick;
@@ -1115,9 +1115,9 @@ namespace SS3D.Systems.Inputs
                     @Fade.started += instance.OnFade;
                     @Fade.performed += instance.OnFade;
                     @Fade.canceled += instance.OnFade;
-                    SwapMinds.started += instance.OnSwapMinds;
-                    SwapMinds.performed += instance.OnSwapMinds;
-                    SwapMinds.canceled += instance.OnSwapMinds;
+                    @SwapMinds.started += instance.OnSwapMinds;
+                    @SwapMinds.performed += instance.OnSwapMinds;
+                    @SwapMinds.canceled += instance.OnSwapMinds;
                     @PrimaryClick.started += instance.OnPrimaryClick;
                     @PrimaryClick.performed += instance.OnPrimaryClick;
                     @PrimaryClick.canceled += instance.OnPrimaryClick;
