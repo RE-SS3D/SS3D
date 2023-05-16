@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &8556310196017592655
+--- !u!1001 &6138295040920424610
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -54,14 +54,14 @@ PrefabInstance:
     - target: {fileID: 5911250328390601216, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 8420070316573550880, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
+      objectReference: {fileID: 526700187579002054, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
-      value: 8549654076861159179
+      value: 10943239119975098356
       objectReference: {fileID: 0}
     - target: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Name
-      value: SodaCanDukePurpleTea
+      value: SodaCanTonic
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
