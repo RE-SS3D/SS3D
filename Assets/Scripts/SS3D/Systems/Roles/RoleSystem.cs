@@ -140,7 +140,7 @@ namespace SS3D.Systems.Roles
         public void GiveRoleLoadoutToPlayer(Entity entity)
         {
             KeyValuePair<Player, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Character.player);
+                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.player);
 
             if (rolePlayer != null)
             {

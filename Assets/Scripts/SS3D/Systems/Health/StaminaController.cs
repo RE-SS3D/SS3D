@@ -100,20 +100,20 @@ namespace SS3D.Systems.Health
         private void SubscribeToEvents()
         {
             _player.SpeedChangeEvent += DepleteStamina;
-            _entity.OnCharacterChanged += AssignViewToControllable;
+            _entity.OnMindChanged += AssignViewToControllable;
         }
 
         private void UnsubscribeFromEvents()
         {
             _player.SpeedChangeEvent -= DepleteStamina;
-            _entity.OnCharacterChanged -= AssignViewToControllable;
+            _entity.OnMindChanged -= AssignViewToControllable;
 
         }
 
         [Client]
-        private void AssignViewToControllable(Character character)
+        private void AssignViewToControllable(Mind mind)
         {
-            if (character == null || !character.IsOwner)
+            if (mind == null || !mind.IsOwner)
             {
                 _staminaBarView.UnassignViewFromPlayer(this);
             }
@@ -140,9 +140,9 @@ namespace SS3D.Systems.Health
         /// </summary>
         private void InitialAssignViewToControllable()
         {
-            if (_entity.Character != null && _entity.Character.IsOwner)
+            if (_entity.Mind != null && _entity.Mind.IsOwner)
             {
-                AssignViewToControllable(_entity.Character);
+                AssignViewToControllable(_entity.Mind);
             }
         }
 

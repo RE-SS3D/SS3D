@@ -48,7 +48,7 @@ namespace SS3D.Systems.Entities
 
         public Entity GetSpawnedEntity(Player player)
         {
-            var entity = _spawnedPlayers.Find(entity => entity.Character.player == player);
+            var entity = _spawnedPlayers.Find(entity => entity.Mind.player == player);
             if (IsPlayerSpawned(player))
             {
                 return entity;
@@ -58,7 +58,7 @@ namespace SS3D.Systems.Entities
 
         public bool TryGetSpawnedEntity(NetworkConnection conn, out Entity entity)
         {
-            entity = _spawnedPlayers.Find(entity => entity.Character?.player?.Owner == conn);
+            entity = _spawnedPlayers.Find(entity => entity.Mind?.player?.Owner == conn);
             return entity != null;
         }
 
@@ -69,8 +69,8 @@ namespace SS3D.Systems.Entities
         /// <returns>Is the player is controlling an entity</returns>
         public bool IsPlayerSpawned(Player player)
         {
-            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Character.player == player);
-            return spawnedPlayer != null && spawnedPlayer.Character != Character.Empty;
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.player == player);
+            return spawnedPlayer != null && spawnedPlayer.Mind != Mind.Empty;
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace SS3D.Systems.Entities
         /// <returns>Is the player is controlling an entity</returns>
         public bool IsPlayerSpawned(NetworkConnection networkConnection)
         {
-            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Character?.player?.Owner == networkConnection);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind?.player?.Owner == networkConnection);
 
             bool isPlayerSpawned;
 
@@ -88,7 +88,7 @@ namespace SS3D.Systems.Entities
             {
                 isPlayerSpawned = false;
             }
-            else if (spawnedPlayer.Character == Character.Empty)
+            else if (spawnedPlayer.Mind == Mind.Empty)
             {
                 isPlayerSpawned = false;
             }
@@ -168,18 +168,18 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnPlayer(Player player)
         {
-            CharacterSystem characterSystem = Subsystems.Get<CharacterSystem>();
-            characterSystem.TryCreateCharacter(player, out Character createdCharacter);
+            MindSystem mindSystem = Subsystems.Get<MindSystem>();
+            mindSystem.TryCreateMind(player, out Mind createdMind);
 
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
             ServerManager.Spawn(entity.NetworkObject, player.Owner);
 
-            createdCharacter.SetPlayer(player);
-            entity.SetCharacter(createdCharacter);
+            createdMind.SetPlayer(player);
+            entity.SetMind(createdMind);
 
             _spawnedPlayers.Add(entity);
 
-            Punpun.Information(this, "Spawning mind {createdMind} on {entity}", Logs.ServerOnly, createdCharacter.name, entity.name);
+            Punpun.Information(this, "Spawning mind {createdMind} on {entity}", Logs.ServerOnly, createdMind.name, entity.name);
         }
 
         /// <summary>

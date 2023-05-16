@@ -68,7 +68,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected void Setup()
         {
             _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
-            _entity.OnCharacterChanged += HandleControllingPlayerChanged;
+            _entity.OnMindChanged += HandleControllingPlayerChanged;
             _inputSystem = Subsystems.Get<InputSystem>();
             Controls controls = _inputSystem.Inputs;
             MovementControls = controls.Movement;
@@ -89,7 +89,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _inputSystem.ToggleActionMap(HotkeysControls, false);
         }
 
-        private void HandleControllingPlayerChanged(Character character)
+        private void HandleControllingPlayerChanged(Mind mind)
         {
             OnSpeedChanged(0);
         }

@@ -492,7 +492,7 @@ namespace SS3D.Systems.Inputs
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Swap Characters"",
+                    ""name"": ""Swap Minds"",
                     ""type"": ""Button"",
                     ""id"": ""848f948f-55f8-440f-befe-1869e0ffd428"",
                     ""expectedControlType"": ""Button"",
@@ -556,7 +556,7 @@ namespace SS3D.Systems.Inputs
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Swap Characters"",
+                    ""action"": ""Swap Minds"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -771,7 +771,7 @@ namespace SS3D.Systems.Inputs
             // Other
             m_Other = asset.FindActionMap("Other", throwIfNotFound: true);
             m_Other_Fade = m_Other.FindAction("Fade", throwIfNotFound: true);
-            m_Other_SwapCharacters = m_Other.FindAction("Swap Characters", throwIfNotFound: true);
+            m_Other_SwapMinds = m_Other.FindAction("Swap Minds", throwIfNotFound: true);
             m_Other_PrimaryClick = m_Other.FindAction("Primary Click", throwIfNotFound: true);
             m_Other_SecondaryClick = m_Other.FindAction("Secondary Click", throwIfNotFound: true);
             m_Other_ToggleMenu = m_Other.FindAction("Toggle Menu", throwIfNotFound: true);
@@ -1066,7 +1066,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputActionMap m_Other;
         private IOtherActions m_OtherActionsCallbackInterface;
         private readonly InputAction m_Other_Fade;
-        private readonly InputAction m_Other_SwapCharacters;
+        private readonly InputAction m_Other_SwapMinds;
         private readonly InputAction m_Other_PrimaryClick;
         private readonly InputAction m_Other_SecondaryClick;
         private readonly InputAction m_Other_ToggleMenu;
@@ -1076,7 +1076,7 @@ namespace SS3D.Systems.Inputs
             private @Controls m_Wrapper;
             public OtherActions(@Controls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Fade => m_Wrapper.m_Other_Fade;
-            public InputAction @SwapCharacters => m_Wrapper.m_Other_SwapCharacters;
+            public InputAction SwapMinds => m_Wrapper.m_Other_SwapMinds;
             public InputAction @PrimaryClick => m_Wrapper.m_Other_PrimaryClick;
             public InputAction @SecondaryClick => m_Wrapper.m_Other_SecondaryClick;
             public InputAction @ToggleMenu => m_Wrapper.m_Other_ToggleMenu;
@@ -1093,9 +1093,9 @@ namespace SS3D.Systems.Inputs
                     @Fade.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnFade;
                     @Fade.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnFade;
                     @Fade.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnFade;
-                    @SwapCharacters.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapCharacters;
-                    @SwapCharacters.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapCharacters;
-                    @SwapCharacters.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapCharacters;
+                    SwapMinds.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
+                    SwapMinds.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
+                    SwapMinds.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSwapMinds;
                     @PrimaryClick.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnPrimaryClick;
                     @PrimaryClick.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnPrimaryClick;
                     @PrimaryClick.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnPrimaryClick;
@@ -1115,9 +1115,9 @@ namespace SS3D.Systems.Inputs
                     @Fade.started += instance.OnFade;
                     @Fade.performed += instance.OnFade;
                     @Fade.canceled += instance.OnFade;
-                    @SwapCharacters.started += instance.OnSwapCharacters;
-                    @SwapCharacters.performed += instance.OnSwapCharacters;
-                    @SwapCharacters.canceled += instance.OnSwapCharacters;
+                    SwapMinds.started += instance.OnSwapMinds;
+                    SwapMinds.performed += instance.OnSwapMinds;
+                    SwapMinds.canceled += instance.OnSwapMinds;
                     @PrimaryClick.started += instance.OnPrimaryClick;
                     @PrimaryClick.performed += instance.OnPrimaryClick;
                     @PrimaryClick.canceled += instance.OnPrimaryClick;
@@ -1262,7 +1262,7 @@ namespace SS3D.Systems.Inputs
         public interface IOtherActions
         {
             void OnFade(InputAction.CallbackContext context);
-            void OnSwapCharacters(InputAction.CallbackContext context);
+            void OnSwapMinds(InputAction.CallbackContext context);
             void OnPrimaryClick(InputAction.CallbackContext context);
             void OnSecondaryClick(InputAction.CallbackContext context);
             void OnToggleMenu(InputAction.CallbackContext context);

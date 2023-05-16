@@ -18,9 +18,9 @@ public class HealthController : NetworkBehaviour
         Entity originEntity = player.GetComponent<Entity>();
         Entity ghostEntity = ghost.GetComponent<Entity>();
 
-        Character originCharacter = originEntity.Character;
+        Mind originMind = originEntity.Mind;
 
-        ghostEntity.SetCharacter(originCharacter);
+        ghostEntity.SetMind(originMind);
         RpcDestroyObjects(originEntity);
         RpcUpdateGhostPosition(originEntity, ghostEntity);
     }
