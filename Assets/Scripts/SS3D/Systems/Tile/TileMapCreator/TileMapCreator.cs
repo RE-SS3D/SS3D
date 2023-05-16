@@ -57,8 +57,9 @@ namespace SS3D.Systems.Tile.UI
         }
 
         [ServerOrClient]
-        private void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
