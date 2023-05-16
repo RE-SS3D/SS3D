@@ -7,12 +7,12 @@ namespace SS3D.Systems.Entities
 {
     /// <summary>
     /// Representation of a mind, it is what "owns" an entity (player controllable).
-    /// A mind is controlled by a Soul, a Soul can control multiple minds (not at the same time).
+    /// A mind is controlled by a Player, a Player can control multiple minds (not at the same time).
     /// </summary>
     public class Mind : NetworkActor
     {
-        [SyncVar(OnChange = nameof(SyncSoul))]
-        public Soul Soul;
+        [SyncVar(OnChange = nameof(SyncPlayer))]
+        public Player player;
 
         [SyncVar]
         public Entity Entity;
@@ -27,19 +27,19 @@ namespace SS3D.Systems.Entities
         }
 
         [Server]
-        public void SetSoul(Soul soul)
+        public void SetPlayer(Player player)
         {
-            Soul = soul;
+            this.player = player;
         }
 
-        public void SyncSoul(Soul oldSoul, Soul newSoul, bool asServer)
+        public void SyncPlayer(Player oldPlayer, Player newPlayer, bool asServer)
         {
             if (!IsServer && IsHost)
             {
                 return;
             }
 
-            name = $"Mind - {newSoul.Ckey}";
+            name = $"Mind - {newPlayer.Ckey}";
         }
     }
 }

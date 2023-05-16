@@ -56,7 +56,7 @@ namespace SS3D.Systems.Permissions
         }
 
         /// <summary>
-        /// Tries to get an user role.
+        /// Tries to get a user role.
         /// </summary>
         /// <param name="ckey">The user to get the role of.</param>
         /// <param name="userPermission">The access level of that user.</param>
@@ -83,7 +83,7 @@ namespace SS3D.Systems.Permissions
         }
 
         /// <summary>
-        /// Updates an user permission.
+        /// Updates a user permission.
         /// </summary>
         /// <param name="ckey">The desired user to update the permission.</param>
         /// <param name="role">The new user role.</param>
