@@ -4,7 +4,6 @@ using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Entities
 {
@@ -18,15 +17,15 @@ namespace SS3D.Systems.Entities
 
         [SerializeField]
         [SyncVar(OnChange = nameof(SyncMind))]
-        private Mind mind = Entities.Mind.Empty;
+        private Mind _mind = Mind.Empty;
 
         public Mind Mind
         {
-            get => mind;
-            set => mind = value;
+            get => _mind;
+            set => _mind = value;
         }
 
-        public string Ckey => mind.player.Ckey;
+        public string Ckey => _mind.player.Ckey;
 
         protected override void OnStart()
         {
@@ -66,7 +65,7 @@ namespace SS3D.Systems.Entities
                 return;
             }
 
-            OnMindChanged?.Invoke(mind);
+            OnMindChanged?.Invoke(_mind);
             InvokeLocalPlayerObjectChanged();
         }
 
@@ -77,7 +76,7 @@ namespace SS3D.Systems.Entities
         [Server]
         public void SetMind(Mind mind)
         {
-            this.mind = mind;
+            this._mind = mind;
 
             GiveOwnership(mind.Owner);
         }

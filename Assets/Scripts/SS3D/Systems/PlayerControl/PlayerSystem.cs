@@ -11,7 +11,6 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.PlayerControl
 {
