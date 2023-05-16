@@ -77,12 +77,10 @@ namespace SS3D.Systems.Health
         public override void OnStartClient()
         {
             base.OnStartClient();
-
             _staminaBarView = ViewLocator.Get<StaminaBarView>().First();
-            _entity.OnMindChanged += AssignViewToControllable;
-
             // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
             SubscribeToEvents();
+            InitialAssignViewToControllable();
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -133,6 +131,18 @@ namespace SS3D.Systems.Health
         {
             _stamina.ConsumeStamina(amountToDeplete);
             _currentStamina = _stamina.Current;
+        }
+
+        /// <summary>
+        /// Where relevant, assigns the Stamina Bar View to this entity.
+        /// Required because Mind is changed / set before the OnMindSet event is subscribed to.
+        /// </summary>
+        private void InitialAssignViewToControllable()
+        {
+            if (_entity.Mind != null && _entity.Mind.IsOwner)
+            {
+                AssignViewToControllable(_entity.Mind);
+            }
         }
 
         /// <summary>
