@@ -23,9 +23,17 @@ namespace SS3D.SceneManagement.Editor
 
 			GUILayoutOption[] options =
 			{
-				GUILayout.Width(75),
+				GUILayout.Width(65),
 				GUILayout.Height(20),
 			};
+
+			GUILayoutOption[] switcherLabelOptions =
+			{
+				GUILayout.Width(100),
+				GUILayout.Height(20),
+			};
+
+			GUILayout.Label("Scene switcher:", switcherLabelOptions);
 
 			foreach (string scene in Scene.Names)
 			{
