@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
@@ -24,7 +23,7 @@ namespace SS3D.Systems.PlayerControl
         private NetworkObject _unauthorizedUserPrefab;
 
         [SerializeField]
-        private Player playerPrefab;
+        private Player _playerPrefab;
 
         [SyncObject]
         private readonly SyncDictionary<string, Player> _serverPlayers = new();
@@ -167,7 +166,7 @@ namespace SS3D.Systems.PlayerControl
             {
                 Punpun.Information(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
 
-                player = Instantiate(playerPrefab);
+                player = Instantiate(_playerPrefab);
                 ServerManager.Spawn(player.gameObject);
 
                 player.SetCkey(ckey);

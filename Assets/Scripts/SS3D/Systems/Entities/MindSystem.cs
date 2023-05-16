@@ -17,12 +17,12 @@ namespace SS3D.Systems.Entities
         private GameObject _mindPrefab;
 
         [SerializeField]
-        private Mind emptyMind;
+        private Mind _emptyMind;
 
         [SyncObject]
         private readonly SyncList<Mind> _spawnedMinds = new();
 
-        public Mind EmptyMind => emptyMind;
+        public Mind EmptyMind => _emptyMind;
 
         /// <summary>
         /// Tried to get the player's mind.
