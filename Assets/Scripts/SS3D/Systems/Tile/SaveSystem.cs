@@ -1,3 +1,4 @@
+using SS3D.Logging;
 using System.IO;
 using UnityEngine;
 
@@ -89,10 +90,13 @@ namespace SS3D.Systems.Tile
             // If theres a save file, load it, if not return null
             if (mostRecentFile != null)
             {
-                string saveString = File.ReadAllText(mostRecentFile.FullName);
+                string saveString = File.ReadAllText(mostRecentFile.FullName);                                     
+                Punpun.Information(typeof(SaveSystem), $"Found most recent save file - {mostRecentFile.FullName}");
+
                 return saveString;
             }
 
+            Punpun.Information(typeof(SaveSystem), $"No saved map file found");
             return null;
         }
 

@@ -57,7 +57,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <param name="enabled"></param>
         public void Enable(bool enabled)
         {
-            _uiPanel.SetActive(enabled);
+            _uiPanel?.SetActive(enabled);
         }
 
         /// <summary>

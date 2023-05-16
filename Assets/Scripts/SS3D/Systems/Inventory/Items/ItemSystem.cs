@@ -39,10 +39,14 @@ namespace SS3D.Systems.Inventory.Items
                 ItemId id = (ItemId)index;
 
                 GameObject itemObject = Assets.Get(id);
-                Item item = itemObject.GetComponent<Item>();
+                bool hasItemComponent = itemObject.TryGetComponent(out Item item);
 
-                item.ItemId = id ;
-
+                if (!hasItemComponent)
+                {
+                    continue;
+                }
+                
+                item.ItemId = id;
                 _itemPrefabs.Add(id, item);
             }
         }

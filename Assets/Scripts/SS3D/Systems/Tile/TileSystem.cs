@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
@@ -27,12 +28,9 @@ namespace SS3D.Systems.Tile
         }
 
         [ServerOrClient]
-        private IEnumerator WaitForResourcesLoad()
+        private async UniTask WaitForResourcesLoad()
         {
-            while (!Loader.IsInitialized)
-            {
-                yield return null;
-            }
+            await UniTask.WaitUntil(() => Loader.IsInitialized);
 
             Load();
         }
@@ -41,18 +39,26 @@ namespace SS3D.Systems.Tile
         private void Setup()
         {
             Loader = GetComponent<TileResourceLoader>();
+            Punpun.Information(this, "Setting up TileSystem");
 
             // Server only loads the map
-            if (IsServer)
+            if (IsServer || IsHost || IsServerOnly)
             {
-                CreateMap("Test map");
-                StartCoroutine(WaitForResourcesLoad());
-                Punpun.Information(this, "All tiles loaded successfully");
+                Punpun.Information(this, "Creating and loading map");
+                CreateAndLoadMap();
             }
         }
 
+        private async UniTask CreateAndLoadMap()
+        {
+            CreateEmptyMap("Test map");
+            await WaitForResourcesLoad();
+            
+            Punpun.Information(this, "All tiles loaded successfully");
+        }
+
         [ServerOrClient]
-        private void CreateMap(string mapName)
+        private void CreateEmptyMap(string mapName)
         {
             if (_currentMap == null)
             {

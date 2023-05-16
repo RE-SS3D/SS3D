@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using System;
@@ -12,7 +13,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Loads assets used by the tilemap. Can be used to retrieve scriptableobjects from a name string.
     /// </summary>
-    public class TileResourceLoader: MonoBehaviour
+    public class TileResourceLoader : Actor
     {
         public Sprite _missingIcon;
 
@@ -20,8 +21,10 @@ namespace SS3D.Systems.Tile
 
         private List<GenericObjectSo> _assets;
 
-        public void Start()
+        protected override void OnAwake()
         {
+            base.OnAwake();
+            
             LoadAssets();
         }
 
@@ -30,19 +33,18 @@ namespace SS3D.Systems.Tile
             _assets = new List<GenericObjectSo>();
 
             GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
-            StartCoroutine(LoadAssetsWithIcon(tempAssets));
+            LoadAssetsWithIcon(tempAssets).Forget();
         }
 
-        private IEnumerator LoadAssetsWithIcon(GenericObjectSo[] assets)
+        private async UniTask LoadAssetsWithIcon(GenericObjectSo[] assets)
         {
             List<Texture2D> tempIcons = new List<Texture2D>();
 
 #if UNITY_EDITOR
-            foreach (var asset in assets)
+            foreach (GenericObjectSo asset in assets)
             {
                 Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
-                yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
-
+                await UniTask.WaitUntil(() => !AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()));
 
                 if (texture == null)
                 {
@@ -57,7 +59,6 @@ namespace SS3D.Systems.Tile
             for (int i = 0; i < assets.Length; i++)
             {
 #if UNITY_EDITOR
-
                 // If we reach this point... Give up and load a default texture instead
                 if (tempIcons[i] != null)
                     assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
@@ -68,11 +69,9 @@ namespace SS3D.Systems.Tile
                 _assets.Add(assets[i]);
             }
 
+            Punpun.Information(this, "Tile assets loaded");
             IsInitialized = true;
-            yield return null;
         }
-
-        
 
         public GenericObjectSo GetAsset(string assetName)
         {

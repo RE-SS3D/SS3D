@@ -1,5 +1,6 @@
 using System;
 using Coimbra;
+using Cysharp.Threading.Tasks;
 using FishNet;
 using FishNet.Managing;
 using FishNet.Managing.Server;
@@ -19,14 +20,11 @@ namespace SS3D.Core
         /// <summary>
         /// Uses the processed args to proceed with game network initialization
         /// </summary>
-        public void InitializeNetworkSession()
+        public async UniTask InitializeNetworkSession()
         {
+            await UniTask.WaitUntil(() => InstanceFinder.NetworkManager != null);
+
             NetworkManager networkManager = InstanceFinder.NetworkManager;
-            if (networkManager == null)
-            {
-                networkManager = InstanceFinder.NetworkManager;
-                InitializeNetworkSession();
-            }
 
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
