@@ -1571,7 +1571,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 1019513474262773944}
   _networkObjectCache: {fileID: 1019513474262773944}
-  mind: {fileID: 0}
+  _mind: {fileID: 0}
 --- !u!1 &6250850031364791032
 GameObject:
   m_ObjectHideFlags: 0
