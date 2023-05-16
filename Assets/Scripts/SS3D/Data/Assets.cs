@@ -81,6 +81,8 @@ namespace SS3D.Data
         /// </summary>
         public static void LoadAssetDatabases()
         {
+            UnloadAssetDatabases();
+            
             List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
             for (int index = 0; index < assetDatabases.Count; index++)
@@ -90,6 +92,18 @@ namespace SS3D.Data
             }
 
             Punpun.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+        }
+
+        /// <summary>
+        /// Clear out any asset databases that are in the Databases list.
+        /// Needed when we are initializing the application subsequent times (e.g. reconnecting to server)
+        /// </summary>
+        private static void UnloadAssetDatabases()
+        {
+            for (int i = Databases.Count - 1; i >= 0; i--)
+            {
+                Databases.Remove(i);
+            }
         }
 
         /// <summary>

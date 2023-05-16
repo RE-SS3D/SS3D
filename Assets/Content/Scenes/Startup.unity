@@ -239,8 +239,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startInOffline: 1
-  _offlineScene: Assets/Scenes/Startup.unity
-  _onlineScene: Assets/Scenes/Lobby.unity
+  _offlineScene: Assets/Content/Scenes/Startup.unity
+  _onlineScene: Assets/Content/Scenes/Lobby.unity
   _replaceScenes: 0
 --- !u!114 &340427415
 MonoBehaviour:
@@ -1633,7 +1633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021075485018, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -229.99925
+      value: -229.99971
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021573311568, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_OnFocusSelectAll

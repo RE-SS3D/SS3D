@@ -1,6 +1,8 @@
 using DG.Tweening;
 using FishNet;
 using FishNet.Transporting;
+using SS3D.Core;
+using SS3D.Core.Settings;
 using SS3D.Data.Messages;
 using SS3D.Utils;
 using TMPro;
@@ -31,8 +33,8 @@ namespace SS3D.Networking
         
         private void Start()
         {
-            ProcessConnectingToServer();
             Setup();
+            ProcessConnectingToServer();
             SubscribeToEvents();
         }
 
@@ -44,7 +46,9 @@ namespace SS3D.Networking
         private void Setup()
         {
             UpdateMessageText(ApplicationMessages.Network.ConnectingToServer);
-            _buttons.SetActive(false);                            
+            _buttons.SetActive(false);
+            _loadingIcon.gameObject.SetActive(true);
+            _connectionFailed = false;
         }
 
         private void SubscribeToEvents()
@@ -82,13 +86,10 @@ namespace SS3D.Networking
 
         private void OnRetryButtonPressed()
         {
-            _connectionFailed = false;
-            _buttons.SetActive(false);
-            _loadingIcon.gameObject.SetActive(true);
-            UpdateMessageText(ApplicationMessages.Network.ConnectingToServer);
+            Setup();
             ProcessConnectingToServer();
-
-            //new RetryServerConnectionEvent().Invoke(this);
+            SessionNetworkSystem session = Subsystems.Get<SessionNetworkSystem>();
+            session.InitializeNetworkSession();
         }
         
         private void OnServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
