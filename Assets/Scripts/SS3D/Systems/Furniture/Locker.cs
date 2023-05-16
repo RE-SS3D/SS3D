@@ -12,8 +12,32 @@ namespace SS3D.Systems.Furniture
     /// </summary>
     public class Locker : NetworkActor, IInteractionTarget
     {
-        [SyncVar] public bool Locked;
+        [SyncVar(OnChange = nameof(OnLocked))] public bool Locked;
         [SerializeField, SyncVar] private IDPermission permissionToUnlock;
+        public GameObject LockLight;
+        private MaterialPropertyBlock propertyBlock;
+        private Renderer _renderer;
+
+        private void OnLocked(bool prev, bool next, bool asServer)
+        {
+            if(next)
+            {
+                propertyBlock.SetColor("_Color", Color.red);
+                _renderer.SetPropertyBlock(propertyBlock);
+            }
+            else
+            {
+                propertyBlock.SetColor("_Color", Color.green);
+                _renderer.SetPropertyBlock(propertyBlock);
+            }
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            propertyBlock = new MaterialPropertyBlock();
+            _renderer = LockLight.GetComponent<Renderer>();
+        }
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
