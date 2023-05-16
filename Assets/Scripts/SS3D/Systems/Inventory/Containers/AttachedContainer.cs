@@ -172,8 +172,9 @@ namespace SS3D.Systems.Inventory.Containers
             _container.OnContentsChanged += HandleContainerContentsChanged;
         }
 
-        public void OnDestroy()
+        protected override void OnDestroyed()
         {
+            base.OnDestroyed();
             Container?.Purge();
         }
 
