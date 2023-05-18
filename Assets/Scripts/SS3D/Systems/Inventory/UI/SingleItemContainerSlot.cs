@@ -18,6 +18,8 @@ namespace SS3D.Systems.Inventory.UI
     {
         public ItemDisplay ItemDisplay;
 
+        public ContainerType ContainerType;
+
         /// <summary>
         /// The container displayed by this slot.
         /// </summary>

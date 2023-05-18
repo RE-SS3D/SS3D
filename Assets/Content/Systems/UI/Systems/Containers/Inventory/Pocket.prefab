@@ -235,6 +235,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Inventory: {fileID: 0}
   ItemDisplay: {fileID: 5688069808004467082}
+  ContainerType: 1
 --- !u!114 &2842198251171595269
 MonoBehaviour:
   m_ObjectHideFlags: 0
