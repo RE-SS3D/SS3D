@@ -37,6 +37,13 @@ public class InventoryAlt : NetworkActor
 
     public int CountHands => OnPlayerContainers.Where(x => x.Type == ContainerType.Hand).Count();
 
+    protected override void OnAwake()
+    {
+        base.OnAwake();
+
+        Hands.Inventory = this;
+    }
+
     protected override void OnStart()
     {
         base.OnStart();

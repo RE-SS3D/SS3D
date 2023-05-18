@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 15
+  _componentIndexCache: 16
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -4517,7 +4517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 13
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -6393,6 +6393,7 @@ MonoBehaviour:
   - {fileID: 5429108461815527728}
   - {fileID: 5004243816591034345}
   - {fileID: 8048937800314992608}
+  - {fileID: 2150560678942863610}
   - {fileID: 5566468530025106438}
   - {fileID: 2045751309335634097}
   - {fileID: 5707557726176584075}
@@ -6742,13 +6743,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ace7b9d7c75cbb4ca57c876f0b3b644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   HandContainers:
   - {fileID: 4140518851396729342}
   - {fileID: 7144090709710962679}
   handRange: 5
+  SelectedColor: {r: 1, g: 0.9764151, b: 0.9764151, a: 1}
   range:
     Horizontal: 1.5
     Vertical: 1
@@ -7162,7 +7164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 14
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -8973,7 +8975,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 16
+  _componentIndexCache: 17
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -9211,7 +9213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 17
+  _componentIndexCache: 18
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0

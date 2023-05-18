@@ -7,8 +7,10 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
@@ -22,6 +24,9 @@ namespace SS3D.Systems.Inventory.Containers
 
         [NonSerialized]
         public InventoryAlt Inventory;
+
+        public Color SelectedColor;
+        private Color _defaultColor;
 
         public int SelectedHandIndex { get; private set; }
         public RangeLimit range = new(1.5f, 1);
@@ -53,14 +58,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
-        public HandsViewAlt HandsView { get; private set; }
-
         protected override void OnAwake()
         {
             base.OnAwake();
-            HandsView = FindObjectOfType<HandsViewAlt>(true);
-            HandsView.Hands = this;
-
             SupportsMultipleInteractions = true;
         }
 
@@ -71,6 +71,7 @@ namespace SS3D.Systems.Inventory.Containers
             _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
+            SetHandHighlight(SelectedHandIndex, true);
         }
 
         protected override void OnDestroyed()
@@ -135,8 +136,10 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 return;
             }
+            int oldSelectedHandIndex = SelectedHandIndex;
             SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
             OnHandChanged?.Invoke(SelectedHandIndex);
+            HighLightChanged(oldSelectedHandIndex);
             CmdSetActiveHand(SelectedHandIndex);
         }
 
@@ -157,10 +160,12 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            int oldSelectedHandIndex = SelectedHandIndex;
             SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
             if (SelectedHandIndex != -1)
             {
                 OnHandChanged?.Invoke(SelectedHandIndex);
+                HighLightChanged(oldSelectedHandIndex);
                 CmdSetActiveHand(SelectedHandIndex);
             }
             else
@@ -222,5 +227,37 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         public Vector3 InteractionOrigin => interactionOrigin.position;
+
+
+        //TODO : put that in inventory view ?
+        private void HighLightChanged(int oldIndex)
+        {
+            if (SelectedHandIndex != -1)
+            {
+                SetHandHighlight(oldIndex, false);
+            }
+
+            SetHandHighlight(SelectedHandIndex, true);
+        }
+
+        //TODO : put that in inventory view ?
+        private void SetHandHighlight(int index, bool highlight)
+        {
+            Transform child = Inventory.InventoryView.GetHandSlot(index);
+            Button button = child.GetComponent<Button>();
+            ColorBlock buttonColors = button.colors;
+            if (highlight)
+            {
+                _defaultColor = buttonColors.normalColor;
+                buttonColors.normalColor = SelectedColor;
+                buttonColors.highlightedColor = SelectedColor; // The selected hand keeps the same color, highlighted or not.
+            }
+            else
+            {
+                buttonColors.normalColor = _defaultColor;
+            }
+
+            button.colors = buttonColors;
+        }
     }
 }
