@@ -107,8 +107,23 @@ namespace SS3D.Systems.Inventory.UI
             return ID.GetComponent<SingleItemContainerSlotAlt>();
         }
 
+        public Transform GetHandSlot(int index)
+        {
+            int childIndex = 0;
+            for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
+            {
+                var childTransform = HorizontalLayout.transform.GetChild(i);
+                if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlotAlt slot) && slot.ContainerType == ContainerType.Hand)
+                {
+                    break;
+                }
+                childIndex++;
+            }
+            return HorizontalLayout.transform.GetChild(index+childIndex);
+        }
 
-        void OnInventoryContainerRemoved(AttachedContainer container)
+
+            void OnInventoryContainerRemoved(AttachedContainer container)
         {
 
         }

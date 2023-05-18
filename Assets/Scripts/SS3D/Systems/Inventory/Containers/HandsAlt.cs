@@ -21,7 +21,7 @@ namespace SS3D.Systems.Inventory.Containers
         private Controls.HotkeysActions _controls;
 
         [NonSerialized]
-        public Inventory Inventory;
+        public InventoryAlt Inventory;
 
         public int SelectedHandIndex { get; private set; }
         public RangeLimit range = new(1.5f, 1);

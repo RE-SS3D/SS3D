@@ -13,8 +13,6 @@ namespace SS3D.Systems.Inventory.UI
     /// </summary>
     public class HandsViewAlt : View
     {
-
-        public Transform HandsContainer;
         public Color SelectedColor;
 
         /// <summary>
@@ -53,7 +51,7 @@ namespace SS3D.Systems.Inventory.UI
 
         private void SetHandHighlight(int index, bool highlight)
         {
-            Transform child = HandsContainer.transform.GetChild(index);
+            Transform child = Hands.Inventory.InventoryView.GetHandSlot(index);
             Button button = child.GetComponent<Button>();
             ColorBlock buttonColors = button.colors;
             if (highlight)

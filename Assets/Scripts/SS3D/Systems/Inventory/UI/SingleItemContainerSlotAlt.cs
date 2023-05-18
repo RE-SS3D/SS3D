@@ -45,7 +45,7 @@ namespace SS3D.Systems.Inventory.UI
         /// and the displayed sprite inside the slot.
         /// Does nothing if the slot already has an item.
         /// </summary>
-        public override void OnItemDisplayDrop(ItemDisplay display)
+        public override void OnItemDisplayDrop(ItemDisplayAlt display)
         {
             if (!_container.Container.Empty)
             {

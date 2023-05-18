@@ -2,6 +2,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using SS3D.Logging;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -13,7 +14,7 @@ namespace SS3D.Systems.Inventory.UI
         /// Called when an item is being dropped onto this display
         /// </summary>
         /// <param name="display"></param>
-        public abstract void OnItemDisplayDrop(ItemDisplay display);
+        public abstract void OnItemDisplayDrop(ItemDisplayAlt display);
 
         /// <summary>
         /// Called when an item is dragged and dropped outside
@@ -33,9 +34,10 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            ItemDisplay display = drag.GetComponent<ItemDisplay>();
+            ItemDisplayAlt display = drag.GetComponent<ItemDisplayAlt>();
             if (display == null)
             {
+                Punpun.Warning(this, "dragging on null display");
                 return;
             }
 
