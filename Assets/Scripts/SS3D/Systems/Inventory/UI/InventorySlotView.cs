@@ -32,26 +32,17 @@ namespace SS3D.Systems.Inventory.UI
             DestroyImmediate(RightPocketGameObject);
 
             // Find all containers with type Pocket on the Human prefab.
-            AttachedContainer[] inventoryContainers = Inventory.GetComponentsInChildren<AttachedContainer>(true);
+            AttachedContainer[] inventoryContainers = Inventory.GetComponentsInChildren<AttachedContainer>(false);
             
             List<AttachedContainer> pocketContainers = inventoryContainers.Where(container => container.Type is ContainerType.Pocket).ToList();
             AttachedContainer idSlotContainer = inventoryContainers.Where(container => container.Type is ContainerType.Identification).FirstOrDefault();
 
-            if (pocketContainers.Count == 0)
+            if (idSlotContainer)
             {
-                throw new ApplicationException("no container of type pocket in " +
-                    "the inventory's game object or any of it's children.");
+                // Set up the container for the id slot display and make it the first slot.
+                var idSlot = SetUpSlot(idSlotContainer, IDSlotPrefab);
+                idSlot.transform.SetSiblingIndex(0);
             }
-
-            if (idSlotContainer == null)
-            {
-                throw new ApplicationException("no container of type identification in " +
-                    "the inventory's game object or any of it's children.");
-            }
-
-            // Set up the container for the id slot display and make it the first slot.
-            var idSlot = SetUpSlot(idSlotContainer, IDSlotPrefab);
-            idSlot.transform.SetSiblingIndex(0);
 
             // Set up the container that each pocket display.
             foreach (AttachedContainer container in pocketContainers)
