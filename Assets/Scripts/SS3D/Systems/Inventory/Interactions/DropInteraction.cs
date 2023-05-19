@@ -25,7 +25,7 @@ namespace SS3D.Systems.Inventory.Interactions
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
 	        // if the interaction source's parent is not a hand we return false
-            if (interactionEvent.Source.GetRootSource() is not HandsAlt)
+            if (interactionEvent.Source.GetRootSource() is not Hands)
             {
                 return false;
             }
@@ -37,7 +37,7 @@ namespace SS3D.Systems.Inventory.Interactions
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
 	        // we check if the source of the interaction is a hand
-            if (interactionEvent.Source.GetRootSource() is HandsAlt hands)
+            if (interactionEvent.Source.GetRootSource() is Hands hands)
             {
 		        // we place the item in the hand in the point we clicked
                 hands.PlaceHeldItem(interactionEvent.Point, hands.ItemInHand.transform.rotation);

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3580911569868326670}
-  - component: {fileID: 8075866415886715468}
   - component: {fileID: 7202489519264981351}
   - component: {fileID: 1219448048532882030}
+  - component: {fileID: 1857745493546727637}
   m_Layer: 0
   m_Name: ItemImage
   m_TagString: Untagged
@@ -39,20 +39,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8075866415886715468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3473020286107453635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5f0b68c728547db936bfea5b7969ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ItemImage: {fileID: 1219448048532882030}
-  _item: {fileID: 0}
 --- !u!222 &7202489519264981351
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -91,6 +77,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1857745493546727637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3473020286107453635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2b2e863b1d33f1408d51dfcf60dcfcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemImage: {fileID: 1219448048532882030}
+  _item: {fileID: 0}
 --- !u!1 &8813745936969960694
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +407,7 @@ GameObject:
   - component: {fileID: 8813745938857574652}
   - component: {fileID: 7418682910163242937}
   - component: {fileID: 1646060852457426498}
-  - component: {fileID: -7378768192968544479}
+  - component: {fileID: 8061433699169130659}
   m_Layer: 5
   m_Name: RightHand
   m_TagString: Untagged
@@ -525,7 +525,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &-7378768192968544479
+--- !u!114 &8061433699169130659
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -534,11 +534,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8813745938857574655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24536e27af2844ae85184b7e28088eb6, type: 3}
+  m_Script: {fileID: 11500000, guid: ae78ba0b7047f0942a09c576ba932f3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Inventory: {fileID: 0}
-  ItemDisplay: {fileID: 8075866415886715468}
+  ItemDisplay: {fileID: 1857745493546727637}
   ContainerType: 2
 --- !u!1 &8813745938952567448
 GameObject:

@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
             // if the target is whatever the hell Alain did
             // and the part that matters, if the interaction source is a hand
-            if (target is IGameObjectProvider targetBehaviour && source is HandsAlt hands)
+            if (target is IGameObjectProvider targetBehaviour && source is Hands hands)
             {
 		        // if the selected hand is not empty we return false
                 if (hands.SelectedHandEmpty)
@@ -62,7 +62,7 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             // remember that when we call this Start, we are starting the interaction per se
             // so we check if the source of the interaction is a Hand, and if the target is an Item
-            if (interactionEvent.Source is HandsAlt hands && interactionEvent.Target is Item target)
+            if (interactionEvent.Source is Hands hands && interactionEvent.Target is Item target)
             {
                 // and then we run the function that adds it to the container
                 hands.Pickup(target);

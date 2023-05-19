@@ -166,7 +166,9 @@ namespace SS3D.Systems.Roles
             ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
-            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
+            if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
+
+            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, container);
             Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
 
             PDA pda = (PDA)pdaItem;
@@ -197,8 +199,12 @@ namespace SS3D.Systems.Roles
 
             SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
             SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);
-            SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, inventory.LeftPocketContainer);
-            SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, inventory.RightPocketContainer);
+
+            if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 0, out AttachedContainer LeftPocketContainer)) return;
+            SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, LeftPocketContainer);
+
+            if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 1, out AttachedContainer RightPocketContainer)) return;
+            SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, RightPocketContainer);
         }
 
         /// <summary>

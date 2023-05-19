@@ -15,7 +15,7 @@ namespace SS3D.Systems.Inventory.UI
     public class InventoryViewAlt : View
     {
 
-        public InventoryAlt Inventory;
+        public Containers.Inventory Inventory;
         public GameObject PocketPrefab;
         public GameObject IDSlotPrefab;
         public GameObject HandLeftPrefab;
@@ -37,7 +37,7 @@ namespace SS3D.Systems.Inventory.UI
 
         // Maybe HandsUI should only handle selected hand highlight and inventory UI
         // should handle setting up containers to UI.
-        public void Setup(InventoryAlt inventory)
+        public void Setup(Containers.Inventory inventory)
         {
             Inventory = inventory;
             inventory.OnInventoryContainerAdded += OnInventoryContainerAdded;
@@ -52,7 +52,7 @@ namespace SS3D.Systems.Inventory.UI
 
         void OnInventoryContainerAdded(AttachedContainer container)
         {
-            SingleItemContainerSlotAlt slot;
+            SingleItemContainerSlot slot;
             switch (container.Type)
             {
                 case ContainerType.Hand:
@@ -76,7 +76,7 @@ namespace SS3D.Systems.Inventory.UI
             slot.Inventory = Inventory;
         }
 
-        private SingleItemContainerSlotAlt AddHandSlot()
+        private SingleItemContainerSlot AddHandSlot()
         {
             GameObject hand;
             if (Inventory.CountHands % 2 == 0)
@@ -91,33 +91,33 @@ namespace SS3D.Systems.Inventory.UI
             for(int i=0; i< HorizontalLayout.transform.childCount; i++)
             {
                 var childTransform = HorizontalLayout.transform.GetChild(i);
-                if(childTransform.gameObject.TryGetComponent(out SingleItemContainerSlotAlt slot) && slot.ContainerType == ContainerType.Pocket)
+                if(childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == ContainerType.Pocket)
                 {
                     hand.transform.SetSiblingIndex(i);
                     break;
                 }
             }
 
-            return hand.GetComponent<SingleItemContainerSlotAlt>();
+            return hand.GetComponent<SingleItemContainerSlot>();
         }
 
         
-        private SingleItemContainerSlotAlt AddPocketSlot()
+        private SingleItemContainerSlot AddPocketSlot()
         {
             GameObject pocket = Instantiate(PocketPrefab, transform);
             pocket.transform.parent = HorizontalLayout.transform;
             // Pocket go  to the far right of the UI.
             pocket.transform.SetAsLastSibling();
-            return pocket.GetComponent<SingleItemContainerSlotAlt>();
+            return pocket.GetComponent<SingleItemContainerSlot>();
         }
 
-        private SingleItemContainerSlotAlt AddIdentificationSlot()
+        private SingleItemContainerSlot AddIdentificationSlot()
         {
             GameObject ID = Instantiate(IDSlotPrefab, transform);
             ID.transform.parent = HorizontalLayout.transform;
             // ID slots go  to the far left of the UI.
             ID.transform.SetAsFirstSibling();
-            return ID.GetComponent<SingleItemContainerSlotAlt>();
+            return ID.GetComponent<SingleItemContainerSlot>();
         }
 
         public Transform GetHandSlot(int index)
@@ -126,7 +126,7 @@ namespace SS3D.Systems.Inventory.UI
             for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
             {
                 var childTransform = HorizontalLayout.transform.GetChild(i);
-                if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlotAlt slot) && slot.ContainerType == ContainerType.Hand)
+                if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == ContainerType.Hand)
                 {
                     break;
                 }

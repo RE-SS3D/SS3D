@@ -6,15 +6,15 @@ using SS3D.Logging;
 
 namespace SS3D.Systems.Inventory.UI
 {
-    public abstract class InventoryDisplayElementAlt : MonoBehaviour, IDropHandler
+    public abstract class InventoryDisplayElement : MonoBehaviour, IDropHandler
     {
-        public InventoryAlt Inventory;
+        public Containers.Inventory Inventory;
 
         /// <summary>
         /// Called when an item is being dropped onto this display
         /// </summary>
         /// <param name="display"></param>
-        public abstract void OnItemDisplayDrop(ItemDisplayAlt display);
+        public abstract void OnItemDisplayDrop(ItemDisplay display);
 
         /// <summary>
         /// Called when an item is dragged and dropped outside
@@ -34,7 +34,7 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            ItemDisplayAlt display = drag.GetComponent<ItemDisplayAlt>();
+            ItemDisplay display = drag.GetComponent<ItemDisplay>();
             if (display == null)
             {
                 Punpun.Warning(this, "dragging on null display");

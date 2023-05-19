@@ -1,13 +1,9 @@
 fileFormatVersion: 2
-guid: 46ab3cb89c7847cfb2ebdf67e0f925ee
+guid: 2312bce62c1ec0a469d1c904f8697ec5
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - Inventory: {instanceID: 0}
-  - ItemSlotPrefab: {instanceID: 0}
-  - ItemDisplayPrefab: {fileID: 6875637879080599341, guid: 13ace5ea9c4528a40a42437a30ca9925, type: 3}
-  - AttachedContainer: {instanceID: 0}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

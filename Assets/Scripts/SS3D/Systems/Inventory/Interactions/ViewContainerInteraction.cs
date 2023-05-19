@@ -41,7 +41,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            var inventory = interactionEvent.Source.GetComponentInTree<InventoryAlt>();
+            var inventory = interactionEvent.Source.GetComponentInTree<Containers.Inventory>();
             if (inventory == null)
             {
                 return false;
@@ -52,12 +52,12 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 return false;
             }
-            return !inventory.HasContainer(AttachedContainer) && entity.GetComponent<HandsAlt>().CanInteract(AttachedContainer.gameObject);
+            return !inventory.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().CanInteract(AttachedContainer.gameObject);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            var inventory = interactionEvent.Source.GetComponentInTree<InventoryAlt>();
+            var inventory = interactionEvent.Source.GetComponentInTree<Containers.Inventory>();
 
             inventory.OpenContainer(AttachedContainer);
 
