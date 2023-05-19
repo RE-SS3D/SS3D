@@ -15,7 +15,7 @@ using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    [RequireComponent(typeof(Inventory))]
+    [RequireComponent(typeof(InventoryAlt))]
     public class HandsAlt : InteractionSource, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
         [SerializeField] public AttachedContainer[] HandContainers;
