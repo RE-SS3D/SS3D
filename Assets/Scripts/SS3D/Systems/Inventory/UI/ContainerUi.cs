@@ -8,12 +8,12 @@ namespace SS3D.Systems.Inventory.UI
 {
     public class ContainerUi : MonoBehaviour
     {
-        public ItemGrid Grid;
+        public ItemGridAlt Grid;
         public Text ContainerName;
 
         private AttachedContainer _attachedContainer;
 
-        public Containers.Inventory Inventory
+        public InventoryAlt Inventory
         {
             set => Grid.Inventory = value;
             get => Grid.Inventory;

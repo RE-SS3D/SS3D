@@ -16,7 +16,7 @@ namespace SS3D.Systems.Inventory.UI
         [NonSerialized] public bool ShouldDrop;
         [NonSerialized] public Vector3 OldPosition;
 
-        protected InventoryDisplayElement InventoryDisplayElement;
+        protected InventoryDisplayElementAlt InventoryDisplayElement;
         
         [SerializeField] private Item _item;
         private Transform _oldParent;
@@ -85,7 +85,7 @@ namespace SS3D.Systems.Inventory.UI
             _oldParent = transform.parent;
             if (InventoryDisplayElement == null)
             {
-                InventoryDisplayElement = _oldParent.GetComponentInParent<InventoryDisplayElement>();
+                InventoryDisplayElement = _oldParent.GetComponentInParent<InventoryDisplayElementAlt>();
             }
             
             OldPosition = GetComponent<RectTransform>().localPosition;

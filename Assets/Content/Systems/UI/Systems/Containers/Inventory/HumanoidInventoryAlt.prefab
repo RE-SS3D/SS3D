@@ -121,3 +121,5 @@ MonoBehaviour:
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
   HorizontalLayout: {fileID: 2251930788393684556}
   Slots: []
+  ContainerUiPrefab: {fileID: 176838957447208628, guid: c706a5a7a16b7bc4788469385ac24801, type: 3}
+  _uiPanel: {fileID: 2251930788393684556}

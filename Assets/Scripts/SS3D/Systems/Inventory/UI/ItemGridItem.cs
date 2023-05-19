@@ -7,7 +7,7 @@ namespace SS3D.Systems.Inventory.UI
         public override void OnDropAccepted()
         {
             base.OnDropAccepted();
-            (InventoryDisplayElement as ItemGrid)?.RemoveGridItem(this);
+            (InventoryDisplayElement as ItemGridAlt)?.RemoveGridItem(this);
             gameObject.Dispose(true);
         }
     }
