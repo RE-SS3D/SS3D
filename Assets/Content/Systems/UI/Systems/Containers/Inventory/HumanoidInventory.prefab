@@ -72,7 +72,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4452887637558266342}
-  - component: {fileID: 1075094444162690472}
+  - component: {fileID: 5701699517036633129}
+  - component: {fileID: 4416089188971054470}
   m_Layer: 0
   m_Name: HumanoidInventory
   m_TagString: Untagged
@@ -101,7 +102,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1075094444162690472
+--- !u!114 &5701699517036633129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6178539299263414650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8609ee7f492f8e44bb25beb1eee6697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerViewer: {fileID: 0}
+  ContainerUiPrefab: {fileID: 176838957447208628, guid: c706a5a7a16b7bc4788469385ac24801, type: 3}
+--- !u!114 &4416089188971054470
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,5 +136,4 @@ MonoBehaviour:
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
   HorizontalLayout: {fileID: 2251930788393684556}
   Slots: []
-  ContainerUiPrefab: {fileID: 176838957447208628, guid: c706a5a7a16b7bc4788469385ac24801, type: 3}
-  _uiPanel: {fileID: 2251930788393684556}
+  ContainerUiPrefab: {fileID: 0}
