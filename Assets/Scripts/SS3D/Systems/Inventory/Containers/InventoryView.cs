@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 using SS3D.Logging;
+using UnityEngine.XR;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -76,18 +77,27 @@ namespace SS3D.Systems.Inventory.UI
 
             hand.transform.parent = HorizontalLayout.transform;
 
-            // Put the hand containers just before the pocket containers.
-            for(int i=0; i< HorizontalLayout.transform.childCount; i++)
-            {
-                var childTransform = HorizontalLayout.transform.GetChild(i);
-                if(childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == ContainerType.Pocket)
-                {
-                    hand.transform.SetSiblingIndex(i);
-                    break;
-                }
-            }
+            // Put the hand containers just before the pocket slots.
+            hand.transform.SetSiblingIndex(FirstIndexSlotOfType(ContainerType.Pocket));
 
             return hand.GetComponent<SingleItemContainerSlot>();
+        }
+
+        /// <summary>
+        /// Returns the game object sibling index of the first game object being a SingleContainerSlot and having a given ContainerType.
+        /// </summary>
+        /// <returns> Index 0 if no slot with container type given is found, otherwise the first index slot of the given type.</returns>
+        private int FirstIndexSlotOfType(ContainerType type)
+        {
+            for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
+            {
+                var childTransform = HorizontalLayout.transform.GetChild(i);
+                if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == type)
+                {
+                    return i;
+                }
+            }
+            return 0;
         }
 
         
@@ -109,6 +119,11 @@ namespace SS3D.Systems.Inventory.UI
             return ID.GetComponent<SingleItemContainerSlot>();
         }
 
+        /// <summary>
+        /// Get the transform of a hand slot game object.
+        /// </summary>
+        /// <param name="index"> The index of the hand slot, necessary as multiple hand slots can be on a player. </param>
+        /// <returns> The transform of the hand slot at the specified index.</returns>
         public Transform GetHandSlot(int index)
         {
             int childIndex = 0;
