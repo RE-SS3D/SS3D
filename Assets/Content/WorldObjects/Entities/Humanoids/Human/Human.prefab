@@ -6687,7 +6687,7 @@ MonoBehaviour:
   - {fileID: 4140518851396729342}
   - {fileID: 7144090709710962679}
   handRange: 5
-  SelectedColor: {r: 1, g: 0.9764151, b: 0.9764151, a: 1}
+  SelectedColor: {r: 1, g: 0.9764151, b: 0.9764151, a: 0.2784314}
   range:
     Horizontal: 1.5
     Vertical: 1
@@ -6709,7 +6709,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   inventory: {fileID: 1089183168752255729}
-  containerView: {fileID: 0}
 --- !u!114 &1089183168752255729
 MonoBehaviour:
   m_ObjectHideFlags: 0
