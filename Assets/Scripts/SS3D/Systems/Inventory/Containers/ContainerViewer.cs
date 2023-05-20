@@ -29,8 +29,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         public HumanInventory inventory;
 
-        public ContainerView containerView;
-
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -40,7 +38,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         private void SetupView()
         {
-            containerView = ViewLocator.Get<ContainerView>().First();
+            var containerView = ViewLocator.Get<ContainerView>().First();
             containerView.Setup(this);
         }
         /// <summary>

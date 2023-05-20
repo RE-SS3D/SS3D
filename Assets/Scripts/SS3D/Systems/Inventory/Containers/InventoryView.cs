@@ -139,6 +139,13 @@ namespace SS3D.Systems.Inventory.UI
                 }
                 childIndex++;
             }
+
+            if(index+childIndex >= HorizontalLayout.transform.childCount)
+            {
+                Punpun.Warning(this, "index out of bound, check that the number of hand slots is greater than index.");
+                return null;
+            }
+
             return HorizontalLayout.transform.GetChild(index+childIndex);
         }
 

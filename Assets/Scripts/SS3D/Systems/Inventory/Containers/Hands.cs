@@ -243,7 +243,7 @@ namespace SS3D.Systems.Inventory.Containers
         //TODO : put that in inventory view ?
         private void SetHandHighlight(int index, bool highlight)
         {
-            Transform child = Inventory.InventoryView.GetHandSlot(index);
+            Transform child = ViewLocator.Get<InventoryView>().First().GetHandSlot(index);
             Button button = child.GetComponent<Button>();
             ColorBlock buttonColors = button.colors;
             if (highlight)

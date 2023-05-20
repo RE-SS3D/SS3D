@@ -26,11 +26,11 @@ namespace SS3D.Systems.Inventory.UI
 
         // Maybe HandsUI should only handle selected hand highlight and inventory UI
         // should handle setting up containers to UI.
-        public void Setup(ContainerViewer inventory)
+        public void Setup(ContainerViewer viewer)
         {
-            containerViewer = inventory;
-            inventory.OnContainerOpened += InventoryOnContainerOpened;
-            inventory.OnContainerClosed += InventoryOnContainerClosed;
+            containerViewer = viewer;
+            viewer.OnContainerOpened += InventoryOnContainerOpened;
+            viewer.OnContainerClosed += InventoryOnContainerClosed;
         }
 
         /// <summary>

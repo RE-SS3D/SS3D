@@ -30,8 +30,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         public event InventoryContainerUpdated OnInventoryContainerRemoved;
 
-        public InventoryView InventoryView { get; private set; }
-
         public ContainerViewer containerViewer;
 
         /// <summary>
@@ -96,8 +94,8 @@ namespace SS3D.Systems.Inventory.Containers
 
         private void SetupView()
         {
-            InventoryView = ViewLocator.Get<InventoryView>().First();
-            InventoryView.Setup(this);
+            var inventoryView = ViewLocator.Get<InventoryView>().First();
+            inventoryView.Setup(this);
         }
 
         public void AddContainer(AttachedContainer container)
