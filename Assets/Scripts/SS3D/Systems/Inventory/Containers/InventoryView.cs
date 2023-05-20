@@ -13,6 +13,9 @@ using UnityEngine.XR;
 
 namespace SS3D.Systems.Inventory.UI
 {
+    /// <summary>
+    /// This handles displaying, removing, adding the container slots in the inventory of the player.
+    /// </summary>
     public class InventoryView : View
     {
 
