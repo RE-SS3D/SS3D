@@ -10,6 +10,7 @@ using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 using SS3D.Logging;
 using UnityEngine.XR;
+using UnityEngine.UI;
 
 namespace SS3D.Systems.Inventory.UI
 {

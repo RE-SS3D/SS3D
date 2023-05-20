@@ -58,20 +58,22 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
-        protected override void OnAwake()
+        public void SetInventory(HumanInventory inventory)
         {
-            base.OnAwake();
-            SupportsMultipleInteractions = true;
+            Inventory = inventory;
+            Inventory.OnInventorySetUp += OnInventorySetUp;
         }
 
-        protected override void OnStart()
+        private void OnInventorySetUp()
         {
-            base.OnStart();
+            SetHandHighlight(SelectedHandIndex, true);
 
             _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
-            SetHandHighlight(SelectedHandIndex, true);
+            SupportsMultipleInteractions = true;
+
+            Inventory.OnInventorySetUp -= OnInventorySetUp;
         }
 
         protected override void OnDestroyed()
@@ -229,7 +231,6 @@ namespace SS3D.Systems.Inventory.Containers
         public Vector3 InteractionOrigin => interactionOrigin.position;
 
 
-        //TODO : put that in inventory view ?
         private void HighLightChanged(int oldIndex)
         {
             if (SelectedHandIndex != -1)
@@ -240,11 +241,10 @@ namespace SS3D.Systems.Inventory.Containers
             SetHandHighlight(SelectedHandIndex, true);
         }
 
-        //TODO : put that in inventory view ?
         private void SetHandHighlight(int index, bool highlight)
         {
-            Transform child = ViewLocator.Get<InventoryView>().First().GetHandSlot(index);
-            Button button = child.GetComponent<Button>();
+            Transform handSlot = ViewLocator.Get<InventoryView>().First().GetHandSlot(index);
+            Button button = handSlot.GetComponent<Button>();
             ColorBlock buttonColors = button.colors;
             if (highlight)
             {

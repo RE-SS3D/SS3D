@@ -25,10 +25,13 @@ namespace SS3D.Systems.Inventory.Containers
         
 
         public delegate void InventoryContainerUpdated(AttachedContainer container);
+        public delegate void Notify();
 
         public event InventoryContainerUpdated OnInventoryContainerAdded;
 
         public event InventoryContainerUpdated OnInventoryContainerRemoved;
+
+        public event Notify OnInventorySetUp;
 
         public ContainerViewer containerViewer;
 
@@ -72,16 +75,17 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnAwake()
         {
             base.OnAwake();
-
-            Hands.Inventory = this;
-
+            Hands.SetInventory(this);
         }
-
-
 
         protected override void OnStart()
         {
             base.OnStart();
+            SetUp();
+        }
+
+        private void SetUp()
+        {
             // Start by adding all containers on the human in the inventory
             SetupView();
             var attachedContainers = GetComponentsInChildren<AttachedContainer>();
@@ -90,6 +94,7 @@ namespace SS3D.Systems.Inventory.Containers
                 AddContainer(container);
             }
             Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+            OnInventorySetUp?.Invoke();
         }
 
         private void SetupView()
