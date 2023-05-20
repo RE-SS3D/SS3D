@@ -13,7 +13,7 @@ namespace SS3D.Systems.Inventory.UI
 
         private AttachedContainer _attachedContainer;
 
-        public Containers.Inventory Inventory
+        public HumanInventory Inventory
         {
             set => Grid.Inventory = value;
             get => Grid.Inventory;

@@ -164,7 +164,7 @@ namespace SS3D.Systems.Roles
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
             ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
-            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
@@ -195,7 +195,7 @@ namespace SS3D.Systems.Roles
         private void SpawnLoadoutItems(Entity entity, RoleLoadout loadout)
         {
             Hands hands = entity.GetComponent<Hands>();
-            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
             SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);

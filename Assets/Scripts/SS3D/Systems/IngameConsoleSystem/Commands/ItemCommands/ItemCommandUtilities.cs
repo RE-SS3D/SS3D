@@ -19,7 +19,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return null;
             }
 
-            Hands hands = playerEntity.GetComponentInParent<Inventory.Containers.Inventory>().Hands;
+            Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;
             return hands.ItemInHand;
         }
     }

@@ -8,7 +8,7 @@ namespace SS3D.Systems.Inventory.UI
 {
     public abstract class InventoryDisplayElement : MonoBehaviour, IDropHandler
     {
-        public Containers.Inventory Inventory;
+        public HumanInventory Inventory;
 
         /// <summary>
         /// Called when an item is being dropped onto this display

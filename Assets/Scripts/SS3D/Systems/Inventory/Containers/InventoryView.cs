@@ -19,7 +19,7 @@ namespace SS3D.Systems.Inventory.UI
     public class InventoryView : View
     {
 
-        public Containers.Inventory Inventory;
+        public HumanInventory Inventory;
         public GameObject PocketPrefab;
         public GameObject IDSlotPrefab;
         public GameObject HandLeftPrefab;
@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.UI
 
         // Maybe HandsUI should only handle selected hand highlight and inventory UI
         // should handle setting up containers to UI.
-        public void Setup(Containers.Inventory inventory)
+        public void Setup(HumanInventory inventory)
         {
             Inventory = inventory;
             inventory.OnInventoryContainerAdded += OnInventoryContainerAdded;

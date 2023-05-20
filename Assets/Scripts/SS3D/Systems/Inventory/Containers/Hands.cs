@@ -15,7 +15,7 @@ using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    [RequireComponent(typeof(Inventory))]
+    [RequireComponent(typeof(HumanInventory))]
     public class Hands : InteractionSource, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
         [SerializeField] public AttachedContainer[] HandContainers;
@@ -23,7 +23,7 @@ namespace SS3D.Systems.Inventory.Containers
         private Controls.HotkeysActions _controls;
 
         [NonSerialized]
-        public Inventory Inventory;
+        public HumanInventory Inventory;
 
         public Color SelectedColor;
         private Color _defaultColor;

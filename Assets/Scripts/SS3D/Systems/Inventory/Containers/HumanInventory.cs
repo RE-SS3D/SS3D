@@ -17,7 +17,7 @@ using System.Collections;
 namespace SS3D.Systems.Inventory.Containers
 {
 
-    public class Inventory : NetworkActor
+    public class HumanInventory : NetworkActor
     {
 
         public List<AttachedContainer> OnPlayerContainers = new();

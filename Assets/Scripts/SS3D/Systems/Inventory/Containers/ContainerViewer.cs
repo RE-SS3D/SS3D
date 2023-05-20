@@ -27,7 +27,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         private readonly List<AttachedContainer> _openedContainers = new();
 
-        public Inventory inventory;
+        public HumanInventory inventory;
 
         public ContainerView containerView;
 
