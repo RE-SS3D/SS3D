@@ -14,15 +14,16 @@ using SS3D.Systems.Inventory.UI;
 using SS3D.Systems.Roles;
 using UnityEngine;
 using System.Collections;
+using FishNet.Object.Synchronizing;
+using System.ComponentModel;
+
 namespace SS3D.Systems.Inventory.Containers
 {
 
     public class HumanInventory : NetworkActor
     {
-
-        public List<AttachedContainer> OnPlayerContainers = new();
-
-        
+        [SyncObject]
+        public readonly SyncList<AttachedContainer> OnPlayerContainers = new();
 
         public delegate void InventoryContainerUpdated(AttachedContainer container);
         public delegate void Notify();
@@ -48,8 +49,8 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="index">The position of the container for a given type, if there's two pocket containers, it'd be 0 and 1</param>
-        /// <param name="IDContainer"></param>
+        /// <param name="position">The position of the container for a given type, if there's two pocket containers, it'd be 0 and 1</param>
+        /// <param name="typeContainer"> The container we want back.</param>
         /// <returns></returns>
         public bool TryGetTypeContainer(ContainerType type, int position, out AttachedContainer typeContainer) 
         {
@@ -70,45 +71,102 @@ namespace SS3D.Systems.Inventory.Containers
             return false;
         }
 
-        public int CountHands => OnPlayerContainers.Where(x => x.Type == ContainerType.Hand).Count();
-
         protected override void OnAwake()
         {
-            base.OnAwake();
-            Hands.SetInventory(this);
+            OnPlayerContainers.OnChange += InventoryContainerOnChange;
         }
 
-        protected override void OnStart()
+        /// <summary>
+        /// Called on server and client whenever there's an operation on the attached Container synclist.
+        /// </summary>
+        [Server]
+        private void InventoryContainerOnChange(SyncListOperation op, int index, AttachedContainer oldContainer, AttachedContainer newContainer, bool asServer)
         {
-            base.OnStart();
-            SetUp();
+            switch (op)
+            {
+                case SyncListOperation.Add:
+                    OnInventoryContainerAdded?.Invoke(newContainer);
+                    break;
+            }
         }
 
-        private void SetUp()
+        public int CountHands => OnPlayerContainers.Where(x => x.Type == ContainerType.Hand).Count();
+
+        public override void OnStartClient()
         {
-            // Start by adding all containers on the human in the inventory
-            SetupView();
+            base.OnStartClient();
+            if (Owner.IsLocalClient)
+            {
+                Hands.SetInventory(this);
+                SetupView();
+            }
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            SetUpContainers();
+        }
+
+        /// <summary>
+        /// Called after OnStartServer, observers are guaranteed to be set up here.
+        /// </summary>
+        public override void OnSpawnServer(NetworkConnection connection)
+        {
+            base.OnSpawnServer(connection);
+            RpcGiveRoleLoadout(Owner);
+            RpcInvokeInventorySetUp(Owner);
+        }
+
+        /// <summary>
+        /// Get the attached container on the Human prefab and put them in this inventory.
+        /// </summary>
+        [Server]
+        private void SetUpContainers()
+        {
             var attachedContainers = GetComponentsInChildren<AttachedContainer>();
             foreach (var container in attachedContainers)
             {
                 AddContainer(container);
+                Punpun.Information(this, "Adding {container} container to inventory", Logs.Generic, container);
             }
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+        }
+
+        /// <summary>
+        /// This method simply warn the client that everything is set up on the inventory, and things that dependson it can now be called.
+        /// </summary>
+        /// <param name="conn"></param>
+        [TargetRpc]
+        private void RpcInvokeInventorySetUp(NetworkConnection conn)
+        {
             OnInventorySetUp?.Invoke();
         }
 
+
+        /// <summary>
+        /// Should be called after setting up the inventory. Gives the player its items for its role.
+        /// </summary>
+        /// <param name="conn"></param>
+        [TargetRpc]
+        private void RpcGiveRoleLoadout(NetworkConnection conn)
+        {
+            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+        }
+
+        [Client]
         private void SetupView()
         {
             var inventoryView = ViewLocator.Get<InventoryView>().First();
             inventoryView.Setup(this);
         }
 
+        [Server]
         public void AddContainer(AttachedContainer container)
         {
             OnPlayerContainers.Add(container);
-            OnInventoryContainerAdded?.Invoke(container);
         }
 
+        [Server]
         public void RemoveContainer(AttachedContainer container)
         {
             OnPlayerContainers.Remove(container);
@@ -166,9 +224,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             CmdTransferItem(item.gameObject, position, targetContainer);
         }
-
-
-
 
 
         [ServerRpc]
@@ -249,6 +304,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         public bool HasPermission(IDPermission permission)
         {
+            // This check only in the first identification containers, if there's multiple and the id is not in the first one it won't work.
             if(!TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer IDContainer))
             {
                 return false;

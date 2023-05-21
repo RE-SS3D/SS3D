@@ -41,7 +41,6 @@ namespace SS3D.Systems.Inventory.UI
             var divisor = Instantiate(Divisor, transform);
             divisor.transform.parent = HorizontalLayout.transform;
             divisor.transform.SetAsFirstSibling();
-
         }
 
         void OnInventoryContainerAdded(AttachedContainer container)

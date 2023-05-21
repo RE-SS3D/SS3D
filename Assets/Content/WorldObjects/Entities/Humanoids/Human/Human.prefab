@@ -292,7 +292,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1870850359086752095
 Transform:
   m_ObjectHideFlags: 0
@@ -6336,6 +6336,7 @@ GameObject:
   - component: {fileID: 2150560678942863610}
   - component: {fileID: 7934531206375951864}
   - component: {fileID: 1089183168752255729}
+  - component: {fileID: 6991070794830036728}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -6724,10 +6725,24 @@ MonoBehaviour:
   _componentIndexCache: 12
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  OnPlayerContainers: []
   containerViewer: {fileID: 7934531206375951864}
   Body: {fileID: 8336170331735268562}
   Hands: {fileID: 2150560678942863610}
+--- !u!114 &6991070794830036728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 1
+  _updateHostVisibility: 1
+  _observerConditions: []
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
