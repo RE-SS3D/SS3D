@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2063989993203335481
 RectTransform:
   m_ObjectHideFlags: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b5e215e427e9c3b4cbdd12fff9ff5226, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e3f92c7c96d5c844e933479427109147, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 2063989993270087811}
   - component: {fileID: 2063989993270087809}
   - component: {fileID: 1534877636}
+  - component: {fileID: 3393983965762327756}
   m_Layer: 5
   m_Name: GenericPanel
   m_TagString: Untagged
@@ -147,6 +148,21 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3393983965762327756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2063989993270087810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae78ba0b7047f0942a09c576ba932f3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Inventory: {fileID: 0}
+  ItemDisplay: {fileID: 0}
+  ContainerType: 0
 --- !u!1 &2063989993343937253
 GameObject:
   m_ObjectHideFlags: 0

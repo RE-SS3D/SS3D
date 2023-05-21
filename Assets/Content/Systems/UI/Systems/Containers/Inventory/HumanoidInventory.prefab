@@ -129,11 +129,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Inventory: {fileID: 0}
-  PocketPrefab: {fileID: 3500707531626207298, guid: 65751264a67228845b5f3eff1d98a38e, type: 3}
-  IDSlotPrefab: {fileID: 3500707531626207298, guid: 594386f4e656a8b418b665fc7654692a, type: 3}
-  HandLeftPrefab: {fileID: 8813745938857574655, guid: 8d2fde02df66d7e43a968a88851c973f, type: 3}
-  HandRightPrefab: {fileID: 8813745938857574655, guid: 407611bd01fa1784987fd411f03cdfa0, type: 3}
+  PocketPrefab: {fileID: 5639615882741078165, guid: 230168e8a7503ea4788fde8234034658, type: 3}
+  IDSlotPrefab: {fileID: 7051810987959079122, guid: c6b23d72daa9f6f498eaf472f53d697f, type: 3}
+  HandLeftPrefab: {fileID: 7029089980375190653, guid: 64d5b65bffd07dc4fbbbd5c73d0b6281, type: 3}
+  HandRightPrefab: {fileID: 6293962685997774382, guid: aca25d317b84e5c43afafc9832b4df8d, type: 3}
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
   HorizontalLayout: {fileID: 2251930788393684556}
   Slots: []
-  ContainerUiPrefab: {fileID: 0}
