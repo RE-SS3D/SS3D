@@ -29,7 +29,10 @@ namespace SS3D.Systems.Inventory.UI
 
         public GameObject HorizontalLayout;
 
-        public List<GameObject> Slots = new();
+        public List<SingleItemContainerSlot> Slots = new();
+
+        public int CountHandsSlots => Slots.Where(x => x.ContainerType == ContainerType.Hand).Count();
+
 
         // Maybe HandsUI should only handle selected hand highlight and inventory UI
         // should handle setting up containers to UI.
@@ -67,12 +70,13 @@ namespace SS3D.Systems.Inventory.UI
             }
             slot.Container = container;
             slot.Inventory = Inventory;
+            Slots.Add(slot);
         }
 
         private SingleItemContainerSlot AddHandSlot()
         {
             GameObject hand;
-            if (Inventory.CountHands % 2 == 0)
+            if (CountHandsSlots % 2 == 0)
             {
                 hand = Instantiate(HandRightPrefab, transform);
             }
