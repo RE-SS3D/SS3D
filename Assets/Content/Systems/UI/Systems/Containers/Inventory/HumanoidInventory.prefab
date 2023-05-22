@@ -133,6 +133,7 @@ MonoBehaviour:
   IDSlotPrefab: {fileID: 7051810987959079122, guid: c6b23d72daa9f6f498eaf472f53d697f, type: 3}
   HandLeftPrefab: {fileID: 7029089980375190653, guid: 64d5b65bffd07dc4fbbbd5c73d0b6281, type: 3}
   HandRightPrefab: {fileID: 6293962685997774382, guid: aca25d317b84e5c43afafc9832b4df8d, type: 3}
+  BagPrefab: {fileID: 3969695133087941026, guid: 98867721229cea84eb087210f54475e0, type: 3}
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
   HorizontalLayout: {fileID: 2251930788393684556}
   Slots: []

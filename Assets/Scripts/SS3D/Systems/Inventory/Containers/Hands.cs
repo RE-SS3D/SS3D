@@ -29,7 +29,7 @@ namespace SS3D.Systems.Inventory.Containers
         private Color _defaultColor;
 
         public int SelectedHandIndex { get; private set; }
-        public RangeLimit range = new(1.5f, 1);
+        public RangeLimit range = new(1.5f, 2);
         // the origin of an x interaction that is performed is provided by this, we use it for range checks
         public Transform interactionOrigin;
         // pickup icon that this hand uses when there's a pickup interaction

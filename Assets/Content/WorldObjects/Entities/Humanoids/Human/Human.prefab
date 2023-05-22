@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 15
+  _componentIndexCache: 16
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -1494,6 +1494,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6307282637357716550}
+  - component: {fileID: 3177252180659035901}
   m_Layer: 0
   m_Name: chest
   m_TagString: Untagged
@@ -1519,6 +1520,43 @@ Transform:
   m_Father: {fileID: 1084986635934123439}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3177252180659035901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394360371059337826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 17
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _automaticContainerSetUp: 1
+  ContainerInteractive: {fileID: 7696460494702996541}
+  ContainerItemDisplay: {fileID: 0}
+  ContainerUi: {fileID: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 1
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 1
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
+  _containerName: Bag
+  _size: {x: 1, y: 1}
+  _hideItems: 1
+  _type: 3
+  _startFilter: {fileID: 0}
 --- !u!1 &1430059919118232172
 GameObject:
   m_ObjectHideFlags: 0
@@ -4517,7 +4555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 13
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -6337,6 +6375,7 @@ GameObject:
   - component: {fileID: 7934531206375951864}
   - component: {fileID: 1089183168752255729}
   - component: {fileID: 6991070794830036728}
+  - component: {fileID: 7696460494702996541}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -6393,9 +6432,11 @@ MonoBehaviour:
   - {fileID: 2150560678942863610}
   - {fileID: 7934531206375951864}
   - {fileID: 1089183168752255729}
+  - {fileID: 7696460494702996541}
   - {fileID: 5566468530025106438}
   - {fileID: 2045751309335634097}
   - {fileID: 5707557726176584075}
+  - {fileID: 3177252180659035901}
   - {fileID: 4140518851396729342}
   - {fileID: 7144090709710962679}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
@@ -6691,7 +6732,7 @@ MonoBehaviour:
   SelectedColor: {r: 1, g: 0.9764151, b: 0.9764151, a: 0.27058825}
   range:
     Horizontal: 1.5
-    Vertical: 1
+    Vertical: 2
   interactionOrigin: {fileID: 5927494552340417975}
   pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
 --- !u!114 &7934531206375951864
@@ -6743,6 +6784,24 @@ MonoBehaviour:
   _overrideType: 1
   _updateHostVisibility: 1
   _observerConditions: []
+--- !u!114 &7696460494702996541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 13
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _openState: 0
+  OverrideOpenIcon: {fileID: 0}
+  attachedContainer: {fileID: 3177252180659035901}
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
@@ -7151,7 +7210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 14
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -8962,7 +9021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 16
+  _componentIndexCache: 18
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -9200,7 +9259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 17
+  _componentIndexCache: 19
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0

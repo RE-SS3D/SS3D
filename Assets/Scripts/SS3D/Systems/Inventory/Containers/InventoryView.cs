@@ -25,6 +25,7 @@ namespace SS3D.Systems.Inventory.UI
         public GameObject IDSlotPrefab;
         public GameObject HandLeftPrefab;
         public GameObject HandRightPrefab;
+        public GameObject BagPrefab;
         public GameObject Divisor;
 
         public GameObject HorizontalLayout;
@@ -63,11 +64,16 @@ namespace SS3D.Systems.Inventory.UI
                     slot = AddIdentificationSlot();
                     break;
 
+                case ContainerType.Bag:
+                    slot = AddBagSlot();
+                    break;
+
                 default:
                     Punpun.Error(this, "Unknown or missing container type for this container");
                     slot = null;
                     break;
             }
+            if (slot == null) return;
             slot.Container = container;
             slot.Inventory = Inventory;
             Slots.Add(slot);
@@ -116,6 +122,17 @@ namespace SS3D.Systems.Inventory.UI
             pocket.transform.SetAsLastSibling();
             return pocket.GetComponent<SingleItemContainerSlot>();
         }
+
+        private SingleItemContainerSlot AddBagSlot()
+        {
+            GameObject bag = Instantiate(BagPrefab, transform);
+            bag.transform.parent = HorizontalLayout.transform;
+            // Put the bag slot just before the pocket slots.
+            bag.transform.SetSiblingIndex(FirstIndexSlotOfType(ContainerType.Hand));
+
+            return bag.GetComponent<SingleItemContainerSlot>();
+        }
+
 
         private SingleItemContainerSlot AddIdentificationSlot()
         {
