@@ -34,6 +34,9 @@ namespace SS3D.Systems.Inventory.UI
 
         public int CountHandsSlots => Slots.Where(x => x.ContainerType == ContainerType.Hand).Count();
 
+        [SerializeField]
+        public List<ContainerType> HorizontalSlotOrder;
+
 
         // Maybe HandsUI should only handle selected hand highlight and inventory UI
         // should handle setting up containers to UI.
@@ -79,6 +82,11 @@ namespace SS3D.Systems.Inventory.UI
             Slots.Add(slot);
         }
 
+        private int OrderOfType(ContainerType type) 
+        {
+            return HorizontalSlotOrder.FindIndex(0, x => x == type);
+        }
+
         private SingleItemContainerSlot AddHandSlot()
         {
             GameObject hand;
@@ -91,9 +99,27 @@ namespace SS3D.Systems.Inventory.UI
             hand.transform.parent = HorizontalLayout.transform;
 
             // Put the hand containers just before the pocket slots.
-            hand.transform.SetSiblingIndex(FirstIndexSlotOfType(ContainerType.Pocket));
+            hand.transform.SetSiblingIndex(PlaceSlot(ContainerType.Hand));
 
             return hand.GetComponent<SingleItemContainerSlot>();
+        }
+
+        /// <summary>
+        /// This place a slot in the horizontal layout according to the order defined by element order in the HorizontalSlotOrder List of containerType.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private int PlaceSlot(ContainerType type)
+        {
+            for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
+            {
+                var childTransform = HorizontalLayout.transform.GetChild(i);
+                if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && OrderOfType(slot.ContainerType) >= OrderOfType(type))
+                {
+                    return i;
+                }
+            }
+            return 0;
         }
 
         /// <summary>
@@ -128,7 +154,7 @@ namespace SS3D.Systems.Inventory.UI
             GameObject bag = Instantiate(BagPrefab, transform);
             bag.transform.parent = HorizontalLayout.transform;
             // Put the bag slot just before the pocket slots.
-            bag.transform.SetSiblingIndex(FirstIndexSlotOfType(ContainerType.Hand));
+            bag.transform.SetSiblingIndex(PlaceSlot(ContainerType.Bag));
 
             return bag.GetComponent<SingleItemContainerSlot>();
         }

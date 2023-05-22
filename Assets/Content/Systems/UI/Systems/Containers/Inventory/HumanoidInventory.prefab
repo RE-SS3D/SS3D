@@ -137,3 +137,4 @@ MonoBehaviour:
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
   HorizontalLayout: {fileID: 2251930788393684556}
   Slots: []
+  HorizontalSlotOrder: 04000000030000000200000001000000
