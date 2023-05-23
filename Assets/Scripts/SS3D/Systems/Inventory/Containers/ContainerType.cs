@@ -10,7 +10,15 @@ namespace SS3D.Systems.Inventory.Containers
         Pocket,
         Hand,
         Bag,
-        Identification
+        Identification,
+        Shoes,
+        Gloves,
+        Glasses,
+        Mask,
+        Ears,
+        Head,
+        Jumpsuit,
+        ExoSuit,
     }
 }
 

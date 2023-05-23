@@ -63,6 +63,67 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &4392532013381623832
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8398295385582505097}
+  - component: {fileID: 8788660105160814451}
+  m_Layer: 0
+  m_Name: Clothing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8398295385582505097
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392532013381623832}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6041109227899930349}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 5, y: 0}
+  m_SizeDelta: {x: -10, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8788660105160814451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392532013381623832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 45, y: 45}
+  m_Spacing: {x: 0.5, y: 0.5}
+  m_Constraint: 1
+  m_ConstraintCount: 3
 --- !u!1 &6178539299263414650
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,6 +155,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2493494043804383331}
+  - {fileID: 6041109227899930349}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -129,12 +191,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Inventory: {fileID: 0}
+  HorizontalLayout: {fileID: 2251930788393684556}
   PocketPrefab: {fileID: 5639615882741078165, guid: 230168e8a7503ea4788fde8234034658, type: 3}
   IDSlotPrefab: {fileID: 7051810987959079122, guid: c6b23d72daa9f6f498eaf472f53d697f, type: 3}
   HandLeftPrefab: {fileID: 7029089980375190653, guid: 64d5b65bffd07dc4fbbbd5c73d0b6281, type: 3}
   HandRightPrefab: {fileID: 6293962685997774382, guid: aca25d317b84e5c43afafc9832b4df8d, type: 3}
   BagPrefab: {fileID: 3969695133087941026, guid: 98867721229cea84eb087210f54475e0, type: 3}
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
-  HorizontalLayout: {fileID: 2251930788393684556}
-  Slots: []
   HorizontalSlotOrder: 04000000030000000200000001000000
+  ClothingLayout: {fileID: 4392532013381623832}
+  ShoesPrefab: {fileID: 7927511312496306239, guid: 7a9a07dff1ccefb429434d70f34ee3de, type: 3}
+  GlovesPrefab: {fileID: 6158837401881827481, guid: d390e92ae02bca34494f77f57fd1c800, type: 3}
+  GlassesPrefab: {fileID: 6734450565220072068, guid: a5a8a40f0de6adf449455bf41468439a, type: 3}
+  MaskPrefab: {fileID: 2633005353059260762, guid: 0f03209702d8f0b4ab149596391830ee, type: 3}
+  EarsPrefab: {fileID: 7148034210968577043, guid: 86e27a9b14f0d7b47accf7df8635e4bb, type: 3}
+  HeadPrefab: {fileID: 8584173595202467535, guid: 113d454c18a13854b87605d0ee9c73a6, type: 3}
+  JumpsuitPrefab: {fileID: 5988165263683014854, guid: 4bb39a802a283d341a20c566474368ae, type: 3}
+  ExoSuitPrefab: {fileID: 6837100192917222649, guid: 7213f8ade5a231544997e1def361efaa, type: 3}
+  DummyPrefab: {fileID: 3933365585080000025, guid: 4d43e2768b3c98f47bcb46c541146e0a, type: 3}
+  ClothingSlotPosition: 000000000a000000000000000700000008000000090000000c0000000b00000006000000000000000500000000000000
+--- !u!1 &9219927822186948004
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6041109227899930349}
+  m_Layer: 0
+  m_Name: BodyContainerPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6041109227899930349
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9219927822186948004}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8398295385582505097}
+  m_Father: {fileID: 4452887637558266342}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 200, y: 200}
+  m_Pivot: {x: 0, y: 0}

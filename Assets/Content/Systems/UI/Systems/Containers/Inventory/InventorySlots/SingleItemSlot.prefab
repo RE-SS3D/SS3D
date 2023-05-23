@@ -242,7 +242,18 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 3500707531961321958, guid: 594386f4e656a8b418b665fc7654692a, type: 3}
+  m_TargetGraphic: {fileID: 4603278309862412043}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4603278309862412043 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2063989994718730318, guid: 1fd282cd3862b2848a83fe40030cf431, type: 3}
+  m_PrefabInstance: {fileID: 2541968410778507077}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

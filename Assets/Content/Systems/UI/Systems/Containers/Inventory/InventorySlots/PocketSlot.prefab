@@ -11,10 +11,6 @@ PrefabInstance:
       propertyPath: ContainerType
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2249671596492474445, guid: aaedbf68381c7904e8810641d76f7a2b, type: 3}
-      propertyPath: m_TargetGraphic
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4603278309003134918, guid: aaedbf68381c7904e8810641d76f7a2b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -21,6 +21,9 @@ namespace SS3D.Systems.Inventory.UI
     {
 
         public HumanInventory Inventory;
+
+        // Slots in the horizontal layout
+        public GameObject HorizontalLayout;
         public GameObject PocketPrefab;
         public GameObject IDSlotPrefab;
         public GameObject HandLeftPrefab;
@@ -28,27 +31,60 @@ namespace SS3D.Systems.Inventory.UI
         public GameObject BagPrefab;
         public GameObject Divisor;
 
-        public GameObject HorizontalLayout;
+        [SerializeField]
+        private List<ContainerType> HorizontalSlotOrder;
 
-        public List<SingleItemContainerSlot> Slots = new();
+
+        public GameObject ClothingLayout;
+        public GameObject ShoesPrefab;
+        public GameObject GlovesPrefab;
+        public GameObject GlassesPrefab;
+        public GameObject MaskPrefab;
+        public GameObject EarsPrefab;
+        public GameObject HeadPrefab;
+        public GameObject JumpsuitPrefab;
+        public GameObject ExoSuitPrefab;
+        public GameObject DummyPrefab;
+
+
+        [SerializeField]
+        private List<ContainerType> ClothingSlotPosition;
+
+
+
+        private List<SingleItemContainerSlot> Slots = new();
+
+        private List<SingleItemContainerSlot> ClothingSlots = new();
 
         public int CountHandsSlots => Slots.Where(x => x.ContainerType == ContainerType.Hand).Count();
 
-        [SerializeField]
-        public List<ContainerType> HorizontalSlotOrder;
+
 
 
         // Maybe HandsUI should only handle selected hand highlight and inventory UI
         // should handle setting up containers to UI.
         public void Setup(HumanInventory inventory)
         {
+            FillClothingLayoutWithDummySlots();
             Inventory = inventory;
             inventory.OnInventoryContainerAdded += OnInventoryContainerAdded;
             inventory.OnInventoryContainerRemoved += OnInventoryContainerRemoved;
+            // TODO correctly place the divisor
             var divisor = Instantiate(Divisor, transform);
             divisor.transform.parent = HorizontalLayout.transform;
             divisor.transform.SetAsFirstSibling();
         }
+
+        private void FillClothingLayoutWithDummySlots()
+        {
+            for(int i=0; i< ClothingSlotPosition.Count; i++)
+            {
+                var dummySlot = Instantiate(DummyPrefab);
+                dummySlot.transform.parent = ClothingLayout.transform;
+                dummySlot.transform.SetAsFirstSibling();
+            }
+        }
+
 
         void OnInventoryContainerAdded(AttachedContainer container)
         {
@@ -69,6 +105,38 @@ namespace SS3D.Systems.Inventory.UI
 
                 case ContainerType.Bag:
                     slot = AddBagSlot();
+                    break;
+
+                case ContainerType.Shoes:
+                    slot = AddClothingSlot(ShoesPrefab);
+                    break;
+
+                case ContainerType.Gloves:
+                    slot = AddClothingSlot(GlovesPrefab);
+                    break;
+
+                case ContainerType.Glasses:
+                    slot = AddClothingSlot(GlassesPrefab);
+                    break;
+
+                case ContainerType.Mask:
+                    slot = AddClothingSlot(MaskPrefab);
+                    break;
+
+                case ContainerType.Ears:
+                    slot = AddClothingSlot(EarsPrefab);
+                    break;
+
+                case ContainerType.Head:
+                    slot = AddClothingSlot(HeadPrefab);
+                    break;
+
+                case ContainerType.ExoSuit:
+                    slot = AddClothingSlot(ExoSuitPrefab);
+                    break;
+
+                case ContainerType.Jumpsuit:
+                    slot = AddClothingSlot(JumpsuitPrefab);
                     break;
 
                 default:
@@ -122,6 +190,8 @@ namespace SS3D.Systems.Inventory.UI
             return 0;
         }
 
+
+
         /// <summary>
         /// Returns the game object sibling index of the first game object being a SingleContainerSlot and having a given ContainerType.
         /// </summary>
@@ -139,7 +209,19 @@ namespace SS3D.Systems.Inventory.UI
             return 0;
         }
 
-        
+        private SingleItemContainerSlot AddClothingSlot(GameObject prefabToInstantiate)
+        {
+            GameObject clothingSlot = Instantiate(prefabToInstantiate, transform);
+            clothingSlot.transform.parent = ClothingLayout.transform;
+            clothingSlot.gameObject.TryGetComponent(out SingleItemContainerSlot slot);
+            int clothPosition = ClothingSlotPosition.FindIndex(0, x => x == slot.ContainerType);
+            var currentSlot = ClothingLayout.transform.GetChild(ClothingSlotPosition.FindIndex(0, x => x == slot.ContainerType));
+            clothingSlot.transform.SetSiblingIndex(clothPosition);
+            currentSlot.transform.parent = null;
+            currentSlot.gameObject.Dispose(true);
+            return slot;
+        }
+
         private SingleItemContainerSlot AddPocketSlot()
         {
             GameObject pocket = Instantiate(PocketPrefab, transform);
