@@ -83,7 +83,7 @@ namespace SS3D.Systems.Inventory.Containers
                     break;
 
                 case ContainerType.Head:
-                   
+                    DisplayCloth(Hat, item, display);
                     break;
 
                 case ContainerType.ExoSuit:
