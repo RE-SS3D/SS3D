@@ -26,11 +26,14 @@ namespace SS3D.Systems.Inventory.Containers
         public readonly SyncList<AttachedContainer> OnPlayerContainers = new();
 
         public delegate void InventoryContainerUpdated(AttachedContainer container);
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
         public delegate void Notify();
 
         public event InventoryContainerUpdated OnInventoryContainerAdded;
 
         public event InventoryContainerUpdated OnInventoryContainerRemoved;
+
+        public event ContainerContentsHandler OnContainerContentChanged;
 
         public event Notify OnInventorySetUp;
 
@@ -99,6 +102,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 Hands.SetInventory(this);
                 SetupView();
+                
             }
         }
 
@@ -164,6 +168,7 @@ namespace SS3D.Systems.Inventory.Containers
         public void AddContainer(AttachedContainer container)
         {
             OnPlayerContainers.Add(container);
+            container.Container.OnContentsChanged += ContainerContentChanged;
         }
 
         [Server]
@@ -171,6 +176,12 @@ namespace SS3D.Systems.Inventory.Containers
         {
             OnPlayerContainers.Remove(container);
             OnInventoryContainerRemoved?.Invoke(container);
+            container.Container.OnContentsChanged -= ContainerContentChanged;
+        }
+
+        public void ContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        {
+            OnContainerContentChanged?.Invoke(container,oldItems,newItems,type);
         }
 
         /// <summary>

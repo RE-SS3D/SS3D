@@ -2740,7 +2740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5434434331182936001
 Transform:
   m_ObjectHideFlags: 0
@@ -5369,7 +5369,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2020101281645496302
 Transform:
   m_ObjectHideFlags: 0
@@ -6595,6 +6595,7 @@ GameObject:
   - component: {fileID: 2858269141102710227}
   - component: {fileID: 3581670488586674287}
   - component: {fileID: 7822392346892910685}
+  - component: {fileID: 6258404136566216916}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -7161,6 +7162,24 @@ MonoBehaviour:
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 3028215939049344471}
+--- !u!114 &6258404136566216916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a156dec7da2f53419befce71ba9bcff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _inventory: {fileID: 1089183168752255729}
+  Hat: {fileID: 2318580196450076595}
+  Eyes: {fileID: 5123606445737711681}
+  Jumpsuit: {fileID: 6156442624279794332}
+  Hands: {fileID: 1554133797385801414}
+  Feet: {fileID: 2216732793499248815}
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0

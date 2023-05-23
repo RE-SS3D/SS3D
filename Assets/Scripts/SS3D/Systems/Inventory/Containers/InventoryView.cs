@@ -20,7 +20,7 @@ namespace SS3D.Systems.Inventory.UI
     public class InventoryView : View
     {
 
-        public HumanInventory Inventory;
+        private HumanInventory Inventory;
 
         // Slots in the horizontal layout
         public GameObject HorizontalLayout;
@@ -50,17 +50,10 @@ namespace SS3D.Systems.Inventory.UI
         [SerializeField]
         private List<ContainerType> ClothingSlotPosition;
 
-
-
         private List<SingleItemContainerSlot> Slots = new();
 
         public int CountHandsSlots => Slots.Where(x => x.ContainerType == ContainerType.Hand).Count();
 
-
-
-
-        // Maybe HandsUI should only handle selected hand highlight and inventory UI
-        // should handle setting up containers to UI.
         public void Setup(HumanInventory inventory)
         {
             FillClothingLayoutWithDummySlots();
