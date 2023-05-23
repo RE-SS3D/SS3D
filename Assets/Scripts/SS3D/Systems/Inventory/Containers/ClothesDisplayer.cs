@@ -26,11 +26,14 @@ namespace SS3D.Systems.Inventory.Containers
 
         public HumanInventory _inventory;
 
+        // Game objects on the human prefab to display clothes.
         public GameObject Hat;
         public GameObject Eyes;
         public GameObject Jumpsuit;
         public GameObject Hands;
         public GameObject Feet;
+
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -39,12 +42,15 @@ namespace SS3D.Systems.Inventory.Containers
 
         public void ContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
-            // If it's not a cloth type container. It'd be probably better to just create "cloth container" inheriting from container to easily test that.
+            // If it's not a cloth type container.
+            // It'd be probably better to just create "cloth container" inheriting from container to easily test that.
             if(container.ContainerType < ContainerType.Shoes)
             {
                 return;
             }
 
+            // TODO : check that the change include a single item.
+            // Also maybe don't check only new item for remove ?
             var item = newItems.FirstOrDefault();
 
             switch(type)
