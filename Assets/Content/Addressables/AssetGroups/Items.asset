@@ -129,6 +129,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Kitchen/KitchenKnife.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 1ef3c21a685ec2d4e9f0876719839d5f
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/TruckerCap.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9b9f6bd470226a74b903e74dbe9e423a
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/Sunglasses.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

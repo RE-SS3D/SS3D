@@ -54,8 +54,6 @@ namespace SS3D.Systems.Inventory.UI
 
         private List<SingleItemContainerSlot> Slots = new();
 
-        private List<SingleItemContainerSlot> ClothingSlots = new();
-
         public int CountHandsSlots => Slots.Where(x => x.ContainerType == ContainerType.Hand).Count();
 
 
