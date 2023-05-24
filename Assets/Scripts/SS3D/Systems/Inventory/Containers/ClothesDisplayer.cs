@@ -26,17 +26,28 @@ namespace SS3D.Systems.Inventory.Containers
 
         public HumanInventory _inventory;
 
+        public Transform ClothesRoot;
+
         // Game objects on the human prefab to display clothes.
         public GameObject Hat;
         public GameObject Eyes;
         public GameObject Jumpsuit;
         public GameObject Hands;
         public GameObject Feet;
+        public GameObject Identification;
+        public GameObject Backpack;
 
 
-        protected override void OnAwake()
+
+        protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
+            var renderers = ClothesRoot.GetComponentsInChildren<SkinnedMeshRenderer>();
+            foreach (var renderer in renderers)
+            {
+                renderer.enabled = false;
+            }
+
             _inventory.OnContainerContentChanged += ContainerContentChanged;
         }
 
@@ -70,6 +81,10 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 case ContainerType.Shoes:
                     
+                    break;
+
+                case ContainerType.Identification:
+                    DisplayCloth(Identification, item, display);
                     break;
 
                 case ContainerType.Gloves:

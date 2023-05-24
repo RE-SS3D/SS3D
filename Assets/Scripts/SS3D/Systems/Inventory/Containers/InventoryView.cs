@@ -11,6 +11,7 @@ using UnityEngine.Serialization;
 using SS3D.Logging;
 using UnityEngine.XR;
 using UnityEngine.UI;
+using TMPro;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -130,7 +131,7 @@ namespace SS3D.Systems.Inventory.UI
                     break;
 
                 default:
-                    Punpun.Error(this, "Unknown or missing container type for this container");
+                    Punpun.Error(this, $"Unknown or missing container type {container.Type} for this container {container}");
                     slot = null;
                     break;
             }
