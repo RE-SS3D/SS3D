@@ -76,7 +76,6 @@ namespace SS3D.Systems.Inventory.UI
             }
         }
 
-
         void OnInventoryContainerAdded(AttachedContainer container)
         {
             SingleItemContainerSlot slot;
@@ -87,15 +86,15 @@ namespace SS3D.Systems.Inventory.UI
                     break;
 
                 case ContainerType.Pocket:
-                    slot = AddPocketSlot();
+                    slot = AddHorizontalLayoutSlot(PocketPrefab, ContainerType.Pocket);
                     break;
 
                 case ContainerType.Identification:
-                    slot = AddIdentificationSlot();
+                    slot = AddHorizontalLayoutSlot(IDSlotPrefab, ContainerType.Identification);
                     break;
 
                 case ContainerType.Bag:
-                    slot = AddBagSlot();
+                    slot = AddHorizontalLayoutSlot(BagPrefab, ContainerType.Bag);
                     break;
 
                 case ContainerType.Shoes:
@@ -148,19 +147,11 @@ namespace SS3D.Systems.Inventory.UI
 
         private SingleItemContainerSlot AddHandSlot()
         {
-            GameObject hand;
             if (CountHandsSlots % 2 == 0)
             {
-                hand = Instantiate(HandRightPrefab, transform);
+                return AddHorizontalLayoutSlot(HandRightPrefab, ContainerType.Hand);
             }
-            else hand = Instantiate(HandLeftPrefab, transform);
-
-            hand.transform.parent = HorizontalLayout.transform;
-
-            // Put the hand containers just before the pocket slots.
-            hand.transform.SetSiblingIndex(PlaceSlot(ContainerType.Hand));
-
-            return hand.GetComponent<SingleItemContainerSlot>();
+            else return AddHorizontalLayoutSlot(HandLeftPrefab, ContainerType.Hand);
         }
 
         /// <summary>
@@ -180,8 +171,6 @@ namespace SS3D.Systems.Inventory.UI
             }
             return 0;
         }
-
-
 
         /// <summary>
         /// Returns the game object sibling index of the first game object being a SingleContainerSlot and having a given ContainerType.
@@ -213,33 +202,13 @@ namespace SS3D.Systems.Inventory.UI
             return slot;
         }
 
-        private SingleItemContainerSlot AddPocketSlot()
+        private SingleItemContainerSlot AddHorizontalLayoutSlot(GameObject prefab, ContainerType type)
         {
-            GameObject pocket = Instantiate(PocketPrefab, transform);
-            pocket.transform.parent = HorizontalLayout.transform;
+            GameObject slot = Instantiate(prefab, transform);
+            slot.transform.parent = HorizontalLayout.transform;
             // Pocket go  to the far right of the UI.
-            pocket.transform.SetAsLastSibling();
-            return pocket.GetComponent<SingleItemContainerSlot>();
-        }
-
-        private SingleItemContainerSlot AddBagSlot()
-        {
-            GameObject bag = Instantiate(BagPrefab, transform);
-            bag.transform.parent = HorizontalLayout.transform;
-            // Put the bag slot just before the pocket slots.
-            bag.transform.SetSiblingIndex(PlaceSlot(ContainerType.Bag));
-
-            return bag.GetComponent<SingleItemContainerSlot>();
-        }
-
-
-        private SingleItemContainerSlot AddIdentificationSlot()
-        {
-            GameObject ID = Instantiate(IDSlotPrefab, transform);
-            ID.transform.parent = HorizontalLayout.transform;
-            // ID slots go  to the far left of the UI.
-            ID.transform.SetAsFirstSibling();
-            return ID.GetComponent<SingleItemContainerSlot>();
+            slot.transform.SetSiblingIndex(PlaceSlot(type));
+            return slot.GetComponent<SingleItemContainerSlot>();
         }
 
         /// <summary>
