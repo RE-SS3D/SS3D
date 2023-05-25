@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 25
+  _componentIndexCache: 27
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -859,7 +859,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 22
+  _componentIndexCache: 24
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -1568,7 +1568,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 26
+  _componentIndexCache: 28
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -2141,9 +2141,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 30
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 3301312253177779075}
   ContainerItemDisplay: {fileID: 0}
@@ -2210,7 +2210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 24
+  _componentIndexCache: 26
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -2814,7 +2814,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &754194221811462458
 Transform:
   m_ObjectHideFlags: 0
@@ -4532,7 +4532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 27
+  _componentIndexCache: 29
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -5711,9 +5711,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 31
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 6606944209543214874}
   ContainerItemDisplay: {fileID: 0}
@@ -6010,7 +6010,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 21
+  _componentIndexCache: 23
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -6735,6 +6735,8 @@ MonoBehaviour:
   - {fileID: 4965805398881751774}
   - {fileID: 1223547382117504491}
   - {fileID: 2265465745196413833}
+  - {fileID: 3301312253177779075}
+  - {fileID: 6606944209543214874}
   - {fileID: 6689112149766062617}
   - {fileID: 1202753384528456214}
   - {fileID: 3028215939049344471}
@@ -6742,6 +6744,8 @@ MonoBehaviour:
   - {fileID: 7584683726852713205}
   - {fileID: 528052100901114241}
   - {fileID: 745316812857141604}
+  - {fileID: 2306112832503890745}
+  - {fileID: 6549211580931091111}
   - {fileID: 7951212175384182717}
   - {fileID: 8320963098858079385}
   - {fileID: 4140518851396729342}
@@ -7144,8 +7148,10 @@ MonoBehaviour:
   Hat: {fileID: 2318580196450076595}
   Eyes: {fileID: 5123606445737711681}
   Jumpsuit: {fileID: 6156442624279794332}
-  Hands: {fileID: 1554133797385801414}
-  Feet: {fileID: 2216732793499248815}
+  HandLeft: {fileID: 972284602524422540}
+  HandRight: {fileID: 3626982131771350130}
+  FootLeft: {fileID: 1594377383810549907}
+  FootRight: {fileID: 61224875741296584}
   Identification: {fileID: 2922662556893833177}
   Backpack: {fileID: 8935913803077858714}
 --- !u!114 &4559920193704007786
@@ -7268,9 +7274,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 21
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 2306112832503890745}
@@ -7286,9 +7292,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 22
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 6549211580931091111}
@@ -8778,7 +8784,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 28
+  _componentIndexCache: 32
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -9545,7 +9551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 23
+  _componentIndexCache: 25
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -9614,7 +9620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 30
+  _componentIndexCache: 34
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -9852,7 +9858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 31
+  _componentIndexCache: 35
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -10089,7 +10095,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 29
+  _componentIndexCache: 33
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1

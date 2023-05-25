@@ -32,8 +32,10 @@ namespace SS3D.Systems.Inventory.Containers
         public GameObject Hat;
         public GameObject Eyes;
         public GameObject Jumpsuit;
-        public GameObject Hands;
-        public GameObject Feet;
+        public GameObject HandLeft;
+        public GameObject HandRight;
+        public GameObject FootLeft;
+        public GameObject FootRight;
         public GameObject Identification;
         public GameObject Backpack;
 
@@ -75,6 +77,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+        // TODO complete with missing stuff (mask, etc..)
         public void ShowCloth(Container container, Item item, bool display)
         {
             switch (container.ContainerType)
@@ -88,7 +91,6 @@ namespace SS3D.Systems.Inventory.Containers
                     break;
 
                 case ContainerType.Mask:
-                    
                     break;
 
                 case ContainerType.Head:
@@ -100,7 +102,23 @@ namespace SS3D.Systems.Inventory.Containers
                     break;
 
                 case ContainerType.Jumpsuit:
-                    
+                    DisplayCloth(Jumpsuit, item, display);
+                    break;
+
+                case ContainerType.ShoeLeft:
+                    DisplayCloth(FootLeft, item, display);
+                    break;
+
+                case ContainerType.ShoeRight:
+                    DisplayCloth(FootRight, item, display);
+                    break;
+
+                case ContainerType.GloveLeft:
+                    DisplayCloth(HandLeft, item, display);
+                    break;
+
+                case ContainerType.GloveRight:
+                    DisplayCloth(HandRight, item, display);
                     break;
             }
         }
