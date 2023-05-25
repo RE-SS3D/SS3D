@@ -1440,11 +1440,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16bcf25f06fe95f05808c9ebd4bb4250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &576650548 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5088917634584121396, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
-  m_PrefabInstance: {fileID: 3810371244444567007}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &604587499
 GameObject:
   m_ObjectHideFlags: 0
@@ -1742,17 +1737,6 @@ MonoBehaviour:
   - {fileID: 1506918116}
   - {fileID: 1604094696}
   - {fileID: 1927660778}
---- !u!114 &676448448 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8098506172083102939, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
-  m_PrefabInstance: {fileID: 3810371244444567007}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d16d9c9e1fac9c84da0a1db31c0c4294, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &756894443
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -48429,7 +48413,7 @@ PrefabInstance:
     - target: {fileID: 2527991446718283015, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
       propertyPath: PocketView
       value: 
-      objectReference: {fileID: 676448448}
+      objectReference: {fileID: 0}
     - target: {fileID: 2598904041719524639, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -48753,7 +48737,7 @@ PrefabInstance:
     - target: {fileID: 8098506172083102939, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
       propertyPath: TransformParent
       value: 
-      objectReference: {fileID: 576650548}
+      objectReference: {fileID: 0}
     - target: {fileID: 8143442421376935510, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -48904,7 +48888,7 @@ PrefabInstance:
       objectReference: {fileID: 1927660778}
     - target: {fileID: 9191455379462354299, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9202296439114504482, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
       propertyPath: m_AnchorMax.x
