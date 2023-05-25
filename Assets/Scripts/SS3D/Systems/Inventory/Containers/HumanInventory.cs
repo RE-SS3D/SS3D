@@ -65,7 +65,7 @@ namespace SS3D.Systems.Inventory.Containers
                     typeContainer = container;
                     return true;
                 }
-                else if(container.Type == ContainerType.Identification)
+                else if(container.Type == type)
                 {
                     typeIndex++;
                 }
