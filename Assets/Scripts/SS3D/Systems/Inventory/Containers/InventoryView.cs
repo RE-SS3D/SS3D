@@ -37,15 +37,18 @@ namespace SS3D.Systems.Inventory.UI
 
 
         public GameObject ClothingLayout;
-        public GameObject ShoesPrefab;
-        public GameObject GlovesPrefab;
+        public GameObject ShoeLeftPrefab;
+        public GameObject ShoeRightPrefab;
+        public GameObject GloveLeftPrefab;
+        public GameObject GloveRightPrefab;
         public GameObject GlassesPrefab;
         public GameObject MaskPrefab;
-        public GameObject EarsPrefab;
         public GameObject HeadPrefab;
         public GameObject JumpsuitPrefab;
         public GameObject ExoSuitPrefab;
         public GameObject DummyPrefab;
+        public GameObject EarLeftPrefab;
+        public GameObject EarRightPrefab;
 
 
         [SerializeField]
@@ -98,14 +101,6 @@ namespace SS3D.Systems.Inventory.UI
                     slot = AddHorizontalLayoutSlot(BagPrefab, ContainerType.Bag);
                     break;
 
-                case ContainerType.Shoes:
-                    slot = AddClothingSlot(ShoesPrefab);
-                    break;
-
-                case ContainerType.Gloves:
-                    slot = AddClothingSlot(GlovesPrefab);
-                    break;
-
                 case ContainerType.Glasses:
                     slot = AddClothingSlot(GlassesPrefab);
                     break;
@@ -114,8 +109,12 @@ namespace SS3D.Systems.Inventory.UI
                     slot = AddClothingSlot(MaskPrefab);
                     break;
 
-                case ContainerType.Ears:
-                    slot = AddClothingSlot(EarsPrefab);
+                case ContainerType.EarLeft:
+                    slot = AddClothingSlot(EarLeftPrefab);
+                    break;
+
+                case ContainerType.EarRight:
+                    slot = AddClothingSlot(EarRightPrefab);
                     break;
 
                 case ContainerType.Head:
@@ -128,6 +127,22 @@ namespace SS3D.Systems.Inventory.UI
 
                 case ContainerType.Jumpsuit:
                     slot = AddClothingSlot(JumpsuitPrefab);
+                    break;
+
+                case ContainerType.GloveLeft:
+                    slot = AddClothingSlot(GloveLeftPrefab);
+                    break;
+
+                case ContainerType.GloveRight:
+                    slot = AddClothingSlot(GloveRightPrefab);
+                    break;
+
+                case ContainerType.ShoeLeft:
+                    slot = AddClothingSlot(ShoeLeftPrefab);
+                    break;
+
+                case ContainerType.ShoeRight:
+                    slot = AddClothingSlot(ShoeRightPrefab);
                     break;
 
                 default:

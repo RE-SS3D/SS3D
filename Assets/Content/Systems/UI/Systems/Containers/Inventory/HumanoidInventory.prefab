@@ -190,7 +190,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86e26eca8ec5a2e4c944b5a118e12ea8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Inventory: {fileID: 0}
   HorizontalLayout: {fileID: 2251930788393684556}
   PocketPrefab: {fileID: 5639615882741078165, guid: 230168e8a7503ea4788fde8234034658, type: 3}
   IDSlotPrefab: {fileID: 7051810987959079122, guid: c6b23d72daa9f6f498eaf472f53d697f, type: 3}
@@ -200,8 +199,10 @@ MonoBehaviour:
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
   HorizontalSlotOrder: 04000000030000000200000001000000
   ClothingLayout: {fileID: 4392532013381623832}
-  ShoesPrefab: {fileID: 7927511312496306239, guid: 7a9a07dff1ccefb429434d70f34ee3de, type: 3}
-  GlovesPrefab: {fileID: 6158837401881827481, guid: d390e92ae02bca34494f77f57fd1c800, type: 3}
+  ShoeLeftPrefab: {fileID: 8668479097449726212, guid: 6d2fdfb2988c7304587777d34f496d5b, type: 3}
+  ShoeRightPrefab: {fileID: 8736263994919197959, guid: 2054b7b0321d0924981d1c07015b086d, type: 3}
+  GloveLeftPrefab: {fileID: 2304999793673436253, guid: 6484ee809f1915742a549af43f511290, type: 3}
+  GloveRightPrefab: {fileID: 2008176450347308421, guid: 90ab7ed77ab01664b9d68219b96516e8, type: 3}
   GlassesPrefab: {fileID: 6734450565220072068, guid: a5a8a40f0de6adf449455bf41468439a, type: 3}
   MaskPrefab: {fileID: 2633005353059260762, guid: 0f03209702d8f0b4ab149596391830ee, type: 3}
   EarsPrefab: {fileID: 7148034210968577043, guid: 86e27a9b14f0d7b47accf7df8635e4bb, type: 3}
@@ -209,7 +210,9 @@ MonoBehaviour:
   JumpsuitPrefab: {fileID: 5988165263683014854, guid: 4bb39a802a283d341a20c566474368ae, type: 3}
   ExoSuitPrefab: {fileID: 6837100192917222649, guid: 7213f8ade5a231544997e1def361efaa, type: 3}
   DummyPrefab: {fileID: 3933365585080000025, guid: 4d43e2768b3c98f47bcb46c541146e0a, type: 3}
-  ClothingSlotPosition: 000000000a000000000000000700000008000000090000000c0000000b00000006000000000000000500000000000000
+  EarLeftPrefab: {fileID: 1102191780216136002, guid: 7fba0b2cc13002b4da9b264a030ce7d8, type: 3}
+  EarRightPrefab: {fileID: 6702060473300478753, guid: 2b52bcb3e287ce1468a7f69caa576557, type: 3}
+  ClothingSlotPosition: 002000000001000000400000400000008000000000000000001000000002000000080000000000001000000020000000
 --- !u!1 &9219927822186948004
 GameObject:
   m_ObjectHideFlags: 0

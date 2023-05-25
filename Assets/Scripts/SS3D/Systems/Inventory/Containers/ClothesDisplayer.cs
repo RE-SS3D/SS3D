@@ -55,7 +55,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             // If it's not a cloth type container.
             // It'd be probably better to just create "cloth container" inheriting from container to easily test that.
-            if(container.ContainerType < ContainerType.Shoes)
+            if(container.ContainerType < ContainerType.Bag)
             {
                 return;
             }
@@ -79,16 +79,8 @@ namespace SS3D.Systems.Inventory.Containers
         {
             switch (container.ContainerType)
             {
-                case ContainerType.Shoes:
-                    
-                    break;
-
                 case ContainerType.Identification:
                     DisplayCloth(Identification, item, display);
-                    break;
-
-                case ContainerType.Gloves:
-                    
                     break;
 
                 case ContainerType.Glasses:
@@ -96,10 +88,6 @@ namespace SS3D.Systems.Inventory.Containers
                     break;
 
                 case ContainerType.Mask:
-                    
-                    break;
-
-                case ContainerType.Ears:
                     
                     break;
 
