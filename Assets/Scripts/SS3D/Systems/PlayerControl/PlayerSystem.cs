@@ -179,7 +179,13 @@ namespace SS3D.Systems.PlayerControl
             }
 
             player.GiveOwnership(conn);
-            _onlinePlayers.Add(ckey, player);
+
+            bool hasOnlinePlayer = _onlinePlayers.TryGetValue(ckey, out Player onlinePlayer);
+            if (!hasOnlinePlayer)
+            {
+                _onlinePlayers.Add(ckey, player);
+            }
+                
         }
 
         [Server]
