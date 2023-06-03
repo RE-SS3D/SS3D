@@ -12,6 +12,8 @@ using SS3D.Logging;
 using UnityEngine.XR;
 using UnityEngine.UI;
 using TMPro;
+using FishNet.Object;
+using FishNet;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -70,6 +72,7 @@ namespace SS3D.Systems.Inventory.UI
             divisor.transform.SetAsFirstSibling();
         }
 
+        [Client]
         private void FillClothingLayoutWithDummySlots()
         {
             for(int i=0; i< ClothingSlotPosition.Count; i++)
@@ -80,6 +83,7 @@ namespace SS3D.Systems.Inventory.UI
             }
         }
 
+        [Client]
         void OnInventoryContainerAdded(AttachedContainer container)
         {
             SingleItemContainerSlot slot;
@@ -257,7 +261,9 @@ namespace SS3D.Systems.Inventory.UI
 
         void OnInventoryContainerRemoved(AttachedContainer container)
         {
-
+            int indexToRemove = Slots.FindIndex(slot => slot.Container == container);
+            Slots[indexToRemove].gameObject.Dispose(true);
+            Slots.RemoveAt(indexToRemove);
         }
     }
 }
