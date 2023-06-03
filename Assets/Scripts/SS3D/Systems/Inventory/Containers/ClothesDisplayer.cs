@@ -2,22 +2,10 @@ using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System.Collections.Generic;
 using System.Linq;
-using FishNet.Connection;
-using FishNet.Object;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Inventory.UI;
-using SS3D.Systems.Roles;
 using UnityEngine;
-using System.Collections;
-using FishNet.Object.Synchronizing;
-using System.ComponentModel;
-using UnityEditor.Graphs;
-using UnityEditor;
 
 namespace SS3D.Systems.Inventory.Containers
 {
