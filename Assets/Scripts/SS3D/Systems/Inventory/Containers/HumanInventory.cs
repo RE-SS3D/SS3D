@@ -82,9 +82,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Called on server and client whenever there's an operation on the attached Container synclist.
         /// </summary>
-        [Server]
         private void InventoryContainerOnChange(SyncListOperation op, int index, AttachedContainer oldContainer, AttachedContainer newContainer, bool asServer)
         {
+            if (asServer) return;
             switch (op)
             {
                 case SyncListOperation.Add:
@@ -137,7 +137,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// This method simply warn the client that everything is set up on the inventory, and things that dependson it can now be called.
+        /// This method simply warn the client that everything is set up on the inventory, and things that depends on it can now be called.
         /// </summary>
         /// <param name="conn"></param>
         [TargetRpc]
@@ -169,6 +169,8 @@ namespace SS3D.Systems.Inventory.Containers
         {
             OnPlayerContainers.Add(container);
             container.Container.OnContentsChanged += ContainerContentChanged;
+            container.OnItemAttached += TryAddContainerOnItemAttached;
+            container.OnItemDetached += TryRemoveContainerOnItemDetached;
         }
 
         [Server]
@@ -258,6 +260,11 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            // Can't put an item in its own container
+            if (item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(container)){
+                return;
+            }
+
             if (container == null)
             {
                 Debug.LogError($"Client sent invalid container reference: NetId {container.ObjectId}");
@@ -327,6 +334,49 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
             return id.HasPermission(permission);
+        }
+
+        private void TryAddContainerOnItemAttached(object sender, Item item)
+        {
+            var parentContainer = (AttachedContainer)sender;
+            var itemContainers = item.GetComponentsInChildren<InventorySlotContainer>();
+            
+            foreach (var container in itemContainers)
+            {
+                if( container.GetComponentInParent<Item>() != item)
+                {
+                    continue;
+                }
+                if (parentContainer == null || parentContainer.Type == ContainerType.Hand)
+                {
+                    continue;
+                }
+
+                if (!OnPlayerContainers.Contains(container))
+                {
+                    AddContainer(container);
+                    Punpun.Warning(this, $"invoke {container} added");
+                }
+            }    
+        }
+
+        private void TryRemoveContainerOnItemDetached(object sender, Item item)
+        {
+            var parentContainer = (AttachedContainer)sender;
+            var itemContainers = item.GetComponentsInChildren<AttachedContainer>();
+            foreach (var container in itemContainers)
+            {
+                if (parentContainer == null || parentContainer.Type == ContainerType.Hand)
+                {
+                    continue;
+                }
+
+                if (OnPlayerContainers.Contains(container))
+                {
+                    RemoveContainer(container);
+                    Punpun.Warning(this, $"invoke {container} removed");
+                }
+            }
         }
     }
 }

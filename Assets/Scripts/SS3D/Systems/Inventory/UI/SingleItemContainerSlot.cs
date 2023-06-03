@@ -57,7 +57,13 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            display.ShouldDrop = true;
+            // Can't put an item in its own container
+            if (display.Item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(Container))
+            {
+                return;
+            }
+
+                display.ShouldDrop = true;
             ItemDisplay.Item = display.Item;
             Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
         }

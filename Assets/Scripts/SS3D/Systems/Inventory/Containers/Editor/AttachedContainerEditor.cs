@@ -11,7 +11,7 @@ using SS3D.Systems;
 /// It allows displaying only compatible parameters in editor, as well as adding and removing necessary
 /// scripts to make the container work.
 /// </summary>
-[CustomEditor(typeof(AttachedContainer))]
+[CustomEditor(typeof(AttachedContainer), true)]
 public class AttachedContainerEditor : Editor
 {
     private AttachedContainer attachedContainer;
