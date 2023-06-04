@@ -38,6 +38,10 @@ namespace SS3D.Systems.Inventory.UI
             {
                 UpdateContainer(Container);
             }
+            if(_container.Items.Count() > 0) 
+            {
+                ItemDisplay.Item =  _container.Items.First();
+            }
         }
 
         public void OnDestroy()
