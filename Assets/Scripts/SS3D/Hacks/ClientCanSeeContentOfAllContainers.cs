@@ -12,10 +12,11 @@ namespace SS3D.Hacks
             if (Input.GetKeyDown(KeyCode.L))
             {
                 Debug.Log("See all containers");
-                var containers = FindObjectsOfType<ContainerInteractive>();
+                var containers = FindObjectsOfType<AttachedContainer>();
                 foreach (var container in containers)
                 {
-                    var items = container.attachedContainer.Container.StoredItems;
+                 
+                    var items = container.Container?.StoredItems;
                     foreach (var item in items)
                     {
                         Debug.Log(item.Item + " in container " + container.name + " at position " + container.gameObject.transform.position);
