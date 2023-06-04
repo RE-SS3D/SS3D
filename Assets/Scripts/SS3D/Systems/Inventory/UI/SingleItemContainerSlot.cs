@@ -40,6 +40,11 @@ namespace SS3D.Systems.Inventory.UI
             }
         }
 
+        public void OnDestroy()
+        {
+            Destroy(ItemDisplay);
+        }
+
         /// <summary>
         /// When dragging and dropping an item sprite over this slot, update the inventory
         /// and the displayed sprite inside the slot.

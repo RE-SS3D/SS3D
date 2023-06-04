@@ -179,6 +179,8 @@ namespace SS3D.Systems.Inventory.Containers
             OnPlayerContainers.Remove(container);
             OnInventoryContainerRemoved?.Invoke(container);
             container.Container.OnContentsChanged -= ContainerContentChanged;
+            container.OnItemAttached -= TryAddContainerOnItemAttached;
+            container.OnItemDetached -= TryRemoveContainerOnItemDetached;
         }
 
         public void ContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
