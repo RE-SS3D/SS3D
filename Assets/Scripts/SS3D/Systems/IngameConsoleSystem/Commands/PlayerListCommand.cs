@@ -20,12 +20,11 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return checkArgsResponse.InvalidArgs;
 
             string ret = "";
-            List<Soul> souls = Subsystems.Get<PlayerSystem>().OnlineSouls.ToList();
-            foreach (Soul i in souls)
+            List<Player> players = Subsystems.Get<PlayerSystem>().OnlinePlayers.ToList();
+            foreach (Player i in players)
             {
                 ret += i.Ckey + "\t";
             }
-
             return ret;
         }
 

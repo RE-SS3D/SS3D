@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
@@ -24,22 +23,22 @@ namespace SS3D.Systems.PlayerControl
         private NetworkObject _unauthorizedUserPrefab;
 
         [SerializeField]
-        private Soul _soulPrefab;
+        private Player _playerPrefab;
 
         [SyncObject]
-        private readonly SyncDictionary<string, Soul> _serverSouls = new();
+        private readonly SyncDictionary<string, Player> _serverPlayers = new();
         [SyncObject]
-        private readonly SyncDictionary<string, Soul> _onlineSouls = new();
+        private readonly SyncDictionary<string, Player> _onlinePlayers = new();
 
-        public IEnumerable<Soul> ServerSouls => _serverSouls.Values;
-        public IEnumerable<Soul> OnlineSouls => _onlineSouls.Values;
+        public IEnumerable<Player> ServerPlayers => _serverPlayers.Values;
+        public IEnumerable<Player> OnlinePlayers => _onlinePlayers.Values;
 
         protected override void OnStart()
         {
             base.OnStart();
 
-            LateSyncOnlineSouls();
-            LateSyncServerSouls();
+            LateSyncOnlinePlayers();
+            LateSyncServerPlayers();
 
             AddEventListeners();
         }
@@ -56,8 +55,8 @@ namespace SS3D.Systems.PlayerControl
 
         private void AddEventListeners()
         {
-            _serverSouls.OnChange += HandleSyncServerSoulsChanged;
-            _onlineSouls.OnChange += HandleSyncOnlineSouls;
+            _serverPlayers.OnChange += HandleSyncServerPlayersChanged;
+            _onlinePlayers.OnChange += HandleSyncOnlinePlayers;
         }
 
         private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs remoteConnectionStateArgs)
@@ -73,7 +72,7 @@ namespace SS3D.Systems.PlayerControl
             ProcessPlayerJoin(conn);
         }
 
-        private void HandleSyncOnlineSouls(SyncDictionaryOperation op, string key, Soul value, bool asServer)
+        private void HandleSyncOnlinePlayers(SyncDictionaryOperation op, string key, Player value, bool asServer)
         {
             ChangeType changeType;
 
@@ -95,19 +94,19 @@ namespace SS3D.Systems.PlayerControl
                     break;
             }
 
-            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.Values.ToList(), changeType, value, key, asServer);
-            serverSoulsChanged.Invoke(this);
+            OnlinePlayersChanged serverPlayersChanged = new(_onlinePlayers.Values.ToList(), changeType, value, key, asServer);
+            serverPlayersChanged.Invoke(this);
         }
 
-        private void LateSyncOnlineSouls()
+        private void LateSyncOnlinePlayers()
         {
-            foreach (Soul soul in _onlineSouls.Values)
+            foreach (Player player in _onlinePlayers.Values)
             {
-                HandleSyncOnlineSouls(SyncDictionaryOperation.Add, soul.Ckey, soul, false);
+                HandleSyncOnlinePlayers(SyncDictionaryOperation.Add, player.Ckey, player, false);
             }
         }
 
-        private void HandleSyncServerSoulsChanged(SyncDictionaryOperation op, string key, Soul value, bool asServer)
+        private void HandleSyncServerPlayersChanged(SyncDictionaryOperation op, string key, Player value, bool asServer)
         {
             ChangeType changeType;
 
@@ -124,15 +123,15 @@ namespace SS3D.Systems.PlayerControl
                     break;
             }
 
-            ServerSoulsChanged serverSoulsChanged = new(_serverSouls.Values.ToList(), changeType, value);
-            serverSoulsChanged.Invoke(this);
+            ServerPlayersChanged serverPlayersChanged = new(_serverPlayers.Values.ToList(), changeType, value);
+            serverPlayersChanged.Invoke(this);
         }
 
-        private void LateSyncServerSouls()
+        private void LateSyncServerPlayers()
         {
-            foreach (Soul soul in _serverSouls.Values)
+            foreach (Player player in _serverPlayers.Values)
             {
-                HandleSyncOnlineSouls(SyncDictionaryOperation.Add, soul.Ckey, soul, false);
+                HandleSyncOnlinePlayers(SyncDictionaryOperation.Add, player.Ckey, player, false);
             }
         }
 
@@ -152,7 +151,7 @@ namespace SS3D.Systems.PlayerControl
         }
 
         /// <summary>
-        /// Used by the server to validate credentials and reassign souls to clients.
+        /// Used by the server to validate credentials and reassign players to clients.
         /// TODO: Actual authentication
         /// </summary>
         /// <param name="conn">Network connection</param>
@@ -161,26 +160,32 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
-            bool hasSoul = _serverSouls.TryGetValue(ckey, out Soul soul);
+            bool hasPlayer = _serverPlayers.TryGetValue(ckey, out Player player);
 
-            if (!hasSoul)
+            if (!hasPlayer)
             {
-                Punpun.Information(this, "No Soul match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
+                Punpun.Information(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
 
-                soul = Instantiate(_soulPrefab);
-                ServerManager.Spawn(soul.gameObject);
+                player = Instantiate(_playerPrefab);
+                ServerManager.Spawn(player.gameObject);
 
-                soul.SetCkey(ckey);
+                player.SetCkey(ckey);
 
-                _serverSouls.Add(ckey, soul);
+                _serverPlayers.Add(ckey, player);
             }
             else
             {
-                Punpun.Information(this, "Soul match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
+                Punpun.Information(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
             }
 
-            soul.GiveOwnership(conn);
-            _onlineSouls.Add(ckey, soul);
+            player.GiveOwnership(conn);
+
+            bool hasOnlinePlayer = _onlinePlayers.TryGetValue(ckey, out Player onlinePlayer);
+            if (!hasOnlinePlayer)
+            {
+                _onlinePlayers.Add(ckey, player);
+            }
+                
         }
 
         [Server]
@@ -201,12 +206,12 @@ namespace SS3D.Systems.PlayerControl
                 Punpun.Information(this, "Client {connectionAddress}'s owned object: {networkIdentity}",
                     Logs.ServerOnly, conn.GetAddress(), networkIdentity.name);
 
-                Soul soul = networkIdentity.GetComponent<Soul>();
-                if (soul != null)
+                Player player = networkIdentity.GetComponent<Player>();
+                if (player != null)
                 {
-                    _onlineSouls.Remove(soul.Ckey);
-                    soul.RemoveOwnership();
-                    Punpun.Information(this, "Invoking the player server left event: {ckey}", Logs.ServerOnly, soul.Ckey);
+                    _onlinePlayers.Remove(player.Ckey);
+                    player.RemoveOwnership();
+                    Punpun.Information(this, "Invoking the player server left event: {ckey}", Logs.ServerOnly, player.Ckey);
 
                     return;
                 }
@@ -216,17 +221,17 @@ namespace SS3D.Systems.PlayerControl
 
         public string GetCkey(NetworkConnection conn)
         {
-            return ServerSouls.ToList().Find(soul => soul.Owner == conn)?.Ckey;
+            return ServerPlayers.ToList().Find(player => player.Owner == conn)?.Ckey;
         }
 
-        public Soul GetSoul(string ckey)
+        public Player GetPlayer(string ckey)
         {
-            return ServerSouls.ToList().Find(soul => soul.Ckey == ckey);
+            return ServerPlayers.ToList().Find(player => player.Ckey == ckey);
         }
 
-        public Soul GetSoul(NetworkConnection conn)
+        public Player GetPlayer(NetworkConnection conn)
         {
-            return ServerSouls.ToList().Find(soul => soul.Owner == conn);
+            return ServerPlayers.ToList().Find(player => player.Owner == conn);
         }
     }
 }

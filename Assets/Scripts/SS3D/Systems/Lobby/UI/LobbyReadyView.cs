@@ -102,8 +102,8 @@ namespace SS3D.Systems.Lobby.UI
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
 
-            Soul soul = playerSystem.GetSoul(LocalConnection);
-            entitySystem.CmdSpawnLatePlayer(soul);
+            Player player = playerSystem.GetPlayer(LocalConnection);
+            entitySystem.CmdSpawnLatePlayer(player);
         }
 
         private void HandleReadyButtonPressed(bool pressed)

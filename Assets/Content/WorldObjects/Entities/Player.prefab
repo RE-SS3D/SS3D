@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3486636391395698902}
   - component: {fileID: 3363661164123955675}
   m_Layer: 0
-  m_Name: Soul
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,10 +74,10 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 24
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 4377038379903598384
+  <AssetPathHash>k__BackingField: 8903033462217631108
   _sceneNetworkObjects: []
 --- !u!114 &3486636391395698902
 MonoBehaviour:

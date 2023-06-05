@@ -8,9 +8,9 @@ namespace SS3D.Systems.Rounds.Events
 {
     public partial struct ReadyPlayersChanged : IEvent
     {
-        public readonly List<Soul> ReadyPlayers;
+        public readonly List<Player> ReadyPlayers;
 
-        public ReadyPlayersChanged(List<Soul>readyPlayers)
+        public ReadyPlayersChanged(List<Player>readyPlayers)
         {
             ReadyPlayers = readyPlayers;
         }
