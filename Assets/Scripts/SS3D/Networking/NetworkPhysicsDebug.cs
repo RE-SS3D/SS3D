@@ -8,7 +8,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 using Random = UnityEngine.Random;
 
 namespace SS3D.Networking
@@ -29,7 +29,7 @@ namespace SS3D.Networking
         protected override void OnStart()
         {
             base.OnStart();
-            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
             _controls.SpawnCans.performed += HandleSpawnSodaCans;
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));

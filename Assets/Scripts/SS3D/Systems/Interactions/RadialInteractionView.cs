@@ -11,14 +11,14 @@ using SS3D.Systems.Inputs;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Interactions
 {
     /// <summary>
     /// Controls the UI for a radial interaction menu
     /// </summary>
-    public sealed class RadialInteractionView : Core.Behaviours.System
+    public sealed class RadialInteractionView : Core.Behaviours.SubSystem
     {
         public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
 
@@ -44,7 +44,7 @@ namespace SS3D.Systems.Interactions
         private List<IInteraction> Interactions { get; set; }
         private InteractionEvent Event { get; set; }
         private Controls.InteractionsActions _controls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
 
         protected override void OnStart()
         {
@@ -69,7 +69,7 @@ namespace SS3D.Systems.Interactions
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
 
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Interactions;
             _controls.ViewInteractions.canceled += HandleDisappear;
         }

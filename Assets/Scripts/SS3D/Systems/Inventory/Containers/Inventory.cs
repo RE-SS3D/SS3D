@@ -72,7 +72,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             SetupView();
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+            Subsystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(Body);
         }
 
         private void SetupView()

@@ -12,14 +12,14 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.TileMapCreator;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Tile.UI
 {
     /// <summary>
     /// In-game editor for placing and deleting items/objects in a tilemap.
     /// </summary>
-    public class TileMapCreator : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
+    public class TileMapCreator : NetworkSubSystem, IPointerEnterHandler, IPointerExitHandler
     {
         public GameObject _menuRoot;
         public GameObject _contentRoot;
@@ -35,13 +35,13 @@ namespace SS3D.Systems.Tile.UI
         private Vector3 _lastSnappedPosition;
         private GenericObjectSo _selectedObject;
 
-        private TileSystem _tileSystem;
+        private TileSubSystem _tileSystem;
         private GhostManager _ghostManager;
         private Plane _plane;
 
         private List<GenericObjectSo> _objectDatabase;
         private Controls.TileCreatorActions _controls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
 
         public bool IsDeleting
         {
@@ -61,7 +61,7 @@ namespace SS3D.Systems.Tile.UI
         {
             base.OnStart();
             ShowUI(false);
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
 
@@ -116,7 +116,7 @@ namespace SS3D.Systems.Tile.UI
         {
             if (!_initalized)
             {
-                _tileSystem = Subsystems.Get<TileSystem>();
+                _tileSystem = Subsystems.Get<TileSubSystem>();
                 _ghostManager = GetComponent<GhostManager>();
                 _plane = new Plane(Vector3.up, 0);
 
@@ -225,7 +225,7 @@ namespace SS3D.Systems.Tile.UI
         {
             if (_tileSystem == null)
             {
-                _tileSystem = Subsystems.Get<TileSystem>();
+                _tileSystem = Subsystems.Get<TileSubSystem>();
             }
 
             TileObjectSo tileObjectSo = (TileObjectSo) _tileSystem.GetAsset(tileObjectSoName);
@@ -394,14 +394,14 @@ namespace SS3D.Systems.Tile.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
-            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", false);
+            Subsystems.Get<InputSubSystem>().ToggleBinding("<Mouse>/scroll/y", false);
         }
 
         [ServerOrClient]
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
-            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", true);
+            Subsystems.Get<InputSubSystem>().ToggleBinding("<Mouse>/scroll/y", true);
         }
     }
 }

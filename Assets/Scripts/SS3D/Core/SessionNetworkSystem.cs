@@ -14,7 +14,7 @@ namespace SS3D.Core
     /// Helps the NetworkManager to understand what we should do in this instance,
     /// if we are a server, or a client, and process respective data.
     /// </summary>
-    public sealed class SessionNetworkSystem : Behaviours.System
+    public sealed class SessionNetworkSystem : Behaviours.SubSystem
     {
         /// <summary>
         /// Uses the processed args to proceed with game network initialization

@@ -9,7 +9,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -68,7 +68,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStart();
             
-            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
+            _controls = Subsystems.Get<InputSubSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
         }

@@ -9,7 +9,7 @@ using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Gamemodes.UI
 {
@@ -37,7 +37,7 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
             _controls.Fade.performed += HandleFadePerformed;
             _controls.Fade.canceled += HandleFadeCanceled;
         }

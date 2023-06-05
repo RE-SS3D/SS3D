@@ -7,7 +7,7 @@ using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -31,7 +31,7 @@ namespace SS3D.Systems.Screens
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
 
-            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
             _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 

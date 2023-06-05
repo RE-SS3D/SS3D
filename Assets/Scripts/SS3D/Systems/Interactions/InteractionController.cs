@@ -13,7 +13,7 @@ using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -30,7 +30,7 @@ namespace SS3D.Systems.Interactions
 
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         
         private Camera _camera;
         private RadialInteractionView _radialView;
@@ -41,13 +41,13 @@ namespace SS3D.Systems.Interactions
             if (!Owner.IsLocalClient) return;
 
             _radialView = Subsystems.Get<RadialInteractionView>();
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
             Controls controls = _inputSystem.Inputs;
             _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
             _radialView = Subsystems.Get<RadialInteractionView>();
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
             _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
             _hotkeysControls.Use.performed += HandleUse;
