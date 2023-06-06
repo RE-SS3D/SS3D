@@ -1,43 +1,92 @@
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
+
 using System.Collections.Generic;
 using System.Linq;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
+using FishNet.Object.Synchronizing;
+using UnityEditor;
+using FishNet.Object;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-    public class ClothesDisplayer : Actor
+    public class ClothesDisplayer : NetworkActor
     {
+
+        private struct ClothDisplayData
+        {
+            public ClothDisplayData(NetworkObject bodyPart, bool display, Item clothToDisplay)
+            {
+                _bodyPart= bodyPart;
+                _display= display;
+                _clothToDisplay= clothToDisplay;
+            }
+            public NetworkObject _bodyPart;
+            public bool _display;
+            public Item _clothToDisplay;
+        }
 
         public HumanInventory _inventory;
 
         public Transform ClothesRoot;
 
         // Game objects on the human prefab to display clothes.
-        public GameObject Hat;
-        public GameObject Eyes;
-        public GameObject Jumpsuit;
-        public GameObject HandLeft;
-        public GameObject HandRight;
-        public GameObject FootLeft;
-        public GameObject FootRight;
-        public GameObject Identification;
-        public GameObject Backpack;
+        public NetworkObject Hat;
+        public NetworkObject Eyes;
+        public NetworkObject Jumpsuit;
+
+        public NetworkObject HandLeft;
+        public NetworkObject HandRight;
+        public NetworkObject FootLeft;
+        public NetworkObject FootRight;
+        public NetworkObject Identification;
+        public NetworkObject Backpack;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData jumpsuitData;
+
+
+        private void OnChange(ClothDisplayData oldValue, ClothDisplayData newValue, bool asServer)
+        {
+
+            if (asServer) return;
+            Debug.Log("jumpsuit changed");
+            Debug.Log("display ? " + newValue._display + "item : " + newValue._clothToDisplay + "on body part : " + newValue._bodyPart );
+
+
+            bool display = newValue._display;
+            var bodyPart = newValue._bodyPart;
+            var item = newValue._clothToDisplay;
+
+            if (!bodyPart.TryGetComponent(out SkinnedMeshRenderer renderer))
+            {
+                Punpun.Warning(this, $"no skinned mesh renderer on game object {bodyPart}, can't display cloth");
+                return;
+            }
+
+            if (display)
+            {
+                bodyPart.gameObject.SetActive(true);
+                renderer.sharedMesh = item.gameObject.GetComponentInChildren<MeshFilter>().mesh;
+            }
+            else
+            {
+                bodyPart.gameObject.SetActive(false);
+            }
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+        }
+
 
 
 
         protected override void OnStart()
         {
             base.OnStart();
-            var renderers = ClothesRoot.GetComponentsInChildren<SkinnedMeshRenderer>();
-            foreach (var renderer in renderers)
-            {
-                renderer.enabled = false;
-            }
-
             _inventory.OnContainerContentChanged += ContainerContentChanged;
         }
 
@@ -111,23 +160,11 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        private void DisplayCloth(GameObject bodyPart, Item item, bool display)
+        private void DisplayCloth(NetworkObject bodyPart, Item item, bool display)
         {
-            if(!bodyPart.TryGetComponent(out SkinnedMeshRenderer renderer))       
-            {
-                Punpun.Warning(this, $"no skinned mesh renderer on game object {bodyPart}, can't display cloth");
-                return;
-            }
-
-            if(display)
-            {
-                bodyPart.SetActive(true);
-                renderer.sharedMesh = item.gameObject.GetComponentInChildren<MeshFilter>().mesh;
-            }
-            else
-            {
-                bodyPart.SetActive(false);
-            }
+            jumpsuitData = new ClothDisplayData(bodyPart, display, item);
         }
+
+
     }
 }
