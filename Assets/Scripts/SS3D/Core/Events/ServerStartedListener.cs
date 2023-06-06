@@ -1,9 +1,7 @@
 using FishNet.Object;
 using System;
-using SS3D.Core;
-using SS3D.Logging;
 
-namespace SS3D.Core
+namespace SS3D.Core.Events
 {
     /// <summary>
     /// Simple class used to trigger a call once client and/or server is fully functionnal and started.
@@ -27,13 +25,6 @@ namespace SS3D.Core
         {
             base.OnStartClient();
             OnServerOrClientStarted?.Invoke(this, EventArgs.Empty);
-        }
-
-
-        // Update is called once per frame
-        void Update()
-        {
-
         }
     }
 }

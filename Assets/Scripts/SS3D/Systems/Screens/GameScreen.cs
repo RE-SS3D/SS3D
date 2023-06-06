@@ -4,6 +4,7 @@ using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Screens
 {
@@ -12,13 +13,13 @@ namespace SS3D.Systems.Screens
     /// </summary>
     public class GameScreen : Actor
     {
-        [SerializeField] private ScreenType _screenType;
+        [FormerlySerializedAs("_screenType")]
+        public ScreenType ScreenType;
+
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Transform _holder;
 
         private Sequence _sequence;
-
-        private static ScreenType LastScreen { get; set; }
 
         private const float ScaleInScale = 1.15f;
         private const float FadeDuration = .05f;
@@ -28,50 +29,32 @@ namespace SS3D.Systems.Screens
         {
             base.OnStart();
 
+            GameScreens.Register(this);
+
             Setup();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            GameScreens.Unregister(ScreenType);
         }
 
         [ServerOrClient]
         private void Setup()
         {
-            LastScreen = ScreenType.None;
-
-            if (_canvasGroup != null)
-            {
-                bool foundCanvas = TryGetComponent(out CanvasGroup canvasGroup);
-                _canvasGroup = foundCanvas ? canvasGroup : GameObject.AddComponent<CanvasGroup>();
-            }
-
-            SetScreenState(ScreenType.Lobby, true);
-
-            AddHandle(ChangeGameScreenEvent.AddListener(HandleChangeGameScreen));
-            AddHandle(CameraTargetChanged.AddListener(HandleChangeCamera));
+            bool foundCanvas = TryGetComponent(out CanvasGroup canvasGroup);
+            _canvasGroup = foundCanvas ? canvasGroup : GameObject.AddComponent<CanvasGroup>();
         }
 
         [ServerOrClient]
-        private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
-        {
-            ScreenType screenType = e.Screen;
-
-            SetScreenState(screenType);
-        }
-
-        [ServerOrClient]
-        private void HandleChangeCamera(ref EventContext context, in CameraTargetChanged e)
-        {
-            ChangeGameScreenEvent changeGameScreenEvent = new(ScreenType.None);
-            changeGameScreenEvent.Invoke(this);
-        }
-
-        [ServerOrClient]
-        private void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
+        public void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence();
 
-            LastScreen = nextScreen;
-
-            bool matchesScreenType = nextScreen == _screenType;
+            bool matchesScreenType = nextScreen == ScreenType;
 
             float fadeDuration = forceInstant ? 0 : FadeDuration;
             float scaleDuration = forceInstant ? 0 : ScaleDuration;

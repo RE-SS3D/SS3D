@@ -39,6 +39,14 @@ namespace SS3D.Systems.Entities
             OnMindChanged?.Invoke(Mind);
         }
 
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, false);
+            localPlayerObjectChanged.Invoke(this);
+        }
+
         private void InvokeLocalPlayerObjectChanged()
         {
             if (Mind == null) return;
@@ -48,7 +56,7 @@ namespace SS3D.Systems.Entities
                 return;
             }
 
-            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject);
+            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, true);
             localPlayerObjectChanged.Invoke(this);
         }
 

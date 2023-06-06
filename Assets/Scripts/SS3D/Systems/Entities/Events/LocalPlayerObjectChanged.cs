@@ -5,11 +5,14 @@ namespace SS3D.Systems.Entities.Events
 {
     public partial struct LocalPlayerObjectChanged : IEvent
     {
-        public readonly GameObject Target;
+        public readonly GameObject PlayerObject;
 
-        public LocalPlayerObjectChanged(GameObject target)
+        public readonly bool PlayerHasObject;
+
+        public LocalPlayerObjectChanged(GameObject playerObject, bool playerHasObject)
         {
-            Target = target;
+            PlayerObject = playerObject;
+            PlayerHasObject = playerHasObject;
         }
     }
 }
