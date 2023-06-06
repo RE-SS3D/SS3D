@@ -182,7 +182,7 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            Punpun.Information(this, _roundState.ToString(), Logs.ServerOnly);
+            Punpun.Information(this, $"Round state updated to: {_roundState}", Logs.Important);
 
             RoundStateUpdated roundStateUpdated = new(newValue);
             roundStateUpdated.Invoke(this);

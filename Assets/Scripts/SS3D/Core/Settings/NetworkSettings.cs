@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SS3D.Core.Settings
 {
-	[ProjectSettings("SS3D", "Network Settings")]
+	[ProjectSettings("SS3D/Core", "Network Settings")]
 	public sealed class NetworkSettings : ScriptableSettings
 	{
 		private const string NetworkSettingsFileName = "network.json";

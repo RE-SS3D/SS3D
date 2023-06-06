@@ -15,7 +15,8 @@ namespace SS3D.Systems.Screens
         /// </summary>
         private static readonly Dictionary<ScreenType, GameScreen> Screens = new();
 
-        private static ScreenType LastScreen { get; set; }
+        public static ScreenType ActiveScreen { get; set; }
+        public static ScreenType LastScreen { get; set; }
 
         /// <summary>
         /// Registers a screen into a screen list.
@@ -53,7 +54,7 @@ namespace SS3D.Systems.Screens
             string message = $"No screen of type {screenType} found.";
 
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Punpun.Error(typeof(Subsystems), message, Logs.Important, typeof(T).Name);
+            Punpun.Error(typeof(GameScreens), message, Logs.Important, typeof(T).Name);
 
             screen = null;
             return false;
@@ -61,7 +62,10 @@ namespace SS3D.Systems.Screens
 
         public static void SwitchTo(ScreenType screenToSwitchTo)
         {
-            LastScreen = screenToSwitchTo;
+            LastScreen = ActiveScreen;
+            ActiveScreen = screenToSwitchTo;
+
+            Punpun.Information(typeof(GameScreens), $"Switching game screen to {screenToSwitchTo}");
 
             foreach (KeyValuePair<ScreenType,GameScreen> screenEntry in Screens)
             {

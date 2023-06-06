@@ -44,12 +44,12 @@ namespace SS3D.Systems.Entities.UI
 
             if (blockCameraVision)
             {
-                _canvasGroup.blocksRaycasts = false;
+                _canvasGroup.blocksRaycasts = true;
                 _alphaSequence.Append(_canvasGroup.DOFade(1, FadeDuration));
             }
             else
             {
-                _alphaSequence.Append(_canvasGroup.DOFade(0, FadeDuration)).OnComplete(() => {   _canvasGroup.blocksRaycasts = true;});
+                _alphaSequence.Append(_canvasGroup.DOFade(0, FadeDuration)).OnComplete(() => {   _canvasGroup.blocksRaycasts = false;});
             }
         }
 

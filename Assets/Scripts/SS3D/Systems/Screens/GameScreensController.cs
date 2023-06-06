@@ -5,16 +5,17 @@ using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Screens.Events;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Screens
 {
     public sealed class GameScreensController : NetworkActor
     {
-        [SerializeField] private bool _blockNone;
-        [SerializeField] private bool _menuOpen;
+        [SerializeField] private bool _blockSwitchToNone;
 
         private PlayerSpawnedState _spawnedState;
         private Controls.OtherActions _controls;
@@ -23,13 +24,12 @@ namespace SS3D.Systems.Screens
         {
             base.OnAwake();
 
-            _menuOpen = true;
-            _blockNone = true;
+            _blockSwitchToNone = true;
             _spawnedState = PlayerSpawnedState.IsNotSpawned;
 
-            ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
-            SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            AddHandle(ChangeGameScreenEvent.AddListener(HandleChangeGameScreen));
+            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
 
             _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.ToggleMenu.performed += HandleToggleMenu;
@@ -44,11 +44,13 @@ namespace SS3D.Systems.Screens
 
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
-            if (!_blockNone)
+            if (_blockSwitchToNone)
             {
-                _menuOpen = !_menuOpen;
-                UpdateScreen();
+                return;
             }
+
+            ScreenType screenToSwitchTo = GameScreens.ActiveScreen == ScreenType.Lobby ? ScreenType.None : ScreenType.Lobby;
+            GameScreens.SwitchTo(screenToSwitchTo);
         }
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
@@ -77,7 +79,6 @@ namespace SS3D.Systems.Screens
                     break;
                 default:
                     LockToMenuScreen();
-                    UpdateScreen();
                     break;
             }
         }
@@ -88,23 +89,25 @@ namespace SS3D.Systems.Screens
 
             if (screenType == ScreenType.None)
             {
-                _menuOpen = false;
                 MarkNewlySpawnedPlayerAsAwaitingConfirmation();
-            }
-
-            if (screenType == ScreenType.Lobby)
-            {
-                _menuOpen = true;
             }
         }
 
 
         private void UpdateScreen()
         {
-            ScreenType newScreen = _menuOpen ? ScreenType.Lobby : ScreenType.None;
-            ChangeGameScreenEvent changeGameScreenEvent = new(newScreen);
-
-            changeGameScreenEvent.Invoke(this);
+            switch (_spawnedState)
+            {
+                case PlayerSpawnedState.IsNotSpawned:
+                case PlayerSpawnedState.AwaitingConfirmationOfSpawn:
+                    GameScreens.SwitchTo(ScreenType.Lobby);
+                    break;
+                case PlayerSpawnedState.ConfirmedSpawned:
+                    GameScreens.SwitchTo(ScreenType.None);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         /// <summary>
@@ -112,9 +115,10 @@ namespace SS3D.Systems.Screens
         /// </summary>
         private void LockToMenuScreen()
         {
-            _blockNone = true;
-            _menuOpen = true;
+            _blockSwitchToNone = true;
             _spawnedState = PlayerSpawnedState.IsNotSpawned;
+
+            UpdateScreen();
         }
 
         /// <summary>
@@ -124,8 +128,10 @@ namespace SS3D.Systems.Screens
         /// </summary>
         private void GivePlayerAccessToGame()
         {
-            _blockNone = false;
+            _blockSwitchToNone = false;
             _spawnedState = PlayerSpawnedState.ConfirmedSpawned;
+
+            UpdateScreen();
         }
 
         /// <summary>
@@ -138,6 +144,8 @@ namespace SS3D.Systems.Screens
             {
                 _spawnedState = PlayerSpawnedState.AwaitingConfirmationOfSpawn;
             }
+
+            UpdateScreen();
         }
 
         /// <summary>

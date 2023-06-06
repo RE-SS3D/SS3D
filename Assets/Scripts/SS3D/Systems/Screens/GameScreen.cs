@@ -1,10 +1,11 @@
-﻿using Coimbra.Services.Events;
+﻿using Coimbra;
+using Coimbra.Services.Events;
 using DG.Tweening;
 using FishNet.Object;
-using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Screens
 {
@@ -20,10 +21,6 @@ namespace SS3D.Systems.Screens
         [SerializeField] private Transform _holder;
 
         private Sequence _sequence;
-
-        private const float ScaleInScale = 1.15f;
-        private const float FadeDuration = .05f;
-        private const float ScaleDuration = .175f;
 
         protected override void OnStart()
         {
@@ -56,11 +53,13 @@ namespace SS3D.Systems.Screens
 
             bool matchesScreenType = nextScreen == ScreenType;
 
-            float fadeDuration = forceInstant ? 0 : FadeDuration;
-            float scaleDuration = forceInstant ? 0 : ScaleDuration;
+            GameScreenSettings gameScreenSettings = ScriptableSettings.GetOrFind<GameScreenSettings>();
+
+            float fadeDuration = forceInstant ? 0 : gameScreenSettings.FadeInOutDuration;
+            float scaleDuration = forceInstant ? 0 : gameScreenSettings.ScaleInOutDuration;
 
             float targetFade = matchesScreenType ? 1 : 0;
-            float targetScale = matchesScreenType ? 1 : ScaleInScale;
+            float targetScale = matchesScreenType ? 1 : gameScreenSettings.ScaleInOutScale;
 
             _holder.DOScale(targetScale, scaleDuration).SetEase(Ease.OutQuart);
 

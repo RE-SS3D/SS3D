@@ -6,7 +6,7 @@ namespace SS3D.Core.Settings
     /// <summary>
     /// Used to define settings for the overall SS3D application in the Project Settings.
     /// </summary>
-    [ProjectSettings("SS3D", "Application Settings")]
+    [ProjectSettings("SS3D/Core", "Application Settings")]
     public sealed class ApplicationSettings : ScriptableSettings
     {
         /// <summary>
