@@ -4,11 +4,10 @@ using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Data;
 using SS3D.Logging;
 using SS3D.Systems.Permissions.Events;
-using UnityEngine;
 using File = System.IO.File;
-using Path = System.IO.Path;
 
 namespace SS3D.Systems.Permissions
 {
@@ -17,9 +16,6 @@ namespace SS3D.Systems.Permissions
     /// </summary>
     public sealed class PermissionSystem : NetworkSystem
     {
-        private const string EditorPermissionFilePath = "/Builds/Game/Config/permissions.txt";
-        private const string PermissionFilePath = "/Config/permissions.txt";
-
         /// <summary>
         /// Dictionary of users and permissions.
         /// </summary>
@@ -32,7 +28,13 @@ namespace SS3D.Systems.Permissions
         [SyncVar]
         public bool HasLoadedPermissions;
 
-        private static string FullPermissionFilePath => Path.GetFullPath(".") + (Application.isEditor ? EditorPermissionFilePath : PermissionFilePath);
+        /// <summary>
+        /// File name to the permissions file.
+        /// TODO: Move this to a PermissionSettings and create permissions via JSON.
+        /// </summary>
+        private const string ConfigFileName = "permissions.txt";
+
+        private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + ConfigFileName;
 
         protected override void OnStart()
         {
@@ -106,7 +108,7 @@ namespace SS3D.Systems.Permissions
                 CreatePermissionsFileIfNotExists();
             }
 
-            string[] lines = File.ReadAllLines(FullPermissionFilePath);
+            string[] lines = File.ReadAllLines(PermissionsPath);
 
             foreach (string line in lines)
             {
@@ -131,13 +133,13 @@ namespace SS3D.Systems.Permissions
         [Server]
         private void CreatePermissionsFileIfNotExists()
         {
-            if (File.Exists(FullPermissionFilePath))
+            if (File.Exists(PermissionsPath))
             {
                 return;
             }
 
             Punpun.Information(this, "Permissions file not found, creating a new one", Logs.ServerOnly);
-            File.WriteAllText(FullPermissionFilePath, string.Empty);
+            File.WriteAllText(PermissionsPath, string.Empty);
         }
 
         /// <summary>

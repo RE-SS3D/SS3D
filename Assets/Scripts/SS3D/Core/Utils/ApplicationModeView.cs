@@ -17,10 +17,10 @@ namespace SS3D.Core.Utils
         {
             base.OnAwake();
 
-            ApplicationStartedEvent.AddListener(HandleApplicationStarted);
+            NetworkSessionStartedEvent.AddListener(HandleApplicationStarted);
         }
 
-        private void HandleApplicationStarted(ref EventContext context, in ApplicationStartedEvent e)
+        private void HandleApplicationStarted(ref EventContext context, in NetworkSessionStartedEvent e)
         {
             string ckey = e.Ckey.Colorize(LogColors.GetLogColor(Logs.Generic));
             string mode = e.NetworkType.ToString().Colorize(LogColors.GetLogColor(Logs.Physics));

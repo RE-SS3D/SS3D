@@ -3,16 +3,41 @@ using DG.Tweening;
 using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using SS3D.Data;
+using SS3D.Data.Enums;
 using SS3D.Logging;
+using SS3D.SceneManagement;
 using UDiscord;
+using UnityEngine;
 
 namespace SS3D.Core
 {
     /// <summary>
     /// Initializes all the core information needed, subsystems and assets pre-loading.
     /// </summary>
-    public sealed class ApplicationStateSystem : Behaviours.System
+    public sealed class ApplicationInitializerSystem : Behaviours.System
     {
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            InitializeLauncher();
+        }
+
+        private void InitializeLauncher()
+        {
+            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
+            ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+
+            Scenes sceneToLoad = startArgsSystem.HasCommandLineArgs() ? Scenes.Intro : Scenes.Launcher;
+
+            if (applicationSettings.ForceLauncher && !startArgsSystem.HasCommandLineArgs())
+            {
+                sceneToLoad = Scenes.Launcher;
+            }                                  
+
+            Scene.LoadAsync(sceneToLoad);
+        }
+
         /// <summary>
         /// Initializes all required systems for the application.
         /// </summary>
@@ -20,35 +45,36 @@ namespace SS3D.Core
         {
             Punpun.Information(this, "Initializing application", Logs.Important);
 
-            InitializeSubsystems();
-            InitializeApplicationSettings();
-            InitializeNetworkSession();
-        }
-
-        /// <summary>
-        /// Initializes the application settings based on the command line args or the Project Settings if in Editor.
-        /// </summary>
-        private void InitializeApplicationSettings()
-        {
-            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
-
-            startArgsSystem.LoadApplicationSettings();
-            startArgsSystem.ProcessCommandLineArgs();
-        }
-
-        /// <summary>
-        /// Initializes the subsystems, like pre-loading assets and integrations.
-        /// </summary>
-        private void InitializeSubsystems()
-        {
             DOTween.Init();
 
             InitializeDiscordIntegration();
             InitializeAssetData();
+
+            InitializeSettings();
+            InitializeNetworkSession();
         }
 
         /// <summary>
-        /// Initializes all the assets from the AssetData.
+        /// Initialize the application settings.
+        /// </summary>
+        private void InitializeSettings()
+        {
+            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
+            ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+
+            if (!startArgsSystem.HasCommandLineArgs() ||applicationSettings.ForceLauncher || Application.isEditor)
+            {
+                return;
+            }
+
+            NetworkSettings.ResetOnBuiltApplication();
+            ApplicationSettings.ResetOnBuiltApplication();
+
+            startArgsSystem.ProcessCommandLineArgs();
+        }
+
+        /// <summary>
+        /// Initializes all the assets from the asset data.
         /// </summary>
         private void InitializeAssetData()
         {
@@ -61,9 +87,8 @@ namespace SS3D.Core
         private void InitializeDiscordIntegration()
         {
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
-            bool enableDiscordIntegration = applicationSettings.EnableDiscord;
 
-            if (enableDiscordIntegration)
+            if (applicationSettings.EnableDiscord)
             {
                 DiscordManager.Initialize();
             }

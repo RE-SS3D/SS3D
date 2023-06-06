@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using SS3D.CodeGeneration;
+using System;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
@@ -26,6 +27,14 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             _assetDatabase = (AssetDatabase)target;
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            _assetDatabase.EnumName = _enumNameTextField.value;
+            _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+        }
+#endif
 
         /// <summary>
         /// This sets ups the UI for the custom inspector using the UI Toolkit
