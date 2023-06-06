@@ -68,7 +68,7 @@ namespace SS3D.Systems.Inventory.UI
             inventory.OnInventoryContainerRemoved += OnInventoryContainerRemoved;
             // TODO correctly place the divisor
             var divisor = Instantiate(Divisor, transform);
-            divisor.transform.parent = HorizontalLayout.transform;
+            divisor.transform.SetParent(HorizontalLayout.transform, false);
             divisor.transform.SetAsFirstSibling();
         }
 
@@ -78,7 +78,7 @@ namespace SS3D.Systems.Inventory.UI
             for(int i=0; i< ClothingSlotPosition.Count; i++)
             {
                 var dummySlot = Instantiate(DummyPrefab);
-                dummySlot.transform.parent = ClothingLayout.transform;
+                dummySlot.transform.SetParent(ClothingLayout.transform, false);
                 dummySlot.transform.SetAsFirstSibling();
             }
         }
@@ -212,12 +212,12 @@ namespace SS3D.Systems.Inventory.UI
         private SingleItemContainerSlot AddClothingSlot(GameObject prefabToInstantiate)
         {
             GameObject clothingSlot = Instantiate(prefabToInstantiate, transform);
-            clothingSlot.transform.parent = ClothingLayout.transform;
+            clothingSlot.transform.SetParent(ClothingLayout.transform, false);
             clothingSlot.gameObject.TryGetComponent(out SingleItemContainerSlot slot);
             int clothPosition = ClothingSlotPosition.FindIndex(0, x => x == slot.ContainerType);
             var currentSlot = ClothingLayout.transform.GetChild(ClothingSlotPosition.FindIndex(0, x => x == slot.ContainerType));
             clothingSlot.transform.SetSiblingIndex(clothPosition);
-            currentSlot.transform.parent = null;
+            currentSlot.transform.SetParent(null, false);
             currentSlot.gameObject.Dispose(true);
             return slot;
         }
@@ -225,7 +225,7 @@ namespace SS3D.Systems.Inventory.UI
         private SingleItemContainerSlot AddHorizontalLayoutSlot(GameObject prefab, ContainerType type)
         {
             GameObject slot = Instantiate(prefab, transform);
-            slot.transform.parent = HorizontalLayout.transform;
+            slot.transform.SetParent(HorizontalLayout.transform, false);
             // Pocket go  to the far right of the UI.
             slot.transform.SetSiblingIndex(PlaceSlot(type));
             return slot.GetComponent<SingleItemContainerSlot>();
