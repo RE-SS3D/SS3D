@@ -14,7 +14,6 @@ namespace SS3D.Systems.Screens
     /// </summary>
     public class GameScreen : Actor
     {
-        [FormerlySerializedAs("_screenType")]
         public ScreenType ScreenType;
 
         [SerializeField] private CanvasGroup _canvasGroup;
