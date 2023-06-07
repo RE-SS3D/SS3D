@@ -41,13 +41,7 @@ namespace SS3D.Systems.Inventory.Items
                 GameObject itemObject = Assets.Get(id);
                 Item item = itemObject.GetComponent<Item>();
 
-                if (item == null)
-                {
-                    Punpun.Warning(this, $"No component {nameof(Item)} found on {id}:{itemObject}");
-                    continue;
-                }
-
-                item.ItemId = id;
+                item.ItemId = id ;
 
                 _itemPrefabs.Add(id, item);
             }

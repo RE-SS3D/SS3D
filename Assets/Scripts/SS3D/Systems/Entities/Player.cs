@@ -24,16 +24,6 @@ namespace SS3D.Systems.Entities
         /// </summary>
         public bool IsLocalConnection => Owner == LocalConnection;
 
-        public override void OnOwnershipClient(NetworkConnection prevOwner)
-        {
-            base.OnOwnershipClient(prevOwner);
-
-            if (Owner == LocalConnection)
-            {
-                GameScreens.SwitchTo(ScreenType.Lobby);
-            }
-        }
-
         [Server]
         public void SetCkey(string ckey)
         {
