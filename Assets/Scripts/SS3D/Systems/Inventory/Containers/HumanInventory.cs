@@ -90,6 +90,10 @@ namespace SS3D.Systems.Inventory.Containers
                 case SyncListOperation.Add:
                     OnInventoryContainerAdded?.Invoke(newContainer);
                     break;
+                case SyncListOperation.RemoveAt:
+                    Debug.Log("remove container " + oldContainer);
+                    OnInventoryContainerRemoved?.Invoke(oldContainer);
+                    break;
             }
         }
 
@@ -177,7 +181,6 @@ namespace SS3D.Systems.Inventory.Containers
         public void RemoveContainer(AttachedContainer container)
         {
             OnPlayerContainers.Remove(container);
-            OnInventoryContainerRemoved?.Invoke(container);
             container.Container.OnContentsChanged -= ContainerContentChanged;
             container.OnItemAttached -= TryAddContainerOnItemAttached;
             container.OnItemDetached -= TryRemoveContainerOnItemDetached;
