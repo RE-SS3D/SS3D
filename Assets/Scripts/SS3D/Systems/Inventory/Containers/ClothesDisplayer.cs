@@ -13,7 +13,6 @@ namespace SS3D.Systems.Inventory.Containers
 {
     public class ClothesDisplayer : NetworkActor
     {
-
         private struct ClothDisplayData
         {
             public ClothDisplayData(NetworkObject bodyPart, bool display, Item clothToDisplay)
@@ -68,7 +67,7 @@ namespace SS3D.Systems.Inventory.Containers
             if (display)
             {
                 bodyPart.gameObject.SetActive(true);
-                renderer.sharedMesh = item.gameObject.GetComponentInChildren<MeshFilter>().mesh;
+                renderer.sharedMesh = item.gameObject.GetComponentInChildren<MeshFilter>().sharedMesh;
             }
             else
             {
@@ -80,9 +79,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStartServer();
         }
-
-
-
 
         protected override void OnStart()
         {
@@ -164,7 +160,5 @@ namespace SS3D.Systems.Inventory.Containers
         {
             jumpsuitData = new ClothDisplayData(bodyPart, display, item);
         }
-
-
     }
 }
