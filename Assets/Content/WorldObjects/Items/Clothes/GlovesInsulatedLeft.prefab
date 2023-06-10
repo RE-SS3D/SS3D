@@ -163,13 +163,14 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 4252068960493444194}
+  - {fileID: 983871327887632920}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 58
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 9602923053376050574
@@ -186,13 +187,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6699414010407460003}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 6699414010407460003}
   _name: Gloves insulated left
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 901be8d20f1f0f24181cc992dfd362ae, type: 2}
   _rigidbody: {fileID: 3769749030059213346}
   Prefab: {fileID: 739222591386748088}
   AttachmentPoint: {fileID: 5901583744529463706}

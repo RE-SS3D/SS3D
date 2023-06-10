@@ -169,10 +169,10 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 6217003466842694042}
   - {fileID: 1216727540494632951}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 3839589873297488192}
+  - {fileID: 4481851017311952938}
+  - {fileID: 91303926677743269}
+  - {fileID: 2773878728011401854}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -221,7 +221,8 @@ MonoBehaviour:
   _name: Jumpsuit Botany
   _weight: 0
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 9fce2bd65c51b5b40ad2346bedb63121, type: 2}
   _rigidbody: {fileID: 7032353790234791075}
   Prefab: {fileID: 3945981868420553423}
   AttachmentPoint: {fileID: 2952123021596382023}
@@ -272,9 +273,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 1606100486293266847}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1606100486293266847}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 91303926677743269}
@@ -290,9 +291,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 1606100486293266847}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1606100486293266847}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 2773878728011401854}
@@ -340,9 +341,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 236b636ce94412b4fb844ee4b91f6f17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 1606100486293266847}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1606100486293266847}
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 4481851017311952938}
   ContainerItemDisplay: {fileID: 0}
@@ -409,9 +410,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 236b636ce94412b4fb844ee4b91f6f17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 1606100486293266847}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1606100486293266847}
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 3839589873297488192}
   ContainerItemDisplay: {fileID: 0}

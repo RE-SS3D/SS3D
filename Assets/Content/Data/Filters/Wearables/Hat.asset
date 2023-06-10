@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0adc192349dc57848b5394a2c6707c23, type: 3}
-  m_Name: Backpack
+  m_Name: Hat
   m_EditorClassIdentifier: 
   mustHaveAll: 0
   acceptedTraits:
-  - {fileID: 11400000, guid: f260c488d87f64d4bbc5cdb19dc9301c, type: 2}
+  - {fileID: 11400000, guid: 4fd47d47c95ea9d4bbfa168e63538ba1, type: 2}
   deniedTraits: []

@@ -43,7 +43,32 @@ namespace SS3D.Systems.Inventory.Containers
         public NetworkObject Backpack;
 
         [SyncVar(OnChange = nameof(OnChange))]
-        private ClothDisplayData jumpsuitData;
+        private ClothDisplayData _hatData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _eyesData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _jumpsuitData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _handLeftData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _handRightData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _footLeftData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _footRightData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _identificationData;
+
+        [SyncVar(OnChange = nameof(OnChange))]
+        private ClothDisplayData _backpackData;
+
 
 
         private void OnChange(ClothDisplayData oldValue, ClothDisplayData newValue, bool asServer)
@@ -116,49 +141,43 @@ namespace SS3D.Systems.Inventory.Containers
             switch (container.ContainerType)
             {
                 case ContainerType.Identification:
-                    DisplayCloth(Identification, item, display);
+                    _identificationData = new ClothDisplayData(Identification, display, item);
                     break;
 
                 case ContainerType.Glasses:
-                    DisplayCloth(Eyes, item, display);
+                    _eyesData= new ClothDisplayData(Eyes, display, item);
                     break;
 
                 case ContainerType.Mask:
                     break;
 
                 case ContainerType.Head:
-                    DisplayCloth(Hat, item, display);
+                    _hatData = new ClothDisplayData(Hat, display, item);
                     break;
 
                 case ContainerType.ExoSuit:
-                    
                     break;
 
                 case ContainerType.Jumpsuit:
-                    DisplayCloth(Jumpsuit, item, display);
+                    _jumpsuitData = new ClothDisplayData(Jumpsuit, display, item);
                     break;
 
                 case ContainerType.ShoeLeft:
-                    DisplayCloth(FootLeft, item, display);
+                    _footLeftData = new ClothDisplayData(FootLeft, display, item);
                     break;
 
                 case ContainerType.ShoeRight:
-                    DisplayCloth(FootRight, item, display);
+                    _footRightData = new ClothDisplayData(FootRight, display, item);
                     break;
 
                 case ContainerType.GloveLeft:
-                    DisplayCloth(HandLeft, item, display);
+                    _handLeftData = new ClothDisplayData(HandLeft, display, item);
                     break;
 
                 case ContainerType.GloveRight:
-                    DisplayCloth(HandRight, item, display);
+                    _handRightData = new ClothDisplayData(HandRight, display, item);
                     break;
             }
-        }
-
-        private void DisplayCloth(NetworkObject bodyPart, Item item, bool display)
-        {
-            jumpsuitData = new ClothDisplayData(bodyPart, display, item);
         }
     }
 }

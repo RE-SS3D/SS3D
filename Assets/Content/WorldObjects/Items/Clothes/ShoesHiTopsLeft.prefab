@@ -193,7 +193,8 @@ MonoBehaviour:
   _name: Shoe hi top left
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 144a9ec15419baf49ba8c376f97628c6, type: 2}
   _rigidbody: {fileID: 7080033783065948612}
   Prefab: {fileID: 6003340987905195654}
   AttachmentPoint: {fileID: 6843391855218923475}

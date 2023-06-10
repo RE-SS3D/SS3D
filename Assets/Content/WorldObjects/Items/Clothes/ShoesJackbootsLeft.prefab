@@ -163,6 +163,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 2893119548092422786}
+  - {fileID: 5134849012001618456}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -186,13 +187,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8657890218937463745}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8657890218937463745}
   _name: shoe jackboot left
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 144a9ec15419baf49ba8c376f97628c6, type: 2}
   _rigidbody: {fileID: 3807802572353236667}
   Prefab: {fileID: 60374868058361228}
   AttachmentPoint: {fileID: 887877796937057358}

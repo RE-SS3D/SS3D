@@ -224,7 +224,8 @@ MonoBehaviour:
   _name: sunglasses
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: aad6862af822986498365c59cf83067a, type: 2}
   _rigidbody: {fileID: 556647876245847021}
   Prefab: {fileID: 2667451333340596270}
   AttachmentPoint: {fileID: 2412422191426993499}

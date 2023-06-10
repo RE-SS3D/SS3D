@@ -177,6 +177,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 8042177759870946059}
+  - {fileID: 1256076610048116208}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -200,13 +201,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 2527334834019670621}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2527334834019670621}
   _name: Jumpsuit Grey
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 9fce2bd65c51b5b40ad2346bedb63121, type: 2}
   _rigidbody: {fileID: 6375350292960470613}
   Prefab: {fileID: 624365323667193292}
   AttachmentPoint: {fileID: 3355955575502377225}

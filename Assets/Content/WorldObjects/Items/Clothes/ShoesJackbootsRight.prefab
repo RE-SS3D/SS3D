@@ -193,7 +193,8 @@ MonoBehaviour:
   _name: Shoe jackboot right
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: c753b1913c89a5745806c17b77d57b6d, type: 2}
   _rigidbody: {fileID: 4037173937583181211}
   Prefab: {fileID: 2653363475000095017}
   AttachmentPoint: {fileID: 8951779009884257322}

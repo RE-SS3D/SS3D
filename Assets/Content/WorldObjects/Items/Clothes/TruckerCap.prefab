@@ -224,7 +224,8 @@ MonoBehaviour:
   _name: Trucker Cap
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 4fd47d47c95ea9d4bbfa168e63538ba1, type: 2}
   _rigidbody: {fileID: 950155378762729286}
   Prefab: {fileID: 2601952054522247362}
   AttachmentPoint: {fileID: 1113522479252378066}

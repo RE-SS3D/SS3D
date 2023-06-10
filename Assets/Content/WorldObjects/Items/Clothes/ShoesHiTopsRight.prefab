@@ -177,6 +177,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 3013549352249691316}
+  - {fileID: 4605974504323946509}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -200,13 +201,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8663352389375050187}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8663352389375050187}
   _name: Shoe hi top right
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: c753b1913c89a5745806c17b77d57b6d, type: 2}
   _rigidbody: {fileID: 4736812714006782479}
   Prefab: {fileID: 930591319891399865}
   AttachmentPoint: {fileID: 4956007631782200439}

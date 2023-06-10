@@ -201,7 +201,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 51
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 8592521216184862926
@@ -224,7 +224,8 @@ MonoBehaviour:
   _name: Jumpsuit engineer
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 9fce2bd65c51b5b40ad2346bedb63121, type: 2}
   _rigidbody: {fileID: 7971893193691774296}
   Prefab: {fileID: 7393721560307922778}
   AttachmentPoint: {fileID: 5498809548548644902}
