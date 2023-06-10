@@ -200,11 +200,11 @@ namespace SS3D.Systems.Roles
             SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
             SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);
 
-            if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 0, out AttachedContainer LeftPocketContainer)) return;
-            SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, LeftPocketContainer);
+            if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 0, out AttachedContainer leftPocketContainer)) return;
+            SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, leftPocketContainer);
 
-            if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 1, out AttachedContainer RightPocketContainer)) return;
-            SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, RightPocketContainer);
+            if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 1, out AttachedContainer rightPocketContainer)) return;
+            SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, rightPocketContainer);
         }
 
         /// <summary>
