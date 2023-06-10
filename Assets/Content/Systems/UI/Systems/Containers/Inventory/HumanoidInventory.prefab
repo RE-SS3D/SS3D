@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 80}
+  m_AnchoredPosition: {x: 0, y: 37}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8347121392257667322
@@ -205,7 +205,6 @@ MonoBehaviour:
   GloveRightPrefab: {fileID: 2008176450347308421, guid: 90ab7ed77ab01664b9d68219b96516e8, type: 3}
   GlassesPrefab: {fileID: 6734450565220072068, guid: a5a8a40f0de6adf449455bf41468439a, type: 3}
   MaskPrefab: {fileID: 2633005353059260762, guid: 0f03209702d8f0b4ab149596391830ee, type: 3}
-  EarsPrefab: {fileID: 7148034210968577043, guid: 86e27a9b14f0d7b47accf7df8635e4bb, type: 3}
   HeadPrefab: {fileID: 8584173595202467535, guid: 113d454c18a13854b87605d0ee9c73a6, type: 3}
   JumpsuitPrefab: {fileID: 5988165263683014854, guid: 4bb39a802a283d341a20c566474368ae, type: 3}
   ExoSuitPrefab: {fileID: 6837100192917222649, guid: 7213f8ade5a231544997e1def361efaa, type: 3}
