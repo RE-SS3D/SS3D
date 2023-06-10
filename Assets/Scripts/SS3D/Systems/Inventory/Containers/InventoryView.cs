@@ -66,10 +66,8 @@ namespace SS3D.Systems.Inventory.UI
             Inventory = inventory;
             inventory.OnInventoryContainerAdded += OnInventoryContainerAdded;
             inventory.OnInventoryContainerRemoved += OnInventoryContainerRemoved;
-            // TODO correctly place the divisor
-            var divisor = Instantiate(Divisor, transform);
-            divisor.transform.SetParent(HorizontalLayout.transform, false);
-            divisor.transform.SetAsFirstSibling();
+            
+
         }
 
         [Client]
@@ -193,20 +191,46 @@ namespace SS3D.Systems.Inventory.UI
         }
 
         /// <summary>
-        /// Returns the game object sibling index of the first game object being a SingleContainerSlot and having a given ContainerType.
+        /// Returns the game object sibling index of the ith game object being a SingleContainerSlot and having a given ContainerType in the horizontal layout.
         /// </summary>
-        /// <returns> Index 0 if no slot with container type given is found, otherwise the first index slot of the given type.</returns>
-        private int FirstIndexSlotOfType(ContainerType type)
+        /// <returns> Index 0 if no slot with container type given is found, otherwise the ith index slot of the given type.</returns>
+        private int IndexSlotOfType(ContainerType type, int number)
         {
+            int countOfGivenType = 0;
             for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
             {
                 var childTransform = HorizontalLayout.transform.GetChild(i);
                 if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == type)
                 {
-                    return i;
+                    if(number == countOfGivenType)
+                    {
+                        return i;
+                    }
+                    countOfGivenType++;   
                 }
             }
             return 0;
+        }
+
+        /// <summary>
+        /// Returns the game object sibling index of the last game object being a SingleContainerSlot and having a given ContainerType in the horizontal Layout.
+        /// </summary>
+        /// <returns> Index 0 if no slot with container type given is found, otherwise the last index slot of the given type.</returns>
+        private int LastIndexSlotOfType(ContainerType type, int number)
+        {
+            var slotsOfType = new List<SingleItemContainerSlot>();
+            for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
+            {
+                var childTransform = HorizontalLayout.transform.GetChild(i);
+                if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == type)
+                {
+                    slotsOfType.Add(slot);
+                }
+            }
+            if (slotsOfType.Count == 0)
+                return 0;
+            else
+                return slotsOfType.IndexOf(slotsOfType.Last());
         }
 
         private SingleItemContainerSlot AddClothingSlot(GameObject prefabToInstantiate)
