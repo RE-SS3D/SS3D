@@ -11,10 +11,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using static UnityEngine.UI.GridLayoutGroup;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    /// <summary>
+    /// This handles displaying and removing containers UI that are not part of the inventory of the player, such as a toolbox.
+    /// </summary>
     public class ContainerViewer : NetworkActor
     {
         public delegate void ContainerEventHandler(AttachedContainer container);
@@ -25,8 +27,12 @@ namespace SS3D.Systems.Inventory.Containers
 
         private float _nextAccessCheck;
 
-        private readonly List<AttachedContainer> _openedContainers = new();
+        /// <summary>
+        /// Container with their UI displayed to the player.
+        /// </summary>
+        private readonly List<AttachedContainer> _displayedContainers = new();
 
+        // Reference to the player human inventory.
         public HumanInventory inventory;
 
         protected override void OnAwake()
@@ -41,6 +47,7 @@ namespace SS3D.Systems.Inventory.Containers
             var containerView = ViewLocator.Get<ContainerView>().First();
             containerView.Setup(this);
         }
+
         /// <summary>
         /// On containers having OpenWhenContainerViewed set true in AttachedContainer, this set the containers state appropriately.
         /// If the container belongs to another Inventory, it's already opened, and therefore it does nothing.
@@ -73,17 +80,17 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// Does this inventory have a specific container ?
+        /// Does this have a specific container ?
         /// </summary>
         public bool HasContainer(AttachedContainer container)
         {
-            return _openedContainers.Contains(container);
+            return _displayedContainers.Contains(container);
         }
 
         public bool CanModifyContainer(AttachedContainer container)
         {
             // TODO: This root transform check might allow you to take out your own organs down the road O_O
-            return _openedContainers.Contains(container) || container.transform.root == transform;
+            return _displayedContainers.Contains(container) || container.transform.root == transform;
         }
 
         [TargetRpc]
@@ -104,7 +111,7 @@ namespace SS3D.Systems.Inventory.Containers
         public void OpenContainer(AttachedContainer attachedContainer)
         {
             attachedContainer.Container.AddObserver(GetComponent<Entity>());
-            _openedContainers.Add(attachedContainer);
+            _displayedContainers.Add(attachedContainer);
             SetOpenState(attachedContainer.gameObject, true);
             NetworkConnection client = Owner;
             if (client != null)
@@ -119,7 +126,7 @@ namespace SS3D.Systems.Inventory.Containers
         public void CloseContainer(AttachedContainer container)
         {
             container.Container.RemoveObserver(GetComponent<Entity>());
-            if (_openedContainers.Remove(container))
+            if (_displayedContainers.Remove(container))
             {
                 Debug.Log("client call remove");
                 SetOpenState(container.gameObject, false);
@@ -141,9 +148,9 @@ namespace SS3D.Systems.Inventory.Containers
 
             // Remove all containers from the inventory that can't be interacted with anymore.
             Hands hands = GetComponent<Hands>();
-            for (int i = 0; i < _openedContainers.Count; i++)
+            for (int i = 0; i < _displayedContainers.Count; i++)
             {
-                AttachedContainer attachedContainer = _openedContainers[i];
+                AttachedContainer attachedContainer = _displayedContainers[i];
                 if (hands.CanInteract(attachedContainer.gameObject))
                 {
                     continue;
