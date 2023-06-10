@@ -19,21 +19,24 @@ using System.ComponentModel;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-
+    /// <summary>
+    /// Inventory stores all containers that are visible in slots on the player. That includes clothing, hands, id, backpack and others.
+    /// It also handles doing a bunch of moving item around containers on the player and out of it.
+    /// </summary>
     public class HumanInventory : NetworkActor
     {
         [SyncObject]
-        public readonly SyncList<AttachedContainer> OnPlayerContainers = new();
+        private readonly SyncList<AttachedContainer> ContainersOnPlayer = new();
 
-        public delegate void InventoryContainerUpdated(AttachedContainer container);
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        public delegate void InventoryContainerModifiedEventHandler(AttachedContainer container);
+        public delegate void ContainerContentsEventHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
         public delegate void Notify();
 
-        public event InventoryContainerUpdated OnInventoryContainerAdded;
+        public event InventoryContainerModifiedEventHandler OnInventoryContainerAdded;
 
-        public event InventoryContainerUpdated OnInventoryContainerRemoved;
+        public event InventoryContainerModifiedEventHandler OnInventoryContainerRemoved;
 
-        public event ContainerContentsHandler OnContainerContentChanged;
+        public event ContainerContentsEventHandler OnContainerContentChanged;
 
         public event Notify OnInventorySetUp;
 
@@ -50,15 +53,15 @@ namespace SS3D.Systems.Inventory.Containers
         public Hands Hands;
 
         /// <summary>
-        /// 
+        /// Try to get a particular type of container in the inventory, and if there's multiple, try to get the one at the given position.
         /// </summary>
         /// <param name="position">The position of the container for a given type, if there's two pocket containers, it'd be 0 and 1</param>
-        /// <param name="typeContainer"> The container we want back.</param>
+        /// <param name="type"> The container we want back.</param>
         /// <returns></returns>
         public bool TryGetTypeContainer(ContainerType type, int position, out AttachedContainer typeContainer) 
         {
             int typeIndex = 0;
-            foreach (var container in OnPlayerContainers) 
+            foreach (var container in ContainersOnPlayer) 
             {
                 if(container.Type == type && position == typeIndex)
                 {
@@ -76,13 +79,15 @@ namespace SS3D.Systems.Inventory.Containers
 
         protected override void OnAwake()
         {
-            OnPlayerContainers.OnChange += InventoryContainerOnChange;
+            ContainersOnPlayer.OnChange += SyncInventoryContainerChange;
         }
 
         /// <summary>
         /// Called on server and client whenever there's an operation on the attached Container synclist.
+        /// The main role of this callback is to invoke events regarding the change of containers in the inventory for
+        /// other scripts to update.
         /// </summary>
-        private void InventoryContainerOnChange(SyncListOperation op, int index, AttachedContainer oldContainer, AttachedContainer newContainer, bool asServer)
+        private void SyncInventoryContainerChange(SyncListOperation op, int index, AttachedContainer oldContainer, AttachedContainer newContainer, bool asServer)
         {
             if (asServer) return;
             switch (op)
@@ -97,7 +102,10 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        public int CountHands => OnPlayerContainers.Where(x => x.Type == ContainerType.Hand).Count();
+        /// <summary>
+        /// Number of hands container on this inventory.
+        /// </summary>
+        public int CountHands => ContainersOnPlayer.Where(x => x.Type == ContainerType.Hand).Count();
 
         public override void OnStartClient()
         {
@@ -128,6 +136,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         /// <summary>
         /// Get the attached container on the Human prefab and put them in this inventory.
+        /// TODO : Should not add containers that do not display as slots.
         /// </summary>
         [Server]
         private void SetUpContainers()
@@ -143,7 +152,6 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// This method simply warn the client that everything is set up on the inventory, and things that depends on it can now be called.
         /// </summary>
-        /// <param name="conn"></param>
         [TargetRpc]
         private void RpcInvokeInventorySetUp(NetworkConnection conn)
         {
@@ -154,7 +162,6 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Should be called after setting up the inventory. Gives the player its items for its role.
         /// </summary>
-        /// <param name="conn"></param>
         [TargetRpc]
         private void RpcGiveRoleLoadout(NetworkConnection conn)
         {
@@ -168,25 +175,36 @@ namespace SS3D.Systems.Inventory.Containers
             inventoryView.Setup(this);
         }
 
+        /// <summary>
+        /// Add a given container to this inventory, and register to a few events related to the container.
+        /// Only use this method to remove a container to ContainersOnPlayer.
+        /// </summary>
         [Server]
-        public void AddContainer(AttachedContainer container)
+        private void AddContainer(AttachedContainer container)
         {
-            OnPlayerContainers.Add(container);
-            container.Container.OnContentsChanged += ContainerContentChanged;
-            container.OnItemAttached += TryAddContainerOnItemAttached;
-            container.OnItemDetached += TryRemoveContainerOnItemDetached;
+            ContainersOnPlayer.Add(container);
+            container.Container.OnContentsChanged += HandleContainerContentChanged;
+            container.OnItemAttached += HandleTryAddContainerOnItemAttached;
+            container.OnItemDetached += HandleTryRemoveContainerOnItemDetached;
         }
 
+        /// <summary>
+        /// Remove a given container to this inventory, and unregister to a few events related to the container.
+        /// Only use this method to remove a container to ContainersOnPlayer.
+        /// </summary>
         [Server]
-        public void RemoveContainer(AttachedContainer container)
+        private void RemoveContainer(AttachedContainer container)
         {
-            OnPlayerContainers.Remove(container);
-            container.Container.OnContentsChanged -= ContainerContentChanged;
-            container.OnItemAttached -= TryAddContainerOnItemAttached;
-            container.OnItemDetached -= TryRemoveContainerOnItemDetached;
+            ContainersOnPlayer.Remove(container);
+            container.Container.OnContentsChanged -= HandleContainerContentChanged;
+            container.OnItemAttached -= HandleTryAddContainerOnItemAttached;
+            container.OnItemDetached -= HandleTryRemoveContainerOnItemDetached;
         }
 
-        public void ContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        /// <summary>
+        /// Simply invoke the event OnContainerContentChanged.
+        /// </summary>
+        private void HandleContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             OnContainerContentChanged?.Invoke(container,oldItems,newItems,type);
         }
@@ -341,7 +359,11 @@ namespace SS3D.Systems.Inventory.Containers
             return id.HasPermission(permission);
         }
 
-        private void TryAddContainerOnItemAttached(object sender, Item item)
+        /// <summary>
+        /// When an item is added to one of the inventory containers, check if this item has some containers that should be displayed by the inventory too.
+        /// Add them to it if that's the case. E.g. a jumpsuit with pockets.
+        /// </summary>
+        private void HandleTryAddContainerOnItemAttached(object sender, Item item)
         {
             var parentContainer = (AttachedContainer)sender;
             var itemContainers = item.GetComponentsInChildren<InventorySlotContainer>();
@@ -352,12 +374,13 @@ namespace SS3D.Systems.Inventory.Containers
                 {
                     continue;
                 }
+                // If the item is held in hand, ignore it, it's not worn by the player so it shouldn't add yet any containers.
                 if (parentContainer == null || parentContainer.Type == ContainerType.Hand)
                 {
                     continue;
                 }
 
-                if (!OnPlayerContainers.Contains(container))
+                if (!ContainersOnPlayer.Contains(container))
                 {
                     AddContainer(container);
                     Punpun.Warning(this, $"invoke {container} added");
@@ -365,18 +388,23 @@ namespace SS3D.Systems.Inventory.Containers
             }    
         }
 
-        private void TryRemoveContainerOnItemDetached(object sender, Item item)
+        /// <summary>
+        /// When removing an item from one the inventory containers, check if that item had some containers like pockets part of the inventory,
+        /// and remove them too if that's the case.
+        /// </summary>
+        private void HandleTryRemoveContainerOnItemDetached(object sender, Item item)
         {
             var parentContainer = (AttachedContainer)sender;
             var itemContainers = item.GetComponentsInChildren<AttachedContainer>();
             foreach (var container in itemContainers)
             {
+                // If the item is held in hand, ignore it, it's not worn by the player so it shouldn't remove any containers.
                 if (parentContainer == null || parentContainer.Type == ContainerType.Hand)
                 {
                     continue;
                 }
 
-                if (OnPlayerContainers.Contains(container))
+                if (ContainersOnPlayer.Contains(container))
                 {
                     RemoveContainer(container);
                     Punpun.Warning(this, $"invoke {container} removed");
