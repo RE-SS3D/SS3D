@@ -135,4 +135,5 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 562230263738288595}
   _networkObjectCache: {fileID: 0}
-  Soul: {fileID: 0}
+  player: {fileID: 0}
+  Entity: {fileID: 0}

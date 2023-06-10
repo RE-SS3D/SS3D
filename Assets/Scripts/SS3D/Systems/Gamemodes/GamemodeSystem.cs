@@ -144,7 +144,7 @@ namespace SS3D.Systems.Gamemodes
         {
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
 
-            NetworkConnection author = playerSystem.GetSoul(objective.AssigneeCkey).Owner;
+            NetworkConnection author = playerSystem.GetPlayer(objective.AssigneeCkey).Owner;
             GamemodeObjectiveUpdatedMessage message = new(objective);
 
             // TODO Add admins as receivers of this message

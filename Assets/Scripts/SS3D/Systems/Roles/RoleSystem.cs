@@ -21,7 +21,7 @@ namespace SS3D.Systems.Roles
     {
         [SerializeField] private RolesAvailable _rolesAvailable;
         private List<RoleCounter> _roleCounters = new List<RoleCounter>();
-        private Dictionary<Soul, RoleData> _rolePlayers = new Dictionary<Soul, RoleData>();
+        private Dictionary<Player, RoleData> _rolePlayers = new Dictionary<Player, RoleData>();
 
         #region Setup
         protected override void OnStart()
@@ -33,7 +33,7 @@ namespace SS3D.Systems.Roles
         [Server]
         private void Setup()
         {
-            AddHandle(OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged));
+            AddHandle(OnlinePlayersChanged.AddListener(HandleOnlinePlayersChanged));
 
             GetAvailableRoles();
         }
@@ -63,7 +63,7 @@ namespace SS3D.Systems.Roles
 
         #region Event Handlers
         [Server]
-        private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)
+        private void HandleOnlinePlayersChanged(ref EventContext context, in OnlinePlayersChanged e)
         {
             if (!e.AsServer)
             {
@@ -72,63 +72,63 @@ namespace SS3D.Systems.Roles
 
             if (e.ChangeType == ChangeType.Addition)
             {
-                HandlePlayerJoined(e.ChangedSoul);
+                HandlePlayerJoined(e.ChangedPlayer);
             } else 
             if (e.ChangeType == ChangeType.Removal)
             {
-                HandlePlayerLeft(e.ChangedSoul);
+                HandlePlayerLeft(e.ChangedPlayer);
             }
         }
 
         [Server]
-        private void HandlePlayerJoined(Soul soul)
+        private void HandlePlayerJoined(Player player)
         {
-            AssignPlayerRole(soul);
+            AssignPlayerRole(player);
         }
 
         [Server]
-        private void HandlePlayerLeft(Soul soul)
+        private void HandlePlayerLeft(Player player)
         {
-            RemovePlayerFromCounters(soul);
+            RemovePlayerFromCounters(player);
         }
         #endregion
 
         /// <summary>
         /// Assign a role to the player after joining the server
         /// </summary>
-        /// <param name="soul"></param>
-        private void AssignPlayerRole(Soul soul)
+        /// <param name="player</param>
+        private void AssignPlayerRole(Player player)
         {
             RoleCounter assistantRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
             RoleCounter securityRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
 
             if (securityRole == null || securityRole.CurrentRoles == securityRole.AvailableRoles)
             {
-                assistantRole.AddPlayer(soul);
-                _rolePlayers.Add(soul, assistantRole.Role);
+                assistantRole.AddPlayer(player);
+                _rolePlayers.Add(player, assistantRole.Role);
             }
             else
             {
-                securityRole.AddPlayer(soul);
-                _rolePlayers.Add(soul, securityRole.Role);
+                securityRole.AddPlayer(player);
+                _rolePlayers.Add(player, securityRole.Role);
             }
         }
 
         /// <summary>
         /// Remove players from the Role Counters if he quit before embarking
         /// </summary>
-        /// <param name="soul"></param>
-        private void RemovePlayerFromCounters(Soul soul)
+        /// <param name="player</param>
+        private void RemovePlayerFromCounters(Player player)
         {
-            KeyValuePair<Soul, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == soul);
+            KeyValuePair<Player, RoleData>? rolePlayer =
+                _rolePlayers.FirstOrDefault(rp => rp.Key == player);
 
             if (rolePlayer != null)
             {
                 RoleData roleData = rolePlayer.Value.Value;
                 RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
 
-                roleCounter.RemovePlayer(soul);
+                roleCounter.RemovePlayer(player);
             }
         }
 
@@ -139,8 +139,8 @@ namespace SS3D.Systems.Roles
         [ServerRpc(RequireOwnership = false)]
         public void GiveRoleLoadoutToPlayer(Entity entity)
         {
-            KeyValuePair<Soul, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
+            KeyValuePair<Player, RoleData>? rolePlayer =
+                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.player);
 
             if (rolePlayer != null)
             {

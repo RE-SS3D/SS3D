@@ -49,7 +49,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 5177941338532333075}
   _networkObjectCache: {fileID: 5177941338532333075}
   _unauthorizedUserPrefab: {fileID: 8203177977882359099, guid: 6ab4ce7059d374a4498481e1385c222e, type: 3}
-  _soulPrefab: {fileID: -3683743083778642796, guid: 59f05e8a3a1d4b94eb5222aed605e260, type: 3}
+  _playerPrefab: {fileID: -3683743083778642796, guid: 59f05e8a3a1d4b94eb5222aed605e260, type: 3}
 --- !u!114 &5177941338532333075
 MonoBehaviour:
   m_ObjectHideFlags: 0

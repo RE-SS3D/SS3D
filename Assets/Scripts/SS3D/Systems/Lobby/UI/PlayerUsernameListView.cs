@@ -44,10 +44,10 @@ namespace SS3D.Systems.Lobby.UI
 
         private void SubscribeToEvents()
         {
-            AddHandle(OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged));
+            AddHandle(OnlinePlayersChanged.AddListener(HandleOnlinePlayersChanged));
         }
 
-        private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)
+        private void HandleOnlinePlayersChanged(ref EventContext context, in OnlinePlayersChanged e)
         {
             string ckey = e.ChangedCkey;
 
@@ -73,11 +73,11 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleReadyPlayersChanged(ref EventContext context, in ReadyPlayersChanged e)
         {
-            List<Soul> readyPlayers = e.ReadyPlayers;
+            List<Player> readyPlayers = e.ReadyPlayers;
 
             foreach (PlayerUsernameView username in _playerUsernames)
             {
-                username.UpdateNameColor(readyPlayers.Find(soul => soul.Ckey == username.Name) ? _userReadyColor : PaletteColors.White);
+                username.UpdateNameColor(readyPlayers.Find(player => player.Ckey == username.Name) ? _userReadyColor : PaletteColors.White);
             }
         }
 

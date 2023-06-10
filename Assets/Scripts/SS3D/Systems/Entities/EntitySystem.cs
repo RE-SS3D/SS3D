@@ -46,10 +46,10 @@ namespace SS3D.Systems.Entities
         [SyncVar(OnChange = nameof(SyncHasSpawnedInitialPlayers))]
         private bool _hasSpawnedInitialPlayers;
 
-        public Entity GetSpawnedEntity(Soul soul)
+        public Entity GetSpawnedEntity(Player player)
         {
-            var entity = _spawnedPlayers.Find(entity => entity.Mind.Soul == soul);
-            if (IsPlayerSpawned(soul))
+            var entity = _spawnedPlayers.Find(entity => entity.Mind.player == player);
+            if (IsPlayerSpawned(player))
             {
                 return entity;
             }
@@ -58,18 +58,18 @@ namespace SS3D.Systems.Entities
 
         public bool TryGetSpawnedEntity(NetworkConnection conn, out Entity entity)
         {
-            entity = _spawnedPlayers.Find(entity => entity.Mind?.Soul?.Owner == conn);
+            entity = _spawnedPlayers.Find(entity => entity.Mind?.player?.Owner == conn);
             return entity != null;
         }
 
         /// <summary>
         /// Returns true if the player is controlling an entity.
         /// </summary>
-        /// <param name="soul">The player's ckey</param>
+        /// <param name="playerThe player's ckey</param>
         /// <returns>Is the player is controlling an entity</returns>
-        public bool IsPlayerSpawned(Soul soul)
+        public bool IsPlayerSpawned(Player player)
         {
-            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.Soul == soul);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.player == player);
             return spawnedPlayer != null && spawnedPlayer.Mind != Mind.Empty;
         }
 
@@ -80,7 +80,7 @@ namespace SS3D.Systems.Entities
         /// <returns>Is the player is controlling an entity</returns>
         public bool IsPlayerSpawned(NetworkConnection networkConnection)
         {
-            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind?.Soul?.Owner == networkConnection);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind?.player?.Owner == networkConnection);
 
             bool isPlayerSpawned;
 
@@ -140,41 +140,41 @@ namespace SS3D.Systems.Entities
         /// <summary>
         /// Asks the server to spawn a player.
         /// </summary>
-        /// <param name="soul"></param>
+        /// <param name="player</param>
         /// <param name="networkConnection"></param>
         [ServerRpc(RequireOwnership = false)]
-        public void CmdSpawnLatePlayer(Soul soul, NetworkConnection networkConnection = null)
+        public void CmdSpawnLatePlayer(Player player, NetworkConnection networkConnection = null)
         {
-            SpawnLatePlayer(soul);
+            SpawnLatePlayer(player);
         }
 
         /// <summary>
         /// Spawns a player after the round has started
         /// </summary>
-        /// <param name="soul">The player's ckey</param>
+        /// <param name="playerThe player's ckey</param>
         [Server]
-        private void SpawnLatePlayer(Soul soul)
+        private void SpawnLatePlayer(Player player)
         {
-            if (!IsPlayerSpawned(soul) && _hasSpawnedInitialPlayers)
+            if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
-                SpawnPlayer(soul);
+                SpawnPlayer(player);
             }
         }
 
         /// <summary>
         /// Spawns a player with a Ckey
         /// </summary>
-        /// <param name="soul">Unique user object</param>
+        /// <param name="playerUnique user object</param>
         [Server]
-        private void SpawnPlayer(Soul soul)
+        private void SpawnPlayer(Player player)
         {
             MindSystem mindSystem = Subsystems.Get<MindSystem>();
-            mindSystem.TryCreateMind(soul, out Mind createdMind);
+            mindSystem.TryCreateMind(player, out Mind createdMind);
 
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
-            ServerManager.Spawn(entity.NetworkObject, soul.Owner);
+            ServerManager.Spawn(entity.NetworkObject, player.Owner);
 
-            createdMind.SetSoul(soul);
+            createdMind.SetPlayer(player);
             entity.SetMind(createdMind);
 
             _spawnedPlayers.Add(entity);
@@ -187,7 +187,7 @@ namespace SS3D.Systems.Entities
         /// </summary>
         /// <param name="players"></param>
         [Server]
-        private void SpawnReadyPlayers(List<Soul> players)
+        private void SpawnReadyPlayers(List<Player> players)
         {
             if (_hasSpawnedInitialPlayers) return;
 
@@ -196,7 +196,7 @@ namespace SS3D.Systems.Entities
                 Punpun.Information(this, "No players to spawn", Logs.ServerOnly);
             }
 
-            foreach (Soul ckey in players)
+            foreach (Player ckey in players)
             {
                 SpawnPlayer(ckey);
             }
@@ -238,7 +238,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void HandleSpawnReadyPlayers(ref EventContext context, in SpawnReadyPlayersEvent e)
         {
-            List<Soul> playersToSpawn = e.ReadyPlayers;
+            List<Player> playersToSpawn = e.ReadyPlayers;
 
             SpawnReadyPlayers(playersToSpawn);
         }

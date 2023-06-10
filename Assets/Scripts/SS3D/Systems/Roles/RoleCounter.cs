@@ -11,13 +11,13 @@ namespace SS3D.Systems.Roles
         public RoleData Role;
         public int CurrentRoles;
         public int AvailableRoles;
-        public List<Soul> Players = new List<Soul>();
+        public List<Player> Players = new List<Player>();
 
         /// <summary>
         /// Add player to role if there are available slots
         /// </summary>
         /// <param name="player"></param>
-        public void AddPlayer(Soul player)
+        public void AddPlayer(Player player)
         {
             if (CurrentRoles < AvailableRoles || AvailableRoles == 0)
             {
@@ -30,7 +30,7 @@ namespace SS3D.Systems.Roles
         /// Remove player from role
         /// </summary>
         /// <param name="player"></param>
-        public void RemovePlayer(Soul player)
+        public void RemovePlayer(Player player)
         {
             Players.Remove(player);
             CurrentRoles--;

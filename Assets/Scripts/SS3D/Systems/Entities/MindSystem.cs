@@ -30,12 +30,13 @@ namespace SS3D.Systems.Entities
         /// <param name="player"></param>
         /// <param name="mind"></param>
         /// <returns></returns>
-        public bool TryGetMind(Soul player, out Mind mind)
+        public bool TryGetMind(Player player, out Mind mind)
         {
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            Soul soul = playerSystem.GetSoul(player.Owner);
+            // todo inspect do we really need to GetPlayer when we pass a player already?
+            Player actualPlayer = playerSystem.GetPlayer(player.Owner);
 
-            mind = _spawnedMinds.Find(mind => mind.Soul == soul);
+            mind = _spawnedMinds.Find(spawnedMind => spawnedMind.player == actualPlayer);
 
             if (mind != null)
             {
@@ -49,34 +50,34 @@ namespace SS3D.Systems.Entities
         /// <summary>
         /// Returns if a user has a mind or not.
         /// </summary>
-        /// <param name="soul"></param>
+        /// <param name="player</param>
         /// <returns></returns>
-        public bool HasMind(Soul soul)
+        public bool HasMind(Player player)
         {
-            Mind mind = _spawnedMinds.Find(mind => mind.Soul == soul);
+            Mind mind = _spawnedMinds.Find(spawnedMind => spawnedMind.player == player);
 
             return mind != null;
         }
 
         /// <summary>
-        /// Tries to create a mind for an user.
+        /// Tries to create a mind for a user.
         /// </summary>
-        /// <param name="soul"></param>
+        /// <param name="player</param>
         /// <param name="createdMind"></param>
         /// <returns></returns>
         [Server]
-        public bool TryCreateMind(Soul soul, out Mind createdMind)
+        public bool TryCreateMind(Player player, out Mind createdMind)
         {
-            if (HasMind(soul))
+            if (HasMind(player))
             {
                 createdMind = null;
                 return false;
             }
 
             Mind mind = Instantiate(_mindPrefab).GetComponent<Mind>();
-            ServerManager.Spawn(mind.GameObject, soul.Owner);
+            ServerManager.Spawn(mind.GameObject, player.Owner);
 
-            mind.SetSoul(soul);
+            mind.SetPlayer(player);
 
             createdMind = mind;
             return true;
@@ -101,11 +102,11 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SwapMinds(Entity origin, Entity target)
         {
-            Mind originSoul = origin.Mind;
-            Mind targetSoul = target.Mind;
+            Mind originMind = origin.Mind;
+            Mind targetMind = target.Mind;
 
-            origin.SetMind(targetSoul);
-            target.SetMind(originSoul);
+            origin.SetMind(targetMind);
+            target.SetMind(originMind);
         }
     }
 }

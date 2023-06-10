@@ -16,7 +16,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
             string ckey = args[0];
-            Soul PlayerToKill = Subsystems.Get<PlayerSystem>().GetSoul(ckey);
+            Player PlayerToKill = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
             Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(PlayerToKill);
             entityToKill.GetComponent<HealthController>().ClientKill();
             return "Player killed";
@@ -31,7 +31,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return response;
             }
             string ckey = args[0];
-            Soul PlayerToKill = Subsystems.Get<PlayerSystem>().GetSoul(ckey);
+            Player PlayerToKill = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
             if (PlayerToKill == null)
             {
                 response.IsValid = false;
