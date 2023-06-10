@@ -12,24 +12,24 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
 
-        [Tooltip("A mesh where north connects to same type")]
+        [Tooltip("A mesh where South connects to same type")]
         public Mesh u;
 
-        [Tooltip("A mesh where north and south edges are connected")]
+        [Tooltip("A mesh where South and south edges are connected")]
         public Mesh i;
 
-        [Tooltip("A mesh where the north and east edges are connected, no corners")]
+        [Tooltip("A mesh where the South and West edges are connected, no corners")]
         public Mesh lNone;
-        [Tooltip("A mesh where the north and east edges are connected, and NE is a corner")]
+        [Tooltip("A mesh where the South and West edges are connected, and NE is a corner")]
         public Mesh lSingle;
 
-        [Tooltip("A mesh where the north, east, and west edges are connected, no corners")]
+        [Tooltip("A mesh where the South, West, and East edges are connected, no corners")]
         public Mesh tNone;
-        [Tooltip("A mesh where the north, east, and west edges are connected, NW is a corner")]
+        [Tooltip("A mesh where the South, West, and East edges are connected, NW is a corner")]
         public Mesh tSingleRight;
-        [Tooltip("A mesh where the north, east, and west edges are connected, NE is a corner")]
+        [Tooltip("A mesh where the South, West, and East edges are connected, NE is a corner")]
         public Mesh tSingleLeft;
-        [Tooltip("A mesh where north, east, and west edges are connected, NW & NE are corners")]
+        [Tooltip("A mesh where South, West, and East edges are connected, NW & NE are corners")]
         public Mesh tDouble;
 
         [Tooltip("A mesh where all edges are connected, no corners")]
@@ -61,35 +61,35 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     break;
                 case AdjacencyShape.U:
                     mesh = u;
-                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleConnection());
                     break;
                 case AdjacencyShape.I:
                     mesh = i;
-                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.North) ? Direction.North : Direction.East);
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.HasConnection(Direction.South) ? Direction.South : Direction.West);
                     break;
                 case AdjacencyShape.LNone:
                     mesh = lNone;
-                    rotation = TileHelper.AngleBetween(Direction.NorthEast, adjacencyMap.GetDirectionBetweenTwoConnections());
+                    rotation = TileHelper.AngleBetween(Direction.SouthWest, adjacencyMap.GetDirectionBetweenTwoConnections());
                     break;
                 case AdjacencyShape.LSingle:
                     mesh = lSingle;
-                    rotation = TileHelper.AngleBetween(Direction.NorthEast, adjacencyMap.GetDirectionBetweenTwoConnections());
+                    rotation = TileHelper.AngleBetween(Direction.SouthWest, adjacencyMap.GetDirectionBetweenTwoConnections());
                     break;
                 case AdjacencyShape.TNone:
                     mesh = tNone;
-                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.TSingleLeft:
                     mesh = tSingleLeft;
-                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.TSingleRight:
                     mesh = tSingleRight;
-                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.TDouble:
                     mesh = tDouble;
-                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.XNone:
                     mesh = xNone;
@@ -97,24 +97,24 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case AdjacencyShape.XSingle:
                     mesh = xSingle;
                     Direction connectingDiagonal = adjacencyMap.GetSingleConnection(false);
-                    rotation = connectingDiagonal == Direction.NorthEast ? 0f :
-                        connectingDiagonal == Direction.SouthEast ? 90f :
-                        connectingDiagonal == Direction.SouthWest ? 180f : -90f;
+                    rotation = connectingDiagonal == Direction.SouthWest ? 0f :
+                        connectingDiagonal == Direction.SouthWest ? 90f :
+                        connectingDiagonal == Direction.SouthEast ? 180f : -90f;
                     break;
                 case AdjacencyShape.XOpposite:
                     mesh = xOpposite;
-                    rotation = adjacencyMap.HasConnection(Direction.NorthEast) ? 0f : 90f;
+                    rotation = adjacencyMap.HasConnection(Direction.SouthWest) ? 0f : 90f;
                     break;
                 case AdjacencyShape.XSide:
                     mesh = xSide;
-                    rotation = TileHelper.AngleBetween(Direction.NorthWest, adjacencyMap.GetDirectionBetweenTwoConnections(false)) - 45f;
+                    rotation = TileHelper.AngleBetween(Direction.SouthEast, adjacencyMap.GetDirectionBetweenTwoConnections(false)) - 45f;
                     break;
                 case AdjacencyShape.XTriple:
                     mesh = xTriple;
                     Direction nonConnectingDiagonal = adjacencyMap.GetSingleNonConnection(false);
-                    rotation = nonConnectingDiagonal == Direction.NorthEast ? -90f :
-                        nonConnectingDiagonal == Direction.SouthEast ? 0f :
-                        nonConnectingDiagonal == Direction.SouthWest ? 90f : 180f;
+                    rotation = nonConnectingDiagonal == Direction.SouthWest ? -90f :
+                        nonConnectingDiagonal == Direction.SouthWest ? 0f :
+                        nonConnectingDiagonal == Direction.SouthEast ? 90f : 180f;
                     break;
                 case AdjacencyShape.XQuad:
                     mesh = xQuad;
