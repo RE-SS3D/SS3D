@@ -22,23 +22,19 @@ namespace SS3D.Core
         public void InitializeNetworkSession()
         {
             NetworkManager networkManager = InstanceFinder.NetworkManager;
-            if (networkManager == null)
-            {
-                networkManager = InstanceFinder.NetworkManager;
-                InitializeNetworkSession();
-            }
+            NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
 
-            ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+            LocalPlayer.UpdateCkey(networkSettings.Ckey);
 
-            string ckey = applicationSettings.Ckey;
-            string serverAddress = applicationSettings.ServerAddress;
-            ushort port = Convert.ToUInt16(applicationSettings.ServerPort);
+            string ckey = networkSettings.Ckey;
+            string serverAddress = networkSettings.ServerAddress;
+            ushort port = Convert.ToUInt16(networkSettings.ServerPort);
 
-            NetworkType networkType = applicationSettings.NetworkType;
+            NetworkType networkType = networkSettings.NetworkType;
 
             switch (networkType)
             {
-                case NetworkType.ServerOnly:
+                case NetworkType.DedicatedServer:
                     Punpun.Information(this, "Hosting a new headless server on port {port}", Logs.Important, port);
                     networkManager.ServerManager.StartConnection(port);
                     break;
@@ -55,13 +51,14 @@ namespace SS3D.Core
                     throw new ArgumentOutOfRangeException();
             }
 
-            ApplicationStartedEvent applicationStartedEvent = new(ckey, networkType);
-            applicationStartedEvent.Invoke(this);
+            NetworkSessionStartedEvent networkSessionStartedEvent = new(ckey, networkType);
+            networkSessionStartedEvent.Invoke(this);
         }
 
         private void OnApplicationQuit()
         {
             CloseNetworkSession();
+            InstanceFinder.ServerManager.StopConnection(true);
         }
 
         /// <summary>

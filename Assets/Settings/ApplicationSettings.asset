@@ -14,9 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _preload: 1
   _type: 2
-  NetworkType: 2
-  Ckey: editorUser
-  ServerAddress: 127.0.0.1
-  ServerPort: 1974
   EnableDiscord: 0
   SkipIntro: 1
+  ForceLauncher: 0
