@@ -197,7 +197,7 @@ MonoBehaviour:
   HandRightPrefab: {fileID: 6293962685997774382, guid: aca25d317b84e5c43afafc9832b4df8d, type: 3}
   BagPrefab: {fileID: 3969695133087941026, guid: 98867721229cea84eb087210f54475e0, type: 3}
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
-  HorizontalSlotOrder: 04000000030000000200000001000000
+  HorizontalSlotOrder: 08000000040000000200000001000000
   ClothingLayout: {fileID: 4392532013381623832}
   ShoeLeftPrefab: {fileID: 8668479097449726212, guid: 6d2fdfb2988c7304587777d34f496d5b, type: 3}
   ShoeRightPrefab: {fileID: 8736263994919197959, guid: 2054b7b0321d0924981d1c07015b086d, type: 3}
