@@ -11,8 +11,15 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+    /// <summary>
+    /// Display cloth on player for all clients.
+    /// </summary>
     public class ClothesDisplayer : NetworkActor
     {
+        /// <summary>
+        /// A small structure containing information regarding clothes on player, to help syncing them.
+        /// For each bodypart that can have clothing, it also contains information on the item to display, if it should show or not.
+        /// </summary>
         private struct ClothDisplayData
         {
             public ClothDisplayData(NetworkObject bodyPart, bool display, Item clothToDisplay)
@@ -28,13 +35,13 @@ namespace SS3D.Systems.Inventory.Containers
 
         public HumanInventory _inventory;
 
+        // The root game objects for clothes
         public Transform ClothesRoot;
 
         // Game objects on the human prefab to display clothes.
         public NetworkObject Hat;
         public NetworkObject Eyes;
         public NetworkObject Jumpsuit;
-
         public NetworkObject HandLeft;
         public NetworkObject HandRight;
         public NetworkObject FootLeft;
@@ -42,36 +49,39 @@ namespace SS3D.Systems.Inventory.Containers
         public NetworkObject Identification;
         public NetworkObject Backpack;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        // Syncvar to sync meshes and cloth display between clients
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _hatData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _eyesData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _jumpsuitData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _handLeftData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _handRightData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _footLeftData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _footRightData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _identificationData;
 
-        [SyncVar(OnChange = nameof(OnChange))]
+        [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _backpackData;
 
 
-
-        private void OnChange(ClothDisplayData oldValue, ClothDisplayData newValue, bool asServer)
+        /// <summary>
+        /// Sync cloth on client.
+        /// </summary>
+        private void SyncCloth(ClothDisplayData oldValue, ClothDisplayData newValue, bool asServer)
         {
 
             if (asServer) return;
@@ -108,10 +118,13 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnStart()
         {
             base.OnStart();
-            _inventory.OnContainerContentChanged += ContainerContentChanged;
+            _inventory.OnContainerContentChanged += HandleContainerContentChanged;
         }
 
-        public void ContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        /// <summary>
+        /// When the content of a container change, check if it should display or remove display of some clothes.
+        /// </summary>
+        public void HandleContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             // If it's not a cloth type container.
             // It'd be probably better to just create "cloth container" inheriting from container to easily test that.
@@ -135,7 +148,9 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        // TODO complete with missing stuff (mask, etc..)
+        /// <summary>
+        /// Show the right cloth depending on which container type has been modified.
+        /// </summary>
         public void ShowCloth(Container container, Item item, bool display)
         {
             switch (container.ContainerType)
