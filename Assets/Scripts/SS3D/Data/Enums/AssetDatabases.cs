@@ -4,7 +4,8 @@ namespace SS3D.Data.Enums
     {
         InteractionIcons = 0, 
         Items = 1, 
-        Settings = 2, 
+        Scenes = 2, 
+        Settings = 3, 
     }
 }
 

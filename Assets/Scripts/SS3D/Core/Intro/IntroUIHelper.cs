@@ -37,8 +37,8 @@ namespace SS3D.Core.Intro
             {
                 Destroy(_temporaryAudioSource);
 
-                ApplicationStateSystem applicationStateSystem = Subsystems.Get<ApplicationStateSystem>();
-                applicationStateSystem.InitializeApplication();
+                ApplicationInitializerSystem applicationInitializerSystem = Subsystems.Get<ApplicationInitializerSystem>();
+                applicationInitializerSystem.InitializeApplication();
 
                 _introUiCanvasGroup.alpha = 0;
                 _connectionUiCanvasGroup.alpha = 1;
@@ -58,8 +58,8 @@ namespace SS3D.Core.Intro
             {
                 _introUiCanvasGroup.DOFade(0, _fadeOutDuration).SetDelay(_splashScreenFreezeDuration).OnComplete(() =>
                 {
-                    ApplicationStateSystem applicationStateSystem = Subsystems.Get<ApplicationStateSystem>();
-                    applicationStateSystem.InitializeApplication();
+                    ApplicationInitializerSystem applicationInitializerSystem = Subsystems.Get<ApplicationInitializerSystem>();
+                    applicationInitializerSystem.InitializeApplication();
 
                     _connectionUiCanvasGroup.DOFade(1, _fadeInDuration).SetDelay(2);
                 });

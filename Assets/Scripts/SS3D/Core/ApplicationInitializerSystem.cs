@@ -11,7 +11,7 @@ namespace SS3D.Core
     /// <summary>
     /// Initializes all the core information needed, subsystems and assets pre-loading.
     /// </summary>
-    public sealed class ApplicationStateSystem : Behaviours.SubSystem
+    public sealed class ApplicationStateSystem : Behaviours.System
     {
         /// <summary>
         /// Initializes all required systems for the application.

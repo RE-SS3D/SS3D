@@ -2,7 +2,7 @@
 {
     public enum NetworkType
     {
-        ServerOnly,
+        DedicatedServer,
         Client,
         Host,
     }
