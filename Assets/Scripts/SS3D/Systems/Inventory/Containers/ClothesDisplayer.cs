@@ -49,6 +49,8 @@ namespace SS3D.Systems.Inventory.Containers
         public NetworkObject Identification;
         public NetworkObject Backpack;
 	    public NetworkObject Face;
+        public NetworkObject EarLeft;
+        public NetworkObject EarRight;
 
         // Syncvar to sync meshes and cloth display between clients
         [SyncVar(OnChange = nameof(SyncCloth))]
@@ -80,6 +82,12 @@ namespace SS3D.Systems.Inventory.Containers
 
 	    [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _faceData;
+
+        [SyncVar(OnChange = nameof(SyncCloth))]
+        private ClothDisplayData _earLeftData;
+
+        [SyncVar(OnChange = nameof(SyncCloth))]
+        private ClothDisplayData _earRightData;
 
 
         /// <summary>
@@ -175,7 +183,7 @@ namespace SS3D.Systems.Inventory.Containers
                     _hatData = new ClothDisplayData(Hat, display, item);
                     break;
 
-		case ContainerType.Bag:
+		        case ContainerType.Bag:
                     _backpackData = new ClothDisplayData(Backpack, display, item);
                     break;
 
@@ -200,6 +208,14 @@ namespace SS3D.Systems.Inventory.Containers
 
                 case ContainerType.GloveRight:
                     _handRightData = new ClothDisplayData(HandRight, display, item);
+                    break;
+
+                case ContainerType.EarLeft:
+                    _earLeftData = new ClothDisplayData(EarLeft, display, item);
+                    break;
+
+                case ContainerType.EarRight:
+                    _earRightData = new ClothDisplayData(EarRight, display, item);
                     break;
             }
         }
