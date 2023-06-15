@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 2174525928007948832}
   - component: {fileID: 2090837846029440516}
   - component: {fileID: -8233116123772242178}
-  m_Layer: 0
+  - component: {fileID: 1157584062476872481}
+  m_Layer: 10
   m_Name: Backpack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,6 +199,20 @@ MonoBehaviour:
   Prefab: {fileID: 802333698458937824}
   AttachmentPoint: {fileID: 259237393137410583}
   AttachmentPointAlt: {fileID: 259237393137410583}
+--- !u!64 &1157584062476872481
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802333698458937824}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7252442911032059456, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
 --- !u!1 &8173373325555765133
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,7 +222,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 259237393137410583}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Attachment
   m_TagString: Untagged
   m_Icon: {fileID: 0}

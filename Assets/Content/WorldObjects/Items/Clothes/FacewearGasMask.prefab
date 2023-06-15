@@ -194,6 +194,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 8076310321107556087}
+  - {fileID: 553178106381397730}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -217,13 +218,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6115335805774105745}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 6115335805774105745}
   _name: Facewear gas mask
   _weight: 1
   _size: {x: 1, y: 1}
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 6169d80297e73ad44b394b52547ac805, type: 2}
   _rigidbody: {fileID: 6826443317434021945}
   Prefab: {fileID: 1687938131941834081}
   AttachmentPoint: {fileID: 5663404281796149511}

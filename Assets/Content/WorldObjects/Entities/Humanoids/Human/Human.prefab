@@ -7444,6 +7444,7 @@ MonoBehaviour:
   FootRight: {fileID: 8626656600768578774}
   Identification: {fileID: 2597311493477513020}
   Backpack: {fileID: 4684017524585288931}
+  Face: {fileID: 2091115627957921416}
 --- !u!114 &4559920193704007786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8366,7 +8367,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8836467227468897358
 Transform:
   m_ObjectHideFlags: 0
@@ -8427,7 +8428,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -4072701865736530102, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+  m_Mesh: {fileID: 0}
   m_Bones:
   - {fileID: 2312129763742525980}
   - {fileID: 555318022889464296}
@@ -10079,7 +10080,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5469234257975473950
 Transform:
   m_ObjectHideFlags: 0
@@ -10140,7 +10141,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 7252442911032059456, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+  m_Mesh: {fileID: 0}
   m_Bones:
   - {fileID: 2312129763742525980}
   - {fileID: 555318022889464296}
