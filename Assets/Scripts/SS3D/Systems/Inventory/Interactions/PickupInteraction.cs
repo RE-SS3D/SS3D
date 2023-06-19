@@ -49,7 +49,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 }
 
                 bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
-                bool notInAContainer = !item.InContainer();
+                bool notInAContainer = !item.IsInContainer();
                 // then we just do a range check, to make sure we can interact
 		        // and we check if the item is not in a container, you can only pick things that are not in a container
                 return isInRange && notInAContainer;
