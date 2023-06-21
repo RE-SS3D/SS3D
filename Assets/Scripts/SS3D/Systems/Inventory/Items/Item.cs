@@ -77,7 +77,7 @@ namespace SS3D.Systems.Inventory.Items
 
         public Container Container => _container;
 
-        private bool _initialised;
+        private bool _initialised = false;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
@@ -101,14 +101,7 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         public Sprite Sprite
         {
-            get
-            {
-                if (_sprite == null)
-                {
-                    _sprite = GenerateIcon();
-                }
-                return _sprite;
-            }
+            get => InventorySprite();
             set => _sprite = value;
         }
 
@@ -133,6 +126,18 @@ namespace SS3D.Systems.Inventory.Items
             base.OnStartServer();
             _traits.AddRange(_startingTraits);
         }
+
+
+        [ServerOrClient]
+        private Sprite InventorySprite()
+        {
+            if (_sprite == null)
+            {
+                _sprite = GenerateIcon();
+            }
+            return _sprite;
+        }
+
         /// <summary>
         /// Destroys this item
         /// </summary>
@@ -191,9 +196,9 @@ namespace SS3D.Systems.Inventory.Items
             // TODO: Make this handle multiple renderers, with different states
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
 
-            foreach (Renderer renderer1 in renderers)
+            foreach (Renderer childRenderer in renderers)
             {
-                renderer1.enabled = visible;
+                childRenderer.enabled = visible;
             }
         }
         
