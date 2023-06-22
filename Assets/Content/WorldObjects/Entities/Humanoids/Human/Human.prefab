@@ -267,6 +267,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: Jumpsuit
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -906,6 +907,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: glass
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -1642,6 +1644,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: ear right
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -2242,6 +2245,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: right foot
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -2311,6 +2315,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: Bag
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -4741,6 +4746,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: ear left
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -5974,6 +5980,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: left foot
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -6273,6 +6280,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: head
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -9155,6 +9163,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: Glove right
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -9456,6 +9465,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: ID container
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -9991,6 +10001,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: Mask
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -10060,6 +10071,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: left hand
   _size: {x: 1, y: 1}
   _hideItems: 0
@@ -10325,6 +10337,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: right hand
   _size: {x: 1, y: 1}
   _hideItems: 0
@@ -10562,6 +10575,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 0
   _containerName: Glove left
   _size: {x: 1, y: 1}
   _hideItems: 1

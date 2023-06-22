@@ -79,6 +79,12 @@ public class AttachedContainerEditor : Editor
             attachedContainer.IsInteractive);
         HandleIsInteractive(isInteractive);
 
+        bool isSlotInUI = EditorGUILayout.Toggle(
+    new GUIContent("is slot in UI", "Set if the container should appear as a slot in the inventory UI"),
+    attachedContainer.IsSlotInUI);
+        HandleIsSlotInUI(isSlotInUI);
+
+
 
         if (attachedContainer.IsInteractive)
         {
@@ -245,6 +251,13 @@ public class AttachedContainerEditor : Editor
     private void HandleOpenWhenContainerViewed(bool openWhenContainerViewed)
     {
         SerializedProperty sp = serializedObject.FindProperty("_openWhenContainerViewed");
+        sp.boolValue = openWhenContainerViewed;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleIsSlotInUI(bool openWhenContainerViewed)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("_isSlotInUI");
         sp.boolValue = openWhenContainerViewed;
         serializedObject.ApplyModifiedProperties();
     }

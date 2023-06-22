@@ -16,6 +16,9 @@ GameObject:
   - component: {fileID: 2090837846029440516}
   - component: {fileID: -8233116123772242178}
   - component: {fileID: 1157584062476872481}
+  - component: {fileID: 7202044625983840266}
+  - component: {fileID: 1564699542711718383}
+  - component: {fileID: 4701154725156718746}
   m_Layer: 10
   m_Name: Backpack
   m_TagString: Untagged
@@ -164,6 +167,8 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 2174525928007948832}
   - {fileID: -8233116123772242178}
+  - {fileID: 7202044625983840266}
+  - {fileID: 4701154725156718746}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -213,6 +218,81 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7252442911032059456, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &7202044625983840266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802333698458937824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 2090837846029440516}
+  _networkObjectCache: {fileID: 2090837846029440516}
+  _automaticContainerSetUp: 1
+  ContainerInteractive: {fileID: 4701154725156718746}
+  ContainerItemDisplay: {fileID: 0}
+  ContainerUi: {fileID: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 1
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 1
+  _hasUi: 1
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
+  _containerName: backpack
+  _size: {x: 5, y: 5}
+  _hideItems: 1
+  _type: 0
+  _startFilter: {fileID: 0}
+--- !u!95 &1564699542711718383
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802333698458937824}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4701154725156718746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802333698458937824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: 2090837846029440516}
+  _networkObjectCache: {fileID: 2090837846029440516}
+  _openState: 0
+  OverrideOpenIcon: {fileID: 0}
+  attachedContainer: {fileID: 7202044625983840266}
 --- !u!1 &8173373325555765133
 GameObject:
   m_ObjectHideFlags: 0

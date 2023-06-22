@@ -17,8 +17,8 @@ GameObject:
   - component: {fileID: 1216727540494632951}
   - component: {fileID: 7894380633031650444}
   - component: {fileID: 4809119552894144540}
-  - component: {fileID: 3839589873297488192}
-  - component: {fileID: 4481851017311952938}
+  - component: {fileID: 6797178900697485394}
+  - component: {fileID: 6624822061738975791}
   m_Layer: 10
   m_Name: JumpsuitBotany
   m_TagString: Untagged
@@ -169,10 +169,10 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 6217003466842694042}
   - {fileID: 1216727540494632951}
-  - {fileID: 3839589873297488192}
-  - {fileID: 4481851017311952938}
-  - {fileID: 91303926677743269}
-  - {fileID: 2773878728011401854}
+  - {fileID: 6797178900697485394}
+  - {fileID: 6624822061738975791}
+  - {fileID: 6836875458946812532}
+  - {fileID: 1039955125434413308}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -261,7 +261,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3839589873297488192
+--- !u!114 &6797178900697485394
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -278,8 +278,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1606100486293266847}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 91303926677743269}
---- !u!114 &4481851017311952938
+  attachedContainer: {fileID: 6836875458946812532}
+--- !u!114 &6624822061738975791
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -296,7 +296,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1606100486293266847}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 2773878728011401854}
+  attachedContainer: {fileID: 1039955125434413308}
 --- !u!1 &6321573054913086286
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,7 +306,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5071989147399299470}
-  - component: {fileID: 2773878728011401854}
+  - component: {fileID: 1039955125434413308}
   m_Layer: 10
   m_Name: right pocket
   m_TagString: Untagged
@@ -329,7 +329,7 @@ Transform:
   m_Father: {fileID: 3945981868420553416}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2773878728011401854
+--- !u!114 &1039955125434413308
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -338,14 +338,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6321573054913086286}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 236b636ce94412b4fb844ee4b91f6f17, type: 3}
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 5
   _addedNetworkObject: {fileID: 1606100486293266847}
   _networkObjectCache: {fileID: 1606100486293266847}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 4481851017311952938}
+  ContainerInteractive: {fileID: 6624822061738975791}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
@@ -361,6 +361,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 1
   _containerName: right pocket
   _size: {x: 1, y: 1}
   _hideItems: 1
@@ -375,7 +376,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6210440484638829983}
-  - component: {fileID: 91303926677743269}
+  - component: {fileID: 6836875458946812532}
   m_Layer: 10
   m_Name: left pocket
   m_TagString: Untagged
@@ -398,7 +399,7 @@ Transform:
   m_Father: {fileID: 3945981868420553416}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &91303926677743269
+--- !u!114 &6836875458946812532
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -407,14 +408,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6394538960510781196}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 236b636ce94412b4fb844ee4b91f6f17, type: 3}
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 4
   _addedNetworkObject: {fileID: 1606100486293266847}
   _networkObjectCache: {fileID: 1606100486293266847}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 3839589873297488192}
+  ContainerInteractive: {fileID: 6797178900697485394}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
@@ -430,6 +431,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
+  _isSlotInUI: 1
   _containerName: left pocket
   _size: {x: 1, y: 1}
   _hideItems: 1
