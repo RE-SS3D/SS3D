@@ -187,14 +187,16 @@ namespace SS3D.Systems.Inventory.UI
         {
             if (CountHandsSlots % 2 == 0)
             {
-                return AddHorizontalLayoutSlot(HandRightPrefab, ContainerType.Hand);
+                return AddHorizontalLayoutSlot(HandLeftPrefab, ContainerType.Hand);
             }
-            else return AddHorizontalLayoutSlot(HandLeftPrefab, ContainerType.Hand);
+            else return AddHorizontalLayoutSlot(HandRightPrefab, ContainerType.Hand);
         }
 
         /// <summary>
         /// This place a slot in the horizontal layout according to the order defined 
         /// by element order in the HorizontalSlotOrder List of containerType.
+        /// In case of multiple slots with the same container type, it places the slot after all other slots
+        /// with same container type.
         /// </summary>
         private int PlaceSlot(ContainerType type)
         {
@@ -203,7 +205,12 @@ namespace SS3D.Systems.Inventory.UI
                 var childTransform = HorizontalLayout.transform.GetChild(i);
                 if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && OrderOfType(slot.ContainerType) >= OrderOfType(type))
                 {
-                    return i;
+                    if(slot.ContainerType == type)
+                    {
+                        return LastIndexSlotOfType(type);
+                    }
+                    else
+                        return i;
                 }
             }
             return 0;
@@ -237,7 +244,7 @@ namespace SS3D.Systems.Inventory.UI
         /// SingleContainerSlot and having a given ContainerType in the horizontal Layout.
         /// </summary>
         /// <returns> Index 0 if no slot with container type given is found, otherwise the last index slot of the given type.</returns>
-        private int LastIndexSlotOfType(ContainerType type, int number)
+        private int LastIndexSlotOfType(ContainerType type)
         {
             var slotsOfType = new List<SingleItemContainerSlot>();
             for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
