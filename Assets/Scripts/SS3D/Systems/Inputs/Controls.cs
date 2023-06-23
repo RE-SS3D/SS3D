@@ -73,15 +73,6 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Move Freely"",
-                    ""type"": ""Button"",
-                    ""id"": ""d287c558-9f1a-487a-a52e-1589aa9e37bd"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -183,17 +174,6 @@ namespace SS3D.Systems.Inputs
                     ""action"": ""Horizontal Rotation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""17cbed13-80d8-4e3e-99eb-c6bdf003d38c"",
-                    ""path"": ""<Mouse>/middleButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move Freely"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -772,7 +752,6 @@ namespace SS3D.Systems.Inputs
             m_Camera_SnapLeft = m_Camera.FindAction("Snap Left", throwIfNotFound: true);
             m_Camera_VerticalRotation = m_Camera.FindAction("Vertical Rotation", throwIfNotFound: true);
             m_Camera_HorizontalRotation = m_Camera.FindAction("Horizontal Rotation", throwIfNotFound: true);
-            m_Camera_MoveFreely = m_Camera.FindAction("Move Freely", throwIfNotFound: true);
             // Movement
             m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
             m_Movement_Movement = m_Movement.FindAction("Movement", throwIfNotFound: true);
@@ -871,7 +850,6 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Camera_SnapLeft;
         private readonly InputAction m_Camera_VerticalRotation;
         private readonly InputAction m_Camera_HorizontalRotation;
-        private readonly InputAction m_Camera_MoveFreely;
         public struct CameraActions
         {
             private @Controls m_Wrapper;
@@ -881,7 +859,6 @@ namespace SS3D.Systems.Inputs
             public InputAction @SnapLeft => m_Wrapper.m_Camera_SnapLeft;
             public InputAction @VerticalRotation => m_Wrapper.m_Camera_VerticalRotation;
             public InputAction @HorizontalRotation => m_Wrapper.m_Camera_HorizontalRotation;
-            public InputAction @MoveFreely => m_Wrapper.m_Camera_MoveFreely;
             public InputActionMap Get() { return m_Wrapper.m_Camera; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -906,9 +883,6 @@ namespace SS3D.Systems.Inputs
                     @HorizontalRotation.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnHorizontalRotation;
                     @HorizontalRotation.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnHorizontalRotation;
                     @HorizontalRotation.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnHorizontalRotation;
-                    @MoveFreely.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnMoveFreely;
-                    @MoveFreely.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnMoveFreely;
-                    @MoveFreely.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnMoveFreely;
                 }
                 m_Wrapper.m_CameraActionsCallbackInterface = instance;
                 if (instance != null)
@@ -928,9 +902,6 @@ namespace SS3D.Systems.Inputs
                     @HorizontalRotation.started += instance.OnHorizontalRotation;
                     @HorizontalRotation.performed += instance.OnHorizontalRotation;
                     @HorizontalRotation.canceled += instance.OnHorizontalRotation;
-                    @MoveFreely.started += instance.OnMoveFreely;
-                    @MoveFreely.performed += instance.OnMoveFreely;
-                    @MoveFreely.canceled += instance.OnMoveFreely;
                 }
             }
         }
@@ -1268,7 +1239,6 @@ namespace SS3D.Systems.Inputs
             void OnSnapLeft(InputAction.CallbackContext context);
             void OnVerticalRotation(InputAction.CallbackContext context);
             void OnHorizontalRotation(InputAction.CallbackContext context);
-            void OnMoveFreely(InputAction.CallbackContext context);
         }
         public interface IMovementActions
         {

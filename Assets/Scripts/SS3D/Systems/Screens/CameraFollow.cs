@@ -87,7 +87,6 @@ namespace SS3D.Systems.Screens
         private const float MaxDistance = 15f;
         private const float SnapAngle = 45.1f;
 
-        private bool _freeMoveStarted;
         #endregion
 
         protected override void OnStart()
@@ -98,8 +97,6 @@ namespace SS3D.Systems.Screens
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
-            _controls.MoveFreely.performed += HandleMoveFreelyStart;
-            _controls.MoveFreely.canceled += HandleMoveFreelyEnd;
             _inputSystem.ToggleActionMap(_controls, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
@@ -112,31 +109,12 @@ namespace SS3D.Systems.Screens
             _controls.Zoom.performed -= HandleZoom;
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
-            _controls.MoveFreely.performed -= HandleMoveFreelyStart;
-            _controls.MoveFreely.canceled -= HandleMoveFreelyEnd;
             _inputSystem.ToggleActionMap(_controls, false);
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (_freeMoveStarted)
-            {
-                Vector2 currentMousePosition = Mouse.current.position.ReadValue();
-                Vector3 previousMousePosition = Mouse.current.position.ReadValueFromPreviousFrame();
-                _horizontalAngle += (float)((currentMousePosition.x - previousMousePosition.x) * 0.25);
-                _verticalAngle += (float)(-(currentMousePosition.y - previousMousePosition.y) * 0.18);
-            }
-            
             ProcessCameraPosition();
-        }
-
-        private void HandleMoveFreelyStart(InputAction.CallbackContext context)
-        {
-            _freeMoveStarted = true;
-        }
-        private void HandleMoveFreelyEnd(InputAction.CallbackContext context)
-        {
-            _freeMoveStarted = false;
         }
         
         private void HandleZoom(InputAction.CallbackContext context) 

@@ -49,15 +49,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Move Freely",
-                    "type": "Button",
-                    "id": "d287c558-9f1a-487a-a52e-1589aa9e37bd",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -159,17 +150,6 @@
                     "action": "Horizontal Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "17cbed13-80d8-4e3e-99eb-c6bdf003d38c",
-                    "path": "<Mouse>/middleButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move Freely",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
