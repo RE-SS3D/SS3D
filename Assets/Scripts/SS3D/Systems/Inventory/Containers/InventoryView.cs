@@ -57,6 +57,8 @@ namespace SS3D.Systems.Inventory.UI
         [SerializeField] private GameObject EarRightPrefab;
         [SerializeField] private GameObject DummyPrefab;
 
+        private object lockObject = new object();
+
         /// <summary>
         /// The order in which clothing slots appear in the grid by container type,
         /// from top left, to bottom right.
@@ -69,6 +71,16 @@ namespace SS3D.Systems.Inventory.UI
 
         // The number of Hand slots.
         public int CountHandsSlots => Slots.Where(x => x.ContainerType == ContainerType.Hand).Count();
+        
+        private bool HasSlotOfType(ContainerType type)
+        {
+            return Slots.Where(x=>x.ContainerType == type).Count() > 0; 
+        }
+
+        private bool HasSlotWithHigherOrSameOrderThan(ContainerType type)
+        {
+            return Slots.Where(x => OrderOfType(x.ContainerType) >= OrderOfType(type)).Count() > 0;
+        }
 
         public void Setup(HumanInventory inventory)
         {
@@ -198,21 +210,33 @@ namespace SS3D.Systems.Inventory.UI
         /// In case of multiple slots with the same container type, it places the slot after all other slots
         /// with same container type.
         /// </summary>
-        private int PlaceSlot(ContainerType type)
+        private int PlaceHorizontalLayoutSlot(ContainerType type)
         {
+            //TODO fix hands again
+
+            // if no slot with order higher place at end
+            if (!HasSlotWithHigherOrSameOrderThan(type))
+            {
+                return HorizontalLayout.transform.childCount;   
+            }
+
+            // if slot with same order, place at last index of slot type.
+            if (HasSlotOfType(type))
+            {
+                return (LastIndexSlotOfType(type)+1);
+            }
+
+            // if slot with order lower, place at last index of type just below.
             for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
             {
                 var childTransform = HorizontalLayout.transform.GetChild(i);
+                
                 if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && OrderOfType(slot.ContainerType) >= OrderOfType(type))
                 {
-                    if(slot.ContainerType == type)
-                    {
-                        return LastIndexSlotOfType(type);
-                    }
-                    else
-                        return i;
+                        return i;     
                 }
             }
+            Punpun.Warning(this, "returning slot position 0, should not reach this point");
             return 0;
         }
 
@@ -246,19 +270,26 @@ namespace SS3D.Systems.Inventory.UI
         /// <returns> Index 0 if no slot with container type given is found, otherwise the last index slot of the given type.</returns>
         private int LastIndexSlotOfType(ContainerType type)
         {
-            var slotsOfType = new List<SingleItemContainerSlot>();
+            SingleItemContainerSlot slotOfType = null;
             for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
             {
+                
                 var childTransform = HorizontalLayout.transform.GetChild(i);
                 if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == type)
                 {
-                    slotsOfType.Add(slot);
+                    slotOfType = slot;
                 }
             }
-            if (slotsOfType.Count == 0)
+            if (slotOfType == null)
+            {
+                Punpun.Information(this, "no slots of type " + type.ToString() + ", returning index 0 ");
                 return 0;
+            }
             else
-                return slotsOfType.IndexOf(slotsOfType.Last());
+            {
+                return slotOfType.gameObject.transform.GetSiblingIndex();
+            }
+               
         }
 
         /// <summary>
@@ -284,9 +315,10 @@ namespace SS3D.Systems.Inventory.UI
         private SingleItemContainerSlot AddHorizontalLayoutSlot(GameObject prefab, ContainerType type)
         {
             GameObject slot = Instantiate(prefab, transform);
+            int slotIndex = PlaceHorizontalLayoutSlot(type);
             slot.transform.SetParent(HorizontalLayout.transform, false);
-            slot.transform.SetSiblingIndex(PlaceSlot(type));
-            return slot.GetComponent<SingleItemContainerSlot>();
+            slot.transform.SetSiblingIndex(slotIndex);
+            return slot.GetComponent<SingleItemContainerSlot>(); 
         }
 
         /// <summary>
