@@ -78,8 +78,6 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip(" The number of custom displays."), SerializeField]
         private int _numberDisplay;
 
-        [Tooltip(" If it should display as a slot in UI."), SerializeField]
-        private bool _isSlotInUI;
 
         public Vector3 AttachmentOffset => _attachmentOffset;
 
@@ -104,8 +102,6 @@ namespace SS3D.Systems.Inventory.Containers
         public Transform[] Displays => _displays;
 
         public int NumberDisplay => _numberDisplay;
-
-        public bool IsSlotInUI => _isSlotInUI;
 
         #endregion
 

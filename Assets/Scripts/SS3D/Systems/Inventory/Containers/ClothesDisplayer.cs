@@ -187,6 +187,9 @@ namespace SS3D.Systems.Inventory.Containers
                     _backpackData = new ClothDisplayData(Backpack, display, item);
                     break;
 
+                case ContainerType.ExoSuit:
+                    break;
+
                 case ContainerType.Jumpsuit:
                     _jumpsuitData = new ClothDisplayData(Jumpsuit, display, item);
                     break;
@@ -213,10 +216,6 @@ namespace SS3D.Systems.Inventory.Containers
 
                 case ContainerType.EarRight:
                     _earRightData = new ClothDisplayData(EarRight, display, item);
-                    break;
-
-                default:
-                    Punpun.Error(this, $"Container type not handled by Clothes displayer");
                     break;
             }
         }

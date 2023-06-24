@@ -366,7 +366,7 @@ namespace SS3D.Systems.Inventory.Containers
         private void HandleTryAddContainerOnItemAttached(object sender, Item item)
         {
             var parentContainer = (AttachedContainer)sender;
-            var itemContainers = item.GetComponentsInChildren<AttachedContainer>().Where(x => x.IsSlotInUI == true);
+            var itemContainers = item.GetComponentsInChildren<InventorySlotContainer>();
             
             foreach (var container in itemContainers)
             {
