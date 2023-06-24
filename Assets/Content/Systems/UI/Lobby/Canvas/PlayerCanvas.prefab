@@ -1075,6 +1075,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: <PrefabId>k__BackingField
+      value: 93
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af039f84b4a245049b5b62799af01384, type: 3}
 --- !u!224 &9191455379462354299 stripped
@@ -1132,6 +1136,14 @@ PrefabInstance:
     - target: {fileID: 3885246897420459619, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4416089188971054470, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
+      propertyPath: ClothingSlotPosition.Array.data[6]
+      value: 2048
+      objectReference: {fileID: 0}
+    - target: {fileID: 4416089188971054470, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
+      propertyPath: ClothingSlotPosition.Array.data[8]
+      value: 4096
       objectReference: {fileID: 0}
     - target: {fileID: 4452887637558266342, guid: 0b8fbd4d5c5a29648b0311070cd87b40, type: 3}
       propertyPath: m_AnchorMax.x
