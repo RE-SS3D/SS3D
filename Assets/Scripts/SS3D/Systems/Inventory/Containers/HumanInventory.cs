@@ -305,8 +305,14 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+            if (!container.Container.CanContainItem(item))
+            {
+                return;
+            }
+
             itemContainer.RemoveItem(item);
             container.Container.AddItemPosition(item, position);
+            
         }
 
 
