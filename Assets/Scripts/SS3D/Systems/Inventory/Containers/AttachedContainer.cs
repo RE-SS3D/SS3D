@@ -79,6 +79,10 @@ namespace SS3D.Systems.Inventory.Containers
         private int _numberDisplay;
 
 
+        [Tooltip(" if should display as slot in UI."), SerializeField]
+        private bool _displayAsSlotInUI;
+
+
         public Vector3 AttachmentOffset => _attachmentOffset;
 
         public bool OnlyStoreWhenOpen => _onlyStoreWhenOpen;
@@ -102,6 +106,8 @@ namespace SS3D.Systems.Inventory.Containers
         public Transform[] Displays => _displays;
 
         public int NumberDisplay => _numberDisplay;
+
+        public bool DisplayAsSlotInUI => _displayAsSlotInUI;
 
         #endregion
 

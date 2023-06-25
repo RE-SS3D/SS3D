@@ -79,6 +79,10 @@ public class AttachedContainerEditor : Editor
             attachedContainer.IsInteractive);
         HandleIsInteractive(isInteractive);
 
+        bool displayAsSlotInUI = EditorGUILayout.Toggle(
+            new GUIContent("displayAsSlotInUI", "Set if the container should display as a slot in UI"),
+            attachedContainer.DisplayAsSlotInUI);
+        HandleDisplayAsSlotInUI(displayAsSlotInUI);
 
         if (attachedContainer.IsInteractive)
         {
@@ -210,6 +214,13 @@ public class AttachedContainerEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("_automaticContainerSetUp");
         sp.boolValue = automaticContainerSetUp;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleDisplayAsSlotInUI(bool displayAsSlotInUI)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("_displayAsSlotInUI");
+        sp.boolValue = displayAsSlotInUI;
         serializedObject.ApplyModifiedProperties();
     }
 
