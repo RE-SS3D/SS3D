@@ -287,17 +287,14 @@ namespace SS3D.Systems.Inventory.Items
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
             // Find stored items
-            AttachedContainer container = GetComponent<AttachedContainer>();
-            if (container == null)
-            {
-                container = GetComponent<ContainerInteractive>().attachedContainer;
-            }
+            AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
             // If stored items are found, temporarily set their parents to null,
             // so RuntimePreviewGenerator won't generate stored items
             Dictionary<Transform, Transform> storedItemsWithParents = new Dictionary<Transform, Transform>();
-            if (container != null)
+            foreach (AttachedContainer attachedContainer in containers)
             {
-                IEnumerable<Item> storedItems = container.Items;
+                
+                IEnumerable<Item> storedItems = attachedContainer.Items;
                 foreach (Item item in storedItems)
                 {
                     Transform itemTransform = item.transform;
