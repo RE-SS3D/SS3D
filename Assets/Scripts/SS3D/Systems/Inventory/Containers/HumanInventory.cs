@@ -136,12 +136,12 @@ namespace SS3D.Systems.Inventory.Containers
 
         /// <summary>
         /// Get the attached container on the Human prefab and put them in this inventory.
-        /// TODO : Should not add containers that do not display as slots.
+        /// Add only containers that display as slots in inventory.
         /// </summary>
         [Server]
         private void SetUpContainers()
         {
-            var attachedContainers = GetComponentsInChildren<AttachedContainer>();
+            var attachedContainers = GetComponentsInChildren<AttachedContainer>().Where(x => x.DisplayAsSlotInUI);
             foreach (var container in attachedContainers)
             {
                 AddContainer(container);

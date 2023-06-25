@@ -97,9 +97,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
 
             if (asServer) return;
-            Debug.Log("jumpsuit changed");
-            Debug.Log("display ? " + newValue._display + "item : " + newValue._clothToDisplay + "on body part : " + newValue._bodyPart );
-
 
             bool display = newValue._display;
             var bodyPart = newValue._bodyPart;
