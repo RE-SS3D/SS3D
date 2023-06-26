@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
 using SS3D.Data;
-using FishNet.Configuring;
 
 
 namespace SS3D.Core

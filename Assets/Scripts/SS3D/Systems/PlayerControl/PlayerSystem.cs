@@ -33,9 +33,9 @@ namespace SS3D.Systems.PlayerControl
         public IEnumerable<Player> ServerPlayers => _serverPlayers.Values;
         public IEnumerable<Player> OnlinePlayers => _onlinePlayers.Values;
 
-        protected override void OnStart()
+        public override void OnStartClient()
         {
-            base.OnStart();
+            base.OnStartClient();
 
             LateSyncOnlinePlayers();
             LateSyncServerPlayers();
