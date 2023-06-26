@@ -34,7 +34,7 @@ namespace SS3D.Systems.Tile
         private IEnumerator LoadAssetsWithIcon(GenericObjectSo[] assets)
         {
             List<Texture2D> tempIcons = new List<Texture2D>();
-            
+            RuntimePreviewGenerator.OrthographicMode = true;
             foreach (var asset in assets)
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(asset.prefab.transform,
