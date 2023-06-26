@@ -195,13 +195,12 @@ namespace SS3D.Systems.Inventory.Items
         {
             // TODO: Make this handle multiple renderers, with different states
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
-
             foreach (Renderer childRenderer in renderers)
             {
                 childRenderer.enabled = visible;
             }
         }
-        
+
         public bool IsVisible()
         {
             // TODO: Make this handle multiple renderers
@@ -305,15 +304,15 @@ namespace SS3D.Systems.Inventory.Items
             {
                 storedItem.parent = null;
             }
-            
+
             Transform previewObject = Instantiate(transform, null, false);
             previewObject.gameObject.hideFlags = HideFlags.HideAndDontSave;
-            
+            previewObject.GetComponent<Item>().SetVisibility(true);
             Sprite icon;
             try
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(previewObject,
-                    Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false, true);
+                    Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128);
                 icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), 
                     new Vector2(0.5f, 0.5f), 100);
                 icon.name = transform.name;
