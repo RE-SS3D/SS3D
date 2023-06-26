@@ -45,18 +45,16 @@ namespace SS3D.Systems.Tile
             
             for (int i = 0; i < assets.Length; i++)
             {
-
-
-                // If we reach this point... Give up and load a default texture instead
                 if (tempIcons[i] != null)
+                {
                     assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
-
-                if (assets[i].icon == null)
+                }
+                else
+                {
                     assets[i].icon = _missingIcon;
-
+                }
                 _assets.Add(assets[i]);
             }
-
             IsInitialized = true;
             yield return null;
         }
