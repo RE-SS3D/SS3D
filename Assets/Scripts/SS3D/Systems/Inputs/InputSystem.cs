@@ -11,6 +11,7 @@ namespace SS3D.Systems.Inputs
     public class InputSystem : SS3D.Core.Behaviours.System
     {
         public Controls Inputs { get; private set; }
+        public float MouseSensitivity { get; private set; }
         private Dictionary<InputAction, int> _actionDisables;
 
         protected override void OnAwake()
@@ -18,7 +19,8 @@ namespace SS3D.Systems.Inputs
             DontDestroyOnLoad(transform.gameObject);
             
             base.OnAwake();
-        
+
+            MouseSensitivity = 0.001f;
             Inputs = new Controls();
             _actionDisables = new();
             foreach (InputAction action in Inputs)

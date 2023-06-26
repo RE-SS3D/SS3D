@@ -3,6 +3,7 @@ using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core.Behaviours;
 using UnityEngine;
 using System;
+using System.Collections;
 using SS3D.Core;
 using SS3D.Systems.Inputs;
 using UnityEngine.InputSystem;
@@ -63,7 +64,7 @@ namespace SS3D.Systems.Screens
         
         private Controls.CameraActions _controls;
         private InputSystem _inputSystem;
-
+        
         // Sensitivities and Accelerations
         private const float DistanceAcceleration = 10.0f;
         private const float AngleAcceleration = 8f;
@@ -86,6 +87,7 @@ namespace SS3D.Systems.Screens
         private const float MinDistance = 3f;
         private const float MaxDistance = 15f;
         private const float SnapAngle = 45.1f;
+        private const float MouseSnapThreshold = 0.04f;
 
         #endregion
 
@@ -97,6 +99,7 @@ namespace SS3D.Systems.Screens
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
+            _controls.MouseRotation.performed += HandleMouseRotation;
             _inputSystem.ToggleActionMap(_controls, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
@@ -109,9 +112,10 @@ namespace SS3D.Systems.Screens
             _controls.Zoom.performed -= HandleZoom;
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
+            _controls.MouseRotation.performed -= HandleMouseRotation;
             _inputSystem.ToggleActionMap(_controls, false);
         }
-
+        
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             ProcessCameraPosition();
@@ -122,20 +126,41 @@ namespace SS3D.Systems.Screens
            _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>(), MinDistance, MaxDistance); 
         }
         
-        // There are two button-type actions for snap, because MultiTap actions don't return values when performed
+        // There are two button-type actions for snap, because Tap actions don't return values when performed
         private void HandleSnapLeft(InputAction.CallbackContext context) 
         {
-           Snap(1); 
+           Snap(true); 
         }
         
         private void HandleSnapRight(InputAction.CallbackContext context) 
         {
-           Snap(-1); 
+           Snap(false); 
         }
         
-        private void Snap(float direction)
+        private void Snap(bool isLeft)
         {
+            int direction = isLeft? 1 : -1;
             _horizontalAngle = Mathf.Round((_horizontalAngle + SnapAngle * direction) / 90.0f) * 90.0f; 
+        }
+        private void HandleMouseRotation(InputAction.CallbackContext context)
+        {
+            float value = context.ReadValue<float>() * _inputSystem.MouseSensitivity;
+            if (Math.Abs(value) > MouseSnapThreshold)
+            {
+                Snap(value > 0);
+                _inputSystem.ToggleAction(_controls.MouseRotation, false);
+                StartCoroutine(MouseRotationTimeout(.4f));
+            }
+            else
+            {
+                _horizontalAngle += value * HorizontalRotationSensitivity;
+            }
+        }
+
+        private IEnumerator MouseRotationTimeout(float time)
+        {
+            yield return new WaitForSeconds(time);
+            _inputSystem.ToggleAction(_controls.MouseRotation, true);
         }
 
         /// <summary>
