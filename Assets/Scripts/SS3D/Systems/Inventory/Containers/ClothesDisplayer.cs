@@ -17,7 +17,7 @@ namespace SS3D.Systems.Inventory.Containers
     public class ClothesDisplayer : NetworkActor
     {
         /// <summary>
-        /// A small structure containing information regarding clothes on player, to help syncing them.
+        /// A small structure containing information regarding clothes on player, to help syncing them over the network.
         /// For each bodypart that can have clothing, it also contains information on the item to display, if it should show or not.
         /// </summary>
         private struct ClothDisplayData
@@ -133,6 +133,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// When the content of a container change, check if it should display or remove display of some clothes.
         /// </summary>
+        [Server]
         public void HandleContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             // If it's not a cloth type container.
@@ -160,6 +161,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Show the right cloth depending on which container type has been modified.
         /// </summary>
+        [Server]
         public void ShowCloth(Container container, Item item, bool display)
         {
             switch (container.ContainerType)
