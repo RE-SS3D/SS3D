@@ -38,7 +38,7 @@ namespace SS3D.Systems.Tile
             foreach (var asset in assets)
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(asset.prefab.transform,
-                    Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
+                    Shader.Find("Unlit/ObjectIcon"), null, 128, 128, true, true);
 
                 tempIcons.Add(texture);
             }
