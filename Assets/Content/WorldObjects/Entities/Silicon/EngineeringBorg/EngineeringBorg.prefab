@@ -1353,6 +1353,7 @@ GameObject:
   - component: {fileID: -7634788102200668286}
   - component: {fileID: -925834532171443999}
   - component: {fileID: 1234979698125959994}
+  - component: {fileID: 6718533481539137195}
   m_Layer: 0
   m_Name: EngineeringBorg
   m_TagString: Untagged
@@ -1572,6 +1573,21 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1019513474262773944}
   _networkObjectCache: {fileID: 1019513474262773944}
   _mind: {fileID: 0}
+--- !u!114 &6718533481539137195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6199841308937614464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions: []
 --- !u!1 &6250850031364791032
 GameObject:
   m_ObjectHideFlags: 0

@@ -167,7 +167,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  _productToDispense: 3
+  _productToDispense: 5
   _dispensingTransform: {fileID: 5160227759105755511}
 --- !u!1 &3671711954327816294
 GameObject:
@@ -193,7 +193,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671711954327816294}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.458, z: 0.256}
+  m_LocalPosition: {x: 0, y: 0.458, z: 0.334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

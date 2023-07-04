@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using FishNet;
+using Coimbra;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using FishNet.Transporting;
 using SS3D.Attributes;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
@@ -83,14 +82,14 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Initialise this item fields. Can only be called once.
         /// </summary>
-        public void Init(string name, float weight, Vector2Int size,  List<Trait> traits)
+        public void Init(string itemName, float weight, Vector2Int size,  List<Trait> traits)
         {
             if (_initialised)
             {
                 Punpun.Error(this, "Item already initialised, returning");
                 return;
             }
-            _name = name ?? string.Empty;
+            _name = itemName ?? string.Empty;
             _weight = weight;
             _size = size;
             _traits.AddRange(traits);
@@ -100,7 +99,6 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// The sprite that is shown in the container slot
         /// </summary>
-
         public Sprite Sprite
         {
             get => InventorySprite();
@@ -133,7 +131,11 @@ namespace SS3D.Systems.Inventory.Items
         [ServerOrClient]
         private Sprite InventorySprite()
         {
-            return _sprite == null ? GenerateNewIcon() : Sprite;
+            if (_sprite == null)
+            {
+                _sprite = GenerateIcon();
+            }
+            return _sprite;
         }
 
         /// <summary>
@@ -185,26 +187,20 @@ namespace SS3D.Systems.Inventory.Items
                 itemCollider.enabled = true;
             }
         }
-
-        /// <summary>
-        /// Sets if this item is visible or not
-        /// </summary>
+        
+        
         /// <param name="visible">Should the item be visible</param>
         [Server]
         public void SetVisibility(bool visible)
         {
             // TODO: Make this handle multiple renderers, with different states
-            Renderer renderer = GetComponentInChildren<Renderer>();
-
-            if (renderer != null)
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (Renderer childRenderer in renderers)
             {
-                renderer.enabled = visible;
+                childRenderer.enabled = visible;
             }
         }
 
-        /// <summary>
-        /// Is this item visible in any way
-        /// </summary>
         public bool IsVisible()
         {
             // TODO: Make this handle multiple renderers
@@ -231,7 +227,7 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         /// <returns></returns>
         [ServerOrClient]
-        public bool InContainer()
+        public bool IsInContainer()
         {
             return _container != null;
         }
@@ -251,10 +247,8 @@ namespace SS3D.Systems.Inventory.Items
         }
 
         /// <summary>
-        /// Checks if the item has an specific trait
+        /// Checks if the item has a specific trait
         /// </summary>
-        /// <param name="trait"></param>
-        /// <returns></returns>
         [ServerOrClient]
         public bool HasTrait(Trait trait)
         {
@@ -285,29 +279,56 @@ namespace SS3D.Systems.Inventory.Items
             _container = newContainer;
         }
 
-        // TODO: Improve this
-        // we have this to generate icons at start, I do not know how bad it is for performance
-        // if you know anything about it, tell us
+        // Generate preview of the same object, but without stored items.
         [ServerOrClient]
-        public Sprite GenerateNewIcon()
+        public Sprite GenerateIcon()
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
+            // Find stored items
+            AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
+            // If stored items are found, temporarily set their parents to null,
+            // so RuntimePreviewGenerator won't generate stored items
+            Dictionary<Transform, Transform> storedItemsWithParents = new Dictionary<Transform, Transform>();
+            foreach (AttachedContainer attachedContainer in containers)
+            {
+                
+                IEnumerable<Item> storedItems = attachedContainer.Items;
+                foreach (Item item in storedItems)
+                {
+                    Transform itemTransform = item.transform;
+                    storedItemsWithParents.Add(itemTransform, itemTransform.parent);
+                }
+            }
+            foreach (Transform storedItem in storedItemsWithParents.Keys)
+            {
+                storedItem.parent = null;
+            }
 
+            Transform previewObject = Instantiate(transform, null, false);
+            previewObject.gameObject.hideFlags = HideFlags.HideAndDontSave;
+            previewObject.GetComponent<Item>().SetVisibility(true);
+            Sprite icon;
             try
             {
-                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
-            Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
-                var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-                sprite.name = transform.name;
-                return sprite;
+                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(previewObject,
+                    Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128);
+                icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), 
+                    new Vector2(0.5f, 0.5f), 100);
+                icon.name = transform.name;
             }
             catch (NullReferenceException)
             {
-                Debug.LogError("Null reference exception, reverting to default sprite for item " + name + ".");
-                return null;
+                Punpun.Warning(this, "Can't generate icon for " + name + ".");
+                icon = null;
             }
-
+            // Return stored items back to their parents
+            previewObject.gameObject.Dispose(false);
+            foreach (KeyValuePair<Transform, Transform> storedItemWithParent in storedItemsWithParents)
+            {
+                storedItemWithParent.Key.parent = storedItemWithParent.Value;
+            }
+            return icon;
         }
 
         /// <summary>
@@ -341,7 +362,7 @@ namespace SS3D.Systems.Inventory.Items
                 Punpun.Warning(this, "item already contains trait {trait}", Logs.Generic, trait.Name);
                 return;
             }
-             _traits.Add(trait);
+            _traits.Add(trait);
         }
 
         /// <summary>

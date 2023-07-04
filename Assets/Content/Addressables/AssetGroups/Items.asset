@@ -77,6 +77,10 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanDukePurpleTea.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: b044d7bdb55405046a9055726a779eb1
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Poster.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: 2332a158259900e4f8a237fa8daff266
     m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/MedicalPatch.prefab
     m_ReadOnly: 0
