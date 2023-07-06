@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 12
+  <ComponentIndex>k__BackingField: 11
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -336,7 +336,6 @@ Transform:
   - {fileID: 6525079246486181739}
   - {fileID: 231479877643016212}
   - {fileID: 3978730619448687650}
-  - {fileID: 3870604044766499510}
   - {fileID: 6658169328145325631}
   - {fileID: 8637305464530177015}
   - {fileID: 5469234257975473950}
@@ -1061,7 +1060,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 9
+  <ComponentIndex>k__BackingField: 8
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -1779,7 +1778,7 @@ Transform:
   - {fileID: 8413454969630779832}
   - {fileID: 3952468918222686353}
   m_Father: {fileID: 1870850359086752095}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1594377383810549907
 GameObject:
@@ -1929,7 +1928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 11
+  <ComponentIndex>k__BackingField: 10
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -2916,7 +2915,7 @@ Transform:
   - {fileID: 1821458746737680447}
   - {fileID: 4462261157748811453}
   m_Father: {fileID: 1870850359086752095}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2318580196450076595
 GameObject:
@@ -3067,7 +3066,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 4
+  <ComponentIndex>k__BackingField: 3
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -3547,167 +3546,6 @@ Transform:
   m_Father: {fileID: 1267633661366518328}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2922662556893833177
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3870604044766499510}
-  - component: {fileID: 4698183942720895415}
-  - component: {fileID: 2597311493477513020}
-  m_Layer: 0
-  m_Name: ID
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3870604044766499510
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2922662556893833177}
-  m_LocalRotation: {x: -0.00000008146034, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9402349, z: 0.03605596}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 1870850359086752095}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!137 &4698183942720895415
-SkinnedMeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2922662556893833177}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 3
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  serializedVersion: 2
-  m_Quality: 0
-  m_UpdateWhenOffscreen: 0
-  m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 0}
-  m_Bones:
-  - {fileID: 2312129763742525980}
-  - {fileID: 555318022889464296}
-  - {fileID: 2964619601704216767}
-  - {fileID: 851636886438930025}
-  - {fileID: 1163351478397259458}
-  - {fileID: 5329309212035021020}
-  - {fileID: 2398135412670540063}
-  - {fileID: 3824984762086596364}
-  - {fileID: 438709074631424037}
-  - {fileID: 1084986635934123439}
-  - {fileID: 6307282637357716550}
-  - {fileID: 5539079144479387355}
-  - {fileID: 9089863125375551091}
-  - {fileID: 5832941566696499316}
-  - {fileID: 9053177843097342720}
-  - {fileID: 1267633661366518328}
-  - {fileID: 4983652985280326632}
-  - {fileID: 6831649574724549004}
-  - {fileID: 3657004668181364307}
-  - {fileID: 7984160872506313774}
-  - {fileID: 2166236694298732271}
-  - {fileID: 8122397135647964431}
-  - {fileID: 1156745993025133393}
-  - {fileID: 5115173101446557820}
-  - {fileID: 3172643569644450408}
-  - {fileID: 3619422700326762265}
-  - {fileID: 2403132919681660608}
-  - {fileID: 2223645953135068443}
-  - {fileID: 6924190181149792844}
-  - {fileID: 6653541696833174003}
-  - {fileID: 3622774868122681214}
-  - {fileID: 2471680998921796577}
-  - {fileID: 8040713312746122184}
-  - {fileID: 2089153385561551699}
-  - {fileID: 2561159763559213326}
-  - {fileID: 5194134162726775776}
-  - {fileID: 1726071883580151758}
-  - {fileID: 1587600703330358405}
-  - {fileID: 1577642226099443706}
-  - {fileID: 6189060155573503914}
-  - {fileID: 3918743488675097537}
-  - {fileID: 5336292931747755294}
-  - {fileID: 7804972431541233091}
-  - {fileID: 8625957104459741184}
-  - {fileID: 5332390800146613625}
-  - {fileID: 2935458371136628918}
-  - {fileID: 6579065618054923413}
-  - {fileID: 1342008326084027676}
-  - {fileID: 6355804955344212816}
-  m_BlendShapeWeights: []
-  m_RootBone: {fileID: 2312129763742525980}
-  m_AABB:
-    m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
-  m_DirtyAABB: 0
---- !u!114 &2597311493477513020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2922662556893833177}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 1
-  _networkBehaviours: []
-  <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
-  <ChildNetworkObjects>k__BackingField: []
-  _isNetworked: 1
-  _isGlobal: 0
-  _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 0
-  _sceneNetworkObjects: []
 --- !u!1 &3021086107100169162
 GameObject:
   m_ObjectHideFlags: 0
@@ -4071,7 +3909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 8
+  <ComponentIndex>k__BackingField: 7
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -4232,7 +4070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 10
+  <ComponentIndex>k__BackingField: 9
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -4784,7 +4622,7 @@ Transform:
   - {fileID: 9136871507229749843}
   - {fileID: 4478298089421918591}
   m_Father: {fileID: 1870850359086752095}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4043374911815983597
 GameObject:
@@ -4934,7 +4772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 7
+  <ComponentIndex>k__BackingField: 6
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -5799,7 +5637,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 6
+  <ComponentIndex>k__BackingField: 5
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -6551,7 +6389,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1870850359086752095}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &8050946424626858951
 SkinnedMeshRenderer:
@@ -6668,7 +6506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 2
+  <ComponentIndex>k__BackingField: 1
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -7034,7 +6872,6 @@ MonoBehaviour:
   - {fileID: 7144090709710962679}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
-  - {fileID: 2597311493477513020}
   - {fileID: 4138789318277530234}
   - {fileID: 4684017524585288931}
   - {fileID: 7590913349156985469}
@@ -7449,7 +7286,6 @@ MonoBehaviour:
   HandRight: {fileID: 8067289659534850981}
   FootLeft: {fileID: 6911900315559804093}
   FootRight: {fileID: 8626656600768578774}
-  Identification: {fileID: 2597311493477513020}
   Backpack: {fileID: 4684017524585288931}
   Face: {fileID: 2091115627957921416}
   EarLeft: {fileID: 7534105608452820685}
@@ -7678,7 +7514,6 @@ Transform:
   m_Children:
   - {fileID: 4531842478586200051}
   - {fileID: 8674961287379602231}
-  - {fileID: 4169942637441476752}
   m_Father: {fileID: 498654123859477456}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8495,7 +8330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 5
+  <ComponentIndex>k__BackingField: 4
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []
@@ -8878,7 +8713,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1870850359086752095}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &4089904536153596817
 SkinnedMeshRenderer:
@@ -9385,6 +9220,7 @@ Transform:
   - {fileID: 1084986635934123439}
   - {fileID: 555318022889464296}
   - {fileID: 5329309212035021020}
+  - {fileID: 4169942637441476752}
   m_Father: {fileID: 8356004225170572391}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9412,13 +9248,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8606613593399740242}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.048257828, y: -0.000008294293, z: -0.00000040073064, w: 0.99883497}
+  m_LocalPosition: {x: 0.13699955, y: -0.043728, z: 0.027157936}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6806139853968569792}
-  m_RootOrder: 2
+  m_Father: {fileID: 2312129763742525980}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1082206991310670826
 MonoBehaviour:
@@ -9455,7 +9291,7 @@ MonoBehaviour:
   _displayAsSlotInUI: 1
   _containerName: ID container
   _size: {x: 1, y: 1}
-  _hideItems: 1
+  _hideItems: 0
   _type: 8
   _startFilter: {fileID: 0}
 --- !u!1 &8678284191513972006
@@ -10095,7 +9931,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1870850359086752095}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &9015990342576147118
 SkinnedMeshRenderer:
@@ -10213,7 +10049,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 3
+  <ComponentIndex>k__BackingField: 2
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
   <ChildNetworkObjects>k__BackingField: []

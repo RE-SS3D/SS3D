@@ -46,7 +46,6 @@ namespace SS3D.Systems.Inventory.Containers
         public NetworkObject HandRight;
         public NetworkObject FootLeft;
         public NetworkObject FootRight;
-        public NetworkObject Identification;
         public NetworkObject Backpack;
 	    public NetworkObject Face;
         public NetworkObject EarLeft;
@@ -73,9 +72,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _footRightData;
-
-        [SyncVar(OnChange = nameof(SyncCloth))]
-        private ClothDisplayData _identificationData;
 
         [SyncVar(OnChange = nameof(SyncCloth))]
         private ClothDisplayData _backpackData;
@@ -166,10 +162,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             switch (container.ContainerType)
             {
-                case ContainerType.Identification:
-                    _identificationData = new ClothDisplayData(Identification, display, item);
-                    break;
-
                 case ContainerType.Glasses:
                     _eyesData= new ClothDisplayData(Eyes, display, item);
                     break;
