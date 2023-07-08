@@ -76,6 +76,9 @@ namespace SS3D.Systems.Inventory.Containers
 
                 // Assign parent
                 itemTransform.SetParent(temporaryPoint.transform, false);
+
+                // Very sketchy, as the root is not reliable to be things we want them to be.
+                // Maybe we can tweak this in the future
                 temporaryPoint.transform.rotation = attachmentPoint.root.rotation * attachmentPoint.localRotation;
                
                 // Assign the relative position between the attachment point and the object
