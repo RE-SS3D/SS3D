@@ -248,8 +248,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
   _rigidbody: {fileID: 3483542684610536844}
   Prefab: {fileID: 5261116577612792016}
-  AttachmentPoint: {fileID: 7149383022180600066}
-  AttachmentPointAlt: {fileID: 0}
+  AttachmentPoint: {fileID: 7760506997891073340}
+  AttachmentPointAlt: {fileID: 7760506997891073340}
   testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
   StartingIDCard: {fileID: 0}
 --- !u!114 &-3412952555245330052
