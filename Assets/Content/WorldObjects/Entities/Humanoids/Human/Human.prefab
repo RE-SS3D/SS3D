@@ -8969,7 +8969,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 4140518851396729342}
-  Mirrored: 0
+  Mirrored: 1
 --- !u!1 &8935913803077858714
 GameObject:
   m_ObjectHideFlags: 0
