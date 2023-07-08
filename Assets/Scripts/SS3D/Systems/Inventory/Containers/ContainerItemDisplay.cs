@@ -70,18 +70,16 @@ namespace SS3D.Systems.Inventory.Containers
                 // Create new (temporary) point
                 // HACK: Required because rotation pivot can be different
                 GameObject temporaryPoint = new GameObject("TempPivotPoint");
-                
+
                 temporaryPoint.transform.SetParent(attachedContainer.Displays[index].transform, false);
                 temporaryPoint.transform.localPosition = Vector3.zero;
-                //temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
-                temporaryPoint.transform.rotation = attachedContainer.Displays[index].transform.rotation;
 
                 // Assign parent
                 itemTransform.SetParent(temporaryPoint.transform, false);
+                temporaryPoint.transform.rotation = attachmentPoint.root.rotation * attachmentPoint.localRotation;
+               
                 // Assign the relative position between the attachment point and the object
                 itemTransform.localPosition = -attachmentPoint.localPosition;
-
-                //item.transform.rotation = attachedContainer.Displays[index].transform.rotation;
                 itemTransform.localRotation = Quaternion.identity;
             }
             else
