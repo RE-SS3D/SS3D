@@ -243,7 +243,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
   _rigidbody: {fileID: 3483542684610536844}
   Prefab: {fileID: 5261116577612792016}
-  AttachmentPoint: {fileID: 7149383022180600066}
+  AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 0}
 --- !u!1 &8188033368034612119
 GameObject:
