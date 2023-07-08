@@ -73,13 +73,15 @@ namespace SS3D.Systems.Inventory.Containers
                 
                 temporaryPoint.transform.SetParent(attachedContainer.Displays[index].transform, false);
                 temporaryPoint.transform.localPosition = Vector3.zero;
-                temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
-                
+                //temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
+                temporaryPoint.transform.rotation = attachedContainer.Displays[index].transform.rotation;
+
                 // Assign parent
                 itemTransform.SetParent(temporaryPoint.transform, false);
                 // Assign the relative position between the attachment point and the object
                 itemTransform.localPosition = -attachmentPoint.localPosition;
-                //item.transform.rotation = displays[index].transform.rotation;
+
+                //item.transform.rotation = attachedContainer.Displays[index].transform.rotation;
                 itemTransform.localRotation = Quaternion.identity;
             }
             else
@@ -91,7 +93,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             _displayedItems[index] = item;
         }
-        
+
         private void ContainerOnItemDetached(object sender, Item item)
         {
             int index = -1;
@@ -114,7 +116,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 item.transform.SetParent(null, true);
                 // It's currently deleting the game object containing the item, why is this here ?
-                //itemParent.gameObject.Destroy();
+                itemParent.gameObject.Dispose(true);
             }
 
             _displayedItems[index] = null;

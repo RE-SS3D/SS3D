@@ -8895,6 +8895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1342008326084027676}
   - component: {fileID: 4140518851396729342}
+  - component: {fileID: 8300769832796282301}
   m_Layer: 0
   m_Name: hold.l
   m_TagString: Untagged
@@ -8946,14 +8947,29 @@ MonoBehaviour:
   _isInteractive: 1
   _hasUi: 0
   _hasCustomInteraction: 0
-  _hasCustomDisplay: 0
-  _displays: []
-  _numberDisplay: 0
+  _hasCustomDisplay: 1
+  _displays:
+  - {fileID: 1342008326084027676}
+  _numberDisplay: 1
   _containerName: left hand
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
   _startFilter: {fileID: 0}
+--- !u!114 &8300769832796282301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8915899267794646267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 4140518851396729342}
+  Mirrored: 0
 --- !u!1 &8935913803077858714
 GameObject:
   m_ObjectHideFlags: 0
@@ -9133,6 +9149,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6653541696833174003}
   - component: {fileID: 7144090709710962679}
+  - component: {fileID: 8735509741792839302}
   m_Layer: 0
   m_Name: hold.r
   m_TagString: Untagged
@@ -9184,14 +9201,29 @@ MonoBehaviour:
   _isInteractive: 1
   _hasUi: 0
   _hasCustomInteraction: 0
-  _hasCustomDisplay: 0
-  _displays: []
-  _numberDisplay: 0
+  _hasCustomDisplay: 1
+  _displays:
+  - {fileID: 6653541696833174003}
+  _numberDisplay: 1
   _containerName: right hand
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
   _startFilter: {fileID: 0}
+--- !u!114 &8735509741792839302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9064888651365615274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 7144090709710962679}
+  Mirrored: 0
 --- !u!1 &9131769810566877388
 GameObject:
   m_ObjectHideFlags: 0
