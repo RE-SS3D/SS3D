@@ -1,0 +1,20 @@
+{
+    "name": "RuntimeInspector.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:fa8dbf94b90efa1478e7c833397cb0b2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
