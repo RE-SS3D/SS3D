@@ -29973,7 +29973,7 @@ GameObject:
   - component: {fileID: 1962741444460096581}
   - component: {fileID: 1962741444460096580}
   m_Layer: 0
-  m_Name: Static World Objects
+  m_Name: StaticWorldObjects
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: 27f4653d8a44783438a9cfd1dd0f7cbf, type: 3}
   m_NavMeshLayer: 0
@@ -30023,7 +30023,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 2499635508
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 5521238259420770767
+  <AssetPathHash>k__BackingField: 9185803773484106751
   _sceneNetworkObjects:
   - {fileID: 0}
   - {fileID: 0}

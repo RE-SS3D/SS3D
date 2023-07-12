@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 4302234173120300220}
   - component: {fileID: 4302234173120300195}
   m_Layer: 0
-  m_Name: Networked View
+  m_Name: NetworkedView
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: 39036f56f13e21b48ac592bc470c2c6a, type: 3}
   m_NavMeshLayer: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 2499635508
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 18360935973388590069
+  <AssetPathHash>k__BackingField: 7943887241591805521
   _sceneNetworkObjects:
   - {fileID: 0}
   - {fileID: 0}
