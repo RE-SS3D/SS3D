@@ -268,9 +268,9 @@ namespace SS3D.Systems.Inventory.Containers
             if (item.transform.parent == transform)
             {
                 item.transform.SetParent(null, true);
-                ProcessItemDetached(item);
             }
 
+            ProcessItemDetached(item);
             item.Unfreeze();
         }
 
@@ -287,9 +287,12 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (AttachItems)
             {
-                Transform itemTransform = item.transform;
-                itemTransform.SetParent(transform, false);
-                itemTransform.localPosition = AttachmentOffset;
+                if (!HasCustomDisplay)
+                {
+                    Transform itemTransform = item.transform;
+                    itemTransform.SetParent(transform, false);
+                    itemTransform.localPosition = AttachmentOffset;
+                }
                 ProcessItemAttached(item);
             }
         }

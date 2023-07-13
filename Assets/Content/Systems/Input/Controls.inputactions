@@ -630,6 +630,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Toggle Runtime Editor",
+                    "type": "Button",
+                    "id": "6cf79877-798f-449c-9aa5-084a04567a38",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -696,6 +705,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Spawn Cans",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7e0906c5-bfd6-41f7-8e95-1c3caccce5ce",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Runtime Editor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
