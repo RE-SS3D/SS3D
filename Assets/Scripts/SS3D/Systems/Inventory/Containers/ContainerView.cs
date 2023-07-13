@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
@@ -15,7 +15,7 @@ namespace SS3D.Systems.Inventory.UI
     public class ContainerView : View
     {
 
-        public ContainerViewer containerViewer;
+        private ContainerViewer containerViewer;
 
         private readonly List<ContainerDisplay> _containerDisplays = new();
 
