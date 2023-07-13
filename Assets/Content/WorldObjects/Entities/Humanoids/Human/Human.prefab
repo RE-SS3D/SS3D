@@ -247,7 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 29
+  _componentIndexCache: 30
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -886,7 +886,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 26
+  _componentIndexCache: 27
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -2294,7 +2294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 28
+  _componentIndexCache: 29
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -6098,7 +6098,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 25
+  _componentIndexCache: 26
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -6856,12 +6856,12 @@ MonoBehaviour:
   - {fileID: 3301312253177779075}
   - {fileID: 6606944209543214874}
   - {fileID: 300689357194200928}
+  - {fileID: 1082206991310670826}
   - {fileID: 6689112149766062617}
   - {fileID: 1202753384528456214}
   - {fileID: 3028215939049344471}
   - {fileID: 5460457101901443602}
   - {fileID: 7584683726852713205}
-  - {fileID: 1082206991310670826}
   - {fileID: 528052100901114241}
   - {fileID: 745316812857141604}
   - {fileID: 2306112832503890745}
@@ -9234,6 +9234,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4169942637441476752}
   - component: {fileID: 1082206991310670826}
+  - component: {fileID: 7489720702399317162}
   m_Layer: 0
   m_Name: ID container
   m_TagString: Untagged
@@ -9249,7 +9250,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8606613593399740242}
   m_LocalRotation: {x: -0.048257828, y: -0.000008294293, z: -0.00000040073064, w: 0.99883497}
-  m_LocalPosition: {x: 0.13699955, y: -0.043728, z: 0.027157936}
+  m_LocalPosition: {x: 0.164, y: 0.072, z: -0.015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9268,12 +9269,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 30
+  _componentIndexCache: 25
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _automaticContainerSetUp: 1
+  _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 300689357194200928}
-  ContainerItemDisplay: {fileID: 0}
+  ContainerItemDisplay: {fileID: 7489720702399317162}
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 0
@@ -9285,15 +9286,30 @@ MonoBehaviour:
   _isInteractive: 1
   _hasUi: 0
   _hasCustomInteraction: 0
-  _hasCustomDisplay: 0
-  _displays: []
-  _numberDisplay: 0
+  _hasCustomDisplay: 1
+  _displays:
+  - {fileID: 4169942637441476752}
+  _numberDisplay: 1
   _displayAsSlotInUI: 1
   _containerName: ID container
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 8
   _startFilter: {fileID: 0}
+--- !u!114 &7489720702399317162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8606613593399740242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 1082206991310670826}
+  Mirrored: 0
 --- !u!1 &8678284191513972006
 GameObject:
   m_ObjectHideFlags: 0
@@ -9804,7 +9820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 27
+  _componentIndexCache: 28
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -9896,6 +9912,7 @@ MonoBehaviour:
   _displays:
   - {fileID: 1342008326084027676}
   _numberDisplay: 1
+  _displayAsSlotInUI: 1
   _containerName: left hand
   _size: {x: 1, y: 1}
   _hideItems: 0
@@ -10177,6 +10194,7 @@ MonoBehaviour:
   _displays:
   - {fileID: 6653541696833174003}
   _numberDisplay: 1
+  _displayAsSlotInUI: 1
   _containerName: right hand
   _size: {x: 1, y: 1}
   _hideItems: 0
