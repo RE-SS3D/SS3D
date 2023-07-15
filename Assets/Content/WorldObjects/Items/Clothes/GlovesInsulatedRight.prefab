@@ -23,14 +23,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1759752206845698186}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.000000029802322, y: 0.000000059604645, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: -0.15, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4581819739591165902}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &4581819739591165899
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,7 +230,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 6087662318167862822}
   Prefab: {fileID: 4581819739591165899}
   AttachmentPoint: {fileID: 4300571028311695952}
-  AttachmentPointAlt: {fileID: 4581819739591165902}
+  AttachmentPointAlt: {fileID: 4300571028311695952}
 --- !u!64 &7041145045412855027
 MeshCollider:
   m_ObjectHideFlags: 0
