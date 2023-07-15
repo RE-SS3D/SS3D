@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 6270372984438359393}
   - component: {fileID: 8996871635369454886}
   - component: {fileID: 8013759367116360982}
+  - component: {fileID: 2090621500076283417}
   m_Layer: 10
   m_Name: HeadsetLeft
   m_TagString: Untagged
@@ -201,7 +202,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 47
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 6865557315451439930
@@ -244,3 +245,16 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -504101684852238494, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &2090621500076283417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7723921361698481624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 9

@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 3546473533537016869}
   - component: {fileID: -2012658674781697945}
   - component: {fileID: -8110830878206171978}
+  - component: {fileID: 5903053600117115308}
   m_Layer: 10
   m_Name: Sunglasses
   m_TagString: Untagged
@@ -244,3 +245,16 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -6500346282090131365, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &5903053600117115308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667451333340596270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 2

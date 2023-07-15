@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 3013549352249691316}
   - component: {fileID: 8663352389375050187}
   - component: {fileID: 4605974504323946509}
+  - component: {fileID: 2293966627244539820}
   m_Layer: 10
   m_Name: ShoesHiTopsRight
   m_TagString: Untagged
@@ -213,6 +214,19 @@ MonoBehaviour:
   Prefab: {fileID: 930591319891399865}
   AttachmentPoint: {fileID: 4956007631782200439}
   AttachmentPointAlt: {fileID: 4956007631782200439}
+--- !u!114 &2293966627244539820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930591319891399865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 1
 --- !u!1 &2748908499357878881
 GameObject:
   m_ObjectHideFlags: 0

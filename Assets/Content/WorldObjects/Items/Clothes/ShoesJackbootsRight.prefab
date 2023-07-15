@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7421556062366613563}
   - component: {fileID: 8747103376381415943}
   - component: {fileID: 8989450246752855161}
+  - component: {fileID: 5115188675067491857}
   m_Layer: 10
   m_Name: ShoesJackbootsRight
   m_TagString: Untagged
@@ -213,6 +214,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -1324151342969176834, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &5115188675067491857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2653363475000095017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 1
 --- !u!1 &6774639687541203304
 GameObject:
   m_ObjectHideFlags: 0

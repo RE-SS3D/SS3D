@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 7923090970201565529}
   - component: {fileID: 5289822754746829837}
   - component: {fileID: 2410778413439115995}
+  - component: {fileID: 7871970376332479996}
   m_Layer: 10
   m_Name: JumpsuitEngineer
   m_TagString: Untagged
@@ -244,3 +245,16 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7310264250969126733, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &7871970376332479996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393721560307922778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 5

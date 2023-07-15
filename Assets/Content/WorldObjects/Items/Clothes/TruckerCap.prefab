@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: -1921154974467191097}
   - component: {fileID: -1938953542191470901}
   - component: {fileID: 4049302817993054162}
+  - component: {fileID: 1629795439574854430}
   m_Layer: 10
   m_Name: TruckerCap
   m_TagString: Untagged
@@ -244,3 +245,16 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7106450658240330850, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &1629795439574854430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 4

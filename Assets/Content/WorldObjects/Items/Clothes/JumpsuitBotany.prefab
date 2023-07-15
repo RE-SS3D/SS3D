@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 4809119552894144540}
   - component: {fileID: 5068916745430490638}
   - component: {fileID: 4765947327316251274}
+  - component: {fileID: 3281200066761241047}
   m_Layer: 10
   m_Name: JumpsuitBotany
   m_TagString: Untagged
@@ -297,6 +298,19 @@ MonoBehaviour:
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 319533666247276065}
+--- !u!114 &3281200066761241047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3945981868420553423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 5
 --- !u!1 &6321573054913086286
 GameObject:
   m_ObjectHideFlags: 0

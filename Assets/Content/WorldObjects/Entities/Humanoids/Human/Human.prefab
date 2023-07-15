@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4462261157748811453}
   - component: {fileID: 5633133699961766715}
   - component: {fileID: 8626656600768578774}
+  - component: {fileID: 1524200455027456264}
   m_Layer: 0
   m_Name: Foot Right
   m_TagString: Untagged
@@ -161,6 +162,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &1524200455027456264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61224875741296584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 1
 --- !u!1 &106812091747019403
 GameObject:
   m_ObjectHideFlags: 0
@@ -923,6 +937,7 @@ GameObject:
   - component: {fileID: 8413454969630779832}
   - component: {fileID: 1326662398481621788}
   - component: {fileID: 6233962219268866637}
+  - component: {fileID: 8149984355783769363}
   m_Layer: 0
   m_Name: Hand Left
   m_TagString: Untagged
@@ -1073,6 +1088,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &8149984355783769363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972284602524422540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 7
 --- !u!1 &1038917509191347453
 GameObject:
   m_ObjectHideFlags: 0
@@ -1791,6 +1819,7 @@ GameObject:
   - component: {fileID: 1821458746737680447}
   - component: {fileID: 8109082287784449202}
   - component: {fileID: 6911900315559804093}
+  - component: {fileID: 706420925057494135}
   m_Layer: 0
   m_Name: Foot Left
   m_TagString: Untagged
@@ -1941,6 +1970,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &706420925057494135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594377383810549907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 0
 --- !u!1 &1674863463214297859
 GameObject:
   m_ObjectHideFlags: 0
@@ -2928,6 +2970,7 @@ GameObject:
   - component: {fileID: 5434434331182936001}
   - component: {fileID: 8339820939275692846}
   - component: {fileID: 7590913349156985469}
+  - component: {fileID: 6053071042394239261}
   m_Layer: 0
   m_Name: Hat
   m_TagString: Untagged
@@ -3079,6 +3122,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &6053071042394239261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2318580196450076595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 4
 --- !u!1 &2388839449928180625
 GameObject:
   m_ObjectHideFlags: 0
@@ -3772,6 +3828,7 @@ GameObject:
   - component: {fileID: 6726566051885356636}
   - component: {fileID: 1589596904512980411}
   - component: {fileID: 1527032890679831709}
+  - component: {fileID: 5708275212759495835}
   m_Layer: 0
   m_Name: Ear Right
   m_TagString: Untagged
@@ -3922,6 +3979,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &5708275212759495835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3538392194666368000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 10
 --- !u!1 &3626982131771350130
 GameObject:
   m_ObjectHideFlags: 0
@@ -3933,6 +4003,7 @@ GameObject:
   - component: {fileID: 3952468918222686353}
   - component: {fileID: 6858204281858372590}
   - component: {fileID: 8067289659534850981}
+  - component: {fileID: 1421316668394371100}
   m_Layer: 0
   m_Name: Hand Right
   m_TagString: Untagged
@@ -4083,6 +4154,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &1421316668394371100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3626982131771350130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 8
 --- !u!1 &3704160777848949328
 GameObject:
   m_ObjectHideFlags: 0
@@ -4635,6 +4719,7 @@ GameObject:
   - component: {fileID: 5211909553744999071}
   - component: {fileID: 5695998073342401492}
   - component: {fileID: 7534105608452820685}
+  - component: {fileID: 4251283191739647136}
   m_Layer: 0
   m_Name: Ear Left
   m_TagString: Untagged
@@ -4785,6 +4870,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &4251283191739647136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4043374911815983597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 9
 --- !u!1 &4209142530063844385
 GameObject:
   m_ObjectHideFlags: 0
@@ -5500,6 +5598,7 @@ GameObject:
   - component: {fileID: 2020101281645496302}
   - component: {fileID: 3775646212739373028}
   - component: {fileID: 8410791339138828931}
+  - component: {fileID: 6299264923820670093}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
@@ -5650,6 +5749,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &6299264923820670093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5123606445737711681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 2
 --- !u!1 &5248849393312167067
 GameObject:
   m_ObjectHideFlags: 0
@@ -6369,6 +6481,7 @@ GameObject:
   - component: {fileID: 6658169328145325631}
   - component: {fileID: 8050946424626858951}
   - component: {fileID: 4138789318277530234}
+  - component: {fileID: 5174669343730670165}
   m_Layer: 0
   m_Name: Jumpsuit
   m_TagString: Untagged
@@ -6519,6 +6632,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &5174669343730670165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6156442624279794332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 5
 --- !u!1 &6200983958115876081
 GameObject:
   m_ObjectHideFlags: 0
@@ -7279,17 +7405,18 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _inventory: {fileID: 1089183168752255729}
   ClothesRoot: {fileID: 1870850359086752095}
-  Hat: {fileID: 7590913349156985469}
-  Eyes: {fileID: 8410791339138828931}
-  Jumpsuit: {fileID: 4138789318277530234}
-  HandLeft: {fileID: 6233962219268866637}
-  HandRight: {fileID: 8067289659534850981}
-  FootLeft: {fileID: 6911900315559804093}
-  FootRight: {fileID: 8626656600768578774}
-  Backpack: {fileID: 4684017524585288931}
-  Face: {fileID: 2091115627957921416}
-  EarLeft: {fileID: 7534105608452820685}
-  EarRight: {fileID: 1527032890679831709}
+  startingClothedBodyPart:
+  - {fileID: 7590913349156985469}
+  - {fileID: 8410791339138828931}
+  - {fileID: 4138789318277530234}
+  - {fileID: 6233962219268866637}
+  - {fileID: 8067289659534850981}
+  - {fileID: 6911900315559804093}
+  - {fileID: 8626656600768578774}
+  - {fileID: 4684017524585288931}
+  - {fileID: 2091115627957921416}
+  - {fileID: 7534105608452820685}
+  - {fileID: 1527032890679831709}
 --- !u!114 &4559920193704007786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8193,6 +8320,7 @@ GameObject:
   - component: {fileID: 8836467227468897358}
   - component: {fileID: 8057421560981843689}
   - component: {fileID: 2091115627957921416}
+  - component: {fileID: 113844057537055301}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -8343,6 +8471,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &113844057537055301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7473514853027042574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 3
 --- !u!1 &7474862859407008586
 GameObject:
   m_ObjectHideFlags: 0
@@ -9943,6 +10084,7 @@ GameObject:
   - component: {fileID: 5469234257975473950}
   - component: {fileID: 9015990342576147118}
   - component: {fileID: 4684017524585288931}
+  - component: {fileID: 1621818506458342007}
   m_Layer: 0
   m_Name: Back
   m_TagString: Untagged
@@ -10094,6 +10236,19 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects: []
+--- !u!114 &1621818506458342007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8935913803077858714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 11
 --- !u!1 &8981706509230505178
 GameObject:
   m_ObjectHideFlags: 0

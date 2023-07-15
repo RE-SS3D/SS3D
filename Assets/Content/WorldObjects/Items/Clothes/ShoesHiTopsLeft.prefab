@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 8681604604373809337}
   - component: {fileID: 2462870481354224635}
   - component: {fileID: 5945712506631318020}
+  - component: {fileID: 5589457681411614888}
   m_Layer: 10
   m_Name: ShoesHiTopsLeft
   m_TagString: Untagged
@@ -170,7 +171,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 107
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16878790226428728250
@@ -213,6 +214,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -6802408581776391992, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &5589457681411614888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6003340987905195654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clothType: 0
 --- !u!1 &6913626269417526130
 GameObject:
   m_ObjectHideFlags: 0
