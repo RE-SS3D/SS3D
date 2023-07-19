@@ -54,13 +54,18 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public Hands Hands;
 
-        /// <summary>
-        /// Try to get a particular type of container in the inventory, and if there's multiple, try to get the one at the given position.
-        /// </summary>
-        /// <param name="position">The position of the container for a given type, if there's two pocket containers, it'd be 0 and 1</param>
-        /// <param name="type"> The container we want back.</param>
-        /// <returns></returns>
-        public bool TryGetTypeContainer(ContainerType type, int position, out AttachedContainer typeContainer) 
+		/// <summary>
+		/// Number of hands container on this inventory.
+		/// </summary>
+		public int CountHands => ContainersOnPlayer.Where(x => x.Type == ContainerType.Hand).Count();
+
+		/// <summary>
+		/// Try to get a particular type of container in the inventory, and if there's multiple, try to get the one at the given position.
+		/// </summary>
+		/// <param name="position">The position of the container for a given type, if there's two pocket containers, it'd be 0 and 1</param>
+		/// <param name="type"> The container we want back.</param>
+		/// <returns></returns>
+		public bool TryGetTypeContainer(ContainerType type, int position, out AttachedContainer typeContainer) 
         {
             int typeIndex = 0;
             foreach (var container in ContainersOnPlayer) 
@@ -103,11 +108,6 @@ namespace SS3D.Systems.Inventory.Containers
                     break;
             }
         }
-
-        /// <summary>
-        /// Number of hands container on this inventory.
-        /// </summary>
-        public int CountHands => ContainersOnPlayer.Where(x => x.Type == ContainerType.Hand).Count();
 
 		public override void OnStartClient()
         {
