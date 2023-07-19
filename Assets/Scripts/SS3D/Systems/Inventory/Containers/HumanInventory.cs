@@ -144,25 +144,6 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        /// <summary>
-        /// This method simply warn the client that everything is set up on the inventory, and things that depends on it can now be called.
-        /// </summary>
-        [TargetRpc]
-        private void RpcInvokeInventorySetUp(NetworkConnection conn)
-        {
-            OnInventorySetUp?.Invoke();
-        }
-
-
-        /// <summary>
-        /// Should be called after setting up the inventory. Gives the player its items for its role.
-        /// </summary>
-        [TargetRpc]
-        private void RpcGiveRoleLoadout(NetworkConnection conn)
-        {
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
-        }
-
         [Client]
         private void SetupView()
         {
