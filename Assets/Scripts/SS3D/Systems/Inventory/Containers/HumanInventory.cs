@@ -1,4 +1,4 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +41,8 @@ namespace SS3D.Systems.Inventory.Containers
         public event Notify OnInventorySetUp;
 
         public ContainerViewer containerViewer;
+
+		public List<AttachedContainer> Containers => ContainersOnPlayer.Collection.ToList();
 
         /// <summary>
         /// The controllable body of the owning player
@@ -107,31 +109,24 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public int CountHands => ContainersOnPlayer.Where(x => x.Type == ContainerType.Hand).Count();
 
-        public override void OnStartClient()
+		public override void OnStartClient()
         {
             base.OnStartClient();
-            if (Owner.IsLocalClient)
-            {
-                Hands.SetInventory(this);
-                SetupView();
-                
-            }
+			if (!IsOwner)
+			{
+				return;
+			}
+
+            Hands.SetInventory(this);
+            SetupView();
+			Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+			OnInventorySetUp?.Invoke();
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             SetUpContainers();
-        }
-
-        /// <summary>
-        /// Called after OnStartServer, observers are guaranteed to be set up here.
-        /// </summary>
-        public override void OnSpawnServer(NetworkConnection connection)
-        {
-            base.OnSpawnServer(connection);
-            RpcGiveRoleLoadout(Owner);
-            RpcInvokeInventorySetUp(Owner);
         }
 
         /// <summary>

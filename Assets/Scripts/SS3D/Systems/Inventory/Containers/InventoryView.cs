@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
@@ -86,6 +86,12 @@ namespace SS3D.Systems.Inventory.UI
         {
             FillClothingLayoutWithDummySlots();
             Inventory = inventory;
+
+			foreach(var container in inventory.Containers)
+			{
+				HandleInventoryContainerAdded(container);
+			}
+
             inventory.OnInventoryContainerAdded += HandleInventoryContainerAdded;
             inventory.OnInventoryContainerRemoved += HandleInventoryContainerRemoved;
         }
@@ -110,6 +116,9 @@ namespace SS3D.Systems.Inventory.UI
         [Client]
         private void HandleInventoryContainerAdded(AttachedContainer container)
         {
+			if (Slots.Exists(x => x.Container == container))
+				return;
+
             SingleItemContainerSlot slot;
             switch (container.Type)
             {
