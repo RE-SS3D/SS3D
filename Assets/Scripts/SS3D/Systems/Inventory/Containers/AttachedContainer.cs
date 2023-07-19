@@ -1,4 +1,4 @@
-using FishNet;
+﻿using FishNet;
 using FishNet.Connection;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
@@ -146,6 +146,10 @@ namespace SS3D.Systems.Inventory.Containers
         public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;
 
+		public delegate void AttachedContainerHandler(AttachedContainer attachedContainer);
+
+		public event AttachedContainerHandler OnAttachedContainerDisabled;
+
         /// <summary>
         /// The items stored in this container, including information on how they are stored
         /// </summary>
@@ -159,11 +163,11 @@ namespace SS3D.Systems.Inventory.Containers
 
         public SyncList<StoredItem> StoredItems => _storedItems;
 
-        /// <summary>
-        /// The container that is attached
-        /// <remarks>Only set this right after creation, as event listener will not update</remarks>
-        /// </summary>
-        public Container Container
+		/// <summary>
+		/// The container that is attached
+		/// <remarks>Only set this right after creation, as event listener will not update</remarks>
+		/// </summary>
+		public Container Container
         {
             get => _container;
             set => UpdateContainer(value);
@@ -178,7 +182,18 @@ namespace SS3D.Systems.Inventory.Containers
             _container.OnContentsChanged += HandleContainerContentsChanged;
         }
 
-        protected override void OnDestroyed()
+		protected override void OnDisabled()
+		{
+			base.OnDisabled();
+			if (!IsServer)
+			{
+				return;
+			}
+			OnAttachedContainerDisabled?.Invoke(this);
+		}
+
+
+		protected override void OnDestroyed()
         {
             base.OnDestroyed();
             Container?.Purge();
@@ -199,11 +214,11 @@ namespace SS3D.Systems.Inventory.Containers
             OnItemDetached?.Invoke(this, e);
         }
 
-        /// <summary>
-        /// Replace the current container with a new one and set it up.
-        /// </summary>
-        /// <param name="newContainer"></param>
-        [Server]
+		/// <summary>
+		/// Replace the current container with a new one and set it up.
+		/// </summary>
+		/// <param name="newContainer"></param>
+		[Server]
         private void UpdateContainer(Container newContainer)
         {
             if (_container != null)
