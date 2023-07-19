@@ -1,4 +1,4 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Connection;
 using FishNet.Object;
@@ -35,9 +35,10 @@ namespace SS3D.Systems.Inventory.Containers
         // Reference to the player human inventory.
         public HumanInventory inventory;
 
-        protected override void OnAwake()
+        public override void OnStartClient()
         {
-            base.OnAwake();
+            base.OnStartClient();
+			if (!IsOwner) { return; }
             SetupView();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }

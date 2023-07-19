@@ -256,8 +256,7 @@ namespace SS3D.Systems.Inventory.Containers
             CmdTransferItem(item.gameObject, position, targetContainer);
         }
 
-
-        [ServerRpc]
+		[ServerRpc]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, AttachedContainer container)
         {
             Item item = itemObject.GetComponent<Item>();
