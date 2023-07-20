@@ -47,7 +47,7 @@ namespace SS3D.Core.Settings
 		{
 			NetworkSettings networkSettings = GetOrFind<NetworkSettings>();
 
-			Punpun.Information(nameof(NetworkSettings), $"Network settings reset on the built executable");
+			Log.Information(nameof(NetworkSettings), $"Network settings reset on the built executable");
 
 			networkSettings.NetworkType = NetworkType.Client;
 			networkSettings.ServerAddress = string.Empty;

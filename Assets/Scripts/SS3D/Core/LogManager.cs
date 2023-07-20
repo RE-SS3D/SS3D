@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
 using SS3D.Data;
+using FishNet.Configuring;
+using Log = Serilog.Log;
 
 
 namespace SS3D.Core
@@ -27,7 +29,7 @@ namespace SS3D.Core
         private static readonly string LogFolderPath;
         private static bool _isInitialized;
 
-        private static LogSetting settings;
+        private static LogSettings settings;
 
         static LogManager()
         {
@@ -36,7 +38,7 @@ namespace SS3D.Core
 
             if (Application.isPlaying)
             {
-                settings = Assets.Get<LogSetting>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
+                settings = Assets.Get<LogSettings>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
             }
             
         }
