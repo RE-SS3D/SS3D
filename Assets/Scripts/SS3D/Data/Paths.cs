@@ -45,39 +45,5 @@ namespace SS3D.Data
 
 			return path;
 		}
-
-		/// <summary>
-		/// Reads or creates a file.
-		/// </summary>
-		/// <param name="path">The full path including the file.</param>
-		/// <returns>The read or created file.</returns>
-		[NotNull]
-		public static string ReadOrCreateIfNotExistsFile([NotNull] string path) 
-		{
-			if (File.Exists(path))
-			{
-				return File.ReadAllText(path);
-			}
-
-			Log.Information(nameof(Paths), $"File {path} not found, creating a new one.");
-			
-			File.Create(path);
-			return File.ReadAllText(path);
-		}
-
-		/// <summary>
-		/// Writes or creates a/to a file.
-		/// </summary>
-		/// <param name="path">File path.</param>
-		/// <param name="fileContent">File content.</param>
-		public static void WriteOrCreateIfNotExistsFile([NotNull] string path, string fileContent)
-		{
-			if (!File.Exists(path))
-			{
-				File.Create(path);
-			}
-
-			File.WriteAllText(path, fileContent);
-		}
 	}
 }

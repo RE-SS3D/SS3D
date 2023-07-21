@@ -14,7 +14,7 @@ namespace SS3D.Systems.Tile
     {
         public Sprite _missingIcon;
 
-        public bool IsInitialized { get; private set; } = false;
+        public bool IsInitialized { get; private set; }
 
         public List<GenericObjectSo> Assets { get; private set; }
 
@@ -41,7 +41,7 @@ namespace SS3D.Systems.Tile
 		        Transform prefabTransform = asset.prefab.transform;
 		        Shader shader = Shader.Find("Unlit/ObjectIcon");
 
-		        Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(prefabTransform, shader, null, 128, 128, true, true);
+		        Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(prefabTransform, shader, null, 128, 128, true);
 
 		        tempIcons.Add(texture);
 	        }
