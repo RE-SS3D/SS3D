@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
@@ -200,11 +200,33 @@ namespace SS3D.Systems.Roles
             SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
             SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);
 
-            if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 0, out AttachedContainer leftPocketContainer)) return;
+			if (!inventory.TryGetTypeContainer(ContainerType.ShoeRight, 0, out AttachedContainer ShoeRightContainer)) return;
+			SpawnItemInSlot(loadout.RightShoeItem, loadout.RightShoe, ShoeRightContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.ShoeLeft, 0, out AttachedContainer ShoeLeftContainer)) return;
+			SpawnItemInSlot(loadout.LeftShoeItem, loadout.LeftShoe, ShoeLeftContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.Jumpsuit, 0, out AttachedContainer JumpsuitContainer)) return;
+			SpawnItemInSlot(loadout.JumpsuitItem, loadout.Jumpsuit, JumpsuitContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.GloveLeft, 0, out AttachedContainer LeftGloveContainer)) return;
+			SpawnItemInSlot(loadout.LeftGloveItem, loadout.LeftGlove, LeftGloveContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.GloveRight, 0, out AttachedContainer RightGloveContainer)) return;
+			SpawnItemInSlot(loadout.RightGloveItem, loadout.RightGlove, RightGloveContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.Head, 0, out AttachedContainer HatContainer)) return;
+			SpawnItemInSlot(loadout.HatItem, loadout.Hat, HatContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.Glasses, 0, out AttachedContainer GlassesContainer)) return;
+			SpawnItemInSlot(loadout.GlassesItem, loadout.Glasses, GlassesContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 0, out AttachedContainer leftPocketContainer)) return;
             SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, leftPocketContainer);
 
             if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 1, out AttachedContainer rightPocketContainer)) return;
             SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, rightPocketContainer);
+
         }
 
         /// <summary>
