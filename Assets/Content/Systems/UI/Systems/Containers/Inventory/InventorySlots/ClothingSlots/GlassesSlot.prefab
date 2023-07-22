@@ -107,5 +107,13 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 00a2398fe3e33f04fb4870807dfd5dfc, type: 3}
+    - target: {fileID: 9053896636040410416, guid: aaedbf68381c7904e8810641d76f7a2b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 9053896636040410416, guid: aaedbf68381c7904e8810641d76f7a2b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 40
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaedbf68381c7904e8810641d76f7a2b, type: 3}
