@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 7005012552243402481}
   - component: {fileID: 4646584122129743545}
   - component: {fileID: 6202040713060371562}
+  - component: {fileID: 8222013437082652963}
   m_Layer: 0
   m_Name: JumpsuitSecurity
   m_TagString: Untagged
@@ -123,7 +124,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 11
+  <PrefabId>k__BackingField: 6
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 1375293245107217236
@@ -279,6 +280,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 5
+--- !u!64 &8222013437082652963
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726792282085660869}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 6295007783518057475, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
 --- !u!1 &1173133123537711899
 GameObject:
   m_ObjectHideFlags: 0
