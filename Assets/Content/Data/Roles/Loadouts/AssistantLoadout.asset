@@ -12,11 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
   m_Name: AssistantLoadout
   m_EditorClassIdentifier: 
-  leftHand: 1
-  rightHand: 1
-  leftPocket: 0
-  rightPocket: 0
-  leftHandItem: 0
-  rightHandItem: 1
-  leftPocketItem: 0
-  rightPocketItem: 0
+  LeftHand: 0
+  RightHand: 0
+  LeftPocket: 0
+  RightPocket: 0
+  LeftGlove: 0
+  RightGlove: 0
+  LeftShoe: 0
+  RightShoe: 0
+  Hat: 0
+  Glasses: 0
+  LeftEar: 0
+  RightEar: 0
+  Jumpsuit: 0
+  LeftHandItem: 0
+  RightHandItem: 0
+  LeftPocketItem: 0
+  RightPocketItem: 0
+  LeftGloveItem: 0
+  RightGloveItem: 0
+  LeftShoeItem: 0
+  RightShoeItem: 0
+  HatItem: 0
+  GlassesItem: 0
+  LeftEarItem: 0
+  RightEarItem: 0
+  JumpsuitItem: 0
