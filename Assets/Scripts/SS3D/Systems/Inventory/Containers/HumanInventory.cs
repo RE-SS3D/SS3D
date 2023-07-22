@@ -183,10 +183,32 @@ namespace SS3D.Systems.Inventory.Containers
 			container.OnAttachedContainerDisabled -= RemoveContainer;
 		}
 
-        /// <summary>
-        /// Simply invoke the event OnContainerContentChanged.
-        /// </summary>
-        private void HandleContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+		[Server]
+		public bool TryAddContainer(AttachedContainer container)
+		{
+			if (!Containers.Contains(container))
+			{
+				AddContainer(container);
+				return true;
+			}
+			return false;
+		}
+
+		[Server]
+		public bool TryRemoveContainer(AttachedContainer container)
+		{
+			if (Containers.Contains(container))
+			{
+				RemoveContainer(container);
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Simply invoke the event OnContainerContentChanged.
+		/// </summary>
+		private void HandleContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             OnContainerContentChanged?.Invoke(container,oldItems,newItems,type);
         }
