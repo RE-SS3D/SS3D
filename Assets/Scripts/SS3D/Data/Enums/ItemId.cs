@@ -44,6 +44,8 @@
         ShoesJackbootsLeft = 39, 
         ShoesJackbootsRight = 40, 
         JumpsuitSecurity = 41, 
+        HeadsetLeft = 42, 
+        HeadsetRight = 43, 
     }
 }
 

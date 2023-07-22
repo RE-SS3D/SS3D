@@ -11,26 +11,32 @@ public class RoleLoadoutEditor : Editor
 {
     private RoleLoadout roleLoadout;
 
-    public void OnEnable()
+	private SerializedProperty sp;
+
+	public void OnEnable()
     {
         roleLoadout = (RoleLoadout)target;
     }
 
     public override void OnInspectorGUI()
     {
-        roleLoadout.LeftHand = EditorGUILayout.Toggle("Left Hand", roleLoadout.LeftHand);
-        roleLoadout.RightHand = EditorGUILayout.Toggle("Right Hand", roleLoadout.RightHand);
-        roleLoadout.LeftPocket = EditorGUILayout.Toggle("Left Pocket", roleLoadout.LeftPocket);
-        roleLoadout.RightPocket = EditorGUILayout.Toggle("Right Pocket", roleLoadout.RightPocket);
-		roleLoadout.LeftGlove = EditorGUILayout.Toggle("Left Glove", roleLoadout.LeftGlove);
-		roleLoadout.RightGlove = EditorGUILayout.Toggle("Right Glove", roleLoadout.RightGlove);
-		roleLoadout.LeftShoe = EditorGUILayout.Toggle("Left Shoe", roleLoadout.LeftShoe);
-		roleLoadout.RightShoe = EditorGUILayout.Toggle("Right Shoe", roleLoadout.RightShoe);
-		roleLoadout.Jumpsuit = EditorGUILayout.Toggle("Jumpsuit", roleLoadout.Jumpsuit);
-		roleLoadout.Glasses = EditorGUILayout.Toggle("Glasses", roleLoadout.Glasses);
-		roleLoadout.LeftEar = EditorGUILayout.Toggle("LeftEar", roleLoadout.LeftEar);
-		roleLoadout.RightEar = EditorGUILayout.Toggle("RightEar", roleLoadout.RightEar);
-		roleLoadout.Hat = EditorGUILayout.Toggle("Hat", roleLoadout.Hat);
+
+
+		serializedObject.Update();
+
+		HandleBools("LeftHand", roleLoadout.LeftHand);
+		HandleBools("RightHand", roleLoadout.RightHand);
+		HandleBools("LeftPocket", roleLoadout.LeftPocket);
+		HandleBools("RightPocket", roleLoadout.RightPocket);
+		HandleBools("LeftGlove", roleLoadout.LeftGlove);
+		HandleBools("RightGlove", roleLoadout.RightGlove);
+		HandleBools("LeftShoe", roleLoadout.LeftShoe);
+		HandleBools("RightShoe", roleLoadout.RightShoe);
+		HandleBools("Jumpsuit", roleLoadout.Jumpsuit);
+		HandleBools("Glasses", roleLoadout.Glasses);
+		HandleBools("LeftEar", roleLoadout.LeftEar);
+		HandleBools("RightEar", roleLoadout.RightEar);
+		HandleBools("Hat", roleLoadout.Hat);
 
 		if (roleLoadout.LeftHand)
         {
@@ -111,4 +117,13 @@ public class RoleLoadoutEditor : Editor
 				EnumPopup("Glasses Item:", roleLoadout.GlassesItem);
 		}
 	}
+
+	public void HandleBools(string name, bool loadContainer)
+	{
+		sp = serializedObject.FindProperty(name);
+		sp.boolValue = EditorGUILayout.Toggle(name, loadContainer);
+		serializedObject.ApplyModifiedProperties();
+	}
+
+
 }

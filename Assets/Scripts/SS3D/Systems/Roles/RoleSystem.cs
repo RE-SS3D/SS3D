@@ -227,7 +227,13 @@ namespace SS3D.Systems.Roles
             if (!inventory.TryGetTypeContainer(ContainerType.Pocket, 1, out AttachedContainer rightPocketContainer)) return;
             SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, rightPocketContainer);
 
-        }
+			if (!inventory.TryGetTypeContainer(ContainerType.EarRight, 0, out AttachedContainer EarRightContainer)) return;
+			SpawnItemInSlot(loadout.RightEarItem, loadout.RightEar, EarRightContainer);
+
+			if (!inventory.TryGetTypeContainer(ContainerType.EarLeft, 0, out AttachedContainer EarLeftContainer)) return;
+			SpawnItemInSlot(loadout.LeftEarItem, loadout.LeftEar, EarLeftContainer);
+
+		}
 
         /// <summary>
         /// Spawns an item inside a container slot after checking for boolean

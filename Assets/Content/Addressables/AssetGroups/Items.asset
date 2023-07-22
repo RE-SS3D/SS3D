@@ -185,6 +185,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitSecurity.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: f549f4153ef612c4586c46ea280e0e94
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1a2f912be4bc1b948a2b22ffde517cdc
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

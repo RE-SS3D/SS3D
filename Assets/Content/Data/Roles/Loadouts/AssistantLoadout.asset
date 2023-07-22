@@ -16,25 +16,25 @@ MonoBehaviour:
   RightHand: 0
   LeftPocket: 0
   RightPocket: 0
-  LeftGlove: 0
-  RightGlove: 0
-  LeftShoe: 0
-  RightShoe: 0
-  Hat: 0
+  LeftGlove: 1
+  RightGlove: 1
+  LeftShoe: 1
+  RightShoe: 1
+  Hat: 1
   Glasses: 0
   LeftEar: 0
-  RightEar: 0
-  Jumpsuit: 0
+  RightEar: 1
+  Jumpsuit: 1
   LeftHandItem: 0
   RightHandItem: 0
   LeftPocketItem: 0
   RightPocketItem: 0
-  LeftGloveItem: 0
-  RightGloveItem: 0
-  LeftShoeItem: 0
-  RightShoeItem: 0
-  HatItem: 0
+  LeftGloveItem: 32
+  RightGloveItem: 33
+  LeftShoeItem: 37
+  RightShoeItem: 38
+  HatItem: 29
   GlassesItem: 0
   LeftEarItem: 0
-  RightEarItem: 0
-  JumpsuitItem: 0
+  RightEarItem: 43
+  JumpsuitItem: 36

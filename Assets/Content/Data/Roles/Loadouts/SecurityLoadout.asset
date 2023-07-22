@@ -12,11 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
   m_Name: SecurityLoadout
   m_EditorClassIdentifier: 
-  leftHand: 1
-  rightHand: 1
-  leftPocket: 0
-  rightPocket: 0
-  leftHandItem: 0
-  rightHandItem: 1
-  leftPocketItem: 0
-  rightPocketItem: 0
+  LeftHand: 0
+  RightHand: 0
+  LeftPocket: 0
+  RightPocket: 0
+  LeftGlove: 1
+  RightGlove: 1
+  LeftShoe: 1
+  RightShoe: 1
+  Hat: 1
+  Glasses: 0
+  LeftEar: 0
+  RightEar: 1
+  Jumpsuit: 1
+  LeftHandItem: 30
+  RightHandItem: 0
+  LeftPocketItem: 0
+  RightPocketItem: 0
+  LeftGloveItem: 32
+  RightGloveItem: 33
+  LeftShoeItem: 37
+  RightShoeItem: 38
+  HatItem: 29
+  GlassesItem: 0
+  LeftEarItem: 0
+  RightEarItem: 43
+  JumpsuitItem: 41
