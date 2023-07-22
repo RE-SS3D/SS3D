@@ -150,10 +150,10 @@ namespace SS3D.Systems.Inventory.Containers
 
 		public event AttachedContainerHandler OnAttachedContainerDisabled;
 
-        /// <summary>
-        /// The items stored in this container, including information on how they are stored
-        /// </summary>
-        [SyncObject]
+		/// <summary>
+		/// The items stored in this container, including information on how they are stored
+		/// </summary>
+		[SyncObject]
         private readonly SyncList<StoredItem> _storedItems = new();
 
         /// <summary>
@@ -184,6 +184,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 		protected override void OnDisabled()
 		{
+			// Mostly used to allow inventory to update accessible containers.
 			base.OnDisabled();
 			if (!IsServer)
 			{
@@ -192,6 +193,20 @@ namespace SS3D.Systems.Inventory.Containers
 			OnAttachedContainerDisabled?.Invoke(this);
 		}
 
+		protected override void OnEnabled()
+		{
+			// Mostly used to allow inventory to update accessible containers.
+			base.OnEnabled();
+			if (!IsServer)
+			{
+				return;
+			}
+			var inventory = GetComponentInParent<HumanInventory>();
+			if (inventory != null)
+			{
+				inventory.TryAddContainer(this);
+			}
+		}
 
 		protected override void OnDestroyed()
         {
