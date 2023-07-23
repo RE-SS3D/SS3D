@@ -44,9 +44,9 @@ GameObject:
   - component: {fileID: 7443103207650447750}
   - component: {fileID: 8913767733420869930}
   - component: {fileID: 2494294424063474924}
+  - component: {fileID: -2900402353996906960}
   - component: {fileID: 5729620301147399970}
   - component: {fileID: -9079531721198773732}
-  - component: {fileID: -2900402353996906960}
   m_Layer: 10
   m_Name: BrutePatch
   m_TagString: Untagged
@@ -149,6 +149,32 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.2455802, y: 0.000000105396964, z: 0.32346106}
   m_Center: {x: 0.000000052154064, y: -0.0000000074504936, z: -0.00000027567148}
+--- !u!114 &-2900402353996906960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4068007204767187790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  _networkBehaviours: []
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  _isNetworked: 1
+  _isGlobal: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: -1
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 17622097159930997963
+  _sceneNetworkObjects: []
 --- !u!114 &5729620301147399970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,29 +240,3 @@ MonoBehaviour:
   Prefab: {fileID: 4068007204767187790}
   AttachmentPoint: {fileID: 3486532436751009279}
   AttachmentPointAlt: {fileID: 3486532436751009279}
---- !u!114 &-2900402353996906960
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4068007204767187790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <IsNested>k__BackingField: 0
-  <ComponentIndex>k__BackingField: 0
-  _networkBehaviours: []
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
-  _isNetworked: 1
-  _isGlobal: 0
-  _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 17622097159930997963
-  _sceneNetworkObjects: []
