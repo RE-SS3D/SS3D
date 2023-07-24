@@ -17,15 +17,15 @@ namespace SS3D.Systems.Entities.Debug
         {
             base.OnStart();
             
-            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
-            _controls.SwapMinds.performed += HandleMindSwap;
+            // _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            // _controls.SwapMinds.performed += HandleMindSwap;
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
             
-            _controls.SwapMinds.performed -= HandleMindSwap;
+           // _controls.SwapMinds.performed -= HandleMindSwap;
         }
 
         [ContextMenu("Request Mind Swap")]

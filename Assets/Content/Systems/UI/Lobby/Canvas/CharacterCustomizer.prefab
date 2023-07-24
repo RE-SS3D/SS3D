@@ -479,7 +479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7e9de368c8487083b5df6427df9f21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ScreenType: 4
+  _screenType: 4
   _canvasGroup: {fileID: 170886901}
   _holder: {fileID: 910827855262019993}
 --- !u!1 &1614507549098967447
