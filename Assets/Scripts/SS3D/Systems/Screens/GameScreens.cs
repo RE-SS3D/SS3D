@@ -21,6 +21,7 @@ namespace SS3D.Systems.Screens
         /// <summary>
         /// Registers a screen into a screen list.
         /// </summary>
+        [ServerOrClient]
         public static void Register([NotNull] GameScreen screen)
         {
             if (!Screens.TryGetValue(screen.ScreenType, out GameScreen _))
@@ -32,6 +33,7 @@ namespace SS3D.Systems.Screens
         /// <summary>
         /// Removes a screen from the screen list.
         /// </summary>
+        [ServerOrClient]
         public static void Unregister(ScreenType type)
         {
             if (Screens.TryGetValue(type, out GameScreen _))
@@ -43,6 +45,7 @@ namespace SS3D.Systems.Screens
         /// <summary>
         /// Tries to get a screen of ScreenType.
         /// </summary>
+        [ServerOrClient]
         public static bool TryGet<T>(ScreenType screenType, [CanBeNull] out T screen) where T : GameScreen
         {
             if (Screens.TryGetValue(screenType, out GameScreen match))
@@ -60,6 +63,7 @@ namespace SS3D.Systems.Screens
             return false;
         }
 
+        [ServerOrClient]
         public static void SwitchTo(ScreenType screenToSwitchTo)
         {
             LastScreen = ActiveScreen;

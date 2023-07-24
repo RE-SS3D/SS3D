@@ -14,12 +14,14 @@ namespace SS3D.Systems.Screens
     /// </summary>
     public class GameScreen : Actor
     {
-        public ScreenType ScreenType;
+        private ScreenType _screenType;
 
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Transform _holder;
 
         private Sequence _sequence;
+
+        public ScreenType ScreenType => _screenType;
 
         protected override void OnStart()
         {
@@ -34,7 +36,7 @@ namespace SS3D.Systems.Screens
         {
             base.OnDestroyed();
 
-            GameScreens.Unregister(ScreenType);
+            GameScreens.Unregister(_screenType);
         }
 
         [ServerOrClient]
@@ -50,7 +52,7 @@ namespace SS3D.Systems.Screens
             _sequence?.Kill();
             _sequence = DOTween.Sequence();
 
-            bool matchesScreenType = nextScreen == ScreenType;
+            bool matchesScreenType = nextScreen == _screenType;
 
             GameScreenSettings gameScreenSettings = ScriptableSettings.GetOrFind<GameScreenSettings>();
 

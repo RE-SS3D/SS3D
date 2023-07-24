@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities.UI
 {
+    /// <summary>
+    /// This scripts is a black panel used to transition the player UI to another state.
+    /// Currently used when the player spawns, to ease out the entry.
+    /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
     public sealed class PlayerCameraBlockerView : View
     {

@@ -95,9 +95,8 @@ namespace SS3D.Systems.Inventory.Containers
 
         protected override void OnDestroyed()
         {
-            InventoryView?.Enable(false);
-
             base.OnDestroyed();
+            InventoryView.Enable(false);
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
