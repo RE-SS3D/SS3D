@@ -32,7 +32,7 @@ namespace SS3D.Systems.Screens
         /// <param name="e"></param>
         private void HandlePlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
         {
-            GameObject target = e.Target;
+            GameObject target = e.PlayerObject;
 
             _fovSequence?.Kill();
             _fovSequence = DOTween.Sequence();
