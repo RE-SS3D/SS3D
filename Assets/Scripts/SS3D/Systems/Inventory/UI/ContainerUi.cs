@@ -1,6 +1,7 @@
 ﻿using System;
 using Coimbra;
 using SS3D.Systems.Inventory.Containers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,7 @@ namespace SS3D.Systems.Inventory.UI
     public class ContainerUi : MonoBehaviour
     {
         public ItemGrid Grid;
-        public Text ContainerName;
+        public TMP_Text ContainerName;
 
         private AttachedContainer _attachedContainer;
 

@@ -4,6 +4,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
@@ -47,12 +48,14 @@ namespace SS3D.Systems.Inventory.Interactions
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source;
-            int index = _attachedContainer.Container.StoredItems.Count - 1;
-            Item pickupItem = _attachedContainer.Container.StoredItems[index].Item;
+
+            Item pickupItem = _attachedContainer.Container.StoredItems.First().Item;
+
             if (pickupItem != null)
             {
                 hands.Pickup(pickupItem);
             }
+
             return false;
         }
     }

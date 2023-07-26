@@ -185,7 +185,6 @@ namespace SS3D.Systems.PlayerControl
             {
                 _onlinePlayers.Add(ckey, player);
             }
-                
         }
 
         [Server]

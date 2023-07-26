@@ -4,7 +4,7 @@ using SS3D.Attributes;
 
 namespace SS3D.Data.AssetDatabases
 {
-    [ProjectSettings("SS3D")]
+    [ProjectSettings("SS3D/Assets")]
     public sealed class AssetDatabaseSettings : ScriptableSettings
     {
         /// <summary>
