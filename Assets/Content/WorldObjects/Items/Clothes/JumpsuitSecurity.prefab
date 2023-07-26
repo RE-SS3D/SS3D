@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 4646584122129743545}
   - component: {fileID: 6202040713060371562}
   - component: {fileID: 8222013437082652963}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: JumpsuitSecurity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,7 +305,7 @@ GameObject:
   - component: {fileID: 2851956703760330410}
   - component: {fileID: 187121919192140935}
   - component: {fileID: 3815251066353690743}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftPocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -416,7 +416,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3332676987736573501}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Attachment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -449,7 +449,7 @@ GameObject:
   - component: {fileID: 3326611009288078612}
   - component: {fileID: 7577701307380778962}
   - component: {fileID: 6078835730650098598}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightPocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
