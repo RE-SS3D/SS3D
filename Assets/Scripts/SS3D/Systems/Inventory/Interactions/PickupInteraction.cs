@@ -32,10 +32,10 @@ namespace SS3D.Systems.Inventory.Interactions
 
             // if the target is whatever the hell Alain did
             // and the part that matters, if the interaction source is a hand
-            if (target is IGameObjectProvider targetBehaviour && source is Hands hands)
+            if (target is IGameObjectProvider targetBehaviour && source is Hand hand)
             {
 		        // if the selected hand is not empty we return false
-                if (hands.SelectedHand.IsEmpty())
+                if (hand.IsEmpty())
                 {
                     return true;
                 }

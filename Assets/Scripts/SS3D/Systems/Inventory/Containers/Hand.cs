@@ -10,7 +10,7 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Inventory.Containers
 {
-	public class Hand : MonoBehaviour, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
+	public class Hand : InteractionSource, IInteractionRangeLimit, IInteractionOriginProvider
 	{
 		public AttachedContainer Container;
 		[SerializeField] private float handRange;

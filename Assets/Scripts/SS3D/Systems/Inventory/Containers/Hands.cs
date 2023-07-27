@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
@@ -23,8 +24,8 @@ namespace SS3D.Systems.Inventory.Containers
 	/// Should probably have some of this code in independent hand components, to allow hands to not be usable after loosing one.
 	/// </summary>
     [RequireComponent(typeof(HumanInventory))]
-    public class Hands : InteractionSource
-    {
+    public class Hands : NetworkActor, IHandsController
+	{
         [SerializeField] public Hand[] PlayerHands;
 
         private Controls.HotkeysActions _controls;
@@ -62,12 +63,16 @@ namespace SS3D.Systems.Inventory.Containers
             _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
-            SupportsMultipleInteractions = true;
 
             Inventory.OnInventorySetUp -= OnInventorySetUp;
         }
 
-        protected override void OnDestroyed()
+		public IInteractionSource GetActiveTool()
+		{
+			return SelectedHand.GetActiveTool();
+		}
+
+		protected override void OnDestroyed()
         {
             base.OnDestroyed();
 
@@ -177,5 +182,18 @@ namespace SS3D.Systems.Inventory.Containers
 
             button.colors = buttonColors;
         }
-    }
+
+		public IInteractionSource GetActiveInteractionSource()
+		{
+			var tool = SelectedHand.GetActiveTool();
+			if(tool != null)
+			{
+				return tool;
+			}
+			else
+			{
+				return SelectedHand;
+			}
+		}
+	}
 }
