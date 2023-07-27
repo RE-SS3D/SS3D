@@ -62,14 +62,14 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             // remember that when we call this Start, we are starting the interaction per se
             // so we check if the source of the interaction is a Hand, and if the target is an Item
-            if (interactionEvent.Source is Hands hands && interactionEvent.Target is Item target)
+            if (interactionEvent.Source is Hand hand && interactionEvent.Target is Item target)
             {
                 // and then we run the function that adds it to the container
-                hands.SelectedHand.Pickup(target);
+                hand.Pickup(target);
 
 
                 try {
-                    string ckey = hands.Inventory.Body.Mind.player.Ckey;
+                    string ckey = hand.handsController.Inventory.Body.Mind.player.Ckey;
 
                     // and call the event for picking up items for the Game Mode System
                     new ItemPickedUpEvent(target, ckey).Invoke(this);

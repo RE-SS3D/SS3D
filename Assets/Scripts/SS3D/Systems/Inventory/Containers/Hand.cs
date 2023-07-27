@@ -28,6 +28,8 @@ namespace SS3D.Systems.Inventory.Containers
 
 		public Transform interactionOrigin;
 
+		public Hands handsController;
+
 		public Vector3 InteractionOrigin => interactionOrigin.position;
 
 		public bool IsEmpty()
@@ -106,19 +108,6 @@ namespace SS3D.Systems.Inventory.Containers
 		public bool CanInteract(GameObject otherObject)
 		{
 			return GetInteractionRange().IsInRange(InteractionOrigin, otherObject.transform.position);
-		}
-
-
-		// Start is called before the first frame update
-		void Start()
-		{
-
-		}
-
-		// Update is called once per frame
-		void Update()
-		{
-
 		}
 	}
 }

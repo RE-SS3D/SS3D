@@ -50,7 +50,16 @@ namespace SS3D.Systems.Inventory.Containers
 
 		public List<AttachedContainer> HandContainers => PlayerHands.Select(x => x.Container).ToList();
 
-        public void SetInventory(HumanInventory inventory)
+		public override void OnStartServer()
+		{
+			base.OnStartServer();
+			foreach(Hand hand in PlayerHands)
+			{
+				hand.handsController = this;
+			}
+		}
+
+		public void SetInventory(HumanInventory inventory)
         {
             Inventory = inventory;
             Inventory.OnInventorySetUp += OnInventorySetUp;
