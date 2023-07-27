@@ -128,7 +128,7 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            Item item = hands.ItemInHand;
+            Item item = hands.SelectedHand.ItemInHand;
             if (item != null)
             {
                 InteractInHand(item.gameObject, gameObject);

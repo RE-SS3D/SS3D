@@ -39,7 +39,7 @@ namespace SS3D.Systems.Inventory.Interactions
             // Will only appear if the current hand is empty and the container isn't empty
             if (interactionEvent.Source is Hands hands && _attachedContainer != null)
             {
-                return hands.SelectedHandEmpty && !_attachedContainer.Container.Empty;
+                return hands.SelectedHand.IsEmpty() && !_attachedContainer.Container.Empty;
             }
 
             return false;
@@ -53,7 +53,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
             if (pickupItem != null)
             {
-                hands.Pickup(pickupItem);
+                hands.SelectedHand?.Pickup(pickupItem);
             }
 
             return false;

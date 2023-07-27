@@ -319,7 +319,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Hands hands = GetComponent<Hands>();
-            if (hands == null || !hands.CanInteract(container.gameObject))
+            if (hands == null || !hands.SelectedHand.CanInteract(container.gameObject))
             {
                 return;
             }
@@ -350,11 +350,11 @@ namespace SS3D.Systems.Inventory.Containers
 
             Item item = container.Container.ItemAt(position);
             // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
-            if (Hands.SelectedHandEmpty)
+            if (Hands.SelectedHand.IsEmpty())
             {
                 if (item != null)
                 {
-                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand);
+                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand.Container);
                 }
             }
             // If selected hand has an item and there's no item on the slot in the container, transfer it to container slot.
@@ -362,7 +362,7 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 if (item == null)
                 {
-                    ClientTransferItem(Hands.ItemInHand, position, container);
+                    ClientTransferItem(Hands.SelectedHand.ItemInHand, position, container);
                 }
             }
         }

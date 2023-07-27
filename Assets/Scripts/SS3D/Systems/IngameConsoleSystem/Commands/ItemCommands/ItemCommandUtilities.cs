@@ -1,4 +1,4 @@
-using SS3D.Core.Settings;
+﻿using SS3D.Core.Settings;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
@@ -20,7 +20,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             }
 
             Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;
-            return hands.ItemInHand;
+            return hands.SelectedHand.ItemInHand;
         }
     }
 }

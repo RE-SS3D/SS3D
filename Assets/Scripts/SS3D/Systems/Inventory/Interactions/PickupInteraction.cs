@@ -1,4 +1,4 @@
-using SS3D.Data;
+﻿using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -35,7 +35,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (target is IGameObjectProvider targetBehaviour && source is Hands hands)
             {
 		        // if the selected hand is not empty we return false
-                if (hands.SelectedHandEmpty)
+                if (hands.SelectedHand.IsEmpty())
                 {
                     return true;
                 }
@@ -65,7 +65,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (interactionEvent.Source is Hands hands && interactionEvent.Target is Item target)
             {
                 // and then we run the function that adds it to the container
-                hands.Pickup(target);
+                hands.SelectedHand.Pickup(target);
 
 
                 try {
