@@ -59,7 +59,7 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             var containerViewer = interactionEvent.Source.GetComponentInTree<ContainerViewer>();
 
-            containerViewer.OpenContainer(AttachedContainer);
+            containerViewer.ShowContainerUI(AttachedContainer);
 
             return false;
         }

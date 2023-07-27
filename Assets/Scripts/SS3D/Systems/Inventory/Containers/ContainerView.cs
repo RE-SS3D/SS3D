@@ -12,11 +12,19 @@ using SS3D.Logging;
 
 namespace SS3D.Systems.Inventory.UI
 {
+	/// <summary>
+	/// Add and remove UIs for containers.
+	/// </summary>
     public class ContainerView : View
     {
-
+		/// <summary>
+		/// The script handling logic regarding when to remove and add container UIs.
+		/// </summary>
         private ContainerViewer containerViewer;
 
+		/// <summary>
+		/// List of displayed containers on the player screen.
+		/// </summary>
         private readonly List<ContainerDisplay> _containerDisplays = new();
 
         /// <summary>
@@ -24,8 +32,6 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         public GameObject ContainerUiPrefab;
 
-        // Maybe HandsUI should only handle selected hand highlight and inventory UI
-        // should handle setting up containers to UI.
         public void Setup(ContainerViewer viewer)
         {
             containerViewer = viewer;

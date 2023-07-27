@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
@@ -15,6 +15,11 @@ using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+
+	/// <summary>
+	/// Handle selections of the hands, holding stuff, using tools, and interacting..
+	/// Should probably have some of this code in independent hand components, to allow hands to not be usable after loosing one.
+	/// </summary>
     [RequireComponent(typeof(HumanInventory))]
     public class Hands : InteractionSource, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {

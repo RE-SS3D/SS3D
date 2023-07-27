@@ -15,7 +15,7 @@ using System.Linq;
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
-    /// This handles displaying and removing containers UI that are not part of the inventory of the player, such as a toolbox.
+    /// This handles displaying and removing containers UI that are not part of the inventory of the player, such as a toolbox's container.
     /// </summary>
     public class ContainerViewer : NetworkActor
     {
@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private readonly List<AttachedContainer> _displayedContainers = new();
 
-        // Reference to the player human inventory.
+        // Reference to the player's inventory.
         public HumanInventory inventory;
 
         public override void OnStartClient()
@@ -81,7 +81,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// Does this have a specific container ?
+        /// Does the player have the UI opened for a specific container ?
         /// </summary>
         public bool HasContainer(AttachedContainer container)
         {
@@ -97,19 +97,13 @@ namespace SS3D.Systems.Inventory.Containers
         [TargetRpc]
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
-            InvokeContainerOpened(container);
-        }
-
-        private void InvokeContainerOpened(AttachedContainer container)
-        {
-            OnContainerOpened?.Invoke(container);
-        }
-
+			OnContainerOpened?.Invoke(container);
+		}
 
         /// <summary>
         /// Make this inventory open an container.
         /// </summary>
-        public void OpenContainer(AttachedContainer attachedContainer)
+        public void ShowContainerUI(AttachedContainer attachedContainer)
         {
             attachedContainer.Container.AddObserver(GetComponent<Entity>());
             _displayedContainers.Add(attachedContainer);
@@ -122,9 +116,9 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// Removes a container from this inventory.
+        /// Removes a container from the list of visible containers UI.
         /// </summary>
-        public void CloseContainer(AttachedContainer container)
+        public void CloseContainerUI(AttachedContainer container)
         {
             container.Container.RemoveObserver(GetComponent<Entity>());
             if (_displayedContainers.Remove(container))
@@ -157,7 +151,7 @@ namespace SS3D.Systems.Inventory.Containers
                     continue;
                 }
 
-                CloseContainer(attachedContainer);
+                CloseContainerUI(attachedContainer);
                 i--;
             }
 
@@ -167,20 +161,14 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         public void CmdContainerClose(AttachedContainer container)
         {
-            CloseContainer(container);
+            CloseContainerUI(container);
         }
-
 
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
-            InvokeContainerClosed(container);
-        }
-
-        private void InvokeContainerClosed(AttachedContainer container)
-        {
-            OnContainerClosed?.Invoke(container);
-        }
+			OnContainerClosed?.Invoke(container);
+		}
 
     }
 }

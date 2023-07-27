@@ -25,21 +25,30 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class HumanInventory : NetworkActor
     {
+		/// <summary>
+		/// List of containers present on the player, meaning, in the player HUD, shown as slots.
+		/// </summary>
         [SyncObject]
         private readonly SyncList<AttachedContainer> ContainersOnPlayer = new();
+
 
         public delegate void InventoryContainerModifiedEventHandler(AttachedContainer container);
         public delegate void ContainerContentsEventHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
         public delegate void Notify();
 
+		// When a container is added to this inventory
         public event InventoryContainerModifiedEventHandler OnInventoryContainerAdded;
 
+		// When a container is removed from this inventory
         public event InventoryContainerModifiedEventHandler OnInventoryContainerRemoved;
 
+		// When the content of a container in this inventory changes
         public event ContainerContentsEventHandler OnContainerContentChanged;
 
+		// When the inventory is done doing its setup
         public event Notify OnInventorySetUp;
 
+		// reference to the component allowing to display out of inventory containers.
         public ContainerViewer containerViewer;
 
 		public List<AttachedContainer> Containers => ContainersOnPlayer.Collection.ToList();
@@ -183,6 +192,10 @@ namespace SS3D.Systems.Inventory.Containers
 			container.OnAttachedContainerDisabled -= RemoveContainer;
 		}
 
+		/// <summary>
+		/// Try to add a container to this inventory, check first if not already added.
+		/// TODO: Should also check if it's the kind of container that can go in inventory.
+		/// </summary>
 		[Server]
 		public bool TryAddContainer(AttachedContainer container)
 		{
@@ -194,6 +207,9 @@ namespace SS3D.Systems.Inventory.Containers
 			return false;
 		}
 
+		/// <summary>
+		/// Try to remove a container already present in this inventory.
+		/// </summary>
 		[Server]
 		public bool TryRemoveContainer(AttachedContainer container)
 		{

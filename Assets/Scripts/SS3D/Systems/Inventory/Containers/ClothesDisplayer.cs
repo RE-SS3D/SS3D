@@ -9,21 +9,11 @@ using FishNet.Object.Synchronizing;
 using UnityEditor;
 using FishNet.Object;
 
-// nouvel item
-// add item
-// item has a cloth type
-// find network object with same clothtype
-// add new clothdisplay data using this clothtype and item to display
-
-// remove item
-// item has cloth type
-// find network object with same clothtype
-// remove cloth display data using this cloth type and item to display.
 
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
-    /// Display cloth on player for all clients.
+    /// Display clothes on player for all clients.
     /// </summary>
     public class ClothesDisplayer : NetworkActor
     {
@@ -42,17 +32,16 @@ namespace SS3D.Systems.Inventory.Containers
             public Item _clothToDisplay;
         }
 
+		/// <summary>
+		/// The inventory containing the player's clothing slots.
+		/// </summary>
         public HumanInventory _inventory;
 
-        // The root game objects for clothes
-        public Transform ClothesRoot;
-
-
+		/// <summary>
+		/// Synced list of body part associated to the clothes on them.
+		/// </summary>
 		[SyncObject]
 		private readonly SyncList<ClothDisplayData> _clothedBodyParts = new SyncList<ClothDisplayData>();
-
-		[SerializeField]
-		private List<NetworkObject> startingClothedBodyPart;
 
         public override void OnStartServer()
         {
@@ -66,7 +55,9 @@ namespace SS3D.Systems.Inventory.Containers
 			_clothedBodyParts.OnChange += ClothedBodyPartsOnChange;
 		}
 
-
+		/// <summary>
+		/// Callback when the syncedList _clothedBodyParts changes. Update the displayed clothes on the player.
+		/// </summary>
 		private void ClothedBodyPartsOnChange(SyncListOperation op, int index,
 			ClothDisplayData oldData, ClothDisplayData newData, bool asServer)
 		{
@@ -75,6 +66,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 			switch (op)
 			{
+				// Show the new cloth on the player
 				case SyncListOperation.Add:
 					NetworkObject newBodyPart = newData._bodyPart;
 					Item newItem = newData._clothToDisplay;
@@ -87,6 +79,7 @@ namespace SS3D.Systems.Inventory.Containers
 					renderer.sharedMesh = newItem.gameObject.GetComponentInChildren<MeshFilter>().sharedMesh;
 					break;
 
+				// Stop displaying cloth on the player
 				case SyncListOperation.RemoveAt:
 					NetworkObject oldBodyPart = oldData._bodyPart;
 					oldBodyPart.gameObject.SetActive(false);
@@ -123,6 +116,10 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+		/// <summary>
+		/// Adds a cloth to the synced list, making a few checks to find where to add it, if possible.
+		/// </summary>
+		/// <param name="item"> The item to add, it should have a Cloth component on it.</param>
 		[Server]
 		private void AddCloth(Item item)
 		{
@@ -143,6 +140,10 @@ namespace SS3D.Systems.Inventory.Containers
 			}
 		}
 
+		/// <summary>
+		/// Remove a cloth from the synced list, check if it's there before removing.
+		/// </summary>
+		/// <param name="item">The item to add, it should have a Cloth component on it.</param>
 		[Server]
 		private void RemoveCloth(Item item)
 		{
