@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
@@ -23,10 +24,12 @@ namespace SS3D.Systems.Inventory.Containers
 	/// Handle selections of the hands, holding stuff, using tools, and interacting..
 	/// Should probably have some of this code in independent hand components, to allow hands to not be usable after loosing one.
 	/// </summary>
+	/// 
+	//TODO Set properly networking on hand selection, hand change should be handled by server only, and then UI change on client only.
     [RequireComponent(typeof(HumanInventory))]
     public class Hands : NetworkActor, IHandsController
 	{
-        [SerializeField] public Hand[] PlayerHands;
+        [SerializeField] public List<Hand> PlayerHands;
 
         private Controls.HotkeysActions _controls;
 
@@ -34,19 +37,15 @@ namespace SS3D.Systems.Inventory.Containers
         public HumanInventory Inventory;
 
         public Color SelectedColor;
-        private Color _defaultColor;
+        public Color _defaultColor;
 
-        public int SelectedHandIndex { get; private set; }
+		[SyncVar(OnChange = nameof(SyncSelectedHand))]
+		private Hand _selectedHand;
 
-        /// <summary>
-        /// Called when the active hand gets changed
-        /// </summary>
-        public event Action<int> OnHandChanged;
-
-        /// <summary>
-        /// The currently active hand
-        /// </summary>
-        public Hand SelectedHand => SelectedHandIndex < PlayerHands.Length ? PlayerHands[SelectedHandIndex] : null;
+		/// <summary>
+		/// The currently active hand
+		/// </summary>
+		public Hand SelectedHand => _selectedHand;
 
 		public List<AttachedContainer> HandContainers => PlayerHands.Select(x => x.Container).ToList();
 
@@ -56,18 +55,30 @@ namespace SS3D.Systems.Inventory.Containers
 			foreach(Hand hand in PlayerHands)
 			{
 				hand.handsController = this;
+				hand.OnHandDisabled += HandleHandRemoved;
 			}
+
+			_selectedHand = PlayerHands.FirstOrDefault();
 		}
 
+		public void SyncSelectedHand(Hand oldHand, Hand newHand, bool asServer)
+		{
+			if (asServer || !IsOwner) return;
+			SetHandHighlight(oldHand, false);
+			SetHandHighlight(newHand, true);
+		}
+
+		[Client]
 		public void SetInventory(HumanInventory inventory)
         {
             Inventory = inventory;
             Inventory.OnInventorySetUp += OnInventorySetUp;
         }
 
-        private void OnInventorySetUp()
+		[Client]
+		private void OnInventorySetUp()
         {
-            SetHandHighlight(SelectedHandIndex, true);
+			SetHandHighlight(PlayerHands.First(), true);
 
             _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
@@ -85,29 +96,31 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnDestroyed();
 
-            _controls.SwapHands.performed -= HandleSwapHands;
-            _controls.Drop.performed -= HandleDropHeldItem;
+			if (IsOwner)
+			{
+				_controls.SwapHands.performed -= HandleSwapHands;
+				_controls.Drop.performed -= HandleDropHeldItem;
+			}
         }
 
+		[Client]
         private void HandleSwapHands(InputAction.CallbackContext context)
         {
-            if (!IsOwner || !enabled || PlayerHands.Length < 1)
+			// We don't swap hand if there's a single one.
+            if (!IsOwner || !enabled || PlayerHands.Count <= 1)
             {
                 return;
             }
-            int oldSelectedHandIndex = SelectedHandIndex;
-            SelectedHandIndex = (SelectedHandIndex + 1) % PlayerHands.Length;
-            OnHandChanged?.Invoke(SelectedHandIndex);
-            HighLightChanged(oldSelectedHandIndex);
-            CmdSetActiveHand(SelectedHandIndex);
+			CmdNextHand();
         }
 
-        /// <summary>
-        /// Set the Active hand of the Player to be the AttachedContainer passed in parameter.
-        /// Do nothing if the parameter is the already active parameter.
-        /// </summary>
-        /// <param name="selectedContainer">This AttachedContainer should only be a hand.</param>
-        public void SetActiveHand(AttachedContainer selectedContainer)
+		/// <summary>
+		/// Set the Active hand of the Player to be the AttachedContainer passed in parameter.
+		/// Do nothing if the parameter is the already active parameter.
+		/// </summary>
+		/// <param name="selectedContainer">This AttachedContainer should only be a hand.</param>
+		[ServerRpc]
+        public void CmdSetActiveHand(AttachedContainer selectedContainer)
         {
 
 			Hand hand = PlayerHands.FirstOrDefault(x => x.Container == selectedContainer);
@@ -124,14 +137,9 @@ namespace SS3D.Systems.Inventory.Containers
 				return;
             }
 
-            int oldSelectedHandIndex = SelectedHandIndex;
-            SelectedHandIndex = PlayerHands.ToList().IndexOf(hand);
-
-            if (SelectedHandIndex != -1)
+            if (hand != null)
             {
-                OnHandChanged?.Invoke(SelectedHandIndex);
-                HighLightChanged(oldSelectedHandIndex);
-                CmdSetActiveHand(SelectedHandIndex);
+                _selectedHand = hand;
             }
             else
             {
@@ -141,46 +149,25 @@ namespace SS3D.Systems.Inventory.Containers
 
         private void HandleDropHeldItem(InputAction.CallbackContext context)
         {
-            CmdDropHeldItem();
+            SelectedHand.CmdDropHeldItem();
         }
 
         [ServerRpc]
-        private void CmdDropHeldItem()
+        private void CmdNextHand()
         {
-            SelectedHand.DropHeldItem();
+			int index = PlayerHands.FindIndex(0, 1, x => x == SelectedHand);
+			_selectedHand = PlayerHands[(index + 1) % PlayerHands.Count];
         }
 
-        [ServerRpc]
-        private void CmdSetActiveHand(int selectedHand)
+		[Client]
+        private void SetHandHighlight(Hand hand, bool highlight)
         {
-            if (selectedHand >= 0 && selectedHand < PlayerHands.Length)
-            {
-                SelectedHandIndex = selectedHand;
-            }
-            else
-            {
-                Debug.Log($"Invalid hand index {selectedHand}");
-            }
-        }
-
-        private void HighLightChanged(int oldIndex)
-        {
-            if (SelectedHandIndex != -1)
-            {
-                SetHandHighlight(oldIndex, false);
-            }
-
-            SetHandHighlight(SelectedHandIndex, true);
-        }
-
-        private void SetHandHighlight(int index, bool highlight)
-        {
-            Transform handSlot = ViewLocator.Get<InventoryView>().First().GetHandSlot(index);
+			int index = PlayerHands.FindIndex(0, x => x == hand);
+			Transform handSlot = ViewLocator.Get<InventoryView>().First().GetHandSlot(index);
             Button button = handSlot.GetComponent<Button>();
             ColorBlock buttonColors = button.colors;
             if (highlight)
             {
-                _defaultColor = buttonColors.normalColor;
                 buttonColors.normalColor = SelectedColor;
                 buttonColors.highlightedColor = SelectedColor; // The selected hand keeps the same color, highlighted or not.
             }
@@ -192,6 +179,7 @@ namespace SS3D.Systems.Inventory.Containers
             button.colors = buttonColors;
         }
 
+		[ServerOrClient]
 		public IInteractionSource GetActiveInteractionSource()
 		{
 			var tool = SelectedHand.GetActiveTool();
@@ -204,5 +192,14 @@ namespace SS3D.Systems.Inventory.Containers
 				return SelectedHand;
 			}
 		}
+
+		[Server]
+		public void HandleHandRemoved(Hand hand)
+		{
+			PlayerHands.Remove(hand);
+			// Change selected hand if the selected hand is removed.
+		}
+
+
 	}
 }

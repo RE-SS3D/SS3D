@@ -1,4 +1,4 @@
-using SS3D.Systems.Inventory.Containers;
+﻿using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
@@ -116,7 +116,11 @@ namespace SS3D.Systems.Inventory.UI
         public void OnPointerClick(PointerEventData eventData)
         {
             Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0, 0));
-            Inventory.ActivateHand(_container);
+
+			if(ContainerType == ContainerType.Hand)
+			{
+				Inventory.ActivateHand(_container);
+			}   
         }
 
         public GameObject GetCurrentGameObjectInSlot()

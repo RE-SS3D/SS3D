@@ -7,6 +7,7 @@ using System.Linq;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
 using FishNet.Object;
+using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -31,6 +32,19 @@ namespace SS3D.Systems.Inventory.Containers
 		public Hands handsController;
 
 		public Vector3 InteractionOrigin => interactionOrigin.position;
+
+		public delegate void HandHandler(Hand hand);
+		public event HandHandler OnHandDisabled;
+
+		protected override void OnDisabled()
+		{
+			if (!IsServer)
+			{
+				return;
+			}
+
+			OnHandDisabled?.Invoke(this);
+		}
 
 		public bool IsEmpty()
 		{
@@ -74,11 +88,8 @@ namespace SS3D.Systems.Inventory.Containers
 			Container.Container.AddItem(item);
 		}
 
-		/// <summary>
-		/// Command wrappers for inventory actions using the currently held item
-		/// </summary>
-		[Server]
-		public void DropHeldItem()
+		[ServerRpc]
+		public void CmdDropHeldItem()
 		{
 			if (IsEmpty())
 			{

@@ -7279,6 +7279,7 @@ MonoBehaviour:
   - {fileID: 4854640730944196939}
   - {fileID: 4555203962178419925}
   SelectedColor: {r: 1, g: 0.9764151, b: 0.9764151, a: 0.8509804}
+  _defaultColor: {r: 1, g: 1, b: 1, a: 0.45490196}
 --- !u!114 &7934531206375951864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10067,6 +10068,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
   Container: {fileID: 4140518851396729342}
   handRange: 3
   range:
@@ -10074,6 +10078,7 @@ MonoBehaviour:
     Vertical: 2
   pickupIcon: {fileID: 0}
   interactionOrigin: {fileID: 1342008326084027676}
+  handsController: {fileID: 0}
 --- !u!1 &8935913803077858714
 GameObject:
   m_ObjectHideFlags: 0
@@ -10383,6 +10388,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
   Container: {fileID: 7144090709710962679}
   handRange: 3
   range:
@@ -10390,6 +10398,7 @@ MonoBehaviour:
     Vertical: 2
   pickupIcon: {fileID: 0}
   interactionOrigin: {fileID: 6653541696833174003}
+  handsController: {fileID: 0}
 --- !u!1 &9131769810566877388
 GameObject:
   m_ObjectHideFlags: 0

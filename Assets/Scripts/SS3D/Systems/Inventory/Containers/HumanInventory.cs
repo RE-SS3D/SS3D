@@ -244,7 +244,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <param name="container">This AttachedContainer should be the hand to activate.</param>
         public void ActivateHand(AttachedContainer container)
         {
-            Hands.SetActiveHand(container);
+            Hands.CmdSetActiveHand(container);
         }
 
         [ServerRpc]
