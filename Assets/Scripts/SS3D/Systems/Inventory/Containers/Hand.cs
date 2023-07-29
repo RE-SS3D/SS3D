@@ -11,11 +11,19 @@ using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
+	/// <summary>
+	/// A hand is what an entity uses to grab and hold items, to interact with things in range.
+	/// </summary>
 	public class Hand : InteractionSource, IInteractionRangeLimit, IInteractionOriginProvider
 	{
+		/// <summary>
+		/// Container linked to this hand, necessary to hold stuff.
+		/// </summary>
 		public AttachedContainer Container;
-		[SerializeField] private float handRange;
 
+		/// <summary>
+		/// Horizontal and vertical max distance to interact with stuff.
+		/// </summary>
 		public RangeLimit range = new(1.5f, 2);
 
 		// pickup icon that this hand uses when there's a pickup interaction
@@ -23,12 +31,18 @@ namespace SS3D.Systems.Inventory.Containers
 		public Sprite pickupIcon;
 
 		/// <summary>
-		/// The item held in the active hand
+		/// The item held in this hand, if it exists
 		/// </summary>
 		public Item ItemInHand => Container.Items.FirstOrDefault();
 
+		/// <summary>
+		/// Point from where distances for interaction is computed.
+		/// </summary>
 		public Transform interactionOrigin;
 
+		/// <summary>
+		/// the hands script controlling this hand.
+		/// </summary>
 		public Hands handsController;
 
 		public Vector3 InteractionOrigin => interactionOrigin.position;
@@ -51,6 +65,10 @@ namespace SS3D.Systems.Inventory.Containers
 			return Container.Container.Empty;
 		}
 
+		/// <summary>
+		/// Get the interaction source from stuff in hand if there's any.
+		/// </summary>
+		/// <returns></returns>
 		public IInteractionSource GetActiveTool()
 		{
 			Item itemInHand = ItemInHand;
@@ -62,7 +80,7 @@ namespace SS3D.Systems.Inventory.Containers
 			IInteractionSource interactionSource = itemInHand.Prefab.GetComponent<IInteractionSource>();
 			if (interactionSource != null)
 			{
-				interactionSource.Source = (IInteractionSource) this;
+				interactionSource.Source = this;
 			}
 			return interactionSource;
 		}
@@ -99,6 +117,9 @@ namespace SS3D.Systems.Inventory.Containers
 			Container.Container.Dump();
 		}
 
+		/// <summary>
+		/// Place item on the floor, or on any other surface, place it out of its container.
+		/// </summary>
 		[Server]
 		public void PlaceHeldItemOutOfHand(Vector3 position, Quaternion rotation)
 		{
