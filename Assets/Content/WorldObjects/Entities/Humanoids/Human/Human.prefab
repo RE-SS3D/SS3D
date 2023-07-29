@@ -6995,7 +6995,9 @@ MonoBehaviour:
   - {fileID: 7951212175384182717}
   - {fileID: 8320963098858079385}
   - {fileID: 4140518851396729342}
+  - {fileID: 4854640730944196939}
   - {fileID: 7144090709710962679}
+  - {fileID: 4555203962178419925}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 4138789318277530234}
@@ -7278,8 +7280,9 @@ MonoBehaviour:
   PlayerHands:
   - {fileID: 4854640730944196939}
   - {fileID: 4555203962178419925}
-  SelectedColor: {r: 1, g: 0.9764151, b: 0.9764151, a: 0.8509804}
+  _selectedColor: {r: 1, g: 1, b: 1, a: 0.8627451}
   _defaultColor: {r: 1, g: 1, b: 1, a: 0.45490196}
+  _selectedHand: {fileID: 0}
 --- !u!114 &7934531206375951864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10068,9 +10071,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 38
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   Container: {fileID: 4140518851396729342}
   handRange: 3
   range:
@@ -10335,7 +10338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 38
+  _componentIndexCache: 39
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -10388,9 +10391,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 40
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   Container: {fileID: 7144090709710962679}
   handRange: 3
   range:

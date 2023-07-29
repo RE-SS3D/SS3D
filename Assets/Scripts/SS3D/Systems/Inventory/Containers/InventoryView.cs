@@ -9,7 +9,6 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 using SS3D.Logging;
-using UnityEngine.XR;
 using UnityEngine.UI;
 using TMPro;
 using FishNet.Object;
@@ -344,26 +343,10 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         /// <param name="index"> The index of the hand slot, necessary as multiple hand slots can be on a player. </param>
         /// <returns> The transform of the hand slot at the specified index.</returns>
-        public Transform GetHandSlot(int index)
+        public Transform GetHandSlot(Hand hand)
         {
-            int childIndex = 0;
-            for (int i = 0; i < HorizontalLayout.transform.childCount; i++)
-            {
-                var childTransform = HorizontalLayout.transform.GetChild(i);
-                if (childTransform.gameObject.TryGetComponent(out SingleItemContainerSlot slot) && slot.ContainerType == ContainerType.Hand)
-                {
-                    break;
-                }
-                childIndex++;
-            }
-
-            if(index+childIndex >= HorizontalLayout.transform.childCount)
-            {
-                Punpun.Warning(this, "index out of bound, check that the number of hand slots is greater than index.");
-                return null;
-            }
-
-            return HorizontalLayout.transform.GetChild(index+childIndex);
+			var slot = Slots.Find(x => x.Container == hand.Container);
+			return slot.transform;
         }
 
         /// <summary>

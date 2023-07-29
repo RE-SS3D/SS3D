@@ -29,15 +29,27 @@ namespace SS3D.Systems.Inventory.Containers
     [RequireComponent(typeof(HumanInventory))]
     public class Hands : NetworkActor, IHandsController
 	{
+		/// <summary>
+		/// List of hands currently on the player, should be modified on server only.
+		/// </summary>
         [SerializeField] public List<Hand> PlayerHands;
+
 
         private Controls.HotkeysActions _controls;
 
+		/// <summary>
+		/// Reference to the inventory linked to Hands.
+		/// </summary>
         [NonSerialized]
         public HumanInventory Inventory;
 
-        public Color SelectedColor;
-        public Color _defaultColor;
+		/// <summary>
+		/// 
+		/// </summary>
+		[SerializeField]
+        private Color _selectedColor;
+		[SerializeField]
+		private Color _defaultColor;
 
 		[SyncVar(OnChange = nameof(SyncSelectedHand))]
 		private Hand _selectedHand;
@@ -46,6 +58,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// The currently active hand
 		/// </summary>
 		public Hand SelectedHand => _selectedHand;
+
 
 		public List<AttachedContainer> HandContainers => PlayerHands.Select(x => x.Container).ToList();
 
@@ -63,7 +76,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 		public void SyncSelectedHand(Hand oldHand, Hand newHand, bool asServer)
 		{
-			if (asServer || !IsOwner) return;
+			if (asServer || !IsOwner || oldHand == null || newHand == null) return;
 			SetHandHighlight(oldHand, false);
 			SetHandHighlight(newHand, true);
 		}
@@ -155,26 +168,32 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerRpc]
         private void CmdNextHand()
         {
+			NextHand();
+        }
+
+		[Server]
+		private void NextHand()
+		{
 			int index = PlayerHands.FindIndex(0, 1, x => x == SelectedHand);
 			_selectedHand = PlayerHands[(index + 1) % PlayerHands.Count];
-        }
+		}
 
 		[Client]
         private void SetHandHighlight(Hand hand, bool highlight)
         {
-			int index = PlayerHands.FindIndex(0, x => x == hand);
-			Transform handSlot = ViewLocator.Get<InventoryView>().First().GetHandSlot(index);
+			Transform handSlot = ViewLocator.Get<InventoryView>().First().GetHandSlot(hand);
             Button button = handSlot.GetComponent<Button>();
             ColorBlock buttonColors = button.colors;
             if (highlight)
             {
-                buttonColors.normalColor = SelectedColor;
-                buttonColors.highlightedColor = SelectedColor; // The selected hand keeps the same color, highlighted or not.
+                buttonColors.normalColor = _selectedColor;
+                buttonColors.highlightedColor = _selectedColor; // The selected hand keeps the same color, highlighted or not.
             }
             else
             {
                 buttonColors.normalColor = _defaultColor;
-            }
+				buttonColors.highlightedColor = _selectedColor;
+			}
 
             button.colors = buttonColors;
         }
@@ -182,7 +201,10 @@ namespace SS3D.Systems.Inventory.Containers
 		[ServerOrClient]
 		public IInteractionSource GetActiveInteractionSource()
 		{
-			var tool = SelectedHand.GetActiveTool();
+			// If no hand is selected, there's no interaction source.
+			if (SelectedHand == null) return null;
+
+			IInteractionSource tool = SelectedHand.GetActiveTool();
 			if(tool != null)
 			{
 				return tool;
@@ -193,11 +215,39 @@ namespace SS3D.Systems.Inventory.Containers
 			}
 		}
 
+		/// <summary>
+		/// Change selected hand if the selected hand is removed.
+		/// </summary>
+		/// <param name="hand"></param>
 		[Server]
 		public void HandleHandRemoved(Hand hand)
 		{
-			PlayerHands.Remove(hand);
-			// Change selected hand if the selected hand is removed.
+			if (!PlayerHands.Remove(hand))
+			{
+				return;
+			}
+
+			if(PlayerHands.Count == 0)
+			{
+				_selectedHand = null;
+				return;
+			}
+
+			if (hand == SelectedHand)
+			{
+				NextHand();
+			}
+			
+		}
+
+		[Server]
+		public void AddHand(Hand hand)
+		{
+			PlayerHands.Add(hand);
+			if(PlayerHands.Count == 1)
+			{
+				_selectedHand = hand;
+			}
 		}
 
 
