@@ -21,11 +21,9 @@ namespace SS3D.Systems.Inventory.Containers
 {
 
 	/// <summary>
-	/// Handle selections of the hands, holding stuff, using tools, and interacting..
-	/// Should probably have some of this code in independent hand components, to allow hands to not be usable after loosing one.
+	/// Handle selections of the active hands, changing colors of active hand slot, and using controls such as dropping or swapping hands.
+	/// Also acts as a controller for all hands present on the player.
 	/// </summary>
-	/// 
-	//TODO Set properly networking on hand selection, hand change should be handled by server only, and then UI change on client only.
     [RequireComponent(typeof(HumanInventory))]
     public class Hands : NetworkActor, IHandsController
 	{
@@ -44,13 +42,20 @@ namespace SS3D.Systems.Inventory.Containers
         public HumanInventory Inventory;
 
 		/// <summary>
-		/// 
+		/// Color of selected hand, or when mouse passes over the slot.
 		/// </summary>
 		[SerializeField]
         private Color _selectedColor;
+
+		/// <summary>
+		/// Color of unselected hand
+		/// </summary>
 		[SerializeField]
 		private Color _defaultColor;
 
+		/// <summary>
+		/// The selected hand, should be part of PlayerHands list.
+		/// </summary>
 		[SyncVar(OnChange = nameof(SyncSelectedHand))]
 		private Hand _selectedHand;
 
@@ -59,7 +64,9 @@ namespace SS3D.Systems.Inventory.Containers
 		/// </summary>
 		public Hand SelectedHand => _selectedHand;
 
-
+		/// <summary>
+		/// A list of all containers linked to all hands on player.
+		/// </summary>
 		public List<AttachedContainer> HandContainers => PlayerHands.Select(x => x.Container).ToList();
 
 		public override void OnStartServer()
@@ -70,15 +77,24 @@ namespace SS3D.Systems.Inventory.Containers
 				hand.handsController = this;
 				hand.OnHandDisabled += HandleHandRemoved;
 			}
-
+			// Set the selected hand to be the first available one.
 			_selectedHand = PlayerHands.FirstOrDefault();
 		}
 
+		/// <summary>
+		/// Sync for clients, set highlight on slots properly.
+		/// </summary>
 		public void SyncSelectedHand(Hand oldHand, Hand newHand, bool asServer)
 		{
-			if (asServer || !IsOwner || oldHand == null || newHand == null) return;
-			SetHandHighlight(oldHand, false);
-			SetHandHighlight(newHand, true);
+			if (asServer || !IsOwner) return;
+			if(oldHand != null)
+			{
+				SetHandHighlight(oldHand, false);
+			}
+			if (newHand != null)
+			{
+				SetHandHighlight(newHand, true);
+			}
 		}
 
 		[Client]
@@ -93,17 +109,13 @@ namespace SS3D.Systems.Inventory.Containers
         {
 			SetHandHighlight(PlayerHands.First(), true);
 
+			// Set up hand related controls.
             _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
 
             Inventory.OnInventorySetUp -= OnInventorySetUp;
         }
-
-		public IInteractionSource GetActiveTool()
-		{
-			return SelectedHand.GetActiveTool();
-		}
 
 		protected override void OnDestroyed()
         {
@@ -160,6 +172,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+		[Client]
         private void HandleDropHeldItem(InputAction.CallbackContext context)
         {
             SelectedHand.CmdDropHeldItem();
@@ -198,6 +211,9 @@ namespace SS3D.Systems.Inventory.Containers
             button.colors = buttonColors;
         }
 
+		/// <summary>
+		/// The source of interaction is either the active hand or the tool held in active hand.
+		/// </summary>
 		[ServerOrClient]
 		public IInteractionSource GetActiveInteractionSource()
 		{
