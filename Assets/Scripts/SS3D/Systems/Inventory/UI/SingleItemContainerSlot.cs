@@ -1,4 +1,4 @@
-﻿using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
