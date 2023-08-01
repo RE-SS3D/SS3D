@@ -31,7 +31,7 @@ public class HealthController : NetworkBehaviour
         GameObject originEntityGameObject = originEntity.gameObject;
         // TODO: Optimize these GetComponents, this is a temporary solution.
         originEntityGameObject.GetComponent<Hands>().Dispose(true);
-        originEntityGameObject.GetComponent<Inventory>().Dispose(true);
+        originEntityGameObject.GetComponent<HumanInventory>().Dispose(true);
         originEntityGameObject.GetComponent<InteractionController>().Dispose(true);
         originEntityGameObject.GetComponent<StaminaController>().Dispose(true);
         originEntityGameObject.GetComponent<HumanoidController>().Dispose(true);

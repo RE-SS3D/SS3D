@@ -148,10 +148,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 176838956871534864}
-  - component: {fileID: 176838956871534865}
   - component: {fileID: 7281547672175283039}
   - component: {fileID: 7824996014716069420}
   - component: {fileID: 6843731359080495399}
+  - component: {fileID: 1271593770586543597}
   m_Layer: 5
   m_Name: Container Section
   m_TagString: Untagged
@@ -180,22 +180,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0.6000061, y: -19.300003}
   m_SizeDelta: {x: -21.913727, y: -65.79132}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &176838956871534865
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 176838956871534867}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46ab3cb89c7847cfb2ebdf67e0f925ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Inventory: {fileID: 0}
-  ItemSlotPrefab: {fileID: 5890138111718056204, guid: 07f21311e013fe5489e5dbdff88b210e, type: 3}
-  ItemDisplayPrefab: {fileID: 7823076622193320381, guid: 044ba9e29227844459b8efa7114bd24a, type: 3}
-  AttachedContainer: {fileID: 0}
 --- !u!222 &7281547672175283039
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -247,6 +231,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
+--- !u!114 &1271593770586543597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176838956871534867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2312bce62c1ec0a469d1c904f8697ec5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Inventory: {fileID: 0}
+  ItemSlotPrefab: {fileID: 5890138111718056204, guid: 07f21311e013fe5489e5dbdff88b210e, type: 3}
+  ItemDisplayPrefab: {fileID: 7823076622193320381, guid: 044ba9e29227844459b8efa7114bd24a, type: 3}
+  AttachedContainer: {fileID: 0}
 --- !u!1 &176838957447208628
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,7 +363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ecbde25c2d14d0eb96deabf8cc85f37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Grid: {fileID: 176838956871534865}
+  Grid: {fileID: 1271593770586543597}
   ContainerName: {fileID: 4307856147151523802}
 --- !u!222 &8355071219440756668
 CanvasRenderer:

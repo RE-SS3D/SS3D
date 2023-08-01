@@ -1,4 +1,4 @@
-namespace SS3D.Data.Enums
+﻿namespace SS3D.Data.Enums
 {
     public enum ItemId
     {
@@ -17,6 +17,35 @@ namespace SS3D.Data.Enums
         SodaCanBeepyLime = 12, 
         SodaCanBeepsSoda = 13, 
         SodaCanDukePurpleTea = 14, 
+        Poster = 15, 
+        MedicalPatch = 16, 
+        BrutePatch = 17, 
+        BurnPatch = 18, 
+        DonkPocket = 19, 
+        Boombox = 20, 
+        GreyFloorTile = 21, 
+        SteelReinforcedSheet = 22, 
+        SteelSheet = 23, 
+        Crowbar = 24, 
+        Screwdriver = 25, 
+        Wrench = 26, 
+        FlashlightBlue = 27, 
+        KitchenKnife = 28, 
+        TruckerCap = 29, 
+        Sunglasses = 30, 
+        FacewearGasMask = 31, 
+        GlovesInsulatedLeft = 32, 
+        GlovesInsulatedRight = 33, 
+        JumpsuitBotany = 34, 
+        JumpsuitEngineer = 35, 
+        JumpsuitGrey = 36, 
+        ShoesHiTopsLeft = 37, 
+        ShoesHiTopsRight = 38, 
+        ShoesJackbootsLeft = 39, 
+        ShoesJackbootsRight = 40, 
+        JumpsuitSecurity = 41, 
+        HeadsetLeft = 42, 
+        HeadsetRight = 43, 
     }
 }
 

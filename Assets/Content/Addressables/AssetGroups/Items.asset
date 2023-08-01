@@ -133,6 +133,66 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Kitchen/KitchenKnife.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 1ef3c21a685ec2d4e9f0876719839d5f
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/TruckerCap.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9b9f6bd470226a74b903e74dbe9e423a
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/Sunglasses.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bf177f8bab26bc84b87fd9a971004418
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/FacewearGasMask.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f1aeab0a35c29314a8a3f823de9815c1
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/GlovesInsulatedLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8725b7f8f45d28a4ba6063318904cc8a
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/GlovesInsulatedRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7f49c948ec182a648ab280a22038752a
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitBotany.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 991fc7d67bda7d247b13ec8498953bc0
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitEngineer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitGrey.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5fa15d6fdef93dc4e80d798cefe8be0b
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesHiTopsLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 317ec7dcff3b11d4eae3a47929200b93
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesHiTopsRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4b790b4ffedbe564dab49f896d71eaa6
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesJackbootsLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d7d68992cbd3cda45bb11a35a1490dc3
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesJackbootsRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4635651592391df41b6b2413afdb76c3
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitSecurity.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f549f4153ef612c4586c46ea280e0e94
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1a2f912be4bc1b948a2b22ffde517cdc
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

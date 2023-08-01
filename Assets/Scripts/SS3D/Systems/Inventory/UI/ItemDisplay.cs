@@ -1,4 +1,4 @@
-﻿using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Inventory.Items;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,7 +17,7 @@ namespace SS3D.Systems.Inventory.UI
         [NonSerialized] public Vector3 OldPosition;
 
         protected InventoryDisplayElement InventoryDisplayElement;
-        
+
         [SerializeField] private Item _item;
         private Transform _oldParent;
         private Vector3 _startMousePosition;
@@ -40,13 +40,13 @@ namespace SS3D.Systems.Inventory.UI
         public void Start()
         {
             _slotImage = GetComponent<Image>();
-            if(!_outlineInner)
+            if (!_outlineInner)
             {
                 _outlineInner = ItemImage.gameObject.AddComponent<Outline>();
                 _outlineInner.effectColor = new Color(0, 0, 0, 0.4f);
                 _outlineInner.effectDistance = new Vector2(0.6f, 0.6f);
             }
-            if(!_outlineOuter)
+            if (!_outlineOuter)
             {
                 _outlineInner = ItemImage.gameObject.AddComponent<Outline>();
                 _outlineInner.effectColor = new Color(0, 0, 0, 0.2f);
@@ -55,17 +55,17 @@ namespace SS3D.Systems.Inventory.UI
             if (_item != null)
             {
                 UpdateDisplay();
-            } 
+            }
         }
-        
-        public virtual void OnDropAccepted(){}
-        
+
+        public virtual void OnDropAccepted() { }
+
         public void OnPointerDown(PointerEventData eventData)
         {
             _startPosition = transform.position;
             _startMousePosition = Input.mousePosition;
         }
-        
+
         public void OnPointerClick(PointerEventData eventData)
         {
             // Somehow, itemdisplay hides the other IPointerClickHandler in it's parent, so the event OnpointerClick is never
@@ -87,12 +87,12 @@ namespace SS3D.Systems.Inventory.UI
             {
                 InventoryDisplayElement = _oldParent.GetComponentInParent<InventoryDisplayElement>();
             }
-            
+
             OldPosition = GetComponent<RectTransform>().localPosition;
             Vector3 tempPosition = transform.position;
             transform.SetParent(transform.root, false);
             transform.position = tempPosition;
-            
+
             _slotImage.raycastTarget = false;
             ShouldDrop = false;
         }
@@ -105,7 +105,7 @@ namespace SS3D.Systems.Inventory.UI
             Vector3 diff = Input.mousePosition - _startMousePosition;
             transform.position = _startPosition + diff;
         }
-        
+
         public void OnEndDrag(PointerEventData eventData)
         {
             // Only allow to drag with a left click.
@@ -120,20 +120,24 @@ namespace SS3D.Systems.Inventory.UI
             {
                 OnDropAccepted();
                 return;
-            }  
+            }
 
             // If the raycast did not hit any element from the UI, drop the item out of the inventory.
             GameObject o = eventData.pointerCurrentRaycast.gameObject;
             if (o == null)
             {
-                GetComponentInParent<InventoryDisplayElement>().DropItemOutside(Item);   
+                GetComponentInParent<InventoryDisplayElement>().DropItemOutside(Item);
             }
         }
-        
+
         private void UpdateDisplay()
         {
+            if(ItemImage == null)
+            {
+                return;
+            }
             ItemImage.sprite = Item != null ? Item.Sprite : null;
-            
+
             Color imageColor = ItemImage.color;
             imageColor.a = ItemImage.sprite != null ? 255 : 0;
             ItemImage.color = imageColor;

@@ -1,4 +1,4 @@
-﻿using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
@@ -18,6 +18,8 @@ namespace SS3D.Systems.Inventory.UI
     {
         public ItemDisplay ItemDisplay;
 
+        public ContainerType ContainerType;
+
         /// <summary>
         /// The container displayed by this slot.
         /// </summary>
@@ -36,8 +38,17 @@ namespace SS3D.Systems.Inventory.UI
             {
                 UpdateContainer(Container);
             }
+            if(_container.Items.Count() > 0) 
+            {
+                ItemDisplay.Item =  _container.Items.First();
+            }
         }
-        
+
+        public void OnDestroy()
+        {
+            Destroy(ItemDisplay);
+        }
+
         /// <summary>
         /// When dragging and dropping an item sprite over this slot, update the inventory
         /// and the displayed sprite inside the slot.
@@ -55,7 +66,13 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            display.ShouldDrop = true;
+            // Can't put an item in its own container
+            if (display.Item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(Container))
+            {
+                return;
+            }
+
+                display.ShouldDrop = true;
             ItemDisplay.Item = display.Item;
             Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
         }
@@ -78,12 +95,12 @@ namespace SS3D.Systems.Inventory.UI
             {
                 return;
             }
-            
+
             if (_container != null)
             {
                 _container.Container.OnContentsChanged -= ContainerContentsChanged;
             }
-            
+
             newContainer.Container.OnContentsChanged += ContainerContentsChanged;
             _container = newContainer;
         }
@@ -98,21 +115,21 @@ namespace SS3D.Systems.Inventory.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0,0));
+            Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0, 0));
             Inventory.ActivateHand(_container);
         }
-		
-		public GameObject GetCurrentGameObjectInSlot()
-		{
-			if (ItemDisplay.Item == null)
-			{
-				return null;
-			}
-			else
-			{
-				return ItemDisplay.Item.gameObject;
-			}
-		}
-		
+
+        public GameObject GetCurrentGameObjectInSlot()
+        {
+            if (ItemDisplay.Item == null)
+            {
+                return null;
+            }
+            else
+            {
+                return ItemDisplay.Item.gameObject;
+            }
+        }
+
     }
 }

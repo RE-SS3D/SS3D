@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Coimbra;
@@ -145,10 +145,10 @@ namespace SS3D.Systems.Inventory.UI
             Vector2 cellSize = _gridLayout.cellSize;
             float x = localPoint.x / (cellSize.x * scale.x);
             float y = localPoint.y / (cellSize.y * scale.y);
-            
+
             return new Vector2(x, y);
         }
-        
+
         /// <summary>
         /// Get a slot position given a screen position
         /// </summary>
@@ -164,7 +164,7 @@ namespace SS3D.Systems.Inventory.UI
             {
                 _gridLayout = GetComponentInChildren<GridLayoutGroup>();
             }
-            
+
             Vector2Int size = AttachedContainer.Container.Size;
             float x = size.x * _gridLayout.cellSize.x + size.x * _gridLayout.spacing.x;
             float y = size.y * _gridLayout.cellSize.y + size.y * _gridLayout.spacing.y;
@@ -177,13 +177,13 @@ namespace SS3D.Systems.Inventory.UI
             {
                 return;
             }
-            
+
             GameObject clicked = eventData.rawPointerPress;
             if (clicked == null)
             {
                 return;
             }
-            
+
 
             Transform parent = clicked.transform.parent;
             if (parent == _gridLayout.transform || parent == transform)
@@ -192,7 +192,7 @@ namespace SS3D.Systems.Inventory.UI
                 Inventory.ClientInteractWithContainerSlot(AttachedContainer, slotPosition);
             }
         }
-        
+
         /// <summary>
         /// When an item display is dropped on this grid, this compute in which slot of the grid the sprite should be displayed.
         /// Does nothing if the area of drop is not free.
@@ -203,15 +203,15 @@ namespace SS3D.Systems.Inventory.UI
             Item item = display.Item;
             Vector2Int size = item.Size;
             Vector3 dragPosition = display.transform.position;
-            
+
             // Get item center position
             Rect rect = display.GetComponent<RectTransform>().rect;
             Vector2 rectCenter = new(rect.width / 2, rect.height / 2);
             Vector2 position = GetSlotPositionExact(new Vector2(dragPosition.x + rectCenter.x, dragPosition.y - rectCenter.y));
-            
+
             // Offset slot by item dimensions
-            Vector2Int slot = new( Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
-            
+            Vector2Int slot = new(Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
+
             // Check if the area of drop is free, if not, don't transfer.
             if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item))
             {
@@ -223,7 +223,7 @@ namespace SS3D.Systems.Inventory.UI
             display.ShouldDrop = true;
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
-        
+
         private void MoveToSlot(Transform objectToMove, Vector2Int position)
         {
             if (objectToMove.parent != transform)
@@ -240,10 +240,10 @@ namespace SS3D.Systems.Inventory.UI
         {
             // avoid creating the same item sprite multiple times. Except when it's moved around in the container.
             // In this case two instances need to exist on the same frame so we allow it.
-           foreach(ItemGridItem itemSprite in _gridItems)
-           {
+            foreach (ItemGridItem itemSprite in _gridItems)
+            {
                 if (itemSprite.Item == item && !ItemMovedInsideGrid) return;
-           }
+            }
 
             GameObject o = Instantiate(ItemDisplayPrefab, transform);
             ItemGridItem itemSpriteOnGrid = o.GetComponent<ItemGridItem>();
@@ -254,16 +254,16 @@ namespace SS3D.Systems.Inventory.UI
 
             itemSpriteOnGrid.Item = item;
             MoveToSlot(o.transform, position);
-            
+
             _gridItems.Add(itemSpriteOnGrid);
         }
 
-		public GameObject GetCurrentGameObjectInSlot()
-		{
-			Vector2Int slotPosition = GetSlotPosition(Mouse.current.position.ReadValue());
-			Container container = AttachedContainer.Container;
-			return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).gameObject;
-		}
-		
+        public GameObject GetCurrentGameObjectInSlot()
+        {
+            Vector2Int slotPosition = GetSlotPosition(Mouse.current.position.ReadValue());
+            Container container = AttachedContainer.Container;
+            return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).gameObject;
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
@@ -164,9 +164,11 @@ namespace SS3D.Systems.Roles
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
             ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
-            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
-            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
+            if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
+
+            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, container);
             Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
 
             PDA pda = (PDA)pdaItem;
@@ -193,13 +195,45 @@ namespace SS3D.Systems.Roles
         private void SpawnLoadoutItems(Entity entity, RoleLoadout loadout)
         {
             Hands hands = entity.GetComponent<Hands>();
-            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
             SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);
-            SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, inventory.LeftPocketContainer);
-            SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, inventory.RightPocketContainer);
-        }
+
+			if (inventory.TryGetTypeContainer(ContainerType.ShoeRight, 0, out AttachedContainer ShoeRightContainer))
+				SpawnItemInSlot(loadout.RightShoeItem, loadout.RightShoe, ShoeRightContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.ShoeLeft, 0, out AttachedContainer ShoeLeftContainer))
+				SpawnItemInSlot(loadout.LeftShoeItem, loadout.LeftShoe, ShoeLeftContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.Jumpsuit, 0, out AttachedContainer JumpsuitContainer))
+				SpawnItemInSlot(loadout.JumpsuitItem, loadout.Jumpsuit, JumpsuitContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.GloveLeft, 0, out AttachedContainer LeftGloveContainer))
+				SpawnItemInSlot(loadout.LeftGloveItem, loadout.LeftGlove, LeftGloveContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.GloveRight, 0, out AttachedContainer RightGloveContainer))
+				SpawnItemInSlot(loadout.RightGloveItem, loadout.RightGlove, RightGloveContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.Head, 0, out AttachedContainer HatContainer))
+				SpawnItemInSlot(loadout.HatItem, loadout.Hat, HatContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.Glasses, 0, out AttachedContainer GlassesContainer))
+				SpawnItemInSlot(loadout.GlassesItem, loadout.Glasses, GlassesContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.Pocket, 0, out AttachedContainer leftPocketContainer))
+				SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, leftPocketContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.Pocket, 1, out AttachedContainer rightPocketContainer))
+				SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, rightPocketContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.EarRight, 0, out AttachedContainer EarRightContainer))
+				SpawnItemInSlot(loadout.RightEarItem, loadout.RightEar, EarRightContainer);
+
+			if (inventory.TryGetTypeContainer(ContainerType.EarLeft, 0, out AttachedContainer EarLeftContainer))
+				SpawnItemInSlot(loadout.LeftEarItem, loadout.LeftEar, EarLeftContainer);
+
+		}
 
         /// <summary>
         /// Spawns an item inside a container slot after checking for boolean

@@ -14,7 +14,7 @@ namespace SS3D.Systems.Inventory.UI
 
         private AttachedContainer _attachedContainer;
 
-        public Containers.Inventory Inventory
+        public HumanInventory Inventory
         {
             set => Grid.Inventory = value;
             get => Grid.Inventory;
@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.UI
 
         public void Close()
         {
-            Inventory.CmdContainerClose(_attachedContainer);
+            Inventory.containerViewer.CmdContainerClose(_attachedContainer);
             gameObject.Dispose(true);
         }
 
