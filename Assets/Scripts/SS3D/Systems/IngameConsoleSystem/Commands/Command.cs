@@ -1,4 +1,5 @@
-﻿using SS3D.Systems.Permissions;
+﻿using FishNet.Object;
+using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
