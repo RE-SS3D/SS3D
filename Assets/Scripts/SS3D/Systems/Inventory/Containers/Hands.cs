@@ -187,7 +187,7 @@ namespace SS3D.Systems.Inventory.Containers
 		[Server]
 		private void NextHand()
 		{
-			int index = PlayerHands.FindIndex(0, 1, x => x == SelectedHand);
+			int index = PlayerHands.FindIndex(0, x => x == SelectedHand);
 			_selectedHand = PlayerHands[(index + 1) % PlayerHands.Count];
 		}
 
