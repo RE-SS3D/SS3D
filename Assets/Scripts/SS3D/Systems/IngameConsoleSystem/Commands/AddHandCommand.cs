@@ -13,11 +13,14 @@ using SS3D.Data.Enums;
 using FishNet.Object;
 using UnityEngine.InputSystem;
 using SS3D.Systems.Inventory.Containers;
+using FishNet.Connection;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
 	/// <summary>
 	/// Command to add a hand to an entity.
+	/// This is mostly used for testing purpose, to check if hands can correctly be added to an entity and if they behave
+	/// as expected.
 	/// </summary>
 	public class AddHandCommand : Command
 	{
@@ -33,7 +36,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			if (checkArgsResponse.IsValid == false)
 				return checkArgsResponse.InvalidArgs;
 			string ckey = args[0];
-			PerformOnServer(args);
+			CmdPerform(args);
 
 			return "hand added";
 		}
@@ -47,14 +50,14 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 				return response;
 			}
 			string ckey = args[0];
-			Player PlayerToKill = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-			if (PlayerToKill == null)
+			Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
+			if (player == null)
 			{
 				response.IsValid = false;
 				response.InvalidArgs = "This player doesn't exist";
 				return response;
 			}
-			Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(PlayerToKill);
+			Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
 			if (entityToKill == null)
 			{
 				response.IsValid = false;
@@ -66,9 +69,18 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		}
 
 		[Server]
-		private void PerformOnServer(string[] args)
+		private void CmdPerform(string[] args, NetworkConnection conn = null)
 		{
 			string ckey = args[0];
+			if(!Subsystems.Get<PermissionSystem>().TryGetUserRole(args[0], out ServerRoleTypes userPermission))
+			{
+				return;
+			}
+
+			if(userPermission < AccessLevel)
+			{
+				return;
+			}
 
 			// default transform for hand.
 			Vector3 position = new Vector3(0.5f, 0.7f, 0);
