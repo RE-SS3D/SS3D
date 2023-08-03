@@ -16,6 +16,9 @@ using SS3D.Systems.Inventory.Containers;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
+	/// <summary>
+	/// Command to add a hand to an entity.
+	/// </summary>
 	public class AddHandCommand : Command
 	{
 		public override string LongDescription => "add hand to user (ckey), you can precise position (x,y,z) and rotation (x,y,z) argument ";
@@ -37,7 +40,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		protected override CheckArgsResponse CheckArgs(string[] args)
 		{
 			CheckArgsResponse response = new CheckArgsResponse();
-			if (args.Length != 1 || args.Length != 7)
+			if (args.Length != 1 && args.Length != 7)
 			{
 				response.IsValid = false;
 				response.InvalidArgs = "Invalid number of arguments";
