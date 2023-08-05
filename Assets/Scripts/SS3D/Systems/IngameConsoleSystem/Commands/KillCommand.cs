@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object;
+using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
@@ -12,6 +13,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
 		public override bool ServerCommand => true;
 
+		[Server]
 		public override string Perform(string[] args)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
@@ -20,10 +22,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             string ckey = args[0];
             Player PlayerToKill = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
             Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(PlayerToKill);
-            entityToKill.GetComponent<HealthController>().ClientKill();
+            entityToKill.GetComponent<HealthController>().Kill();
             return "Player killed";
         }
-        protected override CheckArgsResponse CheckArgs(string[] args)
+
+		[Server]
+		protected override CheckArgsResponse CheckArgs(string[] args)
         {
             CheckArgsResponse response = new CheckArgsResponse();
             if (args.Length != 1)
