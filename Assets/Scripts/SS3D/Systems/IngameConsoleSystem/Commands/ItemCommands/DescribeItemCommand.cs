@@ -1,25 +1,26 @@
-﻿using SS3D.Systems.Inventory.Items;
+﻿using FishNet.Connection;
+using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     /// <summary>
-    /// Command to describe an item held in hand.
+    /// Command to describe an item held in the active hand of the player calling the command.
     /// </summary>
     public class DescribeItemCommand : Command
     {
         public override string LongDescription => "Describes the item in hand";
         public override string ShortDescription => "item.describe";
-        public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
-		public override bool ServerCommand => false;
+        public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+		public override bool ServerCommand => true;
 
-		public override string Perform(string[] args)
+		public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
 
-            Item item = ItemCommandUtilities.GetItemInHand();
+            Item item = ItemCommandUtilities.GetItemInHand(conn);
             if (item == null)
             {
                 return "No item in hand";

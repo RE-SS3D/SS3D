@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
@@ -15,7 +16,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
 		public override bool ServerCommand => false;
 
-		public override string Perform(string[] args)
+		public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Codice.Client.Common;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
@@ -60,6 +59,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 			if (!Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
 			{
 				CommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
+				return;
 			}
 
 			string[] splitCommand = command.Split(' ');
@@ -67,37 +67,39 @@ namespace SS3D.Systems.IngameConsoleSystem
             if (commandName == "help")
             {
                 CommandAnswer(conn, HelpCommand());
+				return;
             }
             if (splitCommand.Length > 1)
             {
                 if (splitCommand[1] == "help")
                 {
                     CommandAnswer(conn, LongHelpCommand(command));
+					return;
                 }
             }
             
             if (!_allCommands.ContainsKey(commandName))
             {
 				CommandAnswer(conn, "No such command exists");
+				return;
             }
 
 			if (_allCommands[commandName].AccessLevel > userPermission)
 			{
 				CommandAnswer(conn, "Access level too low, can't perform command");
+				return;
 			}
 
 			if (_allCommands[commandName].ServerCommand)
 			{
-				CommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray()));
+				CommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray(), conn));
+				return;
 			}
 			else
 			{
 				PerformOnClient(conn, command);
+				return;
 			}
-
-			// Find proper command body and prepare correct args
-			CommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray()));
-
 		}
 
 		[TargetRpc]

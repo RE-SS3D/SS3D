@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using FishNet.Connection;
 using SS3D.Systems.Permissions;
 using UnityEngine.Device;
 
@@ -10,9 +11,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Restart app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
 
-		public override bool ServerCommand => true;
+		public override bool ServerCommand => false;
 
-		public override string Perform(string[] args)
+		public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
