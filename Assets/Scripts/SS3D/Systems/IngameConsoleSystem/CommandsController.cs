@@ -44,7 +44,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 		[Client]
 		public void ClientProcessCommand(string command)
 		{
-			ProcessCommand(command);
+			CmdProcessCommand(command);
 		}
 
 		/// <summary>
@@ -53,12 +53,12 @@ namespace SS3D.Systems.IngameConsoleSystem
 		/// <param name="command">Command and it's args separated by spaces</param>
 		/// <returns>Command response</returns>
 		[ServerRpc(RequireOwnership = false)]
-        public void ProcessCommand(string command, NetworkConnection conn = null)
+        public void CmdProcessCommand(string command, NetworkConnection conn = null)
         {
 			string ckey = Subsystems.Get<PlayerSystem>().GetCkey(conn);
 			if (!Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
 			{
-				CommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
+				RpcCommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
 				return;
 			}
 
@@ -66,44 +66,44 @@ namespace SS3D.Systems.IngameConsoleSystem
             string commandName = splitCommand[0]; 
             if (commandName == "help")
             {
-                CommandAnswer(conn, HelpCommand());
+				RpcCommandAnswer(conn, HelpCommand());
 				return;
             }
             if (splitCommand.Length > 1)
             {
                 if (splitCommand[1] == "help")
                 {
-                    CommandAnswer(conn, LongHelpCommand(command));
+					RpcCommandAnswer(conn, LongHelpCommand(command));
 					return;
                 }
             }
             
             if (!_allCommands.ContainsKey(commandName))
             {
-				CommandAnswer(conn, "No such command exists");
+				RpcCommandAnswer(conn, "No such command exists");
 				return;
             }
 
 			if (_allCommands[commandName].AccessLevel > userPermission)
 			{
-				CommandAnswer(conn, "Access level too low, can't perform command");
+				RpcCommandAnswer(conn, "Access level too low, can't perform command");
 				return;
 			}
 
 			if (_allCommands[commandName].ServerCommand)
 			{
-				CommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray(), conn));
+				RpcCommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray(), conn));
 				return;
 			}
 			else
 			{
-				PerformOnClient(conn, command);
+				RpcPerformOnClient(conn, command);
 				return;
 			}
 		}
 
 		[TargetRpc]
-		public void PerformOnClient(NetworkConnection conn, string command)
+		public void RpcPerformOnClient(NetworkConnection conn, string command)
 		{
 			string[] splitCommand = command.Split(' ');
 			string commandName = splitCommand[0];
@@ -112,7 +112,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 		}
 
 		[TargetRpc]
-		public void CommandAnswer(NetworkConnection conn, string answer) 
+		public void RpcCommandAnswer(NetworkConnection conn, string answer) 
 		{ 
 			console.AddText(answer);
 		}
