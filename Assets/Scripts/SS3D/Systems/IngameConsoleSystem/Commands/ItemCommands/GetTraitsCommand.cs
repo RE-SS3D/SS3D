@@ -1,4 +1,4 @@
-using SS3D.Systems.Inventory.Items;
+﻿using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
@@ -11,8 +11,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Get all traits from item in hand";
         public override string ShortDescription => "item.traits";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
+		public override bool ServerCommand => false;
 
-        public override string Perform(string[] args)
+		public override string Perform(string[] args)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)

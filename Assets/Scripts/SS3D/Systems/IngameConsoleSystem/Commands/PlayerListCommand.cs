@@ -13,7 +13,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Show all players online";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
 
-        public override string Perform(string[] args)
+		public override bool ServerCommand => false;
+
+		public override string Perform(string[] args)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)

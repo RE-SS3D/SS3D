@@ -2,11 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Codice.Client.Common;
+using FishNet.Connection;
+using FishNet.Object;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.IngameConsoleSystem.Commands;
+using SS3D.Systems.Permissions;
+using SS3D.Systems.PlayerControl;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
-    public class CommandsController
+    public class CommandsController : NetworkActor
     {
         /// <summary>
         /// Contains all command infos and their names in lowercase
@@ -16,7 +25,10 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// Length of space between columns in help command
         /// </summary>
         private const int TabLength = 20;
-        public CommandsController()
+
+		[SerializeField] private ConsolePanelView console;
+
+        protected override void OnStart()
         {
             IEnumerable<Type> commands = Assembly.GetAssembly(typeof(Command)).GetTypes().Where(iType =>
                 iType.IsClass && iType.IsSubclassOf(typeof(Command)) && !iType.IsAbstract);
@@ -29,35 +41,82 @@ namespace SS3D.Systems.IngameConsoleSystem
                 _allCommands.Add(name, instance);
             }
         }
-        /// <summary>
-        /// Find and call command
-        /// </summary>
-        /// <param name="command">Command and it's args separated by spaces</param>
-        /// <returns>Command response</returns>
-        public string ProcessCommand(string command)
+
+		[Client]
+		public void ClientProcessCommand(string command)
+		{
+			ProcessCommand(command);
+		}
+
+		/// <summary>
+		/// Find and call command
+		/// </summary>
+		/// <param name="command">Command and it's args separated by spaces</param>
+		/// <returns>Command response</returns>
+		[ServerRpc(RequireOwnership = false)]
+        public void ProcessCommand(string command, NetworkConnection conn = null)
         {
-            string[] splitCommand = command.Split(' ');
+			string ckey = Subsystems.Get<PlayerSystem>().GetCkey(conn);
+			if (!Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
+			{
+				CommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
+			}
+
+			string[] splitCommand = command.Split(' ');
             string commandName = splitCommand[0]; 
             if (commandName == "help")
             {
-                return HelpCommand();
+                CommandAnswer(conn, HelpCommand());
             }
             if (splitCommand.Length > 1)
             {
                 if (splitCommand[1] == "help")
                 {
-                    return LongHelpCommand(command);
+                    CommandAnswer(conn, LongHelpCommand(command));
                 }
             }
-            // Find proper command body and prepare correct args
-            if (_allCommands.ContainsKey(commandName))
+            
+            if (!_allCommands.ContainsKey(commandName))
             {
-                return _allCommands[commandName].Perform(command.Split().Skip(1).ToArray());
-            } 
-            return "No such command exists";
-        }
-        /// <returns>All available commands with short descriptions</returns>
-        private string HelpCommand()
+				CommandAnswer(conn, "No such command exists");
+            }
+
+			if (_allCommands[commandName].AccessLevel > userPermission)
+			{
+				CommandAnswer(conn, "Access level too low, can't perform command");
+			}
+
+			if (_allCommands[commandName].ServerCommand)
+			{
+				CommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray()));
+			}
+			else
+			{
+				PerformOnClient(conn, command);
+			}
+
+			// Find proper command body and prepare correct args
+			CommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray()));
+
+		}
+
+		[TargetRpc]
+		public void PerformOnClient(NetworkConnection conn, string command)
+		{
+			string[] splitCommand = command.Split(' ');
+			string commandName = splitCommand[0];
+			string answer = _allCommands[commandName].Perform(command.Split().Skip(1).ToArray());
+			console.AddText(answer);
+		}
+
+		[TargetRpc]
+		public void CommandAnswer(NetworkConnection conn, string answer) 
+		{ 
+			console.AddText(answer);
+		}
+
+		/// <returns>All available commands with short descriptions</returns>
+		private string HelpCommand()
         {
             string ret = "";
             foreach (KeyValuePair<string, Command> i in _allCommands)

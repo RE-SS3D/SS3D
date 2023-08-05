@@ -10,6 +10,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             public bool IsValid;
             public string InvalidArgs;
         }
+
+		public abstract bool ServerCommand { get; }
         public abstract string ShortDescription { get; }
         public abstract string LongDescription { get; }
         public abstract ServerRoleTypes AccessLevel { get; }
