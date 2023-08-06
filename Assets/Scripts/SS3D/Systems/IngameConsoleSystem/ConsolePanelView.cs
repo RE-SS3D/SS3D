@@ -39,7 +39,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// </summary>
         private TextMeshProUGUI _textField;
 
-		[SerializeField] private CommandsController _commandsController;
+        [SerializeField] private CommandsController _commandsController;
 
         // Used for choosing command via arrows
         [SerializeField] private List<string> _allPrevCommands = new() {""};
@@ -48,7 +48,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         private Controls.ConsoleActions _consoleControls;
         private InputSystem _inputSystem;
 
-		protected override void OnStart()
+        protected override void OnStart()
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
@@ -137,10 +137,10 @@ namespace SS3D.Systems.IngameConsoleSystem
                 _isShowed = !_isShowed;
             }
         }
-		/// <summary>
-		/// Handle command taking from input field and showing a response 
-		/// </summary>
-		[Client]
+        /// <summary>
+        /// Handle command taking from input field and showing a response 
+        /// </summary>
+        [Client]
         public void ProcessCommand(string command)
         {
             AddText("> <color=#742F27>" + command + "</color>");
@@ -148,10 +148,10 @@ namespace SS3D.Systems.IngameConsoleSystem
             _allPrevCommands.Add(command);
             _allPrevCommands.Add("");
             _chosenPrevCommand = _allPrevCommands.Count;
-			_commandsController.ClientProcessCommand(command);
-		}
+            _commandsController.ClientProcessCommand(command);
+        }
 
-		[Client]
+        [Client]
         public void AddText(string text)
         {
             _textField.text += "\n" + text;

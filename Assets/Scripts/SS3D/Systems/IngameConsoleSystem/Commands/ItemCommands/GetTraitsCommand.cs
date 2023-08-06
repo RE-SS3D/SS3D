@@ -12,9 +12,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Get all traits from item in hand";
         public override string ShortDescription => "item.traits";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-		public override bool ServerCommand => true;
+        public override bool ServerCommand => true;
 
-		public override string Perform(string[] args, NetworkConnection conn = null)
+        public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)

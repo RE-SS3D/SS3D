@@ -25,7 +25,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// </summary>
         private const int TabLength = 20;
 
-		[SerializeField] private ConsolePanelView console;
+        [SerializeField] private ConsolePanelView console;
 
         protected override void OnStart()
         {
@@ -41,84 +41,84 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
         }
 
-		[Client]
-		public void ClientProcessCommand(string command)
-		{
-			CmdProcessCommand(command);
-		}
+        [Client]
+        public void ClientProcessCommand(string command)
+        {
+            CmdProcessCommand(command);
+        }
 
-		/// <summary>
-		/// Find and call command
-		/// </summary>
-		/// <param name="command">Command and it's args separated by spaces</param>
-		/// <returns>Command response</returns>
-		[ServerRpc(RequireOwnership = false)]
+        /// <summary>
+        /// Find and call command
+        /// </summary>
+        /// <param name="command">Command and it's args separated by spaces</param>
+        /// <returns>Command response</returns>
+        [ServerRpc(RequireOwnership = false)]
         public void CmdProcessCommand(string command, NetworkConnection conn = null)
         {
-			string ckey = Subsystems.Get<PlayerSystem>().GetCkey(conn);
-			if (!Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
-			{
-				RpcCommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
-				return;
-			}
+            string ckey = Subsystems.Get<PlayerSystem>().GetCkey(conn);
+            if (!Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
+            {
+                RpcCommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
+                return;
+            }
 
-			string[] splitCommand = command.Split(' ');
-            string commandName = splitCommand[0]; 
+            string[] splitCommand = command.Split(' ');
+            string commandName = splitCommand[0];
             if (commandName == "help")
             {
-				RpcCommandAnswer(conn, HelpCommand());
-				return;
+                RpcCommandAnswer(conn, HelpCommand());
+                return;
             }
             if (splitCommand.Length > 1)
             {
                 if (splitCommand[1] == "help")
                 {
-					RpcCommandAnswer(conn, LongHelpCommand(command));
-					return;
+                    RpcCommandAnswer(conn, LongHelpCommand(command));
+                    return;
                 }
             }
-            
+
             if (!_allCommands.ContainsKey(commandName))
             {
-				RpcCommandAnswer(conn, "No such command exists");
-				return;
+                RpcCommandAnswer(conn, "No such command exists");
+                return;
             }
 
-			if (_allCommands[commandName].AccessLevel > userPermission)
-			{
-				RpcCommandAnswer(conn, "Access level too low, can't perform command");
-				return;
-			}
+            if (_allCommands[commandName].AccessLevel > userPermission)
+            {
+                RpcCommandAnswer(conn, "Access level too low, can't perform command");
+                return;
+            }
 
-			if (_allCommands[commandName].ServerCommand)
-			{
-				RpcCommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray(), conn));
-				return;
-			}
-			else
-			{
-				RpcPerformOnClient(conn, command);
-				return;
-			}
-		}
+            if (_allCommands[commandName].ServerCommand)
+            {
+                RpcCommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray(), conn));
+                return;
+            }
+            else
+            {
+                RpcPerformOnClient(conn, command);
+                return;
+            }
+        }
 
-		[TargetRpc]
-		public void RpcPerformOnClient(NetworkConnection conn, string command)
-		{
-			string[] splitCommand = command.Split(' ');
-			string commandName = splitCommand[0];
-			string answer = _allCommands[commandName].Perform(command.Split().Skip(1).ToArray());
-			console.AddText(answer);
-		}
+        [TargetRpc]
+        public void RpcPerformOnClient(NetworkConnection conn, string command)
+        {
+            string[] splitCommand = command.Split(' ');
+            string commandName = splitCommand[0];
+            string answer = _allCommands[commandName].Perform(command.Split().Skip(1).ToArray());
+            console.AddText(answer);
+        }
 
-		[TargetRpc]
-		public void RpcCommandAnswer(NetworkConnection conn, string answer) 
-		{ 
-			console.AddText(answer);
-		}
+        [TargetRpc]
+        public void RpcCommandAnswer(NetworkConnection conn, string answer)
+        {
+            console.AddText(answer);
+        }
 
-		/// <returns>All available commands with short descriptions</returns>
-		private string HelpCommand()
+        /// <returns>All available commands with short descriptions</returns>
+        private string HelpCommand()
         {
             string ret = "";
             foreach (KeyValuePair<string, Command> i in _allCommands)

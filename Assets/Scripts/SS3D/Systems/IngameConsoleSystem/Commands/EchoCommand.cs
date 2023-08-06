@@ -10,8 +10,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "echo (number) (your string)";
         public override string ShortDescription => "Repeat your string";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
-		public override bool ServerCommand => true;
-		public override string Perform(string[] args, NetworkConnection conn = null)
+        public override bool ServerCommand => true;
+        public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)

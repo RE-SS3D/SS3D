@@ -12,31 +12,31 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             public string InvalidArgs;
         }
 
-		/// <summary>
-		/// Is the command going to be executed server or client side ?
-		/// </summary>
-		public abstract bool ServerCommand { get; }
+        /// <summary>
+        /// Is the command going to be executed server or client side ?
+        /// </summary>
+        public abstract bool ServerCommand { get; }
 
         public abstract string ShortDescription { get; }
 
         public abstract string LongDescription { get; }
 
-		/// <summary>
-		/// The requested role to be able to perform this command.
-		/// </summary>
+        /// <summary>
+        /// The requested role to be able to perform this command.
+        /// </summary>
         public abstract ServerRoleTypes AccessLevel { get; }
 
-		/// <summary>
-		/// Perform the given command.
-		/// </summary>
-		/// <param name="args"> An array of arguments for the command.</param>
-		/// <param name="conn"> The connection of the player executing this command, sometimes useful. </param>
-		/// <returns> A message indicating if the command performed as expected, or requested informations.</returns>
+        /// <summary>
+        /// Perform the given command.
+        /// </summary>
+        /// <param name="args"> An array of arguments for the command.</param>
+        /// <param name="conn"> The connection of the player executing this command, sometimes useful. </param>
+        /// <returns> A message indicating if the command performed as expected, or requested informations.</returns>
         public abstract string Perform(string[] args, NetworkConnection conn = null);
 
-		/// <summary>
-		/// Validate the arguments of the command.
-		/// </summary>
+        /// <summary>
+        /// Validate the arguments of the command.
+        /// </summary>
         protected abstract CheckArgsResponse CheckArgs(string[] args);
         protected const string WrongArgsText = "Wrong args. Type \"(command) help\"";
     }

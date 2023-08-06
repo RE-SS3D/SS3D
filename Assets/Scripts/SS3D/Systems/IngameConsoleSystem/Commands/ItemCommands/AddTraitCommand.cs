@@ -14,10 +14,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Adds a trait to the item in hand";
         public override string ShortDescription => "item.addtrait";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-		public override bool ServerCommand => true;
+        public override bool ServerCommand => true;
 
-		[Server]
-		public override string Perform(string[] args, NetworkConnection conn = null)
+        [Server]
+        public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
@@ -50,5 +50,5 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             response.IsValid = true;
             return response;
         }
-	}
+    }
 }
