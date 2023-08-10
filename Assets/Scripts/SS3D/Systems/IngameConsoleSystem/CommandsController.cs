@@ -78,12 +78,6 @@ namespace SS3D.Systems.IngameConsoleSystem
             {
                 return;
             }
-            
-            if (commandObject.Type != CommandType.Offline)
-            {
-                CommandAnswer(null, "Can't execute offline, non offline commands.");
-                return;
-            }
 
             commandObject.Perform(command.Split().Skip(1).ToArray());
         }
