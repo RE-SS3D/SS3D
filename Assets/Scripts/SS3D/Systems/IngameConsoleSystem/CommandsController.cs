@@ -11,7 +11,6 @@ using SS3D.Systems.IngameConsoleSystem.Commands;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
