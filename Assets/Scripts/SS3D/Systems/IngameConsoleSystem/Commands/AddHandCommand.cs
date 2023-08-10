@@ -2,8 +2,6 @@
 using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using FishNet;
 using UnityEditor;
