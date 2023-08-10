@@ -53,7 +53,7 @@ namespace SS3D.Systems.IngameConsoleSystem
                 OfflineProcessCommand(command); 
                 return;
             }
-            CmdProcessCommand(command);
+            CmdProcessOnlineCommand(command);
         }
 
         [ServerOrClient]
