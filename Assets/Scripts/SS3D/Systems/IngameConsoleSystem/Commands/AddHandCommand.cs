@@ -19,7 +19,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 	/// </summary>
 	public class AddHandCommand : Command
 	{
-		public override string LongDescription => "add hand to user (ckey), you can precise position (x,y,z) and rotation (x,y,z) argument ";
+		public override string LongDescription => "add (ckey) [(position) (rotation)]\n Position and rotation are float arrays and written as x y z";
 		public override string ShortDescription => "add hand to user";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 
