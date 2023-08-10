@@ -1,13 +1,9 @@
-﻿using SS3D.Systems.Inventory.Containers;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Systems.Inventory.Items;
 using System.Linq;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
 using FishNet.Object;
-using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {

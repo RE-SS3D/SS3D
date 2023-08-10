@@ -345,7 +345,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <returns> The transform of the hand slot at the specified index.</returns>
         public Transform GetHandSlot(Hand hand)
         {
-			var slot = Slots.Find(x => x.Container == hand.Container);
+			SingleItemContainerSlot slot = Slots.Find(x => x.Container == hand.Container);
 			return slot.transform;
         }
 

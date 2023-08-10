@@ -24,9 +24,6 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 
 		public override CommandType Type => CommandType.Server;
-
-		public GameObject hand;
-
 		public override string Perform(string[] args, NetworkConnection conn)
 		{
 			CheckArgsResponse checkArgsResponse = CheckArgs(args);
