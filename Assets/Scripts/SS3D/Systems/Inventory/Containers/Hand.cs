@@ -7,7 +7,6 @@ using System.Linq;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
 using FishNet.Object;
-using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
