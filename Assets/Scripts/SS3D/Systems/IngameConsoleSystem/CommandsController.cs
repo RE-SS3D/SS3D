@@ -25,7 +25,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// </summary>
         private const int TabLength = 20;
 
-        [SerializeField] private ConsolePanelView console;
+        [SerializeField] private ConsolePanelView _console;
 
         protected override void OnStart()
         {
@@ -178,13 +178,13 @@ namespace SS3D.Systems.IngameConsoleSystem
             string[] splitCommand = command.Split(' ');
             string commandName = splitCommand[0];
             string answer = _allCommands[commandName].Perform(command.Split().Skip(1).ToArray());
-            console.AddText(answer);
+			_console.AddText(answer);
         }
 
         [TargetRpc]
 		private void RpcCommandAnswer(NetworkConnection conn, string answer)
         {
-			console.AddText(answer);
+			_console.AddText(answer);
 		}
 
 		[ServerOrClient]
@@ -196,7 +196,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 			}
 			else
 			{
-				console.AddText(answer);
+				_console.AddText(answer);
 			}	
 		}
 
