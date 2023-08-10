@@ -12,10 +12,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "kill (user ckey)";
         public override string ShortDescription => "Kill player";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-		public override CommandType Type => CommandType.Server;
+        public override CommandType Type => CommandType.Server;
 
 
-		[Server]
+        [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);

@@ -12,9 +12,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Change user permission";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 
-		public override CommandType Type => CommandType.Server;
+        public override CommandType Type => CommandType.Server;
 
-		public override string Perform(string[] args, NetworkConnection conn = null)
+        public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)

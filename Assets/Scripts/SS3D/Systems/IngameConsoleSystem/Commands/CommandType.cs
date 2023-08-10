@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
-	public enum CommandType
-	{
-		Server,
-		Client,
-		Offline
-	}
+    public enum CommandType
+    {
+        Server,
+        Client,
+        Offline
+    }
 }
