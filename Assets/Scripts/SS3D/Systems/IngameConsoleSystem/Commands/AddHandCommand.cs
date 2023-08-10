@@ -1,6 +1,5 @@
 ﻿using SS3D.Core;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using System.Collections;
