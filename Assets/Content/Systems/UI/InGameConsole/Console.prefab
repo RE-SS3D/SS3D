@@ -214,7 +214,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 6636680625000353110}
   _networkObjectCache: {fileID: 6636680625000353110}
-  console: {fileID: 4468402020721993861}
+  _console: {fileID: 4468402020721993861}
 --- !u!114 &6636680625000353110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +278,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2, y: -68.55036}
+  m_AnchoredPosition: {x: 2, y: -230.00002}
   m_SizeDelta: {x: -2, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &4468402021075485017
@@ -1360,8 +1360,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4468402020486027508}
   m_HandleRect: {fileID: 4468402020486027511}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0
+  m_Value: 1
+  m_Size: 0.9991756
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
