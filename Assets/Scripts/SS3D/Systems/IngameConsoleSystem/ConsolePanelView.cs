@@ -6,7 +6,6 @@ using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using TMPro;
 using UnityEngine;
