@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using FishNet.Object;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
@@ -45,16 +45,12 @@ public class HealthController : NetworkBehaviour
         originEntity.Transform.Rotate(new Vector3(90, 0, 0));
     }
 
-    [Client]
-    public void ClientKill()
-    {
-        CmdKill(Ghost);
-    }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void CmdKill(GameObject obj)
+
+    [Server]
+    public void Kill()
     {
-        _spawnedGhost = Instantiate(obj);
+        _spawnedGhost = Instantiate(Ghost);
         ServerManager.Spawn(_spawnedGhost);
         BecomeGhost(gameObject, _spawnedGhost);
     }

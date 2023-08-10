@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Systems.Inputs;
 using TMPro;
@@ -36,7 +37,9 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// Text field with command responses in _contentContainer
         /// </summary>
         private TextMeshProUGUI _textField;
-        private CommandsController _commandsController;
+
+        [SerializeField] private CommandsController _commandsController;
+
         // Used for choosing command via arrows
         [SerializeField] private List<string> _allPrevCommands = new() {""};
         private int _chosenPrevCommand;
@@ -48,7 +51,6 @@ namespace SS3D.Systems.IngameConsoleSystem
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _commandsController = new CommandsController();
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs;
             _consoleControls = _controls.Console;
@@ -137,6 +139,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// <summary>
         /// Handle command taking from input field and showing a response 
         /// </summary>
+        [Client]
         public void ProcessCommand(string command)
         {
             AddText("> <color=#742F27>" + command + "</color>");
@@ -144,10 +147,11 @@ namespace SS3D.Systems.IngameConsoleSystem
             _allPrevCommands.Add(command);
             _allPrevCommands.Add("");
             _chosenPrevCommand = _allPrevCommands.Count;
-            string answer = _commandsController.ProcessCommand(command);
-            AddText(answer);
+            _commandsController.ClientProcessCommand(command);
         }
-        private void AddText(string text)
+
+        [Client]
+        public void AddText(string text)
         {
             _textField.text += "\n" + text;
         }

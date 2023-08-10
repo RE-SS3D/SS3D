@@ -1,4 +1,5 @@
-﻿using SS3D.Systems.Permissions;
+﻿using FishNet.Connection;
+using SS3D.Systems.Permissions;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
@@ -8,13 +9,19 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Close app";
         public override string ShortDescription => "Close app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
-        public override string Perform(string[] args)
+        public override CommandType Type => CommandType.Offline;
+
+        public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
-            
-            Application.Quit();
+
+            #if UNITY_EDITOR
+                        UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                    Application.Quit();
+            #endif
             return "Done";
         }
         protected override CheckArgsResponse CheckArgs(string[] args)

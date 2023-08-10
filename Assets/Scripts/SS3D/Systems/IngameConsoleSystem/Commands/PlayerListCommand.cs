@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
@@ -13,7 +14,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Show all players online";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
 
-        public override string Perform(string[] args)
+		public override CommandType Type => CommandType.Client;
+
+
+		public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
