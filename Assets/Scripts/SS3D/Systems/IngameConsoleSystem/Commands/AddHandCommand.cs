@@ -7,7 +7,6 @@ using FishNet;
 using SS3D.Data;
 using SS3D.Data.Enums;
 using FishNet.Object;
-using UnityEngine.InputSystem;
 using SS3D.Systems.Inventory.Containers;
 using FishNet.Connection;
 
