@@ -48,7 +48,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         [Client]
         public void ClientProcessCommand(string command)
         {
-            if(!LocalConnection.IsActive && _allCommands[CommandName(command)].Type == CommandType.Offline)
+            if(_allCommands[CommandName(command)].Type == CommandType.Offline)
             {
                 OfflineProcessCommand(command); 
                 return;
