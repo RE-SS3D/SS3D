@@ -94,7 +94,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// <param name="command">Command and it's args separated by spaces</param>
         /// <returns>Command response</returns>
         [ServerRpc(RequireOwnership = false)]
-        private void CmdProcessCommand(string command, NetworkConnection conn = null)
+        private void CmdOnlineProcessCommand(string command, NetworkConnection conn = null)
         {
             string ckey = Subsystems.Get<PlayerSystem>().GetCkey(conn);
 
