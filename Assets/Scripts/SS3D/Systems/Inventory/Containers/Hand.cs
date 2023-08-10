@@ -47,8 +47,8 @@ namespace SS3D.Systems.Inventory.Containers
 
 		public Vector3 InteractionOrigin => interactionOrigin.position;
 
-		public delegate void HandHandler(Hand hand);
-		public event HandHandler OnHandDisabled;
+		public delegate void HandEventHandler(Hand hand);
+		public event HandEventHandler OnHandDisabled;
 
 		protected override void OnDisabled()
 		{
