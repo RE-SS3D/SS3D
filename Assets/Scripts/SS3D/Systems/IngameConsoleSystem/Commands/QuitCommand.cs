@@ -9,16 +9,20 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Close app";
         public override string ShortDescription => "Close app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
+		public override CommandType Type => CommandType.Offline;
 
-        public override bool ServerCommand => false;
-        public override string Perform(string[] args, NetworkConnection conn = null)
+		public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
-            
-            Application.Quit();
-            return "Done";
+
+			#if UNITY_EDITOR
+						UnityEditor.EditorApplication.isPlaying = false;
+			#else
+					Application.Quit();
+			#endif
+			return "Done";
         }
         protected override CheckArgsResponse CheckArgs(string[] args)
         {

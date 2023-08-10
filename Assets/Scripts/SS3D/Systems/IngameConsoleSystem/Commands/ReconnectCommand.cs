@@ -10,10 +10,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Restart app";
         public override string ShortDescription => "Restart app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
+		public override CommandType Type => CommandType.Offline;
 
-        public override bool ServerCommand => false;
-
-        public override string Perform(string[] args, NetworkConnection conn = null)
+		public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)

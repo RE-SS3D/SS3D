@@ -15,7 +15,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         /// <summary>
         /// Is the command going to be executed server or client side ?
         /// </summary>
-        public abstract bool ServerCommand { get; }
+        public abstract CommandType Type { get; }
 
         public abstract string ShortDescription { get; }
 

@@ -6,6 +6,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.IngameConsoleSystem.Commands;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
@@ -41,11 +42,52 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
         }
 
+		/// <summary>
+		/// Treat a command, either going through the server if the client is connected, or
+		/// executing it on the disconnected client if the command type allows it.
+		/// </summary>
         [Client]
         public void ClientProcessCommand(string command)
         {
+			if(!LocalConnection.IsActive && _allCommands[CommandName(command)].Type == CommandType.Offline)
+			{
+				OfflineProcessCommand(command); 
+				return;
+			}
             CmdProcessCommand(command);
         }
+
+		[ServerOrClient]
+		private string CommandName(string command)
+		{
+			string[] splitCommand = command.Split(' ');
+			return splitCommand[0];
+		}
+
+		[ServerOrClient]
+		private void OfflineProcessCommand(string command)
+		{
+			string[] splitCommand = command.Split(' ');
+			string commandName = CommandName(command);
+
+			if(TreatHelpCommand(null, command, commandName, splitCommand))
+			{
+				return;
+			}
+			
+			if (TreatUnknownCommand(null, commandName))
+			{
+				return;
+			}
+
+			if (_allCommands[commandName].Type != CommandType.Offline)
+			{
+				CommandAnswer(null, "Can't execute offline, non offline commands.");
+				return;
+			}
+
+			_allCommands[commandName].Perform(command.Split().Skip(1).ToArray());
+		}
 
         /// <summary>
         /// Find and call command
@@ -53,57 +95,86 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// <param name="command">Command and it's args separated by spaces</param>
         /// <returns>Command response</returns>
         [ServerRpc(RequireOwnership = false)]
-        public void CmdProcessCommand(string command, NetworkConnection conn = null)
+        private void CmdProcessCommand(string command, NetworkConnection conn = null)
         {
             string ckey = Subsystems.Get<PlayerSystem>().GetCkey(conn);
+
             if (!Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
             {
-                RpcCommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
+                CommandAnswer(conn, string.Format("No role found for user {0}, can't process command", ckey));
                 return;
             }
 
-            string[] splitCommand = command.Split(' ');
-            string commandName = splitCommand[0];
-            if (commandName == "help")
-            {
-                RpcCommandAnswer(conn, HelpCommand());
-                return;
-            }
-            if (splitCommand.Length > 1)
-            {
-                if (splitCommand[1] == "help")
-                {
-                    RpcCommandAnswer(conn, LongHelpCommand(command));
-                    return;
-                }
-            }
+			string[] splitCommand = command.Split(' ');
+			string commandName = CommandName(command);
 
-            if (!_allCommands.ContainsKey(commandName))
+			if (TreatHelpCommand(conn, command, commandName, splitCommand))
+			{
+				return;
+			}
+
+			if (TreatUnknownCommand(conn, commandName))
+			{
+				return;
+			}
+
+			if (_allCommands[commandName].AccessLevel > userPermission)
             {
-                RpcCommandAnswer(conn, "No such command exists");
+                CommandAnswer(conn, "Access level too low, can't perform command");
                 return;
             }
 
-            if (_allCommands[commandName].AccessLevel > userPermission)
-            {
-                RpcCommandAnswer(conn, "Access level too low, can't perform command");
-                return;
-            }
+			// Either execute command on server or call on client.
+			// Offline commands go through server if client is connected to server. 
+			switch (_allCommands[commandName].Type)
+			{
+				case CommandType.Server:
+					CommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray(), conn));
+					break;
 
-            if (_allCommands[commandName].ServerCommand)
-            {
-                RpcCommandAnswer(conn, _allCommands[commandName].Perform(command.Split().Skip(1).ToArray(), conn));
-                return;
-            }
-            else
-            {
-                RpcPerformOnClient(conn, command);
-                return;
-            }
+				case CommandType.Client:
+					RpcPerformOnClient(conn, command);
+					break;
+
+				case CommandType.Offline:
+					RpcPerformOnClient(conn, command);
+					break;
+			}
         }
 
-        [TargetRpc]
-        public void RpcPerformOnClient(NetworkConnection conn, string command)
+		[ServerOrClient]
+		private bool TreatHelpCommand(NetworkConnection conn, string command, string commandName, string[] splitCommand)
+		{
+			if (commandName == "help")
+			{
+				CommandAnswer(conn, HelpCommand());
+				return true;
+			}
+			if (splitCommand.Length > 1)
+			{
+				if (splitCommand[1] == "help")
+				{
+					CommandAnswer(conn, LongHelpCommand(command));
+					return true;
+				}
+			}
+			return false;
+		}
+
+		[ServerOrClient]
+		private bool TreatUnknownCommand(NetworkConnection conn, string commandName)
+		{
+			if (!_allCommands.ContainsKey(commandName))
+			{
+				CommandAnswer(conn, "No such command exists");
+				return true;
+			}
+			return false;
+		}
+
+
+		[TargetRpc]
+        private void RpcPerformOnClient(NetworkConnection conn, string command)
         {
             string[] splitCommand = command.Split(' ');
             string commandName = splitCommand[0];
@@ -112,10 +183,23 @@ namespace SS3D.Systems.IngameConsoleSystem
         }
 
         [TargetRpc]
-        public void RpcCommandAnswer(NetworkConnection conn, string answer)
+		private void RpcCommandAnswer(NetworkConnection conn, string answer)
         {
-            console.AddText(answer);
-        }
+			console.AddText(answer);
+		}
+
+		[ServerOrClient]
+		private void CommandAnswer(NetworkConnection conn, string answer)
+		{
+			if (IsServer)
+			{
+				RpcCommandAnswer(conn, answer);
+			}
+			else
+			{
+				console.AddText(answer);
+			}	
+		}
 
         /// <returns>All available commands with short descriptions</returns>
         private string HelpCommand()
