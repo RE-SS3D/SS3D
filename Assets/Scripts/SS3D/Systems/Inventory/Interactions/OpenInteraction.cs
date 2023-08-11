@@ -53,7 +53,7 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             // Confirm that there is an entity doing this interaction
-            Entity entity = interactionEvent.Source.GetComponent<Entity>();
+            Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
             if (entity == null)
             {
                 return false;
