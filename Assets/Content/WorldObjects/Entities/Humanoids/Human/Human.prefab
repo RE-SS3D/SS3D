@@ -10075,12 +10075,12 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Container: {fileID: 4140518851396729342}
-  range:
+  _range:
     Horizontal: 1.5
     Vertical: 2
-  pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
-  interactionOrigin: {fileID: 1342008326084027676}
-  handsController: {fileID: 2150560678942863610}
+  _pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  _interactionOrigin: {fileID: 1342008326084027676}
+  HandsController: {fileID: 2150560678942863610}
 --- !u!1 &8935913803077858714
 GameObject:
   m_ObjectHideFlags: 0
@@ -10394,12 +10394,12 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Container: {fileID: 7144090709710962679}
-  range:
+  _range:
     Horizontal: 1.5
     Vertical: 2
-  pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
-  interactionOrigin: {fileID: 6653541696833174003}
-  handsController: {fileID: 2150560678942863610}
+  _pickupIcon: {fileID: 21300000, guid: 2db953f2ae8f41d4e9842d9144a9e396, type: 2}
+  _interactionOrigin: {fileID: 6653541696833174003}
+  HandsController: {fileID: 2150560678942863610}
 --- !u!1 &9131769810566877388
 GameObject:
   m_ObjectHideFlags: 0
