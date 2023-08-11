@@ -63,6 +63,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 		/// <summary>
 		/// Get the interaction source from stuff in hand if there's any.
+		/// Also sets the source of the IInteraction source to be this hand.
 		/// </summary>
 		/// <returns></returns>
 		public IInteractionSource GetActiveTool()
