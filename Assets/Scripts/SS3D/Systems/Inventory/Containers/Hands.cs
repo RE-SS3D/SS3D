@@ -74,7 +74,7 @@ namespace SS3D.Systems.Inventory.Containers
 			base.OnStartServer();
 			foreach(Hand hand in PlayerHands)
 			{
-				hand.handsController = this;
+				hand.HandsController = this;
 				hand.OnHandDisabled += HandleHandRemoved;
 			}
 			// Set the selected hand to be the first available one.
