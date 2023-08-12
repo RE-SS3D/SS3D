@@ -6995,7 +6995,9 @@ MonoBehaviour:
   - {fileID: 7951212175384182717}
   - {fileID: 8320963098858079385}
   - {fileID: 4140518851396729342}
+  - {fileID: 4854640730944196939}
   - {fileID: 7144090709710962679}
+  - {fileID: 4555203962178419925}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 4138789318277530234}
@@ -7275,16 +7277,12 @@ MonoBehaviour:
   _componentIndexCache: 9
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  HandContainers:
-  - {fileID: 4140518851396729342}
-  - {fileID: 7144090709710962679}
-  handRange: 5
-  SelectedColor: {r: 1, g: 0.9764151, b: 0.9764151, a: 0.8509804}
-  range:
-    Horizontal: 1.5
-    Vertical: 2
-  interactionOrigin: {fileID: 5927494552340417975}
-  pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  PlayerHands:
+  - {fileID: 4854640730944196939}
+  - {fileID: 4555203962178419925}
+  _selectedColor: {r: 1, g: 1, b: 1, a: 0.8627451}
+  _defaultColor: {r: 1, g: 1, b: 1, a: 0.45490196}
+  _selectedHand: {fileID: 0}
 --- !u!114 &7934531206375951864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7404,19 +7402,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _inventory: {fileID: 1089183168752255729}
-  ClothesRoot: {fileID: 1870850359086752095}
-  startingClothedBodyPart:
-  - {fileID: 7590913349156985469}
-  - {fileID: 8410791339138828931}
-  - {fileID: 4138789318277530234}
-  - {fileID: 6233962219268866637}
-  - {fileID: 8067289659534850981}
-  - {fileID: 6911900315559804093}
-  - {fileID: 8626656600768578774}
-  - {fileID: 4684017524585288931}
-  - {fileID: 2091115627957921416}
-  - {fileID: 7534105608452820685}
-  - {fileID: 1527032890679831709}
 --- !u!114 &4559920193704007786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9998,6 +9983,7 @@ GameObject:
   - component: {fileID: 1342008326084027676}
   - component: {fileID: 4140518851396729342}
   - component: {fileID: 8300769832796282301}
+  - component: {fileID: 4854640730944196939}
   m_Layer: 0
   m_Name: hold.l
   m_TagString: Untagged
@@ -10073,6 +10059,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 4140518851396729342}
   Mirrored: 1
+--- !u!114 &4854640730944196939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8915899267794646267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 38
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  Container: {fileID: 4140518851396729342}
+  _range:
+    Horizontal: 1.5
+    Vertical: 2
+  _pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  _interactionOrigin: {fileID: 1342008326084027676}
+  HandsController: {fileID: 2150560678942863610}
 --- !u!1 &8935913803077858714
 GameObject:
   m_ObjectHideFlags: 0
@@ -10294,6 +10302,7 @@ GameObject:
   - component: {fileID: 6653541696833174003}
   - component: {fileID: 7144090709710962679}
   - component: {fileID: 8735509741792839302}
+  - component: {fileID: 4555203962178419925}
   m_Layer: 0
   m_Name: hold.r
   m_TagString: Untagged
@@ -10328,7 +10337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 38
+  _componentIndexCache: 39
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -10369,6 +10378,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 7144090709710962679}
   Mirrored: 0
+--- !u!114 &4555203962178419925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9064888651365615274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 40
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  Container: {fileID: 7144090709710962679}
+  _range:
+    Horizontal: 1.5
+    Vertical: 2
+  _pickupIcon: {fileID: 21300000, guid: 2db953f2ae8f41d4e9842d9144a9e396, type: 2}
+  _interactionOrigin: {fileID: 6653541696833174003}
+  HandsController: {fileID: 2150560678942863610}
 --- !u!1 &9131769810566877388
 GameObject:
   m_ObjectHideFlags: 0

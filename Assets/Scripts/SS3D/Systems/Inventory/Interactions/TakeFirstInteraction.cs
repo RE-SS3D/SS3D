@@ -37,9 +37,9 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             // Will only appear if the current hand is empty and the container isn't empty
-            if (interactionEvent.Source is Hands hands && _attachedContainer != null)
+            if (interactionEvent.Source is Hand hand && _attachedContainer != null)
             {
-                return hands.SelectedHandEmpty && !_attachedContainer.Container.Empty;
+                return hand.IsEmpty() && !_attachedContainer.Container.Empty;
             }
 
             return false;
@@ -47,13 +47,13 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hands hands = (Hands) interactionEvent.Source;
+            Hand hand = (Hand) interactionEvent.Source;
 
             Item pickupItem = _attachedContainer.Container.StoredItems.First().Item;
 
             if (pickupItem != null)
             {
-                hands.Pickup(pickupItem);
+                hand.Pickup(pickupItem);
             }
 
             return false;

@@ -21,7 +21,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             }
 
             Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;
-            return hands.ItemInHand;
+            return hands.SelectedHand.ItemInHand;
         }
     }
 }

@@ -53,7 +53,7 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             // Confirm that there is an entity doing this interaction
-            Entity entity = interactionEvent.Source.GetComponent<Entity>();
+            Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
             if (entity == null)
             {
                 return false;
@@ -62,7 +62,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (interactionEvent.Target is IGameObjectProvider target)
             {
                 // Check that the entity is actually capable of interacting with the target
-                if (entity.GetComponent<Hands>().CanInteract(target.GameObject) && IsFirstContainerOpenable(target))
+                if (entity.GetComponent<Hands>().SelectedHand.CanInteract(target.GameObject) && IsFirstContainerOpenable(target))
                 {
                     return target.GameObject.GetComponent<Animator>() != null;
                 }

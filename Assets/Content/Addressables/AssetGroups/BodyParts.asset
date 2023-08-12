@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: BodyParts
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
+  m_GroupName: BodyParts
   m_Data:
     m_SerializedData: []
-  m_GUID: a8f988e8c8dd50c4ea7f7f7e5f300082
+  m_GUID: ff965427dd1889046a3e238d5cb96512
   m_SerializeEntries:
-  - m_GUID: c19eccca279beee4186432a03257a7b9
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHandRight.prefab
+  - m_GUID: 35dfc7c3f708a5b48a206b4a44e7ab49
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandLeft.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: df85b75fd341a244c8364ebb9c4fcfef
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHandLeft.prefab
+  - m_GUID: 7f5954f009d06b2439ca637b43920440
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 5f4cd897eb8adfc4091575397b0c9489, type: 2}
-    - {fileID: 11400000, guid: 2e5868bb24276fa418ad9047a3c0b8d1, type: 2}
+    - {fileID: 11400000, guid: 4de7234b6744e474581238ba31893e14, type: 2}
+    - {fileID: 11400000, guid: 007c51ffa6d371a4aacdc075169132b2, type: 2}
