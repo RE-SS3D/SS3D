@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using SS3D.Substances;
 using System;
 using System.Collections;
@@ -31,4 +31,9 @@ public class HumanBodypart : BodyPart
         TryAddBodyLayer(new CirculatoryLayer(this));
         TryAddBodyLayer(new NerveLayer(this));
     }
+
+	protected override void RemoveBodyPart()
+	{
+		base.RemoveBodyPart();
+	}
 }

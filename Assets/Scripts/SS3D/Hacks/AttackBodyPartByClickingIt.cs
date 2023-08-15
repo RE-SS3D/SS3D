@@ -1,4 +1,4 @@
-
+﻿
 using FishNet.Object;
 using UnityEngine;
 
@@ -32,7 +32,7 @@ public class AttackBodyPartByClickingIt : NetworkBehaviour
             return;
         }
 
-        LayerMask layerMask = LayerMask.GetMask("BodyPart");
+        LayerMask layerMask = LayerMask.GetMask("BodyParts");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (!Physics.Raycast(ray, out hit, 10f, layerMask))

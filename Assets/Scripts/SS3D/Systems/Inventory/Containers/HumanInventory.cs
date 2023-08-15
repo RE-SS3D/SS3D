@@ -171,6 +171,7 @@ namespace SS3D.Systems.Inventory.Containers
             container.Container.OnContentsChanged += HandleContainerContentChanged;
             container.OnItemAttached += HandleTryAddContainerOnItemAttached;
             container.OnItemDetached += HandleTryRemoveContainerOnItemDetached;
+			container.inventory = this;
 
 			// Be careful, destroying an inventory container will cause issue as when syncing with client, the attachedContainer will be null. 
 			// Before destroying a container, consider disabling the behaviour or the game object it's on first to avoid this issue.
@@ -190,6 +191,7 @@ namespace SS3D.Systems.Inventory.Containers
             container.OnItemAttached -= HandleTryAddContainerOnItemAttached;
             container.OnItemDetached -= HandleTryRemoveContainerOnItemDetached;
 			container.OnAttachedContainerDisabled -= RemoveContainer;
+			container.inventory = null;
 		}
 
 		/// <summary>

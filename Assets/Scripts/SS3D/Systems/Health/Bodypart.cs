@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using FishNet.Connection;
 using System.Collections.Generic;
@@ -45,13 +45,17 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         get { return _childBodyParts.AsReadOnly(); }
     }
 
+	public bool IsDestroyed => TotalDamage > MaxDamage;
 
-    /// <summary>
-    /// The parent bodypart is the body part attached to this body part, closest from the brain. 
-    /// For lower left arm, it's higher left arm. For neck, it's head.
-    /// Be careful, it doesn't necessarily match the game object hierarchy
-    /// </summary>
-    public BodyPart ParentBodyPart
+	public bool IsSevered => GetBodyLayer<BoneLayer>().IsDestroyed();
+
+
+	/// <summary>
+	/// The parent bodypart is the body part attached to this body part, closest from the brain. 
+	/// For lower left arm, it's higher left arm. For neck, it's head.
+	/// Be careful, it doesn't necessarily match the game object hierarchy
+	/// </summary>
+	public BodyPart ParentBodyPart
     {
         get { return _parentBodyPart; }
         set
@@ -182,7 +186,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         if (!BodyLayers.Contains(layer)) return false;
         layer.InflictDamage(damageTypeQuantity);
 
-        if (IsSevered()) HideSeveredBodyPart();
+        if (IsSevered) RemoveBodyPart();
 
         return true;
     }
@@ -197,7 +201,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
             layer.InflictDamage(damageTypeQuantity);
         }
 
-        if (IsSevered()) HideSeveredBodyPart();
+        if (IsSevered) RemoveBodyPart();
     }
 
     /// <summary>
@@ -211,7 +215,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
                 layer.InflictDamage(damageTypeQuantity);
         }
 
-        if (IsSevered()) HideSeveredBodyPart();
+        if (IsSevered) RemoveBodyPart();
     }
 
     /// <summary>
@@ -267,13 +271,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         return Name;
     }
 
-    public bool IsSevered()
-    {
-        return GetBodyLayer<BoneLayer>().IsDestroyed();
-    }
+	protected virtual void RemoveBodyPart()
+	{
+		HideSeveredBodyPart();
+	}
 
-    
-    private void HideSeveredBodyPart()
+	private void HideSeveredBodyPart()
     {
         _skinnedMeshRenderer.enabled = false;
         foreach(var part in _childBodyParts)

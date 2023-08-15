@@ -46,6 +46,17 @@ namespace SS3D.Systems.Inventory.Containers
 		public delegate void HandEventHandler(Hand hand);
 		public event HandEventHandler OnHandDisabled;
 
+		public void DisableHand()
+		{
+			if (!IsServer)
+			{
+				return;
+			}
+
+			OnHandDisabled?.Invoke(this);
+			Container.inventory.TryRemoveContainer(Container);
+		}
+
 		protected override void OnDisabled()
 		{
 			if (!IsServer)
