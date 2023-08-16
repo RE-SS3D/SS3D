@@ -99,7 +99,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// The sprite that is shown in the container slot
         /// </summary>
-        public Sprite Sprite
+        public Sprite ItemSprite
         {
             get => InventorySprite();
             set => _sprite = value;
@@ -190,7 +190,7 @@ namespace SS3D.Systems.Inventory.Items
         
         
         /// <param name="visible">Should the item be visible</param>
-        [Server]
+        [ServerOrClient]
         public void SetVisibility(bool visible)
         {
             // TODO: Make this handle multiple renderers, with different states
