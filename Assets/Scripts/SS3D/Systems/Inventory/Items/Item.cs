@@ -155,7 +155,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Freezes the item, making it not move or collide
         /// </summary>
-        [Server]
+        [ServerOrClient]
         public void Freeze()
         {
             if (_rigidbody != null)
@@ -173,7 +173,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Unfreezes the item, restoring normal functionality
         /// </summary>
-        [Server]
+        [ServerOrClient]
         public void Unfreeze()
         {
             if (_rigidbody != null)
