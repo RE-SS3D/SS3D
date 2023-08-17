@@ -18,7 +18,6 @@ using System.Collections.ObjectModel;
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
 /// There should always be a network object component everywhere this component is.
 /// </summary>
-[RequireComponent(typeof(NetworkObject))]
 public abstract class BodyPart : InteractionTargetNetworkBehaviour
 {
 
@@ -40,7 +39,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         get { return _bodyLayers.AsReadOnly(); }
     }
 
-    public ReadOnlyCollection<BodyPart> ChildBodyParts
+
+	public ReadOnlyCollection<BodyPart> ChildBodyParts
     {
         get { return _childBodyParts.AsReadOnly(); }
     }
