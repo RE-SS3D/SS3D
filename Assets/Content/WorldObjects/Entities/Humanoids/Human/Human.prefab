@@ -1745,6 +1745,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 4652682359255614497}
+  _bodyPartItem: {fileID: 0}
   Name: 
 --- !u!65 &3758014577139489731
 BoxCollider:
@@ -3719,8 +3720,9 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 6940805956538079602}
   _skinnedMeshRenderer: {fileID: 6217532572249875957}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
   Name: left hand
-  hand: {fileID: 4854640730944196939}
+  _hand: {fileID: 4854640730944196939}
 --- !u!65 &2660167717358018512
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3786,6 +3788,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 2109177032093860794}
   _skinnedMeshRenderer: {fileID: 6840993320086561213}
+  _bodyPartItem: {fileID: 0}
   Name: right arm
 --- !u!136 &7865012682319576541
 CapsuleCollider:
@@ -5298,8 +5301,9 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5513208408184026152}
   _skinnedMeshRenderer: {fileID: 2879367628846680322}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
   Name: right hand
-  hand: {fileID: 4555203962178419925}
+  _hand: {fileID: 4555203962178419925}
 --- !u!1 &4491579062591798593
 GameObject:
   m_ObjectHideFlags: 0
@@ -6908,6 +6912,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 2109177032093860794}
   _skinnedMeshRenderer: {fileID: 949421968142360378}
+  _bodyPartItem: {fileID: 0}
   Name: left arm
 --- !u!1 &6238267535831980016
 GameObject:
@@ -8426,6 +8431,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 2109177032093860794}
   _skinnedMeshRenderer: {fileID: 270151793522417329}
+  _bodyPartItem: {fileID: 0}
   Name: head
 --- !u!1 &7346838480958185366
 GameObject:
