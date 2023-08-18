@@ -32,8 +32,8 @@ public class HumanBodypart : BodyPart
         TryAddBodyLayer(new NerveLayer(this));
     }
 
-	protected override void RemoveBodyPart()
+	protected override void RemoveSingleBodyPart()
 	{
-		base.RemoveBodyPart();
+		base.RemoveSingleBodyPart();
 	}
 }

@@ -18,9 +18,9 @@ public class HandBodyPart : HumanBodypart
 		base.Init(parent, name);
 	}
 
-	protected override void RemoveBodyPart()
+	protected override void RemoveSingleBodyPart()
 	{
-		base.RemoveBodyPart();
+		base.RemoveSingleBodyPart();
 		hand.DisableHand();
 	}
 }

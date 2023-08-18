@@ -271,7 +271,16 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         return Name;
     }
 
-	protected virtual void RemoveBodyPart()
+	private void RemoveBodyPart()
+	{
+		RemoveSingleBodyPart();
+		foreach (var part in _childBodyParts)
+		{
+			part.RemoveBodyPart();
+		}
+	}
+
+	protected virtual void RemoveSingleBodyPart()
 	{
 		HideSeveredBodyPart();
 	}
@@ -279,10 +288,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	private void HideSeveredBodyPart()
     {
         _skinnedMeshRenderer.enabled = false;
-        foreach(var part in _childBodyParts)
-        {
-            part.HideSeveredBodyPart();
-        }
     }
 
     protected abstract void AddInitialLayers();
