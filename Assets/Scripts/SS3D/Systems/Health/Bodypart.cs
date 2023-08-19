@@ -36,7 +36,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
     public readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
 
-    public string Name;
+	[SerializeField]
+	private Collider _bodyCollider;
+
+    public string Name => gameObject.name;
 
 
 
@@ -90,23 +93,13 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         AddInitialLayers();
     }
 
-    /// <summary>
-    /// Constructor to allow testing without mono/network behaviour script.
-    /// </summary>
-    public virtual void Init(string name = "")
+    public virtual void Init(BodyPart parent)
     {
-        Name = name; 
-    }
-
-    public virtual void Init(BodyPart parent, string name = "")
-    {
-        Name = name;
         ParentBodyPart = parent;
     }
 
-    public virtual void Init(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers, string name = "")
+    public virtual void Init(BodyPart parentBodyPart, List<BodyPart> childBodyParts, List<BodyLayer> bodyLayers)
     {
-        Name = name;
         ParentBodyPart = parentBodyPart;
         _childBodyParts.AddRange(childBodyParts);
         _bodyLayers.AddRange(bodyLayers);

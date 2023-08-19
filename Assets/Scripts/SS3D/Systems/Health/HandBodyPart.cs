@@ -9,14 +9,10 @@ public class HandBodyPart : HumanBodypart
 {
 
 	[SerializeField] private Hand _hand;
-	public override void Init(string name = "")
-	{
-		base.Init(name);
-	}
 
-	public override void Init(BodyPart parent, string name = "")
+	public override void Init(BodyPart parent)
 	{
-		base.Init(parent, name);
+		base.Init(parent);
 	}
 
 	protected override void RemoveSingleBodyPart()

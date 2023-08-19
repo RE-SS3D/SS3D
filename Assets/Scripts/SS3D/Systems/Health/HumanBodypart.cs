@@ -13,15 +13,9 @@ using UnityEngine;
 /// </summary>
 public class HumanBodypart : BodyPart
 {
-
-    public override void Init(string name = "")
+    public override void Init(BodyPart parent)
     {
-        base.Init(name);
-    }
-
-    public override void Init(BodyPart parent, string name = "")
-    {
-        base.Init(parent, name);
+        base.Init(parent);
     }
 
     protected override void AddInitialLayers()
