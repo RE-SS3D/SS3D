@@ -112,7 +112,6 @@ namespace SS3D.Systems.Inventory.Containers
                     OnInventoryContainerAdded?.Invoke(newContainer);
                     break;
                 case SyncListOperation.RemoveAt:
-                    Debug.Log("remove container " + oldContainer);
                     OnInventoryContainerRemoved?.Invoke(oldContainer);
                     break;
             }
