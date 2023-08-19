@@ -658,6 +658,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 6576413314991157836}
   - {fileID: 103478066480505861}
+  - {fileID: 7435336742737043067}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -708,9 +709,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 8532088199163376958}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8532088199163376958}
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 0}
@@ -1142,6 +1143,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4101507759368341734, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
