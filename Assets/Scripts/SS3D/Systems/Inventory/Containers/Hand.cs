@@ -85,7 +85,7 @@ namespace SS3D.Systems.Inventory.Containers
 				return null;
 			}
 
-			IInteractionSource interactionSource = itemInHand.Prefab.GetComponent<IInteractionSource>();
+			IInteractionSource interactionSource = itemInHand.GetComponent<IInteractionSource>();
 			if (interactionSource != null)
 			{
 				interactionSource.Source = this;

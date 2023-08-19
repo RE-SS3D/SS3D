@@ -50,9 +50,6 @@ namespace SS3D.Systems.Inventory.Items
 
         private Sprite _sprite;
 
-        [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
-        public GameObject Prefab;
-
         [Header("Attachment settings")]
 
         [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
