@@ -188,21 +188,19 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Inflic damages of a certain kind on a certain body layer type if the layer is present.
     /// </summary>
     /// <returns>True if the damage could be inflicted</returns>
-    public virtual bool TryInflictDamage<T>(DamageTypeQuantity damageTypeQuantity)
+    public virtual bool TryInflictDamage(BodyLayerType type, DamageTypeQuantity damageTypeQuantity)
     {
-        var layer = GetBodyLayer<T>();
-        if (!BodyLayers.Contains(layer)) return false;
-        layer.InflictDamage(damageTypeQuantity);
-
-        if (IsSevered) RemoveBodyPart();
-
-        return true;
+		BodyLayer layer = FirstBodyLayerOfType(type);
+		if (!BodyLayers.Contains(layer)) return false;
+		layer.InflictDamage(damageTypeQuantity);
+		if (IsSevered) RemoveBodyPart();
+		return true;	
     }
 
-    /// <summary>
-    /// inflict same type damages to all layers present on this body part.
-    /// </summary>
-    public virtual void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
+	/// <summary>
+	/// inflict same type damages to all layers present on this body part.
+	/// </summary>
+	public virtual void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
     {
         foreach (var layer in BodyLayers)
         {
@@ -233,6 +231,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         return BodyLayers.Any(x => x.LayerType == layerType);
     }
+
+	public BodyLayer FirstBodyLayerOfType(BodyLayerType layerType)
+	{
+		return BodyLayers.Where(x => x.LayerType == layerType).First();
+	}
+
 
     /// <summary>
     /// GetBodyLayer of type T on this bodypart.
