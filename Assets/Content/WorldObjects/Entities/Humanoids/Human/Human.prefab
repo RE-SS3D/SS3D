@@ -267,7 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 37
+  _componentIndexCache: 35
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -378,7 +378,7 @@ GameObject:
   - component: {fileID: 8304794297218136879}
   - component: {fileID: 6956777571749741975}
   m_Layer: 12
-  m_Name: Human Leg Right
+  m_Name: HumanLegRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -514,7 +514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 31
+  _componentIndexCache: 29
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
@@ -927,7 +927,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 34
+  _componentIndexCache: 32
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -1685,7 +1685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 38
+  _componentIndexCache: 36
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -1857,6 +1857,77 @@ Transform:
   m_Father: {fileID: 1870850359086752095}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1593509929285526539
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1822146851148749094}
+  - component: {fileID: 8818216694137164997}
+  m_Layer: 12
+  m_Name: GloveContainerRight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1822146851148749094
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1593509929285526539}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8125343414912825193}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8818216694137164997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1593509929285526539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 48
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _automaticContainerSetUp: 1
+  ContainerInteractive: {fileID: 677427367997810169}
+  ContainerItemDisplay: {fileID: 0}
+  inventory: {fileID: 0}
+  ContainerUi: {fileID: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 1
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 1
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
+  _displayAsSlotInUI: 1
+  _containerName: Glove right
+  _size: {x: 1, y: 1}
+  _hideItems: 1
+  _type: 4096
+  _startFilter: {fileID: 11400000, guid: edc47f5d8d1fc924eb6ca994e8590358, type: 2}
 --- !u!1 &1594377383810549907
 GameObject:
   m_ObjectHideFlags: 0
@@ -2322,7 +2393,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 40
+  _componentIndexCache: 38
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -2361,7 +2432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 41
+  _componentIndexCache: 39
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 6956777571749741975}
@@ -2412,7 +2483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 36
+  _componentIndexCache: 34
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -2681,7 +2752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 30
+  _componentIndexCache: 28
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
@@ -3004,7 +3075,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 28
+  _componentIndexCache: 26
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
@@ -3675,7 +3746,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 29
+  _componentIndexCache: 27
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
@@ -4846,7 +4917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 39
+  _componentIndexCache: 37
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -5635,7 +5706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 26
+  _componentIndexCache: 24
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
@@ -6184,7 +6255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 42
+  _componentIndexCache: 40
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -6223,7 +6294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 43
+  _componentIndexCache: 41
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 6206108594876145282}
@@ -6518,7 +6589,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 33
+  _componentIndexCache: 31
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -7225,8 +7296,6 @@ GameObject:
   - component: {fileID: 3788807725072305327}
   - component: {fileID: 571479044043330787}
   - component: {fileID: 5857269694861021747}
-  - component: {fileID: 3043704831697070745}
-  - component: {fileID: 5429108461815527728}
   - component: {fileID: 2150560678942863610}
   - component: {fileID: 7934531206375951864}
   - component: {fileID: 1089183168752255729}
@@ -7237,14 +7306,14 @@ GameObject:
   - component: {fileID: 6258404136566216916}
   - component: {fileID: 4559920193704007786}
   - component: {fileID: 976666287367385554}
-  - component: {fileID: 5196104545104171939}
-  - component: {fileID: 4965805398881751774}
   - component: {fileID: 1223547382117504491}
   - component: {fileID: 2265465745196413833}
   - component: {fileID: 3301312253177779075}
   - component: {fileID: 6606944209543214874}
   - component: {fileID: 300689357194200928}
   - component: {fileID: 3771845344306968317}
+  - component: {fileID: 7110782222688458070}
+  - component: {fileID: 677427367997810169}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -7296,8 +7365,6 @@ MonoBehaviour:
   - {fileID: 3788807725072305327}
   - {fileID: 571479044043330787}
   - {fileID: 5857269694861021747}
-  - {fileID: 3043704831697070745}
-  - {fileID: 5429108461815527728}
   - {fileID: 2150560678942863610}
   - {fileID: 7934531206375951864}
   - {fileID: 1089183168752255729}
@@ -7307,14 +7374,14 @@ MonoBehaviour:
   - {fileID: 6258404136566216916}
   - {fileID: 4559920193704007786}
   - {fileID: 976666287367385554}
-  - {fileID: 5196104545104171939}
-  - {fileID: 4965805398881751774}
   - {fileID: 1223547382117504491}
   - {fileID: 2265465745196413833}
   - {fileID: 3301312253177779075}
   - {fileID: 6606944209543214874}
   - {fileID: 300689357194200928}
   - {fileID: 3771845344306968317}
+  - {fileID: 7110782222688458070}
+  - {fileID: 677427367997810169}
   - {fileID: 5151850602389077742}
   - {fileID: 5839020956740199093}
   - {fileID: 465916857022110443}
@@ -7333,14 +7400,14 @@ MonoBehaviour:
   - {fileID: 9076205458367319664}
   - {fileID: 6549211580931091111}
   - {fileID: 738442892629692064}
-  - {fileID: 7951212175384182717}
   - {fileID: 2124807441123396136}
-  - {fileID: 8320963098858079385}
+  - {fileID: 2877804502633151377}
+  - {fileID: 5948957322531814959}
   - {fileID: 9049119147086013476}
-  - {fileID: 4140518851396729342}
-  - {fileID: 4854640730944196939}
-  - {fileID: 7144090709710962679}
-  - {fileID: 4555203962178419925}
+  - {fileID: 8825455644555575778}
+  - {fileID: 7572883762844705701}
+  - {fileID: 8818216694137164997}
+  - {fileID: 2032574427462071784}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 4138789318277530234}
@@ -7577,42 +7644,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
---- !u!114 &3043704831697070745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 7
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 0}
---- !u!114 &5429108461815527728
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 8
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 0}
 --- !u!114 &2150560678942863610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7625,12 +7656,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ace7b9d7c75cbb4ca57c876f0b3b644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 9
+  _componentIndexCache: 7
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   PlayerHands:
-  - {fileID: 4854640730944196939}
-  - {fileID: 4555203962178419925}
+  - {fileID: 7572883762844705701}
+  - {fileID: 5948957322531814959}
   _selectedColor: {r: 1, g: 1, b: 1, a: 0.8627451}
   _defaultColor: {r: 1, g: 1, b: 1, a: 0.45490196}
   _selectedHand: {fileID: 0}
@@ -7646,7 +7677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da620d1cfa3d9fd49b22c28e910884f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 10
+  _componentIndexCache: 8
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   inventory: {fileID: 1089183168752255729}
@@ -7662,7 +7693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a734a88f440905f4cb00aa24f8deb2fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 11
+  _componentIndexCache: 9
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   containerViewer: {fileID: 7934531206375951864}
@@ -7695,7 +7726,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 12
+  _componentIndexCache: 10
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7713,7 +7744,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 13
+  _componentIndexCache: 11
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7731,7 +7762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 14
+  _componentIndexCache: 12
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7749,7 +7780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a156dec7da2f53419befce71ba9bcff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 15
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _inventory: {fileID: 1089183168752255729}
@@ -7765,7 +7796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 16
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7783,48 +7814,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 17
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 7584683726852713205}
---- !u!114 &5196104545104171939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 18
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 7951212175384182717}
---- !u!114 &4965805398881751774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 19
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 8320963098858079385}
 --- !u!114 &1223547382117504491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7837,7 +7832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 20
+  _componentIndexCache: 16
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7855,7 +7850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 21
+  _componentIndexCache: 17
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7873,7 +7868,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 22
+  _componentIndexCache: 18
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7891,7 +7886,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 23
+  _componentIndexCache: 19
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7909,7 +7904,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 24
+  _componentIndexCache: 20
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7927,12 +7922,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81823982a1f0a0a4b8b5b6c5915d1083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 25
+  _componentIndexCache: 21
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   attackParticleEffect: {fileID: 7714517724079113232, guid: 17b0d9163e9cdf14aa557557e7d9d76b, type: 3}
   attackType: 0
   damageAmount: 7.83
+--- !u!114 &7110782222688458070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 22
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _openState: 0
+  OverrideOpenIcon: {fileID: 0}
+  attachedContainer: {fileID: 2032574427462071784}
+--- !u!114 &677427367997810169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 23
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _openState: 0
+  OverrideOpenIcon: {fileID: 0}
+  attachedContainer: {fileID: 8818216694137164997}
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
@@ -8114,7 +8145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 27
+  _componentIndexCache: 25
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 0}
@@ -9362,10 +9393,12 @@ GameObject:
   m_Component:
   - component: {fileID: 8125343414912825193}
   - component: {fileID: 2879367628846680322}
-  - component: {fileID: 7951212175384182717}
   - component: {fileID: 2124807441123396136}
+  - component: {fileID: 2877804502633151377}
+  - component: {fileID: 5948957322531814959}
+  - component: {fileID: 3114280644682490816}
   m_Layer: 12
-  m_Name: Human Hand Right
+  m_Name: HumanHandRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9382,7 +9415,8 @@ Transform:
   m_LocalPosition: {x: 0.65835714, y: 1.1670547, z: 0.050554566}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1822146851148749094}
   m_Father: {fileID: 4376142534935647200}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9489,7 +9523,27 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.6599275, y: 0.33121663, z: 0.013122633}
     m_Extent: {x: 0.13212344, y: 0.08707075, z: 0.11776911}
   m_DirtyAABB: 0
---- !u!114 &7951212175384182717
+--- !u!114 &2124807441123396136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222677626908822405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 42
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _parentBodyPart: {fileID: 1082974716090020341}
+  _skinnedMeshRenderer: {fileID: 2879367628846680322}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
+  _bodyCollider: {fileID: 495117578137499362}
+  _hand: {fileID: 5948957322531814959}
+--- !u!114 &2877804502633151377
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9501,11 +9555,119 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 43
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _automaticContainerSetUp: 0
+  ContainerInteractive: {fileID: 0}
+  ContainerItemDisplay: {fileID: 0}
+  inventory: {fileID: 0}
+  ContainerUi: {fileID: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 0
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 0
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 1
+  _displays:
+  - {fileID: 6653541696833174003}
+  _numberDisplay: 1
+  _displayAsSlotInUI: 1
+  _containerName: right hand
+  _size: {x: 1, y: 1}
+  _hideItems: 0
+  _type: 2
+  _startFilter: {fileID: 0}
+--- !u!114 &5948957322531814959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222677626908822405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _componentIndexCache: 44
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
+  Container: {fileID: 2877804502633151377}
+  _range:
+    Horizontal: 1.5
+    Vertical: 2
+  _pickupIcon: {fileID: 21300000, guid: 2db953f2ae8f41d4e9842d9144a9e396, type: 2}
+  _interactionOrigin: {fileID: 6653541696833174003}
+  HandsController: {fileID: 2150560678942863610}
+--- !u!114 &3114280644682490816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222677626908822405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 2877804502633151377}
+  Mirrored: 0
+--- !u!1 &8320002649115381438
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2751191426841567755}
+  - component: {fileID: 2032574427462071784}
+  m_Layer: 12
+  m_Name: GloveContainerLeft
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2751191426841567755
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8320002649115381438}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4106946874534760221}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2032574427462071784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8320002649115381438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 49
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 5196104545104171939}
+  ContainerInteractive: {fileID: 7110782222688458070}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -9523,31 +9685,11 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: Glove right
+  _containerName: Glove left
   _size: {x: 1, y: 1}
   _hideItems: 1
-  _type: 4096
-  _startFilter: {fileID: 11400000, guid: edc47f5d8d1fc924eb6ca994e8590358, type: 2}
---- !u!114 &2124807441123396136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8222677626908822405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 45
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 1082974716090020341}
-  _skinnedMeshRenderer: {fileID: 2879367628846680322}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
-  _bodyCollider: {fileID: 495117578137499362}
-  _hand: {fileID: 4555203962178419925}
+  _type: 2048
+  _startFilter: {fileID: 11400000, guid: 36efdbb409cb0324d8b49d7d85fccffc, type: 2}
 --- !u!1 &8327591943400095719
 GameObject:
   m_ObjectHideFlags: 0
@@ -9826,7 +9968,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 32
+  _componentIndexCache: 30
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
@@ -10378,7 +10520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 35
+  _componentIndexCache: 33
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
@@ -10414,9 +10556,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1342008326084027676}
-  - component: {fileID: 4140518851396729342}
-  - component: {fileID: 8300769832796282301}
-  - component: {fileID: 4854640730944196939}
   m_Layer: 0
   m_Name: hold.l
   m_TagString: Untagged
@@ -10439,82 +10578,6 @@ Transform:
   m_Father: {fileID: 2561159763559213326}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4140518851396729342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8915899267794646267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 48
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _automaticContainerSetUp: 0
-  ContainerInteractive: {fileID: 0}
-  ContainerItemDisplay: {fileID: 0}
-  inventory: {fileID: 0}
-  ContainerUi: {fileID: 0}
-  _attachmentOffset: {x: 0, y: 0, z: 0}
-  _onlyStoreWhenOpen: 0
-  _openWhenContainerViewed: 0
-  _attachItems: 1
-  _initialized: 1
-  _maxDistance: 5
-  _isOpenable: 0
-  _isInteractive: 1
-  _hasUi: 0
-  _hasCustomInteraction: 0
-  _hasCustomDisplay: 1
-  _displays:
-  - {fileID: 1342008326084027676}
-  _numberDisplay: 1
-  _displayAsSlotInUI: 1
-  _containerName: left hand
-  _size: {x: 1, y: 1}
-  _hideItems: 0
-  _type: 2
-  _startFilter: {fileID: 0}
---- !u!114 &8300769832796282301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8915899267794646267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 4140518851396729342}
-  Mirrored: 1
---- !u!114 &4854640730944196939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8915899267794646267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 49
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  Container: {fileID: 4140518851396729342}
-  _range:
-    Horizontal: 1.5
-    Vertical: 2
-  _pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
-  _interactionOrigin: {fileID: 1342008326084027676}
-  HandsController: {fileID: 2150560678942863610}
 --- !u!1 &8935913803077858714
 GameObject:
   m_ObjectHideFlags: 0
@@ -10740,9 +10803,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6653541696833174003}
-  - component: {fileID: 7144090709710962679}
-  - component: {fileID: 8735509741792839302}
-  - component: {fileID: 4555203962178419925}
   m_Layer: 0
   m_Name: hold.r
   m_TagString: Untagged
@@ -10765,82 +10825,6 @@ Transform:
   m_Father: {fileID: 4983652985280326632}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -6.07, y: 89.771, z: -88.092}
---- !u!114 &7144090709710962679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9064888651365615274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 50
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _automaticContainerSetUp: 0
-  ContainerInteractive: {fileID: 0}
-  ContainerItemDisplay: {fileID: 0}
-  inventory: {fileID: 0}
-  ContainerUi: {fileID: 0}
-  _attachmentOffset: {x: 0, y: 0, z: 0}
-  _onlyStoreWhenOpen: 0
-  _openWhenContainerViewed: 0
-  _attachItems: 1
-  _initialized: 1
-  _maxDistance: 5
-  _isOpenable: 0
-  _isInteractive: 1
-  _hasUi: 0
-  _hasCustomInteraction: 0
-  _hasCustomDisplay: 1
-  _displays:
-  - {fileID: 6653541696833174003}
-  _numberDisplay: 1
-  _displayAsSlotInUI: 1
-  _containerName: right hand
-  _size: {x: 1, y: 1}
-  _hideItems: 0
-  _type: 2
-  _startFilter: {fileID: 0}
---- !u!114 &8735509741792839302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9064888651365615274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 7144090709710962679}
-  Mirrored: 0
---- !u!114 &4555203962178419925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9064888651365615274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 51
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  Container: {fileID: 7144090709710962679}
-  _range:
-    Horizontal: 1.5
-    Vertical: 2
-  _pickupIcon: {fileID: 21300000, guid: 2db953f2ae8f41d4e9842d9144a9e396, type: 2}
-  _interactionOrigin: {fileID: 6653541696833174003}
-  HandsController: {fileID: 2150560678942863610}
 --- !u!1 &9131769810566877388
 GameObject:
   m_ObjectHideFlags: 0
@@ -10915,10 +10899,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4106946874534760221}
   - component: {fileID: 6217532572249875957}
-  - component: {fileID: 8320963098858079385}
   - component: {fileID: 9049119147086013476}
+  - component: {fileID: 8825455644555575778}
+  - component: {fileID: 4181552281325083619}
+  - component: {fileID: 7572883762844705701}
   m_Layer: 12
-  m_Name: Human Hand Left
+  m_Name: HumanHandLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10935,7 +10921,8 @@ Transform:
   m_LocalPosition: {x: -0.65835714, y: 1.1670547, z: 0.050554566}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2751191426841567755}
   m_Father: {fileID: 4376142534935647200}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11042,7 +11029,27 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.6599268, y: 0.3312164, z: 0.013102621}
     m_Extent: {x: 0.13212243, y: 0.08707071, z: 0.1177676}
   m_DirtyAABB: 0
---- !u!114 &8320963098858079385
+--- !u!114 &9049119147086013476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9182038362482206685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 45
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _parentBodyPart: {fileID: 465916857022110443}
+  _skinnedMeshRenderer: {fileID: 6217532572249875957}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
+  _bodyCollider: {fileID: 2660167717358018512}
+  _hand: {fileID: 7572883762844705701}
+--- !u!114 &8825455644555575778
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11057,8 +11064,8 @@ MonoBehaviour:
   _componentIndexCache: 46
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 4965805398881751774}
+  _automaticContainerSetUp: 0
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -11066,22 +11073,23 @@ MonoBehaviour:
   _onlyStoreWhenOpen: 0
   _openWhenContainerViewed: 0
   _attachItems: 1
-  _initialized: 1
+  _initialized: 0
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
-  _hasCustomDisplay: 0
-  _displays: []
+  _hasCustomDisplay: 1
+  _displays:
+  - {fileID: 1342008326084027676}
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: Glove left
+  _containerName: left hand
   _size: {x: 1, y: 1}
-  _hideItems: 1
-  _type: 2048
-  _startFilter: {fileID: 11400000, guid: 36efdbb409cb0324d8b49d7d85fccffc, type: 2}
---- !u!114 &9049119147086013476
+  _hideItems: 0
+  _type: 2
+  _startFilter: {fileID: 0}
+--- !u!114 &4181552281325083619
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11090,14 +11098,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 9182038362482206685}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 8825455644555575778}
+  Mirrored: 1
+--- !u!114 &7572883762844705701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9182038362482206685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 47
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 465916857022110443}
-  _skinnedMeshRenderer: {fileID: 6217532572249875957}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
-  _bodyCollider: {fileID: 2660167717358018512}
-  _hand: {fileID: 4854640730944196939}
+  Container: {fileID: 8825455644555575778}
+  _range:
+    Horizontal: 1.5
+    Vertical: 2
+  _pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  _interactionOrigin: {fileID: 1342008326084027676}
+  HandsController: {fileID: 2150560678942863610}
