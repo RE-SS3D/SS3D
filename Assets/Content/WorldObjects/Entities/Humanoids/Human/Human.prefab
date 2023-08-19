@@ -234,7 +234,7 @@ GameObject:
   - component: {fileID: 8674961287379602231}
   - component: {fileID: 7584683726852713205}
   m_Layer: 12
-  m_Name: Jumpsuit Container
+  m_Name: JumpsuitContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -894,7 +894,7 @@ GameObject:
   - component: {fileID: 4205348396957217158}
   - component: {fileID: 1202753384528456214}
   m_Layer: 12
-  m_Name: Glass Container
+  m_Name: GlassContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2450,7 +2450,7 @@ GameObject:
   - component: {fileID: 4531842478586200051}
   - component: {fileID: 5460457101901443602}
   m_Layer: 12
-  m_Name: Bag Container
+  m_Name: BagContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2616,7 +2616,7 @@ GameObject:
   - component: {fileID: 1037560153012890605}
   - component: {fileID: 6206108594876145282}
   m_Layer: 12
-  m_Name: Human Leg Left
+  m_Name: HumanLegLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2939,7 +2939,7 @@ GameObject:
   - component: {fileID: 949421968142360378}
   - component: {fileID: 465916857022110443}
   m_Layer: 12
-  m_Name: Human Arm Left
+  m_Name: HumanArmLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3610,7 +3610,7 @@ GameObject:
   - component: {fileID: 6840993320086561213}
   - component: {fileID: 1082974716090020341}
   m_Layer: 12
-  m_Name: Human Arm Right
+  m_Name: HumanArmRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5567,7 +5567,7 @@ GameObject:
   - component: {fileID: 270151793522417329}
   - component: {fileID: 5151850602389077742}
   m_Layer: 12
-  m_Name: Human Head
+  m_Name: HumanHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6556,7 +6556,7 @@ GameObject:
   - component: {fileID: 6428232270065938407}
   - component: {fileID: 6689112149766062617}
   m_Layer: 12
-  m_Name: Head Container
+  m_Name: HeadContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8007,7 +8007,7 @@ GameObject:
   - component: {fileID: 4652682359255614497}
   - component: {fileID: 5839020956740199093}
   m_Layer: 12
-  m_Name: Human Torso
+  m_Name: HumanTorso
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8573,7 +8573,7 @@ GameObject:
   - component: {fileID: 1520629747557640359}
   - component: {fileID: 3358737676406594101}
   m_Layer: 12
-  m_Name: Human Eyes
+  m_Name: HumanEyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9733,7 +9733,7 @@ GameObject:
   - component: {fileID: 7799443497831185722}
   - component: {fileID: 6459807397474569680}
   m_Layer: 12
-  m_Name: Human COMPLETE
+  m_Name: HumanComplete
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10487,7 +10487,7 @@ GameObject:
   - component: {fileID: 5555873607778352576}
   - component: {fileID: 3028215939049344471}
   m_Layer: 12
-  m_Name: Mask Container
+  m_Name: MaskContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
