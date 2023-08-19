@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8626656600768578774}
   - component: {fileID: 1524200455027456264}
   m_Layer: 0
-  m_Name: Foot Right
+  m_Name: ShoeRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -967,7 +967,7 @@ GameObject:
   - component: {fileID: 6233962219268866637}
   - component: {fileID: 8149984355783769363}
   m_Layer: 0
-  m_Name: Hand Left
+  m_Name: GloveLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1834,7 +1834,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4856542740340688858}
   m_Layer: 0
-  m_Name: Hands
+  m_Name: Gloves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1870,7 +1870,7 @@ GameObject:
   - component: {fileID: 6911900315559804093}
   - component: {fileID: 706420925057494135}
   m_Layer: 0
-  m_Name: Foot Left
+  m_Name: ShoeLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3053,7 +3053,7 @@ GameObject:
   m_Component:
   - component: {fileID: 754194221811462458}
   m_Layer: 0
-  m_Name: Feet
+  m_Name: Shoes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3404,7 +3404,7 @@ GameObject:
   - component: {fileID: 9136871507229749843}
   - component: {fileID: 5095774171039425627}
   m_Layer: 0
-  m_Name: Underwear Bottom
+  m_Name: UnderwearBottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4002,7 +4002,7 @@ GameObject:
   - component: {fileID: 1527032890679831709}
   - component: {fileID: 5708275212759495835}
   m_Layer: 0
-  m_Name: Ear Right
+  m_Name: EarWearRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4183,7 +4183,7 @@ GameObject:
   - component: {fileID: 8067289659534850981}
   - component: {fileID: 1421316668394371100}
   m_Layer: 0
-  m_Name: Hand Right
+  m_Name: GloveRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4920,7 +4920,7 @@ GameObject:
   - component: {fileID: 7534105608452820685}
   - component: {fileID: 4251283191739647136}
   m_Layer: 0
-  m_Name: Ear Left
+  m_Name: EarWearLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5867,7 +5867,7 @@ GameObject:
   - component: {fileID: 8410791339138828931}
   - component: {fileID: 6299264923820670093}
   m_Layer: 0
-  m_Name: Eyes
+  m_Name: Glasses
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6555,7 +6555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6525079246486181739}
   m_Layer: 0
-  m_Name: Head
+  m_Name: HeadWear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8363,7 +8363,7 @@ GameObject:
   - component: {fileID: 8597866665138281237}
   - component: {fileID: 2901963028592262164}
   m_Layer: 0
-  m_Name: Underwear Top
+  m_Name: UnderwearTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8710,7 +8710,7 @@ GameObject:
   - component: {fileID: 2091115627957921416}
   - component: {fileID: 113844057537055301}
   m_Layer: 0
-  m_Name: Face
+  m_Name: Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
