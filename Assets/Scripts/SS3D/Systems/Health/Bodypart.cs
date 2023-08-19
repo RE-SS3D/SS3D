@@ -13,6 +13,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Health;
 using System.Linq;
 using System.Collections.ObjectModel;
+using FishNet;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -27,12 +28,18 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [SerializeField]
     private SkinnedMeshRenderer _skinnedMeshRenderer;
 
+	[SerializeField]
+	protected GameObject _bodyPartItem;
 
-    private readonly List<BodyPart> _childBodyParts = new List<BodyPart>();
+
+	private readonly List<BodyPart> _childBodyParts = new List<BodyPart>();
 
     public readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
 
     public string Name;
+
+
+
 
     public ReadOnlyCollection<BodyLayer> BodyLayers
     {
@@ -112,22 +119,23 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// The body part is not destroyed, it's simply detached from the entity.
     /// </summary>
-    public void DetachBodyPart()
+    protected virtual void DetachBodyPart()
     {
-        //Spawn a detached body part from the entity, and destroy this one with all childs.
-        // Maybe better in body part controller.
-        //throw new NotImplementedException();
-        _parentBodyPart.DetachBodyPart();
-        Despawn();
-    }
+		//Spawn a detached body part from the entity, and destroy this one with all childs.
+		// Maybe better in body part controller.
+		//throw new NotImplementedException();
 
-    /// <summary>
-    /// The body part took so much damages that it's simply destroyed.
-    /// Think complete crushing, burning to dust kind of stuff.
-    /// All child body parts are detached.
-    /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
-    public void DestroyBodyPart()
+		GameObject go = Instantiate(_bodyPartItem);
+		InstanceFinder.ServerManager.Spawn(go, null);
+	}
+
+	/// <summary>
+	/// The body part took so much damages that it's simply destroyed.
+	/// Think complete crushing, burning to dust kind of stuff.
+	/// All child body parts are detached.
+	/// </summary>
+	/// <exception cref="NotImplementedException"></exception>
+	public void DestroyBodyPart()
     {
         // destroy this body part with all childs on the entity, detach all childs.
         // Maybe better in body part controller.
@@ -283,6 +291,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	protected virtual void RemoveSingleBodyPart()
 	{
 		HideSeveredBodyPart();
+		DetachBodyPart();
 	}
 
 	private void HideSeveredBodyPart()
