@@ -519,7 +519,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
   _skinnedMeshRenderer: {fileID: 8304794297218136879}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 242a937784a622f4f8a6e6d097e0737c, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 983acf51173ef60479e35c5e35946162, type: 3}
   _bodyCollider: {fileID: 7885778496726064405}
 --- !u!1 &472338063523916287
 GameObject:
@@ -2437,7 +2437,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 6956777571749741975}
   _skinnedMeshRenderer: {fileID: 8793278027620475813}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 10191cb6340d65a47998ce9f74202907, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 4d59bb658831172479995d721f8cbd6c, type: 3}
   _bodyCollider: {fileID: 5307304765832513536}
 --- !u!1 &1718925025091415045
 GameObject:
@@ -2757,7 +2757,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
   _skinnedMeshRenderer: {fileID: 1037560153012890605}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: ecaf79b0a74bdb443a350e88daa94a66, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 2d0913074150cca43b88c90ec658aacb, type: 3}
   _bodyCollider: {fileID: 3498391959947423981}
 --- !u!1 &1879675768441011179
 GameObject:
@@ -3080,7 +3080,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
   _skinnedMeshRenderer: {fileID: 949421968142360378}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 06b6be83779804245b7f6411fe07b851, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 9659c4cc7bea07c4ba38b492f407ef7f, type: 3}
   _bodyCollider: {fileID: 4061536191967800809}
 --- !u!1 &2150520291421741415
 GameObject:
@@ -3751,7 +3751,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
   _skinnedMeshRenderer: {fileID: 6840993320086561213}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 432a4ad70e41e5c4f8f913f76fe0e66c, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 2f664501d8d74774c9427f7fb6d50ae6, type: 3}
   _bodyCollider: {fileID: 7865012682319576541}
 --- !u!1 &2716332713394458792
 GameObject:
@@ -5711,7 +5711,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 5839020956740199093}
   _skinnedMeshRenderer: {fileID: 270151793522417329}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 9ac7c2cd12db800479e566335ff7440b, type: 3}
   _bodyCollider: {fileID: 4933536203666300704}
 --- !u!1 &4806492444777318490
 GameObject:
@@ -6299,7 +6299,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 6206108594876145282}
   _skinnedMeshRenderer: {fileID: 7063966259298033300}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 0dc65741e07717347bf929a5cb47a810, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 60890cc80962a7e44b97b4ba3b0518e3, type: 3}
   _bodyCollider: {fileID: 2829801289424663116}
 --- !u!1 &5259835642244508253
 GameObject:
@@ -8150,7 +8150,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 4652682359255614497}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 037a2810833b4da4ba507e535165f4db, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 885d5a9c5776fd64ab1cf595e0cfd9d8, type: 3}
   _bodyCollider: {fileID: 3758014577139489731}
 --- !u!1 &6618192393620894408
 GameObject:
@@ -9540,7 +9540,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 1082974716090020341}
   _skinnedMeshRenderer: {fileID: 2879367628846680322}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: c19eccca279beee4186432a03257a7b9, type: 3}
   _bodyCollider: {fileID: 495117578137499362}
   _hand: {fileID: 5948957322531814959}
 --- !u!114 &2877804502633151377
@@ -11046,7 +11046,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _parentBodyPart: {fileID: 465916857022110443}
   _skinnedMeshRenderer: {fileID: 6217532572249875957}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: df85b75fd341a244c8364ebb9c4fcfef, type: 3}
   _bodyCollider: {fileID: 2660167717358018512}
   _hand: {fileID: 7572883762844705701}
 --- !u!114 &8825455644555575778
