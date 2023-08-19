@@ -281,9 +281,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	private void RemoveBodyPart()
 	{
 		RemoveSingleBodyPart();
-		foreach (var part in _childBodyParts)
+		for(int i= _childBodyParts.Count-1; i>=0;i--)
 		{
-			part.RemoveBodyPart();
+			_childBodyParts[i].RemoveBodyPart();
 		}
 	}
 
