@@ -39,6 +39,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	[SerializeField]
 	private Collider _bodyCollider;
 
+	public Collider BodyCollider => _bodyCollider;
+
     public string Name => gameObject.name;
 
 

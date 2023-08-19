@@ -1,5 +1,6 @@
 ﻿
 using FishNet.Object;
+using System.Linq;
 using UnityEngine;
 
 
@@ -40,7 +41,8 @@ public class AttackBodyPartByClickingIt : NetworkBehaviour
             return;
         }
 
-        BodyPart target = hit.collider.GetComponent<BodyPart>();
+		BodyPart target = GetComponentsInChildren<BodyPart>().Where(x => x.BodyCollider == hit.collider).First();
+
         if (!target)
         {
             return;
