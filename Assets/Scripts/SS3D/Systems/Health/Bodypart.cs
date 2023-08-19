@@ -14,6 +14,7 @@ using SS3D.Systems.Health;
 using System.Linq;
 using System.Collections.ObjectModel;
 using FishNet;
+using Coimbra;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -57,7 +58,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         get { return _childBodyParts.AsReadOnly(); }
     }
 
-	public bool IsDestroyed => TotalDamage > MaxDamage;
+	public bool IsDestroyed => TotalDamage >= MaxDamage;
 
 	public bool IsSevered => GetBodyLayer<BoneLayer>().IsDestroyed();
 
@@ -111,31 +112,41 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         }
     }
 
-    /// <summary>
-    /// The body part is not destroyed, it's simply detached from the entity.
-    /// </summary>
-    protected virtual void DetachBodyPart()
-    {
-		//Spawn a detached body part from the entity, and destroy this one with all childs.
-		// Maybe better in body part controller.
-		//throw new NotImplementedException();
-
-		GameObject go = Instantiate(_bodyPartItem);
+	/// <summary>
+	/// The body part is not destroyed, it's simply detached from the entity.
+	/// Spawn a detached body part from the entity, and destroy this one with all childs.
+	/// This spawns an item based on this body part. Upon being detached, some specific treatments are needed for some bodyparts.
+	/// Implementation should handle instantiating _bodyPartItem, removing the bodypart game object and doing whatever else is necessary.
+	/// </summary>
+	protected virtual void DetachBodyPart()
+	{
+		/*
+		 * When detaching a bodypart, a prefab is spawned, very similar but having a few different scripts like the Item script, or removing a few others.
+		 * Fishnet in version 3.10.7 does not allow removing or adding scripts, however it allows disabling and enabling.
+		 * When detaching a body part, don't forget to check if some scripts were enabled/disabled, and update the relevant values of the spawned body part with 
+		 * those of the just detached body part.
+		 */
+		GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
 		InstanceFinder.ServerManager.Spawn(go, null);
+		gameObject.Dispose(true);
+
 	}
 
 	/// <summary>
 	/// The body part took so much damages that it's simply destroyed.
 	/// Think complete crushing, burning to dust kind of stuff.
-	/// All child body parts are detached.
+	/// All child body parts are detached, all internal are destroyed.
 	/// </summary>
 	/// <exception cref="NotImplementedException"></exception>
 	public void DestroyBodyPart()
     {
-        // destroy this body part with all childs on the entity, detach all childs.
-        // Maybe better in body part controller.
-        //throw new NotImplementedException();
-    }
+		// destroy this body part with all childs on the entity, detach all childs.
+		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
+		{
+			_childBodyParts[i].RemoveBodyPart();
+		}
+		gameObject.Dispose(true);
+	}
 
 
 
@@ -188,7 +199,15 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		BodyLayer layer = FirstBodyLayerOfType(type);
 		if (!BodyLayers.Contains(layer)) return false;
 		layer.InflictDamage(damageTypeQuantity);
-		if (IsSevered) RemoveBodyPart();
+		if (IsDestroyed)
+		{
+			DestroyBodyPart();
+		}
+		else if (IsSevered)
+		{
+			RemoveBodyPart();
+		}
+
 		return true;	
     }
 
@@ -197,12 +216,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// </summary>
 	public virtual void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
     {
-        foreach (var layer in BodyLayers)
+        foreach (BodyLayer layer in BodyLayers)
         {
-            layer.InflictDamage(damageTypeQuantity);
+			TryInflictDamage(layer.LayerType, damageTypeQuantity);
         }
-
-        if (IsSevered) RemoveBodyPart();
     }
 
     /// <summary>
@@ -210,13 +227,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     public virtual void InflictDamageToAllLayerButOne<T>(DamageTypeQuantity damageTypeQuantity)
     {
-        foreach (var layer in BodyLayers)
+        foreach (BodyLayer layer in BodyLayers)
         {
             if (!(layer is T))
-                layer.InflictDamage(damageTypeQuantity);
+				TryInflictDamage(layer.LayerType, damageTypeQuantity);	
         }
-
-        if (IsSevered) RemoveBodyPart();
     }
 
     /// <summary>
@@ -280,11 +295,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	private void RemoveBodyPart()
 	{
-		RemoveSingleBodyPart();
 		for(int i= _childBodyParts.Count-1; i>=0;i--)
 		{
 			_childBodyParts[i].RemoveBodyPart();
 		}
+		RemoveSingleBodyPart();
 	}
 
 	protected virtual void RemoveSingleBodyPart()

@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HandBodyPart : HumanBodypart
+public class HandBodyPart : BodyPart
 {
 
 	[SerializeField] private Hand _hand;
@@ -15,17 +15,11 @@ public class HandBodyPart : HumanBodypart
 		base.Init(parent);
 	}
 
-	protected override void RemoveSingleBodyPart()
+	protected override void AddInitialLayers()
 	{
-		base.RemoveSingleBodyPart();
-		_hand.DisableHand();
-	}
-
-	protected override void DetachBodyPart()
-	{
-		GameObject go = Instantiate(_bodyPartItem);
-		Hand hand = go.GetComponent<Hand>();
-		Destroy(hand);
-		InstanceFinder.ServerManager.Spawn(go, null);
+		TryAddBodyLayer(new MuscleLayer(this));
+		TryAddBodyLayer(new BoneLayer(this));
+		TryAddBodyLayer(new CirculatoryLayer(this));
+		TryAddBodyLayer(new NerveLayer(this));
 	}
 }
