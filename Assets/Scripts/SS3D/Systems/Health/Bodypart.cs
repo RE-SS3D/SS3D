@@ -308,7 +308,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	{
 		HideSeveredBodyPart();
 		DetachBodyPart();
-		_parentBodyPart._childBodyParts.Remove(this);
+		_parentBodyPart?._childBodyParts.Remove(this);
 		_parentBodyPart = null;
 	}
 
