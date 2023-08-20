@@ -122,7 +122,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	{
 		/*
 		 * When detaching a bodypart, a prefab is spawned, very similar but having a few different scripts like the Item script, or removing a few others.
-		 * Fishnet in version 3.10.7 does not allow removing or adding scripts, however it allows disabling and enabling.
+		 * Fishnet in version 3.10.7 does not allow adding networkbehaviours, however it allows disabling and enabling.
 		 * When detaching a body part, don't forget to check if some scripts were enabled/disabled, and update the relevant values of the spawned body part with 
 		 * those of the just detached body part.
 		 */
