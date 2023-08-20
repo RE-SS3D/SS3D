@@ -214,6 +214,12 @@ namespace SS3D.Systems.Inventory.Containers
 			}
 		}
 
+		[Server]
+		public void InvokeContainerDisabled()
+		{
+			OnAttachedContainerDisabled?.Invoke(this);
+		}
+
 		protected override void OnDestroyed()
         {
             base.OnDestroyed();
