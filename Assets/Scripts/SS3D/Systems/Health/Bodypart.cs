@@ -15,6 +15,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using FishNet;
 using Coimbra;
+using SS3D.Systems.Inventory.Containers;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -127,6 +128,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		 */
 		GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
 		InstanceFinder.ServerManager.Spawn(go, null);
+
+		var containers = GetComponentsInChildren<AttachedContainer>();
+		foreach (var container in containers)
+		{
+			container.Container.Dump();
+		}
 		gameObject.Dispose(true);
 
 	}
@@ -147,6 +154,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		}
 		_parentBodyPart?._childBodyParts.Remove(this);
 		_parentBodyPart = null;
+		var containers = GetComponentsInChildren<AttachedContainer>();
+		foreach (var container in containers)
+		{
+			container.Container.Dump();
+		}
 		gameObject.Dispose(true);
 	}
 

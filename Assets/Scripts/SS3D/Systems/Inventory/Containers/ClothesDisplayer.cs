@@ -123,7 +123,7 @@ namespace SS3D.Systems.Inventory.Containers
 		[Server]
 		private void AddCloth(Item item)
 		{
-			if (!item.TryGetComponent(out Cloth cloth))
+			if (item == null || !item.TryGetComponent(out Cloth cloth))
 			{
 				return;
 			}
@@ -147,7 +147,7 @@ namespace SS3D.Systems.Inventory.Containers
 		[Server]
 		private void RemoveCloth(Item item)
 		{
-			if (!item.TryGetComponent(out Cloth cloth))
+			if (item == null || !item.TryGetComponent(out Cloth cloth))
 			{
 				return;
 			}
