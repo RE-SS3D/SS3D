@@ -18,7 +18,6 @@ using Coimbra;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
-/// There should always be a network object component everywhere this component is.
 /// </summary>
 public abstract class BodyPart : InteractionTargetNetworkBehaviour
 {
@@ -138,6 +137,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// All child body parts are detached, all internal are destroyed.
 	/// </summary>
 	/// <exception cref="NotImplementedException"></exception>
+	[Server]
 	public void DestroyBodyPart()
     {
 		// destroy this body part with all childs on the entity, detach all childs.
@@ -145,6 +145,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		{
 			_childBodyParts[i].RemoveBodyPart();
 		}
+		_parentBodyPart?._childBodyParts.Remove(this);
+		_parentBodyPart = null;
 		gameObject.Dispose(true);
 	}
 
@@ -306,6 +308,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	{
 		HideSeveredBodyPart();
 		DetachBodyPart();
+		_parentBodyPart._childBodyParts.Remove(this);
+		_parentBodyPart = null;
 	}
 
 	private void HideSeveredBodyPart()
