@@ -1755,7 +1755,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1394360371059337826}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.27500942, y: 0.37684795, z: 0.2108456}
@@ -3861,7 +3861,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3021086107100169162}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.1790439, y: 0.18800841, z: 0.119040824}
@@ -3908,7 +3908,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3146009794794091675}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.06908912
   m_Height: 0.3977172
@@ -4732,7 +4732,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3786064091942543194}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.10848094, y: 0.3344841, z: 0.15546888}
@@ -5200,7 +5200,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4209142530063844385}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.1
@@ -5416,7 +5416,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4363807679330425325}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.21967961, y: 0.22613916, z: 0.13197084}
@@ -5788,7 +5788,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4866882200861722142}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.11855765, y: 0.30347887, z: 0.14599887}
@@ -6509,7 +6509,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5479548291615498498}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.1
@@ -7106,7 +7106,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6200983958115876081}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.0663891
   m_Height: 0.3878733
@@ -7401,10 +7401,11 @@ MonoBehaviour:
   - {fileID: 2150560678942863610}
   - {fileID: 7934531206375951864}
   - {fileID: 1089183168752255729}
+  - {fileID: 6258404136566216916}
+  - {fileID: 3771845344306968317}
   - {fileID: 4947016969258934535}
   - {fileID: 397698445884480565}
   - {fileID: 7822392346892910685}
-  - {fileID: 6258404136566216916}
   - {fileID: 4559920193704007786}
   - {fileID: 976666287367385554}
   - {fileID: 1223547382117504491}
@@ -7412,7 +7413,6 @@ MonoBehaviour:
   - {fileID: 3301312253177779075}
   - {fileID: 6606944209543214874}
   - {fileID: 300689357194200928}
-  - {fileID: 3771845344306968317}
   - {fileID: 7110782222688458070}
   - {fileID: 677427367997810169}
   - {fileID: 5151850602389077742}
@@ -7759,7 +7759,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a156dec7da2f53419befce71ba9bcff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 13
+  _componentIndexCache: 10
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _inventory: {fileID: 1089183168752255729}
@@ -7775,7 +7775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81823982a1f0a0a4b8b5b6c5915d1083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 21
+  _componentIndexCache: 11
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   attackParticleEffect: {fileID: 7714517724079113232, guid: 17b0d9163e9cdf14aa557557e7d9d76b, type: 3}
@@ -7793,7 +7793,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 10
+  _componentIndexCache: 12
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7811,7 +7811,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 11
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7829,7 +7829,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 12
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7847,7 +7847,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 14
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7865,7 +7865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 15
+  _componentIndexCache: 16
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7883,7 +7883,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 16
+  _componentIndexCache: 17
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7901,7 +7901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 17
+  _componentIndexCache: 18
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7919,7 +7919,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 18
+  _componentIndexCache: 19
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7937,7 +7937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 19
+  _componentIndexCache: 20
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -7955,7 +7955,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 20
+  _componentIndexCache: 21
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _openState: 0
@@ -8591,7 +8591,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7117039680706093616}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.15901591
