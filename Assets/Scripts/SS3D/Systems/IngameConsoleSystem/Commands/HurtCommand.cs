@@ -1,5 +1,4 @@
-﻿using Codice.CM.SEIDInfo;
-using FishNet.Connection;
+﻿using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Systems.Entities;

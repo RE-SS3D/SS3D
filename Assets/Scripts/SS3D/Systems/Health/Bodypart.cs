@@ -151,6 +151,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// <summary>
 	/// Method to call at the end of Destroy and/or Detach
 	/// </summary>
+	[Server]
 	protected void Dispose()
 	{
 		_parentBodyPart?._childBodyParts.Remove(this);
@@ -160,12 +161,19 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		{
 			container.Container.Dump();
 		}
-		gameObject.Dispose(true);
+		Deactivate();
+	}
+
+
+	[ObserversRpc(RunLocally = true, BufferLast = true)]
+	public void Deactivate()
+	{
+		gameObject.SetActive(false);
 	}
 
 
 
-    public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
+	public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
     {
         return new IInteraction[] { new KillInteraction() };
     }

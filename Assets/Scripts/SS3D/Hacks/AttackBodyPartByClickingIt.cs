@@ -20,7 +20,12 @@ public class AttackBodyPartByClickingIt : NetworkBehaviour
     [SerializeField] private DamageType attackType;
     [SerializeField][Range(1, 10)] private float damageAmount;
 
-    private void Update()
+	public override void OnStartClient()
+	{
+		base.OnStartClient();
+		if (!IsOwner) enabled = false;
+	}
+	private void Update()
     {
         CheckForAttack();
     }
