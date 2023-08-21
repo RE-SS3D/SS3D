@@ -114,7 +114,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	/// <summary>
 	/// The body part is not destroyed, it's simply detached from the entity.
-	/// Spawn a detached body part from the entity, and destroy this one with all childs.
+	/// Spawn a detached body part from the entity, and destroy this one.
 	/// This spawns an item based on this body part. Upon being detached, some specific treatments are needed for some bodyparts.
 	/// Implementation should handle instantiating _bodyPartItem, removing the bodypart game object and doing whatever else is necessary.
 	/// </summary>
@@ -128,14 +128,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		 */
 		GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
 		InstanceFinder.ServerManager.Spawn(go, null);
-
-		var containers = GetComponentsInChildren<AttachedContainer>();
-		foreach (var container in containers)
-		{
-			container.Container.Dump();
-		}
-		gameObject.Dispose(true);
-
+		Dispose();
 	}
 
 	/// <summary>
@@ -145,13 +138,21 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// </summary>
 	/// <exception cref="NotImplementedException"></exception>
 	[Server]
-	public void DestroyBodyPart()
+	protected virtual void DestroyBodyPart()
     {
 		// destroy this body part with all childs on the entity, detach all childs.
 		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
 		{
 			_childBodyParts[i].RemoveBodyPart();
 		}
+		Dispose();
+	}
+
+	/// <summary>
+	/// Method to call at the end of Destroy and/or Detach
+	/// </summary>
+	protected void Dispose()
+	{
 		_parentBodyPart?._childBodyParts.Remove(this);
 		_parentBodyPart = null;
 		var containers = GetComponentsInChildren<AttachedContainer>();
