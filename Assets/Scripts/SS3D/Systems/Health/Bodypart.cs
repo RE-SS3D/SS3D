@@ -24,7 +24,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 {
 
     [SyncVar]
-    private BodyPart _parentBodyPart;
+    protected BodyPart _parentBodyPart;
 
     [SerializeField]
     private SkinnedMeshRenderer _skinnedMeshRenderer;
@@ -33,12 +33,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	protected GameObject _bodyPartItem;
 
 
-	private readonly List<BodyPart> _childBodyParts = new List<BodyPart>();
+	protected readonly List<BodyPart> _childBodyParts = new List<BodyPart>();
 
-    public readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
+	protected readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
 
 	[SerializeField]
-	private Collider _bodyCollider;
+	protected Collider _bodyCollider;
 
 	public Collider BodyCollider => _bodyCollider;
 
@@ -156,17 +156,29 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	{
 		_parentBodyPart?._childBodyParts.Remove(this);
 		_parentBodyPart = null;
+		DumpContainers();
+		Deactivate();
+	}
+
+	protected void DumpContainers()
+	{
 		var containers = GetComponentsInChildren<AttachedContainer>();
 		foreach (var container in containers)
 		{
 			container.Container.Dump();
 		}
-		Deactivate();
+	}
+
+	protected void RemoveChildAndParent()
+	{
+		_parentBodyPart?._childBodyParts.Remove(this);
+		_parentBodyPart = null;
 	}
 
 
+
 	[ObserversRpc(RunLocally = true, BufferLast = true)]
-	public void Deactivate()
+	protected void Deactivate()
 	{
 		gameObject.SetActive(false);
 	}

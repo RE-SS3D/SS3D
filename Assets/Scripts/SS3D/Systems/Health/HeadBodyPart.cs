@@ -28,6 +28,8 @@ public class HeadBodyPart : BodyPart
 		MindSystem entitySystem = Subsystems.Get<MindSystem>();
 		entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
 
-		Dispose();
+		RemoveChildAndParent();
+		DumpContainers();
+		Deactivate();
 	}
 }
