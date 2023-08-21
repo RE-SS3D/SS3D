@@ -184,7 +184,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 3
@@ -254,12 +254,13 @@ MonoBehaviour:
   - {fileID: 949826828486068756}
   - {fileID: 7854195103374356208}
   - {fileID: 6047619831351193847}
+  - {fileID: 8869621938725342091}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -403,9 +404,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 8532088199163376958}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8532088199163376958}
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 0}
