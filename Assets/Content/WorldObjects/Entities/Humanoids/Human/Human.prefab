@@ -5564,8 +5564,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 444995378988440430}
-  - component: {fileID: 5151850602389077742}
   - component: {fileID: 270151793522417329}
+  - component: {fileID: 3338140507791060534}
   m_Layer: 12
   m_Name: HumanHead
   m_TagString: Untagged
@@ -5593,25 +5593,6 @@ Transform:
   m_Father: {fileID: 498654123859477456}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5151850602389077742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4586892454499637632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 24
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 5839020956740199093}
-  _skinnedMeshRenderer: {fileID: 270151793522417329}
-  _bodyPartItem: {fileID: 5774385816057912484, guid: 9ac7c2cd12db800479e566335ff7440b, type: 3}
-  _bodyCollider: {fileID: 4933536203666300704}
 --- !u!137 &270151793522417329
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -5715,6 +5696,25 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0000001937151, y: 0.598488, z: -0.025634572}
     m_Extent: {x: 0.10535494, y: 0.15681435, z: 0.13710809}
   m_DirtyAABB: 0
+--- !u!114 &3338140507791060534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4586892454499637632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de75930610499f24788224d6b0e10d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _parentBodyPart: {fileID: 5839020956740199093}
+  _skinnedMeshRenderer: {fileID: 270151793522417329}
+  _bodyPartItem: {fileID: 5774385816057912484, guid: 9ac7c2cd12db800479e566335ff7440b, type: 3}
+  _bodyCollider: {fileID: 4933536203666300704}
 --- !u!1 &4806492444777318490
 GameObject:
   m_ObjectHideFlags: 0
@@ -7415,7 +7415,7 @@ MonoBehaviour:
   - {fileID: 300689357194200928}
   - {fileID: 7110782222688458070}
   - {fileID: 677427367997810169}
-  - {fileID: 5151850602389077742}
+  - {fileID: 0}
   - {fileID: 5839020956740199093}
   - {fileID: 465916857022110443}
   - {fileID: 1082974716090020341}

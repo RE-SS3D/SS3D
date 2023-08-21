@@ -84,8 +84,8 @@ namespace SS3D.Systems.Entities
         [Server]
         public void SetMind(Mind mind)
         {
-            this._mind = mind;
-
+			this._mind = mind;
+			if(mind == null) return;
             GiveOwnership(mind.Owner);
         }
     }
