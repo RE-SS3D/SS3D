@@ -43,8 +43,11 @@ namespace SS3D.Systems.Entities
         {
             base.OnDestroyed();
 
-            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, false);
-            localPlayerObjectChanged.Invoke(this);
+			if (IsOwner)
+			{
+				LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, false);
+				localPlayerObjectChanged.Invoke(this);
+			}
         }
 
         private void InvokeLocalPlayerObjectChanged()
