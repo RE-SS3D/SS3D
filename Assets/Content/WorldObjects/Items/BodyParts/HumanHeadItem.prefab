@@ -545,7 +545,7 @@ GameObject:
   - component: {fileID: 8532088199163376958}
   - component: {fileID: 103478066480505861}
   - component: {fileID: 8461581488634887098}
-  - component: {fileID: 7232113870036127856}
+  - component: {fileID: 8268725903037194028}
   m_Layer: 10
   m_Name: HumanHeadItem
   m_TagString: Untagged
@@ -660,6 +660,7 @@ MonoBehaviour:
   - {fileID: 6576413314991157836}
   - {fileID: 103478066480505861}
   - {fileID: 8461581488634887098}
+  - {fileID: 8268725903037194028}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -671,7 +672,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 41
+  <PrefabId>k__BackingField: 3
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -717,7 +718,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 0}
   _bodyCollider: {fileID: 0}
---- !u!114 &7232113870036127856
+--- !u!114 &8268725903037194028
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -729,9 +730,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67a464fdf1254e188dcb2729033a7718, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 8532088199163376958}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8532088199163376958}
   _mind: {fileID: 0}
 --- !u!1 &6053338017641552129
 GameObject:

@@ -1,4 +1,5 @@
 ﻿using FishNet;
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using System.Collections;
@@ -27,6 +28,7 @@ public class HeadBodyPart : BodyPart
 		InstanceFinder.ServerManager.Spawn(go, null);
 		MindSystem entitySystem = Subsystems.Get<MindSystem>();
 		entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
+		go.GetComponent<NetworkObject>().RemoveOwnership();
 
 		RemoveChildAndParent();
 		DumpContainers();

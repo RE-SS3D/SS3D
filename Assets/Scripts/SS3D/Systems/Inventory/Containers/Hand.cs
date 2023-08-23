@@ -101,6 +101,7 @@ namespace SS3D.Systems.Inventory.Containers
 		[Server]
 		public void Pickup(Item item)
 		{
+			item.GiveOwnership(Owner);
 			if (!IsEmpty())
 			{
 				return;
@@ -122,6 +123,9 @@ namespace SS3D.Systems.Inventory.Containers
 				return;
 			}
 
+			ItemInHand.GiveOwnership(null);
+
+
 			Container.Container.Dump();
 		}
 
@@ -135,7 +139,7 @@ namespace SS3D.Systems.Inventory.Containers
 			{
 				return;
 			}
-
+			ItemInHand.GiveOwnership(null);
 			Item item = ItemInHand;
 			item.SetContainer(null);
 			ItemUtility.Place(item, position, rotation, transform);
