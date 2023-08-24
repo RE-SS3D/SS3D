@@ -814,7 +814,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8532088199163376958}
   _networkObjectCache: {fileID: 8532088199163376958}
   _mind: {fileID: 0}
-  Ghost: {fileID: 0}
+  Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
 --- !u!95 &2219815040223475245
 Animator:
   serializedVersion: 4
