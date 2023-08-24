@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 using FishNet;
 using Coimbra;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -38,6 +39,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	protected readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
 
 	[SerializeField]
+	protected AttachedContainer _internalBodyParts;
+
+	[SerializeField]
 	protected Collider _bodyCollider;
 
 	public Collider BodyCollider => _bodyCollider;
@@ -57,6 +61,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         get { return _childBodyParts.AsReadOnly(); }
     }
+
+	public IEnumerable<Item> InternalBodyParts
+	{
+		get { return _internalBodyParts.Items; }
+	}
 
 	public bool IsDestroyed => TotalDamage >= MaxDamage;
 
@@ -145,6 +154,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		{
 			_childBodyParts[i].RemoveBodyPart();
 		}
+
+		_internalBodyParts?.Container?.Purge();
 		Dispose();
 	}
 
