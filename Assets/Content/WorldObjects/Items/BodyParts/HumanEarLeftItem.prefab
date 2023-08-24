@@ -181,7 +181,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 3
 --- !u!114 &6576413314991157836
@@ -247,6 +247,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 6576413314991157836}
   - {fileID: 103478066480505861}
+  - {fileID: 4955538499567978298}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -258,7 +259,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 41
+  <PrefabId>k__BackingField: 120
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -297,10 +298,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 8532088199163376958}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8532088199163376958}
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 0}
+  _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
