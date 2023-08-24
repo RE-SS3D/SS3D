@@ -1,8 +1,13 @@
 ﻿using System;
+using Coimbra;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Health;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -91,5 +96,50 @@ namespace SS3D.Systems.Entities
 			if(mind == null) return;
             GiveOwnership(mind.Owner);
         }
-    }
+
+		public GameObject Ghost;
+		private GameObject _spawnedGhost;
+
+		[Server]
+		private void BecomeGhost(GameObject player, GameObject ghost)
+		{
+			Entity originEntity = player.GetComponent<Entity>();
+			Entity ghostEntity = ghost.GetComponent<Entity>();
+
+			Mind originMind = originEntity.Mind;
+
+			ghostEntity.SetMind(originMind);
+			RpcDestroyObjects(originEntity);
+			RpcUpdateGhostPosition(originEntity, ghostEntity);
+		}
+
+		[ObserversRpc]
+		private void RpcDestroyObjects(Entity originEntity)
+		{
+			GameObject originEntityGameObject = originEntity.gameObject;
+			originEntityGameObject.GetComponent<Hands>()?.Dispose(true);
+			originEntityGameObject.GetComponent<HumanInventory>()?.Dispose(true);
+			originEntityGameObject.GetComponent<InteractionController>()?.Dispose(true);
+			originEntityGameObject.GetComponent<StaminaController>()?.Dispose(true);
+			originEntityGameObject.GetComponent<HumanoidController>()?.Dispose(true);
+			// TODO: Optimize these GetComponents, this is a temporary solution.
+		}
+
+		[ObserversRpc]
+		private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
+		{
+			ghostEntity.Transform.SetPositionAndRotation(originEntity.Transform.position, originEntity.Transform.rotation);
+			originEntity.Transform.Rotate(new Vector3(90, 0, 0));
+		}
+
+
+
+		[Server]
+		public void Kill()
+		{
+			_spawnedGhost = Instantiate(Ghost);
+			ServerManager.Spawn(_spawnedGhost);
+			BecomeGhost(gameObject, _spawnedGhost);
+		}
+	}
 }

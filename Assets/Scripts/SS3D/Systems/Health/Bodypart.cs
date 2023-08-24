@@ -155,6 +155,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 			_childBodyParts[i].RemoveBodyPart();
 		}
 
+		foreach(var item in _internalBodyParts.Items)
+		{
+			var internalBodyPart = item.GetComponentInChildren<BodyPart>();
+			internalBodyPart?.DestroyBodyPart();
+		}
+
 		_internalBodyParts?.Container?.Purge();
 		Dispose();
 	}

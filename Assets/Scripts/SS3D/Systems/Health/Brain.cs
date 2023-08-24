@@ -21,4 +21,11 @@ public class Brain : BodyPart
         TryAddBodyLayer(new NerveLayer(this));
         TryAddBodyLayer(new OrganLayer(this));
     }
+
+	protected override void DestroyBodyPart()
+	{
+		var entity = GetComponentInParent<Entity>();
+		entity?.Kill();
+		Dispose();
+	}
 }
