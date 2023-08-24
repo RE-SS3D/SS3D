@@ -796,7 +796,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 0}
   _internalBodyParts: {fileID: 4793582885253167513}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 944150679711282915}
   brain: {fileID: 6359273142575834818}
 --- !u!114 &8268725903037194028
 MonoBehaviour:
@@ -814,6 +814,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8532088199163376958}
   _networkObjectCache: {fileID: 8532088199163376958}
   _mind: {fileID: 0}
+  Ghost: {fileID: 0}
 --- !u!95 &2219815040223475245
 Animator:
   serializedVersion: 4
