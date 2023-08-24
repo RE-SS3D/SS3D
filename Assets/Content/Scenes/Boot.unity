@@ -225,7 +225,7 @@ MonoBehaviour:
   _objectPool: {fileID: 0}
   _persistence: 0
   _logging: {fileID: 0}
-  _spawnablePrefabs: {fileID: 11400000, guid: 59af76506e3115f479c03aedaf5de785, type: 2}
+  _spawnablePrefabs: {fileID: 11400000, guid: 44b859ef8fa90fe4389e6da31fa16075, type: 2}
 --- !u!114 &340427414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,6 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57ce8bbb58966cb45a7140f32da5327a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enableGlobalScenes: 1
   _startInOffline: 1
   _offlineScene: Assets/Content/Scenes/Boot.unity
   _onlineScene: Assets/Content/Scenes/Game.unity
@@ -274,6 +275,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _authenticator: {fileID: 0}
+  _remoteClientTimeout: 2
+  _remoteClientTimeoutDuration: 60
+  _syncTypeRate: 0.1
   SpawnPacking:
     Position: 0
     Rotation: 0
@@ -301,7 +305,6 @@ MonoBehaviour:
   _maximumFrameTicks: 3
   _tickRate: 120
   _pingInterval: 1
-  _timingInterval: 2
   _physicsMode: 0
 --- !u!114 &340427418
 MonoBehaviour:
@@ -316,6 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Transport: {fileID: 340427415}
+  _intermediateLayer: {fileID: 0}
   _latencySimulator:
     _enabled: 0
     _simulateHost: 1
