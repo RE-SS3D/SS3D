@@ -147,7 +147,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// </summary>
 	/// <exception cref="NotImplementedException"></exception>
 	[Server]
-	protected virtual void DestroyBodyPart()
+	public virtual void DestroyBodyPart()
     {
 		// destroy this body part with all childs on the entity, detach all childs.
 		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
@@ -155,13 +155,16 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 			_childBodyParts[i].RemoveBodyPart();
 		}
 
-		foreach(var item in _internalBodyParts.Items)
-		{
-			var internalBodyPart = item.GetComponentInChildren<BodyPart>();
-			internalBodyPart?.DestroyBodyPart();
+		if (_internalBodyParts != null){
+
+			foreach (var item in _internalBodyParts.Items)
+			{
+				var internalBodyPart = item.GetComponentInChildren<BodyPart>();
+				internalBodyPart?.DestroyBodyPart();
+			}
+			_internalBodyParts.Container?.Purge();
 		}
 
-		_internalBodyParts?.Container?.Purge();
 		Dispose();
 	}
 

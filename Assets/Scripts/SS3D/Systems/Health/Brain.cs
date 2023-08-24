@@ -22,7 +22,7 @@ public class Brain : BodyPart
         TryAddBodyLayer(new OrganLayer(this));
     }
 
-	protected override void DestroyBodyPart()
+	public override void DestroyBodyPart()
 	{
 		var entity = GetComponentInParent<Entity>();
 		entity?.Kill();
