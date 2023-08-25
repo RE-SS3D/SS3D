@@ -42,17 +42,25 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
 			BodyPart bodyPart = bodyParts.First();
 
-			Enum.TryParse(bodyLayerName, true, out bodyLayerType);
 			Enum.TryParse(damageTypeName, true, out damageType);
 			damageAmount = int.Parse(damageAmountString);
 
-			BodyLayer bodyLayer = bodyPart.FirstBodyLayerOfType(bodyLayerType);
-
-			if (!bodyPart.TryInflictDamage(bodyLayerType, new DamageTypeQuantity(damageType, damageAmount)))
+			if (bodyLayerName != "all")
 			{
-				checkArgsResponse.IsValid = false;
-				return checkArgsResponse.InvalidArgs = "can't inflict damage on bodypart";
+				Enum.TryParse(bodyLayerName, true, out bodyLayerType);
+				BodyLayer bodyLayer = bodyPart.FirstBodyLayerOfType(bodyLayerType);
+
+				if (!bodyPart.TryInflictDamage(bodyLayerType, new DamageTypeQuantity(damageType, damageAmount)))
+				{
+					checkArgsResponse.IsValid = false;
+					return checkArgsResponse.InvalidArgs = "can't inflict damage on bodypart";
+				}
 			}
+			else if(bodyLayerName == "all")
+			{
+				bodyPart.InflictDamageToAllLayer(new DamageTypeQuantity(damageType, damageAmount));
+			}
+
 			return "BodyPart hurt";
 		}
 
@@ -89,7 +97,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			}
 
 
-			if (!Enum.TryParse(bodyLayerName, true, out bodyLayerType))
+			if (!Enum.TryParse(bodyLayerName, true, out bodyLayerType) && bodyLayerName != "all")
 			{
 				response.IsValid = false;
 				response.InvalidArgs = "Provide a valid body layer type name";
