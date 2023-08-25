@@ -42,7 +42,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Vector3 AbsoluteMovement;
         protected Vector2 Input;
         protected Vector2 SmoothedInput;
-        protected Vector3 TargetMovement;
+        public Vector3 TargetMovement;
 
         private Actor _camera;
         protected Controls.MovementActions MovementControls;
@@ -95,12 +95,15 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
-        { 
+        {
+	        if (!enabled)
+	        {
+		        return;
+	        }
             if (!IsOwner)
             {
                 return;
             }
-
             ProcessCharacterMovement();
         }
 
@@ -138,7 +141,6 @@ namespace SS3D.Systems.Entities.Humanoid
 
              Vector3 resultingMovement = TargetMovement + Position;
             AbsoluteMovement = resultingMovement;
-
              _movementTarget.position = AbsoluteMovement;
          }
 
