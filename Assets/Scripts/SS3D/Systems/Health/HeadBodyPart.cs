@@ -35,6 +35,9 @@ public class HeadBodyPart : BodyPart
 	{
 		GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
 		InstanceFinder.ServerManager.Spawn(go, null);
+		var bodyPart = go.GetComponent<BodyPart>();
+		CopyValuesToBodyPart(bodyPart);
+
 		MindSystem entitySystem = Subsystems.Get<MindSystem>();
 		entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
 		go.GetComponent<NetworkObject>().RemoveOwnership();

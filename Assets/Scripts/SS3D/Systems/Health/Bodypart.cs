@@ -48,6 +48,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
     public string Name => gameObject.name;
 
+	public bool IsDetached => _parentBodyPart == null;
+
 
 
 
@@ -137,7 +139,20 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		 */
 		GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
 		InstanceFinder.ServerManager.Spawn(go, null);
+		var bodyPart = go.GetComponent<BodyPart>();
+		CopyValuesToBodyPart(bodyPart);
+
 		Dispose();
+	}
+
+	protected virtual void CopyValuesToBodyPart(BodyPart bodyPart)
+	{
+		foreach(BodyLayer layer in bodyPart.BodyLayers)
+		{
+			BodyLayer layerToWrite = BodyLayers.Where(x => x.LayerType == layer.LayerType).First();
+			if (layerToWrite == null) continue;
+			layer.CopyLayerValues(layerToWrite);
+		}
 	}
 
 	/// <summary>
@@ -328,7 +343,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <returns></returns>
     public string Describe()
     {
-        var description = "";
+        string description = "";
         foreach (var layer in BodyLayers)
         {
             description += "Layer " + layer.GetType().ToString() + "\n";
@@ -359,6 +374,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	protected virtual void RemoveSingleBodyPart()
 	{
+		if (IsDetached) return;
 		HideSeveredBodyPart();
 		DetachBodyPart();
 		_parentBodyPart?._childBodyParts.Remove(this);
@@ -367,6 +383,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	private void HideSeveredBodyPart()
     {
+		if (_skinnedMeshRenderer == null) return;
         _skinnedMeshRenderer.enabled = false;
     }
 

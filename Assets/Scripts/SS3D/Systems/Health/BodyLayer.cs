@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -183,6 +183,13 @@ public abstract class BodyLayer
         if(DamageReceivedEvent!= null) DamageReceivedEvent.Invoke(this, args);
 
     }
+
+	public void CopyLayerValues(BodyLayer layer)
+	{
+		_damageResistances = layer._damageResistances.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+		_damageSuceptibilities = layer._damageSuceptibilities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+		_damageTypeQuantities = layer._damageTypeQuantities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+	}
 
     /// <summary>
     /// Set all resistances on this body layer. By default, there are none and resistance is 0.
