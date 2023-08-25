@@ -1,8 +1,9 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public class DamageTypeQuantity
+public class DamageTypeQuantity : ICloneable
 {
     public DamageType damageType;
     public float quantity;
@@ -12,4 +13,9 @@ public class DamageTypeQuantity
         this.damageType = damageType;
         this.quantity = quantity;
     }
+
+	public object Clone()
+	{
+		return new DamageTypeQuantity(damageType, quantity);
+	}
 }

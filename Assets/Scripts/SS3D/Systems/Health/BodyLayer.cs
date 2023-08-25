@@ -78,8 +78,10 @@ public abstract class BodyLayer
     /// Add damage without going above max damage for any given type.
     /// </summary>
     /// <param name="damageQuantity"></param>
-    public virtual void InflictDamage(DamageTypeQuantity damage)
+    public virtual void InflictDamage(DamageTypeQuantity damageToInflict)
     {
+		DamageTypeQuantity damage = (DamageTypeQuantity) damageToInflict.Clone();
+
         float currentDamageQuantity = GetDamageTypeQuantity(damage.damageType);
         damage.quantity = ApplyResistanceAndSusceptibility(damage);
 

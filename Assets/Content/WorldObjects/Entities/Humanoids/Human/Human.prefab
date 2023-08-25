@@ -7866,7 +7866,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   attackParticleEffect: {fileID: 7714517724079113232, guid: 17b0d9163e9cdf14aa557557e7d9d76b, type: 3}
   attackType: 0
-  damageAmount: 7.83
+  damageAmount: 5
 --- !u!114 &4947016969258934535
 MonoBehaviour:
   m_ObjectHideFlags: 0
