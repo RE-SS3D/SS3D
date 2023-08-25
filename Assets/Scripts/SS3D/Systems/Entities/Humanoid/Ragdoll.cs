@@ -30,7 +30,6 @@ namespace SS3D.Systems.Entities.Humanoid
 			{
 				_ragdollParts.Add(part.transform.GetComponent<Rigidbody>());
 			}
-			//Recover();
 		}
 
 		private void Update()
@@ -61,6 +60,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			Vector3 movement = _humanoidLivingController.TargetMovement * 3;
 			foreach (Rigidbody part in _ragdollParts)
 			{
+				part.isKinematic = true;
 				part.isKinematic = false;
 				part.AddForce(movement, ForceMode.VelocityChange);
 			}
@@ -70,10 +70,6 @@ namespace SS3D.Systems.Entities.Humanoid
 
 		private void Recover()
 		{
-			foreach (Rigidbody part in _ragdollParts)
-			{
-				part.isKinematic = true;
-			}
 			_animator.enabled = true;
 			_characterController.enabled = true;
 			_humanoidLivingController.enabled = true;
