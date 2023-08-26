@@ -97,7 +97,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
             Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
             _parentBodyPart = value;
             _parentBodyPart._childBodyParts.Add(this);
-			_isDetached = false;
         }
     }
 
@@ -142,6 +141,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		InstanceFinder.ServerManager.Spawn(go, null);
 		var bodyPart = go.GetComponent<BodyPart>();
 		CopyValuesToBodyPart(bodyPart);
+		bodyPart._isDetached = true;
 		_isDetached = true;
 		Dispose();
 	}
@@ -274,7 +274,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		{
 			DestroyBodyPart();
 		}
-		else if (IsSevered)
+		else if (IsSevered && !_isDetached)
 		{
 			RemoveBodyPart();
 		}
@@ -285,7 +285,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// <summary>
 	/// inflict same type damages to all layers present on this body part.
 	/// </summary>
-	public virtual void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
+	public void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
     {
         foreach (BodyLayer layer in BodyLayers)
         {
@@ -296,7 +296,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// inflict same type damages to all layers present on this body part except one.
     /// </summary>
-    public virtual void InflictDamageToAllLayerButOne<T>(DamageTypeQuantity damageTypeQuantity)
+    public void InflictDamageToAllLayerButOne<T>(DamageTypeQuantity damageTypeQuantity)
     {
         foreach (BodyLayer layer in BodyLayers)
         {
@@ -366,7 +366,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	private void RemoveBodyPart()
 	{
-		for(int i= _childBodyParts.Count-1; i>=0;i--)
+		if (_isDetached) return;
+		for (int i= _childBodyParts.Count-1; i>=0;i--)
 		{
 			_childBodyParts[i].RemoveBodyPart();
 		}
