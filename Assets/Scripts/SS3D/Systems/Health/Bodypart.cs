@@ -169,6 +169,20 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// </summary>
 	protected virtual void DetachBodyPart()
 	{
+
+		if (_isDetached) return;
+		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
+		{
+			_childBodyParts[i].DetachBodyPart();
+		}
+		HideSeveredBodyPart();
+		SpawnDetachedBodyPart();
+		_isDetached = true;
+		Dispose();
+	}
+
+	private void SpawnDetachedBodyPart()
+	{
 		/*
 		 * When detaching a bodypart, a prefab is spawned, very similar but having a few different scripts like the Item script, or removing a few others.
 		 * Fishnet in version 3.10.7 does not allow adding networkbehaviours, however it allows disabling and enabling.
@@ -180,8 +194,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		BodyPart bodyPart = go.GetComponent<BodyPart>();
 		CopyValuesToBodyPart(bodyPart);
 		bodyPart._isDetached = true;
-		_isDetached = true;
-		Dispose();
 	}
 
 	/// <summary>
@@ -209,7 +221,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		// Detach all childs
 		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
 		{
-			_childBodyParts[i].RemoveBodyPart();
+			_childBodyParts[i].DetachBodyPart();
 		}
 
 		// Destroy all internal body parts
@@ -325,7 +337,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		}
 		else if (IsSevered && !_isDetached)
 		{
-			RemoveBodyPart();
+			DetachBodyPart();
 		}
 
 		return true;	
@@ -410,25 +422,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         return Name;
     }
-
-	private void RemoveBodyPart()
-	{
-		if (_isDetached) return;
-		for (int i= _childBodyParts.Count-1; i>=0;i--)
-		{
-			_childBodyParts[i].RemoveBodyPart();
-		}
-		RemoveSingleBodyPart();
-	}
-
-	protected virtual void RemoveSingleBodyPart()
-	{
-		if (_isDetached) return;
-		HideSeveredBodyPart();
-		DetachBodyPart();
-		_parentBodyPart?._childBodyParts.Remove(this);
-		_parentBodyPart = null;
-	}
 
 	/// <summary>
 	/// Hide a freshly cut body part on the player.
