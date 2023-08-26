@@ -48,7 +48,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
     public string Name => gameObject.name;
 
-	public bool IsDetached => _parentBodyPart == null;
+	private bool _isDetached;
 
 
 
@@ -97,6 +97,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
             Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
             _parentBodyPart = value;
             _parentBodyPart._childBodyParts.Add(this);
+			_isDetached = false;
         }
     }
 
@@ -141,7 +142,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		InstanceFinder.ServerManager.Spawn(go, null);
 		var bodyPart = go.GetComponent<BodyPart>();
 		CopyValuesToBodyPart(bodyPart);
-
+		_isDetached = true;
 		Dispose();
 	}
 
@@ -374,7 +375,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	protected virtual void RemoveSingleBodyPart()
 	{
-		if (IsDetached) return;
+		if (_isDetached) return;
 		HideSeveredBodyPart();
 		DetachBodyPart();
 		_parentBodyPart?._childBodyParts.Remove(this);
