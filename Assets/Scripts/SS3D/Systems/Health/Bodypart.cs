@@ -23,24 +23,44 @@ using SS3D.Systems.Inventory.Items;
 /// </summary>
 public abstract class BodyPart : InteractionTargetNetworkBehaviour
 {
-
+	/// <summary>
+	/// Body part to which this body part is attached, from an anatomy perspective. (left hand is attached to left arm, attached to torso...)
+	/// Can be null (Human torso are the root of the tree of attached body parts)
+	/// </summary>
     [SyncVar]
     protected BodyPart _parentBodyPart;
 
+	/// <summary>
+	/// When a body part is attached, its shown through its skinnedMeshrenderer on the player. When its detached, it's important to hide this.
+	/// </summary>
     [SerializeField]
     private SkinnedMeshRenderer _skinnedMeshRenderer;
 
+	/// <summary>
+	/// The game object spawned upon detaching the bodypart.
+	/// </summary>
 	[SerializeField]
 	protected GameObject _bodyPartItem;
 
-
+	/// <summary>
+	/// List of body parts child of this one. 
+	/// </summary>
 	protected readonly List<BodyPart> _childBodyParts = new List<BodyPart>();
 
+	/// <summary>
+	/// List of body layers composing a body part.
+	/// </summary>
 	protected readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
 
+	/// <summary>
+	/// A container containing all internal body parts. The head has a brain for an internal body part. Internal body parts should be destroyed
+	/// </summary>
 	[SerializeField]
 	protected AttachedContainer _internalBodyParts;
 
+	/// <summary>
+	/// Collider registering hits on this bodypart. It should usually be on the armature of the Entity, so it follows animations.
+	/// </summary>
 	[SerializeField]
 	protected Collider _bodyCollider;
 
@@ -48,9 +68,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
     public string Name => gameObject.name;
 
+	/// <summary>
+	/// Check if this bodypart has been detached. Should always be true for all bodyparts spawned on detach.
+	/// </summary>
 	private bool _isDetached;
-
-
 
 
     public ReadOnlyCollection<BodyLayer> BodyLayers
@@ -69,9 +90,18 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		get { return _internalBodyParts.Items; }
 	}
 
+	/// <summary>
+	/// A bodypart is considered destroyed when The total amount of damages it sustained is above a maximum.
+	/// </summary>
 	public bool IsDestroyed => TotalDamage >= MaxDamage;
 
+	/// <summary>
+	/// A bodypart is considered severed when the total amount of damages it sustained on the bone layer is above a maximum.
+	/// </summary>
 	public bool IsSevered => GetBodyLayer<BoneLayer>().IsDestroyed();
+
+	public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
+	public float MaxDamage => _bodyLayers.Sum(layer => layer.MaxDamage);
 
 
 	/// <summary>
@@ -82,22 +112,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	public BodyPart ParentBodyPart
     {
         get { return _parentBodyPart; }
-        set
-        {
-            if (value == null)
-                return;
-
-            if (_childBodyParts.Contains(value))
-            {
-                Punpun.Error(this, "trying to set up {bodypart} bodypart as both child and" +
-                    " parent of {bodypart} bodypart.", Logs.Generic, value, this);
-                return;
-            }
-
-            Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
-            _parentBodyPart = value;
-            _parentBodyPart._childBodyParts.Add(this);
-        }
+        set => SetParentBodyPart(value);
     }
 
     public override void OnStartServer()
@@ -117,11 +132,34 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         ParentBodyPart = parentBodyPart;
         _childBodyParts.AddRange(childBodyParts);
         _bodyLayers.AddRange(bodyLayers);
-        foreach (var bodylayer in BodyLayers)
+        foreach (BodyLayer bodylayer in BodyLayers)
         {
             bodylayer.BodyPart = this;
         }
     }
+
+	/// <summary>
+	/// Properly set a new parent body part, should be useful when detaching or attaching again a bodypart.
+	/// </summary>
+	public void SetParentBodyPart(BodyPart value)
+	{
+		if (value == null)
+		{
+			_parentBodyPart = null;
+			return;
+		}
+
+		if (_childBodyParts.Contains(value))
+		{
+			Punpun.Error(this, "trying to set up {bodypart} bodypart as both child and" +
+				" parent of {bodypart} bodypart.", Logs.Generic, value, this);
+			return;
+		}
+
+		Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
+		_parentBodyPart = value;
+		_parentBodyPart._childBodyParts.Add(this);
+	}
 
 	/// <summary>
 	/// The body part is not destroyed, it's simply detached from the entity.
@@ -139,13 +177,17 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		 */
 		GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
 		InstanceFinder.ServerManager.Spawn(go, null);
-		var bodyPart = go.GetComponent<BodyPart>();
+		BodyPart bodyPart = go.GetComponent<BodyPart>();
 		CopyValuesToBodyPart(bodyPart);
 		bodyPart._isDetached = true;
 		_isDetached = true;
 		Dispose();
 	}
 
+	/// <summary>
+	/// Copy the value of this to another body part. 
+	/// Especially useful to keep sustained damages on a spawned body part upon detaching it. 
+	/// </summary>
 	protected virtual void CopyValuesToBodyPart(BodyPart bodyPart)
 	{
 		foreach(BodyLayer layer in bodyPart.BodyLayers)
@@ -159,52 +201,59 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// <summary>
 	/// The body part took so much damages that it's simply destroyed.
 	/// Think complete crushing, burning to dust kind of stuff.
-	/// All child body parts are detached, all internal are destroyed.
+	/// All child body parts are detached, all internal body parts are destroyed.
 	/// </summary>
-	/// <exception cref="NotImplementedException"></exception>
 	[Server]
 	public virtual void DestroyBodyPart()
     {
-		// destroy this body part with all childs on the entity, detach all childs.
+		// Detach all childs
 		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
 		{
 			_childBodyParts[i].RemoveBodyPart();
 		}
 
+		// Destroy all internal body parts
 		if (_internalBodyParts != null){
 
-			foreach (var item in _internalBodyParts.Items)
+			foreach (Item item in _internalBodyParts.Items)
 			{
-				var internalBodyPart = item.GetComponentInChildren<BodyPart>();
+				BodyPart internalBodyPart = item.GetComponentInChildren<BodyPart>();
 				internalBodyPart?.DestroyBodyPart();
 			}
 			_internalBodyParts.Container?.Purge();
 		}
 
+		// Dispose of this body part
 		Dispose();
 	}
 
 	/// <summary>
-	/// Method to call at the end of Destroy and/or Detach
+	/// Method to call at the end of Destroy and/or Detach. Remove parent body part, child in parent, dump or destroy content of containers 
+	/// and deactivate this body part's game object for all observers.
 	/// </summary>
 	[Server]
 	protected void Dispose()
 	{
-		_parentBodyPart?._childBodyParts.Remove(this);
-		_parentBodyPart = null;
+		RemoveChildAndParent();
 		DumpContainers();
 		Deactivate();
 	}
 
+	/// <summary>
+	/// Simply dump the content of all containers
+	/// </summary>
 	protected void DumpContainers()
 	{
-		var containers = GetComponentsInChildren<AttachedContainer>();
-		foreach (var container in containers)
+		AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
+		foreach (AttachedContainer container in containers)
 		{
 			container.Container.Dump();
 		}
 	}
 
+	/// <summary>
+	/// Remove the reference to this in the parent body part, and make the parent body part reference null.
+	/// </summary>
 	protected void RemoveChildAndParent()
 	{
 		_parentBodyPart?._childBodyParts.Remove(this);
@@ -213,6 +262,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 
 
+	/// <summary>
+	/// Deactivate this game object, should run for all observers, and for late joining (hence bufferlast = true).
+	/// </summary>
 	[ObserversRpc(RunLocally = true, BufferLast = true)]
 	protected void Deactivate()
 	{
@@ -237,9 +289,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         _bodyLayers.Add(layer);
         return true;
     }
-
-    public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
-    public float MaxDamage => _bodyLayers.Sum(layer => layer.MaxDamage);
 
 
     /// <summary>
@@ -327,30 +376,28 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <returns></returns>
     public BodyLayer GetBodyLayer<T>()
     {
-        foreach (var layer in BodyLayers)
+        foreach (BodyLayer layer in BodyLayers)
         {
             if (layer is T)
             {
                 return layer;
             }
         }
-
         return null;
     }
 
     /// <summary>
     /// Describe extensively the bodypart.
     /// </summary>
-    /// <returns></returns>
     public string Describe()
     {
         string description = "";
-        foreach (var layer in BodyLayers)
+        foreach (BodyLayer layer in BodyLayers)
         {
             description += "Layer " + layer.GetType().ToString() + "\n";
         }
         description += "Child connected body parts : \n";
-        foreach (var part in _childBodyParts)
+        foreach (BodyPart part in _childBodyParts)
         {
             description += part.gameObject.name + "\n";
         }
@@ -383,12 +430,18 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		_parentBodyPart = null;
 	}
 
+	/// <summary>
+	/// Hide a freshly cut body part on the player.
+	/// </summary>
 	private void HideSeveredBodyPart()
     {
 		if (_skinnedMeshRenderer == null) return;
         _skinnedMeshRenderer.enabled = false;
     }
 
+	/// <summary>
+	/// Add the body layers in their initial states on the player. 
+	/// </summary>
     protected abstract void AddInitialLayers();
 
 
