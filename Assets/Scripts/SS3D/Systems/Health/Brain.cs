@@ -8,7 +8,6 @@ using UnityEditor;
 using SS3D.Substances;
 
 /// <summary>
-/// TODO : Make an organ bodylayer since that might be useful as all organs will have the same damage susceptibility.
 /// When the brain dies, the player dies.
 /// </summary>
 public class Brain : BodyPart
@@ -24,8 +23,8 @@ public class Brain : BodyPart
 
 	public override void DestroyBodyPart()
 	{
-		var entity = GetComponentInParent<Entity>();
+		Entity entity = GetComponentInParent<Entity>();
 		entity?.Kill();
-		Dispose();
+		Dispose(true);
 	}
 }

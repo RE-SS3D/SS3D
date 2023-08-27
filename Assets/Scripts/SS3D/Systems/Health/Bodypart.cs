@@ -175,7 +175,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		HideSeveredBodyPart();
 		SpawnDetachedBodyPart();
 		_isDetached = true;
-		Dispose();
+		Dispose(false);
 	}
 
 	protected void DetachChildBodyParts()
@@ -224,11 +224,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	[Server]
 	public virtual void DestroyBodyPart()
     {
-		// Detach all childs
-		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
-		{
-			_childBodyParts[i].DetachBodyPart();
-		}
+		DetachChildBodyParts();
 
 		// Destroy all internal body parts
 		if (_internalBodyParts != null){
@@ -242,7 +238,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		}
 
 		// Dispose of this body part
-		Dispose();
+		Dispose(true);
 	}
 
 	/// <summary>
@@ -250,22 +246,29 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// and deactivate this body part's game object for all observers.
 	/// </summary>
 	[Server]
-	protected void Dispose()
+	protected void Dispose(bool purgeContainersContent)
 	{
 		RemoveChildAndParent();
-		DumpContainers();
+		DumpOrPurgeContainers(purgeContainersContent);
 		Deactivate();
 	}
 
 	/// <summary>
 	/// Simply dump the content of all containers
 	/// </summary>
-	protected void DumpContainers()
+	private void DumpOrPurgeContainers(bool purgeContainersContent)
 	{
 		AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
 		foreach (AttachedContainer container in containers)
 		{
-			container.Container.Dump();
+			if (purgeContainersContent)
+			{
+				container.Container?.Purge();
+			}
+			else
+			{
+				container.Container.Dump();
+			}
 		}
 	}
 

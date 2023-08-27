@@ -43,6 +43,6 @@ public class HeadBodyPart : BodyPart
 		go.GetComponent<NetworkObject>().RemoveOwnership();
 
 		_isDetached = true;
-		Dispose();
+		Dispose(false);
 	}
 }
