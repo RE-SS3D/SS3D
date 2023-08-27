@@ -271,7 +271,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 976666287367385554}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -282,7 +282,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -932,7 +932,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 397698445884480565}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -943,7 +943,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -1587,7 +1587,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 2265465745196413833}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -1598,7 +1598,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -1906,7 +1906,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 677427367997810169}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -1917,7 +1917,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -2295,7 +2295,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 3301312253177779075}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -2306,7 +2306,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -2489,7 +2489,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 4559920193704007786}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -2500,7 +2500,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -4823,7 +4823,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 1223547382117504491}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -4834,7 +4834,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -6166,7 +6166,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 6606944209543214874}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -6177,7 +6177,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -6635,7 +6635,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 4947016969258934535}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -6646,7 +6646,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -6941,7 +6941,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 4962567597935680168}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -6952,7 +6952,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -7416,19 +7416,6 @@ GameObject:
   - component: {fileID: 1089183168752255729}
   - component: {fileID: 6258404136566216916}
   - component: {fileID: 3771845344306968317}
-  - component: {fileID: 4947016969258934535}
-  - component: {fileID: 397698445884480565}
-  - component: {fileID: 7822392346892910685}
-  - component: {fileID: 4559920193704007786}
-  - component: {fileID: 976666287367385554}
-  - component: {fileID: 1223547382117504491}
-  - component: {fileID: 2265465745196413833}
-  - component: {fileID: 3301312253177779075}
-  - component: {fileID: 6606944209543214874}
-  - component: {fileID: 300689357194200928}
-  - component: {fileID: 7110782222688458070}
-  - component: {fileID: 677427367997810169}
-  - component: {fileID: 4962567597935680168}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -7485,19 +7472,19 @@ MonoBehaviour:
   - {fileID: 1089183168752255729}
   - {fileID: 6258404136566216916}
   - {fileID: 3771845344306968317}
-  - {fileID: 4947016969258934535}
-  - {fileID: 397698445884480565}
-  - {fileID: 7822392346892910685}
-  - {fileID: 4559920193704007786}
-  - {fileID: 976666287367385554}
-  - {fileID: 1223547382117504491}
-  - {fileID: 2265465745196413833}
-  - {fileID: 3301312253177779075}
-  - {fileID: 6606944209543214874}
-  - {fileID: 300689357194200928}
-  - {fileID: 7110782222688458070}
-  - {fileID: 677427367997810169}
-  - {fileID: 4962567597935680168}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 3338140507791060534}
   - {fileID: 5839020956740199093}
   - {fileID: 465916857022110443}
@@ -7721,7 +7708,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _selectionMask:
     serializedVersion: 2
-    m_Bits: 1043
+    m_Bits: 7187
 --- !u!114 &3788807725072305327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7867,240 +7854,6 @@ MonoBehaviour:
   attackParticleEffect: {fileID: 7714517724079113232, guid: 17b0d9163e9cdf14aa557557e7d9d76b, type: 3}
   attackType: 0
   damageAmount: 10
---- !u!114 &4947016969258934535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 12
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 6689112149766062617}
---- !u!114 &397698445884480565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 13
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 1202753384528456214}
---- !u!114 &7822392346892910685
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 14
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 3028215939049344471}
---- !u!114 &4559920193704007786
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 15
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 5460457101901443602}
---- !u!114 &976666287367385554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 16
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 7584683726852713205}
---- !u!114 &1223547382117504491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 17
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 745316812857141604}
---- !u!114 &2265465745196413833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 18
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 528052100901114241}
---- !u!114 &3301312253177779075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 19
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 2306112832503890745}
---- !u!114 &6606944209543214874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 20
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 6549211580931091111}
---- !u!114 &300689357194200928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 21
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 1082206991310670826}
---- !u!114 &7110782222688458070
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 22
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 2032574427462071784}
---- !u!114 &677427367997810169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 23
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 8818216694137164997}
---- !u!114 &4962567597935680168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 24
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _openState: 0
-  OverrideOpenIcon: {fileID: 0}
-  attachedContainer: {fileID: 3070344760670726098}
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
@@ -9534,6 +9287,7 @@ GameObject:
   - component: {fileID: 2877804502633151377}
   - component: {fileID: 5948957322531814959}
   - component: {fileID: 3114280644682490816}
+  - component: {fileID: 4140257108267273893}
   m_Layer: 12
   m_Name: HumanHandRight
   m_TagString: Untagged
@@ -9757,6 +9511,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 2877804502633151377}
   Mirrored: 0
+--- !u!114 &4140257108267273893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222677626908822405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76995bdf538c155469a296a7b56f57f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8320002649115381438
 GameObject:
   m_ObjectHideFlags: 0
@@ -9805,7 +9571,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 7110782222688458070}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -9816,7 +9582,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -10110,7 +9876,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 0
-  ContainerInteractive: {fileID: 300689357194200928}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 7489720702399317162}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -10121,7 +9887,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 1
@@ -10662,7 +10428,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _automaticContainerSetUp: 1
-  ContainerInteractive: {fileID: 7822392346892910685}
+  ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
@@ -10673,7 +10439,7 @@ MonoBehaviour:
   _initialized: 1
   _maxDistance: 5
   _isOpenable: 0
-  _isInteractive: 1
+  _isInteractive: 0
   _hasUi: 0
   _hasCustomInteraction: 0
   _hasCustomDisplay: 0
@@ -11041,6 +10807,7 @@ GameObject:
   - component: {fileID: 8825455644555575778}
   - component: {fileID: 4181552281325083619}
   - component: {fileID: 7572883762844705701}
+  - component: {fileID: 5377253027743065077}
   m_Layer: 12
   m_Name: HumanHandLeft
   m_TagString: Untagged
@@ -11264,6 +11031,18 @@ MonoBehaviour:
   _pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   _interactionOrigin: {fileID: 1342008326084027676}
   HandsController: {fileID: 2150560678942863610}
+--- !u!114 &5377253027743065077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9182038362482206685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76995bdf538c155469a296a7b56f57f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4384804525801143358
 PrefabInstance:
   m_ObjectHideFlags: 0
