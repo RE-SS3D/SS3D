@@ -71,7 +71,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// <summary>
 	/// Check if this bodypart has been detached. Should always be true for all bodyparts spawned on detach.
 	/// </summary>
-	private bool _isDetached;
+	protected bool _isDetached;
 
 
     public ReadOnlyCollection<BodyLayer> BodyLayers
@@ -171,17 +171,22 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	{
 
 		if (_isDetached) return;
-		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
-		{
-			_childBodyParts[i].DetachBodyPart();
-		}
+		DetachChildBodyParts();
 		HideSeveredBodyPart();
 		SpawnDetachedBodyPart();
 		_isDetached = true;
 		Dispose();
 	}
 
-	private void SpawnDetachedBodyPart()
+	protected void DetachChildBodyParts()
+	{
+		for (int i = _childBodyParts.Count - 1; i >= 0; i--)
+		{
+			_childBodyParts[i].DetachBodyPart();
+		}
+	}
+
+	protected BodyPart SpawnDetachedBodyPart()
 	{
 		/*
 		 * When detaching a bodypart, a prefab is spawned, very similar but having a few different scripts like the Item script, or removing a few others.
@@ -194,6 +199,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		BodyPart bodyPart = go.GetComponent<BodyPart>();
 		CopyValuesToBodyPart(bodyPart);
 		bodyPart._isDetached = true;
+		return bodyPart;
 	}
 
 	/// <summary>
@@ -424,7 +430,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	/// <summary>
 	/// Hide a freshly cut body part on the player.
 	/// </summary>
-	private void HideSeveredBodyPart()
+	protected void HideSeveredBodyPart()
     {
 		if (_skinnedMeshRenderer == null) return;
         _skinnedMeshRenderer.enabled = false;

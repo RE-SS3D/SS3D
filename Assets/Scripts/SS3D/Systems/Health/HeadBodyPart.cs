@@ -33,17 +33,16 @@ public class HeadBodyPart : BodyPart
 
 	protected override void DetachBodyPart()
 	{
-		GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
-		InstanceFinder.ServerManager.Spawn(go, null);
-		var bodyPart = go.GetComponent<BodyPart>();
-		CopyValuesToBodyPart(bodyPart);
+		if (_isDetached) return;
+		DetachChildBodyParts();
+		HideSeveredBodyPart();
 
+		BodyPart go = SpawnDetachedBodyPart();
 		MindSystem entitySystem = Subsystems.Get<MindSystem>();
 		entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
 		go.GetComponent<NetworkObject>().RemoveOwnership();
 
-		RemoveChildAndParent();
-		DumpContainers();
-		Deactivate();
+		_isDetached = true;
+		Dispose();
 	}
 }
