@@ -283,13 +283,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		gameObject.SetActive(false);
 	}
 
-
-
-	public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
-    {
-        return new IInteraction[] { new KillInteraction() };
-    }
-
     /// <summary>
     /// Add a body layer if none of the same type are already present on this body part.
     /// TODO : use generic to check type, actually check if only one body layer of each kind.
@@ -422,6 +415,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         return Name;
     }
+
+	public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
+	{
+		return new IInteraction[] {};
+	}
 
 	/// <summary>
 	/// Hide a freshly cut body part on the player.
