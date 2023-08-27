@@ -34,8 +34,6 @@ namespace SS3D.Systems.Inventory.Containers
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
 
-		[SyncVar] public HumanInventory inventory;
-
 		// reference towards the container UI linked to this container.
 		[Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
         public ContainerUi ContainerUi;
