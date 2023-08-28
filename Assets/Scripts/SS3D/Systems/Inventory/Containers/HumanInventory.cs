@@ -408,7 +408,6 @@ namespace SS3D.Systems.Inventory.Containers
                 if (!ContainersOnPlayer.Contains(container))
                 {
                     AddContainer(container);
-                    Punpun.Warning(this, $"invoke {container} added");
                 }
             }    
         }
