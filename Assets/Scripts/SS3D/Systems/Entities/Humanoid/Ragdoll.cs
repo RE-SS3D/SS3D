@@ -15,10 +15,11 @@ namespace SS3D.Systems.Entities.Humanoid
 		private CharacterController _characterController;
 		private List<Rigidbody> _ragdollParts;
 		private float _knockdownEnd;
-		private bool _isKnockedDown = false;
+		public bool IsKnockedDown { get; private set; }
 
 		private void Start()
 		{
+			IsKnockedDown = false;
 			_character = ArmatureRoot.parent;
 			_center = ArmatureRoot.GetChild(0);
 			_animator = _character.GetComponent<Animator>();
@@ -34,7 +35,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
 		private void Update()
 		{
-			if (_isKnockedDown)
+			if (IsKnockedDown)
 			{
 				if (Input.GetKeyDown(KeyCode.Y))
 				{
@@ -52,7 +53,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			
 		}
 
-		private void Knockdown()
+		public void Knockdown()
 		{
 			_humanoidLivingController.enabled = false;
 			_characterController.enabled = false;
@@ -65,15 +66,15 @@ namespace SS3D.Systems.Entities.Humanoid
 				part.AddForce(movement, ForceMode.VelocityChange);
 			}
 
-			_isKnockedDown = true;
+			IsKnockedDown = true;
 		}
 
-		private void Recover()
+		public void Recover()
 		{
 			_animator.enabled = true;
 			_characterController.enabled = true;
 			_humanoidLivingController.enabled = true;
-			_isKnockedDown = false;
+			IsKnockedDown = false;
 			_animator.Play("Getting Up");
 		}
 
