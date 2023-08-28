@@ -1,4 +1,7 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Health;
@@ -21,11 +24,39 @@ namespace SS3D.Systems.Entities.Humanoid
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
-        
-        /// <summary>
-        /// Executes the movement code and updates the IK targets
-        /// </summary>
-        protected override void ProcessCharacterMovement()
+
+		List<FootBodyPart> feet;
+
+		private int _optimalFeetNumber = 2;
+
+		[SyncVar] private float _feetHealthFactor;
+
+		public override void OnStartClient()
+		{
+			base.OnStartClient();
+			if (!IsOwner)
+			{
+				return;
+			}	
+		}
+
+		public override void OnStartServer()
+		{
+			base.OnStartServer();
+			feet = GetComponentsInChildren<FootBodyPart>().ToList();
+			foreach (FootBodyPart foot in feet)
+			{
+				foot.OnDamageInflicted += HandleFootHurt;
+				foot.OnBodyPartDetached += HandleFootRemoved;
+				foot.OnBodyPartDestroyed += HandleFootRemoved;
+			}
+			_feetHealthFactor = 1;
+		}
+
+		/// <summary>
+		/// Executes the movement code and updates the IK targets
+		/// </summary>
+		protected override void ProcessCharacterMovement()
         {
             ProcessPlayerInput();
 
@@ -54,8 +85,28 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            _characterController.Move(TargetMovement * ((_movementSpeed) * Time.deltaTime));
+            _characterController.Move(TargetMovement * ((_feetHealthFactor * _movementSpeed) * Time.deltaTime));
         }
-    }
+
+		private void HandleFootHurt(object sender, EventArgs e)
+		{
+			UpdateFeetHealthFactor();
+		}
+
+		private void HandleFootRemoved(object sender, EventArgs e)
+		{
+			FootBodyPart foot = (FootBodyPart)sender;
+			if (foot != null)
+			{
+				feet.Remove(foot);
+			}
+			UpdateFeetHealthFactor();
+		}
+
+		private void UpdateFeetHealthFactor()
+		{
+			_feetHealthFactor = feet.Sum(x => x.GetSpeedContribution()) / _optimalFeetNumber;
+		}
+	}
 
 }

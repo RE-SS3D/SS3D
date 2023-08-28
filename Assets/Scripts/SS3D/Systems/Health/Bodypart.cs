@@ -17,6 +17,7 @@ using FishNet;
 using Coimbra;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using System;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -103,6 +104,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 	public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
 	public float MaxDamage => _bodyLayers.Sum(layer => layer.MaxDamage);
 
+	public float RelativeDamage => 1- TotalDamage/ MaxDamage;
+
+	public event EventHandler OnDamageInflicted;
+	public event EventHandler OnBodyPartDestroyed;
+	public event EventHandler OnBodyPartDetached;
+	public event EventHandler OnBodyPartLayerAdded;
 
 	/// <summary>
 	/// The parent bodypart is the body part attached to this body part, closest from the brain. 
@@ -119,7 +126,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         base.OnStartServer();
         ParentBodyPart = _parentBodyPart;
-        AddInitialLayers();
+		AddInitialLayers();
     }
 
     public virtual void Init(BodyPart parent)
@@ -175,6 +182,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		HideSeveredBodyPart();
 		SpawnDetachedBodyPart();
 		_isDetached = true;
+		InvokeOnBodyPartDetached();
 		Dispose(false);
 	}
 
@@ -238,6 +246,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		}
 
 		// Dispose of this body part
+		InvokeOnBodyPartDestroyed();
 		Dispose(true);
 	}
 
@@ -342,6 +351,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 			DetachBodyPart();
 		}
 
+		OnDamageInflicted?.Invoke(this, EventArgs.Empty);
 		return true;	
     }
 
@@ -439,10 +449,25 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         _skinnedMeshRenderer.enabled = false;
     }
 
+	protected void InvokeOnBodyPartDetached()
+	{
+		OnBodyPartDetached?.Invoke(this, EventArgs.Empty);
+	}
+
+	protected void InvokeOnBodyPartDestroyed()
+	{
+		OnBodyPartDestroyed?.Invoke(this, EventArgs.Empty);
+	}
+
+	protected void InvokeOnBodyPartLayerAdded()
+	{
+		OnBodyPartLayerAdded?.Invoke(this, EventArgs.Empty);
+	}
+
 	/// <summary>
 	/// Add the body layers in their initial states on the player. 
 	/// </summary>
-    protected abstract void AddInitialLayers();
+	protected abstract void AddInitialLayers();
 
 
 }

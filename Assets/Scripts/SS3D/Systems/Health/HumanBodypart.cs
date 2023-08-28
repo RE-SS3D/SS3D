@@ -24,5 +24,6 @@ public class HumanBodypart : BodyPart
         TryAddBodyLayer(new BoneLayer(this));
         TryAddBodyLayer(new CirculatoryLayer(this));
         TryAddBodyLayer(new NerveLayer(this));
-    }
+		InvokeOnBodyPartLayerAdded();
+	}
 }

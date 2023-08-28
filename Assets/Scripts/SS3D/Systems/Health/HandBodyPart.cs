@@ -21,5 +21,6 @@ public class HandBodyPart : BodyPart
 		TryAddBodyLayer(new BoneLayer(this));
 		TryAddBodyLayer(new CirculatoryLayer(this));
 		TryAddBodyLayer(new NerveLayer(this));
+		InvokeOnBodyPartLayerAdded();
 	}
 }

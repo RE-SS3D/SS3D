@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Systems.Inventory.Items;
+using System;
 
 public class HeadBodyPart : BodyPart
 {
@@ -28,7 +29,7 @@ public class HeadBodyPart : BodyPart
 		TryAddBodyLayer(new BoneLayer(this));
 		TryAddBodyLayer(new CirculatoryLayer(this));
 		TryAddBodyLayer(new NerveLayer(this));
-		TryAddBodyLayer(new OrganLayer(this));
+		InvokeOnBodyPartLayerAdded();
 	}
 
 	protected override void DetachBodyPart()
@@ -42,6 +43,7 @@ public class HeadBodyPart : BodyPart
 		entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
 		go.GetComponent<NetworkObject>().RemoveOwnership();
 
+		InvokeOnBodyPartDetached();
 		_isDetached = true;
 		Dispose(false);
 	}
