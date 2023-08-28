@@ -1,4 +1,4 @@
-﻿using Serilog;
+using Serilog;
 using Serilog.Sinks.Unity3D;
 using Serilog.Core;
 using Serilog.Events;
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
 using SS3D.Data;
+using FishNet.Configuring;
 
 
 namespace SS3D.Core

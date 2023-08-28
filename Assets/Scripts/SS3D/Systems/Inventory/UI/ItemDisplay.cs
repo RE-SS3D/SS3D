@@ -1,4 +1,4 @@
-﻿using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Inventory.Items;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -136,7 +136,7 @@ namespace SS3D.Systems.Inventory.UI
             {
                 return;
             }
-            ItemImage.sprite = Item != null ? Item.ItemSprite : null;
+            ItemImage.sprite = Item != null ? Item.Sprite : null;
 
             Color imageColor = ItemImage.color;
             imageColor.a = ItemImage.sprite != null ? 255 : 0;

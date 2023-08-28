@@ -99,7 +99,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// The sprite that is shown in the container slot
         /// </summary>
-        public Sprite ItemSprite
+        public Sprite Sprite
         {
             get => InventorySprite();
             set => _sprite = value;
@@ -155,7 +155,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Freezes the item, making it not move or collide
         /// </summary>
-        [ServerOrClient]
+        [Server]
         public void Freeze()
         {
             if (_rigidbody != null)
@@ -173,7 +173,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Unfreezes the item, restoring normal functionality
         /// </summary>
-        [ServerOrClient]
+        [Server]
         public void Unfreeze()
         {
             if (_rigidbody != null)
@@ -190,7 +190,7 @@ namespace SS3D.Systems.Inventory.Items
         
         
         /// <param name="visible">Should the item be visible</param>
-        [ServerOrClient]
+        [Server]
         public void SetVisibility(bool visible)
         {
             // TODO: Make this handle multiple renderers, with different states

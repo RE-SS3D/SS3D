@@ -178,12 +178,8 @@ namespace SS3D.Systems.Inventory.Containers
             base.OnAwake();
             _container = new Container(this);
             _storedItems.OnChange += HandleStoredItemsChanged;
+            UpdateContainer(_container);
             _container.OnContentsChanged += HandleContainerContentsChanged;
-
-			if (IsServer)
-			{
-				UpdateContainer(_container);
-			}
         }
 
 		protected override void OnDisabled()
@@ -288,7 +284,7 @@ namespace SS3D.Systems.Inventory.Containers
             _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
 
-        [ServerOrClient]
+        [Server]
         private void handleItemRemoved(Item item)
         {
 
@@ -308,7 +304,7 @@ namespace SS3D.Systems.Inventory.Containers
             item.Unfreeze();
         }
 
-        [ServerOrClient]
+        [Server]
         private void handleItemAdded(Item item)
         {
             item.Freeze();
@@ -331,7 +327,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        [ServerOrClient]
+        [Server]
         private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
