@@ -50,15 +50,18 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		[Server]
 		protected override CheckArgsResponse CheckArgs(string[] args)
 		{
-			CheckArgsResponse response = new CheckArgsResponse();
+			CheckArgsResponse response = new();
 			if (args.Length < 1 || args.Length > 2)
 			{
 				response.IsValid = false;
 				response.InvalidArgs = "Invalid number of arguments";
 				return response;
 			}
-
-			if (float.TryParse(args[1], out float time))
+			
+			// Use dot as separator
+			NumberFormatInfo nfi = new();
+			nfi.NumberDecimalSeparator = ".";
+			if (float.TryParse(args[1], NumberStyles.Any, nfi, out float time))
 			{
 				if (time <= 0)
 				{
