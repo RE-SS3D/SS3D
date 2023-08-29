@@ -267,6 +267,8 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
+			if (changeType == ContainerChangeType.None) return;
+
             InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
 
@@ -330,14 +332,10 @@ namespace SS3D.Systems.Inventory.Containers
 				return false;
 			}
 
-			Vector2Int itemSize = item.Size;
-			int maxX = Size.x - itemSize.x;
-			int maxY = Size.y - itemSize.y;
-
 			// TODO: Use a more efficient algorithm
-			for (int y = 0; y <= maxY; y++)
+			for (int y = 0; y <= Size.y; y++)
 			{
-				for (int x = 0; x <= maxX; x++)
+				for (int x = 0; x <= Size.x; x++)
 				{
 					Vector2Int itemPosition = new Vector2Int(x, y);
 					if (AddItemPosition(item, itemPosition))
@@ -368,11 +366,6 @@ namespace SS3D.Systems.Inventory.Containers
 					return true;
 				}
 
-				if (!IsAreaFreeExcluding(new RectInt(position, item.Size), item))
-				{
-					return false;
-				}
-
 				StoredItem storedItem = new(item, position);
 				ReplaceStoredItem(storedItem, itemIndex);
 				return true;
@@ -388,11 +381,8 @@ namespace SS3D.Systems.Inventory.Containers
 			bool wasAdded = false;
 			lock (_modificationLock)
 			{
-				if (IsAreaFree(new RectInt(position, item.Size)))
-				{
-					AddItemUnchecked(item, position);
-					wasAdded = true;
-				}
+				AddItemUnchecked(item, position);
+				wasAdded = true;
 			}
 
 			if (!wasAdded)
@@ -463,64 +453,6 @@ namespace SS3D.Systems.Inventory.Containers
 		}
 
 		/// <summary>
-		/// Checks if a given area in the container is free
-		/// </summary>
-		/// <param name="area">The area to check</param>
-		/// <returns>If the given area is free</returns>
-		public bool IsAreaFree(RectInt area)
-		{
-			if (area.xMin < 0 || area.xMax < 0)
-			{
-				return false;
-			}
-
-			if (area.xMax > Size.x || area.yMax > Size.y)
-			{
-				return false;
-			}
-
-			foreach (StoredItem storedItem in _storedItems)
-			{
-				if (storedItem.IsExcludedOfFreeAreaComputation) continue;
-				RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
-				if (area.Overlaps(storedItemPlacement))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		/// <summary>
-		/// Checks if a given area in the container is free, while excluding an item
-		/// </summary>
-		/// <param name="area">The area to check</param>
-		/// <param name="item">The item to exclude from the check</param>
-		/// <returns>If the given area is free</returns>
-		public bool IsAreaFreeExcluding(RectInt area, Item item)
-		{
-			//TODO : WARNING !!!! this modify the synclist multiple times sending SET events. Only modify the synclist when needed, use a copy instead.
-			int itemIndex = FindItem(item);
-			StoredItem storedItem = default;
-			if (itemIndex != -1)
-			{
-				storedItem = _storedItems[itemIndex];
-				_storedItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, true);
-			}
-
-			bool areaFree = IsAreaFree(area);
-
-			if (itemIndex != -1)
-			{
-				_storedItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, false);
-				_storedItems[itemIndex] = storedItem;
-			}
-
-			return areaFree;
-		}
-
-		/// <summary>
 		/// Removes an item from the container
 		/// </summary>
 		/// <param name="item">The item to remove</param>
@@ -576,8 +508,7 @@ namespace SS3D.Systems.Inventory.Containers
 		{
 			foreach (StoredItem storedItem in _storedItems)
 			{
-				RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
-				if (storedItemPlacement.Contains(position))
+				if (storedItem.Position == position)
 				{
 					return storedItem.Item;
 				}
@@ -684,23 +615,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns></returns>
 		public bool CanHoldItem(Item item)
 		{
-			Vector2Int itemSize = item.Size;
-			int maxX = Size.x - itemSize.x;
-			int maxY = Size.y - itemSize.y;
-
-			// TODO: Use a more efficient algorithm
-			for (int y = 0; y <= maxY; y++)
-			{
-				for (int x = 0; x <= maxX; x++)
-				{
-					if (IsAreaFreeExcluding(new RectInt(new Vector2Int(x, y), item.Size), item))
-					{
-						return true;
-					}
-				}
-			}
-
-			return false;
+			return Items.Count() < Size.x * Size.y;
 		}
 
 		/// <summary>

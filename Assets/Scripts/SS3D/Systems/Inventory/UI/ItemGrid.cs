@@ -200,7 +200,6 @@ namespace SS3D.Systems.Inventory.UI
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
             Item item = display.Item;
-            Vector2Int size = item.Size;
             Vector3 dragPosition = display.transform.position;
 
             // Get item center position
@@ -209,13 +208,7 @@ namespace SS3D.Systems.Inventory.UI
             Vector2 position = GetSlotPositionExact(new Vector2(dragPosition.x + rectCenter.x, dragPosition.y - rectCenter.y));
 
             // Offset slot by item dimensions
-            Vector2Int slot = new(Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
-
-            // Check if the area of drop is free, if not, don't transfer.
-            if (!AttachedContainer.IsAreaFreeExcluding(new RectInt(slot, size), item))
-            {
-                return;
-            }
+            Vector2Int slot = new(Mathf.RoundToInt(position.x - 1 / 2f), Mathf.RoundToInt(position.y - 1 / 2f));
 
             CreateItemDisplay(item, slot, true);
 
@@ -247,9 +240,8 @@ namespace SS3D.Systems.Inventory.UI
             GameObject o = Instantiate(ItemDisplayPrefab, transform);
             ItemGridItem itemSpriteOnGrid = o.GetComponent<ItemGridItem>();
 
-            Vector2Int itemSize = item.Size;
             Vector2 cellSize = _gridLayout.cellSize;
-            o.GetComponent<RectTransform>().sizeDelta = new Vector2(itemSize.x * cellSize.x, itemSize.y * cellSize.y);
+            o.GetComponent<RectTransform>().sizeDelta = new Vector2(cellSize.x, cellSize.y);
 
             itemSpriteOnGrid.Item = item;
             MoveToSlot(o.transform, position);

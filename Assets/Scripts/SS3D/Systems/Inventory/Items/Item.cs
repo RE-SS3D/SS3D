@@ -40,9 +40,6 @@ namespace SS3D.Systems.Inventory.Items
         [FormerlySerializedAs("Weight")]
         [SerializeField] private float _weight;
 
-        [FormerlySerializedAs("Size")]
-        [SerializeField] private Vector2Int _size;
-
         [FormerlySerializedAs("Traits")]
         [SerializeField] private List<Trait> _startingTraits;
 
@@ -72,7 +69,6 @@ namespace SS3D.Systems.Inventory.Items
 
         public string Name => _name;
         public ItemId ItemId { get; set; }
-        public Vector2Int Size => _size;
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
         public AttachedContainer Container => _container;
@@ -91,7 +87,6 @@ namespace SS3D.Systems.Inventory.Items
             }
             _name = itemName ?? string.Empty;
             _weight = weight;
-            _size = size;
             _traits.AddRange(traits);
             _initialised = true;
         }
@@ -243,7 +238,7 @@ namespace SS3D.Systems.Inventory.Items
             {
                 traits += trait.Name + " ";
             }
-            return $"{Name}, size = {Size}, weight = {_weight}, traits = {traits}, container is {_container?.ContainerName}";
+            return $"{Name}, weight = {_weight}, traits = {traits}, container is {_container?.ContainerName}";
         }
 
         /// <summary>
@@ -329,26 +324,6 @@ namespace SS3D.Systems.Inventory.Items
                 storedItemWithParent.Key.parent = storedItemWithParent.Value;
             }
             return icon;
-        }
-
-        /// <summary>
-        /// Check if size is correctly defined, and if not set it as (1,1).
-        /// </summary>
-        [ServerOrClient]
-        public void ValidateSize()
-        {
-            // Items can't have no size
-            if (Size.x <= 0)
-            {
-                _size = new Vector2Int(1, Size.y);
-                Punpun.Warning(this, "item size in x lesser or equal zero, reverting it to 1");
-            }
-
-            if (Size.y <= 0)
-            {
-                _size = new Vector2Int(Size.x, 1);
-                Punpun.Warning(this, "item size in y lesser or equal zero, reverting it to 1");
-            }
         }
 
         /// <summary>
