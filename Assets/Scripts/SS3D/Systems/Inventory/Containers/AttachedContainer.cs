@@ -79,7 +79,6 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip(" The number of custom displays."), SerializeField]
         private int _numberDisplay;
 
-
         [Tooltip(" if should display as slot in UI."), SerializeField]
         private bool _displayAsSlotInUI;
 
@@ -115,8 +114,7 @@ namespace SS3D.Systems.Inventory.Containers
         // If you define setters for the properties of this region in the future, be careful and make sure they modify the related container fields as well in Container.cs.
         #region ContainerAndAttachedContainerFieldsAndProperties
 
-        [Tooltip("Name of the container."), SerializeField]
-        private string _containerName = "container";
+        public string ContainerName => gameObject.name;
 
         [Tooltip("Defines the size of the container, every item takes a defined place inside a container."), SerializeField]
         private Vector2Int _size = new(0, 0);
@@ -133,8 +131,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         [Tooltip("The filter on the container."), SerializeField]
         private Filter _startFilter;
-
-        public string ContainerName => _containerName;
         public ContainerType Type => _type;
         public Vector2Int Size => _size;
         public bool HideItems => _hideItems;
@@ -174,8 +170,6 @@ namespace SS3D.Systems.Inventory.Containers
 		/// Called when the contents of the container change
 		/// </summary>
 		public event ContainerContentsHandler OnContentsChanged;
-
-		public readonly List<Entity> ObservingPlayers = new();
 
 		private readonly object _modificationLock = new();
 		/// <summary>
@@ -488,7 +482,6 @@ namespace SS3D.Systems.Inventory.Containers
 				_storedItems.Add(newItem);
 		}
 
-
 		/// <summary>
 		/// Correctly set a storeItem in the container at the given index. All replacing should use this method, never do it directly.
 		/// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
@@ -735,7 +728,6 @@ namespace SS3D.Systems.Inventory.Containers
 			{
 				return _startFilter.CanStore(item);
 			}
-
 			return true;
 		}
 

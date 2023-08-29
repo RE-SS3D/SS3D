@@ -67,16 +67,6 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Hands hands = GetComponent<Hands>();
-            foreach (Entity observer in container.ObservingPlayers)
-            {
-                // checks if the container is already viewed by another entity
-                if (HasContainer(container) && observer != hands)
-                {
-                    return;
-                }
-            }
-
             container.ContainerInteractive.SetOpenState(state);
         }
 
