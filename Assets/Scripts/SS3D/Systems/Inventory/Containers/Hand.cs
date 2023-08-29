@@ -58,7 +58,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 		public bool IsEmpty()
 		{
-			return Container.Container.Empty;
+			return Container.Empty;
 		}
 
 		/// <summary>
@@ -95,12 +95,12 @@ namespace SS3D.Systems.Inventory.Containers
 				return;
 			}
 
-			if (item.Container != null && item.Container.AttachedTo != Container)
+			if (item.Container != null && item.Container != Container)
 			{
 				item.Container.RemoveItem(item);
 			}
 
-			Container.Container.AddItem(item);
+			Container.AddItem(item);
 		}
 
 		[ServerRpc]
@@ -111,7 +111,7 @@ namespace SS3D.Systems.Inventory.Containers
 				return;
 			}
 
-			Container.Container.Dump();
+			Container.Dump();
 		}
 
 		/// <summary>

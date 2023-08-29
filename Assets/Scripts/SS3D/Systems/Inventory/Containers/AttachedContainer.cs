@@ -16,6 +16,7 @@ using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
 using FishNet.Object;
+using static SS3D.Substances.SubstanceContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -139,11 +140,18 @@ namespace SS3D.Systems.Inventory.Containers
         public bool HideItems => _hideItems;
         public Filter StartFilter => _startFilter;
 
-        #endregion
+		/// <summary>
+		/// Is this container empty
+		/// </summary>
+		public bool Empty => ItemCount == 0;
+		/// <summary>
+		/// How many items are in this container
+		/// </summary>
+		public int ItemCount => Items.Count();
 
-        private Container _container;
+		#endregion
 
-        public event EventHandler<Item> OnItemAttached;
+		public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;
 
 		public delegate void AttachedContainerHandler(AttachedContainer attachedContainer);
@@ -159,31 +167,29 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container
         /// </summary>
-        public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
+        public IEnumerable<Item> Items => _storedItems.Select(x => x.Item);
 
-        public SyncList<StoredItem> StoredItems => _storedItems;
-
+		public delegate void ContainerContentsHandler(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
 		/// <summary>
-		/// The container that is attached
-		/// <remarks>Only set this right after creation, as event listener will not update</remarks>
+		/// Called when the contents of the container change
 		/// </summary>
-		public Container Container
-        {
-            get => _container;
-            set => UpdateContainer(value);
-        }
+		public event ContainerContentsHandler OnContentsChanged;
 
-        protected override void OnAwake()
+		public readonly List<Entity> ObservingPlayers = new();
+
+		private readonly object _modificationLock = new();
+		/// <summary>
+		/// The last time the contents of this container were changed
+		/// </summary>
+		public float LastModification { get; private set; }
+
+		public ContainerType ContainerType => _type;
+
+		protected override void OnAwake()
         {
             base.OnAwake();
-            _container = new Container(this);
             _storedItems.OnChange += HandleStoredItemsChanged;
-            _container.OnContentsChanged += HandleContainerContentsChanged;
-
-			if (IsServer)
-			{
-				UpdateContainer(_container);
-			}
+            OnContentsChanged += HandleContainerContentsChanged;
         }
 
 		protected override void OnDisabled()
@@ -215,12 +221,12 @@ namespace SS3D.Systems.Inventory.Containers
 		protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            Container?.Purge();
+            Purge();
         }
 
         public override string ToString()
         {
-            return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
+            return $"{name}({nameof(AttachedContainer)})[size: {Size}, items: ]";
         }
 
         public void ProcessItemAttached(Item e)
@@ -231,27 +237,6 @@ namespace SS3D.Systems.Inventory.Containers
         public void ProcessItemDetached(Item e)
         {
             OnItemDetached?.Invoke(this, e);
-        }
-
-		/// <summary>
-		/// Replace the current container with a new one and set it up.
-		/// </summary>
-		/// <param name="newContainer"></param>
-		[Server]
-        private void UpdateContainer(Container newContainer)
-        {
-            if (_container != null)
-            {
-                _container.AttachedTo = null;
-            }
-
-            if (newContainer == null)
-            {
-                return;
-            }
-
-            newContainer.AttachedTo = this;
-            _container = newContainer;
         }
 
         /// <summary>
@@ -285,7 +270,7 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
+            InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
 
         [ServerOrClient]
@@ -332,7 +317,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         [ServerOrClient]
-        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void HandleContainerContentsChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {
@@ -379,7 +364,440 @@ namespace SS3D.Systems.Inventory.Containers
                     }
             }
         }
-    }
 
+		/// <summary>
+		/// Places an item into this container in the first available position
+		/// </summary>
+		/// <param name="item">The item to place</param>
+		/// <returns>If the item was added</returns>
+		public bool AddItem(Item item)
+		{
+			if (ContainsItem(item))
+			{
+				return true;
+			}
+
+			if (!CanStoreItem(item))
+			{
+				return false;
+			}
+
+			Vector2Int itemSize = item.Size;
+			int maxX = Size.x - itemSize.x;
+			int maxY = Size.y - itemSize.y;
+
+			// TODO: Use a more efficient algorithm
+			for (int y = 0; y <= maxY; y++)
+			{
+				for (int x = 0; x <= maxX; x++)
+				{
+					Vector2Int itemPosition = new Vector2Int(x, y);
+					if (AddItemPosition(item, itemPosition))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Tries to add an item at the specified position
+		/// </summary>
+		/// <param name="storedItem">The item to add</param>
+		/// <param name="position">The target position in the container</param>
+		/// <returns>If the item was added</returns>
+		public bool AddItemPosition(Item item, Vector2Int position)
+		{
+			int itemIndex = FindItem(item);
+			if (itemIndex != -1)
+			{
+				StoredItem existingItem = _storedItems[itemIndex];
+				// Try to move existing item
+				if (existingItem.Position == position)
+				{
+					return true;
+				}
+
+				if (!IsAreaFreeExcluding(new RectInt(position, item.Size), item))
+				{
+					return false;
+				}
+
+				StoredItem storedItem = new(item, position);
+				ReplaceStoredItems(storedItem, itemIndex);
+				return true;
+
+				// Item at same position, nothing to do
+			}
+
+			if (!CanStoreItem(item))
+			{
+				return false;
+			}
+
+			bool wasAdded = false;
+			lock (_modificationLock)
+			{
+				if (IsAreaFree(new RectInt(position, item.Size)))
+				{
+					AddItemUnchecked(item, position);
+					wasAdded = true;
+				}
+			}
+
+			if (!wasAdded)
+			{
+				return false;
+			}
+
+			item.SetContainer(this);
+
+			return true;
+		}
+
+		/// <summary>
+		/// Adds an item to the container without any checks (but ensuring there are no duplicates)
+		/// </summary>
+		/// <param name="item">The item to add</param>
+		/// <param name="position">Where the item should go, make sure this position is valid and free!</param>
+		private void AddItemUnchecked(Item item, Vector2Int position)
+		{
+			StoredItem newItem = new(item, position);
+
+			// Move it if it is already in the container
+			if (MoveItemUnchecked(newItem))
+			{
+				return;
+			}
+
+			AddToStoredItems(newItem);
+			LastModification = Time.time;
+		}
+
+		/// <summary>
+		/// Correctly add a storeItem to the container. All adding should use this method, never do it directly.
+		/// If an AttachedContainer is set up, add to AttachedContainer's syncList, 
+		/// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+		/// If no AttachedContainer is set up, add to the _storedItems list directly.
+		/// </summary>
+		/// <param name="newItem"> the item to store.</param>
+		private void AddToStoredItems(StoredItem newItem)
+		{
+				_storedItems.Add(newItem);
+		}
+
+
+		/// <summary>
+		/// Correctly set a storeItem in the container at the given index. All replacing should use this method, never do it directly.
+		/// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
+		/// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+		/// If no AttachedContainer is set up, set the _storedItems list directly.
+		/// </summary>
+		/// <param name="item">the item to store.</param>
+		/// <param name="index">the index in the list at which it should be stored.</param>
+		private void ReplaceStoredItems(StoredItem item, int index)
+		{
+			_storedItems[index] = item;
+		}
+
+		/// <summary>
+		/// Correctly remove a storeItem in the container at the given index. All removing should use this method, never do it directly.
+		/// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
+		/// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+		/// If no AttachedContainer is set up, remove the item from the _storedItems list directly.
+		/// </summary>
+		/// <param name="index">the index in the list at which the storedItem should be removed.</param>
+		private void RemoveStoredItem(int index)
+		{
+			_storedItems.RemoveAt(index);
+		}
+
+
+		/// <summary>
+		/// Adds a stored item without checking any validity
+		/// <param name="storedItem">The item to store</param>
+		/// </summary>
+		public void AddItemUnchecked(StoredItem storedItem)
+		{
+			AddItemUnchecked(storedItem.Item, storedItem.Position);
+		}
+
+		/// <summary>
+		/// Checks if a given area in the container is free
+		/// </summary>
+		/// <param name="area">The area to check</param>
+		/// <returns>If the given area is free</returns>
+		public bool IsAreaFree(RectInt area)
+		{
+			if (area.xMin < 0 || area.xMax < 0)
+			{
+				return false;
+			}
+
+			if (area.xMax > Size.x || area.yMax > Size.y)
+			{
+				return false;
+			}
+
+			foreach (StoredItem storedItem in _storedItems)
+			{
+				if (storedItem.IsExcludedOfFreeAreaComputation) continue;
+				RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
+				if (area.Overlaps(storedItemPlacement))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Checks if a given area in the container is free, while excluding an item
+		/// </summary>
+		/// <param name="area">The area to check</param>
+		/// <param name="item">The item to exclude from the check</param>
+		/// <returns>If the given area is free</returns>
+		public bool IsAreaFreeExcluding(RectInt area, Item item)
+		{
+			int itemIndex = FindItem(item);
+			StoredItem storedItem = default;
+			if (itemIndex != -1)
+			{
+				storedItem = _storedItems[itemIndex];
+				_storedItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, true);
+			}
+
+			bool areaFree = IsAreaFree(area);
+
+			if (itemIndex != -1)
+			{
+				_storedItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, false);
+				_storedItems[itemIndex] = storedItem;
+			}
+
+			return areaFree;
+		}
+
+		/// <summary>
+		/// Removes an item from the container
+		/// </summary>
+		/// <param name="item">The item to remove</param>
+		public void RemoveItem(Item item)
+		{
+			for (int i = 0; i < _storedItems.Count; i++)
+			{
+				if (_storedItems[i].Item != item)
+				{
+					continue;
+				}
+
+				RemoveItemAt(i);
+				return;
+			}
+		}
+
+		/// <summary>
+		/// Moves an item without performing validation
+		/// </summary>
+		/// <param name="item">The item to move</param>
+		/// <returns>If the item was moved</returns>
+		private bool MoveItemUnchecked(StoredItem item)
+		{
+			for (int i = 0; i < _storedItems.Count; i++)
+			{
+				StoredItem x = _storedItems[i];
+				if (x.Item != item.Item)
+				{
+					continue;
+				}
+
+				if (x.Position == item.Position)
+				{
+					return true;
+				}
+
+				ReplaceStoredItems(item, i);
+				LastModification = Time.time;
+
+				return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Finds an item at a position
+		/// </summary>
+		/// <param name="position">The position to check</param>
+		/// <returns>The item at the position, or null if there is none</returns>
+		public Item ItemAt(Vector2Int position)
+		{
+			foreach (StoredItem storedItem in _storedItems)
+			{
+				RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
+				if (storedItemPlacement.Contains(position))
+				{
+					return storedItem.Item;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Finds the position of an item in the container
+		/// </summary>
+		/// <param name="item">The item to look for</param>
+		/// <returns>The item's position or (-1, -1)</returns>
+		public Vector2Int PositionOf(Item item)
+		{
+			foreach (StoredItem storedItem in _storedItems)
+			{
+				if (storedItem.Item.Equals(item))
+				{
+					return storedItem.Position;
+				}
+			}
+
+			return new Vector2Int(-1, -1);
+		}
+
+		private void RemoveItemAt(int index)
+		{
+			StoredItem storedItem = _storedItems[index];
+			lock (_modificationLock)
+			{
+				RemoveStoredItem(index);
+			}
+
+			LastModification = Time.time;
+			storedItem.Item.SetContainer(null);
+		}
+
+		/// <summary>
+		/// Empties the container, removing all items
+		/// </summary>
+		public void Dump()
+		{
+			Item[] oldItems = _storedItems.Select(x => x.Item).ToArray();
+			for (int i = 0; i < oldItems.Length; i++)
+			{
+				oldItems[i].SetContainer(null);
+			}
+			_storedItems.Clear();
+
+			LastModification = Time.time;
+		}
+
+		/// <summary>
+		/// Destroys all items in this container
+		/// </summary>
+		public void Purge()
+		{
+			for (int i = 0; i < _storedItems.Count; i++)
+			{
+				_storedItems[i].Item.Delete();
+			}
+			_storedItems.Clear();
+
+			LastModification = Time.time;
+		}
+
+		/// <summary>
+		/// Checks if this container contains the item
+		/// </summary>
+		/// <param name="item">The item to search for</param>
+		/// <returns>If it is in this container</returns>
+		public bool ContainsItem(Item item)
+		{
+			foreach (StoredItem storedItem in _storedItems)
+			{
+				if (storedItem.Item.Equals(item))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Checks if this item could be stored (traits etc.) without considering size
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public bool CanStoreItem(Item item)
+		{
+			if (_startFilter != null)
+			{
+				return _startFilter.CanStore(item);
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Checks if this item fits inside the container
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public bool CanHoldItem(Item item)
+		{
+			Vector2Int itemSize = item.Size;
+			int maxX = Size.x - itemSize.x;
+			int maxY = Size.y - itemSize.y;
+
+			// TODO: Use a more efficient algorithm
+			for (int y = 0; y <= maxY; y++)
+			{
+				for (int x = 0; x <= maxX; x++)
+				{
+					if (IsAreaFreeExcluding(new RectInt(new Vector2Int(x, y), item.Size), item))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Checks if this item can be stored and fits inside the container
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public bool CanContainItem(Item item)
+		{
+			return (CanStoreItem(item) && CanHoldItem(item));
+		}
+		
+		/// <summary>
+		/// Finds the index of an item
+		/// </summary>
+		/// <param name="item">The item to look for</param>
+		/// <returns>The index of the item or -1 if not found</returns>
+		public int FindItem(Item item)
+		{
+			for (int i = 0; i < _storedItems.Count; i++)
+			{
+				StoredItem storedItem = _storedItems[i];
+				if (storedItem.Item == item)
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
+
+		public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
+		{
+			OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
+		}
+	}
 
 }

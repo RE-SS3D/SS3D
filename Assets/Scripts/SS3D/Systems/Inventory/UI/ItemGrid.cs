@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Coimbra;
@@ -44,25 +44,24 @@ namespace SS3D.Systems.Inventory.UI
             }
 
             Transform parent = _gridLayout.transform;
-            Container container = AttachedContainer.Container;
-            Vector2Int containerSize = container.Size;
+            Vector2Int containerSize = AttachedContainer.Size;
             int count = containerSize.x * containerSize.y;
             for (int i = 0; i < count; i++)
             {
                 Instantiate(ItemSlotPrefab, parent);
             }
 
-            if (container.ItemCount > 0)
+            if (AttachedContainer.ItemCount > 0)
             {
                 StartCoroutine(DisplayInitialItems());
             }
 
-            AttachedContainer.Container.OnContentsChanged += ContainerOnContentsChanged;
+            AttachedContainer.OnContentsChanged += ContainerOnContentsChanged;
         }
 
         private void OnDestroy()
         {
-            AttachedContainer.Container.OnContentsChanged -= ContainerOnContentsChanged;
+            AttachedContainer.OnContentsChanged -= ContainerOnContentsChanged;
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace SS3D.Systems.Inventory.UI
             yield return new WaitForEndOfFrame();
             foreach (Item item in AttachedContainer.Items)
             {
-                Vector2Int position = AttachedContainer.Container.PositionOf(item);
+                Vector2Int position = AttachedContainer.PositionOf(item);
                 CreateItemDisplay(item, position);
             }
         }
@@ -83,7 +82,7 @@ namespace SS3D.Systems.Inventory.UI
         /// When the container change, change the display of items inside it.
         /// Either add a display, remove a display or move a display to another slot.
         /// </summary>
-        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerOnContentsChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {
@@ -165,7 +164,7 @@ namespace SS3D.Systems.Inventory.UI
                 _gridLayout = GetComponentInChildren<GridLayoutGroup>();
             }
 
-            Vector2Int size = AttachedContainer.Container.Size;
+            Vector2Int size = AttachedContainer.Size;
             float x = size.x * _gridLayout.cellSize.x + size.x * _gridLayout.spacing.x;
             float y = size.y * _gridLayout.cellSize.y + size.y * _gridLayout.spacing.y;
             return new Vector2(x, y);
@@ -213,7 +212,7 @@ namespace SS3D.Systems.Inventory.UI
             Vector2Int slot = new(Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
 
             // Check if the area of drop is free, if not, don't transfer.
-            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item))
+            if (!AttachedContainer.IsAreaFreeExcluding(new RectInt(slot, size), item))
             {
                 return;
             }
@@ -230,7 +229,7 @@ namespace SS3D.Systems.Inventory.UI
             {
                 objectToMove.SetParent(transform, false);
             }
-            Vector2Int containerSize = AttachedContainer.Container.Size;
+            Vector2Int containerSize = AttachedContainer.Size;
             int slotIndex = position.y * containerSize.x + position.x;
             Transform slot = _gridLayout.transform.GetChild(slotIndex);
             objectToMove.localPosition = slot.localPosition;
@@ -261,8 +260,7 @@ namespace SS3D.Systems.Inventory.UI
         public GameObject GetCurrentGameObjectInSlot()
         {
             Vector2Int slotPosition = GetSlotPosition(Mouse.current.position.ReadValue());
-            Container container = AttachedContainer.Container;
-            return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).gameObject;
+            return AttachedContainer.ItemAt(slotPosition) == null ? null : AttachedContainer.ItemAt(slotPosition).gameObject;
         }
 
     }

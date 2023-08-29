@@ -16,6 +16,7 @@ using UnityEngine;
 using System.Collections;
 using FishNet.Object.Synchronizing;
 using System.ComponentModel;
+using static UnityEngine.GraphicsBuffer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -33,7 +34,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 
         public delegate void InventoryContainerModifiedEventHandler(AttachedContainer container);
-        public delegate void ContainerContentsEventHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        public delegate void ContainerContentsEventHandler(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
         public delegate void Notify();
 
 		// When a container is added to this inventory
@@ -168,7 +169,7 @@ namespace SS3D.Systems.Inventory.Containers
         private void AddContainer(AttachedContainer container)
         {
             ContainersOnPlayer.Add(container);
-            container.Container.OnContentsChanged += HandleContainerContentChanged;
+            container.OnContentsChanged += HandleContainerContentChanged;
             container.OnItemAttached += HandleTryAddContainerOnItemAttached;
             container.OnItemDetached += HandleTryRemoveContainerOnItemDetached;
 
@@ -186,7 +187,7 @@ namespace SS3D.Systems.Inventory.Containers
         private void RemoveContainer(AttachedContainer container)
         {
             ContainersOnPlayer.Remove(container);
-            container.Container.OnContentsChanged -= HandleContainerContentChanged;
+            container.OnContentsChanged -= HandleContainerContentChanged;
             container.OnItemAttached -= HandleTryAddContainerOnItemAttached;
             container.OnItemDetached -= HandleTryRemoveContainerOnItemDetached;
 			container.OnAttachedContainerDisabled -= RemoveContainer;
@@ -224,7 +225,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <summary>
 		/// Simply invoke the event OnContainerContentChanged.
 		/// </summary>
-		private void HandleContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+		private void HandleContainerContentChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             OnContainerContentChanged?.Invoke(container,oldItems,newItems,type);
         }
@@ -256,7 +257,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            AttachedContainer attachedTo = item.Container?.AttachedTo;
+            AttachedContainer attachedTo = item.Container;
             if (attachedTo == null)
             {
                 return;
@@ -290,14 +291,8 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Container itemContainer = item.Container;
+            AttachedContainer itemContainer = item.Container;
             if (itemContainer == null)
-            {
-                return;
-            }
-
-            AttachedContainer attachedTo = itemContainer.AttachedTo;
-            if (attachedTo == null)
             {
                 return;
             }
@@ -313,7 +308,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            if (!containerViewer.CanModifyContainer(attachedTo) || !containerViewer.CanModifyContainer(container))
+            if (!containerViewer.CanModifyContainer(itemContainer) || !containerViewer.CanModifyContainer(container))
             {
                 return;
             }
@@ -324,13 +319,13 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            if (!container.Container.CanContainItem(item))
+            if (!container.CanContainItem(item))
             {
                 return;
             }
 
             itemContainer.RemoveItem(item);
-            container.Container.AddItemPosition(item, position);
+            container.AddItemPosition(item, position);
             
         }
 
@@ -348,7 +343,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Item item = container.Container.ItemAt(position);
+            Item item = container.ItemAt(position);
             // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
             if (Hands.SelectedHand.IsEmpty())
             {

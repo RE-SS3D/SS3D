@@ -68,14 +68,14 @@ namespace SS3D.Systems.Inventory.Items
         private readonly SyncList<Trait> _traits = new();
 
         [SyncVar]
-        private Container _container;
+        private AttachedContainer _container;
 
         public string Name => _name;
         public ItemId ItemId { get; set; }
         public Vector2Int Size => _size;
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
-        public Container Container => _container;
+        public AttachedContainer Container => _container;
 
         private bool _initialised = false;
 
@@ -259,7 +259,7 @@ namespace SS3D.Systems.Inventory.Items
         /// Modify the container of this item, can pass null to make this item not depending on any container.
         /// </summary>
         [Server]
-        public void SetContainer(Container newContainer)
+        public void SetContainer(AttachedContainer newContainer)
         {
             if (_container == newContainer)
             {
