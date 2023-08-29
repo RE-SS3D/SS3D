@@ -2,6 +2,7 @@
 {
     public enum ContainerChangeType
     {
+		None,
         Add,
         Remove,
         Move

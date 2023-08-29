@@ -16,7 +16,6 @@ using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
 using FishNet.Object;
-using static SS3D.Substances.SubstanceContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -183,7 +182,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnAwake();
             _storedItems.OnChange += HandleStoredItemsChanged;
-            OnContentsChanged += HandleContainerContentsChanged;
         }
 
 		protected override void OnDisabled()
@@ -242,24 +240,29 @@ namespace SS3D.Systems.Inventory.Containers
         /// <param name="newItem">Element after the change</param>
         private void HandleStoredItemsChanged(SyncListOperation op, int index, StoredItem oldItem, StoredItem newItem, bool asServer)
         {
-            ContainerChangeType changeType;
+            ContainerChangeType changeType = ContainerChangeType.None;
 
             switch (op)
             {
                 case SyncListOperation.Add:
                     changeType = ContainerChangeType.Add;
-                    break;
+					handleItemAdded(newItem.Item);
+					break;
                 case SyncListOperation.Insert:
-                case SyncListOperation.Set:
+					break;
+				case SyncListOperation.Set:
                     changeType = ContainerChangeType.Move;
-                    break;
+					break;
                 case SyncListOperation.RemoveAt:
-                case SyncListOperation.Clear:
+					changeType = ContainerChangeType.Remove;
+					handleItemRemoved(oldItem.Item);
+					break;
+				case SyncListOperation.Clear:
                     changeType = ContainerChangeType.Remove;
-                    break;
+					handleItemRemoved(oldItem.Item);
+					break;
                 case SyncListOperation.Complete:
-                    changeType = ContainerChangeType.Move;
-                    break;
+					break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
@@ -307,55 +310,6 @@ namespace SS3D.Systems.Inventory.Containers
                     itemTransform.localPosition = AttachmentOffset;
                 }
                 ProcessItemAttached(item);
-            }
-        }
-
-        [ServerOrClient]
-        private void HandleContainerContentsChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
-        {
-            switch (type)
-            {
-                case ContainerChangeType.Add:
-                    foreach (Item item in newItems)
-                    {
-                        if (item == null)
-                        {
-                            continue;
-                        }
-
-                        handleItemAdded(item);
-                    }
-
-                    break;
-                case ContainerChangeType.Move:
-                    {
-                        foreach (Item item in newItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                            handleItemAdded(item);
-                        }
-
-                        break;
-                    }
-                case ContainerChangeType.Remove:
-                    {
-                        foreach (Item item in oldItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                        }
-
-                        break;
-                    }
             }
         }
 
@@ -420,7 +374,7 @@ namespace SS3D.Systems.Inventory.Containers
 				}
 
 				StoredItem storedItem = new(item, position);
-				ReplaceStoredItems(storedItem, itemIndex);
+				ReplaceStoredItem(storedItem, itemIndex);
 				return true;
 
 				// Item at same position, nothing to do
@@ -466,40 +420,31 @@ namespace SS3D.Systems.Inventory.Containers
 				return;
 			}
 
-			AddToStoredItems(newItem);
+			AddStoredItem(newItem);
 			LastModification = Time.time;
 		}
 
 		/// <summary>
 		/// Correctly add a storeItem to the container. All adding should use this method, never do it directly.
-		/// If an AttachedContainer is set up, add to AttachedContainer's syncList, 
-		/// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
-		/// If no AttachedContainer is set up, add to the _storedItems list directly.
 		/// </summary>
 		/// <param name="newItem"> the item to store.</param>
-		private void AddToStoredItems(StoredItem newItem)
+		private void AddStoredItem(StoredItem newItem)
 		{
-				_storedItems.Add(newItem);
+			_storedItems.Add(newItem);
 		}
 
 		/// <summary>
 		/// Correctly set a storeItem in the container at the given index. All replacing should use this method, never do it directly.
-		/// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
-		/// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
-		/// If no AttachedContainer is set up, set the _storedItems list directly.
 		/// </summary>
 		/// <param name="item">the item to store.</param>
 		/// <param name="index">the index in the list at which it should be stored.</param>
-		private void ReplaceStoredItems(StoredItem item, int index)
+		private void ReplaceStoredItem(StoredItem item, int index)
 		{
 			_storedItems[index] = item;
 		}
 
 		/// <summary>
 		/// Correctly remove a storeItem in the container at the given index. All removing should use this method, never do it directly.
-		/// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
-		/// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
-		/// If no AttachedContainer is set up, remove the item from the _storedItems list directly.
 		/// </summary>
 		/// <param name="index">the index in the list at which the storedItem should be removed.</param>
 		private void RemoveStoredItem(int index)
@@ -555,6 +500,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns>If the given area is free</returns>
 		public bool IsAreaFreeExcluding(RectInt area, Item item)
 		{
+			//TODO : WARNING !!!! this modify the synclist multiple times sending SET events. Only modify the synclist when needed, use a copy instead.
 			int itemIndex = FindItem(item);
 			StoredItem storedItem = default;
 			if (itemIndex != -1)
@@ -612,7 +558,7 @@ namespace SS3D.Systems.Inventory.Containers
 					return true;
 				}
 
-				ReplaceStoredItems(item, i);
+				ReplaceStoredItem(item, i);
 				LastModification = Time.time;
 
 				return true;
