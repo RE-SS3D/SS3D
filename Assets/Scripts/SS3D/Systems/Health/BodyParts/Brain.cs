@@ -19,15 +19,15 @@ public class Brain : BodyPart
         TryAddBodyLayer(new CirculatoryLayer(this));
         TryAddBodyLayer(new NerveLayer(this));
         TryAddBodyLayer(new OrganLayer(this));
-		InvokeOnBodyPartLayerAdded();
+        InvokeOnBodyPartLayerAdded();
 
-	}
+    }
 
-	public override void DestroyBodyPart()
-	{
-		Entity entity = GetComponentInParent<Entity>();
-		entity?.Kill();
-		InvokeOnBodyPartDestroyed();
-		Dispose(true);
-	}
+    public override void DestroyBodyPart()
+    {
+        Entity entity = GetComponentInParent<Entity>();
+        entity?.Kill();
+        InvokeOnBodyPartDestroyed();
+        Dispose(true);
+    }
 }

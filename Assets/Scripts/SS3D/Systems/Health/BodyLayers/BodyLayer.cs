@@ -80,7 +80,7 @@ public abstract class BodyLayer
     /// <param name="damageQuantity"></param>
     public virtual void InflictDamage(DamageTypeQuantity damageToInflict)
     {
-		DamageTypeQuantity damage = (DamageTypeQuantity) damageToInflict.Clone();
+        DamageTypeQuantity damage = (DamageTypeQuantity) damageToInflict.Clone();
 
         float currentDamageQuantity = GetDamageTypeQuantity(damage.damageType);
         damage.quantity = ApplyResistanceAndSusceptibility(damage);
@@ -186,12 +186,12 @@ public abstract class BodyLayer
 
     }
 
-	public void CopyLayerValues(BodyLayer layer)
-	{
-		_damageResistances = layer._damageResistances.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
-		_damageSuceptibilities = layer._damageSuceptibilities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
-		_damageTypeQuantities = layer._damageTypeQuantities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
-	}
+    public void CopyLayerValues(BodyLayer layer)
+    {
+        _damageResistances = layer._damageResistances.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+        _damageSuceptibilities = layer._damageSuceptibilities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+        _damageTypeQuantities = layer._damageTypeQuantities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+    }
 
     /// <summary>
     /// Set all resistances on this body layer. By default, there are none and resistance is 0.

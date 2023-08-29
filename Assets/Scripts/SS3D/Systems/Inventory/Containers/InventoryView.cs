@@ -86,10 +86,10 @@ namespace SS3D.Systems.Inventory.UI
             FillClothingLayoutWithDummySlots();
             Inventory = inventory;
 
-			foreach(var container in inventory.Containers)
-			{
-				HandleInventoryContainerAdded(container);
-			}
+            foreach(var container in inventory.Containers)
+            {
+                HandleInventoryContainerAdded(container);
+            }
 
             inventory.OnInventoryContainerAdded += HandleInventoryContainerAdded;
             inventory.OnInventoryContainerRemoved += HandleInventoryContainerRemoved;
@@ -115,8 +115,8 @@ namespace SS3D.Systems.Inventory.UI
         [Client]
         private void HandleInventoryContainerAdded(AttachedContainer container)
         {
-			if (Slots.Exists(x => x.Container == container))
-				return;
+            if (Slots.Exists(x => x.Container == container))
+                return;
 
             SingleItemContainerSlot slot;
             switch (container.Type)
@@ -311,18 +311,18 @@ namespace SS3D.Systems.Inventory.UI
             clothingSlot.gameObject.TryGetComponent(out SingleItemContainerSlot slot);
             int clothPosition = ClothingSlotPosition.FindIndex(0, x => x == slot.ContainerType);
 
-			int slotPositionForContainerType = ClothingSlotPosition.FindIndex(0, x => x == slot.ContainerType);
+            int slotPositionForContainerType = ClothingSlotPosition.FindIndex(0, x => x == slot.ContainerType);
 
-			Transform currentSlotTransform = ClothingLayout.transform.GetChild(slotPositionForContainerType);
+            Transform currentSlotTransform = ClothingLayout.transform.GetChild(slotPositionForContainerType);
 
-			// Remove the place holder dummy slot first.
-			if (currentSlotTransform.gameObject.TryGetComponent(out DummySlot currentSlot))
-			{
-				currentSlotTransform.transform.SetParent(null, false);
-				currentSlotTransform.gameObject.Dispose(true);
-			};
+            // Remove the place holder dummy slot first.
+            if (currentSlotTransform.gameObject.TryGetComponent(out DummySlot currentSlot))
+            {
+                currentSlotTransform.transform.SetParent(null, false);
+                currentSlotTransform.gameObject.Dispose(true);
+            };
 
-			clothingSlot.transform.SetSiblingIndex(clothPosition);
+            clothingSlot.transform.SetSiblingIndex(clothPosition);
             return slot;
         }
 
@@ -345,29 +345,29 @@ namespace SS3D.Systems.Inventory.UI
         /// <returns> The transform of the hand slot at the specified index.</returns>
         public Transform GetHandSlot(Hand hand)
         {
-			SingleItemContainerSlot slot = Slots.Find(x => x.Container == hand.Container);
-			return slot.transform;
+            SingleItemContainerSlot slot = Slots.Find(x => x.Container == hand.Container);
+            return slot.transform;
         }
 
         /// <summary>
         /// Remove the corresponding slot when a container is removed from the inventory.
-		/// Replace with an empty slot if it's a clothing type of container.
+        /// Replace with an empty slot if it's a clothing type of container.
         /// </summary>
         private void HandleInventoryContainerRemoved(AttachedContainer container)
         {
-			int indexToRemove = Slots.FindIndex(slot => slot.Container == container);
+            int indexToRemove = Slots.FindIndex(slot => slot.Container == container);
             
-			// Replace the removed slot with a dummy slot if it's a clothing type of slot.
-			// This allow the grid layout elements to keep their positions despite having a slot removed.
-			if(ClothingSlotPosition.Contains(container.Type)){
-				GameObject dummySlot = Instantiate(DummyPrefab);
-				dummySlot.transform.SetParent(ClothingLayout.transform, false);
-				int clothPosition = ClothingSlotPosition.FindIndex(0, x => x == Slots[indexToRemove].ContainerType);
-				dummySlot.transform.SetSiblingIndex(clothPosition);
-			}
+            // Replace the removed slot with a dummy slot if it's a clothing type of slot.
+            // This allow the grid layout elements to keep their positions despite having a slot removed.
+            if(ClothingSlotPosition.Contains(container.Type)){
+                GameObject dummySlot = Instantiate(DummyPrefab);
+                dummySlot.transform.SetParent(ClothingLayout.transform, false);
+                int clothPosition = ClothingSlotPosition.FindIndex(0, x => x == Slots[indexToRemove].ContainerType);
+                dummySlot.transform.SetSiblingIndex(clothPosition);
+            }
 
-			Slots[indexToRemove].gameObject.Dispose(true);
-			Slots.RemoveAt(indexToRemove);
-		}
+            Slots[indexToRemove].gameObject.Dispose(true);
+            Slots.RemoveAt(indexToRemove);
+        }
     }
 }

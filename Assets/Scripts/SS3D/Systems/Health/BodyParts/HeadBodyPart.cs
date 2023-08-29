@@ -13,43 +13,43 @@ using System;
 /// </summary>
 public class HeadBodyPart : BodyPart
 {
-	public Brain brain;
+    public Brain brain;
 
-	public override void Init(BodyPart parent)
-	{
-		base.Init(parent);
-	}
+    public override void Init(BodyPart parent)
+    {
+        base.Init(parent);
+    }
 
-	public override void OnStartServer()
-	{
-		base.OnStartServer();
-		_internalBodyParts.Container.AddItem(brain.gameObject.GetComponent<Item>());
-	}
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        _internalBodyParts.Container.AddItem(brain.gameObject.GetComponent<Item>());
+    }
 
-	protected override void AddInitialLayers()
-	{
-		TryAddBodyLayer(new MuscleLayer(this));
-		TryAddBodyLayer(new BoneLayer(this));
-		TryAddBodyLayer(new CirculatoryLayer(this));
-		TryAddBodyLayer(new NerveLayer(this));
-		InvokeOnBodyPartLayerAdded();
-	}
+    protected override void AddInitialLayers()
+    {
+        TryAddBodyLayer(new MuscleLayer(this));
+        TryAddBodyLayer(new BoneLayer(this));
+        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new NerveLayer(this));
+        InvokeOnBodyPartLayerAdded();
+    }
 
-	protected override void DetachBodyPart()
-	{
-		if (_isDetached) return;
-		DetachChildBodyParts();
-		HideSeveredBodyPart();
+    protected override void DetachBodyPart()
+    {
+        if (_isDetached) return;
+        DetachChildBodyParts();
+        HideSeveredBodyPart();
 
-		// When detached, spawn a head and set player's mind to be in the head,
-		// so that player can still play as a head (death is near though..).
-		BodyPart go = SpawnDetachedBodyPart();
-		MindSystem entitySystem = Subsystems.Get<MindSystem>();
-		entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
-		go.GetComponent<NetworkObject>().RemoveOwnership();
+        // When detached, spawn a head and set player's mind to be in the head,
+        // so that player can still play as a head (death is near though..).
+        BodyPart go = SpawnDetachedBodyPart();
+        MindSystem entitySystem = Subsystems.Get<MindSystem>();
+        entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
+        go.GetComponent<NetworkObject>().RemoveOwnership();
 
-		InvokeOnBodyPartDetached();
-		_isDetached = true;
-		Dispose(false);
-	}
+        InvokeOnBodyPartDetached();
+        _isDetached = true;
+        Dispose(false);
+    }
 }

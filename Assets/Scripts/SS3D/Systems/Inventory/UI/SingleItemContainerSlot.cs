@@ -117,10 +117,10 @@ namespace SS3D.Systems.Inventory.UI
         {
             Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0, 0));
 
-			if(ContainerType == ContainerType.Hand)
-			{
-				Inventory.ActivateHand(_container);
-			}   
+            if(ContainerType == ContainerType.Hand)
+            {
+                Inventory.ActivateHand(_container);
+            }   
         }
 
         public GameObject GetCurrentGameObjectInSlot()

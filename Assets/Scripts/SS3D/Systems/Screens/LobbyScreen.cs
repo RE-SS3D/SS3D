@@ -5,7 +5,7 @@ using SS3D.Systems.Screens.Events;
 
 namespace SS3D.Systems.Screens
 {
-	public sealed class LobbyScreen : GameScreen
-	{
-	}
+    public sealed class LobbyScreen : GameScreen
+    {
+    }
 }

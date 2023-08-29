@@ -8,19 +8,19 @@ using UnityEngine;
 public class HandBodyPart : BodyPart
 {
 
-	[SerializeField] private Hand _hand;
+    [SerializeField] private Hand _hand;
 
-	public override void Init(BodyPart parent)
-	{
-		base.Init(parent);
-	}
+    public override void Init(BodyPart parent)
+    {
+        base.Init(parent);
+    }
 
-	protected override void AddInitialLayers()
-	{
-		TryAddBodyLayer(new MuscleLayer(this));
-		TryAddBodyLayer(new BoneLayer(this));
-		TryAddBodyLayer(new CirculatoryLayer(this));
-		TryAddBodyLayer(new NerveLayer(this));
-		InvokeOnBodyPartLayerAdded();
-	}
+    protected override void AddInitialLayers()
+    {
+        TryAddBodyLayer(new MuscleLayer(this));
+        TryAddBodyLayer(new BoneLayer(this));
+        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new NerveLayer(this));
+        InvokeOnBodyPartLayerAdded();
+    }
 }

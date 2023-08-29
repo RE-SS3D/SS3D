@@ -34,8 +34,8 @@ namespace SS3D.Systems.Inventory.Containers
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
 
-		// reference towards the container UI linked to this container.
-		[Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
+        // reference towards the container UI linked to this container.
+        [Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
         public ContainerUi ContainerUi;
 
         [Tooltip("The local position of attached items."), SerializeField]
@@ -146,14 +146,14 @@ namespace SS3D.Systems.Inventory.Containers
         public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;
 
-		public delegate void AttachedContainerHandler(AttachedContainer attachedContainer);
+        public delegate void AttachedContainerHandler(AttachedContainer attachedContainer);
 
-		public event AttachedContainerHandler OnAttachedContainerDisabled;
+        public event AttachedContainerHandler OnAttachedContainerDisabled;
 
-		/// <summary>
-		/// The items stored in this container, including information on how they are stored
-		/// </summary>
-		[SyncObject]
+        /// <summary>
+        /// The items stored in this container, including information on how they are stored
+        /// </summary>
+        [SyncObject]
         private readonly SyncList<StoredItem> _storedItems = new();
 
         /// <summary>
@@ -163,11 +163,11 @@ namespace SS3D.Systems.Inventory.Containers
 
         public SyncList<StoredItem> StoredItems => _storedItems;
 
-		/// <summary>
-		/// The container that is attached
-		/// <remarks>Only set this right after creation, as event listener will not update</remarks>
-		/// </summary>
-		public Container Container
+        /// <summary>
+        /// The container that is attached
+        /// <remarks>Only set this right after creation, as event listener will not update</remarks>
+        /// </summary>
+        public Container Container
         {
             get => _container;
             set => UpdateContainer(value);
@@ -180,45 +180,45 @@ namespace SS3D.Systems.Inventory.Containers
             _storedItems.OnChange += HandleStoredItemsChanged;
             _container.OnContentsChanged += HandleContainerContentsChanged;
 
-			if (IsServer)
-			{
-				UpdateContainer(_container);
-			}
+            if (IsServer)
+            {
+                UpdateContainer(_container);
+            }
         }
 
-		protected override void OnDisabled()
-		{
-			// Mostly used to allow inventory to update accessible containers.
-			base.OnDisabled();
-			if (!IsServer)
-			{
-				return;
-			}
-			OnAttachedContainerDisabled?.Invoke(this);
-		}
+        protected override void OnDisabled()
+        {
+            // Mostly used to allow inventory to update accessible containers.
+            base.OnDisabled();
+            if (!IsServer)
+            {
+                return;
+            }
+            OnAttachedContainerDisabled?.Invoke(this);
+        }
 
-		protected override void OnEnabled()
-		{
-			// Mostly used to allow inventory to update accessible containers.
-			base.OnEnabled();
-			if (!IsServer)
-			{
-				return;
-			}
-			var inventory = GetComponentInParent<HumanInventory>();
-			if (inventory != null)
-			{
-				inventory.TryAddContainer(this);
-			}
-		}
+        protected override void OnEnabled()
+        {
+            // Mostly used to allow inventory to update accessible containers.
+            base.OnEnabled();
+            if (!IsServer)
+            {
+                return;
+            }
+            var inventory = GetComponentInParent<HumanInventory>();
+            if (inventory != null)
+            {
+                inventory.TryAddContainer(this);
+            }
+        }
 
-		[Server]
-		public void InvokeContainerDisabled()
-		{
-			OnAttachedContainerDisabled?.Invoke(this);
-		}
+        [Server]
+        public void InvokeContainerDisabled()
+        {
+            OnAttachedContainerDisabled?.Invoke(this);
+        }
 
-		protected override void OnDestroyed()
+        protected override void OnDestroyed()
         {
             base.OnDestroyed();
             Container?.Purge();
@@ -239,11 +239,11 @@ namespace SS3D.Systems.Inventory.Containers
             OnItemDetached?.Invoke(this, e);
         }
 
-		/// <summary>
-		/// Replace the current container with a new one and set it up.
-		/// </summary>
-		/// <param name="newContainer"></param>
-		[Server]
+        /// <summary>
+        /// Replace the current container with a new one and set it up.
+        /// </summary>
+        /// <param name="newContainer"></param>
+        [Server]
         private void UpdateContainer(Container newContainer)
         {
             if (_container != null)

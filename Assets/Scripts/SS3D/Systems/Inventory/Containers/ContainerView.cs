@@ -12,19 +12,19 @@ using SS3D.Logging;
 
 namespace SS3D.Systems.Inventory.UI
 {
-	/// <summary>
-	/// Add and remove UIs for containers.
-	/// </summary>
+    /// <summary>
+    /// Add and remove UIs for containers.
+    /// </summary>
     public class ContainerView : View
     {
-		/// <summary>
-		/// The script handling logic regarding when to remove and add container UIs.
-		/// </summary>
+        /// <summary>
+        /// The script handling logic regarding when to remove and add container UIs.
+        /// </summary>
         private ContainerViewer containerViewer;
 
-		/// <summary>
-		/// List of displayed containers on the player screen.
-		/// </summary>
+        /// <summary>
+        /// List of displayed containers on the player screen.
+        /// </summary>
         private readonly List<ContainerDisplay> _containerDisplays = new();
 
         /// <summary>

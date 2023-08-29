@@ -12,16 +12,16 @@ using UnityEngine;
 /// </summary>
 public class HandHit : MonoBehaviour, IInteractionSourceExtension
 {
-	public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
-	{
-		var interaction = new HitInteraction();
-		
-		foreach(IInteractionTarget target in targets)
-		{
-			if(interaction.CanInteract(new InteractionEvent(gameObject.GetComponent<Hand>(), target)))
-			{
-				interactions.Add(new InteractionEntry(target, interaction));
-			}
-		}
-	}
+    public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+    {
+        var interaction = new HitInteraction();
+        
+        foreach(IInteractionTarget target in targets)
+        {
+            if(interaction.CanInteract(new InteractionEvent(gameObject.GetComponent<Hand>(), target)))
+            {
+                interactions.Add(new InteractionEntry(target, interaction));
+            }
+        }
+    }
 }

@@ -204,7 +204,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             else
             {
                 _console.AddText(answer);
-            }	
+            }    
         }
 
         /// <returns>All available commands with short descriptions</returns>

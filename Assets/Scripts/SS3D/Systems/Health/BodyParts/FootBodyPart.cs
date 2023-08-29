@@ -9,17 +9,17 @@ using UnityEngine;
 /// </summary>
 public class FootBodyPart : BodyPart, IWalkEnabler
 {
-	public float GetSpeedContribution()
-	{
-		return RelativeDamage;
-	}
+    public float GetSpeedContribution()
+    {
+        return RelativeDamage;
+    }
 
-	protected override void AddInitialLayers()
-	{
-		TryAddBodyLayer(new MuscleLayer(this));
-		TryAddBodyLayer(new BoneLayer(this));
-		TryAddBodyLayer(new CirculatoryLayer(this));
-		TryAddBodyLayer(new NerveLayer(this));
-		InvokeOnBodyPartLayerAdded();
-	}
+    protected override void AddInitialLayers()
+    {
+        TryAddBodyLayer(new MuscleLayer(this));
+        TryAddBodyLayer(new BoneLayer(this));
+        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new NerveLayer(this));
+        InvokeOnBodyPartLayerAdded();
+    }
 }

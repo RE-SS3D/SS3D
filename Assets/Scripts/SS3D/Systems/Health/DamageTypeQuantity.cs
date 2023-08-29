@@ -14,8 +14,8 @@ public class DamageTypeQuantity : ICloneable
         this.quantity = quantity;
     }
 
-	public object Clone()
-	{
-		return new DamageTypeQuantity(damageType, quantity);
-	}
+    public object Clone()
+    {
+        return new DamageTypeQuantity(damageType, quantity);
+    }
 }
