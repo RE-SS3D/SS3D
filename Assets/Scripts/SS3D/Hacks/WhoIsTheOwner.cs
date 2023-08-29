@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Simple script to check the owner of a game object this script is on.
+/// Simply press F to show the owner in console.
+/// </summary>
 public class WhoIsTheOwner : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -21,6 +20,5 @@ public class WhoIsTheOwner : NetworkBehaviour
 		}
 
 		Debug.Log("Owner of gameobject" + gameObject.name + " is " + Owner);
-
 	}
 }

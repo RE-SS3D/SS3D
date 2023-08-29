@@ -16,7 +16,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
 	public class HitBodyPartCommand : Command
 	{
-		public override string LongDescription => "Hurt a given body part and body layer by a given amount of damages from a given type";
+		public override string LongDescription => "Hurt a given body part and body layer unattached to a player by a given amount of damages from a given type. \n" +
+			"Usage : hitbodypart [game object name] [body layer name] [damage type name] [amount of damage]";
 		public override string ShortDescription => "Hit me daddy";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 		public override CommandType Type => CommandType.Server;

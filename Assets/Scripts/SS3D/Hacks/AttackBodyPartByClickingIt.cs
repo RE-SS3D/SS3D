@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 /// <summary>
-/// Placeholder class to simulate attacks on other players. Inflicted damage will cause various effects
+/// Placeholder class to simulate attacks on oneself. Inflicted damage will cause various effects
 /// like bruising and bleeding, but they don't do anything yet. Damage can also sever bodyparts, which is also
 /// only visual at the moment.
 ///

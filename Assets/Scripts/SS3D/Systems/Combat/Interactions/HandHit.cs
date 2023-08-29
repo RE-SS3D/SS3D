@@ -6,6 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Little script to add next to Hand script, allowing to add a HitInteraction from hand sources.
+/// </summary>
 public class HandHit : MonoBehaviour, IInteractionSourceExtension
 {
 	public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)

@@ -12,6 +12,9 @@ using SS3D.Data.Enums;
 
 namespace SS3D.Systems.Combat.Interactions
 {
+	/// <summary>
+	/// Interaction to hit another player.
+	/// </summary>
 	public class HitInteraction : Interaction
 	{
 
@@ -52,12 +55,6 @@ namespace SS3D.Systems.Combat.Interactions
 			return false;
 		}
 
-		/// <summary>
-		/// Starts the interaction (server-side)
-		/// </summary>
-		/// <param name="interactionEvent">The source used in the interaction</param>
-		/// <param name="reference"></param>
-		/// <returns>If the interaction should continue running</returns>
 		public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
 		{
 			IInteractionTarget target = interactionEvent.Target;
@@ -70,6 +67,8 @@ namespace SS3D.Systems.Combat.Interactions
 			{
 				Entity entity = targetBehaviour.GameObject.GetComponentInParent<Entity>();
 				BodyPart bodyPart = entity.GetComponentInChildren<BodyPart>();
+				
+				// Inflict a fix amount and type of damages for now. Long term, should be passed in parameter and depends on weapon type, velocity ...
 				bodyPart.InflictDamageToAllLayer(new DamageTypeQuantity(DamageType.Slash, 50));
 			}
 

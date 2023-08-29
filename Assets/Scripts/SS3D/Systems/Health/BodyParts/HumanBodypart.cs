@@ -8,8 +8,7 @@ using Unity.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Represent a generic body part, containing muscles, bones, nerves and veins.
-/// Can be used for arms, foot, legs ... Should not be used for organs.
+/// Represent a generic body part for humans, without any particular mechanisms.
 /// </summary>
 public class HumanBodypart : BodyPart
 {

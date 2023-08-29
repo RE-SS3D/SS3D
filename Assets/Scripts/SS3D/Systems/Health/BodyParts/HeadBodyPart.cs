@@ -8,6 +8,9 @@ using UnityEngine;
 using SS3D.Systems.Inventory.Items;
 using System;
 
+/// <summary>
+/// Body part for a human head.
+/// </summary>
 public class HeadBodyPart : BodyPart
 {
 	public Brain brain;
@@ -38,6 +41,8 @@ public class HeadBodyPart : BodyPart
 		DetachChildBodyParts();
 		HideSeveredBodyPart();
 
+		// When detached, spawn a head and set player's mind to be in the head,
+		// so that player can still play as a head (death is near though..).
 		BodyPart go = SpawnDetachedBodyPart();
 		MindSystem entitySystem = Subsystems.Get<MindSystem>();
 		entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());

@@ -15,6 +15,9 @@ namespace SS3D.Interactions.Extensions
             return null;
         }
 
+		/// <summary>
+		/// Get a component T in parent of a IInteraction target.
+		/// </summary>
 		public static T GetComponentInParent<T>(this IInteractionTarget target) where T : class
 		{
 			GameObject go;

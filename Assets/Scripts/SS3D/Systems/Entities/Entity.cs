@@ -100,6 +100,10 @@ namespace SS3D.Systems.Entities
 		public GameObject Ghost;
 		private GameObject _spawnedGhost;
 
+
+		/// <summary>
+		/// On death, the player should become a ghost.
+		/// </summary>
 		[Server]
 		private void BecomeGhost(GameObject player, GameObject ghost)
 		{
@@ -125,6 +129,9 @@ namespace SS3D.Systems.Entities
 			// TODO: Optimize these GetComponents, this is a temporary solution.
 		}
 
+		/// <summary>
+		/// Put Ghost at the same place as the deceased player.
+		/// </summary>
 		[ObserversRpc]
 		private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
 		{
@@ -132,8 +139,9 @@ namespace SS3D.Systems.Entities
 			originEntity.Transform.Rotate(new Vector3(90, 0, 0));
 		}
 
-
-
+		/// <summary>
+		/// Kill a player, instantiating a ghost.
+		/// </summary>
 		[Server]
 		public void Kill()
 		{
