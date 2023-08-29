@@ -212,7 +212,12 @@ namespace SS3D.Systems.Inventory.UI
 
             CreateItemDisplay(item, slot, true);
 
-            display.ShouldDrop = true;
+			if (!AttachedContainer.IsAreaFree(slot))
+			{
+				return;
+			}
+
+			display.ShouldDrop = true;
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
 

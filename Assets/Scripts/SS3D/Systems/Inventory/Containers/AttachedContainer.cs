@@ -647,6 +647,19 @@ namespace SS3D.Systems.Inventory.Containers
 			return -1;
 		}
 
+		public bool IsAreaFree(Vector2Int slotPosition)
+		{
+			foreach (StoredItem storedItem in _storedItems)
+			{
+				if (storedItem.Position == slotPosition)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
 		{
 			OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
