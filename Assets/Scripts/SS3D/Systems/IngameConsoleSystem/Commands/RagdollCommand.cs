@@ -5,13 +5,14 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
+using System.Globalization;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
 	public class RagdollCommand : Command
 	{
-		public override string LongDescription => "ragdoll (user ckey)";
-		public override string ShortDescription => "Toggle player's ragdoll";
+		public override string LongDescription => "ragdoll (user ckey) [time]";
+		public override string ShortDescription => "Toggle player's ragdoll. Time is a float type and should be written as 0.5";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 		public override CommandType Type => CommandType.Server;
 		
@@ -25,13 +26,23 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
 			Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
 			Ragdoll ragdoll = entity.GetComponent<Ragdoll>();
-			if (ragdoll.IsKnockedDown)
+
+			if (args.Length > 1)
 			{
-				ragdoll.Recover();
+				// Force c# into using dot as separator
+				float time = float.Parse(args[1], CultureInfo.InvariantCulture);
+				ragdoll.Knockdown(time);
 			}
 			else
 			{
-				ragdoll.Knockdown();
+				if (ragdoll.IsKnockedDown)
+				{
+					ragdoll.Recover();
+				}
+				else
+				{
+					ragdoll.KnockdownTimeless();
+				}
 			}
 			return "Player ragdolled";
 		}
@@ -40,10 +51,26 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		protected override CheckArgsResponse CheckArgs(string[] args)
 		{
 			CheckArgsResponse response = new CheckArgsResponse();
-			if (args.Length != 1)
+			if (args.Length < 1 || args.Length > 2)
 			{
 				response.IsValid = false;
 				response.InvalidArgs = "Invalid number of arguments";
+				return response;
+			}
+
+			if (float.TryParse(args[1], out float time))
+			{
+				if (time <= 0)
+				{
+					response.IsValid = false;
+					response.InvalidArgs = "Invalid time";
+					return response;
+				}
+			}
+			else
+			{
+				response.IsValid = false;
+				response.InvalidArgs = "Invalid time";
 				return response;
 			}
 			string ckey = args[0];

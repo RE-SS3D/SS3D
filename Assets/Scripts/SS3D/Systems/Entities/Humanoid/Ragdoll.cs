@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -6,15 +8,21 @@ namespace SS3D.Systems.Entities.Humanoid
 {
 	public class Ragdoll : MonoBehaviour
 	{
-		[FormerlySerializedAs("_armatureRoot")]
 		public Transform ArmatureRoot;
 		private Transform _character;
+		/// <summary>
+		/// Transform, that character is positioned on during ragdoll state
+		/// </summary>
 		private Transform _center;
 		private Animator _animator;
 		private HumanoidLivingController _humanoidLivingController;
 		private CharacterController _characterController;
-		private List<Rigidbody> _ragdollParts;
-		private float _knockdownEnd;
+		private Rigidbody[] _ragdollParts;
+		private float _knockDownEnd;
+		/// <summary>
+		/// If knockdown is going to expire
+		/// </summary>
+		private bool _isKnockDownTimed;
 		public bool IsKnockedDown { get; private set; }
 
 		private void Start()
@@ -25,12 +33,19 @@ namespace SS3D.Systems.Entities.Humanoid
 			_animator = _character.GetComponent<Animator>();
 			_humanoidLivingController = _character.GetComponent<HumanoidLivingController>();
 			_characterController = _character.GetComponent<CharacterController>();
-			_ragdollParts = new();
-
+			
+			List<Rigidbody> ragdollParts = new();
 			foreach (RagdollPart part in _character.GetComponentsInChildren<RagdollPart>())
 			{
-				_ragdollParts.Add(part.transform.GetComponent<Rigidbody>());
+				ragdollParts.Add(part.transform.GetComponent<Rigidbody>());
 			}
+			_ragdollParts = ragdollParts.ToArray();
+			ToggleKinematic(true);
+		}
+
+		private void OnDisable()
+		{
+			Recover();
 		}
 
 		private void Update()
@@ -50,19 +65,49 @@ namespace SS3D.Systems.Entities.Humanoid
 					Knockdown(); 
 				}
 			}
-			
+
+			if ((IsKnockedDown) && (Time.time > _knockDownEnd) && (_isKnockDownTimed))
+			{
+				// Knockdown expired
+				Recover();
+				_isKnockDownTimed = false;
+			}
+		}
+		/// <summary>
+		/// Knockdown the character.
+		/// </summary>
+		public void KnockdownTimeless()
+		{
+			_isKnockDownTimed = false;
+			Knockdown();
 		}
 
-		public void Knockdown()
+		/// <summary>
+		/// Knockdown the character for some time.
+		/// </summary>
+		/// <param name="seconds"></param>
+		public void Knockdown(float seconds)
+		{
+			if (!IsKnockedDown)
+			{
+				_isKnockDownTimed = true;
+				_knockDownEnd = Time.time + seconds;
+				Knockdown();
+			}
+			else
+			{
+				_knockDownEnd = Math.Max(_knockDownEnd, Time.time + seconds);
+			}
+		}
+		private void Knockdown()
 		{
 			_humanoidLivingController.enabled = false;
 			_characterController.enabled = false;
 			_animator.enabled = false;
 			Vector3 movement = _humanoidLivingController.TargetMovement * 3;
+			ToggleKinematic(false);
 			foreach (Rigidbody part in _ragdollParts)
 			{
-				part.isKinematic = true;
-				part.isKinematic = false;
 				part.AddForce(movement, ForceMode.VelocityChange);
 			}
 
@@ -75,6 +120,8 @@ namespace SS3D.Systems.Entities.Humanoid
 			_characterController.enabled = true;
 			_humanoidLivingController.enabled = true;
 			IsKnockedDown = false;
+			// This is important, because otherwise the character will fly away after disabling its animator
+			ToggleKinematic(true);
 			_animator.Play("Getting Up");
 		}
 
@@ -83,6 +130,14 @@ namespace SS3D.Systems.Entities.Humanoid
 			Vector3 originalHipsPosition = _center.position;
 			_character.position = _center.position;
 			_center.position = originalHipsPosition;
+		}
+
+		private void ToggleKinematic(bool isKinematic)
+		{
+			foreach (Rigidbody part in _ragdollParts)
+			{
+				part.isKinematic = isKinematic;
+			}
 		}
 	}
 }
