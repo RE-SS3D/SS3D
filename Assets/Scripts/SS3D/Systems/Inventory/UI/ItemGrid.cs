@@ -98,7 +98,7 @@ namespace SS3D.Systems.Inventory.UI
                     foreach (Item item in oldItems)
                     {
                         if (item == null) continue;
-                        for (var i = 0; i < _gridItems.Count; i++)
+                        for (int i = 0; i < _gridItems.Count; i++)
                         {
                             ItemGridItem gridItem = _gridItems[i];
                             if (gridItem.Item != item)
@@ -121,7 +121,7 @@ namespace SS3D.Systems.Inventory.UI
                             if (gridItem.Item == item)
                             {
                                 Vector2Int position = container.PositionOf(item);
-                                MoveToSlot(gridItem.transform, position);
+                                MoveToSlot(gridItem, position);
                                 break;
                             }
                         }
@@ -195,7 +195,8 @@ namespace SS3D.Systems.Inventory.UI
 
         /// <summary>
         /// When an item display is dropped on this grid, this compute in which slot of the grid the sprite should be displayed.
-        /// Does nothing if the area of drop is not free.
+        /// Does nothing if the area of drop is not free. Does nothing if the mouse is outside the slots.
+		/// This use the mouse position to decide in which slot the sprite should go.
         /// </summary>
         /// <param name="display"></param>
         public override void OnItemDisplayDrop(ItemDisplay display)
@@ -215,15 +216,16 @@ namespace SS3D.Systems.Inventory.UI
 				return;
 			}
 
-			CreateItemDisplay(item, slot, true);
-
+			display.MakeVisible(false);
 			display.ShouldDrop = true;
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
 
-        private void MoveToSlot(Transform objectToMove, Vector2Int position)
+        private void MoveToSlot(ItemGridItem gridItem, Vector2Int position)
         {
-            if (objectToMove.parent != transform)
+			Transform objectToMove = gridItem.transform;
+
+			if (objectToMove.parent != transform)
             {
                 objectToMove.SetParent(transform, false);
             }
@@ -231,6 +233,7 @@ namespace SS3D.Systems.Inventory.UI
             int slotIndex = position.y * containerSize.x + position.x;
             Transform slot = _gridLayout.transform.GetChild(slotIndex);
             objectToMove.localPosition = slot.localPosition;
+			gridItem.MakeVisible(true);
         }
 
         private void CreateItemDisplay(Item item, Vector2Int position, bool ItemMovedInsideGrid = false)
@@ -249,7 +252,7 @@ namespace SS3D.Systems.Inventory.UI
             o.GetComponent<RectTransform>().sizeDelta = new Vector2(cellSize.x, cellSize.y);
 
             itemSpriteOnGrid.Item = item;
-            MoveToSlot(o.transform, position);
+            MoveToSlot(itemSpriteOnGrid, position);
 
             _gridItems.Add(itemSpriteOnGrid);
         }

@@ -72,9 +72,9 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-                display.ShouldDrop = true;
-            ItemDisplay.Item = display.Item;
-            Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
+            display.ShouldDrop = true;
+			display.MakeVisible(false);
+            Inventory.ClientTransferItem(display.Item, Vector2Int.zero, Container);
         }
 
         /// <summary>
@@ -83,8 +83,9 @@ namespace SS3D.Systems.Inventory.UI
         private void UpdateDisplay()
         {
             var item = _container.Items.FirstOrDefault();
-            ItemDisplay.Item = item;
-        }
+			ItemDisplay.Item = item;
+			ItemDisplay.MakeVisible(true);
+		}
 
         /// <summary>
         /// UpdateContainer modify the container that this slot display, replacing the old one with newContainer.
