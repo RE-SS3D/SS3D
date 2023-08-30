@@ -142,6 +142,7 @@ namespace SS3D.Systems.Inventory.UI
             Vector2 localPoint = new Vector2(screenPosition.x - corners[1].x, corners[1].y - screenPosition.y);
             Vector3 scale = _gridLayout.transform.localToWorldMatrix.lossyScale;
             Vector2 cellSize = _gridLayout.cellSize;
+			// TODO : for optimal precision, should include spacing between cells ?
             float x = localPoint.x / (cellSize.x * scale.x);
             float y = localPoint.y / (cellSize.y * scale.y);
 
@@ -202,20 +203,19 @@ namespace SS3D.Systems.Inventory.UI
             Item item = display.Item;
             Vector3 dragPosition = display.transform.position;
 
-            // Get item center position
-            Rect rect = display.GetComponent<RectTransform>().rect;
-            Vector2 rectCenter = new(rect.width / 2, rect.height / 2);
-            Vector2 position = GetSlotPositionExact(new Vector2(dragPosition.x + rectCenter.x, dragPosition.y - rectCenter.y));
+			Vector3 mousePosition = Input.mousePosition;
+            Vector2 position = GetSlotPositionExact(mousePosition);
 
             // Offset slot by item dimensions
+			// TODO : issue here with slot position
             Vector2Int slot = new(Mathf.RoundToInt(position.x - 1 / 2f), Mathf.RoundToInt(position.y - 1 / 2f));
 
-            CreateItemDisplay(item, slot, true);
-
-			if (!AttachedContainer.IsAreaFree(slot))
+			if (!AttachedContainer.AreSlotCoordinatesInGrid(slot) || !AttachedContainer.IsAreaFree(slot))
 			{
 				return;
 			}
+
+			CreateItemDisplay(item, slot, true);
 
 			display.ShouldDrop = true;
             Inventory.ClientTransferItem(item, slot, AttachedContainer);

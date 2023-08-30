@@ -16,6 +16,7 @@ using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
 using FishNet.Object;
+using SS3D.Logging;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -267,7 +268,12 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-			if (changeType == ContainerChangeType.None) return;
+			// This seem to be called correctly 2 move and none when moving inside, 2 remove and none when removing, 2 add and none when adding, 2 add 2 remove and none when transferring
+			Punpun.Information(this, "container change type is" + changeType.ToString());
+
+			if (changeType == ContainerChangeType.None) {
+				return;
+			}
 
             InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
@@ -663,6 +669,11 @@ namespace SS3D.Systems.Inventory.Containers
 		public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
 		{
 			OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
+		}
+
+		public bool AreSlotCoordinatesInGrid(Vector2Int slotCoordinates)
+		{
+			return slotCoordinates.x < Size.x && slotCoordinates.y < Size.y && slotCoordinates.x >= 0 && slotCoordinates.y >= 0;
 		}
 	}
 
