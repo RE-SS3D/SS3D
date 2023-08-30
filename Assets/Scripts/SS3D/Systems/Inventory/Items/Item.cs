@@ -160,7 +160,6 @@ namespace SS3D.Systems.Inventory.Items
             var itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
-                Punpun.Debug(this, "item {item} frozen", Logs.Generic, Name);
                 itemCollider.enabled = false;
             }
         }
