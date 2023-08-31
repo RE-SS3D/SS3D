@@ -616,7 +616,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		public bool CanStoreItem(Item item)
+		private bool CanStoreItem(Item item)
 		{
 			if (_startFilter != null)
 			{
@@ -630,7 +630,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		public bool CanHoldItem(Item item)
+		private bool CanHoldItem(Item item)
 		{
 			return Items.Count() < Size.x * Size.y;
 		}
@@ -642,7 +642,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns></returns>
 		public bool CanContainItem(Item item)
 		{
-			return (CanStoreItem(item) && CanHoldItem(item));
+			return CanStoreItem(item) && CanHoldItem(item);
 		}
 		
 		/// <summary>

@@ -51,7 +51,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         private bool CanStore(Item item, AttachedContainer target)
         {
-            return target.CanStoreItem(item) && target.CanHoldItem(item);
+            return target.CanContainItem(item);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
