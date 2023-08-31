@@ -34,7 +34,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 
         public delegate void InventoryContainerModifiedEventHandler(AttachedContainer container);
-        public delegate void ContainerContentsEventHandler(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        public delegate void ContainerContentsEventHandler(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type);
         public delegate void Notify();
 
 		// When a container is added to this inventory
@@ -225,9 +225,9 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <summary>
 		/// Simply invoke the event OnContainerContentChanged.
 		/// </summary>
-		private void HandleContainerContentChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+		private void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
-            OnContainerContentChanged?.Invoke(container,oldItems,newItems,type);
+            OnContainerContentChanged?.Invoke(container,oldItem,newItem,type);
         }
 
         /// <summary>

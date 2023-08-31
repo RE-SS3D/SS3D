@@ -82,51 +82,49 @@ namespace SS3D.Systems.Inventory.UI
         /// When the container change, change the display of items inside it.
         /// Either add a display, remove a display or move a display to another slot.
         /// </summary>
-        private void ContainerOnContentsChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerOnContentsChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
-            switch (type)
+			Vector2Int position = new Vector2Int(0, 0);
+
+			switch (type)
             {
                 case ContainerChangeType.Add:
-                    foreach (Item item in newItems)
-                    {
-                        if (item == null) continue;
-                        Vector2Int position = container.PositionOf(item);
-                        CreateItemDisplay(item, position);
-                    }
-                    break;
+
+                    if (newItem == null) return;
+					position = container.PositionOf(newItem);
+					CreateItemDisplay(newItem, position);
+					break;
+
                 case ContainerChangeType.Remove:
-                    foreach (Item item in oldItems)
-                    {
-                        if (item == null) continue;
+
+                        if (oldItem == null) return;
                         for (int i = 0; i < _gridItems.Count; i++)
                         {
                             ItemGridItem gridItem = _gridItems[i];
-                            if (gridItem.Item != item)
+                            if (gridItem.Item != oldItem)
                             {
                                 continue;
                             }
-
                             _gridItems.RemoveAt(i);
                             gridItem.gameObject.Dispose(true);
                             break;
                         }
-                    }
-                    break;
+						break;
+
                 case ContainerChangeType.Move:
-                    foreach (Item item in newItems)
+
+                    if (newItem == null) return;
+                    foreach (ItemGridItem gridItem in _gridItems)
                     {
-                        if (item == null) continue;
-                        foreach (ItemGridItem gridItem in _gridItems)
+                        if (gridItem.Item == newItem)
                         {
-                            if (gridItem.Item == item)
-                            {
-                                Vector2Int position = container.PositionOf(item);
-                                MoveToSlot(gridItem, position);
-                                break;
-                            }
+                            position = container.PositionOf(newItem);
+                            MoveToSlot(gridItem, position);
+                            break;
                         }
                     }
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

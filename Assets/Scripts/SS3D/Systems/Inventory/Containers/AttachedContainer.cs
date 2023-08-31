@@ -166,7 +166,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public IEnumerable<Item> Items => _storedItems.Select(x => x.Item);
 
-		public delegate void ContainerContentsHandler(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+		public delegate void ContainerContentsHandler(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type);
 		/// <summary>
 		/// Called when the contents of the container change
 		/// </summary>
@@ -282,7 +282,7 @@ namespace SS3D.Systems.Inventory.Containers
 				return;
 			}
 
-            InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
+            InvokeOnContentChanged(oldItem.Item, newItem.Item, changeType);
         }
 
         [ServerOrClient]
@@ -677,9 +677,9 @@ namespace SS3D.Systems.Inventory.Containers
 			return true;
 		}
 
-		public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
+		public void InvokeOnContentChanged(Item oldItem, Item newItem, ContainerChangeType changeType)
 		{
-			OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
+			OnContentsChanged?.Invoke(this, oldItem, newItem, changeType);
 		}
 
 		public bool AreSlotCoordinatesInGrid(Vector2Int slotCoordinates)
