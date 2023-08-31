@@ -78,7 +78,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <summary>
         /// Initialise this item fields. Can only be called once.
         /// </summary>
-        public void Init(string itemName, float weight, Vector2Int size,  List<Trait> traits)
+        public void Init(string itemName, float weight,  List<Trait> traits)
         {
             if (_initialised)
             {
