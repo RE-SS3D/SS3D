@@ -158,6 +158,9 @@ namespace SS3D.Systems.Inventory.UI
             return new Vector2Int(Mathf.FloorToInt(exact.x), Mathf.FloorToInt(exact.y));
         }
 
+		/// <summary>
+		/// Get the dimension of the grid in pixels, including cell sizes and spacing.
+		/// </summary>
         public Vector2 GetGridDimensions()
         {
             if (_gridLayout == null)
@@ -216,11 +219,15 @@ namespace SS3D.Systems.Inventory.UI
 				return;
 			}
 
+			// We make it not visible the time it is transfered to another slot, to avoid seeing the sprite flickering.
 			display.MakeVisible(false);
 			display.ShouldDrop = true;
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
 
+		/// <summary>
+		/// Move an item sprite at a given position on the grid.
+		/// </summary>
         private void MoveToSlot(ItemGridItem gridItem, Vector2Int position)
         {
 			Transform objectToMove = gridItem.transform;
@@ -236,6 +243,9 @@ namespace SS3D.Systems.Inventory.UI
 			gridItem.MakeVisible(true);
         }
 
+		/// <summary>
+		/// Instantiate a sprite at the right location in the grid.
+		/// </summary>
         private void CreateItemDisplay(Item item, Vector2Int position, bool ItemMovedInsideGrid = false)
         {
             // avoid creating the same item sprite multiple times. Except when it's moved around in the container.

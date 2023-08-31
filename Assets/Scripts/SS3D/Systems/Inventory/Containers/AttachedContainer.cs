@@ -282,6 +282,8 @@ namespace SS3D.Systems.Inventory.Containers
         private void handleItemRemoved(Item item)
         {
 
+			if (item == null) return;
+
             // Restore visibility
             if (HideItems)
             {
@@ -301,7 +303,9 @@ namespace SS3D.Systems.Inventory.Containers
         [ServerOrClient]
         private void handleItemAdded(Item item)
         {
-            item.Freeze();
+			if (item == null) return;
+
+			item.Freeze();
 
             // Make invisible
             if (HideItems)
