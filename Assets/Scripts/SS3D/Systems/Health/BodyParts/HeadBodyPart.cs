@@ -48,8 +48,20 @@ public class HeadBodyPart : BodyPart
         entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
         go.GetComponent<NetworkObject>().RemoveOwnership();
 
-        InvokeOnBodyPartDetached();
+		InvokeOnBodyPartDetached();
         _isDetached = true;
-        Dispose(false);
+		// For now simply set unactive the whole body. In the future, should instead put the body in ragdoll mode
+		// and disable a bunch of components.
+		DeactivateWholeBody();
+		Dispose(false);
     }
+
+	/// <summary>
+	/// Deactivate this game object, should run for all observers, and for late joining (hence bufferlast = true).
+	/// </summary>
+	[ObserversRpc(RunLocally = true, BufferLast = true)]
+	protected void DeactivateWholeBody()
+	{
+		GetComponentInParent<Entity>().gameObject.SetActive(false);
+	}
 }
