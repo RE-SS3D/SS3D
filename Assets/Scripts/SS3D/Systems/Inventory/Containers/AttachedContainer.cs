@@ -17,6 +17,7 @@ using FishNet.Object.Synchronizing;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Logging;
+using System.Drawing;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -217,6 +218,12 @@ namespace SS3D.Systems.Inventory.Containers
             Purge();
         }
 
+		public void Init(Vector2Int size, Filter filter)
+		{
+			_size = size;
+			_startFilter= filter;
+		}
+
         public override string ToString()
         {
             return $"{name}({nameof(AttachedContainer)})[size: {Size}, items: ]";
@@ -337,7 +344,7 @@ namespace SS3D.Systems.Inventory.Containers
 				return true;
 			}
 
-			if (!CanStoreItem(item))
+			if (!CanContainItem(item))
 			{
 				return false;
 			}
@@ -383,7 +390,7 @@ namespace SS3D.Systems.Inventory.Containers
 				// Item at same position, nothing to do
 			}
 
-			if (!CanStoreItem(item))
+			if (!CanContainItem(item))
 			{
 				return false;
 			}
