@@ -96,7 +96,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             // If it's not a cloth type container.
             // It'd be probably better to just create "cloth container" inheriting from container to easily test that.
-            if(container.ContainerType < ContainerType.Bag)
+            if(container.AttachedTo.GetComponent<ClothContainer>() == null)
             {
                 return;
             }
