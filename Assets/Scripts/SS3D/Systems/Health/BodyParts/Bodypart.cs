@@ -267,7 +267,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     private void DumpOrPurgeContainers(bool purgeContainersContent)
     {
-        AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
+        IEnumerable<AttachedContainer> containers = GetComponentsInChildren<AttachedContainer>().Where(x => x.GetComponent<OrganContainer>() == null);
         foreach (AttachedContainer container in containers)
         {
             if (purgeContainersContent)
