@@ -112,7 +112,7 @@ resharper_csharp_blank_lines_around_namespace = 0
 resharper_csharp_blank_lines_around_region = 0
 resharper_csharp_blank_lines_inside_region = 0
 resharper_csharp_empty_block_style = together_same_line
-resharper_csharp_indent_style = tab
+resharper_csharp_indent_style = space
 resharper_csharp_keep_blank_lines_in_code = 100
 resharper_csharp_keep_blank_lines_in_declarations = 100
 resharper_csharp_max_line_length = 544
@@ -285,9 +285,8 @@ indent_style = space
 indent_size = 2
 
 [*.{c,c++,cc,cginc,compute,cp,cpp,cs,cu,cuh,cxx,fx,fxh,h,hh,hlsl,hlsli,hlslinc,hpp,hxx,inc,inl,ino,ipp,ixx,mpp,mq4,mq5,mqh,tpp,usf,ush}]
-indent_style = tab
-indent_size = tab
-tab_width = 4
+indent_style = space
+indent_size = 4
 
 [*.{appxmanifest,asax,ascx,aspx,axaml,build,cshtml,dtd,fs,fsi,fsscript,fsx,master,ml,mli,nuspec,paml,razor,resw,resx,shader,skin,vb,xaml,xamlx,xoml,xsd}]
 indent_style = space
