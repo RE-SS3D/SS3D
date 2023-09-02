@@ -149,7 +149,7 @@ namespace SS3D.Systems.Inventory.Containers
             foreach (var container in attachedContainers)
             {
                 AddContainer(container);
-                Punpun.Information(this, "Adding {container} container to inventory", Logs.Generic, container);
+                Log.Information(this, "Adding {container} container to inventory", Logs.Generic, container);
             }
         }
 
@@ -434,7 +434,7 @@ namespace SS3D.Systems.Inventory.Containers
                 if (ContainersOnPlayer.Contains(container))
                 {
                     RemoveContainer(container);
-                    Punpun.Warning(this, $"invoke {container} removed");
+                    Log.Warning(this, $"invoke {container} removed");
                 }
             }
         }

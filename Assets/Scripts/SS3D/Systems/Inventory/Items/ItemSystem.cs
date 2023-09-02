@@ -46,7 +46,7 @@ namespace SS3D.Systems.Inventory.Items
                 }
                 else
                 {
-                    Punpun.Error(this, $"gameobject {itemObject} doesn't have any item component");
+                    Log.Error(this, $"gameobject {itemObject} doesn't have any item component");
                 } 
             }
         }

@@ -37,7 +37,7 @@ namespace SS3D.Systems.Inventory.UI
             ItemDisplay display = drag.GetComponent<ItemDisplay>();
             if (display == null)
             {
-                Punpun.Warning(this, "dragging on null display");
+                Log.Warning(this, "dragging on null display");
                 return;
             }
 
