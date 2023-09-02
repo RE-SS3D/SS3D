@@ -14,10 +14,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Adds a trait to the item in hand";
         public override string ShortDescription => "item.addtrait";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-		public override CommandType Type => CommandType.Server;
+        public override CommandType Type => CommandType.Server;
 
 
-		[Server]
+        [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);

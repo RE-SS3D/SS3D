@@ -38,7 +38,7 @@ namespace SS3D.Systems.Inventory.Containers
         public override void OnStartClient()
         {
             base.OnStartClient();
-			if (!IsOwner) { return; }
+            if (!IsOwner) { return; }
             SetupView();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -97,8 +97,8 @@ namespace SS3D.Systems.Inventory.Containers
         [TargetRpc]
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
-			OnContainerOpened?.Invoke(container);
-		}
+            OnContainerOpened?.Invoke(container);
+        }
 
         /// <summary>
         /// Make this inventory open an container.
@@ -167,8 +167,8 @@ namespace SS3D.Systems.Inventory.Containers
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
-			OnContainerClosed?.Invoke(container);
-		}
+            OnContainerClosed?.Invoke(container);
+        }
 
     }
 }

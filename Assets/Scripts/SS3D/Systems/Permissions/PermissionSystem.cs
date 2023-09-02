@@ -92,7 +92,7 @@ namespace SS3D.Systems.Permissions
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
-			throw new NotImplementedException();
+            throw new NotImplementedException();
             // TODO: This
             // Add new user permission to list
             // Add new user permission to text file

@@ -1,8 +1,13 @@
 ﻿using System;
+using Coimbra;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Health;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -43,8 +48,11 @@ namespace SS3D.Systems.Entities
         {
             base.OnDestroyed();
 
-            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, false);
-            localPlayerObjectChanged.Invoke(this);
+            if (IsOwner)
+            {
+                LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, false);
+                localPlayerObjectChanged.Invoke(this);
+            }
         }
 
         private void InvokeLocalPlayerObjectChanged()
@@ -85,8 +93,13 @@ namespace SS3D.Systems.Entities
         public void SetMind(Mind mind)
         {
             this._mind = mind;
-
+            if(mind == null) return;
             GiveOwnership(mind.Owner);
         }
+
+		public virtual void Kill()
+		{
+			throw new NotImplementedException();
+		}
     }
 }

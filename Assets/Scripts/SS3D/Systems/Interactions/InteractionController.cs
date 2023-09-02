@@ -361,7 +361,7 @@ namespace SS3D.Systems.Interactions
         [ServerOrClient]
         private IInteractionSource GetActiveInteractionSource()
         {
-			IHandsController handsController = GetComponent<IHandsController>();
+            IHandsController handsController = GetComponent<IHandsController>();
             var interactionSource = handsController.GetActiveInteractionSource();
 
             return interactionSource;
