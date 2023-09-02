@@ -1,14 +1,17 @@
-public enum DamageType
+﻿namespace SS3D.Systems.Health
 {
-    Crush,
-    Slash,
-    Puncture,
-    Pressure,
-    Heat,
-    Cold,
-    Shock,
-    Rad,
-    Toxic,
-    Acid,
-    Oxy,
+	public enum DamageType
+	{
+		Crush,
+		Slash,
+		Puncture,
+		Pressure,
+		Heat,
+		Cold,
+		Shock,
+		Rad,
+		Toxic,
+		Acid,
+		Oxy,
+	}
 }

@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class OrganContainer : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
+namespace SS3D.Systems.Inventory.Containers {
+	public class OrganContainer : MonoBehaviour
+	{
+		// Start is called before the first frame update
+		void Start()
+		{
         
-    }
+		}
 
-    // Update is called once per frame
-    void Update()
-    {
+		// Update is called once per frame
+		void Update()
+		{
         
-    }
+		}
+	}
 }

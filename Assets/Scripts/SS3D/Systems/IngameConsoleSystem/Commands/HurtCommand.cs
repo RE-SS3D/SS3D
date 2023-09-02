@@ -5,12 +5,9 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
-using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
+using SS3D.Systems.Health;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {

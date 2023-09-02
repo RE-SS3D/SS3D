@@ -1,16 +1,11 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
-using SS3D.Core;
-using SS3D.Systems.Entities;
+using SS3D.Systems.Health;
 using SS3D.Systems.Permissions;
-using SS3D.Systems.PlayerControl;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
