@@ -7549,6 +7549,7 @@ GameObject:
   - component: {fileID: 6258404136566216916}
   - component: {fileID: 3771845344306968317}
   - component: {fileID: 5283895024578974260}
+  - component: {fileID: 5164211669966765644}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -7852,7 +7853,7 @@ MonoBehaviour:
   _movementTarget: {fileID: 282733360052666326}
   _characterController: {fileID: 3812744165389046210}
   _staminaController: {fileID: 3788807725072305327}
-  _feetHealthFactor: 0
+  _feetController: {fileID: 5164211669966765644}
 --- !u!114 &5857269694861021747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7975,6 +7976,22 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _mind: {fileID: 0}
   Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
+--- !u!114 &5164211669966765644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a01db53685baa84d8ca938524f2638f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _feetHealthFactor: 1
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
