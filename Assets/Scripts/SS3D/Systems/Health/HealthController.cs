@@ -12,6 +12,11 @@ public class HealthController : NetworkBehaviour
     public GameObject Ghost;
     private GameObject _spawnedGhost;
 
+	[SerializeField]
+	private CirculatoryController _circulatoryController;
+
+	public CirculatoryController Circulatory => _circulatoryController;
+
     [Server]
     private void BecomeGhost(GameObject player, GameObject ghost)
     {

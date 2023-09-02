@@ -74,6 +74,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     protected bool _isDetached;
 
+	public HealthController HealthController;
+
 
     public ReadOnlyCollection<BodyLayer> BodyLayers
     {
