@@ -1,63 +1,63 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System;
 using FishNet.Object;
-using System.Linq;
 
-public class NerveLayer : BodyLayer
+namespace SS3D.Systems.Health
 {
+	public class NerveLayer : BodyLayer
+	{
 
-    public NetworkBehaviour GetNetworkBehaviour => BodyPart;
+		public NetworkBehaviour GetNetworkBehaviour => BodyPart;
 
 
-    public NetworkObject getNetworkedObject
-    {
-        get
-        {
-            return BodyPart.NetworkObject;
-        }
-        set
-        {
+		public NetworkObject getNetworkedObject
+		{
+			get
+			{
+				return BodyPart.NetworkObject;
+			}
+			set
+			{
 
-        }
-    }
+			}
+		}
 
-    public GameObject getGameObject
-    {
-        get
-        {
-            return BodyPart.gameObject;
-        }
-        set
-        {
+		public GameObject getGameObject
+		{
+			get
+			{
+				return BodyPart.gameObject;
+			}
+			set
+			{
 
-        }
-    }
+			}
+		}
 
-    public override BodyLayerType LayerType
-    {
-        get { return BodyLayerType.Nerve; }
-    }
+		public override BodyLayerType LayerType
+		{
+			get { return BodyLayerType.Nerve; }
+		}
 
-    public NerveLayer(BodyPart bodyPart) : base(bodyPart)
-    {
+		public NerveLayer(BodyPart bodyPart) : base(bodyPart)
+		{
 
-    }
+		}
 
-    public NerveLayer(BodyPart bodyPart,
-        List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
-        : base(bodyPart, damages, susceptibilities, resistances)
-    {
+		public NerveLayer(BodyPart bodyPart,
+			List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
+			: base(bodyPart, damages, susceptibilities, resistances)
+		{
 
-    }
+		}
 
-    protected override void SetSuceptibilities()
-    {
-        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 1.5f));
-        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Pressure, 0.5f));
-        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 2f));
-        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
-        _damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
-    }
+		protected override void SetSuceptibilities()
+		{
+			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 1.5f));
+			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Pressure, 0.5f));
+			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 2f));
+			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
+			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
+		}
+	}
 }

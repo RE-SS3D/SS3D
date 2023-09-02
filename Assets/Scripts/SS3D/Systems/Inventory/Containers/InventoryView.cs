@@ -369,5 +369,13 @@ namespace SS3D.Systems.Inventory.UI
             Slots[indexToRemove].gameObject.Dispose(true);
             Slots.RemoveAt(indexToRemove);
         }
+
+		public void DestroyAllSlots()
+		{
+			for(int i = Slots.Count-1; i>=0; i--)
+			{
+				Slots[i].gameObject.Dispose(true);
+			}
+		}
     }
 }

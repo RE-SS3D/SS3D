@@ -5,12 +5,9 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
-using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
+using SS3D.Systems.Health;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -51,7 +48,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
             BodyLayer bodyLayer = bodyPart.FirstBodyLayerOfType(bodyLayerType);
 
-            if(!bodyPart.TryInflictDamage(bodyLayerType, new DamageTypeQuantity(damageType, damageAmount)))
+
+			if (bodyLayerName == "all")
+			{
+				bodyPart.InflictDamageToAllLayer(new DamageTypeQuantity(damageType, damageAmount));
+			}
+			else if (!bodyPart.TryInflictDamage(bodyLayerType, new DamageTypeQuantity(damageType, damageAmount)))
             {
                 checkArgsResponse.IsValid= false;
                 return checkArgsResponse.InvalidArgs = "can't inflict damage on bodypart";
@@ -93,7 +95,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             }
 
 
-            if (!Enum.TryParse(bodyLayerName, true, out bodyLayerType))
+            if (!Enum.TryParse(bodyLayerName, true, out bodyLayerType) && bodyLayerName != "all")
             {
                 response.IsValid = false;
                 response.InvalidArgs = "Provide a valid body layer type name";
@@ -142,7 +144,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
             BodyPart bodyPart = bodyParts.First();
 
-            if (!bodyPart.ContainsLayer(bodyLayerType))
+            if (bodyLayerName != "all" && !bodyPart.ContainsLayer(bodyLayerType))
             {
                 response.IsValid = false;
                 response.InvalidArgs = "body layer not present on the bodypart";

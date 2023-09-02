@@ -104,7 +104,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     public bool IsSevered => GetBodyLayer<BoneLayer>().IsDestroyed();
 
     public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
-    public float MaxDamage => _bodyLayers.Sum(layer => layer.MaxDamage);
+    public float MaxDamage => 0.8f*_bodyLayers.Sum(layer => layer.MaxDamage);
 
     public float RelativeDamage => 1- TotalDamage/ MaxDamage;
 

@@ -1,4 +1,4 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
@@ -16,7 +16,6 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
-    [RequireComponent(typeof(Entity))]
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(Animator))]
     public abstract class HumanoidController : NetworkActor

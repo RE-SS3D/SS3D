@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum HealthStateType
+﻿namespace SS3D.Systems.Health
 {
-    Minor,
-    Moderate,
-    Significant,
-    Critical,
-    Dead
+	public enum HealthStateType
+	{
+		Minor,
+		Moderate,
+		Significant,
+		Critical,
+		Dead
+	}
 }

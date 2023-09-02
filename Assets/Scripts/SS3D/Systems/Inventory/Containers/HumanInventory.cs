@@ -159,11 +159,19 @@ namespace SS3D.Systems.Inventory.Containers
             inventoryView.Setup(this);
         }
 
-        /// <summary>
-        /// Add a given container to this inventory, and register to a few events related to the container.
-        /// Only use this method to remove a container to ContainersOnPlayer.
-        /// </summary>
-        [Server]
+		protected override void OnDisabled()
+		{
+			base.OnDisabled();
+			var inventoryView = ViewLocator.Get<InventoryView>().First();
+			inventoryView.DestroyAllSlots();
+
+		}
+
+		/// <summary>
+		/// Add a given container to this inventory, and register to a few events related to the container.
+		/// Only use this method to remove a container to ContainersOnPlayer.
+		/// </summary>
+		[Server]
         private void AddContainer(AttachedContainer container)
         {
             ContainersOnPlayer.Add(container);

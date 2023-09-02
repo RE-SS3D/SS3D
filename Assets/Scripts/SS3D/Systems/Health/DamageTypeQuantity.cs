@@ -1,21 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using System;
 
-public class DamageTypeQuantity : ICloneable
+namespace SS3D.Systems.Health
 {
-    public DamageType damageType;
-    public float quantity;
+	public class DamageTypeQuantity : ICloneable
+	{
+		public DamageType damageType;
+		public float quantity;
 
-    public DamageTypeQuantity(DamageType damageType, float quantity)
-    {
-        this.damageType = damageType;
-        this.quantity = quantity;
-    }
+		public DamageTypeQuantity(DamageType damageType, float quantity)
+		{
+			this.damageType = damageType;
+			this.quantity = quantity;
+		}
 
-    public object Clone()
-    {
-        return new DamageTypeQuantity(damageType, quantity);
-    }
+		public object Clone()
+		{
+			return new DamageTypeQuantity(damageType, quantity);
+		}
+	}
 }
