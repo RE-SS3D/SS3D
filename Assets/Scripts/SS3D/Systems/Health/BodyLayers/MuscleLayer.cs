@@ -31,7 +31,7 @@ namespace SS3D.Systems.Health
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Cold, 1.5f));
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 1.5f));
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Acid, 1.5f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Oxy, 1.5f));
+			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Respiratory, 1.5f));
 		}
 	}
 }

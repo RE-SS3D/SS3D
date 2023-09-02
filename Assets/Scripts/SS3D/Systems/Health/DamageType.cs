@@ -12,6 +12,6 @@
 		Rad,
 		Toxic,
 		Acid,
-		Oxy,
+		Respiratory,
 	}
 }
