@@ -26,9 +26,9 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class HumanInventory : NetworkActor
     {
-		/// <summary>
-		/// List of containers present on the player, meaning, in the player HUD, shown as slots.
-		/// </summary>
+        /// <summary>
+        /// List of containers present on the player, meaning, in the player HUD, shown as slots.
+        /// </summary>
         [SyncObject]
         private readonly SyncList<AttachedContainer> ContainersOnPlayer = new();
 
@@ -37,22 +37,22 @@ namespace SS3D.Systems.Inventory.Containers
         public delegate void ContainerContentsEventHandler(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type);
         public delegate void Notify();
 
-		// When a container is added to this inventory
+        // When a container is added to this inventory
         public event InventoryContainerModifiedEventHandler OnInventoryContainerAdded;
 
-		// When a container is removed from this inventory
+        // When a container is removed from this inventory
         public event InventoryContainerModifiedEventHandler OnInventoryContainerRemoved;
 
-		// When the content of a container in this inventory changes
+        // When the content of a container in this inventory changes
         public event ContainerContentsEventHandler OnContainerContentChanged;
 
-		// When the inventory is done doing its setup
+        // When the inventory is done doing its setup
         public event Notify OnInventorySetUp;
 
-		// reference to the component allowing to display out of inventory containers.
+        // reference to the component allowing to display out of inventory containers.
         public ContainerViewer containerViewer;
 
-		public List<AttachedContainer> Containers => ContainersOnPlayer.Collection.ToList();
+        public List<AttachedContainer> Containers => ContainersOnPlayer.Collection.ToList();
 
         /// <summary>
         /// The controllable body of the owning player
@@ -64,18 +64,18 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public Hands Hands;
 
-		/// <summary>
-		/// Number of hands container on this inventory.
-		/// </summary>
-		public int CountHands => ContainersOnPlayer.Where(x => x.Type == ContainerType.Hand).Count();
+        /// <summary>
+        /// Number of hands container on this inventory.
+        /// </summary>
+        public int CountHands => ContainersOnPlayer.Where(x => x.Type == ContainerType.Hand).Count();
 
-		/// <summary>
-		/// Try to get a particular type of container in the inventory, and if there's multiple, try to get the one at the given position.
-		/// </summary>
-		/// <param name="position">The position of the container for a given type, if there's two pocket containers, it'd be 0 and 1</param>
-		/// <param name="type"> The container we want back.</param>
-		/// <returns></returns>
-		public bool TryGetTypeContainer(ContainerType type, int position, out AttachedContainer typeContainer) 
+        /// <summary>
+        /// Try to get a particular type of container in the inventory, and if there's multiple, try to get the one at the given position.
+        /// </summary>
+        /// <param name="position">The position of the container for a given type, if there's two pocket containers, it'd be 0 and 1</param>
+        /// <param name="type"> The container we want back.</param>
+        /// <returns></returns>
+        public bool TryGetTypeContainer(ContainerType type, int position, out AttachedContainer typeContainer) 
         {
             int typeIndex = 0;
             foreach (var container in ContainersOnPlayer) 
@@ -113,24 +113,23 @@ namespace SS3D.Systems.Inventory.Containers
                     OnInventoryContainerAdded?.Invoke(newContainer);
                     break;
                 case SyncListOperation.RemoveAt:
-                    Debug.Log("remove container " + oldContainer);
                     OnInventoryContainerRemoved?.Invoke(oldContainer);
                     break;
             }
         }
 
-		public override void OnStartClient()
+        public override void OnStartClient()
         {
             base.OnStartClient();
-			if (!IsOwner)
-			{
-				return;
-			}
+            if (!IsOwner)
+            {
+                return;
+            }
 
             Hands.SetInventory(this);
             SetupView();
-			Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
-			OnInventorySetUp?.Invoke();
+            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+            OnInventorySetUp?.Invoke();
         }
 
         public override void OnStartServer()
@@ -161,11 +160,19 @@ namespace SS3D.Systems.Inventory.Containers
             inventoryView.Setup(this);
         }
 
-        /// <summary>
-        /// Add a given container to this inventory, and register to a few events related to the container.
-        /// Only use this method to remove a container to ContainersOnPlayer.
-        /// </summary>
-        [Server]
+		protected override void OnDisabled()
+		{
+			base.OnDisabled();
+			var inventoryView = ViewLocator.Get<InventoryView>().First();
+			inventoryView.DestroyAllSlots();
+
+		}
+
+		/// <summary>
+		/// Add a given container to this inventory, and register to a few events related to the container.
+		/// Only use this method to remove a container to ContainersOnPlayer.
+		/// </summary>
+		[Server]
         private void AddContainer(AttachedContainer container)
         {
             ContainersOnPlayer.Add(container);
@@ -173,11 +180,11 @@ namespace SS3D.Systems.Inventory.Containers
             container.OnItemAttached += HandleTryAddContainerOnItemAttached;
             container.OnItemDetached += HandleTryRemoveContainerOnItemDetached;
 
-			// Be careful, destroying an inventory container will cause issue as when syncing with client, the attachedContainer will be null. 
-			// Before destroying a container, consider disabling the behaviour or the game object it's on first to avoid this issue.
-			container.OnAttachedContainerDisabled += RemoveContainer;
+            // Be careful, destroying an inventory container will cause issue as when syncing with client, the attachedContainer will be null. 
+            // Before destroying a container, consider disabling the behaviour or the game object it's on first to avoid this issue.
+            container.OnAttachedContainerDisabled += RemoveContainer;
 
-		}
+        }
 
         /// <summary>
         /// Remove a given container to this inventory, and unregister to a few events related to the container.
@@ -190,37 +197,37 @@ namespace SS3D.Systems.Inventory.Containers
             container.OnContentsChanged -= HandleContainerContentChanged;
             container.OnItemAttached -= HandleTryAddContainerOnItemAttached;
             container.OnItemDetached -= HandleTryRemoveContainerOnItemDetached;
-			container.OnAttachedContainerDisabled -= RemoveContainer;
-		}
+            container.OnAttachedContainerDisabled -= RemoveContainer;
+        }
 
-		/// <summary>
-		/// Try to add a container to this inventory, check first if not already added.
-		/// TODO: Should also check if it's the kind of container that can go in inventory.
-		/// </summary>
-		[Server]
-		public bool TryAddContainer(AttachedContainer container)
-		{
-			if (!Containers.Contains(container))
-			{
-				AddContainer(container);
-				return true;
-			}
-			return false;
-		}
+        /// <summary>
+        /// Try to add a container to this inventory, check first if not already added.
+        /// TODO: Should also check if it's the kind of container that can go in inventory.
+        /// </summary>
+        [Server]
+        public bool TryAddContainer(AttachedContainer container)
+        {
+            if (!Containers.Contains(container))
+            {
+                AddContainer(container);
+                return true;
+            }
+            return false;
+        }
 
-		/// <summary>
-		/// Try to remove a container already present in this inventory.
-		/// </summary>
-		[Server]
-		public bool TryRemoveContainer(AttachedContainer container)
-		{
-			if (Containers.Contains(container))
-			{
-				RemoveContainer(container);
-				return true;
-			}
-			return false;
-		}
+        /// <summary>
+        /// Try to remove a container already present in this inventory.
+        /// </summary>
+        [Server]
+        public bool TryRemoveContainer(AttachedContainer container)
+        {
+            if (Containers.Contains(container))
+            {
+                RemoveContainer(container);
+                return true;
+            }
+            return false;
+        }
 
 		/// <summary>
 		/// Simply invoke the event OnContainerContentChanged.
@@ -282,7 +289,7 @@ namespace SS3D.Systems.Inventory.Containers
             CmdTransferItem(item.gameObject, position, targetContainer);
         }
 
-		[ServerRpc]
+        [ServerRpc]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, AttachedContainer container)
         {
             Item item = itemObject.GetComponent<Item>();
@@ -431,5 +438,5 @@ namespace SS3D.Systems.Inventory.Containers
                 }
             }
         }
-	}
+    }
 }

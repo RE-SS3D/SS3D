@@ -1,4 +1,7 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Health;
@@ -11,7 +14,6 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for living biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
-    [RequireComponent(typeof(Entity))]
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
@@ -21,7 +23,17 @@ namespace SS3D.Systems.Entities.Humanoid
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
-        
+		[SerializeField] private FeetController _feetController;
+
+		public override void OnStartClient()
+        {
+            base.OnStartClient();
+            if (!IsOwner)
+            {
+                return;
+            }    
+        }
+
         /// <summary>
         /// Executes the movement code and updates the IK targets
         /// </summary>
@@ -54,7 +66,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            _characterController.Move(TargetMovement * ((_movementSpeed) * Time.deltaTime));
+            _characterController.Move(TargetMovement * ((_feetController.FeetHealthFactor * _movementSpeed) * Time.deltaTime));
         }
     }
 
