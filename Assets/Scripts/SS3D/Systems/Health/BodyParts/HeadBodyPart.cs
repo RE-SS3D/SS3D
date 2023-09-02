@@ -40,10 +40,13 @@ namespace SS3D.Systems.Health
 
 			// When detached, spawn a head and set player's mind to be in the head,
 			// so that player can still play as a head (death is near though..).
-			BodyPart go = SpawnDetachedBodyPart();
-			MindSystem entitySystem = Subsystems.Get<MindSystem>();
-			entitySystem.SwapMinds(GetComponentInParent<Entity>(), go.GetComponent<Entity>());
-			go.GetComponent<NetworkObject>().RemoveOwnership();
+			BodyPart head = SpawnDetachedBodyPart();
+			MindSystem mindSystem = Subsystems.Get<MindSystem>();
+			mindSystem.SwapMinds(GetComponentInParent<Entity>(), head.GetComponent<Entity>());
+			head.GetComponent<NetworkObject>().RemoveOwnership();
+
+			var entitySystem = Subsystems.Get<EntitySystem>();
+			entitySystem.TransferEntity(GetComponentInParent<Entity>(),head.GetComponent<Entity>());
 
 			InvokeOnBodyPartDetached();
 			_isDetached = true;

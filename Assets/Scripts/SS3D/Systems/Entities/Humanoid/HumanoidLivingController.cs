@@ -14,7 +14,6 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for living biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
-    [RequireComponent(typeof(Entity))]
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]

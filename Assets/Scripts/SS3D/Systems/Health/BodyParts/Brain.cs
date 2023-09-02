@@ -20,7 +20,7 @@ namespace SS3D.Systems.Health
 
 		public override void DestroyBodyPart()
 		{
-			Entity entity = GetComponentInParent<Entity>();
+			Human entity = GetComponentInParent<Human>();
 			entity?.Kill();
 			InvokeOnBodyPartDestroyed();
 			Dispose(true);

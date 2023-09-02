@@ -7539,7 +7539,6 @@ GameObject:
   - component: {fileID: 1252106768682846670}
   - component: {fileID: 3812744165389046210}
   - component: {fileID: 6706577840954258383}
-  - component: {fileID: 8336170331735268562}
   - component: {fileID: 5293420320943344825}
   - component: {fileID: 3788807725072305327}
   - component: {fileID: 571479044043330787}
@@ -7549,6 +7548,7 @@ GameObject:
   - component: {fileID: 1089183168752255729}
   - component: {fileID: 6258404136566216916}
   - component: {fileID: 3771845344306968317}
+  - component: {fileID: 5283895024578974260}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -7595,7 +7595,6 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 7255324433810104430}
   - {fileID: 5113695969261828376}
-  - {fileID: 8336170331735268562}
   - {fileID: 5293420320943344825}
   - {fileID: 3788807725072305327}
   - {fileID: 571479044043330787}
@@ -7605,6 +7604,7 @@ MonoBehaviour:
   - {fileID: 1089183168752255729}
   - {fileID: 6258404136566216916}
   - {fileID: 3771845344306968317}
+  - {fileID: 5283895024578974260}
   - {fileID: 3338140507791060534}
   - {fileID: 5839020956740199093}
   - {fileID: 465916857022110443}
@@ -7794,23 +7794,6 @@ MonoBehaviour:
   _movementController: {fileID: 571479044043330787}
   _animator: {fileID: 1252106768682846670}
   _lerpMultiplier: 2.4
---- !u!114 &8336170331735268562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a464fdf1254e188dcb2729033a7718, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 2930813178971533500}
-  _mind: {fileID: 0}
-  Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
 --- !u!114 &5293420320943344825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7823,7 +7806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0362743a29c3f4bb97acacf5ad39f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _selectionMask:
@@ -7841,11 +7824,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d49f6aa9fbc08542855c3ce2be467ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _player: {fileID: 571479044043330787}
-  _entity: {fileID: 8336170331735268562}
+  _entity: {fileID: 5283895024578974260}
   _currentStamina: 100
 --- !u!114 &571479044043330787
 MonoBehaviour:
@@ -7859,10 +7842,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 318cd55c1238afd41875e5eb60b62493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 5
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _entity: {fileID: 8336170331735268562}
+  _entity: {fileID: 5283895024578974260}
   _movementSpeed: 5
   _lerpMultiplier: 2
   _rotationLerpMultiplier: 6
@@ -7882,7 +7865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dba8acd5c6a2f1c438c5d3b65c03ebc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 6
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
@@ -7898,7 +7881,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ace7b9d7c75cbb4ca57c876f0b3b644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 7
+  _componentIndexCache: 6
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   PlayerHands:
@@ -7919,7 +7902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da620d1cfa3d9fd49b22c28e910884f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 8
+  _componentIndexCache: 7
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   inventory: {fileID: 1089183168752255729}
@@ -7935,11 +7918,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a734a88f440905f4cb00aa24f8deb2fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 9
+  _componentIndexCache: 8
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   containerViewer: {fileID: 7934531206375951864}
-  Body: {fileID: 8336170331735268562}
+  Body: {fileID: 5283895024578974260}
   Hands: {fileID: 2150560678942863610}
 --- !u!114 &6258404136566216916
 MonoBehaviour:
@@ -7953,7 +7936,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a156dec7da2f53419befce71ba9bcff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 10
+  _componentIndexCache: 9
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _inventory: {fileID: 1089183168752255729}
@@ -7969,12 +7952,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81823982a1f0a0a4b8b5b6c5915d1083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 11
+  _componentIndexCache: 10
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   attackParticleEffect: {fileID: 7714517724079113232, guid: 17b0d9163e9cdf14aa557557e7d9d76b, type: 3}
-  attackType: 0
+  attackType: 4
   damageAmount: 10
+--- !u!114 &5283895024578974260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a180b5cc7241c081c14b68e054c850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 11
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _mind: {fileID: 0}
+  Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0

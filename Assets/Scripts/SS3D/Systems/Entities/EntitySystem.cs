@@ -250,6 +250,11 @@ namespace SS3D.Systems.Entities
                 return;
             }
 
+			if(op == SyncListOperation.Set)
+			{
+				return;
+			}
+
             if (!asServer && IsHost)
             {
                 return;
@@ -276,5 +281,11 @@ namespace SS3D.Systems.Entities
                 return;
             }
         }
-    }
+
+		public void TransferEntity(Entity oldEntity, Entity newEntity)
+		{
+			int index = _spawnedPlayers.FindIndex(x => x == oldEntity);
+			_spawnedPlayers[index] = newEntity;
+		}
+	}
 }
