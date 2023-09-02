@@ -2,10 +2,11 @@ namespace SS3D.Data.Enums
 {
     public enum AssetDatabases
     {
-        InteractionIcons = 0, 
-        Items = 1, 
-        Scenes = 2, 
-        Settings = 3, 
+        BodyParts = 0, 
+        InteractionIcons = 1, 
+        Items = 2, 
+        Scenes = 3, 
+        Settings = 4, 
     }
 }
 

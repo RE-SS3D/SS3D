@@ -41,23 +41,23 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            var containerViewer = interactionEvent.Source.GetComponentInTree<ContainerViewer>();
+            var containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
             if (containerViewer == null)
             {
                 return false;
             }
 
-            Entity entity = interactionEvent.Source.GetComponentInTree<Entity>();
+            Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
             if (entity == null)
             {
                 return false;
             }
-            return !containerViewer.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().CanInteract(AttachedContainer.gameObject);
+            return !containerViewer.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().SelectedHand.CanInteract(AttachedContainer.gameObject);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            var containerViewer = interactionEvent.Source.GetComponentInTree<ContainerViewer>();
+            var containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
 
             containerViewer.ShowContainerUI(AttachedContainer);
 

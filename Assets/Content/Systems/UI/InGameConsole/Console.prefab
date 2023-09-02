@@ -88,8 +88,9 @@ GameObject:
   - component: {fileID: 4468402020721993881}
   - component: {fileID: 4468402020721993880}
   - component: {fileID: 4468402020721993883}
-  - component: {fileID: 4468402020721993882}
   - component: {fileID: 4468402020721993861}
+  - component: {fileID: 2462624425783740797}
+  - component: {fileID: 6636680625000353110}
   m_Layer: 5
   m_Name: Console
   m_TagString: Untagged
@@ -179,18 +180,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &4468402020721993882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4468402020721993860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 748528fe61fbac44bb380645d676726c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4468402020721993861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,8 +196,52 @@ MonoBehaviour:
   _contentContainer: {fileID: 4468402021075484997}
   _movingSpeed: 2500
   _inputField: {fileID: 4468402021573311568}
+  _commandsController: {fileID: 2462624425783740797}
   _allPrevCommands:
   - 
+--- !u!114 &2462624425783740797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4468402020721993860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9076991674ff4984a7bd0fed6bf0b169, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 6636680625000353110}
+  _networkObjectCache: {fileID: 6636680625000353110}
+  _console: {fileID: 4468402020721993861}
+--- !u!114 &6636680625000353110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4468402020721993860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  _networkBehaviours:
+  - {fileID: 2462624425783740797}
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  _isNetworked: 1
+  _isGlobal: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 135
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 17889965511288280426
+  _sceneNetworkObjects: []
 --- !u!1 &4468402021075484997
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +278,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2, y: -230}
+  m_AnchoredPosition: {x: 2, y: -229.99997}
   m_SizeDelta: {x: -2, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &4468402021075485017
@@ -1104,7 +1137,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 30
   m_Viewport: {fileID: 4468402022117316798}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 4468402022262526144}

@@ -146,7 +146,7 @@ namespace SS3D.Systems.Inventory.Containers
             for (int i = 0; i < _displayedContainers.Count; i++)
             {
                 AttachedContainer attachedContainer = _displayedContainers[i];
-                if (hands.CanInteract(attachedContainer.gameObject))
+                if (hands.SelectedHand.CanInteract(attachedContainer.gameObject))
                 {
                     continue;
                 }
