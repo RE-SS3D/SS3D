@@ -21,6 +21,13 @@ public class CirculatoryController : NetworkActor
 
     public SubstanceContainer Container => _container;
 
+    public enum BreathingState
+    {
+        Nice,
+        Difficult,
+        Suffocating
+    }
+
     public override void OnStartServer()
     {
 	    base.OnStartServer();
@@ -36,6 +43,8 @@ public class CirculatoryController : NetworkActor
 
         UpdateVolume();
     }
+
+    public BreathingState breathing;
 
     /// <summary>
     /// Should be called when a body part is disconnected from heart, as the total volume of the circulatory container should
@@ -108,10 +117,33 @@ public class CirculatoryController : NetworkActor
         {
             _container.RemoveSubstance(oxygen, (float)availableOxygen);
         }
+
+        SetBreathingState((float) availableOxygen, sumNeeded);
+    }
+
+    private void SetBreathingState(float availableOxygen, float sumNeeded)
+    {
+        if (availableOxygen > 1.2 * sumNeeded)
+        {
+            breathing = BreathingState.Nice; 
+        }
+        else if(availableOxygen > sumNeeded)
+        {
+            breathing = BreathingState.Difficult;
+        }
+        else
+        {
+            breathing = BreathingState.Suffocating;
+        }
+
+        Debug.Log(breathing.ToString());
     }
 
     /// <summary>
     /// Return the amount of oxygen the circulatory system can send to organs.
+    /// If the blood quantity is above a given treshold, all oxygen in the circulatory container is available.
+    /// If blood gets below, it starts diminishing the availability of oxygen despite the circulatory system containing enough.
+    /// This is to mimick the lack of blood making oxygen transport difficult and potentially leading to organ suffocation.
     /// </summary>
     private double AvailableOxygen()
     {
@@ -120,15 +152,21 @@ public class CirculatoryController : NetworkActor
 
         Substance oxygen = registry.FromType(SubstanceType.Oxygen);
 
-        float bloodQuantity = _container.GetSubstanceVolume(blood);
+        float bloodVolume = _container.GetSubstanceVolume(blood);
 
-        float healthyBloodQuantity = (float) 0.8 * _container.Volume;
+        float healthyBloodVolume = (float) 0.8 * _container.Volume;
 
         double oxygenMoles = _container.GetSubstanceQuantity(oxygen);
 
-        return bloodQuantity > healthyBloodQuantity ? oxygenMoles : (bloodQuantity / healthyBloodQuantity) * oxygenMoles;
+        return bloodVolume > healthyBloodVolume ? oxygenMoles : (bloodVolume / healthyBloodVolume) * oxygenMoles;
     }
 
+    /// <summary>
+    /// Get a list of all body part attached to heart, including all internal organs.
+    /// A body part is considered attached to heart if it's either the external body part of heart, 
+    /// a child of the latter or an internal body part of any, with the condition that they need to have a circulatory layer.
+    /// Fixing a living foot on a wooden leg won't prevent it from dying.
+    /// </summary>
     private List<BodyPart> GetAllBodyPartAttachedToHeart()
     {
         List<BodyPart> connectedToHeart = new List<BodyPart>();
@@ -141,6 +179,9 @@ public class CirculatoryController : NetworkActor
         return connectedToHeart;
     }
 
+    /// <summary>
+    /// Helper method for GetAllBodyPartAttachedToHeart().
+    /// </summary>
     private void GetAllBodyPartAttachedToHeartRecursion(List<BodyPart> connectedToHeart, BodyPart current)
     {
             if (current.ContainsLayer(BodyLayerType.Circulatory))
@@ -162,6 +203,9 @@ public class CirculatoryController : NetworkActor
             }
     }
 
+    /// <summary>
+    /// Compute the need in oxygen of every body part attached to heart.
+    /// </summary>
     private float[] ComputeIndividualNeeds(List<BodyPart> connectedToHeart)
     {
         float[] oxygenNeededForEachpart = new float[connectedToHeart.Count];
