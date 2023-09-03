@@ -97,7 +97,7 @@ public class CirculatoryController : NetworkActor
 
     private List<BodyPart> GetAllBodyPartAttachedToHeart()
     {
-        List<BodyPart> connectedToHeart = new List<BodyPart> { _heart };
+        List<BodyPart> connectedToHeart = new List<BodyPart>();
 
         if (_heart.IsInsideBodyPart)
         {
