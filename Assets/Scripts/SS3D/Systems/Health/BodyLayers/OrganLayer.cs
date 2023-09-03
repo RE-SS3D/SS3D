@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health
 {
-	public class OrganLayer : BodyLayer
-	{
-		public OrganLayer(BodyPart bodyPart) : base(bodyPart)
+	public class OrganLayer : BodyLayer, IOxygenNeeder
+    {
+        private const double _molesPerCubeCentimetersOfOxygenNeeded = 1.15e-9;
+
+        public OrganLayer(BodyPart bodyPart) : base(bodyPart)
 		{
 		}
 
@@ -19,7 +21,12 @@ namespace SS3D.Systems.Health
 
 		public override BodyLayerType LayerType { get => BodyLayerType.Organ; }
 
-		protected override void SetSuceptibilities()
+        public double GetOxygenNeeded()
+        {
+            return _molesPerCubeCentimetersOfOxygenNeeded * BodyPart.Volume * 1000;
+        }
+
+        protected override void SetSuceptibilities()
 		{
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 2f));
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Puncture, 1.5f));
@@ -30,5 +37,10 @@ namespace SS3D.Systems.Health
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Acid, 1.5f));
 		}
-	}
+
+        public override void Cleanlayer()
+        {
+
+        }
+    }
 }

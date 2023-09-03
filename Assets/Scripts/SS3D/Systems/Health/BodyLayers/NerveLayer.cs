@@ -4,10 +4,11 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Health
 {
-	public class NerveLayer : BodyLayer
+	public class NerveLayer : BodyLayer, IOxygenNeeder
 	{
+        private const double _molesPerCubeCentimetersOfOxygenNeeded = 1.15e-9;
 
-		public NetworkBehaviour GetNetworkBehaviour => BodyPart;
+        public NetworkBehaviour GetNetworkBehaviour => BodyPart;
 
 
 		public NetworkObject getNetworkedObject
@@ -59,5 +60,15 @@ namespace SS3D.Systems.Health
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
 		}
-	}
+
+        public double GetOxygenNeeded()
+        {
+            return _molesPerCubeCentimetersOfOxygenNeeded * BodyPart.Volume * 1000;
+        }
+
+        public override void Cleanlayer()
+        {
+
+        }
+    }
 }

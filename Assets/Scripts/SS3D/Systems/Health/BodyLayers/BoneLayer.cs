@@ -42,5 +42,10 @@ namespace SS3D.Systems.Health
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public override void Cleanlayer()
+        {
+            
+        }
+    }
 }

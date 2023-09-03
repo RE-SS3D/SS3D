@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace SS3D.Systems.Health
 {
-	public class MuscleLayer : BodyLayer
+	public class MuscleLayer : BodyLayer, IOxygenNeeder
 	{
+        public const double _molesPerCubeCentimetersOfOxygenNeeded = 1.15e-9;
+
 		public override BodyLayerType LayerType
 		{
 			get { return BodyLayerType.Muscle; }
@@ -33,5 +35,15 @@ namespace SS3D.Systems.Health
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Acid, 1.5f));
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Oxy, 1.5f));
 		}
-	}
+
+        public double GetOxygenNeeded()
+        {
+            return _molesPerCubeCentimetersOfOxygenNeeded * BodyPart.Volume * 1000;
+        }
+
+        public override void Cleanlayer()
+        {
+
+        }
+    }
 }

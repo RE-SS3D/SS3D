@@ -15,6 +15,8 @@ namespace SS3D.Systems.Health
 	{
 		public abstract BodyLayerType LayerType { get; }
 
+        public abstract void Cleanlayer();
+
 		/// <summary>
 		/// The body part containing this body layer.
 		/// </summary>
@@ -46,7 +48,9 @@ namespace SS3D.Systems.Health
 
 		public float TotalDamage => DamageTypeQuantities.Sum(x => x.quantity);
 
-		public List<DamageTypeQuantity> DamageTypeQuantities => _damageTypeQuantities;
+        public float RelativeDamage => TotalDamage/MaxDamage;
+
+        public List<DamageTypeQuantity> DamageTypeQuantities => _damageTypeQuantities;
 		public List<DamageTypeQuantity> DamageResistances => _damageResistances;
 		public List<DamageTypeQuantity> DamageSuceptibilities => _damageSuceptibilities;
 
@@ -81,6 +85,7 @@ namespace SS3D.Systems.Health
 		/// <param name="damageQuantity"></param>
 		public virtual void InflictDamage(DamageTypeQuantity damageToInflict)
 		{
+            Debug.Log("inflicting damage on layer type" + LayerType);
 			DamageTypeQuantity damage = (DamageTypeQuantity) damageToInflict.Clone();
 
 			float currentDamageQuantity = GetDamageTypeQuantity(damage.damageType);
