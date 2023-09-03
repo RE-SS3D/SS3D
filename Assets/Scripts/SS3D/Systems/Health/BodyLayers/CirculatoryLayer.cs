@@ -69,15 +69,18 @@ namespace SS3D.Systems.Health
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
 		}
 
+        /// <summary>
+        /// Consume oxygen
+        /// </summary>
         public void ConsumeOxygen()
         {
             double oxygenNeeded = OxygenNeeded;
-            float proportionReserveOfNeeded =(float)(_oxygenReserve / oxygenNeeded);
+            float fractionOfNeededOxygen =(float)(_oxygenReserve / oxygenNeeded);
 
             if (oxygenNeeded > _oxygenReserve)
             {
                 _oxygenReserve = 0;
-                InflictOxyDamage(proportionReserveOfNeeded);
+                InflictOxyDamage(fractionOfNeededOxygen);
             }
             else
             {
@@ -85,13 +88,19 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void InflictOxyDamage(float proportionReserveOfNeeded)
+
+
+        /// <summary>
+        /// Inflict Oxy damage to all body layers needing oxygen, in proportion of what's left in reserve.
+        /// </summary>
+        /// <param name="fractionOfNeededOxygen"> oxygen in reserve divided by needed oxygen. Should be between 0 and 1.</param>
+        private void InflictOxyDamage(float fractionOfNeededOxygen)
         {
             var consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
             Debug.Log(consumers.Count());
             foreach (BodyLayer layer in consumers)
             {
-                BodyPart.TryInflictDamage(layer.LayerType, new DamageTypeQuantity(DamageType.Oxy, (1-proportionReserveOfNeeded) * _damageWithNoOxygen));
+                BodyPart.TryInflictDamage(layer.LayerType, new DamageTypeQuantity(DamageType.Oxy, (1- fractionOfNeededOxygen) * _damageWithNoOxygen));
             }
         }
 
@@ -114,7 +123,7 @@ namespace SS3D.Systems.Health
 
         /// <summary>
         /// Remove from the substance container a given amount of blood. For now, this amount is only determined by
-        /// the damage 
+        /// the damage. TODO : different kind of damages should contribute differently to bleeding.
         /// </summary>
         public void Bleed()
         {
@@ -123,12 +132,18 @@ namespace SS3D.Systems.Health
             BodyPart.HealthController.Circulatory.Container.RemoveSubstance(blood, MaxBloodLost * RelativeDamage);
         }
 
+        /// <summary>
+        /// Called when this layer is created, necessary for periodic oxygen consumption.
+        /// </summary>
         public void RegisterToOxygenConsumerSystem()
         {
             OxygenConsumerSystem registry = Subsystems.Get<OxygenConsumerSystem>();
             registry.RegisterConsumer(this);
         }
 
+        /// <summary>
+        /// Should be called only when this circulatory layer does not function anymore (when body part is destroyed).
+        /// </summary>
         public override void Cleanlayer()
         {
             OxygenConsumerSystem registry = Subsystems.Get<OxygenConsumerSystem>();

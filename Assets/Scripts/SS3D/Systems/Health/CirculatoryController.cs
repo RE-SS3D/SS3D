@@ -34,15 +34,24 @@ public class CirculatoryController : NetworkActor
 
         _heart.OnPulse += HandleHeartPulse;
 
+        UpdateVolume();
+    }
+
+    /// <summary>
+    /// Should be called when a body part is disconnected from heart, as the total volume of the circulatory container should
+    /// become smaller (or bigger if a body part is added).
+    /// </summary>
+    private void UpdateVolume()
+    {
         List<BodyPart> connectedToHeart = GetAllBodyPartAttachedToHeart();
         // Around 5 liters of blood in a full adult human
-        _container.ChangeVolume((float)connectedToHeart.Sum(x => x.Volume) / 12f);
+        _container.ChangeVolume(1000*(float)connectedToHeart.Sum(x => x.Volume) / 12f);
     }
 
     public void HandleHeartPulse(object sender, EventArgs args)
     {
         List<BodyPart> connectedToHeart = GetAllBodyPartAttachedToHeart();
-        _container.ChangeVolume((float) connectedToHeart.Sum(x => x.Volume) / 12f);
+        UpdateVolume();
         SendOxygen(connectedToHeart);
         Bleed(connectedToHeart);
     }
@@ -56,6 +65,11 @@ public class CirculatoryController : NetworkActor
         }
     }
 
+    /// <summary>
+    /// Send oxygen to all connected circulatory layers to heart.
+    /// Send a bit more than necessary when oxygen is available to restore oxygen reserves in each circulatory layers.
+    /// </summary>
+    /// <param name="connectedToHeart"></param>
     private void SendOxygen(List<BodyPart> connectedToHeart)
     {
         double availableOxygen = AvailableOxygen();
@@ -67,12 +81,32 @@ public class CirculatoryController : NetworkActor
         SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
         Substance oxygen = registry.FromType(SubstanceType.Oxygen);
 
+
+
         foreach (BodyPart part in connectedToHeart)
         {
             var veins = (CirculatoryLayer)part.GetBodyLayer<CirculatoryLayer>();
-            double proportionAvailable = oxygenNeededForEachpart[i] / sumNeeded;
-            veins.ReceiveOxygen(proportionAvailable*availableOxygen);
+            double proportionAvailable = 0;
+            if (availableOxygen > 1.2 * sumNeeded)
+            {
+                proportionAvailable = oxygenNeededForEachpart[i] / sumNeeded;
+                veins.ReceiveOxygen(1.2 * proportionAvailable * availableOxygen);
+            }
+            else
+            {
+                proportionAvailable = oxygenNeededForEachpart[i] / sumNeeded;
+                veins.ReceiveOxygen(proportionAvailable * availableOxygen);
+            }
             i++;
+        }
+
+        if (availableOxygen > 1.2 * sumNeeded)
+        {
+            _container.RemoveSubstance(oxygen, 1.2f * sumNeeded);
+        }
+        else
+        {
+            _container.RemoveSubstance(oxygen, (float)availableOxygen);
         }
     }
 
