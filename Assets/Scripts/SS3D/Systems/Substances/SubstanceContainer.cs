@@ -10,6 +10,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Core;
 using System.Collections.ObjectModel;
 using SS3D.Logging;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace SS3D.Substances
 {
@@ -101,6 +102,13 @@ namespace SS3D.Substances
             _volume = volume;
             _locked = locked;
             _initialised = true;
+        }
+
+        [Server]
+        public void ChangeVolume(float newVolume)
+        {
+            // TODO : might need to spill the excess of volume already present
+            _volume = newVolume;
         }
 
         /// <summary>
@@ -448,6 +456,17 @@ namespace SS3D.Substances
             }
 
             container.SetDirty();
+        }
+
+        public float GetSubstanceQuantity(Substance substance)
+        {
+           return Substances.FirstOrDefault(x => x.Substance == substance).Moles;
+        }
+
+        public float GetSubstanceVolume(Substance substance)
+        {
+            var entry = Substances.FirstOrDefault(x => x.Substance == substance);
+            return entry.Substance == null ? 0f : entry.Substance.MillilitersPerMole * entry.Moles;
         }
     }
 }
