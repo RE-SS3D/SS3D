@@ -18,6 +18,7 @@ using Coimbra;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
+using SS3D.Systems;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -53,11 +54,18 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     protected readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
 
+
+	private BodyPart _externalBodyPart;
+
+	public BodyPart ExternalBodyPart => _externalBodyPart;
+
+	public bool IsInsideBodyPart => _externalBodyPart != null;
+
     /// <summary>
     /// A container containing all internal body parts. The head has a brain for an internal body part. Internal body parts should be destroyed
     /// </summary>
     [SerializeField]
-    protected AttachedContainer _internalBodyParts;
+    private AttachedContainer _internalBodyParts;
 
     /// <summary>
     /// Collider registering hits on this bodypart. It should usually be on the armature of the Entity, so it follows animations.
@@ -88,10 +96,19 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         get { return _childBodyParts.AsReadOnly(); }
     }
 
-    public IEnumerable<Item> InternalBodyParts
+    public IEnumerable<BodyPart> InternalBodyParts
     {
-        get { return _internalBodyParts.Items; }
+        get { return _internalBodyParts?.Items.Select(x => x.GetComponent<BodyPart>()); }
     }
+
+    public bool HasInternalBodyPart => _internalBodyParts != null && _internalBodyParts.Items.Count() != 0;
+
+    /// <summary>
+    /// The volume in cm3 of a given bodypart
+    /// </summary>
+    [SerializeField] protected double _bodyPartVolume;
+
+    public double Volume => _bodyPartVolume;
 
     /// <summary>
     /// A bodypart is considered destroyed when The total amount of damages it sustained is above a maximum.
@@ -101,12 +118,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// A bodypart is considered severed when the total amount of damages it sustained on the bone layer is above a maximum.
     /// </summary>
-    public bool IsSevered => GetBodyLayer<BoneLayer>().IsDestroyed();
+    public bool IsSevered => GetBodyLayer<BoneLayer>() == null ? false : GetBodyLayer<BoneLayer>().IsDestroyed();
 
     public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
-    public float MaxDamage => 0.8f*_bodyLayers.Sum(layer => layer.MaxDamage);
+    public float MaxDamage => 0.5f*_bodyLayers.Sum(layer => layer.MaxDamage);
 
-    public float RelativeDamage => 1- TotalDamage/ MaxDamage;
+    public float RelativeDamage => TotalDamage/ MaxDamage;
 
     public event EventHandler OnDamageInflicted;
     public event EventHandler OnBodyPartDestroyed;
@@ -261,6 +278,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         RemoveChildAndParent();
         DumpOrPurgeContainers(purgeContainersContent);
+        CleanLayers();
         Deactivate();
     }
 
@@ -292,6 +310,14 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         _parentBodyPart = null;
     }
 
+    /// <summary>
+    /// Destroy the body layers properly
+    /// </summary>
+    protected void CleanLayers()
+    {
+        _bodyLayers.ForEach(x => x.Cleanlayer());
+    }
+
 
 
     /// <summary>
@@ -301,6 +327,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     protected void Deactivate()
     {
         gameObject.SetActive(false);
+        gameObject.Dispose(true);
     }
 
     /// <summary>
@@ -442,10 +469,22 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         return new IInteraction[] {};
     }
 
-    /// <summary>
-    /// Hide a freshly cut body part on the player.
-    /// </summary>
-    protected void HideSeveredBodyPart()
+	public void AddInternalBodyPart(BodyPart part)
+	{
+		_internalBodyParts.Container.AddItem(part.gameObject.GetComponent<Item>());
+		part._externalBodyPart = this;
+	}
+
+	public void RemoveInternalBodyPart(BodyPart part)
+	{
+		_internalBodyParts.Container.RemoveItem(part.gameObject.GetComponent<Item>());
+		part._externalBodyPart = null;
+	}
+
+	/// <summary>
+	/// Hide a freshly cut body part on the player.
+	/// </summary>
+	protected void HideSeveredBodyPart()
     {
         if (_skinnedMeshRenderer == null) return;
         _skinnedMeshRenderer.enabled = false;

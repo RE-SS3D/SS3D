@@ -9,7 +9,7 @@
 	{
 		public float GetSpeedContribution()
 		{
-			return RelativeDamage;
+			return 1-RelativeDamage;
 		}
 
 		protected override void AddInitialLayers()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Systems.Health;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Graphs;
@@ -9,11 +10,11 @@ public class Heart : BodyPart
 {
 	
 	// Number of beat per minutes
-	private float _beatFrequency;
+	private float _beatFrequency = 60f;
 
 	public event EventHandler OnPulse;
 
-	public float SecondsBetweenBeats => 60f / _beatFrequency;
+	public float SecondsBetweenBeats => _beatFrequency > 0 ? 60f / _beatFrequency : float.MaxValue;
 
 	private float _timer = 0f;
 
@@ -31,6 +32,9 @@ public class Heart : BodyPart
 
 	protected override void AddInitialLayers()
 	{
-		throw new NotImplementedException();
-	}
+        TryAddBodyLayer(new MuscleLayer(this));
+        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new NerveLayer(this));
+        TryAddBodyLayer(new OrganLayer(this));
+    }
 }
