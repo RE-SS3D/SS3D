@@ -74,7 +74,7 @@ namespace SS3D.Substances
                 SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
                 if (container != null)
                 {
-                    container.AddSubstance(Substance.Substance, Substance.Moles);
+                    container.AddSubstance(Substance.Substance, Substance.MilliMoles);
                     container.SetDirty();
                 }
             }

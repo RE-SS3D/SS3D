@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 26
   Color: {r: 0.5521538, g: 0.7606287, b: 0.8301887, a: 0.33333334}
-  MillilitersPerMole: 22000
+  MillilitersPerMilliMoles: 22.4
