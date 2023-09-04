@@ -326,6 +326,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [ObserversRpc(RunLocally = true, BufferLast = true)]
     protected void Deactivate()
     {
+        if (gameObject??true) return;
         gameObject.SetActive(false);
         gameObject.Dispose(true);
     }

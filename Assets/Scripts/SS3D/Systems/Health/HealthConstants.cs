@@ -5,7 +5,7 @@
         /// <summary>
         /// Max amount of damages taken upon each attempt at consuming oxygen if none is present in reserve. No units.
         /// </summary>
-        public const float DamageWithNoOxygen = 5f;
+        public const float DamageWithNoOxygen = 25f;
 
         /// <summary>
         /// Average quantity of oxygen needed for one milliliters of human cells for one second. mmol / ml / s.

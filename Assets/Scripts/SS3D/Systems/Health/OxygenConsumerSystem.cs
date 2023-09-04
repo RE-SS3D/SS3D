@@ -21,9 +21,10 @@ namespace SS3D.Systems.Health
             if (_timer > _timeBeforeConsuming)
             {
                 _timer = 0f;
-                foreach (IOxygenConsumer consumer in consumerList)
+
+                for (int i= consumerList.Count-1; i>=0; i--)
                 {
-                    consumer.ConsumeOxygen();
+                    consumerList[i].ConsumeOxygen();
                 }
             }
         }
