@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
-using SS3D.Core;
+﻿using SS3D.Core;
+using SS3D.Data;
+using SS3D.Data.Enums;
 using SS3D.Substances;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
+
 
 namespace SS3D.Systems.Health
 {
@@ -14,12 +14,14 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// MilliMole quantity this layer can contain of oxygen
         /// </summary>
-        private double _oxygenMaxCapacity = 0.02f ;
+        private double _oxygenMaxCapacity = 0.05f ;
 
         /// <summary>
         /// Millimole quantity of oxygen in reserve in this circulatory layer.
         /// </summary>
         private double _oxygenReserve;
+
+        private GameObject _bloodEffect;
 
         /// <summary>
         /// To keep things simple for now, a body part simply needs the average of oxygen consumed for each consuming layer composing it.
@@ -62,6 +64,29 @@ namespace SS3D.Systems.Health
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Puncture, 2f));
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
 		}
+
+        protected override void DamageInflicted(DamageTypeQuantity damageQuantity)
+        {
+            base.DamageInflicted(damageQuantity);
+            GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, (int)ParticlesEffectsIds.BleedingParticle);
+            if (_bloodEffect != null) return;
+
+            GameObject bloodDisplayer;
+            Transform bloodParent;
+            if(BodyPart.BodyCollider != null)
+            {
+                bloodDisplayer = BodyPart.BodyCollider.gameObject;
+                bloodParent= BodyPart.BodyCollider.gameObject.transform;
+            }
+            else
+            {
+                bloodDisplayer = BodyPart.gameObject;
+                bloodParent = BodyPart.gameObject.transform;
+            }
+
+            _bloodEffect = Object.Instantiate(bleedingEffect, bloodDisplayer.transform.position, Quaternion.identity);
+            _bloodEffect.transform.parent = bloodParent;
+        }
 
         /// <summary>
         /// Consume oxygen and inflict damages if not enough oxygen is present.

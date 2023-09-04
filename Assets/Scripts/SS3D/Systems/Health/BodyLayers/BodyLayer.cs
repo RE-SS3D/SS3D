@@ -25,7 +25,7 @@ namespace SS3D.Systems.Health
 		/// <summary>
 		/// Events fired when damages are received on this layer.
 		/// </summary>
-		public event EventHandler<DamageEventArgs> DamageReceivedEvent;
+		public event EventHandler<DamageEventArgs> OnDamageReceivedEvent;
 
 		/// <summary>
 		/// Quantity of damages on this bodyLayer
@@ -115,7 +115,7 @@ namespace SS3D.Systems.Health
 				}
 			}
 
-			OnDamageInflicted(damage);
+			DamageInflicted(damage);
 			// TODO : Apply some sync stuff in bodybehaviour.
 		}
 
@@ -185,11 +185,10 @@ namespace SS3D.Systems.Health
 			return modifiedDamages < 0 ? 0 : modifiedDamages;
 		}
 
-		public virtual void OnDamageInflicted(DamageTypeQuantity damageQuantity)
+		protected virtual void DamageInflicted(DamageTypeQuantity damageQuantity)
 		{
 			var args = new DamageEventArgs(damageQuantity);
-			if(DamageReceivedEvent!= null) DamageReceivedEvent.Invoke(this, args);
-
+			OnDamageReceivedEvent?.Invoke(this, args);
 		}
 
 		public void CopyLayerValues(BodyLayer layer)
