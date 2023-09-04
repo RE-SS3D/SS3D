@@ -368,6 +368,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <returns>True if the damage could be inflicted</returns>
     public virtual bool TryInflictDamage(BodyLayerType type, DamageTypeQuantity damageTypeQuantity)
     {
+        // Should not inflict damages if already destroyed or severed.
+        if(IsDestroyed || IsSevered) return false;
+
         BodyLayer layer = FirstBodyLayerOfType(type);
         if (!BodyLayers.Contains(layer)) return false;
         layer.InflictDamage(damageTypeQuantity);

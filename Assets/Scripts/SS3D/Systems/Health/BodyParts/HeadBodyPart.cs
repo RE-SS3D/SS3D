@@ -62,7 +62,7 @@ namespace SS3D.Systems.Health
 		[ObserversRpc(RunLocally = true, BufferLast = true)]
 		protected void DeactivateWholeBody()
 		{
-			GetComponentInParent<Entity>().gameObject.SetActive(false);
+			GetComponentInParent<Human>().gameObject.SetActive(false);
 		}
 	}
 }

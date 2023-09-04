@@ -43,8 +43,9 @@ namespace SS3D.Systems.Entities
 			originEntityGameObject.GetComponent<InteractionController>()?.Dispose(true);
 			originEntityGameObject.GetComponent<StaminaController>()?.Dispose(true);
 			originEntityGameObject.GetComponent<HumanoidController>()?.Dispose(true);
-			// TODO: Optimize these GetComponents, this is a temporary solution.
-		}
+            originEntityGameObject.GetComponent<HumanoidLivingController>()?.Dispose(true);
+            // TODO: Optimize these GetComponents, this is a temporary solution.
+        }
 
 		/// <summary>
 		/// Put Ghost at the same place as the deceased player.
@@ -68,5 +69,10 @@ namespace SS3D.Systems.Entities
 			entitySystem.TransferEntity(GetComponentInParent<Entity>(), _spawnedGhost.GetComponent<Entity>());
 			BecomeGhost(gameObject, _spawnedGhost);
 		}
-	}
+
+        public override void DeactivateComponents()
+        {
+            RpcDestroyObjects(this);
+        }
+    }
 }

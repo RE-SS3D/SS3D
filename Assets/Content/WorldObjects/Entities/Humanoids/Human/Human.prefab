@@ -289,7 +289,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: Jumpsuit
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 512
@@ -964,7 +963,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: glass
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 64
@@ -1631,7 +1629,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: ear right
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 16384
@@ -1962,7 +1959,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: Glove right
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 4096
@@ -2363,7 +2359,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: right foot
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 32
@@ -2571,7 +2566,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: Bag
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 4
@@ -4099,7 +4093,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 0
-  _containerName: container
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 0
@@ -4994,7 +4987,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: ear left
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 8192
@@ -6351,7 +6343,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: left foot
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 16
@@ -6834,7 +6825,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: head
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 256
@@ -7153,7 +7143,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 0
-  _containerName: container
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 0
@@ -8122,7 +8111,7 @@ MonoBehaviour:
   - Substance: {fileID: 11400000, guid: 02eff39cd6b70a64abc4a59e3cc1b4d3, type: 2}
     MilliMoles: 90000
   - Substance: {fileID: 11400000, guid: 2030145386ed160418f9a07c5d68774f, type: 2}
-    MilliMoles: 5
+    MilliMoles: 0
   _currentVolume: 0
   _volume: 5500
   _locked: 0
@@ -9748,7 +9737,6 @@ MonoBehaviour:
   - {fileID: 6653541696833174003}
   _numberDisplay: 1
   _displayAsSlotInUI: 1
-  _containerName: right hand
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
@@ -9867,7 +9855,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: Glove left
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 2048
@@ -10184,7 +10171,6 @@ MonoBehaviour:
   - {fileID: 658316473173035848}
   _numberDisplay: 1
   _displayAsSlotInUI: 1
-  _containerName: ID container
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 8
@@ -10735,7 +10721,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: Mask
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 128
@@ -11292,7 +11277,6 @@ MonoBehaviour:
   - {fileID: 1342008326084027676}
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: left hand
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
