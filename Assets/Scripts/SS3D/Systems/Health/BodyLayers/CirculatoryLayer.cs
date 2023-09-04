@@ -14,7 +14,7 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// MilliMole quantity this layer can contain of oxygen
         /// </summary>
-        private double _oxygenMaxCapacity = 0.05f ;
+        private double _oxygenMaxCapacity;
 
         /// <summary>
         /// Millimole quantity of oxygen in reserve in this circulatory layer.
@@ -46,6 +46,9 @@ namespace SS3D.Systems.Health
 		}
 		public CirculatoryLayer(BodyPart bodyPart) : base(bodyPart)
 		{
+            // Should approximately correspond to three seconds of oxygen reserve at 60 bmp heart rate.
+            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody *
+                HealthConstants.OxygenSecondOfReserveInNormalConditions;
             _oxygenReserve = _oxygenMaxCapacity;
             RegisterToOxygenConsumerSystem();
         }
@@ -54,6 +57,8 @@ namespace SS3D.Systems.Health
 		List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
 		: base(bodyPart, damages, susceptibilities, resistances)
 		{
+            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody *
+                HealthConstants.OxygenSecondOfReserveInNormalConditions;
             _oxygenReserve = _oxygenMaxCapacity;
             RegisterToOxygenConsumerSystem();
         }
