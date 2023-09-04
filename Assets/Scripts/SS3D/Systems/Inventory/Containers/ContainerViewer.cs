@@ -67,16 +67,6 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Hands hands = GetComponent<Hands>();
-            foreach (Entity observer in container.Container.ObservingPlayers)
-            {
-                // checks if the container is already viewed by another entity
-                if (HasContainer(container) && observer != hands)
-                {
-                    return;
-                }
-            }
-
             container.ContainerInteractive.SetOpenState(state);
         }
 
@@ -105,7 +95,6 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void ShowContainerUI(AttachedContainer attachedContainer)
         {
-            attachedContainer.Container.AddObserver(GetComponent<Entity>());
             _displayedContainers.Add(attachedContainer);
             SetOpenState(attachedContainer.gameObject, true);
             NetworkConnection client = Owner;
@@ -120,7 +109,6 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void CloseContainerUI(AttachedContainer container)
         {
-            container.Container.RemoveObserver(GetComponent<Entity>());
             if (_displayedContainers.Remove(container))
             {
                 Debug.Log("client call remove");

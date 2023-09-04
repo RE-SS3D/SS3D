@@ -56,10 +56,10 @@ namespace SS3D.Systems.Inventory.Containers
             OnHandDisabled?.Invoke(this);
         }
 
-        public bool IsEmpty()
-        {
-            return Container.Container.Empty;
-        }
+		public bool IsEmpty()
+		{
+			return Container.Empty;
+		}
 
         /// <summary>
         /// Get the interaction source from stuff in hand if there's any.
@@ -96,13 +96,13 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            if (item.Container != null && item.Container.AttachedTo != Container)
-            {
-                item.Container.RemoveItem(item);
-            }
+			if (item.Container != null && item.Container != Container)
+			{
+				item.Container.RemoveItem(item);
+			}
 
-            Container.Container.AddItem(item);
-        }
+			Container.AddItem(item);
+		}
 
         [ServerRpc]
         public void CmdDropHeldItem()
@@ -112,11 +112,10 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
+			Container.Dump();
             ItemInHand.GiveOwnership(null);
+		}
 
-
-            Container.Container.Dump();
-        }
 
         /// <summary>
         /// Place item on the floor, or on any other surface, place it out of its container.

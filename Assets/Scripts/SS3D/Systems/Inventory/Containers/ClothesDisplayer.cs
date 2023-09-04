@@ -88,15 +88,15 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        /// <summary>
-        /// When the content of a container change, check if it should display or remove display of some clothes.
-        /// </summary>
-        [Server]
-        public void HandleContainerContentChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+		/// <summary>
+		/// When the content of a container change, check if it should display or remove display of some clothes.
+		/// </summary>
+		[Server]
+        public void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
             // If it's not a cloth type container.
             // It'd be probably better to just create "cloth container" inheriting from container to easily test that.
-            if(container.AttachedTo.GetComponent<ClothContainer>() == null)
+            if(container.GetComponent<ClothContainer>() == null)
             {
                 return;
             }
@@ -104,14 +104,10 @@ namespace SS3D.Systems.Inventory.Containers
             switch(type)
             {
                 case ContainerChangeType.Add:
-                    //ShowCloth(container, item, true);
-                    Item newItem = newItems.FirstOrDefault();
-                    AddCloth(newItem);
+					AddCloth(newItem);
                     break;
                 case ContainerChangeType.Remove:
-                    //ShowCloth(container, item, false);
-                    Item oldItem = oldItems.FirstOrDefault();
-                    RemoveCloth(oldItem);
+					RemoveCloth(oldItem);
                     break;
             }
         }

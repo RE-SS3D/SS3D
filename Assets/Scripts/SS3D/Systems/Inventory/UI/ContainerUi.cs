@@ -26,7 +26,7 @@ namespace SS3D.Systems.Inventory.UI
             {
                 _attachedContainer = value;
                 Grid.AttachedContainer = value;
-                UpdateContainer(value.Container);
+                UpdateContainer(value);
             }
         }
 
@@ -36,14 +36,14 @@ namespace SS3D.Systems.Inventory.UI
             gameObject.Dispose(true);
         }
 
-        private void UpdateContainer(Container container)
+        private void UpdateContainer(AttachedContainer container)
         {
             if (container == null)
             {
                 return;
             }
 
-            container.AttachedTo.ContainerUi = this;
+            container.ContainerUi = this;
 
             RectTransform rectTransform = Grid.GetComponent<RectTransform>();
             Vector2 gridDimensions = Grid.GetGridDimensions();

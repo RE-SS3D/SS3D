@@ -1,4 +1,4 @@
-
+﻿
 using SS3D.Systems.Inventory.Containers;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,10 +16,10 @@ namespace SS3D.Hacks
                 foreach (var container in containers)
                 {
                  
-                    var items = container.Container?.StoredItems;
+                    var items = container.Items;
                     foreach (var item in items)
                     {
-                        Debug.Log(item.Item + " in container " + container.name + " at position " + container.gameObject.transform.position);
+                        Debug.Log(item + " in container " + container.name + " at position " + container.gameObject.transform.position);
                     }
                 }
             }
