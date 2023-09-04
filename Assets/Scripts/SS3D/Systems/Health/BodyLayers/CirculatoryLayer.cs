@@ -14,7 +14,7 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// MilliMole quantity this layer can contain of oxygen
         /// </summary>
-        private double _oxygenMaxCapacity = 1f ;
+        private double _oxygenMaxCapacity = 0.02f ;
 
         /// <summary>
         /// Millimole quantity of oxygen in reserve in this circulatory layer.

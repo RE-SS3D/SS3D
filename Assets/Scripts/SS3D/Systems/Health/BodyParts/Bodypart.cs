@@ -471,13 +471,13 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	public void AddInternalBodyPart(BodyPart part)
 	{
-		_internalBodyParts.Container.AddItem(part.gameObject.GetComponent<Item>());
+		_internalBodyParts.AddItem(part.gameObject.GetComponent<Item>());
 		part._externalBodyPart = this;
 	}
 
 	public void RemoveInternalBodyPart(BodyPart part)
 	{
-		_internalBodyParts.Container.RemoveItem(part.gameObject.GetComponent<Item>());
+		_internalBodyParts.RemoveItem(part.gameObject.GetComponent<Item>());
 		part._externalBodyPart = null;
 	}
 
