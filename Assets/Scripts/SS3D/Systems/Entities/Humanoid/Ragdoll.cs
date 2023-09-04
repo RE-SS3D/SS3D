@@ -24,7 +24,14 @@ namespace SS3D.Systems.Entities.Humanoid
 		/// </summary>
 		private bool _isKnockDownTimed;
 		public bool IsKnockedDown { get; private set; }
-
+		private enum RagdollState
+		{
+			Disabled,
+			Enabled,
+			StandingUp,
+			BonesReset
+		}
+		private RagdollState _currentState;
 		private void Start()
 		{
 			IsKnockedDown = false;
@@ -41,6 +48,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			}
 			_ragdollParts = ragdollParts.ToArray();
 			ToggleKinematic(true);
+			_currentState = RagdollState.Disabled;
 		}
 
 		private void OnDisable()
@@ -56,7 +64,6 @@ namespace SS3D.Systems.Entities.Humanoid
 				{
 					Recover();
 				}
-				AlignPositionToHips();
 			}
 			else
 			{
@@ -66,12 +73,44 @@ namespace SS3D.Systems.Entities.Humanoid
 				}
 			}
 
+			switch (_currentState)
+			{
+				case RagdollState.Disabled:
+					DisabledBehavior();
+					break;
+				case RagdollState.Enabled:
+					EnabledBehavior();
+					break;
+				case RagdollState.StandingUp:
+					StandingUpBehavior();
+					break;
+				case RagdollState.BonesReset:
+					BonesResetBehavior();
+					break;
+			}
+		}
+
+		private void DisabledBehavior()
+		{
 			if ((IsKnockedDown) && (Time.time > _knockDownEnd) && (_isKnockDownTimed))
 			{
-				// Knockdown expired
-				Recover();
-				_isKnockDownTimed = false;
+				_currentState = RagdollState.BonesReset;
 			}
+		}
+
+		private void EnabledBehavior()
+		{
+			AlignPositionToHips();
+		}
+
+		private void StandingUpBehavior()
+		{
+			
+		}
+
+		private void BonesResetBehavior()
+		{
+			
 		}
 		/// <summary>
 		/// Knockdown the character.
@@ -112,6 +151,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			}
 
 			IsKnockedDown = true;
+			_currentState = RagdollState.Enabled;
 		}
 
 		public void Recover()
@@ -123,6 +163,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			// This is important, because otherwise the character will fly away after disabling its animator
 			ToggleKinematic(true);
 			_animator.Play("Getting Up");
+			_currentState = RagdollState.Disabled;
 		}
 
 		private void AlignPositionToHips()
