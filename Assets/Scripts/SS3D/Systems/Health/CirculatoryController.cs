@@ -150,11 +150,11 @@ public class CirculatoryController : NetworkActor
 
         float bloodVolume = _container.GetSubstanceVolume(blood);
 
-        float healthyBloodVolume = (float) 0.8 * _container.Volume;
+        float healthyBloodVolume = (float) HealthConstants.HealthyBloodVolumeRatio * _container.Volume;
 
-        double oxygenMoles = _container.GetSubstanceQuantity(oxygen);
+        double oxygenQuantity = _container.GetSubstanceQuantity(oxygen);
 
-        return bloodVolume > healthyBloodVolume ? oxygenMoles : (bloodVolume / healthyBloodVolume) * oxygenMoles;
+        return bloodVolume > healthyBloodVolume ? oxygenQuantity : (bloodVolume / healthyBloodVolume) * oxygenQuantity;
     }
 
     /// <summary>

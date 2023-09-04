@@ -21,7 +21,7 @@ namespace SS3D.Systems.Health
 
         public double GetOxygenNeeded()
         {
-            return HealthConstants.MilliMolesPerCentilitersOfOxygen * BodyPart.Volume * 1000;
+            return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
         }
 
         protected override void SetSuceptibilities()
