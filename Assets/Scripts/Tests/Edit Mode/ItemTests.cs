@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using SS3D.Systems;
@@ -90,7 +90,7 @@ namespace EditorTests
             // Apply the traits to the item and return it
             var go = new GameObject();
             var item = go.AddComponent<Item>();
-            item.Init("TestItem", 1f, Vector2Int.one, traits);
+            item.Init("TestItem", 1f, traits);
             return item;
         }
 
@@ -103,7 +103,7 @@ namespace EditorTests
         {
             var go = new GameObject();
             var item = go.AddComponent<Item>();
-            item.Init("TestItem", 1f, Vector2Int.one, traits);
+            item.Init("TestItem", 1f, traits);
             return item;
         }
 
@@ -116,7 +116,7 @@ namespace EditorTests
         {
             var go = new GameObject();
             var item = go.AddComponent<Item>();
-            item.Init("TestItem", 1f, Vector2Int.one, new List<Trait>());
+            item.Init("TestItem", 1f, new List<Trait>());
             return item;
         }
         #endregion

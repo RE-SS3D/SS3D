@@ -1,4 +1,4 @@
-//C# Example (LookAtPointEditor.cs)
+﻿//C# Example (LookAtPointEditor.cs)
 using UnityEditor;
 using UnityEngine;
 using SS3D.Systems.Inventory.Containers;
@@ -67,12 +67,6 @@ public class AttachedContainerEditor : Editor
             new GUIContent("Automatic container setup", ""),
             SerializedAutomaticContainerSetUp.boolValue);
         HandleAutomaticContainerSetUp(automaticContainerSetUp);
-
-        string containerName = EditorGUILayout.TextField(
-            new GUIContent("Container Name", "the name of the container, appearing in container related interactions"),
-            attachedContainer.ContainerName);
-        HandleContainerName(containerName);
-
 
         bool isInteractive = EditorGUILayout.Toggle(
             new GUIContent("is Interactive", "Set if the container can be interacted with or not. Adds the ContainerInteractive file, which contains default interactions for the container"),
@@ -166,7 +160,7 @@ public class AttachedContainerEditor : Editor
                     attachedContainer.NumberDisplay);
                 HandleNumberDisplay(numberDisplay);
 
-                SerializedProperty sp = serializedObject.FindProperty("displays");
+                SerializedProperty sp = serializedObject.FindProperty("_displays");
                 sp.arraySize = numberDisplay;
                 for (int i = 0; i < sp.arraySize; ++i)
                 {
@@ -317,13 +311,6 @@ public class AttachedContainerEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("_hasCustomInteraction");
         sp.boolValue = hasCustomInteraction;
-        serializedObject.ApplyModifiedProperties();
-    }
-
-    private void HandleContainerName(string containerName)
-    {
-        SerializedProperty sp = serializedObject.FindProperty("_containerName");
-        sp.stringValue = containerName;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleIsOpenable(bool isOpenable)

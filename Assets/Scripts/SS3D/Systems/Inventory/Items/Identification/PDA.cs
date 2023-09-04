@@ -26,7 +26,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
             attachedContainer = GetComponent<AttachedContainer>();
             if (StartingIDCard)
             {
-                attachedContainer.Container.AddItem(StartingIDCard);
+                attachedContainer.AddItem(StartingIDCard);
             }
         }
 

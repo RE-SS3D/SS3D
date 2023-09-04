@@ -261,7 +261,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
                 BodyPart internalBodyPart = item.GetComponentInChildren<BodyPart>();
                 internalBodyPart?.DestroyBodyPart();
             }
-            _internalBodyParts.Container?.Purge();
+            _internalBodyParts.Purge();
         }
 
         // Dispose of this body part
@@ -292,11 +292,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         {
             if (purgeContainersContent)
             {
-                container.Container?.Purge();
+                container.Purge();
             }
             else
             {
-                container.Container.Dump();
+                container.Dump();
             }
         }
     }
