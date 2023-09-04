@@ -1,4 +1,4 @@
-﻿namespace SS3D.Data.Enums
+namespace SS3D.Data.Enums
 {
     public enum ItemId
     {

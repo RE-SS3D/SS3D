@@ -5,8 +5,9 @@ namespace SS3D.Data.Enums
         BodyParts = 0, 
         InteractionIcons = 1, 
         Items = 2, 
-        Scenes = 3, 
-        Settings = 4, 
+        ParticlesEffects = 3, 
+        Scenes = 4, 
+        Settings = 5, 
     }
 }
 
