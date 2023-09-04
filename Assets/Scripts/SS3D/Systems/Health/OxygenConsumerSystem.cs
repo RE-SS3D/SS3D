@@ -4,35 +4,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OxygenConsumerSystem : NetworkSystem
+namespace SS3D.Systems.Health
 {
-    private readonly List<IOxygenConsumer> consumerList = new List<IOxygenConsumer>();
-    private float _timer = 0f;
-    private float _timeBeforeConsuming = 1f;
-
-    void Update()
+    public class OxygenConsumerSystem : NetworkSystem
     {
-        if (!IsServer) return;
+        private readonly List<IOxygenConsumer> consumerList = new List<IOxygenConsumer>();
+        private float _timer = 0f;
+        private float _timeBeforeConsuming = 1f;
 
-        _timer += Time.deltaTime;
-
-        if (_timer > _timeBeforeConsuming)
+        void Update()
         {
-            _timer = 0f;
-            foreach (IOxygenConsumer consumer in consumerList)
+            if (!IsServer) return;
+
+            _timer += Time.deltaTime;
+
+            if (_timer > _timeBeforeConsuming)
             {
-                consumer.ConsumeOxygen();
+                _timer = 0f;
+                foreach (IOxygenConsumer consumer in consumerList)
+                {
+                    consumer.ConsumeOxygen();
+                }
             }
         }
-    }
 
-    public void RegisterConsumer(IOxygenConsumer consumer)
-    {
-        consumerList.Add(consumer);
-    }
+        public void RegisterConsumer(IOxygenConsumer consumer)
+        {
+            consumerList.Add(consumer);
+        }
 
-    public void UnregisterConsumer(IOxygenConsumer consumer)
-    {
-        consumerList.Remove(consumer);
+        public void UnregisterConsumer(IOxygenConsumer consumer)
+        {
+            consumerList.Remove(consumer);
+        }
     }
 }

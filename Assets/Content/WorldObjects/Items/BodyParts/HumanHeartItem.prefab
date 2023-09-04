@@ -317,4 +317,4 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
-  _bodyPartVolume: 0
+  _bodyPartVolume: 300

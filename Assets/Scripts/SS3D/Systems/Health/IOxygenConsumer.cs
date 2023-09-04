@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IOxygenConsumer
+namespace SS3D.Systems.Health
 {
-    public void RegisterToOxygenConsumerSystem();
+    public interface IOxygenConsumer
+    {
+        public void RegisterToOxygenConsumerSystem();
 
-    public void ConsumeOxygen();
+        public void ConsumeOxygen();
+    }
 }

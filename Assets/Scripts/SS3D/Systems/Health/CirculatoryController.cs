@@ -50,8 +50,7 @@ public class CirculatoryController : NetworkActor
     private void UpdateVolume()
     {
         List<BodyPart> connectedToHeart = GetAllBodyPartAttachedToHeart();
-        // Around 5 liters of blood in a full adult human
-        _container.ChangeVolume(1000*(float)connectedToHeart.Sum(x => x.Volume) / 12f);
+        _container.ChangeVolume((float)connectedToHeart.Sum(x => x.Volume) * HealthConstants.BloodVolumeToHumanVolumeRatio);
     }
 
     public void HandleHeartPulse(object sender, EventArgs args)
@@ -93,10 +92,10 @@ public class CirculatoryController : NetworkActor
         {
             var veins = (CirculatoryLayer)part.GetBodyLayer<CirculatoryLayer>();
             double proportionAvailable = 0;
-            if (availableOxygen > 1.2 * sumNeeded)
+            if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
             {
                 proportionAvailable = oxygenNeededForEachpart[i] / sumNeeded;
-                veins.ReceiveOxygen(1.2 * proportionAvailable * availableOxygen);
+                veins.ReceiveOxygen(HealthConstants.SafeOxygenFactor * proportionAvailable * availableOxygen);
             }
             else
             {
@@ -106,9 +105,9 @@ public class CirculatoryController : NetworkActor
             i++;
         }
 
-        if (availableOxygen > 1.2 * sumNeeded)
+        if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
         {
-            _container.RemoveSubstance(oxygen, 1.2f * sumNeeded);
+            _container.RemoveSubstance(oxygen, HealthConstants.SafeOxygenFactor * sumNeeded);
         }
         else
         {
@@ -120,7 +119,7 @@ public class CirculatoryController : NetworkActor
 
     private void SetBreathingState(float availableOxygen, float sumNeeded)
     {
-        if (availableOxygen > 1.2 * sumNeeded)
+        if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
         {
             breathing = BreathingState.Nice; 
         }

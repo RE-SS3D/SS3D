@@ -104,7 +104,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     public bool HasInternalBodyPart => _internalBodyParts != null && _internalBodyParts.Items.Count() != 0;
 
     /// <summary>
-    /// The volume in cm3 of a given bodypart
+    /// The volume in mililiters of a given bodypart
     /// </summary>
     [SerializeField] protected double _bodyPartVolume;
 

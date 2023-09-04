@@ -12,20 +12,14 @@ namespace SS3D.Systems.Health
     public class CirculatoryLayer : BodyLayer, IOxygenConsumer, IOxygenNeeder
 	{
         /// <summary>
-        /// Mole quantity this layer can contain of oxygen
+        /// MilliMole quantity this layer can contain of oxygen
         /// </summary>
-        private const double _oxygenMaxCapacity = 0.001f ;
-
-        private double _oxygenReserve;
-
-        private const float _damageWithNoOxygen = 5f;
-
-        private const double _molesPerCubeCentimetersOfOxygenNeeded = 1.15e-9;
+        private double _oxygenMaxCapacity = 1f ;
 
         /// <summary>
-        /// max amount in mole of blood lost at each heart beat
+        /// Millimole quantity of oxygen in reserve in this circulatory layer.
         /// </summary>
-        private const float MaxBloodLost = 2f;
+        private double _oxygenReserve;
 
         /// <summary>
         /// To keep things simple for now, a body part simply needs the average of oxygen consumed for each consuming layer composing it.
@@ -70,7 +64,7 @@ namespace SS3D.Systems.Health
 		}
 
         /// <summary>
-        /// Consume oxygen
+        /// Consume oxygen and inflict damages if not enough oxygen is present.
         /// </summary>
         public void ConsumeOxygen()
         {
@@ -100,7 +94,8 @@ namespace SS3D.Systems.Health
             Debug.Log(consumers.Count());
             foreach (BodyLayer layer in consumers)
             {
-                BodyPart.TryInflictDamage(layer.LayerType, new DamageTypeQuantity(DamageType.Oxy, (1- fractionOfNeededOxygen) * _damageWithNoOxygen));
+                BodyPart.TryInflictDamage(layer.LayerType,
+                    new DamageTypeQuantity(DamageType.Oxy, (1- fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
             }
         }
 
@@ -118,7 +113,7 @@ namespace SS3D.Systems.Health
 
         public double GetOxygenNeeded()
         {
-            return _molesPerCubeCentimetersOfOxygenNeeded * BodyPart.Volume*1000;
+            return HealthConstants.MilliMolesPerCentilitersOfOxygen * BodyPart.Volume*1000;
         }
 
         /// <summary>
@@ -129,7 +124,7 @@ namespace SS3D.Systems.Health
         {
             SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
             Substance blood = registry.FromType(SubstanceType.Blood);
-            BodyPart.HealthController.Circulatory.Container.RemoveSubstance(blood, MaxBloodLost * RelativeDamage);
+            BodyPart.HealthController.Circulatory.Container.RemoveSubstance(blood, HealthConstants.MaxBloodLost * RelativeDamage);
         }
 
         /// <summary>

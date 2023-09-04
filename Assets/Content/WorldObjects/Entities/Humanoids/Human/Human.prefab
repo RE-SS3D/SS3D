@@ -432,7 +432,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 7885778496726064405}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 9.1
+  _bodyPartVolume: 9100
 --- !u!137 &8304794297218136879
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2389,7 +2389,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 5307304765832513536}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 1.3
+  _bodyPartVolume: 1300
 --- !u!137 &8793278027620475813
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2736,7 +2736,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 3498391959947423981}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 9.1
+  _bodyPartVolume: 9100
 --- !u!137 &1037560153012890605
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -3062,7 +3062,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 4061536191967800809}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 2.6
+  _bodyPartVolume: 2600
 --- !u!137 &949421968142360378
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -3736,7 +3736,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 7865012682319576541}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 2.6
+  _bodyPartVolume: 2600
 --- !u!137 &6840993320086561213
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -5888,7 +5888,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 3070344760670726098}
   _bodyCollider: {fileID: 4933536203666300704}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 5.2
+  _bodyPartVolume: 5200
   brain: {fileID: 4827024419444716214}
 --- !u!1 &4806492444777318490
 GameObject:
@@ -6377,7 +6377,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 2829801289424663116}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 1.3
+  _bodyPartVolume: 1300
 --- !u!137 &7063966259298033300
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -8102,6 +8102,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _heart: {fileID: 1872609562917901822}
   _container: {fileID: 8765307112244453444}
+  breathing: 0
 --- !u!114 &8765307112244453444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8318,7 +8319,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 5209421398917094837}
   _bodyCollider: {fileID: 3758014577139489731}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 25.3
+  _bodyPartVolume: 25300
   heart: {fileID: 1872609562917901822}
 --- !u!1 &6618192393620894408
 GameObject:
@@ -9711,7 +9712,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 495117578137499362}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 0.65
+  _bodyPartVolume: 650
   _hand: {fileID: 5948957322531814959}
 --- !u!114 &2877804502633151377
 MonoBehaviour:
@@ -11255,7 +11256,7 @@ MonoBehaviour:
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 2660167717358018512}
   HealthController: {fileID: 5857269694861021747}
-  _bodyPartVolume: 0.65
+  _bodyPartVolume: 650
   _hand: {fileID: 7572883762844705701}
 --- !u!114 &8825455644555575778
 MonoBehaviour:
@@ -11351,10 +11352,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6069704630732161621}
     m_Modifications:
-    - target: {fileID: -4912275786866611839, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
-      propertyPath: _bodyPartVolume
-      value: 0.3
-      objectReference: {fileID: 0}
     - target: {fileID: -4912275786866611839, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: HealthController
       value: 
@@ -11562,10 +11559,6 @@ PrefabInstance:
     - target: {fileID: 8532088199163376958, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: SerializedTransformProperties.LocalScale.z
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9089668530437459592, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
-      propertyPath: _bodyPartVolume
-      value: 1.3
       objectReference: {fileID: 0}
     - target: {fileID: 9089668530437459592, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: HealthController

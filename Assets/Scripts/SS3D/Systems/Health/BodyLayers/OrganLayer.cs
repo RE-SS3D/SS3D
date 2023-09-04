@@ -6,8 +6,6 @@ namespace SS3D.Systems.Health
 {
 	public class OrganLayer : BodyLayer, IOxygenNeeder
     {
-        private const double _molesPerCubeCentimetersOfOxygenNeeded = 1.15e-9;
-
         public OrganLayer(BodyPart bodyPart) : base(bodyPart)
 		{
 		}
@@ -23,7 +21,7 @@ namespace SS3D.Systems.Health
 
         public double GetOxygenNeeded()
         {
-            return _molesPerCubeCentimetersOfOxygenNeeded * BodyPart.Volume * 1000;
+            return HealthConstants.MilliMolesPerCentilitersOfOxygen * BodyPart.Volume * 1000;
         }
 
         protected override void SetSuceptibilities()
