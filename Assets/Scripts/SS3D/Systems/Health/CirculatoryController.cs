@@ -132,7 +132,7 @@ public class CirculatoryController : NetworkActor
             breathing = BreathingState.Suffocating;
         }
 
-        Debug.Log(breathing.ToString());
+        //Debug.Log(breathing.ToString());
     }
 
     /// <summary>

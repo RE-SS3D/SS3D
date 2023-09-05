@@ -55,16 +55,16 @@ namespace SS3D.Systems.Health
 
 			InvokeOnBodyPartDetached();
 			_isDetached = true;
-			// For now simply set unactive the whole body. In the future, should instead put the body in ragdoll mode
-			// and disable a bunch of components.
-			DeactivateWholeBody();
-			Dispose(false);
+            // For now simply set unactive the whole body. In the future, should instead put the body in ragdoll mode
+            // and disable a bunch of components.
+            //DeactivateWholeBody();
+
+            Dispose(false);
 		}
 
-        public override void DestroyBodyPart()
+        protected override void DestroyBodyPart()
         {
             base.DestroyBodyPart();
-
         }
 
         /// <summary>

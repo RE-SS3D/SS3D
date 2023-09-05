@@ -36,7 +36,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
             BodyPart bodyPart = bodyParts.First();
 
-            bodyPart.DestroyBodyPart();
+            bodyPart.InflictDamageToAllLayer(new Health.DamageTypeQuantity(Health.DamageType.Heat, 10000000000));
             return "BodyPart hurt";
         }
 

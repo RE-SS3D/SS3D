@@ -206,6 +206,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         SpawnDetachedBodyPart();
         _isDetached = true;
         InvokeOnBodyPartDetached();
+
         Dispose(false);
     }
 
@@ -253,7 +254,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// All child body parts are detached, all internal body parts are destroyed.
     /// </summary>
     [Server]
-    public virtual void DestroyBodyPart()
+    protected virtual void DestroyBodyPart()
     {
         DetachChildBodyParts();
 
@@ -280,6 +281,14 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [Server]
     protected void Dispose(bool purgeContainersContent)
     {
+        if (HasInternalBodyPart)
+        {
+            foreach (BodyPart part in InternalBodyParts)
+            {
+                part.Dispose(true);
+            }
+        }
+
         RemoveChildAndParent();
         DumpOrPurgeContainers(purgeContainersContent);
         CleanLayers();
@@ -287,11 +296,14 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     }
 
     /// <summary>
-    /// Simply dump the content of all containers
+    /// Simply dump the content of all containers which are not specifically for containing organs. 
+    /// (we don't want the brain flying when head is detached .. or do we ..? ).
     /// </summary>
     private void DumpOrPurgeContainers(bool purgeContainersContent)
     {
-        IEnumerable<AttachedContainer> containers = GetComponentsInChildren<AttachedContainer>().Where(x => x.GetComponent<OrganContainer>() == null);
+        IEnumerable<AttachedContainer> containers = GetComponentsInChildren<AttachedContainer>()
+            .Where(x => x.GetComponent<OrganContainer>() == null);
+        
         foreach (AttachedContainer container in containers)
         {
             if (purgeContainersContent)

@@ -1,4 +1,5 @@
-﻿using SS3D.Systems.Entities;
+﻿using SS3D.Logging;
+using SS3D.Systems.Entities;
 
 namespace SS3D.Systems.Health
 {
@@ -18,8 +19,9 @@ namespace SS3D.Systems.Health
 
 		}
 
-		public override void DestroyBodyPart()
+		protected override void DestroyBodyPart()
 		{
+            Punpun.Information(this, "brain dies");
 			Human entity = GetComponentInParent<Human>();
 			entity?.Kill();
 			InvokeOnBodyPartDestroyed();

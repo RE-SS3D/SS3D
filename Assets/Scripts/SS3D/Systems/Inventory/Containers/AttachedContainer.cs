@@ -114,7 +114,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         #endregion
 
-        // If you define setters for the properties of this region in the future, be careful and make sure they modify the related container fields as well in Container.cs.
         #region ContainerAndAttachedContainerFieldsAndProperties
 
         public string ContainerName => gameObject.name;
@@ -286,7 +285,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             if(changeType == ContainerChangeType.Remove)
             {
-                Punpun.Information(this, "from container " + this.gameObject + ", removing item" + oldItem.Item?.name);
+                //Punpun.Information(this, "from container " + this.gameObject + ", removing item" + oldItem.Item?.name);
             }
 
 			if (changeType == ContainerChangeType.None) {
