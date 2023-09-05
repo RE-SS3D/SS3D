@@ -432,6 +432,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 7885778496726064405}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
+  isBleeding: 0
 --- !u!137 &8304794297218136879
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2385,6 +2386,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 5307304765832513536}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
+  isBleeding: 0
 --- !u!137 &8793278027620475813
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2731,6 +2733,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 3498391959947423981}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
+  isBleeding: 0
 --- !u!137 &1037560153012890605
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -3057,6 +3060,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 4061536191967800809}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
+  isBleeding: 0
 --- !u!137 &949421968142360378
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -3731,6 +3735,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 7865012682319576541}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
+  isBleeding: 0
 --- !u!137 &6840993320086561213
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -5881,6 +5886,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 4933536203666300704}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 5200
+  isBleeding: 0
   brain: {fileID: 4827024419444716214}
 --- !u!1 &4806492444777318490
 GameObject:
@@ -6369,6 +6375,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 2829801289424663116}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
+  isBleeding: 0
 --- !u!137 &7063966259298033300
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -7737,7 +7744,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 3
+  <PrefabId>k__BackingField: 90
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -8111,7 +8118,7 @@ MonoBehaviour:
   - Substance: {fileID: 11400000, guid: 02eff39cd6b70a64abc4a59e3cc1b4d3, type: 2}
     MilliMoles: 90000
   - Substance: {fileID: 11400000, guid: 2030145386ed160418f9a07c5d68774f, type: 2}
-    MilliMoles: 0
+    MilliMoles: 10
   _currentVolume: 0
   _volume: 5500
   _locked: 0
@@ -8309,6 +8316,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 3758014577139489731}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 25300
+  isBleeding: 0
   heart: {fileID: 1872609562917901822}
 --- !u!1 &6618192393620894408
 GameObject:
@@ -9702,6 +9710,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 495117578137499362}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
+  isBleeding: 0
   _hand: {fileID: 5948957322531814959}
 --- !u!114 &2877804502633151377
 MonoBehaviour:
@@ -11242,6 +11251,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 2660167717358018512}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
+  isBleeding: 0
   _hand: {fileID: 7572883762844705701}
 --- !u!114 &8825455644555575778
 MonoBehaviour:
@@ -11352,6 +11362,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HumanHeartItem
       objectReference: {fileID: 0}
+    - target: {fileID: 5774385816057912484, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7596600830642500397, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -11416,6 +11430,34 @@ PrefabInstance:
       propertyPath: <ParentNetworkObject>k__BackingField
       value: 
       objectReference: {fileID: 2930813178971533500}
+    - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: SerializedTransformProperties.LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: SerializedTransformProperties.LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: SerializedTransformProperties.LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
 --- !u!114 &1872609562917901822 stripped

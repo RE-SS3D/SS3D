@@ -1,4 +1,7 @@
-﻿using SS3D.Core;
+﻿using Coimbra;
+using FishNet.Object.Synchronizing;
+using JetBrains.Annotations;
+using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Substances;
@@ -12,7 +15,7 @@ namespace SS3D.Systems.Health
     public class CirculatoryLayer : BodyLayer, IOxygenConsumer, IOxygenNeeder
 	{
         /// <summary>
-        /// MilliMole quantity this layer can contain of oxygen
+        /// MilliMole quantity this layer can contain of oxygen.
         /// </summary>
         private double _oxygenMaxCapacity;
 
@@ -20,8 +23,6 @@ namespace SS3D.Systems.Health
         /// Millimole quantity of oxygen in reserve in this circulatory layer.
         /// </summary>
         private double _oxygenReserve;
-
-        private GameObject _bloodEffect;
 
         /// <summary>
         /// To keep things simple for now, a body part simply needs the average of oxygen consumed for each consuming layer composing it.
@@ -44,21 +45,26 @@ namespace SS3D.Systems.Health
 		{
 			get { return BodyLayerType.Circulatory; }
 		}
-		public CirculatoryLayer(BodyPart bodyPart) : base(bodyPart)
+
+        /// <summary>
+        /// </summary>
+        /// <param name="bodyPart"></param>
+        /// <param name="oxygenReserveFactor">The oxygen reserve factor defines how much oxygen this bodylayer can store.
+        /// In normal conditions, it should roughly be equal to the time in seconds of reserve</param>
+		public CirculatoryLayer(BodyPart bodyPart, float oxygenReserveFactor) : base(bodyPart)
 		{
-            // Should approximately correspond to three seconds of oxygen reserve at 60 bmp heart rate.
-            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody *
-                HealthConstants.OxygenSecondOfReserveInNormalConditions;
+            // Should approximately correspond to "OxygenSecondOfReserveInNormalConditions * oxygenReserveFactor"
+            // seconds of oxygen reserve at 60 bmp heart rate.
+            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
             _oxygenReserve = _oxygenMaxCapacity;
             RegisterToOxygenConsumerSystem();
         }
 
 		public CirculatoryLayer(BodyPart bodyPart,
-		List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
+		List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances, float oxygenReserveFactor)
 		: base(bodyPart, damages, susceptibilities, resistances)
 		{
-            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody *
-                HealthConstants.OxygenSecondOfReserveInNormalConditions;
+            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
             _oxygenReserve = _oxygenMaxCapacity;
             RegisterToOxygenConsumerSystem();
         }
@@ -73,24 +79,11 @@ namespace SS3D.Systems.Health
         protected override void DamageInflicted(DamageTypeQuantity damageQuantity)
         {
             base.DamageInflicted(damageQuantity);
-            GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, (int)ParticlesEffectsIds.BleedingParticle);
-            if (_bloodEffect != null) return;
 
-            GameObject bloodDisplayer;
-            Transform bloodParent;
-            if(BodyPart.BodyCollider != null)
+            if (!BodyPart.isBleeding)
             {
-                bloodDisplayer = BodyPart.BodyCollider.gameObject;
-                bloodParent= BodyPart.BodyCollider.gameObject.transform;
+                BodyPart.isBleeding = true;
             }
-            else
-            {
-                bloodDisplayer = BodyPart.gameObject;
-                bloodParent = BodyPart.gameObject.transform;
-            }
-
-            _bloodEffect = Object.Instantiate(bleedingEffect, bloodDisplayer.transform.position, Quaternion.identity);
-            _bloodEffect.transform.parent = bloodParent;
         }
 
         /// <summary>
@@ -121,7 +114,6 @@ namespace SS3D.Systems.Health
         private void InflictOxyDamage(float fractionOfNeededOxygen)
         {
             var consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
-            Debug.Log(consumers.Count());
             foreach (BodyLayer layer in consumers)
             {
                 BodyPart.TryInflictDamage(layer.LayerType,

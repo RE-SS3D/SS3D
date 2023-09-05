@@ -27,7 +27,7 @@ namespace SS3D.Systems.Health
 		{
 			TryAddBodyLayer(new MuscleLayer(this));
 			TryAddBodyLayer(new BoneLayer(this));
-			TryAddBodyLayer(new CirculatoryLayer(this));
+			TryAddBodyLayer(new CirculatoryLayer(this, 5f));
 			TryAddBodyLayer(new NerveLayer(this));
 			InvokeOnBodyPartLayerAdded();
 		}
@@ -42,11 +42,16 @@ namespace SS3D.Systems.Health
 			// so that player can still play as a head (death is near though..).
 			BodyPart head = SpawnDetachedBodyPart();
 			MindSystem mindSystem = Subsystems.Get<MindSystem>();
-			mindSystem.SwapMinds(GetComponentInParent<Entity>(), head.GetComponent<Entity>());
-			head.GetComponent<NetworkObject>().RemoveOwnership();
 
-			var entitySystem = Subsystems.Get<EntitySystem>();
-			entitySystem.TransferEntity(GetComponentInParent<Entity>(),head.GetComponent<Entity>());
+            var EntityControllingHead = GetComponentInParent<Entity>();
+            if(EntityControllingHead.Mind != null)
+            {
+                mindSystem.SwapMinds(GetComponentInParent<Entity>(), head.GetComponent<Entity>());
+                head.GetComponent<NetworkObject>().RemoveOwnership();
+
+                var entitySystem = Subsystems.Get<EntitySystem>();
+                entitySystem.TryTransferEntity(GetComponentInParent<Entity>(), head.GetComponent<Entity>());
+            }
 
 			InvokeOnBodyPartDetached();
 			_isDetached = true;
@@ -56,10 +61,16 @@ namespace SS3D.Systems.Health
 			Dispose(false);
 		}
 
-		/// <summary>
-		/// Deactivate this game object, should run for all observers, and for late joining (hence bufferlast = true).
-		/// </summary>
-		[ObserversRpc(RunLocally = true, BufferLast = true)]
+        public override void DestroyBodyPart()
+        {
+            base.DestroyBodyPart();
+
+        }
+
+        /// <summary>
+        /// Deactivate this game object, should run for all observers, and for late joining (hence bufferlast = true).
+        /// </summary>
+        [ObserversRpc(RunLocally = true, BufferLast = true)]
 		protected void DeactivateWholeBody()
 		{
 			GetComponentInParent<Human>().gameObject.SetActive(false);

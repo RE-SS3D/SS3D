@@ -7,6 +7,7 @@ using SS3D.Data.Enums;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
+using System.Collections;
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -18,6 +19,7 @@ using System.Linq;
 using FishNet.Object;
 using SS3D.Logging;
 using System.Drawing;
+using UnityEditor;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -592,6 +594,7 @@ namespace SS3D.Systems.Inventory.Containers
 		{
 			for (int i = 0; i < _storedItems.Count; i++)
 			{
+                if (_storedItems[i].Item == null) continue;
 				_storedItems[i].Item.Delete();
 			}
 			_storedItems.Clear();

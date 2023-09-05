@@ -11,7 +11,7 @@ namespace SS3D.Systems.Health
 
 		protected override void AddInitialLayers()
 		{
-			TryAddBodyLayer(new CirculatoryLayer(this));
+			TryAddBodyLayer(new CirculatoryLayer(this, 3f));
 			TryAddBodyLayer(new NerveLayer(this));
 			TryAddBodyLayer(new OrganLayer(this));
 			InvokeOnBodyPartLayerAdded();

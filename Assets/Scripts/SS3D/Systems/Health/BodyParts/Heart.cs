@@ -32,7 +32,7 @@ public class Heart : BodyPart
 	protected override void AddInitialLayers()
 	{
         TryAddBodyLayer(new MuscleLayer(this));
-        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new CirculatoryLayer(this, 3f));
         TryAddBodyLayer(new NerveLayer(this));
         TryAddBodyLayer(new OrganLayer(this));
     }

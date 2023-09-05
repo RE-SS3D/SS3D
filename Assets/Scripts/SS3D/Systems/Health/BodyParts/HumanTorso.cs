@@ -18,7 +18,7 @@ public class HumanTorso : BodyPart
     {
         TryAddBodyLayer(new MuscleLayer(this));
         TryAddBodyLayer(new BoneLayer(this));
-        TryAddBodyLayer(new CirculatoryLayer(this));
+        TryAddBodyLayer(new CirculatoryLayer(this, 8f));
         TryAddBodyLayer(new NerveLayer(this));
         InvokeOnBodyPartLayerAdded();
     }

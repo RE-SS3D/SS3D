@@ -19,6 +19,8 @@ using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
 using SS3D.Systems;
+using SS3D.Data.Enums;
+using SS3D.Data;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -84,6 +86,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
 	public HealthController HealthController;
 
+    private GameObject _bloodEffect;
+
+
 
     public ReadOnlyCollection<BodyLayer> BodyLayers
     {
@@ -96,9 +101,20 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         get { return _childBodyParts.AsReadOnly(); }
     }
 
-    public IEnumerable<BodyPart> InternalBodyParts
+    public List<BodyPart> InternalBodyParts
     {
-        get { return _internalBodyParts?.Items.Select(x => x.GetComponent<BodyPart>()); }
+        get 
+        {
+            List<BodyPart> bodyParts = new List<BodyPart>();
+            foreach (Item item in _internalBodyParts.Items)
+            {
+                if(item != null && item.TryGetComponent(out BodyPart bodyPart))
+                {
+                    bodyParts.Add(bodyPart);
+                }
+            }
+            return bodyParts;
+        }
     }
 
     public bool HasInternalBodyPart => _internalBodyParts != null && _internalBodyParts.Items.Count() != 0;
@@ -253,13 +269,13 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         DetachChildBodyParts();
 
-        // Destroy all internal body parts
+        // Destroy all internal body parts i
         if (_internalBodyParts != null){
 
-            foreach (Item item in _internalBodyParts.Items)
+            foreach (BodyPart part in InternalBodyParts)
             {
-                BodyPart internalBodyPart = item.GetComponentInChildren<BodyPart>();
-                internalBodyPart?.DestroyBodyPart();
+                if(!part.IsDestroyed)
+                    part.DestroyBodyPart();
             }
             _internalBodyParts.Purge();
         }
@@ -326,7 +342,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [ObserversRpc(RunLocally = true, BufferLast = true)]
     protected void Deactivate()
     {
-        if (gameObject??true) return;
+        if (gameObject == null) return;
         gameObject.SetActive(false);
         gameObject.Dispose(true);
     }
@@ -513,6 +529,38 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Add the body layers in their initial states on the player. 
     /// </summary>
     protected abstract void AddInitialLayers();
+
+    [SyncVar(OnChange = nameof(SyncBleedEffect))]
+    public bool isBleeding;
+
+    public void SyncBleedEffect(bool prev, bool next, bool asServer)
+    {
+        if (prev == next || asServer) return;
+
+        if (next)
+        {
+            GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, (int)ParticlesEffectsIds.BleedingParticle);
+            GameObject bloodDisplayer;
+            Transform bloodParent;
+            if (BodyCollider != null)
+            {
+                bloodDisplayer = BodyCollider.gameObject;
+                bloodParent = BodyCollider.gameObject.transform;
+            }
+            else
+            {
+                bloodDisplayer = gameObject;
+                bloodParent = gameObject.transform;
+            }
+
+            _bloodEffect = Instantiate(bleedingEffect, bloodDisplayer.transform.position, Quaternion.identity);
+            _bloodEffect.transform.parent = bloodParent;
+        }
+        else
+        {
+            _bloodEffect.Dispose(true);
+        }
+    }
 
 
 }

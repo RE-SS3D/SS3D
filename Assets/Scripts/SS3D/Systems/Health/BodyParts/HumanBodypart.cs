@@ -14,7 +14,7 @@
 		{
 			TryAddBodyLayer(new MuscleLayer(this));
 			TryAddBodyLayer(new BoneLayer(this));
-			TryAddBodyLayer(new CirculatoryLayer(this));
+            TryAddBodyLayer(new CirculatoryLayer(this,1f));
 			TryAddBodyLayer(new NerveLayer(this));
 			InvokeOnBodyPartLayerAdded();
 		}

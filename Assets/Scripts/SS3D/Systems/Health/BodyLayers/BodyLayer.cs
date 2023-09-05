@@ -8,11 +8,15 @@ using FishNet.Object;
 namespace SS3D.Systems.Health
 {
 	/// <summary>
-	/// Be careful when adding fields to a bodylayer, or when creating a new bodylayer.
-	/// They need to be synced and therefore sent over the network, this means that you need to serialize them properly.
+	/// Bodylayers are not networked object, keep in mind they are server side only.
+    /// If you need to query anything from them, you'll have to go through bodypart.
+    /// Bodylayers should only exists as a part of Bodypart.
 	/// </summary>
 	public abstract class BodyLayer
 	{
+        /// <summary>
+        /// Type of this bodylayer, a body part should not have two layers of the same type.
+        /// </summary>
 		public abstract BodyLayerType LayerType { get; }
 
         public abstract void Cleanlayer();
@@ -27,21 +31,15 @@ namespace SS3D.Systems.Health
 		/// </summary>
 		public event EventHandler<DamageEventArgs> OnDamageReceivedEvent;
 
-		/// <summary>
-		/// Quantity of damages on this bodyLayer
-		/// </summary>
 		protected List<DamageTypeQuantity> _damageTypeQuantities;
 
-		/// <summary>
-		/// Minimum amount of damage to do to make any actual damage.
-		/// </summary>
 		protected List<DamageTypeQuantity> _damageResistances;
 
-		/// <summary>
-		/// Susceptibility to damage, damages are multiplied by this number.
-		/// </summary>
 		protected List<DamageTypeQuantity> _damageSuceptibilities;
 
+        /// <summary>
+        /// Maximum amount of damages the body layer can sustain.
+        /// </summary>
 		public virtual float MaxDamage => 100;
 
 		public const float MinDamage = 0;
@@ -50,15 +48,26 @@ namespace SS3D.Systems.Health
 
         public float RelativeDamage => TotalDamage/MaxDamage;
 
+        /// <summary>
+        /// Quantity of damages on this bodyLayer for each type of damages.
+        /// </summary>
         public List<DamageTypeQuantity> DamageTypeQuantities => _damageTypeQuantities;
-		public List<DamageTypeQuantity> DamageResistances => _damageResistances;
-		public List<DamageTypeQuantity> DamageSuceptibilities => _damageSuceptibilities;
+
+        /// <summary>
+        /// Minimum amount of damage to do to make any actual damage for each type of damages.
+        /// </summary>
+        public List<DamageTypeQuantity> DamageResistances => _damageResistances;
+
+        /// <summary>
+        /// Susceptibility to damage, damages are multiplied by this number, for each type of damages.
+        /// </summary>
+        public List<DamageTypeQuantity> DamageSuceptibilities => _damageSuceptibilities;
 
 		/// <summary>
 		/// TODO : Put default damage suceptibility and resistance into a scriptable object and replace those lists with "damage * modifier".
-		/// They should be empty most of the time as they are modifiers.
+		/// They should be empty most of the time as they are modifiers. This will improve memory usage.
 		/// </summary>
-		/// <param name="bodyPart"></param>
+		/// <param name="bodyPart">The bodypart this bodylayer belongs to.</param>
 		public BodyLayer(BodyPart bodyPart)
 		{
 			_damageResistances = new List<DamageTypeQuantity>();
@@ -80,12 +89,12 @@ namespace SS3D.Systems.Health
 
 
 		/// <summary>
-		/// Add damage without going above max damage for any given type.
+		/// Add damage without going above max damage for any given type. 
+        /// Doesn't simply add the amount passed in parameters, first apply susceptibility and resistance.
 		/// </summary>
-		/// <param name="damageQuantity"></param>
+		/// <param name="damageQuantity">The type and amount of damage to inflict, before applying any modifiers.</param>
 		public virtual void InflictDamage(DamageTypeQuantity damageToInflict)
 		{
-            Debug.Log("inflicting damage on layer type" + LayerType);
 			DamageTypeQuantity damage = (DamageTypeQuantity) damageToInflict.Clone();
 
 			float currentDamageQuantity = GetDamageTypeQuantity(damage.damageType);
@@ -116,9 +125,13 @@ namespace SS3D.Systems.Health
 			}
 
 			DamageInflicted(damage);
-			// TODO : Apply some sync stuff in bodybehaviour.
 		}
 
+        /// <summary>
+        /// Remove a given quantity of damages of a given type on this bodylayer. Can't remove below the minimum (should usually be zero).
+        /// Remove exactly the amount passed in parameter, no modifiers.
+        /// </summary>
+        /// <param name="damage">Quantity and amount of damage to remove.</param>
 		public virtual void HealDamage(DamageTypeQuantity damage)
 		{
 			float currentDamageQuantity = GetDamageTypeQuantity(damage.damageType);
@@ -191,11 +204,15 @@ namespace SS3D.Systems.Health
 			OnDamageReceivedEvent?.Invoke(this, args);
 		}
 
-		public void CopyLayerValues(BodyLayer layer)
+        /// <summary>
+        /// Take another bodylayer and copy its values to this one. Useful when spawning a new bodypart to preserve data.
+        /// </summary>
+        /// <param name="layer"> The layer from which we want the values to copy.</param>
+		public void CopyLayerValues(BodyLayer other)
 		{
-			_damageResistances = layer._damageResistances.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
-			_damageSuceptibilities = layer._damageSuceptibilities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
-			_damageTypeQuantities = layer._damageTypeQuantities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+			_damageResistances = other._damageResistances.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+			_damageSuceptibilities = other._damageSuceptibilities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+			_damageTypeQuantities = other._damageTypeQuantities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
 		}
 
 		/// <summary>

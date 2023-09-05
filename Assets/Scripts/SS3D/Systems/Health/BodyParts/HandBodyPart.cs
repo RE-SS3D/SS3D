@@ -17,7 +17,7 @@ namespace SS3D.Systems.Health
 		{
 			TryAddBodyLayer(new MuscleLayer(this));
 			TryAddBodyLayer(new BoneLayer(this));
-			TryAddBodyLayer(new CirculatoryLayer(this));
+			TryAddBodyLayer(new CirculatoryLayer(this, 5f));
 			TryAddBodyLayer(new NerveLayer(this));
 			InvokeOnBodyPartLayerAdded();
 		}

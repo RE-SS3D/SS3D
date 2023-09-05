@@ -247,11 +247,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8532088199163376958}
   _name: 
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
   AttachmentPoint: {fileID: 5000622523273975387}
   AttachmentPointAlt: {fileID: 0}
+  _container: {fileID: 0}
 --- !u!23 &4081087857378720118
 MeshRenderer:
   m_ObjectHideFlags: 0

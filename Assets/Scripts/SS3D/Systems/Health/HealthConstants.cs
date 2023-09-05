@@ -35,11 +35,5 @@
         /// Close to one, oxygen will become fastly unavailable. Close to 0, body can function even with little blood.
         /// </summary>
         public const float HealthyBloodVolumeRatio = 0.8f;
-
-        /// <summary>
-        /// Change that to change the approximate time it'll take for body parts to take oxy damages
-        /// When bodyparts relies uniquely on their reserves. Time might be affected by other factors.
-        /// </summary>
-        public const float OxygenSecondOfReserveInNormalConditions = 10f;
     }
 }

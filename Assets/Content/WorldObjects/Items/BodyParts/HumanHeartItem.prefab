@@ -318,3 +318,4 @@ MonoBehaviour:
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 300
+  isBleeding: 0
