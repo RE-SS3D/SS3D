@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 787567626965563974}
   - component: {fileID: 9217642514011775196}
   - component: {fileID: 2681293810503783247}
+  - component: {fileID: 1655501874811601480}
   m_Layer: 10
   m_Name: HumanHandLeft
   m_TagString: Untagged
@@ -279,7 +280,6 @@ MonoBehaviour:
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 6047619831351193847}
   ContainerItemDisplay: {fileID: 0}
-  inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 0
@@ -295,7 +295,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: hand left
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
@@ -371,12 +370,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8532088199163376958}
   _name: hand left
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 787567626965563974}
-  Prefab: {fileID: 5774385816057912484}
   AttachmentPoint: {fileID: 8087437400747043343, guid: df85b75fd341a244c8364ebb9c4fcfef, type: 3}
   AttachmentPointAlt: {fileID: 8087437400747043343, guid: df85b75fd341a244c8364ebb9c4fcfef, type: 3}
+  _container: {fileID: 0}
 --- !u!64 &2681293810503783247
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -391,3 +389,27 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 779107774233065848, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+--- !u!114 &1655501874811601480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 8532088199163376958}
+  _networkObjectCache: {fileID: 0}
+  _parentBodyPart: {fileID: 0}
+  _skinnedMeshRenderer: {fileID: 0}
+  _bodyPartItem: {fileID: 0}
+  _internalBodyParts: {fileID: 0}
+  _bodyCollider: {fileID: 0}
+  HealthController: {fileID: 0}
+  _bodyPartVolume: 650
+  isBleeding: 0
+  _hand: {fileID: 949826828486068756}

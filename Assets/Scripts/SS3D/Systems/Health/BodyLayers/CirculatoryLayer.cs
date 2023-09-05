@@ -79,11 +79,6 @@ namespace SS3D.Systems.Health
         protected override void DamageInflicted(DamageTypeQuantity damageQuantity)
         {
             base.DamageInflicted(damageQuantity);
-
-            if (!BodyPart.isBleeding)
-            {
-                BodyPart.isBleeding = true;
-            }
         }
 
         /// <summary>
@@ -147,6 +142,15 @@ namespace SS3D.Systems.Health
             SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
             Substance blood = registry.FromType(SubstanceType.Blood);
             BodyPart.HealthController.Circulatory.Container.RemoveSubstance(blood, HealthConstants.MaxBloodLost * RelativeDamage);
+
+            if (!BodyPart.isBleeding && RelativeDamage > 0)
+            {
+                BodyPart.isBleeding = true;
+            }
+            else if ((BodyPart.isBleeding && RelativeDamage == 0))
+            {
+                BodyPart.isBleeding = false;
+            }
         }
 
         /// <summary>

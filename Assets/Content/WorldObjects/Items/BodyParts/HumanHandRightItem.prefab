@@ -259,8 +259,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -288,11 +288,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8532088199163376958}
   _name: right hand
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
   AttachmentPoint: {fileID: 8087437400747043343}
   AttachmentPointAlt: {fileID: 0}
+  _container: {fileID: 0}
 --- !u!114 &-5392502220935940654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,7 +311,6 @@ MonoBehaviour:
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 17826520120412619}
   ContainerItemDisplay: {fileID: 0}
-  inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 0
@@ -327,7 +326,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: right hand
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 2
@@ -412,4 +410,7 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 0}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
+  HealthController: {fileID: 0}
+  _bodyPartVolume: 650
+  isBleeding: 0
   _hand: {fileID: 0}

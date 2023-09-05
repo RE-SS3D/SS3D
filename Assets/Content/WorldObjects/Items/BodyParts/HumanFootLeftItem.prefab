@@ -246,11 +246,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 171614716955879869}
   _name: 
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
   AttachmentPoint: {fileID: 8087437400747043343}
   AttachmentPointAlt: {fileID: 0}
+  _container: {fileID: 0}
 --- !u!114 &-2023664425711094046
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,6 +271,9 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 0}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
+  HealthController: {fileID: 0}
+  _bodyPartVolume: 1300
+  isBleeding: 0
 --- !u!114 &171614716955879869
 MonoBehaviour:
   m_ObjectHideFlags: 0

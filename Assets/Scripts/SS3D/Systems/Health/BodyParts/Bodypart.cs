@@ -211,7 +211,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     protected virtual void DetachBodyPart()
     {
-
+        isBleeding = false;
         if (_isDetached) return;
         DetachChildBodyParts();
         HideSeveredBodyPart();
@@ -267,6 +267,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [Server]
     public virtual void DestroyBodyPart()
     {
+        isBleeding = false;
         DetachChildBodyParts();
 
         // Destroy all internal body parts i
@@ -535,9 +536,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
     public void SyncBleedEffect(bool prev, bool next, bool asServer)
     {
-        if (prev == next || asServer) return;
+        if (prev == next) return;
 
-        if (next)
+        if (next && _bloodEffect == null)
         {
             GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, (int)ParticlesEffectsIds.BleedingParticle);
             GameObject bloodDisplayer;
@@ -556,7 +557,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
             _bloodEffect = Instantiate(bleedingEffect, bloodDisplayer.transform.position, Quaternion.identity);
             _bloodEffect.transform.parent = bloodParent;
         }
-        else
+        else if(!next && _bloodEffect != null)
         {
             _bloodEffect.Dispose(true);
         }

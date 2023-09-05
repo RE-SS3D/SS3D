@@ -8118,7 +8118,7 @@ MonoBehaviour:
   - Substance: {fileID: 11400000, guid: 02eff39cd6b70a64abc4a59e3cc1b4d3, type: 2}
     MilliMoles: 90000
   - Substance: {fileID: 11400000, guid: 2030145386ed160418f9a07c5d68774f, type: 2}
-    MilliMoles: 10
+    MilliMoles: 1
   _currentVolume: 0
   _volume: 5500
   _locked: 0

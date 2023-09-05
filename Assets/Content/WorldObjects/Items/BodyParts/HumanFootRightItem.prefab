@@ -252,8 +252,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -281,11 +281,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8532088199163376958}
   _name: 
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
   AttachmentPoint: {fileID: 8087437400747043343}
   AttachmentPointAlt: {fileID: 0}
+  _container: {fileID: 0}
 --- !u!114 &5940136136884477243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,3 +306,6 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 0}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
+  HealthController: {fileID: 0}
+  _bodyPartVolume: 1300
+  isBleeding: 0
