@@ -123,7 +123,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// A bodypart is considered severed when the total amount of damages it sustained on the bone layer is above a maximum.
     /// </summary>
-    public bool IsSevered => GetBodyLayer<BoneLayer>() == null ? false : GetBodyLayer<BoneLayer>().IsDestroyed();
+    public bool IsSevered => TryGetBodyLayer(out BoneLayer bones) ? bones.IsDestroyed() : false;
 
     public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
     public float MaxDamage => 0.5f*_bodyLayers.Sum(layer => layer.MaxDamage);
@@ -444,12 +444,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         return BodyLayers.Any(x => x.LayerType == layerType);
     }
-
     public BodyLayer FirstBodyLayerOfType(BodyLayerType layerType)
     {
         return BodyLayers.Where(x => x.LayerType == layerType).First();
     }
-
 
     /// <summary>
     /// GetBodyLayer of type T on this bodypart.
@@ -457,16 +455,18 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public BodyLayer GetBodyLayer<T>()
+    public bool TryGetBodyLayer<T>(out T bodyLayer) where T : BodyLayer
     {
         foreach (BodyLayer layer in BodyLayers)
         {
             if (layer is T)
             {
-                return layer;
+                bodyLayer = (T)Convert.ChangeType(layer, typeof(T));
+                return true;
             }
         }
-        return null;
+        bodyLayer = null;
+        return false;
     }
 
     /// <summary>

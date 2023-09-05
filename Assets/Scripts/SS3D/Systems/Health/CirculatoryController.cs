@@ -65,7 +65,7 @@ public class CirculatoryController : NetworkActor
     {
         foreach (BodyPart part in connectedToHeart)
         {
-            var veins = (CirculatoryLayer) part.GetBodyLayer<CirculatoryLayer>();
+            part.TryGetBodyLayer(out CirculatoryLayer veins);
             veins.Bleed();
         }
     }
@@ -90,7 +90,7 @@ public class CirculatoryController : NetworkActor
 
         foreach (BodyPart part in connectedToHeart)
         {
-            var veins = (CirculatoryLayer)part.GetBodyLayer<CirculatoryLayer>();
+            part.TryGetBodyLayer(out CirculatoryLayer veins);
             double proportionAvailable = 0;
             if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
             {
@@ -208,7 +208,7 @@ public class CirculatoryController : NetworkActor
         int i = 0;
         foreach(BodyPart bodyPart in connectedToHeart)
         {
-            var circulatory = (CirculatoryLayer) bodyPart.GetBodyLayer<CirculatoryLayer>();
+            bodyPart.TryGetBodyLayer(out CirculatoryLayer circulatory);
             oxygenNeededForEachpart[i] = (float) circulatory.OxygenNeeded;
             i++;
         }
