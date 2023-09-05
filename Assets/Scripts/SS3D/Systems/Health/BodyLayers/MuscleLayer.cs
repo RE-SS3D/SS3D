@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace SS3D.Systems.Health
 {
+    /// <summary>
+    /// Muscle layer mostly determines the ability to move and to hold things. 
+    /// TODO : It should receive a top down signal from brain, and all muscle layer on the way influence 
+    /// how much this one is able to function.
+    /// </summary>
 	public class MuscleLayer : BodyLayer, IOxygenNeeder
 	{
 		public override BodyLayerType LayerType

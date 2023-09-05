@@ -4,7 +4,12 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Health
 {
-	public class NerveLayer : BodyLayer, IOxygenNeeder
+    /// <summary>
+    /// NerveLayer layer mostly determines the ability to feel things 
+    /// TODO : It should send a down top signal to brain, representing how much pain it has.
+    /// Too much pain should make the player drop things, or fall.
+    /// </summary>
+    public class NerveLayer : BodyLayer, IOxygenNeeder
 	{
 
         public NetworkBehaviour GetNetworkBehaviour => BodyPart;
