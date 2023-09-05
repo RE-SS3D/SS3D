@@ -21,5 +21,15 @@ namespace SS3D.Systems.Health
 			TryAddBodyLayer(new NerveLayer(this));
 			InvokeOnBodyPartLayerAdded();
 		}
-	}
+
+        protected override void AfterSpawningCopiedBodyPart()
+        {
+            return;
+        }
+
+        protected override void BeforeDestroyingBodyPart()
+        {
+            return;
+        }
+    }
 }

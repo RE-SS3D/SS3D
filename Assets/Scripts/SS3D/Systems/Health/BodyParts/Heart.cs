@@ -29,7 +29,17 @@ public class Heart : BodyPart
 		}
 	}
 
-	protected override void AddInitialLayers()
+    protected override void AfterSpawningCopiedBodyPart()
+    {
+        return;
+    }
+
+    protected override void BeforeDestroyingBodyPart()
+    {
+        return;
+    }
+
+    protected override void AddInitialLayers()
 	{
         TryAddBodyLayer(new MuscleLayer(this));
         TryAddBodyLayer(new CirculatoryLayer(this, 3f));

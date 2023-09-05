@@ -22,4 +22,14 @@ public class HumanTorso : BodyPart
         TryAddBodyLayer(new NerveLayer(this));
         InvokeOnBodyPartLayerAdded();
     }
+
+    protected override void AfterSpawningCopiedBodyPart()
+    {
+        return;
+    }
+
+    protected override void BeforeDestroyingBodyPart()
+    {
+        return;
+    }
 }

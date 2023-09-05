@@ -75,7 +75,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Check if this bodypart has been detached. Should always be true for all bodyparts spawned on detach.
     /// </summary>
-    protected bool _isDetached;
+    private bool _isDetached;
+
+    protected BodyPart _spawnedCopy;
 
 	public HealthController HealthController;
 
@@ -198,19 +200,23 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// This spawns an item based on this body part. Upon being detached, some specific treatments are needed for some bodyparts.
     /// Implementation should handle instantiating _bodyPartItem, removing the bodypart game object and doing whatever else is necessary.
     /// </summary>
-    protected virtual void DetachBodyPart()
+    private void DetachBodyPart()
     {
         if (_isDetached) return;
         DetachChildBodyParts();
         HideSeveredBodyPart();
-        SpawnDetachedBodyPart();
+        _spawnedCopy = SpawnDetachedBodyPart();
+        AfterSpawningCopiedBodyPart();
         _isDetached = true;
         InvokeOnBodyPartDetached();
-
         Dispose(false);
     }
 
-    protected void DetachChildBodyParts()
+    protected abstract void AfterSpawningCopiedBodyPart();
+
+    protected abstract void BeforeDestroyingBodyPart();
+
+    private void DetachChildBodyParts()
     {
         for (int i = _childBodyParts.Count - 1; i >= 0; i--)
         {
@@ -218,7 +224,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         }
     }
 
-    protected BodyPart SpawnDetachedBodyPart()
+    private BodyPart SpawnDetachedBodyPart()
     {
         /*
          * When detaching a bodypart, a prefab is spawned, very similar but having a few different scripts like the Item script, or removing a few others.
@@ -254,8 +260,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// All child body parts are detached, all internal body parts are destroyed.
     /// </summary>
     [Server]
-    protected virtual void DestroyBodyPart()
+    private void DestroyBodyPart()
     {
+        BeforeDestroyingBodyPart();
+
         DetachChildBodyParts();
 
         // Destroy all internal body parts i
@@ -279,7 +287,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// and deactivate this body part's game object for all observers.
     /// </summary>
     [Server]
-    protected void Dispose(bool purgeContainersContent)
+    private void Dispose(bool purgeContainersContent)
     {
         if (HasInternalBodyPart)
         {
@@ -320,7 +328,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Remove the reference to this in the parent body part, and make the parent body part reference null.
     /// </summary>
-    protected void RemoveChildAndParent()
+    private void RemoveChildAndParent()
     {
         _parentBodyPart?._childBodyParts.Remove(this);
         _parentBodyPart = null;
@@ -329,7 +337,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Destroy the body layers properly
     /// </summary>
-    protected void CleanLayers()
+    private void CleanLayers()
     {
         _bodyLayers.ForEach(x => x.Cleanlayer());
     }
@@ -340,7 +348,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// A cleaner solution would be to register to an event fired by container once it's done dumping or purging.
     /// </summary>
     /// <returns></returns>
-    protected IEnumerator DeactivateOneFrameLater()
+    private IEnumerator DeactivateOneFrameLater()
     {
         yield return null;
         Deactivate();

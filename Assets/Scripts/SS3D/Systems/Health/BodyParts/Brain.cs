@@ -19,13 +19,16 @@ namespace SS3D.Systems.Health
 
 		}
 
-		protected override void DestroyBodyPart()
-		{
+        protected override void AfterSpawningCopiedBodyPart()
+        {
+            return;
+        }
+
+        protected override void BeforeDestroyingBodyPart()
+        {
             Punpun.Information(this, "brain dies");
-			Human entity = GetComponentInParent<Human>();
-			entity?.Kill();
-			InvokeOnBodyPartDestroyed();
-			Dispose(true);
-		}
+            Human entity = GetComponentInParent<Human>();
+            entity?.Kill();
+        }
 	}
 }
