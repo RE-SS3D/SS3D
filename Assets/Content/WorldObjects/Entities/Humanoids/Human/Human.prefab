@@ -388,6 +388,7 @@ GameObject:
   - component: {fileID: 5748561531554055639}
   - component: {fileID: 6956777571749741975}
   - component: {fileID: 8304794297218136879}
+  - component: {fileID: 6597817459075280848}
   m_Layer: 12
   m_Name: HumanLegRight
   m_TagString: Untagged
@@ -432,7 +433,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 7885778496726064405}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
-  isBleeding: 0
 --- !u!137 &8304794297218136879
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -536,6 +536,23 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.1460191, y: -0.50401264, z: 0.049134985}
     m_Extent: {x: 0.101392865, y: 0.30669564, z: 0.11181447}
   m_DirtyAABB: 0
+--- !u!114 &6597817459075280848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446286587578563252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 6956777571749741975}
+  isBleeding: 0
 --- !u!1 &472338063523916287
 GameObject:
   m_ObjectHideFlags: 0
@@ -2305,6 +2322,7 @@ GameObject:
   - component: {fileID: 4041160852756243419}
   - component: {fileID: 8793278027620475813}
   - component: {fileID: 2463725901607846913}
+  - component: {fileID: 1771436799082289863}
   m_Layer: 12
   m_Name: Human Foot Right
   m_TagString: Untagged
@@ -2386,7 +2404,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 5307304765832513536}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
-  isBleeding: 0
 --- !u!137 &8793278027620475813
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2502,6 +2519,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1771436799082289863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1704470385696637362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 4041160852756243419}
+  isBleeding: 0
 --- !u!1 &1718925025091415045
 GameObject:
   m_ObjectHideFlags: 0
@@ -2689,6 +2723,7 @@ GameObject:
   - component: {fileID: 4161278733561394789}
   - component: {fileID: 6206108594876145282}
   - component: {fileID: 1037560153012890605}
+  - component: {fileID: 6248871090636260291}
   m_Layer: 12
   m_Name: HumanLegLeft
   m_TagString: Untagged
@@ -2733,7 +2768,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 3498391959947423981}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
-  isBleeding: 0
 --- !u!137 &1037560153012890605
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2837,6 +2871,23 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.14613374, y: -0.5037019, z: 0.049162403}
     m_Extent: {x: 0.101277485, y: 0.30700675, z: 0.11185096}
   m_DirtyAABB: 0
+--- !u!114 &6248871090636260291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809420363039335133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 6206108594876145282}
+  isBleeding: 0
 --- !u!1 &1879675768441011179
 GameObject:
   m_ObjectHideFlags: 0
@@ -3016,6 +3067,7 @@ GameObject:
   - component: {fileID: 4502847908403178062}
   - component: {fileID: 465916857022110443}
   - component: {fileID: 949421968142360378}
+  - component: {fileID: 2917275038983424055}
   m_Layer: 12
   m_Name: HumanArmLeft
   m_TagString: Untagged
@@ -3060,7 +3112,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 4061536191967800809}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
-  isBleeding: 0
 --- !u!137 &949421968142360378
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -3164,6 +3215,23 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.4324906, y: 0.34749562, z: -0.018724438}
     m_Extent: {x: 0.1858468, y: 0.07936078, z: 0.09575342}
   m_DirtyAABB: 0
+--- !u!114 &2917275038983424055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119839903865359034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 465916857022110443}
+  isBleeding: 0
 --- !u!1 &2150520291421741415
 GameObject:
   m_ObjectHideFlags: 0
@@ -3691,6 +3759,7 @@ GameObject:
   - component: {fileID: 5970252886068655664}
   - component: {fileID: 1082974716090020341}
   - component: {fileID: 6840993320086561213}
+  - component: {fileID: 6813471014197390351}
   m_Layer: 12
   m_Name: HumanArmRight
   m_TagString: Untagged
@@ -3735,7 +3804,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 7865012682319576541}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
-  isBleeding: 0
 --- !u!137 &6840993320086561213
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -3839,6 +3907,23 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.43337834, y: 0.34740484, z: -0.01875157}
     m_Extent: {x: 0.18495905, y: 0.07947959, z: 0.0957582}
   m_DirtyAABB: 0
+--- !u!114 &6813471014197390351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2673109151141559659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 1082974716090020341}
+  isBleeding: 0
 --- !u!1 &2716332713394458792
 GameObject:
   m_ObjectHideFlags: 0
@@ -5733,6 +5818,7 @@ GameObject:
   - component: {fileID: 444995378988440430}
   - component: {fileID: 270151793522417329}
   - component: {fileID: 3338140507791060534}
+  - component: {fileID: 3550190016985810917}
   m_Layer: 12
   m_Name: HumanHead
   m_TagString: Untagged
@@ -5886,8 +5972,24 @@ MonoBehaviour:
   _bodyCollider: {fileID: 4933536203666300704}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 5200
-  isBleeding: 0
   brain: {fileID: 4827024419444716214}
+--- !u!114 &3550190016985810917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4586892454499637632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 3338140507791060534}
+  isBleeding: 0
 --- !u!1 &4806492444777318490
 GameObject:
   m_ObjectHideFlags: 0
@@ -6294,6 +6396,7 @@ GameObject:
   - component: {fileID: 2329251983725585613}
   - component: {fileID: 7063966259298033300}
   - component: {fileID: 5407114594000503892}
+  - component: {fileID: 8216186974058028496}
   m_Layer: 12
   m_Name: Human Foot Left
   m_TagString: Untagged
@@ -6375,7 +6478,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 2829801289424663116}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
-  isBleeding: 0
 --- !u!137 &7063966259298033300
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -6491,6 +6593,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8216186974058028496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5248849393312167067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 2329251983725585613}
+  isBleeding: 0
 --- !u!1 &5259835642244508253
 GameObject:
   m_ObjectHideFlags: 0
@@ -8165,6 +8284,7 @@ GameObject:
   - component: {fileID: 6806139853968569792}
   - component: {fileID: 4652682359255614497}
   - component: {fileID: 1689438430210725708}
+  - component: {fileID: 3916515887951048146}
   m_Layer: 12
   m_Name: HumanTorso
   m_TagString: Untagged
@@ -8316,8 +8436,24 @@ MonoBehaviour:
   _bodyCollider: {fileID: 3758014577139489731}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 25300
-  isBleeding: 0
   heart: {fileID: 1872609562917901822}
+--- !u!114 &3916515887951048146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6497759491280381115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 1689438430210725708}
+  isBleeding: 0
 --- !u!1 &6618192393620894408
 GameObject:
   m_ObjectHideFlags: 0
@@ -9562,6 +9698,7 @@ GameObject:
   - component: {fileID: 5948957322531814959}
   - component: {fileID: 3114280644682490816}
   - component: {fileID: 4140257108267273893}
+  - component: {fileID: 3937633611794755679}
   m_Layer: 12
   m_Name: HumanHandRight
   m_TagString: Untagged
@@ -9710,7 +9847,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 495117578137499362}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
-  isBleeding: 0
   _hand: {fileID: 5948957322531814959}
 --- !u!114 &2877804502633151377
 MonoBehaviour:
@@ -9798,6 +9934,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76995bdf538c155469a296a7b56f57f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3937633611794755679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8222677626908822405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 2124807441123396136}
+  isBleeding: 0
 --- !u!1 &8320002649115381438
 GameObject:
   m_ObjectHideFlags: 0
@@ -11103,6 +11256,7 @@ GameObject:
   - component: {fileID: 4181552281325083619}
   - component: {fileID: 7572883762844705701}
   - component: {fileID: 5377253027743065077}
+  - component: {fileID: 6052013393892991301}
   m_Layer: 12
   m_Name: HumanHandLeft
   m_TagString: Untagged
@@ -11251,7 +11405,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 2660167717358018512}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
-  isBleeding: 0
   _hand: {fileID: 7572883762844705701}
 --- !u!114 &8825455644555575778
 MonoBehaviour:
@@ -11339,6 +11492,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76995bdf538c155469a296a7b56f57f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6052013393892991301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9182038362482206685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 9049119147086013476}
+  isBleeding: 0
 --- !u!1001 &2461445119093030015
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11357,6 +11527,10 @@ PrefabInstance:
     - target: {fileID: -4912275786866611839, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: _componentIndexCache
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4081087857378720118, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5774385816057912484, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: m_Name

@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Enums;
+using SS3D.Logging;
 using SS3D.Substances;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace SS3D.Systems.Health
         /// Millimole quantity of oxygen in reserve in this circulatory layer.
         /// </summary>
         private double _oxygenReserve;
+
+        private BleedingBodyPart _bleedingHandler;
 
         /// <summary>
         /// To keep things simple for now, a body part simply needs the average of oxygen consumed for each consuming layer composing it.
@@ -55,18 +58,30 @@ namespace SS3D.Systems.Health
 		{
             // Should approximately correspond to "OxygenSecondOfReserveInNormalConditions * oxygenReserveFactor"
             // seconds of oxygen reserve at 60 bmp heart rate.
-            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
-            _oxygenReserve = _oxygenMaxCapacity;
-            RegisterToOxygenConsumerSystem();
+            Init(bodyPart, oxygenReserveFactor);
         }
 
 		public CirculatoryLayer(BodyPart bodyPart,
 		List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances, float oxygenReserveFactor)
 		: base(bodyPart, damages, susceptibilities, resistances)
 		{
+            Init(bodyPart, oxygenReserveFactor);
+        }
+
+        private void Init(BodyPart bodyPart, float oxygenReserveFactor)
+        {
             _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
             _oxygenReserve = _oxygenMaxCapacity;
             RegisterToOxygenConsumerSystem();
+            if(bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
+            {
+                _bleedingHandler = bleedingBodyPart; 
+            }
+            else
+            {
+                Punpun.Error(this, "Trying to set up a circulatory layer without a BleedingBodyPart component next to the body part." +
+                    " Please add a BleedingBodyPart component.");
+            }
         }
 
 		protected override void SetSuceptibilities()
@@ -143,13 +158,13 @@ namespace SS3D.Systems.Health
             Substance blood = registry.FromType(SubstanceType.Blood);
             BodyPart.HealthController.Circulatory.Container.RemoveSubstance(blood, HealthConstants.MaxBloodLost * RelativeDamage);
 
-            if (!BodyPart.isBleeding && RelativeDamage > 0)
+            if (!_bleedingHandler.isBleeding && RelativeDamage > 0)
             {
-                BodyPart.isBleeding = true;
+                _bleedingHandler.isBleeding = true;
             }
-            else if ((BodyPart.isBleeding && RelativeDamage == 0))
+            else if ((_bleedingHandler.isBleeding && RelativeDamage == 0))
             {
-                BodyPart.isBleeding = false;
+                _bleedingHandler.isBleeding = false;
             }
         }
 

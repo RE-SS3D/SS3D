@@ -616,6 +616,7 @@ GameObject:
   - component: {fileID: 8461581488634887098}
   - component: {fileID: 2219815040223475245}
   - component: {fileID: -4404037060207653705}
+  - component: {fileID: -3416037128353281461}
   m_Layer: 10
   m_Name: HumanHeadItem
   m_TagString: Untagged
@@ -795,7 +796,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 944150679711282915}
   HealthController: {fileID: 0}
   _bodyPartVolume: 5200
-  isBleeding: 0
   brain: {fileID: 6359273142575834818}
 --- !u!95 &2219815040223475245
 Animator:
@@ -834,6 +834,23 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8532088199163376958}
   _mind: {fileID: 1256239026443271520, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
   Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
+--- !u!114 &-3416037128353281461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 8532088199163376958}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 8461581488634887098}
+  isBleeding: 0
 --- !u!1 &6053338017641552129
 GameObject:
   m_ObjectHideFlags: 0

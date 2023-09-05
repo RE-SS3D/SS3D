@@ -223,6 +223,7 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
+            if(!IsServer) { return; }
             Purge();
         }
 
@@ -283,8 +284,10 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-			// This seem to be called correctly 2 move and none when moving inside, 2 remove and none when removing, 2 add and none when adding, 2 add 2 remove and none when transferring
-			Punpun.Information(this, "container change type is" + changeType.ToString());
+            if(changeType == ContainerChangeType.Remove)
+            {
+                Punpun.Information(this, "from container " + this.gameObject + ", removing item" + oldItem.Item?.name);
+            }
 
 			if (changeType == ContainerChangeType.None) {
 				return;
@@ -577,6 +580,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// </summary>
 		public void Dump()
 		{
+            Punpun.Information(this, "dumping the content of container on" + gameObject);
 			Item[] oldItems = _storedItems.Select(x => x.Item).ToArray();
 			for (int i = 0; i < oldItems.Length; i++)
 			{

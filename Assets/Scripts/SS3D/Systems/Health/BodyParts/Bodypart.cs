@@ -1,13 +1,8 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using FishNet.Connection;
 using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Core;
 using SS3D.Logging;
-using SS3D.Systems.Permissions;
-using Cysharp.Threading.Tasks;
-using UnityEditor;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Health;
@@ -18,9 +13,7 @@ using Coimbra;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
-using SS3D.Systems;
-using SS3D.Data.Enums;
-using SS3D.Data;
+using System.Collections;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -85,10 +78,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     protected bool _isDetached;
 
 	public HealthController HealthController;
-
-    private GameObject _bloodEffect;
-
-
 
     public ReadOnlyCollection<BodyLayer> BodyLayers
     {
@@ -211,7 +200,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     protected virtual void DetachBodyPart()
     {
-        isBleeding = false;
         if (_isDetached) return;
         DetachChildBodyParts();
         HideSeveredBodyPart();
@@ -267,7 +255,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [Server]
     public virtual void DestroyBodyPart()
     {
-        isBleeding = false;
         DetachChildBodyParts();
 
         // Destroy all internal body parts i
@@ -296,7 +283,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         RemoveChildAndParent();
         DumpOrPurgeContainers(purgeContainersContent);
         CleanLayers();
-        Deactivate();
+        StartCoroutine(DeactivateOneFrameLater());
     }
 
     /// <summary>
@@ -335,13 +322,23 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         _bodyLayers.ForEach(x => x.Cleanlayer());
     }
 
-
+    /// <summary>
+    /// Deactivate game object for all observers one frame later. Deactivating too soon causes issues with
+    /// item dumped by container, and other stuff. Should not deactivate before everything is done.
+    /// A cleaner solution would be to register to an event fired by container once it's done dumping or purging.
+    /// </summary>
+    /// <returns></returns>
+    protected IEnumerator DeactivateOneFrameLater()
+    {
+        yield return null;
+        Deactivate();
+    }
 
     /// <summary>
     /// Deactivate this game object, should run for all observers, and for late joining (hence bufferlast = true).
     /// </summary>
     [ObserversRpc(RunLocally = true, BufferLast = true)]
-    protected void Deactivate()
+    private void Deactivate()
     {
         if (gameObject == null) return;
         gameObject.SetActive(false);
@@ -530,38 +527,4 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Add the body layers in their initial states on the player. 
     /// </summary>
     protected abstract void AddInitialLayers();
-
-    [SyncVar(OnChange = nameof(SyncBleedEffect))]
-    public bool isBleeding;
-
-    public void SyncBleedEffect(bool prev, bool next, bool asServer)
-    {
-        if (prev == next) return;
-
-        if (next && _bloodEffect == null)
-        {
-            GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, (int)ParticlesEffectsIds.BleedingParticle);
-            GameObject bloodDisplayer;
-            Transform bloodParent;
-            if (BodyCollider != null)
-            {
-                bloodDisplayer = BodyCollider.gameObject;
-                bloodParent = BodyCollider.gameObject.transform;
-            }
-            else
-            {
-                bloodDisplayer = gameObject;
-                bloodParent = gameObject.transform;
-            }
-
-            _bloodEffect = Instantiate(bleedingEffect, bloodDisplayer.transform.position, Quaternion.identity);
-            _bloodEffect.transform.parent = bloodParent;
-        }
-        else if(!next && _bloodEffect != null)
-        {
-            _bloodEffect.Dispose(true);
-        }
-    }
-
-
 }

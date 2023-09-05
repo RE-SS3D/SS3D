@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 8532088199163376958}
   - component: {fileID: 103478066480505861}
   - component: {fileID: 5940136136884477243}
+  - component: {fileID: 4488550039439935652}
   m_Layer: 10
   m_Name: HumanFootRightItem
   m_TagString: Untagged
@@ -259,7 +260,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 114
+  <PrefabId>k__BackingField: 115
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -308,4 +309,20 @@ MonoBehaviour:
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 1300
+--- !u!114 &4488550039439935652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 8532088199163376958}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 5940136136884477243}
   isBleeding: 0

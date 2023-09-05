@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 103478066480505861}
   - component: {fileID: -2023664425711094046}
   - component: {fileID: 171614716955879869}
+  - component: {fileID: -5810796189263966453}
   m_Layer: 10
   m_Name: HumanFootLeftItem
   m_TagString: Untagged
@@ -273,7 +274,6 @@ MonoBehaviour:
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 1300
-  isBleeding: 0
 --- !u!114 &171614716955879869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,8 +304,25 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 111
+  <PrefabId>k__BackingField: 112
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11777033671513324788
+--- !u!114 &-5810796189263966453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 171614716955879869}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: -2023664425711094046}
+  isBleeding: 0

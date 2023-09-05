@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 7244337257717968850}
   - component: {fileID: 6047619831351193847}
   - component: {fileID: 8869621938725342091}
+  - component: {fileID: -8435056193936671747}
   m_Layer: 10
   m_Name: HumanHandLeftItem
   m_TagString: Untagged
@@ -266,7 +267,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 141
+  <PrefabId>k__BackingField: 142
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -412,5 +413,21 @@ MonoBehaviour:
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 650
-  isBleeding: 0
   _hand: {fileID: 0}
+--- !u!114 &-8435056193936671747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 8532088199163376958}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 8869621938725342091}
+  isBleeding: 0
