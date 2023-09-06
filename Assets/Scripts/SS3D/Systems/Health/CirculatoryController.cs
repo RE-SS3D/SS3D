@@ -14,16 +14,15 @@ public class CirculatoryController : NetworkActor
     private Heart _heart;
 
     [SerializeField]
+    private Lungs _leftLungs;
+
+    [SerializeField]
+    private Lungs _rightLungs;
+
+    [SerializeField]
     private SubstanceContainer _container;
 
     public SubstanceContainer Container => _container;
-
-    public enum BreathingState
-    {
-        Nice,
-        Difficult,
-        Suffocating
-    }
 
     public override void OnStartServer()
     {
@@ -40,8 +39,6 @@ public class CirculatoryController : NetworkActor
 
         UpdateVolume();
     }
-
-    public BreathingState breathing;
 
     /// <summary>
     /// Should be called when a body part is disconnected from heart, as the total volume of the circulatory container should
@@ -86,8 +83,6 @@ public class CirculatoryController : NetworkActor
         SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
         Substance oxygen = registry.FromType(SubstanceType.Oxygen);
 
-
-
         foreach (BodyPart part in connectedToHeart)
         {
             part.TryGetBodyLayer(out CirculatoryLayer veins);
@@ -114,26 +109,11 @@ public class CirculatoryController : NetworkActor
             _container.RemoveSubstance(oxygen, (float)availableOxygen);
         }
 
-        SetBreathingState((float) availableOxygen, sumNeeded);
+        _leftLungs.SetBreathingState((float) availableOxygen, sumNeeded);
+        _rightLungs.SetBreathingState((float)availableOxygen, sumNeeded);
     }
 
-    private void SetBreathingState(float availableOxygen, float sumNeeded)
-    {
-        if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
-        {
-            breathing = BreathingState.Nice; 
-        }
-        else if(availableOxygen > sumNeeded)
-        {
-            breathing = BreathingState.Difficult;
-        }
-        else
-        {
-            breathing = BreathingState.Suffocating;
-        }
-
-        //Debug.Log(breathing.ToString());
-    }
+    
 
     /// <summary>
     /// Return the amount of oxygen the circulatory system can send to organs.

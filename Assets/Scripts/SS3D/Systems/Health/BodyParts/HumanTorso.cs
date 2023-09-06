@@ -7,11 +7,15 @@ using UnityEngine;
 public class HumanTorso : BodyPart
 {
     public Heart heart;
+    public Lungs leftLung;
+    public Lungs rightLungs;
 
     public override void OnStartServer()
     {
         base.OnStartServer();
         AddInternalBodyPart(heart);
+        AddInternalBodyPart(leftLung);
+        AddInternalBodyPart(rightLungs);
     }
 
     protected override void AddInitialLayers()
