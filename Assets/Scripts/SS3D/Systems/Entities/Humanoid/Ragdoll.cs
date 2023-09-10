@@ -147,14 +147,6 @@ namespace SS3D.Systems.Entities.Humanoid
 		}
 		private void BonesReset()
 		{
-			if (_center.transform.forward.y > 0)
-			{
-				_isFacingDown = false;
-			}
-			else
-			{
-				_isFacingDown = true;
-			}
 			PopulateBoneTransforms(_ragdollBones);
 			_currentState = RagdollState.BonesReset;
 			// This is important, because otherwise the character will fly away after disabling its animator
@@ -169,6 +161,8 @@ namespace SS3D.Systems.Entities.Humanoid
 			{
 				PopulateStandUpBoneTransforms(_standUpFaceUpClipName);
 			}
+
+			_animator.SetFloat("Speed", 0);
 		}
 
 		private void BonesResetBehavior()
@@ -248,10 +242,16 @@ namespace SS3D.Systems.Entities.Humanoid
 				newPosition.y = hitInfo.point.y + 0.0051f;
 			}
 			_character.position = newPosition;
-			
 			Quaternion originalHipsRotation = _center.rotation;
-
 			Vector3 desiredDirection = _center.up;
+			if (_center.transform.forward.y > 0)
+			{
+				_isFacingDown = false;
+			}
+			else
+			{
+				_isFacingDown = true;
+			}
 			if (!_isFacingDown)
 			{
 				desiredDirection *= -1;
