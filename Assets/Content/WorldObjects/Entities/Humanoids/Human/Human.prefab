@@ -8130,6 +8130,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ArmatureRoot: {fileID: 8356004225170572391}
+  _standUpFaceUpClipName: Getting Up Face Up
+  _standUpFaceUpStateName: Getting Up Face Up
+  _standUpFaceDownClipName: Getting Up Face Down
+  _standUpFaceDownStateName: Getting Up Face Down
+  _isFacingDown: 0
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0

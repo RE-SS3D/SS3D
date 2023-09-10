@@ -27,9 +27,15 @@ namespace SS3D.Systems.Entities.Humanoid
 		private bool _isKnockDownTimed;
 		public bool IsKnockedDown { get; private set; }
 		[SerializeField]
-		private string _standUpClipName;
+		private string _standUpFaceUpClipName;
 		[SerializeField]
-		private string _standUpStateName;
+		private string _standUpFaceUpStateName;
+		[SerializeField]
+		private string _standUpFaceDownClipName;
+		[SerializeField]
+		private string _standUpFaceDownStateName;
+		[SerializeField]
+		private bool _isFacingDown;
 
 		private enum RagdollState
 		{
@@ -119,12 +125,21 @@ namespace SS3D.Systems.Entities.Humanoid
 		{
 			_animator.enabled = true;
 			_currentState = RagdollState.StandingUp;
-			_animator.Play(_standUpStateName);
+
+			if (_isFacingDown)
+			{
+				_animator.Play(_standUpFaceDownStateName, 0, 0);
+			}
+			else
+			{
+				_animator.Play(_standUpFaceUpStateName, 0, 0);
+			}
 		}
 
 		private void StandingUpBehavior()
 		{
-			if (_animator.GetCurrentAnimatorStateInfo(0).IsName(_standUpStateName) == false)
+			string standUpName = _isFacingDown ? _standUpFaceDownClipName : _standUpFaceUpClipName;
+			if (_animator.GetCurrentAnimatorStateInfo(0).IsName(standUpName) == false)
 			{
 				_currentState = RagdollState.Walking;
 				Recover();
@@ -132,12 +147,28 @@ namespace SS3D.Systems.Entities.Humanoid
 		}
 		private void BonesReset()
 		{
+			if (_center.transform.forward.y > 0)
+			{
+				_isFacingDown = false;
+			}
+			else
+			{
+				_isFacingDown = true;
+			}
 			PopulateBoneTransforms(_ragdollBones);
 			_currentState = RagdollState.BonesReset;
 			// This is important, because otherwise the character will fly away after disabling its animator
 			ToggleKinematic(true);
 			_elapsedResetBonesTime = 0;
-			PopulateStandUpBoneTransforms(_standUpClipName);
+
+			if (_isFacingDown)
+			{
+				PopulateStandUpBoneTransforms(_standUpFaceDownClipName);
+			}
+			else
+			{
+				PopulateStandUpBoneTransforms(_standUpFaceUpClipName);
+			}
 		}
 
 		private void BonesResetBehavior()
@@ -152,6 +183,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			if (elapsedPercentage >= 1)
 			{
 				StandUp();
+				IsKnockedDown = false;
 			}
 
 		}
@@ -207,12 +239,23 @@ namespace SS3D.Systems.Entities.Humanoid
 		private void AlignPositionToHips()
 		{
 			Vector3 originalHipsPosition = _center.position;
-			Vector3 positionOffset = _standUpBones[0].Position;
-			//positionOffset.y = 0;
-			_character.position = _center.position;
+			/*Vector3 positionOffset = _standUpBones[0].Position;
+			positionOffset.y = 0;*/
+			Vector3 newPosition = _center.position;
+
+			if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo))
+			{
+				newPosition.y = hitInfo.point.y + 0.0051f;
+			}
+			_character.position = newPosition;
 			
 			Quaternion originalHipsRotation = _center.rotation;
-			Vector3 desiredDirection = _center.up * -1;
+
+			Vector3 desiredDirection = _center.up;
+			if (!_isFacingDown)
+			{
+				desiredDirection *= -1;
+			}
 			desiredDirection.y = 0;
 			desiredDirection.Normalize();
 			transform.rotation *= Quaternion.FromToRotation(transform.forward, desiredDirection);
@@ -242,16 +285,9 @@ namespace SS3D.Systems.Entities.Humanoid
 		{
 			Vector3 positionBeforeSampling = transform.position;
 			Quaternion rotationBeforeSampling = transform.rotation;
-			foreach (AnimationClip clip in _animator.runtimeAnimatorController.animationClips)
-			{
-				if (clip.name == clipName)
-				{
-					clip.SampleAnimation(gameObject, 0f);
-					PopulateBoneTransforms(_standUpBones);
-					break;
-				}
-			}
-
+			AnimationClip clip = Array.Find(_animator.runtimeAnimatorController.animationClips, clip => clip.name == clipName);
+			clip.SampleAnimation(gameObject, 0f);
+			PopulateBoneTransforms(_standUpBones);
 			transform.position = positionBeforeSampling;
 			transform.rotation = rotationBeforeSampling;
 		}
