@@ -8243,8 +8243,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _heart: {fileID: 1872609562917901822}
-  _leftLungs: {fileID: 2177541117370366682}
-  _rightLungs: {fileID: 6799870962488124763}
   _container: {fileID: 8765307112244453444}
 --- !u!114 &8765307112244453444
 MonoBehaviour:
@@ -8265,7 +8263,7 @@ MonoBehaviour:
   - Substance: {fileID: 11400000, guid: 02eff39cd6b70a64abc4a59e3cc1b4d3, type: 2}
     MilliMoles: 90000
   - Substance: {fileID: 11400000, guid: 2030145386ed160418f9a07c5d68774f, type: 2}
-    MilliMoles: 1
+    MilliMoles: 5
   _currentVolume: 0
   _volume: 5500
   _locked: 0
@@ -11650,6 +11648,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6069704630732161621}
     m_Modifications:
+    - target: {fileID: -4912275786866611839, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: _container
+      value: 
+      objectReference: {fileID: 8765307112244453444}
+    - target: {fileID: -4912275786866611839, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: _leftLungs
+      value: 
+      objectReference: {fileID: 2177541117370366682}
+    - target: {fileID: -4912275786866611839, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
+      propertyPath: _rightLungs
+      value: 
+      objectReference: {fileID: 6799870962488124763}
     - target: {fileID: -4912275786866611839, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: HealthController
       value: 

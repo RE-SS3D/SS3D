@@ -315,11 +315,14 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8532088199163376958}
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 0}
-  _bodyPartItem: {fileID: 0}
+  _bodyPartItem: {fileID: 5774385816057912484}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 300
+  _leftLungs: {fileID: 0}
+  _rightLungs: {fileID: 0}
+  _container: {fileID: 0}
 --- !u!114 &6280511418527049418
 MonoBehaviour:
   m_ObjectHideFlags: 0
