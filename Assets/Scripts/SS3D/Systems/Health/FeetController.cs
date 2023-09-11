@@ -41,18 +41,20 @@ public class FeetController : NetworkActor
 		_feetHealthFactor = 1;
 	}
 
-	/// <summary>
-	/// Update feet health factor when a foot takes damages.
-	/// </summary>
-	private void HandleFootHurt(object sender, EventArgs e)
+    /// <summary>
+    /// Update feet health factor when a foot takes damages.
+    /// </summary>
+    [Server]
+    private void HandleFootHurt(object sender, EventArgs e)
 	{
 		UpdateFeetHealthFactor();
 	}
 
-	/// <summary>
-	/// If a foot is destroyed or detached, remove it from the list of available feet.
-	/// </summary>
-	private void HandleFootRemoved(object sender, EventArgs e)
+    /// <summary>
+    /// If a foot is destroyed or detached, remove it from the list of available feet.
+    /// </summary>
+    [Server]
+    private void HandleFootRemoved(object sender, EventArgs e)
 	{
 		FootBodyPart foot = (FootBodyPart)sender;
 		if (foot != null)
@@ -62,10 +64,11 @@ public class FeetController : NetworkActor
 		UpdateFeetHealthFactor();
 	}
 
-	/// <summary>
-	/// Simply update the feet health factor, based on the health of each available feet and their numbers.
-	/// </summary>
-	private void UpdateFeetHealthFactor()
+    /// <summary>
+    /// Simply update the feet health factor, based on the health of each available feet and their numbers.
+    /// </summary>
+    [Server]
+    private void UpdateFeetHealthFactor()
 	{
 		_feetHealthFactor = feet.Sum(x => x.GetSpeedContribution()) / _optimalFeetNumber;
 	}
