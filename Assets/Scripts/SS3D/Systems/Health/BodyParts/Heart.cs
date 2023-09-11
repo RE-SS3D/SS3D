@@ -23,18 +23,11 @@ namespace SS3D.Systems.Health
 
         private float _timer = 0f;
 
-        [SerializeField]
-        private Lungs _leftLungs;
-
-        [SerializeField]
-        private Lungs _rightLungs;
-
-        [SerializeField]
-        private SubstanceContainer _container;
-
-        public SubstanceContainer Container => _container;
+        private float _oxygenSumNeeded; 
 
         private List<BodyPart> _connectedToHeart;
+
+        public float OxygenSumNeeded => _oxygenSumNeeded;
 
         public override void OnStartServer()
         {
@@ -90,9 +83,11 @@ namespace SS3D.Systems.Health
         [Server]
         private void SendOxygen()
         {
-            double availableOxygen = AvailableOxygen();
+            double availableOxygen =  HealthController.Circulatory.AvailableOxygen();
 
-            float[] oxygenNeededForEachpart = ComputeIndividualNeeds();
+            float[] oxygenNeededForEachpart = 
+                HealthController.Circulatory.ComputeIndividualNeeds(_connectedToHeart.AsReadOnly());
+
             float sumNeeded = oxygenNeededForEachpart.Sum();
             int i = 0;
 
@@ -118,38 +113,12 @@ namespace SS3D.Systems.Health
 
             if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
             {
-                _container.RemoveSubstance(oxygen, HealthConstants.SafeOxygenFactor * sumNeeded);
+                HealthController.Circulatory.Container.RemoveSubstance(oxygen, HealthConstants.SafeOxygenFactor * sumNeeded);
             }
             else
             {
-                _container.RemoveSubstance(oxygen, (float)availableOxygen);
+                HealthController.Circulatory.Container.RemoveSubstance(oxygen, (float)availableOxygen);
             }
-
-            _leftLungs.SetBreathingState((float)availableOxygen, sumNeeded);
-            _rightLungs.SetBreathingState((float)availableOxygen, sumNeeded);
-        }
-
-        /// <summary>
-        /// Return the amount of oxygen the circulatory system can send to organs.
-        /// If the blood quantity is above a given treshold, all oxygen in the circulatory container is available.
-        /// If blood gets below, it starts diminishing the availability of oxygen despite the circulatory system containing enough.
-        /// This is to mimick the lack of blood making oxygen transport difficult and potentially leading to organ suffocation.
-        /// </summary>
-        [Server]
-        private double AvailableOxygen()
-        {
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
-            Substance blood = registry.FromType(SubstanceType.Blood);
-
-            Substance oxygen = registry.FromType(SubstanceType.Oxygen);
-
-            float bloodVolume = _container.GetSubstanceVolume(blood);
-
-            float healthyBloodVolume = (float)HealthConstants.HealthyBloodVolumeRatio * _container.Volume;
-
-            double oxygenQuantity = _container.GetSubstanceQuantity(oxygen);
-
-            return bloodVolume > healthyBloodVolume ? oxygenQuantity : (bloodVolume / healthyBloodVolume) * oxygenQuantity;
         }
 
         [Server]
@@ -209,23 +178,6 @@ namespace SS3D.Systems.Health
             {
                 GetAllBodyPartAttachedToHeartRecursion(connectedToHeart, bodyPart);
             }
-        }
-
-        /// <summary>
-        /// Compute the need in oxygen of every body part attached to heart.
-        /// </summary>
-        [Server]
-        private float[] ComputeIndividualNeeds()
-        {
-            float[] oxygenNeededForEachpart = new float[_connectedToHeart.Count];
-            int i = 0;
-            foreach (BodyPart bodyPart in _connectedToHeart)
-            {
-                bodyPart.TryGetBodyLayer(out CirculatoryLayer circulatory);
-                oxygenNeededForEachpart[i] = (float)circulatory.OxygenNeeded;
-                i++;
-            }
-            return oxygenNeededForEachpart;
         }
 
         [Server]

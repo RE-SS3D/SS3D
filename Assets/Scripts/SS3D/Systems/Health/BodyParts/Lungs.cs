@@ -5,6 +5,7 @@ using SS3D.Systems.Health;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Health
@@ -25,9 +26,6 @@ namespace SS3D.Systems.Health
         private float _breathFrequency = 60f;
 
         public event EventHandler OnBreath;
-
-        [SerializeField]
-        private CirculatoryController _circulatoryController;
 
         private float _timer = 0f;
 
@@ -66,19 +64,22 @@ namespace SS3D.Systems.Health
             OnBreath?.Invoke(this, EventArgs.Empty);
             SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
-            if (_circulatoryController.Container.GetSubstanceQuantity(oxygen) > MaxOxygenAmount)
+            if (HealthController.Circulatory.Container.GetSubstanceQuantity(oxygen) > MaxOxygenAmount)
             {
                 return;
             }
             else
             {
-                _circulatoryController.Container.AddSubstance(oxygen, OxygenConstantIntake);
+                HealthController.Circulatory.Container.AddSubstance(oxygen, OxygenConstantIntake);
             }
+
+            SetBreathingState((float)HealthController.Circulatory.AvailableOxygen(),
+                HealthController.Circulatory.ComputeIndividualNeeds(HealthController.BodyPartsOnEntity).Sum());
         }
 
         // should set that to private
         [Server]
-        public void SetBreathingState(float availableOxygen, float sumNeeded)
+        private void SetBreathingState(float availableOxygen, float sumNeeded)
         {
             if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
             {

@@ -6,6 +6,7 @@ using SS3D.Systems.Health;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -50,6 +51,46 @@ namespace SS3D.Systems.Health
             BodyPart[] allBodyPartsOnEntity = GetComponentsInChildren<BodyPart>();
 
             _container.ChangeVolume((float)allBodyPartsOnEntity.Sum(x => x.Volume) * HealthConstants.BloodVolumeToHumanVolumeRatio);
+        }
+
+        /// <summary>
+        /// Return the amount of oxygen the circulatory system can send to organs.
+        /// If the blood quantity is above a given treshold, all oxygen in the circulatory container is available.
+        /// If blood gets below, it starts diminishing the availability of oxygen despite the circulatory system containing enough.
+        /// This is to mimick the lack of blood making oxygen transport difficult and potentially leading to organ suffocation.
+        /// </summary>
+        [Server]
+        public double AvailableOxygen()
+        {
+            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            Substance blood = registry.FromType(SubstanceType.Blood);
+
+            Substance oxygen = registry.FromType(SubstanceType.Oxygen);
+
+            float bloodVolume = _container.GetSubstanceVolume(blood);
+
+            float healthyBloodVolume = (float)HealthConstants.HealthyBloodVolumeRatio * _container.Volume;
+
+            double oxygenQuantity = _container.GetSubstanceQuantity(oxygen);
+
+            return bloodVolume > healthyBloodVolume ? oxygenQuantity : (bloodVolume / healthyBloodVolume) * oxygenQuantity;
+        }
+
+        /// <summary>
+        /// Compute the need in oxygen of every body part in the provided list.
+        /// </summary>
+        [Server]
+        public float[] ComputeIndividualNeeds(ReadOnlyCollection<BodyPart> parts)
+        {
+            float[] oxygenNeededForEachpart = new float[parts.Count];
+            int i = 0;
+            foreach (BodyPart bodyPart in parts)
+            {
+                bodyPart.TryGetBodyLayer(out CirculatoryLayer circulatory);
+                oxygenNeededForEachpart[i] = (float)circulatory.OxygenNeeded;
+                i++;
+            }
+            return oxygenNeededForEachpart;
         }
     }
 }

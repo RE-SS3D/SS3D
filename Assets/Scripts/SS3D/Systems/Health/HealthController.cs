@@ -9,6 +9,7 @@ using SS3D.Systems.Inventory.Containers;
 using System.Collections.Generic;
 using System;
 using System.Diagnostics.Tracing;
+using System.Collections.ObjectModel;
 
 namespace SS3D.Systems.Health
 {
@@ -29,6 +30,8 @@ namespace SS3D.Systems.Health
         public FeetController FeetController => _feetController;
 
         private List<BodyPart> _bodyPartsOnEntity = new List<BodyPart>();
+
+        public ReadOnlyCollection<BodyPart> BodyPartsOnEntity => _bodyPartsOnEntity.AsReadOnly();
 
         public event EventHandler<BodyPart> OnBodyPartRemoved;
 
