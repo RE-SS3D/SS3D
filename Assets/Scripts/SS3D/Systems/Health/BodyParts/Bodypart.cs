@@ -214,10 +214,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         Dispose(false);
     }
 
-    [Server]
     protected abstract void AfterSpawningCopiedBodyPart();
 
-    [Server]
     protected abstract void BeforeDestroyingBodyPart();
 
     [Server]
@@ -575,6 +573,5 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Add the body layers in their initial states on the player. 
     /// </summary>
-    [Server]
     protected abstract void AddInitialLayers();
 }
