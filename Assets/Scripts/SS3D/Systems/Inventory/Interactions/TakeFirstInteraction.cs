@@ -4,6 +4,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
@@ -36,9 +37,9 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             // Will only appear if the current hand is empty and the container isn't empty
-            if (interactionEvent.Source is Hands hands && _attachedContainer != null)
+            if (interactionEvent.Source is Hand hand && _attachedContainer != null)
             {
-                return hands.SelectedHandEmpty && !_attachedContainer.Container.Empty;
+                return hand.IsEmpty() && !_attachedContainer.Empty;
             }
 
             return false;
@@ -46,13 +47,15 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hands hands = (Hands) interactionEvent.Source;
-            int index = _attachedContainer.Container.StoredItems.Count - 1;
-            Item pickupItem = _attachedContainer.Container.StoredItems[index].Item;
+            Hand hand = (Hand) interactionEvent.Source;
+
+            Item pickupItem = _attachedContainer.Items.First();
+
             if (pickupItem != null)
             {
-                hands.Pickup(pickupItem);
+                hand.Pickup(pickupItem);
             }
+
             return false;
         }
     }

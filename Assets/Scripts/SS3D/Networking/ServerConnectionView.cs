@@ -52,15 +52,13 @@ namespace SS3D.Networking
             _quitButton.onClick.AddListener(Application.Quit);
             _retryButton.onClick.AddListener(OnRetryButtonPressed);
 
-            InstanceFinder.ClientManager.OnClientConnectionState += OnServerConnectionFailed;
+            InstanceFinder.ClientManager.OnClientConnectionState += HandleServerConnectionFailed;
         }
 
         private void UnsubscribeFromEvents()
         {
             _quitButton.onClick.RemoveListener(Application.Quit);
             _retryButton.onClick.RemoveListener(OnRetryButtonPressed);
-
-            InstanceFinder.ClientManager.OnClientConnectionState -= OnServerConnectionFailed;
         }
         
         private void UpdateMessageText(string message)
@@ -76,7 +74,7 @@ namespace SS3D.Networking
                 return;
             }
             
-            // loops a rotating animation
+            // loops the rotating animation
             _loadingIcon.DOLocalRotate(_loadingMovement, _loadingIconAnimationDuration, RotateMode.LocalAxisAdd).OnComplete(ProcessConnectingToServer).SetEase(Ease.Linear);
         }
 
@@ -86,12 +84,11 @@ namespace SS3D.Networking
             _buttons.SetActive(false);
             _loadingIcon.gameObject.SetActive(true);
             UpdateMessageText(ApplicationMessages.Network.ConnectingToServer);
-            ProcessConnectingToServer();
 
-            //new RetryServerConnectionEvent().Invoke(this);
+            ProcessConnectingToServer();
         }
         
-        private void OnServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
+        private void HandleServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
         {
             if (clientConnectionStateArgs.ConnectionState != LocalConnectionState.Stopped)
             {

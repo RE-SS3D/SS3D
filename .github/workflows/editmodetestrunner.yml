@@ -7,28 +7,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: true
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - run: npm install @actions/core
+      - run: npm install @actions/github
+      - run: npm install jsdom
+      - run: npm install fs
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
         with:
           testMode: editmode
         env:
           UNITY_LICENSE_FILE: ../Documents/UnityLicense.ulf
+      - name: Produce summary output
+        uses: ./.github/actions/interpret-test-results
+        if: always()
+        id: interpret-test-results
+        with:
+          XML_PATH: artifacts/editmode-results.xml
       - name: Notify discord if tests fail
         uses: rjstone/discord-webhook-notify@v1
         if: failure() && github.event_name != 'pull_request'
         with:
           severity: error
-          details: Test runner failed!
+          details: ${{ steps.interpret-test-results.outputs.DISPLAY_STRING }}
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_TEST_RESULTS }}
       - name: Notify discord if tests succeed
         uses: rjstone/discord-webhook-notify@v1
         if: success() && github.event_name != 'pull_request'
         with:
           severity: info
-          details: Test runner passed!
+          details: ${{ steps.interpret-test-results.outputs.DISPLAY_STRING }}
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_TEST_RESULTS }}
       - name: Upload test results
         uses: actions/upload-artifact@v2

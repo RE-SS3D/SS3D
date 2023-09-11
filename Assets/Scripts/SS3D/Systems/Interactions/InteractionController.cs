@@ -130,7 +130,7 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            Item item = hands.ItemInHand;
+            Item item = hands.SelectedHand.ItemInHand;
             if (item != null)
             {
                 InteractInHand(item.gameObject, gameObject);
@@ -363,10 +363,8 @@ namespace SS3D.Systems.Interactions
         [ServerOrClient]
         private IInteractionSource GetActiveInteractionSource()
         {
-            IToolHolder toolHolder = GetComponent<IToolHolder>();
-            IInteractionSource activeTool = toolHolder?.GetActiveTool();
-
-            IInteractionSource interactionSource = activeTool ?? GetComponent<IInteractionSource>();
+            IHandsController handsController = GetComponent<IHandsController>();
+            var interactionSource = handsController.GetActiveInteractionSource();
 
             return interactionSource;
         }

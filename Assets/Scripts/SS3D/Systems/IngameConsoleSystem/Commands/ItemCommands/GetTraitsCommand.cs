@@ -1,5 +1,4 @@
-using SS3D.Core;
-using SS3D.Systems.Entities;
+﻿using FishNet.Connection;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Permissions;
 
@@ -12,17 +11,17 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     {
         public override string LongDescription => "Get all traits from item in hand";
         public override string ShortDescription => "item.traits";
-        public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
+        public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+        public override CommandType Type => CommandType.Server;
 
-        public override string Perform(string[] args)
+
+        public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
-            var itemSystem = Subsystems.Get<ItemSystem>();
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out Entity entity);
-            Item item = itemSystem.GetItemInHand(entity);
+
+            Item item = ItemCommandUtilities.GetItemInHand(conn);
             if (item == null)
             {
                 return "No item in hand";

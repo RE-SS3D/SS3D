@@ -21,7 +21,7 @@ namespace SS3D.Systems.Rounds
     /// </summary>
     public class ReadyPlayersSystem : NetworkSystem
     {
-        [SyncObject] private readonly SyncList<Soul> _readyPlayers = new();
+        [SyncObject] private readonly SyncList<Player> _readyPlayers = new();
 
         public override void OnStartServer()
         {
@@ -29,7 +29,7 @@ namespace SS3D.Systems.Rounds
 
             ServerManager.RegisterBroadcast<ChangePlayerReadyMessage>(HandleChangePlayerReady);
 
-            AddHandle(OnlineSoulsChanged.AddListener(HandleUserLeftServer));
+            AddHandle(OnlinePlayersChanged.AddListener(HandleUserLeftServer));
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
         }
 
@@ -55,43 +55,43 @@ namespace SS3D.Systems.Rounds
         }
 
         [Server]
-        private void RemoveReadyPlayer(Soul soul, ChangeType changeType)
+        private void RemoveReadyPlayer(Player player, ChangeType changeType)
         {
             if (changeType == ChangeType.Addition)
             {
                 return;
             }
 
-            if (soul == null)
+            if (player == null)
             {
                 return;
             }
 
-            if (_readyPlayers.SingleOrDefault(match => match == soul) != null)
+            if (_readyPlayers.SingleOrDefault(match => match == player) != null)
             {
-                _readyPlayers.Remove(soul);
+                _readyPlayers.Remove(player);
             }
         }
 
         /// <summary>
         /// Sets the player ready state
         /// </summary>
-        /// <param name="soul">The player's Soul</param>
+        /// <param name="player">The player himself</param>
         /// <param name="ready">Is the player ready</param>
         [Server]
-        private void SetPlayerReady(Soul soul, bool ready)
+        private void SetPlayerReady(Player player, bool ready)
         {
-            bool soulIsReady = _readyPlayers.Contains(soul);
+            bool playerIsReady = _readyPlayers.Contains(player);
 
             switch (ready)
             {
-                case true when !soulIsReady:
-                    Punpun.Information(this, "player is {ckey} is ready", Logs.ServerOnly, soul.Ckey);
-                    _readyPlayers.Add(soul);
+                case true when !playerIsReady:
+                    Punpun.Information(this, "player is {ckey} is ready", Logs.ServerOnly, player.Ckey);
+                    _readyPlayers.Add(player);
                     break;
-                case false when soulIsReady:
-                    Punpun.Information(this, "player is {cCkey} is not ready", Logs.ServerOnly, soul.Ckey);
-                    _readyPlayers.Remove(soul);
+                case false when playerIsReady:
+                    Punpun.Information(this, "player is {cCkey} is not ready", Logs.ServerOnly, player.Ckey);
+                    _readyPlayers.Remove(player);
                     break;
             }
         }
@@ -99,12 +99,12 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
-            Soul soul = Subsystems.Get<PlayerSystem>().GetSoul(m.Ckey);
+            Player player = Subsystems.Get<PlayerSystem>().GetPlayer(m.Ckey);
 
-            SetPlayerReady(soul, m.Ready);
+            SetPlayerReady(player, m.Ready);
         }
 
-        private void HandleReadyPlayersChanged(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
+        private void HandleReadyPlayersChanged(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
         {
             SyncReadyPlayers();
         }
@@ -116,9 +116,9 @@ namespace SS3D.Systems.Rounds
         }
 
         [Server]
-        private void HandleUserLeftServer(ref EventContext context, in OnlineSoulsChanged e)
+        private void HandleUserLeftServer(ref EventContext context, in OnlinePlayersChanged e)
         {
-            RemoveReadyPlayer(e.ChangedSoul, e.ChangeType);
+            RemoveReadyPlayer(e.ChangedPlayer, e.ChangeType);
         }
 
         /// <summary>

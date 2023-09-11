@@ -67,7 +67,7 @@ namespace EditorTests.Log
             string color = LogColors.GetLogColor(Logs.Generic);
             Punpun.Information(this, "{simpleDictionary}", Logs.Generic, _simpleDictionaryToDisplay);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] {{\"one\":1,\"two\":2,\"three\":3}}");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] {{\"one\":1,\"two\":2,\"three\":3}}");
             _lastUnityConsoleMessage = "";
         }
 
@@ -85,7 +85,7 @@ namespace EditorTests.Log
             string color = LogColors.GetLogColor(Logs.Generic);
             Punpun.Information(this, "{@simpleStructure}", Logs.Generic, _simpleStructureToDisplay);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] {{\"Name\":\"simple\",\"Count\":3,\"IsCool\":true,\"$type\":\"SimpleStructure\"}}");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] {{\"Name\":\"simple\",\"Count\":3,\"IsCool\":true,\"$type\":\"SimpleStructure\"}}");
             _lastUnityConsoleMessage = "";
         }
 
@@ -100,7 +100,7 @@ namespace EditorTests.Log
             string color = LogColors.GetLogColor(Logs.Generic);
             Punpun.Information(this, "{list}", Logs.Generic, _floatListToDisplay);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] [0.4,0.222,4.7E-05,78789]");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] [0.4,0.222,4.7E-05,78789]");
             _lastUnityConsoleMessage = "";
         }
 
@@ -115,43 +115,43 @@ namespace EditorTests.Log
             string color = LogColors.GetLogColor(Logs.Generic);
             Punpun.Information(this, "hello there !", Logs.Generic);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] hello there !");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.External);
             Punpun.Information(this, "hello there !", Logs.External);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] hello there !");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.ServerOnly);
             Punpun.Information(this, "hello there !", Logs.ServerOnly);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] hello there !");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.ClientOnly);
             Punpun.Information(this, "hello there !", Logs.ClientOnly);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] hello there !");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.None);
             Punpun.Information(this, "hello there !", Logs.None);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] hello there !");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.Important);
             Punpun.Information(this, "hello there !", Logs.Important);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] hello there !");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.Physics);
             Punpun.Information(this, "hello there !", Logs.Physics);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] hello there !");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
         }
 

@@ -1,8 +1,8 @@
 ﻿using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using SS3D.Systems.Permissions;
-using SS3D.Core;
-using SS3D.Systems.Entities;
+using FishNet.Object;
+using FishNet.Connection;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -13,19 +13,19 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     {
         public override string LongDescription => "Adds a trait to the item in hand";
         public override string ShortDescription => "item.addtrait";
-        public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
+        public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+        public override CommandType Type => CommandType.Server;
 
-        public override string Perform(string[] args)
+
+        [Server]
+        public override string Perform(string[] args, NetworkConnection conn = null)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
             string traitName = args[0];
 
-            var itemSystem = Subsystems.Get<ItemSystem>();
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out Entity entity);
-            Item item = itemSystem.GetItemInHand(entity);
+            Item item = ItemCommandUtilities.GetItemInHand(conn);
             if (item == null)
             {
                 return "No item in hand";
@@ -51,5 +51,5 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             response.IsValid = true;
             return response;
         }
-	}
+    }
 }

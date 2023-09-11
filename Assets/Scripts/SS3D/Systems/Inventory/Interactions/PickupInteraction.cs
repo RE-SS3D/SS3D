@@ -1,4 +1,4 @@
-using SS3D.Data;
+﻿using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -32,16 +32,16 @@ namespace SS3D.Systems.Inventory.Interactions
 
             // if the target is whatever the hell Alain did
             // and the part that matters, if the interaction source is a hand
-            if (target is IGameObjectProvider targetBehaviour && source is Hands hands)
+            if (target is IGameObjectProvider targetBehaviour && source is Hand hand)
             {
-		        // if the selected hand is not empty we return false
-                if (hands.SelectedHandEmpty)
+                // if the selected hand is not empty we return false
+                if (hand.IsEmpty())
                 {
                     return true;
                 }
 
-		        // we try to get the Item component from the GameObject we just interacted with
-		        // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
+                // we try to get the Item component from the GameObject we just interacted with
+                // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
                 Item item = targetBehaviour.GameObject.GetComponent<Item>();
                 if (item == null)
                 {
@@ -49,9 +49,9 @@ namespace SS3D.Systems.Inventory.Interactions
                 }
 
                 bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
-                bool notInAContainer = !item.InContainer();
+                bool notInAContainer = !item.IsInContainer();
                 // then we just do a range check, to make sure we can interact
-		        // and we check if the item is not in a container, you can only pick things that are not in a container
+                // and we check if the item is not in a container, you can only pick things that are not in a container
                 return isInRange && notInAContainer;
             }
 
@@ -62,14 +62,14 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             // remember that when we call this Start, we are starting the interaction per se
             // so we check if the source of the interaction is a Hand, and if the target is an Item
-            if (interactionEvent.Source is Hands hands && interactionEvent.Target is Item target)
+            if (interactionEvent.Source is Hand hand && interactionEvent.Target is Item target)
             {
                 // and then we run the function that adds it to the container
-                hands.Pickup(target);
+                hand.Pickup(target);
 
 
                 try {
-                    string ckey = hands.Inventory.Body.Mind.Soul.Ckey;
+                    string ckey = hand.HandsController.Inventory.Body.Mind.player.Ckey;
 
                     // and call the event for picking up items for the Game Mode System
                     new ItemPickedUpEvent(target, ckey).Invoke(this);

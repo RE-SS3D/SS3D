@@ -136,10 +136,12 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.0.6.1
+  bundleVersion: 0.0.6.6
   preloadedAssets:
   - {fileID: 11400000, guid: 2b55e2e913cc78044a828c6fb589fb9e, type: 2}
   - {fileID: 11400000, guid: 443046479504c5640b8f5902a102c09f, type: 2}
+  - {fileID: 11400000, guid: 3c59f55e6898e694083e7a1ede49fe18, type: 2}
+  - {fileID: 11400000, guid: 97967903e9bd51b499aaa39639cc9bb2, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -178,7 +180,7 @@ PlayerSettings:
   CreateWallpaper: 0
   APKExpansionFiles: 0
   keepLoadedShadersAlive: 0
-  StripUnusedMeshComponents: 1
+  StripUnusedMeshComponents: 0
   VertexChannelCompressionMask: 4054
   iPhoneSdkVersion: 988
   iOSTargetOSVersionString: 11.0
@@ -623,7 +625,7 @@ PlayerSettings:
     PS4: UNITY_POST_PROCESSING_STACK_V2
     PS5: UNITY_POST_PROCESSING_STACK_V2
     Stadia: UNITY_POST_PROCESSING_STACK_V2
-    Standalone: UNITY_POST_PROCESSING_STACK_V2;FISHNET
+    Standalone: UNITY_POST_PROCESSING_STACK_V2;FISHNET;FISHNET_V3;DISABLE_QOL_ATTRIBUTES
     WebGL: UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: UNITY_POST_PROCESSING_STACK_V2
     XboxOne: UNITY_POST_PROCESSING_STACK_V2

@@ -29,34 +29,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/ToolBoxes/ToolboxBlue.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: ae126cdb679d68642b4dcc7d4db6d2ea
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCola.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 67dec530733e9f44184e1cc616786768
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanTonic.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1f96c431e982dc84281c52987a0aac1c
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanDukePurpleTea.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: cbe4989d1925276409163212a1ee01b8
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepsSoda.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: bb701a993659a10439bd36445f90d143
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedLaughter.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 260f9055de5f3424d807ca1d8d7a011c
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedAir.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: de543fe84ff1e564e9f616e3aa62c122
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 2a63163a4db141744a802f3ff67087db
     m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityPDA.prefab
     m_ReadOnly: 0
@@ -75,6 +47,150 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: d9aabfd5d726a7f499b8e360d919eba4
     m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Substances/Mug.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 92d6696a323ef66448190e8e9d69fd22
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCola.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: dceb056e41b5c634f9933423de8e075c
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedLaughter.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e4281cb43d1443d4388737777fdd98d8
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedAir.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a7c35693adae32f43b4d7fe2eb8b091b
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanTonic.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4e6899916bc8fd742a07f32b3a04de12
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f490a74616c067c4f83995017e10b420
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepsSoda.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 177428b73bad0fb4a89d1a64b85629bf
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanDukePurpleTea.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b044d7bdb55405046a9055726a779eb1
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Poster.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2332a158259900e4f8a237fa8daff266
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/MedicalPatch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b5be0a52925e2674193d081d2deb68cb
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/BrutePatch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 162e188d33a82b440a239f20901c716a
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/BurnPatch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 56b1aff2041026242bed0f064dee56bb
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Food/General/Snacks/DonkPocket.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1d2cf546d53e3fe4c9103007427aaec7
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Boombox.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 404443f7c306fc8469698745624fa3bf
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/GreyFloorTile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f88a398ad3d01454f955de9c337d9b99
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelReinforcedSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4cb99cf2fee96f944abbacc51b0b701c
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7becfab153276864f9fc7636a839d837
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Construction/Crowbar.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9c8363ee7f934bd4b8ee5a2e30da1269
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Construction/Screwdriver.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 772da386eb7b01745913050fee544c32
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Construction/Wrench.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 781dd9024aaa53444bc3deeaa9708fbb
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Generic/FlashlightBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 411b513efc8f06a40aecfc47d0c5fc5a
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Kitchen/KitchenKnife.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1ef3c21a685ec2d4e9f0876719839d5f
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/TruckerCap.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9b9f6bd470226a74b903e74dbe9e423a
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/Sunglasses.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bf177f8bab26bc84b87fd9a971004418
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/FacewearGasMask.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f1aeab0a35c29314a8a3f823de9815c1
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/GlovesInsulatedLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8725b7f8f45d28a4ba6063318904cc8a
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/GlovesInsulatedRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7f49c948ec182a648ab280a22038752a
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitBotany.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 991fc7d67bda7d247b13ec8498953bc0
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitEngineer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitGrey.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5fa15d6fdef93dc4e80d798cefe8be0b
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesHiTopsLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 317ec7dcff3b11d4eae3a47929200b93
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesHiTopsRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4b790b4ffedbe564dab49f896d71eaa6
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesJackbootsLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d7d68992cbd3cda45bb11a35a1490dc3
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/ShoesJackbootsRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4635651592391df41b6b2413afdb76c3
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/JumpsuitSecurity.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f549f4153ef612c4586c46ea280e0e94
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1a2f912be4bc1b948a2b22ffde517cdc
+    m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

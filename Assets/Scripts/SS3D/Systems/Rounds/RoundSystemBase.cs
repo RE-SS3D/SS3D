@@ -110,7 +110,7 @@ namespace SS3D.Systems.Rounds
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
 
-            // Gets the soul that matches the connection, uses the ckey as the user id
+            // Gets the player that matches the connection, uses the ckey as the user id
             string userCkey = playerSystem.GetCkey(conn);
 
             // Checks if player can call a round start
@@ -182,7 +182,7 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            Punpun.Information(this, _roundState.ToString(), Logs.ServerOnly);
+            Punpun.Information(this, $"Round state updated to: {_roundState}", Logs.Important);
 
             RoundStateUpdated roundStateUpdated = new(newValue);
             roundStateUpdated.Invoke(this);

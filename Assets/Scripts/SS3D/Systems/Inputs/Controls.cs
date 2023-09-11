@@ -39,24 +39,6 @@ namespace SS3D.Systems.Inputs
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Snap Right"",
-                    ""type"": ""Button"",
-                    ""id"": ""7608f038-428f-4432-84fb-3d4e80e039df"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": ""MultiTap(tapDelay=0.2)"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Snap Left"",
-                    ""type"": ""Button"",
-                    ""id"": ""f0b5149d-025d-44c7-850b-76eedaa3308b"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": ""MultiTap(tapDelay=0.2)"",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Vertical Rotation"",
                     ""type"": ""Button"",
                     ""id"": ""44e7f37c-88c6-4bd4-b0d0-fe0b161cafac"",
@@ -71,7 +53,34 @@ namespace SS3D.Systems.Inputs
                     ""id"": ""2bb89fc3-b3a6-4fca-a4c6-c48087be1a5c"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.4)"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Mouse Rotation"",
+                    ""type"": ""Button"",
+                    ""id"": ""05c11a8a-0897-4250-af8d-089612cbaf7f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
                     ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Snap Right"",
+                    ""type"": ""Button"",
+                    ""id"": ""6075863c-a88a-4295-b561-24da4f2042e3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Tap"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Snap Left"",
+                    ""type"": ""Button"",
+                    ""id"": ""c3a693ef-8736-4622-91e9-3b4a48250e9d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Tap"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -84,28 +93,6 @@ namespace SS3D.Systems.Inputs
                     ""processors"": ""Clamp(min=-1,max=1)"",
                     ""groups"": """",
                     ""action"": ""Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""40991a34-2585-4f5c-b857-73d37c971cf1"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Snap Right"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""165d0665-eda2-49e1-a6f3-7895f663a409"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Snap Left"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -143,9 +130,9 @@ namespace SS3D.Systems.Inputs
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""43e89268-7fdb-412e-8493-4960be911aab"",
-                    ""path"": ""1DAxis"",
+                    ""name"": ""Left"",
+                    ""id"": ""966f1f13-073c-4178-a716-6be9a87cd145"",
+                    ""path"": ""OneModifier"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -154,9 +141,9 @@ namespace SS3D.Systems.Inputs
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""negative"",
-                    ""id"": ""b48ff774-f40e-48b3-9ae9-757d47308e12"",
-                    ""path"": ""<Keyboard>/3"",
+                    ""name"": ""modifier"",
+                    ""id"": ""c62adfd0-5156-4926-9c91-372525a48e7b"",
+                    ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -165,13 +152,145 @@ namespace SS3D.Systems.Inputs
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""positive"",
-                    ""id"": ""8cc94a0b-c51c-47dc-89be-985f9efd2461"",
-                    ""path"": ""<Keyboard>/1"",
+                    ""name"": ""binding"",
+                    ""id"": ""17f6c765-175e-491a-8171-bf06c4b1c5fe"",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Horizontal Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Right"",
+                    ""id"": ""fe16d086-24d8-4fa4-8f82-5abbbe27e3ed"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": ""Invert"",
+                    ""groups"": """",
+                    ""action"": ""Horizontal Rotation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""908e0cf0-c70c-4aa0-bd22-8c9a63a99c17"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Horizontal Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""eb5d1172-1f72-42ff-a6e0-8bb4ced70427"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Horizontal Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""caf05d9f-86a5-4300-8575-77154dd31167"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mouse Rotation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""8cf44a8a-7bbc-489a-ae0a-c3692b0a8eb4"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mouse Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""611931f2-395b-4f6b-82f3-fba56553f7b6"",
+                    ""path"": ""<Mouse>/delta/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mouse Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""ac41db70-e65e-4d9d-bc6a-ac32e65a0263"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Snap Right"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""17263931-c9fd-4fd0-b166-81f5d8178278"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Snap Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""a250103f-a5e1-4ddf-bad3-40f482969ce3"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Snap Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""61ddd7b0-7da5-4076-a802-921a5ea88f18"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Snap Left"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""a0e20945-47bf-40b4-87d8-f710db0d65d3"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Snap Left"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""7af6e38a-fc12-42d9-a3c4-ea5553ef6f6e"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Snap Left"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -535,6 +654,15 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Toggle Runtime Editor"",
+                    ""type"": ""Button"",
+                    ""id"": ""6cf79877-798f-449c-9aa5-084a04567a38"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -601,6 +729,17 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Spawn Cans"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7e0906c5-bfd6-41f7-8e95-1c3caccce5ce"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Toggle Runtime Editor"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -748,10 +887,11 @@ namespace SS3D.Systems.Inputs
             // Camera
             m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
             m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
-            m_Camera_SnapRight = m_Camera.FindAction("Snap Right", throwIfNotFound: true);
-            m_Camera_SnapLeft = m_Camera.FindAction("Snap Left", throwIfNotFound: true);
             m_Camera_VerticalRotation = m_Camera.FindAction("Vertical Rotation", throwIfNotFound: true);
             m_Camera_HorizontalRotation = m_Camera.FindAction("Horizontal Rotation", throwIfNotFound: true);
+            m_Camera_MouseRotation = m_Camera.FindAction("Mouse Rotation", throwIfNotFound: true);
+            m_Camera_SnapRight = m_Camera.FindAction("Snap Right", throwIfNotFound: true);
+            m_Camera_SnapLeft = m_Camera.FindAction("Snap Left", throwIfNotFound: true);
             // Movement
             m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
             m_Movement_Movement = m_Movement.FindAction("Movement", throwIfNotFound: true);
@@ -776,6 +916,7 @@ namespace SS3D.Systems.Inputs
             m_Other_SecondaryClick = m_Other.FindAction("Secondary Click", throwIfNotFound: true);
             m_Other_ToggleMenu = m_Other.FindAction("Toggle Menu", throwIfNotFound: true);
             m_Other_SpawnCans = m_Other.FindAction("Spawn Cans", throwIfNotFound: true);
+            m_Other_ToggleRuntimeEditor = m_Other.FindAction("Toggle Runtime Editor", throwIfNotFound: true);
             // Tile Creator
             m_TileCreator = asset.FindActionMap("Tile Creator", throwIfNotFound: true);
             m_TileCreator_ToggleMenu = m_TileCreator.FindAction("Toggle Menu", throwIfNotFound: true);
@@ -846,19 +987,21 @@ namespace SS3D.Systems.Inputs
         private readonly InputActionMap m_Camera;
         private ICameraActions m_CameraActionsCallbackInterface;
         private readonly InputAction m_Camera_Zoom;
-        private readonly InputAction m_Camera_SnapRight;
-        private readonly InputAction m_Camera_SnapLeft;
         private readonly InputAction m_Camera_VerticalRotation;
         private readonly InputAction m_Camera_HorizontalRotation;
+        private readonly InputAction m_Camera_MouseRotation;
+        private readonly InputAction m_Camera_SnapRight;
+        private readonly InputAction m_Camera_SnapLeft;
         public struct CameraActions
         {
             private @Controls m_Wrapper;
             public CameraActions(@Controls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Zoom => m_Wrapper.m_Camera_Zoom;
-            public InputAction @SnapRight => m_Wrapper.m_Camera_SnapRight;
-            public InputAction @SnapLeft => m_Wrapper.m_Camera_SnapLeft;
             public InputAction @VerticalRotation => m_Wrapper.m_Camera_VerticalRotation;
             public InputAction @HorizontalRotation => m_Wrapper.m_Camera_HorizontalRotation;
+            public InputAction @MouseRotation => m_Wrapper.m_Camera_MouseRotation;
+            public InputAction @SnapRight => m_Wrapper.m_Camera_SnapRight;
+            public InputAction @SnapLeft => m_Wrapper.m_Camera_SnapLeft;
             public InputActionMap Get() { return m_Wrapper.m_Camera; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -871,18 +1014,21 @@ namespace SS3D.Systems.Inputs
                     @Zoom.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoom;
                     @Zoom.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoom;
                     @Zoom.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoom;
-                    @SnapRight.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapRight;
-                    @SnapRight.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapRight;
-                    @SnapRight.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapRight;
-                    @SnapLeft.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapLeft;
-                    @SnapLeft.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapLeft;
-                    @SnapLeft.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapLeft;
                     @VerticalRotation.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnVerticalRotation;
                     @VerticalRotation.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnVerticalRotation;
                     @VerticalRotation.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnVerticalRotation;
                     @HorizontalRotation.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnHorizontalRotation;
                     @HorizontalRotation.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnHorizontalRotation;
                     @HorizontalRotation.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnHorizontalRotation;
+                    @MouseRotation.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnMouseRotation;
+                    @MouseRotation.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnMouseRotation;
+                    @MouseRotation.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnMouseRotation;
+                    @SnapRight.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapRight;
+                    @SnapRight.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapRight;
+                    @SnapRight.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapRight;
+                    @SnapLeft.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapLeft;
+                    @SnapLeft.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapLeft;
+                    @SnapLeft.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnSnapLeft;
                 }
                 m_Wrapper.m_CameraActionsCallbackInterface = instance;
                 if (instance != null)
@@ -890,18 +1036,21 @@ namespace SS3D.Systems.Inputs
                     @Zoom.started += instance.OnZoom;
                     @Zoom.performed += instance.OnZoom;
                     @Zoom.canceled += instance.OnZoom;
-                    @SnapRight.started += instance.OnSnapRight;
-                    @SnapRight.performed += instance.OnSnapRight;
-                    @SnapRight.canceled += instance.OnSnapRight;
-                    @SnapLeft.started += instance.OnSnapLeft;
-                    @SnapLeft.performed += instance.OnSnapLeft;
-                    @SnapLeft.canceled += instance.OnSnapLeft;
                     @VerticalRotation.started += instance.OnVerticalRotation;
                     @VerticalRotation.performed += instance.OnVerticalRotation;
                     @VerticalRotation.canceled += instance.OnVerticalRotation;
                     @HorizontalRotation.started += instance.OnHorizontalRotation;
                     @HorizontalRotation.performed += instance.OnHorizontalRotation;
                     @HorizontalRotation.canceled += instance.OnHorizontalRotation;
+                    @MouseRotation.started += instance.OnMouseRotation;
+                    @MouseRotation.performed += instance.OnMouseRotation;
+                    @MouseRotation.canceled += instance.OnMouseRotation;
+                    @SnapRight.started += instance.OnSnapRight;
+                    @SnapRight.performed += instance.OnSnapRight;
+                    @SnapRight.canceled += instance.OnSnapRight;
+                    @SnapLeft.started += instance.OnSnapLeft;
+                    @SnapLeft.performed += instance.OnSnapLeft;
+                    @SnapLeft.canceled += instance.OnSnapLeft;
                 }
             }
         }
@@ -1071,6 +1220,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Other_SecondaryClick;
         private readonly InputAction m_Other_ToggleMenu;
         private readonly InputAction m_Other_SpawnCans;
+        private readonly InputAction m_Other_ToggleRuntimeEditor;
         public struct OtherActions
         {
             private @Controls m_Wrapper;
@@ -1081,6 +1231,7 @@ namespace SS3D.Systems.Inputs
             public InputAction @SecondaryClick => m_Wrapper.m_Other_SecondaryClick;
             public InputAction @ToggleMenu => m_Wrapper.m_Other_ToggleMenu;
             public InputAction @SpawnCans => m_Wrapper.m_Other_SpawnCans;
+            public InputAction @ToggleRuntimeEditor => m_Wrapper.m_Other_ToggleRuntimeEditor;
             public InputActionMap Get() { return m_Wrapper.m_Other; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1108,6 +1259,9 @@ namespace SS3D.Systems.Inputs
                     @SpawnCans.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSpawnCans;
                     @SpawnCans.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSpawnCans;
                     @SpawnCans.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSpawnCans;
+                    @ToggleRuntimeEditor.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleRuntimeEditor;
+                    @ToggleRuntimeEditor.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleRuntimeEditor;
+                    @ToggleRuntimeEditor.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleRuntimeEditor;
                 }
                 m_Wrapper.m_OtherActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1130,6 +1284,9 @@ namespace SS3D.Systems.Inputs
                     @SpawnCans.started += instance.OnSpawnCans;
                     @SpawnCans.performed += instance.OnSpawnCans;
                     @SpawnCans.canceled += instance.OnSpawnCans;
+                    @ToggleRuntimeEditor.started += instance.OnToggleRuntimeEditor;
+                    @ToggleRuntimeEditor.performed += instance.OnToggleRuntimeEditor;
+                    @ToggleRuntimeEditor.canceled += instance.OnToggleRuntimeEditor;
                 }
             }
         }
@@ -1235,10 +1392,11 @@ namespace SS3D.Systems.Inputs
         public interface ICameraActions
         {
             void OnZoom(InputAction.CallbackContext context);
-            void OnSnapRight(InputAction.CallbackContext context);
-            void OnSnapLeft(InputAction.CallbackContext context);
             void OnVerticalRotation(InputAction.CallbackContext context);
             void OnHorizontalRotation(InputAction.CallbackContext context);
+            void OnMouseRotation(InputAction.CallbackContext context);
+            void OnSnapRight(InputAction.CallbackContext context);
+            void OnSnapLeft(InputAction.CallbackContext context);
         }
         public interface IMovementActions
         {
@@ -1267,6 +1425,7 @@ namespace SS3D.Systems.Inputs
             void OnSecondaryClick(InputAction.CallbackContext context);
             void OnToggleMenu(InputAction.CallbackContext context);
             void OnSpawnCans(InputAction.CallbackContext context);
+            void OnToggleRuntimeEditor(InputAction.CallbackContext context);
         }
         public interface ITileCreatorActions
         {

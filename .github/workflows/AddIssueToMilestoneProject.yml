@@ -1,4 +1,4 @@
-name: Add Issue To Milestone Project
+name: Add Issues and Pull Requests To Milestone Project
 on:
   issues:
     types: [milestoned]
@@ -102,21 +102,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
       - run: "echo 'Field options: ${{ steps.get-backlog-id.outputs.data }}'"
+      - name: Determine status column
+        uses: ./.github/actions/determine-status-column
+        id: determine-status-column
+        with:
+          PULL_REQUEST_URL: ${{ github.event.issue.pull_request.url }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}       
       - name: Get target field ID
         uses: ./.github/actions/get-single-select-field-id
         id: get-single-select-field-id
         with:
           JSON_FIELD_OPTIONS: ${{ steps.get-backlog-id.outputs.data }}
-          TARGET_OPTION: Backlog
+          TARGET_OPTION: ${{ steps.determine-status-column.outputs.COLUMN }}
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_MANAGEMENT_TOKEN }}
-      - name: Add To Backlog
+      - name: Add To correct column
         uses: octokit/graphql-action@v2.2.24
-        id: add-issue-to-backlog-column
+        id: add-issue-to-correct-column
         if: ${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID != ''}}
         with:
           query: |
-            mutation AddToBacklog {
+            mutation AddToCorrectColumn {
               updateProjectV2ItemFieldValue(input: {projectId:"${{ steps.check-milestone-exists.outputs.EXISTING_PROJECT_ID }}", itemId:"${{ fromJSON(steps.add-issue-to-milestone-project.outputs.data).addProjectV2ItemById.item.id }}", fieldId: "${{ fromJSON(steps.locate-status-column.outputs.data).node.field.id }}", value: { singleSelectOptionId: "${{steps.get-single-select-field-id.outputs.OPTION_ID}}" }}) {
                 clientMutationId
               }

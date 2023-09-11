@@ -238,6 +238,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 3258417366846669140}
   Locked: 0
   permissionToUnlock: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  LockLight: {fileID: 4459199731998976186}
 --- !u!114 &3298710121668139635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,6 +333,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoundLock
       objectReference: {fileID: 0}
+    - target: {fileID: 4821486539432451734, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5650284824437553449, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c914c5a95648ac847a6a7655c4c2df2d, type: 2}
     - target: {fileID: 8166293055860096448, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -378,6 +387,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}
+--- !u!1 &4459199731998976186 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3317534475151898868, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}
+  m_PrefabInstance: {fileID: 1434399234288422990}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7114705292073184654 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8166293055860096448, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}

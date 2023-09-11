@@ -15,24 +15,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Snap Right",
-                    "type": "Button",
-                    "id": "7608f038-428f-4432-84fb-3d4e80e039df",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "MultiTap(tapDelay=0.2)",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Snap Left",
-                    "type": "Button",
-                    "id": "f0b5149d-025d-44c7-850b-76eedaa3308b",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "MultiTap(tapDelay=0.2)",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Vertical Rotation",
                     "type": "Button",
                     "id": "44e7f37c-88c6-4bd4-b0d0-fe0b161cafac",
@@ -47,7 +29,34 @@
                     "id": "2bb89fc3-b3a6-4fca-a4c6-c48087be1a5c",
                     "expectedControlType": "Button",
                     "processors": "",
+                    "interactions": "Hold(duration=0.4)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Mouse Rotation",
+                    "type": "Button",
+                    "id": "05c11a8a-0897-4250-af8d-089612cbaf7f",
+                    "expectedControlType": "Button",
+                    "processors": "",
                     "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Snap Right",
+                    "type": "Button",
+                    "id": "6075863c-a88a-4295-b561-24da4f2042e3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Tap",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Snap Left",
+                    "type": "Button",
+                    "id": "c3a693ef-8736-4622-91e9-3b4a48250e9d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Tap",
                     "initialStateCheck": false
                 }
             ],
@@ -60,28 +69,6 @@
                     "processors": "Clamp(min=-1,max=1)",
                     "groups": "",
                     "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "40991a34-2585-4f5c-b857-73d37c971cf1",
-                    "path": "<Keyboard>/3",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Snap Right",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "165d0665-eda2-49e1-a6f3-7895f663a409",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Snap Left",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -119,9 +106,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "1D Axis",
-                    "id": "43e89268-7fdb-412e-8493-4960be911aab",
-                    "path": "1DAxis",
+                    "name": "Left",
+                    "id": "966f1f13-073c-4178-a716-6be9a87cd145",
+                    "path": "OneModifier",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -130,9 +117,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "negative",
-                    "id": "b48ff774-f40e-48b3-9ae9-757d47308e12",
-                    "path": "<Keyboard>/3",
+                    "name": "modifier",
+                    "id": "c62adfd0-5156-4926-9c91-372525a48e7b",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -141,13 +128,145 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "positive",
-                    "id": "8cc94a0b-c51c-47dc-89be-985f9efd2461",
-                    "path": "<Keyboard>/1",
+                    "name": "binding",
+                    "id": "17f6c765-175e-491a-8171-bf06c4b1c5fe",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Horizontal Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Right",
+                    "id": "fe16d086-24d8-4fa4-8f82-5abbbe27e3ed",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "Invert",
+                    "groups": "",
+                    "action": "Horizontal Rotation",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "908e0cf0-c70c-4aa0-bd22-8c9a63a99c17",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Horizontal Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "eb5d1172-1f72-42ff-a6e0-8bb4ced70427",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Horizontal Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "caf05d9f-86a5-4300-8575-77154dd31167",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Mouse Rotation",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "8cf44a8a-7bbc-489a-ae0a-c3692b0a8eb4",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Mouse Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "611931f2-395b-4f6b-82f3-fba56553f7b6",
+                    "path": "<Mouse>/delta/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Mouse Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "ac41db70-e65e-4d9d-bc6a-ac32e65a0263",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Snap Right",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "17263931-c9fd-4fd0-b166-81f5d8178278",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Snap Right",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "a250103f-a5e1-4ddf-bad3-40f482969ce3",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Snap Right",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "61ddd7b0-7da5-4076-a802-921a5ea88f18",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Snap Left",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "a0e20945-47bf-40b4-87d8-f710db0d65d3",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Snap Left",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "7af6e38a-fc12-42d9-a3c4-ea5553ef6f6e",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Snap Left",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }
@@ -511,6 +630,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Toggle Runtime Editor",
+                    "type": "Button",
+                    "id": "6cf79877-798f-449c-9aa5-084a04567a38",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -577,6 +705,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Spawn Cans",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7e0906c5-bfd6-41f7-8e95-1c3caccce5ce",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Runtime Editor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

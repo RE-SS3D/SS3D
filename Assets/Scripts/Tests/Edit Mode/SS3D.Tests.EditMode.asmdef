@@ -6,7 +6,6 @@
         "FishNet.Runtime",
         "SS3D.Attributes",
         "SS3D.Systems",
-        "SS3D.Tests.Common",
         "Coimbra",
         "SS3D.Data",
         "SS3D.Logging",

@@ -831,7 +831,6 @@ GameObject:
   - component: {fileID: 996747444}
   - component: {fileID: 996747446}
   - component: {fileID: 996747445}
-  - component: {fileID: 996747447}
   m_Layer: 5
   m_Name: Text (TMP) (001)
   m_TagString: Untagged
@@ -956,19 +955,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &996747447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 996747443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 988dec00c80c53945b5516f8d81ee0f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _roundCountdownText: {fileID: 996747445}
 --- !u!1 &1359148433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1297,7 +1283,7 @@ GameObject:
   - component: {fileID: 1669090662}
   - component: {fileID: 1669090665}
   - component: {fileID: 1669090664}
-  - component: {fileID: 4370972904279086845}
+  - component: {fileID: 509278569747409682}
   - component: {fileID: 4370972904279086846}
   m_Layer: 5
   m_Name: Admin
@@ -1365,7 +1351,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4370972904279086845
+--- !u!114 &509278569747409682
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1423,7 +1409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _active: 0
   _panelUI: {fileID: 1547124749}
-  _tabButton: {fileID: 4370972904279086845}
+  _tabButton: {fileID: 509278569747409682}
 --- !u!1 &1784472767
 GameObject:
   m_ObjectHideFlags: 0
@@ -5471,7 +5457,7 @@ GameObject:
   - component: {fileID: 9217222916359667033}
   - component: {fileID: 4370972905076281517}
   - component: {fileID: 1401177685}
-  - component: {fileID: 1300949538}
+  - component: {fileID: 4370972904279086845}
   m_Layer: 5
   m_Name: LobbyCanvas
   m_TagString: Untagged
@@ -5582,7 +5568,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1300949538
+--- !u!114 &4370972904279086845
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5591,10 +5577,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4370972905076281512}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce7e9de368c8487083b5df6427df9f21, type: 3}
+  m_Script: {fileID: 11500000, guid: 58bc7906cdd14f44b8f075d6031c8e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _screenType: 3
+  ScreenType: 3
   _canvasGroup: {fileID: 4370972905076281517}
   _holder: {fileID: 4370972904293784224}
 --- !u!1 &4370972905362277894

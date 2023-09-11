@@ -11,13 +11,15 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private Animator _animator;
         [SerializeField] private float _lerpMultiplier;
 
-        private void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
             SubscribeToEvents();    
         }
 
-        private void OnDestroy()
+        protected override void OnDestroyed()
         {
+            base.OnDestroyed();
             UnsubscribeFromEvents();
         }
 

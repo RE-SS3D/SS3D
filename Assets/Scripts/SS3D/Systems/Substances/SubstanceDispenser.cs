@@ -32,8 +32,9 @@ namespace SS3D.Content.Furniture.Generic
 
         private SubstancesSystem registry;
 
-        private void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
             registry = Subsystems.Get<SubstancesSystem>();
             if (registry == null)
             {

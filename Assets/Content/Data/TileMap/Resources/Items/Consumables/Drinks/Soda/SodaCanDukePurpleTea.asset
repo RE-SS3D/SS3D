@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SodaCanDukePurpleTea
   m_EditorClassIdentifier: 
   nameString: soda_dukepurpletea
-  prefab: {fileID: 8423412686940963211, guid: 1f96c431e982dc84281c52987a0aac1c, type: 3}
-  icon: {fileID: 0}
+  prefab: {fileID: 169984495843080388, guid: 177428b73bad0fb4a89d1a64b85629bf, type: 3}
+  icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}

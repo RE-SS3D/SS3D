@@ -42,7 +42,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
                 if (hands != null && _attachedContainer != null)
                 {
-                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), _attachedContainer);
+                    return !hands.SelectedHand.IsEmpty() && CanStore(interactionEvent.Source.GetComponent<Item>(), _attachedContainer);
                 }
             }
 
@@ -51,8 +51,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         private bool CanStore(Item item, AttachedContainer target)
         {
-            Container container = target.Container;
-            return container.CanStoreItem(item) && container.CanHoldItem(item);
+            return target.CanContainItem(item);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
@@ -61,7 +60,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                _attachedContainer.Container.AddItem(hands.ItemInHand);
+                _attachedContainer.AddItem(hands.SelectedHand.ItemInHand);
                 return true;
             }
             return false;

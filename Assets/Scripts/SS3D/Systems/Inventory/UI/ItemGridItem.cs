@@ -1,5 +1,5 @@
 ﻿using Coimbra;
-
+using UnityEngine.UI;
 namespace SS3D.Systems.Inventory.UI
 {
     public class ItemGridItem : ItemDisplay
@@ -7,8 +7,7 @@ namespace SS3D.Systems.Inventory.UI
         public override void OnDropAccepted()
         {
             base.OnDropAccepted();
-            (InventoryDisplayElement as ItemGrid)?.RemoveGridItem(this);
-            gameObject.Dispose(true);
+			MakeVisible(false);
         }
     }
 }

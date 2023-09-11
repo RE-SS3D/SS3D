@@ -1,10 +1,7 @@
-using SS3D.Core.Behaviours;
 using SS3D.Logging;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -31,43 +28,33 @@ namespace SS3D.Systems.Tile
 
             GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
             StartCoroutine(LoadAssetsWithIcon(tempAssets));
+            //LoadAssetsWithIcon(tempAssets);
         }
 
         private IEnumerator LoadAssetsWithIcon(GenericObjectSo[] assets)
         {
             List<Texture2D> tempIcons = new List<Texture2D>();
-
-#if UNITY_EDITOR
+            RuntimePreviewGenerator.OrthographicMode = true;
             foreach (var asset in assets)
             {
-                Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
-                yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
-
-
-                if (texture == null)
-                {
-                    // Unity is dumb, so we need to reload generated textures...
-                    texture = AssetPreview.GetAssetPreview(asset.prefab);
-                }
+                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(asset.prefab.transform,
+                    Shader.Find("Unlit/ObjectIcon"), null, 128, 128, true, true);
 
                 tempIcons.Add(texture);
             }
-#endif
-
+            
             for (int i = 0; i < assets.Length; i++)
             {
-#if UNITY_EDITOR
-
-                // If we reach this point... Give up and load a default texture instead
                 if (tempIcons[i] != null)
+                {
                     assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
-#endif
-                if (assets[i].icon == null)
+                }
+                else
+                {
                     assets[i].icon = _missingIcon;
-
+                }
                 _assets.Add(assets[i]);
             }
-
             IsInitialized = true;
             yield return null;
         }

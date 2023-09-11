@@ -1,4 +1,4 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
@@ -16,7 +16,6 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
-    [RequireComponent(typeof(Entity))]
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(Animator))]
     public abstract class HumanoidController : NetworkActor
@@ -68,7 +67,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected void Setup()
         {
             _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
-            _entity.OnMindChanged += HandleControllingSoulChanged;
+            _entity.OnMindChanged += HandleControllingPlayerChanged;
             _inputSystem = Subsystems.Get<InputSystem>();
             Controls controls = _inputSystem.Inputs;
             MovementControls = controls.Movement;
@@ -89,7 +88,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _inputSystem.ToggleActionMap(HotkeysControls, false);
         }
 
-        private void HandleControllingSoulChanged(Mind mind)
+        private void HandleControllingPlayerChanged(Mind mind)
         {
             OnSpeedChanged(0);
         }

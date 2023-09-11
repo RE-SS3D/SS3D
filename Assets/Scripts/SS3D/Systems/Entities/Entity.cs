@@ -1,8 +1,13 @@
 ﻿using System;
+using Coimbra;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Health;
+using SS3D.Systems.Interactions;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -25,7 +30,7 @@ namespace SS3D.Systems.Entities
             set => _mind = value;
         }
 
-        public string Ckey => _mind.Soul.Ckey;
+        public string Ckey => _mind.player.Ckey;
 
         protected override void OnStart()
         {
@@ -39,16 +44,27 @@ namespace SS3D.Systems.Entities
             OnMindChanged?.Invoke(Mind);
         }
 
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            if (IsOwner)
+            {
+                LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, false);
+                localPlayerObjectChanged.Invoke(this);
+            }
+        }
+
         private void InvokeLocalPlayerObjectChanged()
         {
             if (Mind == null) return;
 
-            if (!Mind.Soul.IsLocalConnection)
+            if (!Mind.player.IsLocalConnection)
             {
                 return;
             }
 
-            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject);
+            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObject, true);
             localPlayerObjectChanged.Invoke(this);
         }
 
@@ -56,9 +72,9 @@ namespace SS3D.Systems.Entities
         /// Called by FishNet when the value of _mind is synced.
         /// </summary>
         /// <param name="oldMind">Value before sync</param>
-        /// <param name="newSoul">Value after sync</param>
+        /// <param name="newMind">Value after sync</param>
         /// <param name="asServer">Is the sync is being called as the server (host and server only)</param>
-        public void SyncMind(Mind oldMind, Mind newSoul, bool asServer)
+        public void SyncMind(Mind oldMind, Mind newMind, bool asServer)
         {
             if (!asServer && IsHost)
             {
@@ -76,9 +92,14 @@ namespace SS3D.Systems.Entities
         [Server]
         public void SetMind(Mind mind)
         {
-            _mind = mind;
-
+            this._mind = mind;
+            if(mind == null) return;
             GiveOwnership(mind.Owner);
         }
+
+		public virtual void Kill()
+		{
+			throw new NotImplementedException();
+		}
     }
 }

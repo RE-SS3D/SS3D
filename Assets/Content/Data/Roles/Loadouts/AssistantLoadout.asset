@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
+  m_Name: AssistantLoadout
+  m_EditorClassIdentifier: 
+  LeftHand: 0
+  RightHand: 0
+  LeftPocket: 0
+  RightPocket: 0
+  LeftGlove: 1
+  RightGlove: 1
+  LeftShoe: 1
+  RightShoe: 1
+  Hat: 1
+  Glasses: 0
+  LeftEar: 0
+  RightEar: 1
+  Jumpsuit: 1
+  LeftHandItem: 0
+  RightHandItem: 0
+  LeftPocketItem: 0
+  RightPocketItem: 0
+  LeftGloveItem: 32
+  RightGloveItem: 33
+  LeftShoeItem: 37
+  RightShoeItem: 38
+  HatItem: 29
+  GlassesItem: 0
+  LeftEarItem: 0
+  RightEarItem: 43
+  JumpsuitItem: 36

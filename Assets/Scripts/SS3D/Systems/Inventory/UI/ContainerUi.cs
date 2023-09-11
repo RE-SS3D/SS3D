@@ -1,6 +1,7 @@
 ﻿using System;
 using Coimbra;
 using SS3D.Systems.Inventory.Containers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +10,11 @@ namespace SS3D.Systems.Inventory.UI
     public class ContainerUi : MonoBehaviour
     {
         public ItemGrid Grid;
-        public Text ContainerName;
+        public TMP_Text ContainerName;
 
         private AttachedContainer _attachedContainer;
 
-        public Containers.Inventory Inventory
+        public HumanInventory Inventory
         {
             set => Grid.Inventory = value;
             get => Grid.Inventory;
@@ -25,24 +26,24 @@ namespace SS3D.Systems.Inventory.UI
             {
                 _attachedContainer = value;
                 Grid.AttachedContainer = value;
-                UpdateContainer(value.Container);
+                UpdateContainer(value);
             }
         }
 
         public void Close()
         {
-            Inventory.CmdContainerClose(_attachedContainer);
+            Inventory.containerViewer.CmdContainerClose(_attachedContainer);
             gameObject.Dispose(true);
         }
 
-        private void UpdateContainer(Container container)
+        private void UpdateContainer(AttachedContainer container)
         {
             if (container == null)
             {
                 return;
             }
 
-            container.AttachedTo.ContainerUi = this;
+            container.ContainerUi = this;
 
             RectTransform rectTransform = Grid.GetComponent<RectTransform>();
             Vector2 gridDimensions = Grid.GetGridDimensions();

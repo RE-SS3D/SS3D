@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Backpack
   m_EditorClassIdentifier: 
   mustHaveAll: 0
-  acceptedTraits: []
+  acceptedTraits:
+  - {fileID: 11400000, guid: f260c488d87f64d4bbc5cdb19dc9301c, type: 2}
   deniedTraits: []
-  hash: -905570011

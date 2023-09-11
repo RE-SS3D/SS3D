@@ -18,6 +18,8 @@ namespace SS3D.Systems.Inventory.UI
     {
         public ItemDisplay ItemDisplay;
 
+        public ContainerType ContainerType;
+
         /// <summary>
         /// The container displayed by this slot.
         /// </summary>
@@ -36,8 +38,17 @@ namespace SS3D.Systems.Inventory.UI
             {
                 UpdateContainer(Container);
             }
+            if(_container.Items.Count() > 0) 
+            {
+                ItemDisplay.Item =  _container.Items.First();
+            }
         }
-        
+
+        public void OnDestroy()
+        {
+            Destroy(ItemDisplay);
+        }
+
         /// <summary>
         /// When dragging and dropping an item sprite over this slot, update the inventory
         /// and the displayed sprite inside the slot.
@@ -45,19 +56,25 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
-            if (!_container.Container.Empty)
+            if (!_container.Empty)
             {
                 return;
             }
 
-            if (!_container.Container.CanContainItem(display.Item))
+            if (!_container.CanContainItem(display.Item))
+            {
+                return;
+            }
+
+            // Can't put an item in its own container
+            if (display.Item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(Container))
             {
                 return;
             }
 
             display.ShouldDrop = true;
-            ItemDisplay.Item = display.Item;
-            Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
+			display.MakeVisible(false);
+            Inventory.ClientTransferItem(display.Item, Vector2Int.zero, Container);
         }
 
         /// <summary>
@@ -65,9 +82,10 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         private void UpdateDisplay()
         {
-            var item = _container.Container.Items.FirstOrDefault();
-            ItemDisplay.Item = item;
-        }
+            var item = _container.Items.FirstOrDefault();
+			ItemDisplay.Item = item;
+			ItemDisplay.MakeVisible(true);
+		}
 
         /// <summary>
         /// UpdateContainer modify the container that this slot display, replacing the old one with newContainer.
@@ -78,17 +96,17 @@ namespace SS3D.Systems.Inventory.UI
             {
                 return;
             }
-            
+
             if (_container != null)
             {
-                _container.Container.OnContentsChanged -= ContainerContentsChanged;
+                _container.OnContentsChanged -= ContainerContentsChanged;
             }
-            
-            newContainer.Container.OnContentsChanged += ContainerContentsChanged;
+
+            newContainer.OnContentsChanged += ContainerContentsChanged;
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerContentsChanged(AttachedContainer _, Item oldItem, Item newItem, ContainerChangeType type)
         {
             if (type != ContainerChangeType.Move)
             {
@@ -98,21 +116,25 @@ namespace SS3D.Systems.Inventory.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0,0));
-            Inventory.ActivateHand(_container);
+            Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0, 0));
+
+            if(ContainerType == ContainerType.Hand)
+            {
+                Inventory.ActivateHand(_container);
+            }   
         }
-		
-		public GameObject GetCurrentGameObjectInSlot()
-		{
-			if (ItemDisplay.Item == null)
-			{
-				return null;
-			}
-			else
-			{
-				return ItemDisplay.Item.gameObject;
-			}
-		}
-		
+
+        public GameObject GetCurrentGameObjectInSlot()
+        {
+            if (ItemDisplay.Item == null)
+            {
+                return null;
+            }
+            else
+            {
+                return ItemDisplay.Item.gameObject;
+            }
+        }
+
     }
 }

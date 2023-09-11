@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
@@ -21,7 +21,7 @@ namespace SS3D.Systems.Roles
     {
         [SerializeField] private RolesAvailable _rolesAvailable;
         private List<RoleCounter> _roleCounters = new List<RoleCounter>();
-        private Dictionary<Soul, RoleData> _rolePlayers = new Dictionary<Soul, RoleData>();
+        private Dictionary<Player, RoleData> _rolePlayers = new Dictionary<Player, RoleData>();
 
         #region Setup
         protected override void OnStart()
@@ -33,7 +33,7 @@ namespace SS3D.Systems.Roles
         [Server]
         private void Setup()
         {
-            AddHandle(OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged));
+            AddHandle(OnlinePlayersChanged.AddListener(HandleOnlinePlayersChanged));
 
             GetAvailableRoles();
         }
@@ -63,7 +63,7 @@ namespace SS3D.Systems.Roles
 
         #region Event Handlers
         [Server]
-        private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)
+        private void HandleOnlinePlayersChanged(ref EventContext context, in OnlinePlayersChanged e)
         {
             if (!e.AsServer)
             {
@@ -72,63 +72,63 @@ namespace SS3D.Systems.Roles
 
             if (e.ChangeType == ChangeType.Addition)
             {
-                HandlePlayerJoined(e.ChangedSoul);
+                HandlePlayerJoined(e.ChangedPlayer);
             } else 
             if (e.ChangeType == ChangeType.Removal)
             {
-                HandlePlayerLeft(e.ChangedSoul);
+                HandlePlayerLeft(e.ChangedPlayer);
             }
         }
 
         [Server]
-        private void HandlePlayerJoined(Soul soul)
+        private void HandlePlayerJoined(Player player)
         {
-            AssignPlayerRole(soul);
+            AssignPlayerRole(player);
         }
 
         [Server]
-        private void HandlePlayerLeft(Soul soul)
+        private void HandlePlayerLeft(Player player)
         {
-            RemovePlayerFromCounters(soul);
+            RemovePlayerFromCounters(player);
         }
         #endregion
 
         /// <summary>
         /// Assign a role to the player after joining the server
         /// </summary>
-        /// <param name="soul"></param>
-        private void AssignPlayerRole(Soul soul)
+        /// <param name="player</param>
+        private void AssignPlayerRole(Player player)
         {
             RoleCounter assistantRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
             RoleCounter securityRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
 
             if (securityRole == null || securityRole.CurrentRoles == securityRole.AvailableRoles)
             {
-                assistantRole.AddPlayer(soul);
-                _rolePlayers.Add(soul, assistantRole.Role);
+                assistantRole.AddPlayer(player);
+                _rolePlayers.Add(player, assistantRole.Role);
             }
             else
             {
-                securityRole.AddPlayer(soul);
-                _rolePlayers.Add(soul, securityRole.Role);
+                securityRole.AddPlayer(player);
+                _rolePlayers.Add(player, securityRole.Role);
             }
         }
 
         /// <summary>
         /// Remove players from the Role Counters if he quit before embarking
         /// </summary>
-        /// <param name="soul"></param>
-        private void RemovePlayerFromCounters(Soul soul)
+        /// <param name="player</param>
+        private void RemovePlayerFromCounters(Player player)
         {
-            KeyValuePair<Soul, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == soul);
+            KeyValuePair<Player, RoleData>? rolePlayer =
+                _rolePlayers.FirstOrDefault(rp => rp.Key == player);
 
             if (rolePlayer != null)
             {
                 RoleData roleData = rolePlayer.Value.Value;
                 RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
 
-                roleCounter.RemovePlayer(soul);
+                roleCounter.RemovePlayer(player);
             }
         }
 
@@ -139,8 +139,8 @@ namespace SS3D.Systems.Roles
         [ServerRpc(RequireOwnership = false)]
         public void GiveRoleLoadoutToPlayer(Entity entity)
         {
-            KeyValuePair<Soul, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
+            KeyValuePair<Player, RoleData>? rolePlayer =
+                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.player);
 
             if (rolePlayer != null)
             {
@@ -164,9 +164,11 @@ namespace SS3D.Systems.Roles
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
             ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
-            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
-            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
+            if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
+
+            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, container);
             Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
 
             PDA pda = (PDA)pdaItem;
@@ -193,12 +195,44 @@ namespace SS3D.Systems.Roles
         private void SpawnLoadoutItems(Entity entity, RoleLoadout loadout)
         {
             Hands hands = entity.GetComponent<Hands>();
-            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
             SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);
-            SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, inventory.LeftPocketContainer);
-            SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, inventory.RightPocketContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.ShoeRight, 0, out AttachedContainer ShoeRightContainer))
+                SpawnItemInSlot(loadout.RightShoeItem, loadout.RightShoe, ShoeRightContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.ShoeLeft, 0, out AttachedContainer ShoeLeftContainer))
+                SpawnItemInSlot(loadout.LeftShoeItem, loadout.LeftShoe, ShoeLeftContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.Jumpsuit, 0, out AttachedContainer JumpsuitContainer))
+                SpawnItemInSlot(loadout.JumpsuitItem, loadout.Jumpsuit, JumpsuitContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.GloveLeft, 0, out AttachedContainer LeftGloveContainer))
+                SpawnItemInSlot(loadout.LeftGloveItem, loadout.LeftGlove, LeftGloveContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.GloveRight, 0, out AttachedContainer RightGloveContainer))
+                SpawnItemInSlot(loadout.RightGloveItem, loadout.RightGlove, RightGloveContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.Head, 0, out AttachedContainer HatContainer))
+                SpawnItemInSlot(loadout.HatItem, loadout.Hat, HatContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.Glasses, 0, out AttachedContainer GlassesContainer))
+                SpawnItemInSlot(loadout.GlassesItem, loadout.Glasses, GlassesContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.Pocket, 0, out AttachedContainer leftPocketContainer))
+                SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, leftPocketContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.Pocket, 1, out AttachedContainer rightPocketContainer))
+                SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, rightPocketContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.EarRight, 0, out AttachedContainer EarRightContainer))
+                SpawnItemInSlot(loadout.RightEarItem, loadout.RightEar, EarRightContainer);
+
+            if (inventory.TryGetTypeContainer(ContainerType.EarLeft, 0, out AttachedContainer EarLeftContainer))
+                SpawnItemInSlot(loadout.LeftEarItem, loadout.LeftEar, EarLeftContainer);
+
         }
 
         /// <summary>
