@@ -34,23 +34,25 @@ namespace SS3D.Systems.Health
 
         public SubstanceContainer Container => _container;
 
+        private List<BodyPart> _connectedToHeart;
+
         public override void OnStartServer()
         {
             base.OnStartServer();
+            _connectedToHeart = GetAllBodyPartAttachedToHeart();
             OnPulse += HandleHeartPulse;
+            HealthController.OnBodyPartRemoved += HandleBodyPartRemoved;
         }
 
         [Server]
         public void HandleHeartPulse(object sender, EventArgs args)
-        {
-            List<BodyPart> connectedToHeart = GetAllBodyPartAttachedToHeart();
-            SendOxygen(connectedToHeart);
-            Bleed(connectedToHeart);
+        {          
+            SendOxygen();
+            Bleed();
         }
 
         void Update()
         {
-
             _timer += Time.deltaTime;
 
             if (_timer > SecondsBetweenBeats)
@@ -87,18 +89,18 @@ namespace SS3D.Systems.Health
         /// </summary>
         /// <param name="connectedToHeart"></param>
         [Server]
-        private void SendOxygen(List<BodyPart> connectedToHeart)
+        private void SendOxygen()
         {
             double availableOxygen = AvailableOxygen();
 
-            float[] oxygenNeededForEachpart = ComputeIndividualNeeds(connectedToHeart);
+            float[] oxygenNeededForEachpart = ComputeIndividualNeeds();
             float sumNeeded = oxygenNeededForEachpart.Sum();
             int i = 0;
 
             SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
 
-            foreach (BodyPart part in connectedToHeart)
+            foreach (BodyPart part in _connectedToHeart)
             {
                 part.TryGetBodyLayer(out CirculatoryLayer veins);
                 double proportionAvailable = 0;
@@ -151,9 +153,15 @@ namespace SS3D.Systems.Health
             return bloodVolume > healthyBloodVolume ? oxygenQuantity : (bloodVolume / healthyBloodVolume) * oxygenQuantity;
         }
 
-        private void Bleed(List<BodyPart> connectedToHeart)
+        [Server]
+        public void HandleBodyPartRemoved(object sender, BodyPart part)
         {
-            foreach (BodyPart part in connectedToHeart)
+            _connectedToHeart.Remove(part);
+        }
+
+        private void Bleed()
+        {
+            foreach (BodyPart part in _connectedToHeart)
             {
                 part.TryGetBodyLayer(out CirculatoryLayer veins);
                 veins.Bleed();
@@ -208,11 +216,11 @@ namespace SS3D.Systems.Health
         /// Compute the need in oxygen of every body part attached to heart.
         /// </summary>
         [Server]
-        private float[] ComputeIndividualNeeds(List<BodyPart> connectedToHeart)
+        private float[] ComputeIndividualNeeds()
         {
-            float[] oxygenNeededForEachpart = new float[connectedToHeart.Count];
+            float[] oxygenNeededForEachpart = new float[_connectedToHeart.Count];
             int i = 0;
-            foreach (BodyPart bodyPart in connectedToHeart)
+            foreach (BodyPart bodyPart in _connectedToHeart)
             {
                 bodyPart.TryGetBodyLayer(out CirculatoryLayer circulatory);
                 oxygenNeededForEachpart[i] = (float)circulatory.OxygenNeeded;
