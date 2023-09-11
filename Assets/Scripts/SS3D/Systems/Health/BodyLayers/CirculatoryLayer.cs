@@ -1,4 +1,5 @@
 ﻿using Coimbra;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using JetBrains.Annotations;
 using SS3D.Core;
@@ -27,21 +28,17 @@ namespace SS3D.Systems.Health
 
         private BleedingBodyPart _bleedingHandler;
 
+        private double _oxygenNeeded;
+
         /// <summary>
-        /// To keep things simple for now, a body part simply needs the average of oxygen consumed for each consuming layer composing it.
+        /// To keep things simple for now, 
+        /// a body part simply needs the average of 
+        /// oxygen consumed for each consuming layer composing it.
         /// </summary>
         public double OxygenNeeded
         {
-            get
-            {
-                double totalOxygen = BodyPart.BodyLayers.OfType<IOxygenNeeder>().Sum(x => x.GetOxygenNeeded());
-                int NumberOxygenConsumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>().Count();
-                if (NumberOxygenConsumers > 0)
-                {
-                    return totalOxygen / NumberOxygenConsumers;
-                }
-                else return 0;
-            }   
+            private set => SetOxygenNeeded();
+            get => _oxygenNeeded;
         }
         
 		public override BodyLayerType LayerType
@@ -72,6 +69,12 @@ namespace SS3D.Systems.Health
         {
             _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
             _oxygenReserve = _oxygenMaxCapacity;
+
+            // TODO : Currently only set the amount of oxygen needed once at Init.
+            // Should maybe change too if a layer is changing the amount of oxygen it needs,
+            // or if it gets destroyed or one gets added.
+            SetOxygenNeeded();
+
             RegisterToOxygenConsumerSystem();
             if(bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
             {
@@ -84,6 +87,7 @@ namespace SS3D.Systems.Health
             }
         }
 
+        [Server]
 		protected override void SetSuceptibilities()
 		{
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 2f));
@@ -91,27 +95,22 @@ namespace SS3D.Systems.Health
 			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
 		}
 
-        protected override void DamageInflicted(DamageTypeQuantity damageQuantity)
-        {
-            base.DamageInflicted(damageQuantity);
-        }
-
         /// <summary>
         /// Consume oxygen and inflict damages if not enough oxygen is present.
         /// </summary>
+        [Server]
         public void ConsumeOxygen()
         {
-            double oxygenNeeded = OxygenNeeded;
-            float fractionOfNeededOxygen =(float)(_oxygenReserve / oxygenNeeded);
+            float fractionOfNeededOxygen =(float)(_oxygenReserve / _oxygenNeeded);
 
-            if (oxygenNeeded > _oxygenReserve)
+            if (_oxygenNeeded > _oxygenReserve)
             {
                 _oxygenReserve = 0;
                 InflictOxyDamage(fractionOfNeededOxygen);
             }
             else
             {
-                _oxygenReserve -= oxygenNeeded;
+                _oxygenReserve -= _oxygenNeeded;
             }
         }
 
@@ -121,6 +120,7 @@ namespace SS3D.Systems.Health
         /// Inflict Oxy damage to all body layers needing oxygen, in proportion of what's left in reserve.
         /// </summary>
         /// <param name="fractionOfNeededOxygen"> oxygen in reserve divided by needed oxygen. Should be between 0 and 1.</param>
+        [Server]
         private void InflictOxyDamage(float fractionOfNeededOxygen)
         {
             var consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
@@ -131,6 +131,7 @@ namespace SS3D.Systems.Health
             }
         }
 
+        [Server]
         public void ReceiveOxygen(double mole)
         {
             if(_oxygenReserve + mole > _oxygenMaxCapacity)
@@ -143,6 +144,7 @@ namespace SS3D.Systems.Health
             }
         }
 
+        [Server]
         public double GetOxygenNeeded()
         {
             return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
@@ -152,6 +154,7 @@ namespace SS3D.Systems.Health
         /// Remove from the substance container a given amount of blood. For now, this amount is only determined by
         /// the damage. TODO : different kind of damages should contribute differently to bleeding.
         /// </summary>
+        [Server]
         public void Bleed()
         {
             SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
@@ -171,6 +174,7 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// Called when this layer is created, necessary for periodic oxygen consumption.
         /// </summary>
+        [Server]
         public void RegisterToOxygenConsumerSystem()
         {
             OxygenConsumerSystem registry = Subsystems.Get<OxygenConsumerSystem>();
@@ -180,10 +184,23 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// Should be called only when this circulatory layer does not function anymore (when body part is destroyed).
         /// </summary>
+        [Server]
         public override void Cleanlayer()
         {
             OxygenConsumerSystem registry = Subsystems.Get<OxygenConsumerSystem>();
             registry.UnregisterConsumer(this);
+        }
+
+        [Server]
+        private void SetOxygenNeeded()
+        {
+            double totalOxygen = BodyPart.BodyLayers.OfType<IOxygenNeeder>().Sum(x => x.GetOxygenNeeded());
+            int NumberOxygenConsumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>().Count();
+            if (NumberOxygenConsumers > 0)
+            {
+                _oxygenNeeded = totalOxygen / NumberOxygenConsumers;
+            }
+            else _oxygenNeeded = 0;
         }
     }
 }
