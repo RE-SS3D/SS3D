@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+// TODO : Add a list of excluded assemblies from the SS3D folder.
 public class RuleSetManager : EditorWindow
 {
     private static readonly string OriginalRulesetPath = "Assets/Scripts/SS3D/Analysers/CustomRuleSetInitializer/SS3DRules.ruleset";
