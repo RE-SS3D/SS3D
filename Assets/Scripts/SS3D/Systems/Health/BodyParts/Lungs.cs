@@ -32,7 +32,7 @@ public class Lungs : BodyPart
 
     // TODO : remove this and replace with oxygen taken from atmos when possible
     [SerializeField]
-    private const float OxygenConstantIntake = 0.4f;
+    private float OxygenConstantIntake = 0.4f;
 
     public float SecondsBetweenBreaths => _breathFrequency > 0 ? 60f / _breathFrequency : float.MaxValue;
 
