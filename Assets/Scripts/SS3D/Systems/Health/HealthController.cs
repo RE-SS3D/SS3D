@@ -10,7 +10,7 @@ using SS3D.Systems.Inventory.Containers;
 namespace SS3D.Systems.Health
 {
     /// <summary>
-    /// Has a references towards everything related to health on a human player.
+    /// Has a reference towards everything related to health on a human player.
     /// </summary>
     public class HealthController : NetworkBehaviour
     {
