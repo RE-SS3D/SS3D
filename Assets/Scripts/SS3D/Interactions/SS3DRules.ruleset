@@ -134,7 +134,7 @@
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.ReadabilityRules">
     <Rule Id="SA1100" Action="Warning" />
-    <Rule Id="SA1101" Action="Warning" />
+    <Rule Id="SA1101" Action="Error" />
     <Rule Id="SA1102" Action="Warning" />
     <Rule Id="SA1103" Action="Warning" />
     <Rule Id="SA1104" Action="Warning" />
