@@ -152,7 +152,7 @@ namespace SS3D.Systems.Health
 
         /// <summary>
         /// Remove from the substance container a given amount of blood. For now, this amount is only determined by
-        /// the damage. TODO : different kind of damages should contribute differently to bleeding.
+        /// the amount of damage. TODO : different kind of damages should contribute differently to bleeding.
         /// </summary>
         [Server]
         public void Bleed()

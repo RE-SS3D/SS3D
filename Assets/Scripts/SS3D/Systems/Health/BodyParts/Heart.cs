@@ -87,7 +87,6 @@ namespace SS3D.Systems.Health
         /// Send oxygen to all connected circulatory layers to heart.
         /// Send a bit more than necessary when oxygen is available to restore oxygen reserves in each circulatory layers.
         /// </summary>
-        /// <param name="connectedToHeart"></param>
         [Server]
         private void SendOxygen()
         {
