@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object;
+using SS3D.Core;
 using SS3D.Substances;
 using SS3D.Systems.Health;
 using System;
@@ -29,10 +30,15 @@ public class Lungs : BodyPart
 
     private float _timer = 0f;
 
+    // TODO : remove this and replace with oxygen taken from atmos when possible
+    [SerializeField]
+    private const float OxygenConstantIntake = 0.4f;
+
     public float SecondsBetweenBreaths => _breathFrequency > 0 ? 60f / _breathFrequency : float.MaxValue;
 
     public float MaxOxygenAmount => 10;
 
+    [Server]
     protected override void AddInitialLayers()
     {
         TryAddBodyLayer(new MuscleLayer(this));
@@ -41,9 +47,9 @@ public class Lungs : BodyPart
         TryAddBodyLayer(new OrganLayer(this));
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (!IsServer) return;
         _timer += Time.deltaTime;
 
         if (_timer > SecondsBetweenBreaths)
@@ -53,6 +59,7 @@ public class Lungs : BodyPart
         }
     }
 
+    [Server]
     private void Breath()
     {
         OnBreath?.Invoke(this, EventArgs.Empty);
@@ -64,11 +71,12 @@ public class Lungs : BodyPart
         }
         else
         {
-            _circulatoryController.Container.AddSubstance(oxygen, 0.4f);
+            _circulatoryController.Container.AddSubstance(oxygen, OxygenConstantIntake);
         }
     }
 
     // should set that to private
+    [Server]
     public void SetBreathingState(float availableOxygen, float sumNeeded)
     {
         if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
@@ -85,11 +93,13 @@ public class Lungs : BodyPart
         }
     }
 
+    [Server]
     protected override void AfterSpawningCopiedBodyPart()
     {
         return;
     }
 
+    [Server]
     protected override void BeforeDestroyingBodyPart()
     {
         return;

@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object;
+using SS3D.Core;
 using SS3D.Substances;
 using SS3D.Systems.Health;
 using System;
@@ -37,6 +38,7 @@ public class Heart : BodyPart
         OnPulse += HandleHeartPulse;
     }
 
+    [Server]
     public void HandleHeartPulse(object sender, EventArgs args)
     {
         List<BodyPart> connectedToHeart = GetAllBodyPartAttachedToHeart();
@@ -56,16 +58,19 @@ public class Heart : BodyPart
         }
     }
 
+    [Server]
     protected override void AfterSpawningCopiedBodyPart()
     {
         return;
     }
 
+    [Server]
     protected override void BeforeDestroyingBodyPart()
     {
         return;
     }
 
+    [Server]
     protected override void AddInitialLayers()
     {
         TryAddBodyLayer(new MuscleLayer(this));
@@ -79,6 +84,7 @@ public class Heart : BodyPart
     /// Send a bit more than necessary when oxygen is available to restore oxygen reserves in each circulatory layers.
     /// </summary>
     /// <param name="connectedToHeart"></param>
+    [Server]
     private void SendOxygen(List<BodyPart> connectedToHeart)
     {
         double availableOxygen = AvailableOxygen();
@@ -126,6 +132,7 @@ public class Heart : BodyPart
     /// If blood gets below, it starts diminishing the availability of oxygen despite the circulatory system containing enough.
     /// This is to mimick the lack of blood making oxygen transport difficult and potentially leading to organ suffocation.
     /// </summary>
+    [Server]
     private double AvailableOxygen()
     {
         SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
@@ -157,6 +164,7 @@ public class Heart : BodyPart
     /// a child of the latter or an internal body part of any, with the condition that they need to have a circulatory layer.
     /// Fixing a living foot on a wooden leg won't prevent it from dying.
     /// </summary>
+    [Server]
     private List<BodyPart> GetAllBodyPartAttachedToHeart()
     {
         List<BodyPart> connectedToHeart = new List<BodyPart>();
@@ -172,6 +180,7 @@ public class Heart : BodyPart
     /// <summary>
     /// Helper method for GetAllBodyPartAttachedToHeart().
     /// </summary>
+    [Server]
     private void GetAllBodyPartAttachedToHeartRecursion(List<BodyPart> connectedToHeart, BodyPart current)
     {
         if (current.ContainsLayer(BodyLayerType.Circulatory))
@@ -196,6 +205,7 @@ public class Heart : BodyPart
     /// <summary>
     /// Compute the need in oxygen of every body part attached to heart.
     /// </summary>
+    [Server]
     private float[] ComputeIndividualNeeds(List<BodyPart> connectedToHeart)
     {
         float[] oxygenNeededForEachpart = new float[connectedToHeart.Count];
@@ -209,6 +219,7 @@ public class Heart : BodyPart
         return oxygenNeededForEachpart;
     }
 
+    [Server]
     public void SetBeatFrequency(float frequency)
     {
         _beatFrequency = frequency;
