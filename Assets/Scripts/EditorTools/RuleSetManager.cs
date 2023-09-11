@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class WipeAllRuleSet : EditorWindow
+public class RuleSetManager : EditorWindow
 {
     private static readonly string OriginalRulesetPath = "Assets/Scripts/SS3D/Analysers/CustomRuleSetInitializer/SS3DRules.ruleset";
 
@@ -20,7 +20,7 @@ public class WipeAllRuleSet : EditorWindow
     [MenuItem("Tools/SS3D/RuleSetManager")]
     public static void ShowWindow()
     {
-        GetWindow<WipeAllRuleSet>("Ruleset manager");
+        GetWindow<RuleSetManager>("Ruleset manager");
     }
 
     public void CreateGUI()
