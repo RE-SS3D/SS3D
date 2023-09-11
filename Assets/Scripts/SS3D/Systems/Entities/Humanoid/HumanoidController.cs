@@ -80,6 +80,12 @@ namespace SS3D.Systems.Entities.Humanoid
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
+        protected override void OnDisabled()
+        {
+	        base.OnDisabled();
+	        TargetMovement = Vector3.zero;
+        }
+
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
