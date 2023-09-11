@@ -7,57 +7,23 @@ using SS3D.Systems.Health;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 
-public class HealthController : NetworkBehaviour
+namespace SS3D.Systems.Health
 {
-    public GameObject Ghost;
-    private GameObject _spawnedGhost;
-
-	[SerializeField]
-	private CirculatoryController _circulatoryController;
-
-	public CirculatoryController Circulatory => _circulatoryController;
-
-    [Server]
-    private void BecomeGhost(GameObject player, GameObject ghost)
+    /// <summary>
+    /// Has a references towards everything related to health on a human player.
+    /// </summary>
+    public class HealthController : NetworkBehaviour
     {
-        Entity originEntity = player.GetComponent<Entity>();
-        Entity ghostEntity = ghost.GetComponent<Entity>();
 
-        Mind originMind = originEntity.Mind;
+        [SerializeField]
+        private CirculatoryController _circulatoryController;
 
-        ghostEntity.SetMind(originMind);
-        RpcDestroyObjects(originEntity);
-        RpcUpdateGhostPosition(originEntity, ghostEntity);
-    }
+        [SerializeField]
+        private FeetController _feetController;
 
-    [ObserversRpc]
-    private void RpcDestroyObjects(Entity originEntity)
-    {
-        GameObject originEntityGameObject = originEntity.gameObject;
-        // TODO: Optimize these GetComponents, this is a temporary solution.
-        originEntityGameObject.GetComponent<Hands>().Dispose(true);
-        originEntityGameObject.GetComponent<HumanInventory>().Dispose(true);
-        originEntityGameObject.GetComponent<InteractionController>().Dispose(true);
-        originEntityGameObject.GetComponent<StaminaController>().Dispose(true);
-        originEntityGameObject.GetComponent<HumanoidController>().Dispose(true);
-        
-    }
+        public CirculatoryController Circulatory => _circulatoryController;
 
-    [ObserversRpc]
-    private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
-    {
-        ghostEntity.Transform.SetPositionAndRotation(originEntity.Transform.position, originEntity.Transform.rotation);
-        originEntity.Transform.Rotate(new Vector3(90, 0, 0));
-    }
-
-
-
-    [Server]
-    public void Kill()
-    {
-        _spawnedGhost = Instantiate(Ghost);
-        ServerManager.Spawn(_spawnedGhost);
-        BecomeGhost(gameObject, _spawnedGhost);
+        public FeetController FeetController => _feetController;
     }
 }
 

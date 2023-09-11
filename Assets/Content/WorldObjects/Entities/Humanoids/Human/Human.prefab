@@ -8103,8 +8103,8 @@ MonoBehaviour:
   _componentIndexCache: 5
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
   _circulatoryController: {fileID: 997946055182512827}
+  _feetController: {fileID: 5164211669966765644}
 --- !u!114 &2150560678942863610
 MonoBehaviour:
   m_ObjectHideFlags: 0
