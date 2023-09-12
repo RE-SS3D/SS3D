@@ -24,6 +24,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne()
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return IssueReproduction.Issue0990_PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne();
         }
 

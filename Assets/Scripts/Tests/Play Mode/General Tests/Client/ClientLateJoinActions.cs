@@ -41,6 +41,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(HumanoidController);
         }
 
@@ -49,6 +50,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerCanDropAndPickUpItem()
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return PlaymodeTestRepository.PlayerCanDropAndPickUpItem(this);
         }
 

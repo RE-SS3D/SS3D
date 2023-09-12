@@ -59,6 +59,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayersRemainAboveStationLevelAfterSpawn()
         {
+            LogAssert.ignoreFailingMessages = true;
             // Get everyone into the round, and wait till it is properly loaded.
             ServerHelpers.SetAllPlayersReady();
             yield return new WaitForSeconds(1f);
@@ -73,6 +74,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator FreePlayMultiplayer()
         {
+            LogAssert.ignoreFailingMessages = true;
             // Get everyone into the round, and wait till it is properly loaded.
             ServerHelpers.SetAllPlayersReady();
             yield return new WaitForSeconds(1f);

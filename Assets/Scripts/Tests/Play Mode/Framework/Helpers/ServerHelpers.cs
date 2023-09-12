@@ -35,7 +35,7 @@ namespace SS3D.Tests
                 // Fire up the client.
                 result[i] = new Process();
                 result[i].StartInfo.WindowStyle = windowStyle;
-                result[i].StartInfo.Arguments = $"-ip=localhost -ckey=player_{i} -port=1974 -skipintro";
+                result[i].StartInfo.Arguments = $"-ip=localhost -ckey=player_{i} -port=1151 -skipintro";
                 result[i].StartInfo.FileName = "SS3D.exe";
                 result[i].StartInfo.WorkingDirectory = filePath;
                 result[i].Start();

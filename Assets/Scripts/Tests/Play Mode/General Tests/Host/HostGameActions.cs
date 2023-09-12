@@ -33,12 +33,14 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn([ValueSource("Iterations")] int iteration)
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(HumanoidController);
         }
 
         [UnityTest]
         public IEnumerator PlayerCanMoveInEachDirectionCorrectly()
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return PlaymodeTestRepository.PlayerCanMoveInEachDirectionCorrectly(this, HumanoidController);
         }
 

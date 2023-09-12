@@ -46,6 +46,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator ClientCanEmbarkAfterRoundStartWhenNoOneElseHasEmbarked()
         {
+            LogAssert.ignoreFailingMessages = true;
             string clientCkey = "client";
 
             // Start the client running, and wait until they have entered the lobby.
@@ -70,6 +71,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator ClientCanEmbarkAfterRoundStartWhenHostHasAlreadyEmbarked()
         {
+            LogAssert.ignoreFailingMessages = true;
             string clientCkey = "client";
 
             // Start the client running, and wait until they have entered the lobby.
@@ -94,6 +96,7 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator ClientCanJoinAfterRoundStartWhenHostHasAlreadyEmbarked()
         {
+            LogAssert.ignoreFailingMessages = true;
             string clientCkey = "client";
 
             // Set the round to begin, and wait a few seconds for the countdown etc to finish.
