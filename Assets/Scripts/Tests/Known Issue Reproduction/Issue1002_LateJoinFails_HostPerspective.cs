@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Core.Settings;
@@ -127,7 +127,7 @@ namespace SS3D.Tests
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             float startTime = Time.time;
 
-            while (playerSystem.OnlineSouls.ToList().Find(soul => soul.Ckey == ckey) == null)
+            while (playerSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == ckey) == null)
             {
                 yield return new WaitForSeconds(1f);
                 Assert.IsTrue(Time.time < startTime + timeout, $"Client '{ckey}' not loaded after timeout of {timeout} seconds.");

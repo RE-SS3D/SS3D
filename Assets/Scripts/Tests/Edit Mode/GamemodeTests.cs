@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.GameModes.Modes;

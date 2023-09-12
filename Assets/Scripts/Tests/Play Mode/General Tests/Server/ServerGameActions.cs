@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Core;
@@ -28,7 +28,7 @@ namespace SS3D.Tests
         public void OneTimeSetUp()
         {
             // Set to run as server
-            SetApplicationSettings(NetworkType.ServerOnly);
+            SetApplicationSettings(NetworkType.DedicatedServer);
 
             // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();

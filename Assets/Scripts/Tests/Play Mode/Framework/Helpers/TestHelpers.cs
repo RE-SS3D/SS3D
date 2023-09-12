@@ -1,3 +1,6 @@
+﻿using FishNet;
+using FishNet.Connection;
+using FishNet.Managing.Client;
 using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Systems.Entities;
@@ -158,18 +161,18 @@ namespace SS3D.Tests
             fixture.Set((AxisControl)fixture.InputDevice["Movement/y"], 0);
         }
 
-        public static Container LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId item)
+        public static AttachedContainer LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId item)
         {
-            var itemSystem = Subsystems.Get<ItemSystem>();
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out var entity);
-            var inventory = entity.gameObject.GetComponent<Inventory>();
-            foreach(var hand in inventory.Hands.HandContainers)
+            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
+            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetOwnedEntity( InstanceFinder.ClientManager.Connection ,out Entity entity);
+            HumanInventory inventory = entity.gameObject.GetComponent<HumanInventory>();
+            foreach(Hand hand in inventory.Hands.PlayerHands)
             {
                 if (!hand.Container.Empty) continue;
                 else
                 {
-                    itemSystem.CmdSpawnItemInContainer(item, hand);
+                    itemSystem.CmdSpawnItemInContainer(item, hand.Container);
                     return hand.Container;
                 }
             }
@@ -179,15 +182,15 @@ namespace SS3D.Tests
 
         public static InteractionController GetLocalInteractionController()
         {
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection ,out Entity entity);
             return entity.gameObject.GetComponent<InteractionController>();
         }
 
         public static Vector3 GetLocalPlayerPosition()
         {
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
             return entity.gameObject.transform.position;
         }
     }

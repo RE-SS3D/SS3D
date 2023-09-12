@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -146,13 +146,13 @@ namespace SS3D.Tests
         protected void SetApplicationSettings(NetworkType type)
         {
             // Create new settings so that tests are run in the correct context.
-            ApplicationSettings originalSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
-            ApplicationSettings newSettings = ScriptableObject.Instantiate(originalSettings);
+            NetworkSettings originalSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
+            NetworkSettings newSettings = UnityEngine.Object.Instantiate(originalSettings);
             newSettings.NetworkType = type;
             newSettings.Ckey = "john";
 
             // Apply the new settings
-            ScriptableSettings.SetOrOverwrite<ApplicationSettings>(newSettings);
+            ScriptableSettings.SetOrOverwrite<NetworkSettings>(newSettings);
         }
 
         protected void ClientSceneLoaded(Scene scene, LoadSceneMode mode)

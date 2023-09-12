@@ -11,8 +11,6 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Items
 {
-
-    using Inventory = Containers.Inventory;
     /// <summary>
     /// System used to spawn items.
     /// </summary>
@@ -143,8 +141,8 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         public Item GetItemInHand(Entity playerEntity)
         {
-            Hands hands = playerEntity.GetComponentInParent<Inventory>().Hands;
-            return hands.ItemInHand;
+            Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;
+            return hands.SelectedHand.ItemInHand;
         }
 
 

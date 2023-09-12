@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using UnityEngine;
 using SS3D.Core.Settings;
 using SS3D.Core.Utils;
@@ -25,13 +25,13 @@ namespace SS3D.Tests
         /// <param name="Ckey">Ckey. Applicable only for Client network type, but must not be empty if client</param>
         /// <param name="windowStyle">Whether minimized (default), maximized, normal or hidden</param>
         /// <returns>The process handle for the running SS3D build</returns>
-        public static Process OpenCompiledBuild(NetworkType networkType = NetworkType.ServerOnly, string Ckey = "client", ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
+        public static Process OpenCompiledBuild(NetworkType networkType = NetworkType.DedicatedServer, string Ckey = "client", ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
         {
             // Confirm all arguments
             string arguments = $"{CommandLineArgs.Ip}{IpAddress} {CommandLineArgs.Port}{Port} {CommandLineArgs.SkipIntro} ";
             switch (networkType)
             {
-                case NetworkType.ServerOnly: arguments += CommandLineArgs.ServerOnly; break;
+                case NetworkType.DedicatedServer: arguments += CommandLineArgs.ServerOnly; break;
                 case NetworkType.Host: arguments += CommandLineArgs.Host; break;
                 case NetworkType.Client: arguments += CommandLineArgs.Ckey + Ckey; break;
             }

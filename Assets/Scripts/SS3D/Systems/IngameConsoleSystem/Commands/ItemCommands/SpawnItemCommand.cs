@@ -1,4 +1,4 @@
-using SS3D.Core;
+﻿using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
@@ -13,6 +13,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using FishNet.Managing.Server;
 using FishNet;
+using FishNet.Connection;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -21,18 +23,25 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Spawn item using item name at the same position as human or at position x,z";
         public override string ShortDescription => "Spawn item";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
-        public override string Perform(string[] args)
+
+        public override CommandType Type => CommandType.Server;
+
+        public override string Perform(string[] args, NetworkConnection conn)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
             string itemName = args[0];
-            var itemSystem = Subsystems.Get<ItemSystem>();
-            var entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetLocalPlayerEntity(out var entity);
+            if(!Subsystems.Get<EntitySystem>().TryGetOwnedEntity(conn, out Entity entity))
+            {
+                return "Connection does not own any entity registered in entity system.";
+            };
+
+            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             itemSystem.CmdSpawnItem(itemName.ToEnum<ItemId>(), entity.transform.position, Quaternion.identity);
             return $"item {itemName} spawned at position {entity.transform.position}";
         }
+
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
             CheckArgsResponse response = new CheckArgsResponse();
@@ -42,7 +51,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 response.InvalidArgs = "Invalid number of arguments";
                 return response;
             }
-            var itemName = args[0];
+            string itemName = args[0];
             if(!Assets.TryGet((int) AssetDatabases.Items, (int) itemName.ToEnum<ItemId>(), out Item item))
             {
                 response.IsValid = false;

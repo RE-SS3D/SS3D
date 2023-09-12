@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
@@ -71,7 +71,7 @@ namespace SS3D.Tests
 
                 // Check whether all souls are online.
                 currentOnlineSouls = 0;
-                foreach (var soul in playerSystem.OnlineSouls)
+                foreach (Player player in playerSystem.OnlinePlayers)
                 {
                     currentOnlineSouls++;
                 }
@@ -92,10 +92,10 @@ namespace SS3D.Tests
             ReadyPlayersSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSystem>();
             ChangePlayerReadyMessage msg;
                 
-            foreach (Soul soul in playerSystem.OnlineSouls)
+            foreach (Player player in playerSystem.OnlinePlayers)
             {
-                msg = new ChangePlayerReadyMessage(soul.Ckey, true);
-                readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(soul.LocalConnection, msg);
+                msg = new ChangePlayerReadyMessage(player.Ckey, true);
+                readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(player.LocalConnection, msg);
             }
         }
 
@@ -103,9 +103,9 @@ namespace SS3D.Tests
         {
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             ReadyPlayersSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSystem>();
-            Soul soul = playerSystem.OnlineSouls.ToList().Find(soul => soul.Ckey == Ckey);
+            Player player = playerSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == Ckey);
             ChangePlayerReadyMessage msg = new ChangePlayerReadyMessage(Ckey, readiness);
-            readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(soul.LocalConnection, msg);
+            readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(player.LocalConnection, msg);
         }
 
         /// <summary>
@@ -123,8 +123,8 @@ namespace SS3D.Tests
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
 
-            Soul soul = playerSystem.GetSoul(Ckey);
-            entitySystem.CmdSpawnLatePlayer(soul);
+            Player player = playerSystem.GetPlayer(Ckey);
+            entitySystem.CmdSpawnLatePlayer(player);
         }
 
 

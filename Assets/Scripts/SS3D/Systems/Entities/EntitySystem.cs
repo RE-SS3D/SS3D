@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
@@ -148,6 +148,20 @@ namespace SS3D.Systems.Entities
         public void CmdSpawnLatePlayer(Player player, NetworkConnection networkConnection = null)
         {
             SpawnLatePlayer(player);
+        }
+
+        public bool TryGetOwnedEntity(NetworkConnection conn, out Entity entity)
+        {
+            foreach(Entity e in SpawnedPlayers)
+            {
+                if(e.Owner == conn)
+                {
+                    entity = e;
+                    return true;
+                }
+            }
+            entity = null;
+            return false;
         }
 
         /// <summary>
