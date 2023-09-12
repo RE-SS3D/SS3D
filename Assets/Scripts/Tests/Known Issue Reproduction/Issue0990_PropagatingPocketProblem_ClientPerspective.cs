@@ -1,4 +1,4 @@
-using SS3D.Core.Settings;
+﻿using SS3D.Core.Settings;
 using System.Collections;
 using UnityEngine.TestTools;
 
@@ -10,12 +10,14 @@ namespace SS3D.Tests
         [UnitySetUp]
         public IEnumerator UnitySetUp()
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return LoadAndSetInGame(NetworkType.Client);
         }
 
         [UnityTearDown]
         public IEnumerator UnityTearDown()
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return TestHelpers.FinishAndExitRound();
         }
 

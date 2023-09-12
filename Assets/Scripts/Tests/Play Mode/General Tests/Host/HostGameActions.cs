@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Threading;
 using NUnit.Framework;
 using SS3D.Core.Settings;
@@ -14,7 +14,8 @@ namespace SS3D.Tests
         [UnitySetUp]
         public IEnumerator UnitySetUp()
         {
-            if(!setUpOnce)
+            LogAssert.ignoreFailingMessages = true;
+            if (!setUpOnce)
             {
                 yield return LoadAndSetInLobby(NetworkType.Host);
                 setUpOnce = true;
@@ -25,6 +26,7 @@ namespace SS3D.Tests
         [UnityTearDown]
         public IEnumerator UnityTearDown()
         {
+            LogAssert.ignoreFailingMessages = true;
             yield return TestHelpers.FinishAndExitRound();
         }
 

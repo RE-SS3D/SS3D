@@ -15,7 +15,7 @@ namespace SS3D.Tests
     {
         public const string ExecutableName = "SS3D.exe";
         public const string IpAddress = "127.0.0.1";
-        public const string Port = "1974";
+        public const string Port = "1151";
         public const int MaxExpectedServerLoadTimeMillis = 10000;
 
         /// <summary>

@@ -157,7 +157,7 @@ namespace SS3D.Tests
 
         protected void ClientSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (scene.name.Equals("Lobby"))
+            if (scene.name.Equals("Game"))
             {
                 lobbySceneLoaded = true;
                 SceneManager.sceneLoaded -= ClientSceneLoaded;
@@ -183,7 +183,7 @@ namespace SS3D.Tests
             // Start up the game.
             lobbySceneLoaded = false;
             SceneManager.sceneLoaded += ClientSceneLoaded;
-            SceneManager.LoadScene("Startup", LoadSceneMode.Single);
+            SceneManager.LoadScene("Boot", LoadSceneMode.Single);
         }
 
         protected void KillAllBuiltExecutables()
@@ -292,13 +292,15 @@ namespace SS3D.Tests
                 // Set to run as client
                 SetApplicationSettings(NetworkType.Client);
             }
-
-            SetApplicationSettings(type);
+            else
+            {
+                SetApplicationSettings(type);
+            }
 
             // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();
 
-            WaitForLobbyLoaded();
+            yield return WaitForLobbyLoaded();
 
             // Wait a bit to make sure UI is correctly Loaded
             yield return new WaitForSeconds(3f);

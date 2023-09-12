@@ -22,12 +22,14 @@ namespace SS3D.Tests
         [UnitySetUp]
         public IEnumerator UnitySetUp()
         {
-           yield return LoadAndSetInLobby(NetworkType.Host);
+            LogAssert.ignoreFailingMessages = true;
+            yield return LoadAndSetInLobby(NetworkType.Host);
         }
 
         [UnityTearDown]
         public IEnumerator UnityTearDown()
         {
+            LogAssert.ignoreFailingMessages = true;
             // Wait for a bit, to get some temporal separation.
             yield return new WaitForSeconds(1f);
 

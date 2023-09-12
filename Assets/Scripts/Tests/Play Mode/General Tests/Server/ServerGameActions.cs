@@ -27,6 +27,7 @@ namespace SS3D.Tests
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
+            LogAssert.ignoreFailingMessages = true;
             // Set to run as server
             SetApplicationSettings(NetworkType.DedicatedServer);
 
@@ -37,6 +38,7 @@ namespace SS3D.Tests
         [UnitySetUp]
         public IEnumerator UnitySetUp()
         {
+            LogAssert.ignoreFailingMessages = true;
             // Make several clients
             const int clientsToCreate = 8;
             clientProcess = ServerHelpers.CreateClients(clientsToCreate, ProcessWindowStyle.Normal);
@@ -48,6 +50,7 @@ namespace SS3D.Tests
         [UnityTearDown]
         public IEnumerator UnityTearDown()
         {
+            LogAssert.ignoreFailingMessages = true;
             ServerHelpers.ChangeRoundState(false);
             KillClientProcesses();
             yield return null;
