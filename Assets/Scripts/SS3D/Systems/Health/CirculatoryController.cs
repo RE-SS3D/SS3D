@@ -22,6 +22,31 @@ namespace SS3D.Systems.Health
 
         public SubstanceContainer Container => _container;
 
+        public float MaxBloodVolume => (float) GetComponentsInChildren<BodyPart>()
+            .Sum(x => x.Volume) * HealthConstants.BloodVolumeToHumanVolumeRatio;
+
+        public float MaxBloodQuantity
+        {
+            get
+            {
+                SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+                Substance blood = registry.FromType(SubstanceType.Blood);
+                return MaxBloodVolume / blood.MillilitersPerMilliMoles;
+            }
+        }
+
+        public float MaxOxygenVolume => HealthConstants.MaxOxygenToBloodVolumeRatio * MaxBloodVolume;
+
+        public float MaxOxygenQuantity
+        {
+            get
+            {
+                SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+                Substance oxygen = registry.FromType(SubstanceType.Oxygen);
+                return MaxOxygenVolume / oxygen.MillilitersPerMilliMoles;
+            }
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();

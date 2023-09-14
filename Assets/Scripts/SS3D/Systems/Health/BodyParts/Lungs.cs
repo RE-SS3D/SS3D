@@ -35,8 +35,6 @@ namespace SS3D.Systems.Health
 
         public float SecondsBetweenBreaths => _breathFrequency > 0 ? 60f / _breathFrequency : float.MaxValue;
 
-        public float MaxOxygenAmount => 10;
-
         [Server]
         protected override void AddInitialLayers()
         {
@@ -64,7 +62,7 @@ namespace SS3D.Systems.Health
             OnBreath?.Invoke(this, EventArgs.Empty);
             SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
-            if (HealthController.Circulatory.Container.GetSubstanceQuantity(oxygen) > MaxOxygenAmount)
+            if (HealthController.Circulatory.Container.GetSubstanceQuantity(oxygen) > HealthController.Circulatory.MaxOxygenQuantity)
             {
                 return;
             }

@@ -35,5 +35,12 @@
         /// Close to one, oxygen will become fastly unavailable. Close to 0, body can function even with little blood.
         /// </summary>
         public const float HealthyBloodVolumeRatio = 0.8f;
+
+        /// <summary>
+        /// The maximum volume of oxygen which the blood can carry when fully saturated
+        /// is termed the oxygen carrying capacity, which,
+        /// with a normal haemoglobin concentration, is approximately 20 mL oxygen per 100 mL blood.
+        /// </summary>
+        public const float MaxOxygenToBloodVolumeRatio = 0.2f;
     }
 }
