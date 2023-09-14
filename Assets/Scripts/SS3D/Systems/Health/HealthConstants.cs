@@ -10,7 +10,7 @@
         /// <summary>
         /// Average quantity of oxygen needed for one milliliters of human cells for one second. mmol / ml / s.
         /// </summary>
-        public const double MilliMolesOfOxygenPerMillilitersOfBody = 1.15e-6;
+        public const double MilliMolesOfOxygenPerMillilitersOfBody = 2.77e-6;
 
         /// <summary>
         /// max amount in millimole of blood lost at each heart beat. mmol
@@ -27,7 +27,7 @@
         /// Average ratio between the volume of blood and the volume of body parts in a human. No units.
         /// Determines the volume of blood in the body.
         /// </summary>
-        public const float BloodVolumeToHumanVolumeRatio = 0.08f;
+        public const float BloodVolumeToHumanVolumeRatio = 0.077f;
 
         /// <summary>
         /// Healthy ratio of blood volume to blood container volume in the blood container before
@@ -42,5 +42,11 @@
         /// with a normal haemoglobin concentration, is approximately 20 mL oxygen per 100 mL blood.
         /// </summary>
         public const float MaxOxygenToBloodVolumeRatio = 0.2f;
+
+        /// <summary>
+        /// This factor gives a rough idea of how much more blood a human can have before it starts having trouble
+        /// due to the excess of blood.
+        /// </summary>
+        public const float HighBloodVolumeToleranceFactor = 1.15f;
     }
 }
