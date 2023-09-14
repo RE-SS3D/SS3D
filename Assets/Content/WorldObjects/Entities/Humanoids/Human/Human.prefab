@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 11
+  <ComponentIndex>k__BackingField: 12
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -946,7 +946,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 444995378988440430}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1202753384528456214
 MonoBehaviour:
@@ -1146,7 +1146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 8
+  <ComponentIndex>k__BackingField: 9
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -2142,7 +2142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 10
+  <ComponentIndex>k__BackingField: 11
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -3447,7 +3447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 3
+  <ComponentIndex>k__BackingField: 4
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -4147,9 +4147,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7327953413181730917}
-  - {fileID: 4447442956856439833}
   - {fileID: 5423534066673291090}
+  - {fileID: 4447442956856439833}
+  - {fileID: 7327953413181730917}
   m_Father: {fileID: 6806139853968569792}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4465,7 +4465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 7
+  <ComponentIndex>k__BackingField: 8
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -4646,7 +4646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 9
+  <ComponentIndex>k__BackingField: 10
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -5394,7 +5394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 6
+  <ComponentIndex>k__BackingField: 7
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -5853,6 +5853,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6175974718718660371}
   - {fileID: 1520629747557640359}
   - {fileID: 6428232270065938407}
   - {fileID: 4205348396957217158}
@@ -6366,7 +6367,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 5
+  <ComponentIndex>k__BackingField: 6
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -6931,7 +6932,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 444995378988440430}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6689112149766062617
 MonoBehaviour:
@@ -7246,10 +7247,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6175974718718660371}
+  m_Children: []
   m_Father: {fileID: 444995378988440430}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3070344760670726098
 MonoBehaviour:
@@ -7869,6 +7869,7 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 4138789318277530234}
   - {fileID: 4684017524585288931}
+  - {fileID: 5382335363686172928}
   - {fileID: 7590913349156985469}
   - {fileID: 2091115627957921416}
   - {fileID: 8410791339138828931}
@@ -7878,10 +7879,9 @@ MonoBehaviour:
   - {fileID: 8067289659534850981}
   - {fileID: 6911900315559804093}
   - {fileID: 8626656600768578774}
-  - {fileID: 5382335363686172928}
-  - {fileID: 8842400029206623862}
-  - {fileID: 2503122855776023050}
   - {fileID: 6071096700574353729}
+  - {fileID: 2503122855776023050}
+  - {fileID: 8842400029206623862}
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
@@ -8476,7 +8476,7 @@ MonoBehaviour:
   _bodyPartVolume: 25300
   heart: {fileID: 1872609562917901822}
   leftLung: {fileID: 2177541117370366682}
-  rightLungs: {fileID: 6799870962488124763}
+  rightLung: {fileID: 6799870962488124763}
 --- !u!114 &3916515887951048146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8934,7 +8934,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 444995378988440430}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &3358737676406594101
 SkinnedMeshRenderer:
@@ -9219,7 +9219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 4
+  <ComponentIndex>k__BackingField: 5
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 2930813178971533500}
@@ -9282,7 +9282,7 @@ Transform:
   - {fileID: 6313390061406284947}
   - {fileID: 4928814663996923680}
   m_Father: {fileID: 444995378988440430}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7528059133581162048
 GameObject:
@@ -10888,7 +10888,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 444995378988440430}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3028215939049344471
 MonoBehaviour:
@@ -11561,6 +11561,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5857269694861021747}
     - target: {fileID: -3277656919187790317, guid: 9d475ae6ec7b7a749abae10066b336be, type: 3}
+      propertyPath: OxygenConstantIntake
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -3277656919187790317, guid: 9d475ae6ec7b7a749abae10066b336be, type: 3}
       propertyPath: _circulatoryController
       value: 
       objectReference: {fileID: 997946055182512827}
@@ -11568,9 +11572,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: HumanLungRightItem
       objectReference: {fileID: 0}
+    - target: {fileID: 5774385816057912484, guid: 9d475ae6ec7b7a749abae10066b336be, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7596600830642500397, guid: 9d475ae6ec7b7a749abae10066b336be, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7596600830642500397, guid: 9d475ae6ec7b7a749abae10066b336be, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11618,7 +11626,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8532088199163376958, guid: 9d475ae6ec7b7a749abae10066b336be, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
-      value: 13
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8532088199163376958, guid: 9d475ae6ec7b7a749abae10066b336be, type: 3}
       propertyPath: <ParentNetworkObject>k__BackingField
@@ -11698,7 +11706,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7596600830642500397, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7596600830642500397, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11750,7 +11758,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
-      value: 15
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 8532088199163376958, guid: 8b2b80e8392e44944a184d9166ce97b1, type: 3}
       propertyPath: _networkBehaviours.Array.data[2]
@@ -11822,7 +11830,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 7641444464932994032}
+    m_TransformParent: {fileID: 444995378988440430}
     m_Modifications:
     - target: {fileID: 5774385816057912484, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: m_Name
@@ -11882,7 +11890,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8532088199163376958, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
-      value: 12
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8532088199163376958, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: <ParentNetworkObject>k__BackingField
@@ -11965,12 +11973,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5857269694861021747}
     - target: {fileID: 5398936211986677230, guid: 57d15c94003230048bd96a5bc7115bc2, type: 3}
+      propertyPath: OxygenConstantIntake
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5398936211986677230, guid: 57d15c94003230048bd96a5bc7115bc2, type: 3}
       propertyPath: _circulatoryController
       value: 
       objectReference: {fileID: 997946055182512827}
     - target: {fileID: 5774385816057912484, guid: 57d15c94003230048bd96a5bc7115bc2, type: 3}
       propertyPath: m_Name
       value: HumanLungLeftItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 5774385816057912484, guid: 57d15c94003230048bd96a5bc7115bc2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7596600830642500397, guid: 57d15c94003230048bd96a5bc7115bc2, type: 3}
       propertyPath: m_RootOrder
