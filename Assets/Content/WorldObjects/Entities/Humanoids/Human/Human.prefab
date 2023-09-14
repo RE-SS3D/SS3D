@@ -426,12 +426,12 @@ MonoBehaviour:
   _componentIndexCache: 25
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 0}
+  _parentBodyPart: {fileID: 1689438430210725708}
   _skinnedMeshRenderer: {fileID: 8304794297218136879}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 983acf51173ef60479e35c5e35946162, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 7885778496726064405}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
 --- !u!137 &8304794297218136879
 SkinnedMeshRenderer:
@@ -2402,7 +2402,7 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 5774385816057912484, guid: 4d59bb658831172479995d721f8cbd6c, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 5307304765832513536}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
 --- !u!137 &8793278027620475813
 SkinnedMeshRenderer:
@@ -2761,12 +2761,12 @@ MonoBehaviour:
   _componentIndexCache: 23
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 0}
+  _parentBodyPart: {fileID: 1689438430210725708}
   _skinnedMeshRenderer: {fileID: 1037560153012890605}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 2d0913074150cca43b88c90ec658aacb, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 3498391959947423981}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
 --- !u!137 &1037560153012890605
 SkinnedMeshRenderer:
@@ -3105,12 +3105,12 @@ MonoBehaviour:
   _componentIndexCache: 19
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 0}
+  _parentBodyPart: {fileID: 1689438430210725708}
   _skinnedMeshRenderer: {fileID: 949421968142360378}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 9659c4cc7bea07c4ba38b492f407ef7f, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 4061536191967800809}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
 --- !u!137 &949421968142360378
 SkinnedMeshRenderer:
@@ -3797,12 +3797,12 @@ MonoBehaviour:
   _componentIndexCache: 21
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 0}
+  _parentBodyPart: {fileID: 1689438430210725708}
   _skinnedMeshRenderer: {fileID: 6840993320086561213}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 2f664501d8d74774c9427f7fb6d50ae6, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 7865012682319576541}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
 --- !u!137 &6840993320086561213
 SkinnedMeshRenderer:
@@ -5980,12 +5980,12 @@ MonoBehaviour:
   _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _parentBodyPart: {fileID: 0}
+  _parentBodyPart: {fileID: 1689438430210725708}
   _skinnedMeshRenderer: {fileID: 270151793522417329}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 9ac7c2cd12db800479e566335ff7440b, type: 3}
   _internalBodyParts: {fileID: 3070344760670726098}
   _bodyCollider: {fileID: 4933536203666300704}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 3800
   brain: {fileID: 4827024419444716214}
 --- !u!114 &3550190016985810917
@@ -6491,7 +6491,7 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 5774385816057912484, guid: 60890cc80962a7e44b97b4ba3b0518e3, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 2829801289424663116}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
 --- !u!137 &7063966259298033300
 SkinnedMeshRenderer:
@@ -8261,13 +8261,9 @@ MonoBehaviour:
   _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  InitialSubstances:
-  - Substance: {fileID: 11400000, guid: 02eff39cd6b70a64abc4a59e3cc1b4d3, type: 2}
-    MilliMoles: 80000
-  - Substance: {fileID: 11400000, guid: 2030145386ed160418f9a07c5d68774f, type: 2}
-    MilliMoles: 44
+  InitialSubstances: []
   _currentVolume: 0
-  _volume: 5500
+  _volume: 0
   _locked: 0
   _initialised: 0
 --- !u!114 &4073266545982979633
@@ -9889,7 +9885,7 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 5774385816057912484, guid: c19eccca279beee4186432a03257a7b9, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 495117578137499362}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
   _hand: {fileID: 5948957322531814959}
 --- !u!114 &2877804502633151377
@@ -11447,7 +11443,7 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 5774385816057912484, guid: df85b75fd341a244c8364ebb9c4fcfef, type: 3}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 2660167717358018512}
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
   _hand: {fileID: 7572883762844705701}
 --- !u!114 &8825455644555575778
