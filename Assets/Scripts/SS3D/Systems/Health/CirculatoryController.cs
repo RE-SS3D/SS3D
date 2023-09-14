@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
+using static Codice.Client.Common.WebApi.WebApiEndpoints;
 
 namespace SS3D.Systems.Health
 {
@@ -23,59 +24,61 @@ namespace SS3D.Systems.Health
         [SerializeField]
         private HealthController _healthController;
 
+        private Substance _blood;
+        private Substance _oxygen;
+
         public SubstanceContainer Container => _container;
 
         /// <summary>
-        /// The volume of blood in mLs the substance container can contain as a maximum. the 1 minus MaxOxygenToBloodVolumeRatio factor
-        /// is there to "leave place" to oxygen in the container, which takes up a significant amount (around 20%).
+        /// The volume of blood in mLs the substance container can contain as a maximum. the 1 plus MaxOxygenToBloodVolumeRatio factor
+        /// is there to "leave place" to oxygen in the container, which takes up a significant amount 
+        /// (up to MaxOxygenToBloodVolumeRatio times 100 % of the blood volume).
         /// </summary>
-        public float MaxBloodVolume => _healthController.BodyPartsVolume *
-            HealthConstants.BloodVolumeToHumanVolumeRatio * (1 - HealthConstants.MaxOxygenToBloodVolumeRatio);
+        public float MaxBloodVolume =>  _healthController.BodyPartsVolume * HealthConstants.BloodVolumeToHumanVolumeRatio /
+            (1+HealthConstants.MaxOxygenToBloodVolumeRatio);
 
         /// <summary>
         /// The maximum amount of blood in mmols _container can handle.
         /// </summary>
-        public float MaxBloodQuantity
-        {
-            get
-            {
-                SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
-                Substance blood = registry.FromType(SubstanceType.Blood);
-                return MaxBloodVolume / blood.MillilitersPerMilliMoles;
-            }
-        }
+        public float MaxBloodQuantity => MaxBloodVolume / _blood.MillilitersPerMilliMoles;
 
         /// <summary>
         /// The maximum volume in mLs of oxygen _container can handle.
         /// </summary>
-        public float MaxOxygenVolume => _healthController.BodyPartsVolume *
-            HealthConstants.BloodVolumeToHumanVolumeRatio * HealthConstants.MaxOxygenToBloodVolumeRatio;
+        private float MaxOxygenFullBloodVolume => HealthConstants.MaxOxygenToBloodVolumeRatio * MaxBloodVolume;
 
+
+        /// <summary>
+        /// Maximum volume of oxygen in mLs that can fit in _container, given the present amount of blood in it.
+        /// </summary>
+        public float MaxOxygenVolume => HealthConstants.MaxOxygenToBloodVolumeRatio * _container.GetSubstanceVolume(_blood);
+
+
+        /// <summary>
+        /// Maximum amount of oxygen in mmols that can fit in _container, given the present amount of blood in it.
+        /// </summary>
+        public float MaxOxygenQuantity => MaxOxygenVolume / _oxygen.MillilitersPerMilliMoles;
 
         /// <summary>
         /// The maximum amount of oxygen in mmols _container can handle.
         /// </summary>
-        public float MaxOxygenQuantity
-        {
-            get
-            {
-                SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
-                Substance oxygen = registry.FromType(SubstanceType.Oxygen);
-                return MaxOxygenVolume / oxygen.MillilitersPerMilliMoles;
-            }
-        }
+        private float MaxOxygenFullBloodQuantity => MaxOxygenFullBloodVolume / _oxygen.MillilitersPerMilliMoles;
 
         /// <summary>
         /// Max total volume _container can have. The tolerance factor allows for a margin, but trouble can occurs if 
         /// the volume of the container is above MaxOxygenVolume + MaxBloodVolume.
         /// </summary>
-        public float MaxTotalVolume => (MaxOxygenVolume + MaxBloodVolume) * HealthConstants.HighBloodVolumeToleranceFactor;
+        public float MaxTotalVolume => (MaxOxygenFullBloodVolume + MaxBloodVolume) * HealthConstants.HighBloodVolumeToleranceFactor;
 
         public override void OnStartServer()
         {
             base.OnStartServer();
+            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            _blood = registry.FromType(SubstanceType.Blood);
+            _oxygen = registry.FromType(SubstanceType.Oxygen);
             StartCoroutine(Init());
         }
+
         /// <summary>
         /// Has to wait a bit to set up all body parts, otherwise fail to get bodypart attached to heart.
         /// </summary>
@@ -98,8 +101,6 @@ namespace SS3D.Systems.Health
         [Server]
         private void UpdateVolume()
         {
-            BodyPart[] allBodyPartsOnEntity = GetComponentsInChildren<BodyPart>();
-
             _container.ChangeVolume(MaxTotalVolume);
         }
 
@@ -112,16 +113,16 @@ namespace SS3D.Systems.Health
         [Server]
         public double AvailableOxygen()
         {
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
-            Substance blood = registry.FromType(SubstanceType.Blood);
+            float bloodVolume = _container.GetSubstanceVolume(_blood);
 
-            Substance oxygen = registry.FromType(SubstanceType.Oxygen);
+            float healthyBloodVolume = HealthConstants.HealthyBloodVolumeRatio * MaxBloodVolume;
 
-            float bloodVolume = _container.GetSubstanceVolume(blood);
+            float oxygenQuantity = _container.GetSubstanceQuantity(_oxygen);
 
-            float healthyBloodVolume = (float)HealthConstants.HealthyBloodVolumeRatio * _container.Volume;
-
-            double oxygenQuantity = _container.GetSubstanceQuantity(oxygen);
+            if(oxygenQuantity > MaxOxygenQuantity)
+            {
+                _container.RemoveSubstance(_oxygen, oxygenQuantity - MaxOxygenQuantity);
+            }
 
             return bloodVolume > healthyBloodVolume ? oxygenQuantity : (bloodVolume / healthyBloodVolume) * oxygenQuantity;
         }
@@ -149,12 +150,8 @@ namespace SS3D.Systems.Health
         /// <returns></returns>
         public void AddInitialSubstance()
         {
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
-            Substance blood = registry.FromType(SubstanceType.Blood);
-            Substance oxygen = registry.FromType(SubstanceType.Oxygen);
-
-            _container.AddSubstance(blood, MaxBloodQuantity);
-            _container.AddSubstance(oxygen, MaxOxygenQuantity);
+            _container.AddSubstance(_blood, MaxBloodQuantity);
+            _container.AddSubstance(_oxygen, MaxOxygenFullBloodQuantity);
         }
     }
 }
