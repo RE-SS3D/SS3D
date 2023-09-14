@@ -40,8 +40,10 @@
         /// The maximum volume of oxygen which the blood can carry when fully saturated
         /// is termed the oxygen carrying capacity, which,
         /// with a normal haemoglobin concentration, is approximately 20 mL oxygen per 100 mL blood.
+        /// in SS3D, "real blood" is composed of "blood" and oxygen, in the amount of 2 part oxygen, 8 part blood.
+        /// So oxygen volume is at a maximum one fourth of blood volume.
         /// </summary>
-        public const float MaxOxygenToBloodVolumeRatio = 0.2f;
+        public const float MaxOxygenToBloodVolumeRatio = 0.25f;
 
         /// <summary>
         /// This factor gives a rough idea of how much more blood a human can have before it starts having trouble
