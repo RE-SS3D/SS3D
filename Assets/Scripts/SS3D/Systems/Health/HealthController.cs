@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System;
 using System.Diagnostics.Tracing;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace SS3D.Systems.Health
 {
@@ -36,6 +37,16 @@ namespace SS3D.Systems.Health
         public event EventHandler<BodyPart> OnBodyPartRemoved;
 
         public event EventHandler OnBodyPartAdded;
+
+        public float BodyPartsVolume 
+        {
+            get
+            {
+                BodyPart[] AllBodyparts = GetComponentsInChildren<BodyPart>();
+                return (float)AllBodyparts.Sum(x => x.Volume);
+            }
+            
+        }
 
         public override void OnStartServer()
         {

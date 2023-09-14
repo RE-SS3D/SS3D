@@ -20,10 +20,12 @@ namespace SS3D.Systems.Health
         [SerializeField]
         private SubstanceContainer _container;
 
+        [SerializeField]
+        private HealthController _healthController;
+
         public SubstanceContainer Container => _container;
 
-        public float MaxBloodVolume => (float) GetComponentsInChildren<BodyPart>()
-            .Sum(x => x.Volume) * HealthConstants.BloodVolumeToHumanVolumeRatio;
+        public float MaxBloodVolume => _healthController.BodyPartsVolume * HealthConstants.BloodVolumeToHumanVolumeRatio;
 
         public float MaxBloodQuantity
         {
