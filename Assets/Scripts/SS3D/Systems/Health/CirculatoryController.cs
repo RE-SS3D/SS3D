@@ -25,8 +25,16 @@ namespace SS3D.Systems.Health
 
         public SubstanceContainer Container => _container;
 
-        public float MaxBloodVolume => _healthController.BodyPartsVolume * HealthConstants.BloodVolumeToHumanVolumeRatio;
+        /// <summary>
+        /// The volume of blood in mLs the substance container can contain as a maximum. the 1 minus MaxOxygenToBloodVolumeRatio factor
+        /// is there to "leave place" to oxygen in the container, which takes up a significant amount (around 20%).
+        /// </summary>
+        public float MaxBloodVolume => _healthController.BodyPartsVolume *
+            HealthConstants.BloodVolumeToHumanVolumeRatio * (1 - HealthConstants.MaxOxygenToBloodVolumeRatio);
 
+        /// <summary>
+        /// The maximum amount of blood in mmols _container can handle.
+        /// </summary>
         public float MaxBloodQuantity
         {
             get
@@ -37,8 +45,16 @@ namespace SS3D.Systems.Health
             }
         }
 
-        public float MaxOxygenVolume => HealthConstants.MaxOxygenToBloodVolumeRatio * MaxBloodVolume;
+        /// <summary>
+        /// The maximum volume in mLs of oxygen _container can handle.
+        /// </summary>
+        public float MaxOxygenVolume => _healthController.BodyPartsVolume *
+            HealthConstants.BloodVolumeToHumanVolumeRatio * HealthConstants.MaxOxygenToBloodVolumeRatio;
 
+
+        /// <summary>
+        /// The maximum amount of oxygen in mmols _container can handle.
+        /// </summary>
         public float MaxOxygenQuantity
         {
             get
@@ -48,6 +64,12 @@ namespace SS3D.Systems.Health
                 return MaxOxygenVolume / oxygen.MillilitersPerMilliMoles;
             }
         }
+
+        /// <summary>
+        /// Max total volume _container can have. The tolerance factor allows for a margin, but trouble can occurs if 
+        /// the volume of the container is above MaxOxygenVolume + MaxBloodVolume.
+        /// </summary>
+        public float MaxTotalVolume => (MaxOxygenVolume + MaxBloodVolume) * HealthConstants.HighBloodVolumeToleranceFactor;
 
         public override void OnStartServer()
         {
@@ -65,6 +87,7 @@ namespace SS3D.Systems.Health
             yield return null;
 
             UpdateVolume();
+            AddInitialSubstance();
         }
 
         /// <summary>
@@ -77,7 +100,7 @@ namespace SS3D.Systems.Health
         {
             BodyPart[] allBodyPartsOnEntity = GetComponentsInChildren<BodyPart>();
 
-            _container.ChangeVolume((float)allBodyPartsOnEntity.Sum(x => x.Volume) * HealthConstants.BloodVolumeToHumanVolumeRatio);
+            _container.ChangeVolume(MaxTotalVolume);
         }
 
         /// <summary>
@@ -118,6 +141,20 @@ namespace SS3D.Systems.Health
                 i++;
             }
             return oxygenNeededForEachpart;
+        }
+
+        /// <summary>
+        /// Simply add oxygen and blood in the maximum allowed amount.
+        /// </summary>
+        /// <returns></returns>
+        public void AddInitialSubstance()
+        {
+            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            Substance blood = registry.FromType(SubstanceType.Blood);
+            Substance oxygen = registry.FromType(SubstanceType.Oxygen);
+
+            _container.AddSubstance(blood, MaxBloodQuantity);
+            _container.AddSubstance(oxygen, MaxOxygenQuantity);
         }
     }
 }
