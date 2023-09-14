@@ -32,6 +32,13 @@ namespace SS3D.Systems.Health
         public override void OnStartServer()
         {
             base.OnStartServer();
+            StartCoroutine(DelayInit());
+        }
+
+        private IEnumerator DelayInit()
+        {
+            yield return null;
+            yield return null;
             _connectedToHeart = GetAllBodyPartAttachedToHeart();
             OnPulse += HandleHeartPulse;
             HealthController.OnBodyPartRemoved += HandleBodyPartRemoved;

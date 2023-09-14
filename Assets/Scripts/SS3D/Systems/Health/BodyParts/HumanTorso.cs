@@ -8,14 +8,20 @@ public class HumanTorso : BodyPart
 {
     public Heart heart;
     public Lungs leftLung;
-    public Lungs rightLungs;
+    public Lungs rightLung;
 
     public override void OnStartServer()
     {
         base.OnStartServer();
+        StartCoroutine(AddInternalOrgans());
+    }
+
+    private IEnumerator AddInternalOrgans()
+    {
+        yield return null;
         AddInternalBodyPart(heart);
         AddInternalBodyPart(leftLung);
-        AddInternalBodyPart(rightLungs);
+        AddInternalBodyPart(rightLung);
     }
 
     protected override void AddInitialLayers()
