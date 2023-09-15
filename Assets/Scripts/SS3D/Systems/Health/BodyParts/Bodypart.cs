@@ -158,12 +158,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
         if (_childBodyParts.Contains(value))
         {
-            Punpun.Error(this, "trying to set up {bodypart} bodypart as both child and" +
+            Log.Error(this, "trying to set up {bodypart} bodypart as both child and" +
                 " parent of {bodypart} bodypart.", Logs.Generic, value, this);
             return;
         }
 
-        Punpun.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
+        Log.Debug(this, "value of parent body part {bodypart}", Logs.Generic, value);
         _parentBodyPart = value;
         _parentBodyPart._childBodyParts.Add(this);
     }

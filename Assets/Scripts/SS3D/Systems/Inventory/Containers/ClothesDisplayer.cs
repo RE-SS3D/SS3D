@@ -72,7 +72,7 @@ namespace SS3D.Systems.Inventory.Containers
                     Item newItem = newData._clothToDisplay;
                     if (!newBodyPart.TryGetComponent(out SkinnedMeshRenderer renderer))
                     {
-                        Punpun.Warning(this, $"no skinned mesh renderer on game object {newBodyPart}, can't display cloth");
+                        Log.Warning(this, $"no skinned mesh renderer on game object {newBodyPart}, can't display cloth");
                         return;
                     }
                     newBodyPart.gameObject.SetActive(true);
