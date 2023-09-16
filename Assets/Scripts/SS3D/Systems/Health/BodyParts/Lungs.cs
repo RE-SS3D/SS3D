@@ -56,6 +56,10 @@ namespace SS3D.Systems.Health
             }
         }
 
+        /// <summary>
+        /// Take some amount of gas from atmos and inject it in blood.
+        /// TODO : Actually take gas from atmos, for now, constant intake of oxygen.
+        /// </summary>
         [Server]
         private void Breath()
         {
@@ -71,14 +75,19 @@ namespace SS3D.Systems.Health
                 HealthController.Circulatory.Container.AddSubstance(oxygen, OxygenConstantIntake);
             }
 
-            SetBreathingState((float)HealthController.Circulatory.AvailableOxygen(),
-                HealthController.Circulatory.ComputeIndividualNeeds(HealthController.BodyPartsOnEntity).Sum());
+            SetBreathingState();
         }
 
-        // should set that to private
+        /// <summary>
+        /// Breathing state could be useful to set stuff like breathing noises. This set it up depending on the amount of 
+        /// available and needed oxygen. Breathing becomes more difficult as oxygen amount becomes uncomfortable.
+        /// </summary>
         [Server]
-        private void SetBreathingState(float availableOxygen, float sumNeeded)
+        private void SetBreathingState()
         {
+            float availableOxygen = (float)HealthController.Circulatory.AvailableOxygen();
+            float sumNeeded = HealthController.Circulatory.ComputeIndividualNeeds(HealthController.BodyPartsOnEntity).Sum();
+
             if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
             {
                 breathing = BreathingState.Nice;

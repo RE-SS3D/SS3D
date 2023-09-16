@@ -35,6 +35,10 @@ namespace SS3D.Systems.Health
             StartCoroutine(DelayInit());
         }
 
+        /// <summary>
+        /// Necessary to prevent issue with body part not getting attached ...
+        /// TODO : Implement a proper pipeline of initialisation.
+        /// </summary>
         private IEnumerator DelayInit()
         {
             yield return null;
@@ -44,6 +48,9 @@ namespace SS3D.Systems.Health
             HealthController.OnBodyPartRemoved += HandleBodyPartRemoved;
         }
 
+        /// <summary>
+        /// Simple handler for pulse event.
+        /// </summary>
         [Server]
         public void HandleHeartPulse(object sender, EventArgs args)
         {          
@@ -107,17 +114,20 @@ namespace SS3D.Systems.Health
                 double proportionAvailable = 0;
                 if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
                 {
+                    // Send a bit more if it can afford it.
                     proportionAvailable = oxygenNeededForEachpart[i] / sumNeeded;
                     veins.ReceiveOxygen(HealthConstants.SafeOxygenFactor * proportionAvailable * availableOxygen);
                 }
                 else
                 {
+                    // Send just what it needs to survive (or less).
                     proportionAvailable = oxygenNeededForEachpart[i] / sumNeeded;
                     veins.ReceiveOxygen(proportionAvailable * availableOxygen);
                 }
                 i++;
             }
 
+            // Remove all oxygen sent to body parts from the substance container.
             if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
             {
                 HealthController.Circulatory.Container.RemoveSubstance(oxygen, HealthConstants.SafeOxygenFactor * sumNeeded);
@@ -128,12 +138,18 @@ namespace SS3D.Systems.Health
             }
         }
 
+        /// <summary>
+        /// Simply remove a body part connected to heart
+        /// </summary>
         [Server]
         public void HandleBodyPartRemoved(object sender, BodyPart part)
         {
             _connectedToHeart.Remove(part);
         }
 
+        /// <summary>
+        /// Make all circulatory layer connected to heart bleed.
+        /// </summary>
         private void Bleed()
         {
             foreach (BodyPart part in _connectedToHeart)
@@ -187,6 +203,9 @@ namespace SS3D.Systems.Health
             }
         }
 
+        /// <summary>
+        /// Simply set the heart frequency, the default is 60 BPM.
+        /// </summary>
         [Server]
         public void SetBeatFrequency(float frequency)
         {

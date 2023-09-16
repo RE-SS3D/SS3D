@@ -19,11 +19,11 @@ namespace SS3D.Systems.Health
 
 		}
 
-        protected override void AfterSpawningCopiedBodyPart()
-        {
-            return;
-        }
+        protected override void AfterSpawningCopiedBodyPart() { }
 
+        /// <summary>
+        /// When the brain is destroyed, the player is killed.
+        /// </summary>
         protected override void BeforeDestroyingBodyPart()
         {
             Punpun.Information(this, "brain dies");

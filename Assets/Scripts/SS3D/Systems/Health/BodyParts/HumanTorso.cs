@@ -16,6 +16,10 @@ public class HumanTorso : BodyPart
         StartCoroutine(AddInternalOrgans());
     }
 
+    /// <summary>
+    /// Add specific torso internal organs, heart, lungs, and more to come..
+    /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
+    /// </summary>
     private IEnumerator AddInternalOrgans()
     {
         yield return null;

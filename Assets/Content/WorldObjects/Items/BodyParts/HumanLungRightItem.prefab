@@ -321,7 +321,7 @@ MonoBehaviour:
   HealthController: {fileID: 0}
   _bodyPartVolume: 700
   breathing: 0
-  _circulatoryController: {fileID: 0}
+  OxygenConstantIntake: 0
 --- !u!114 &5784313772530910597
 MonoBehaviour:
   m_ObjectHideFlags: 0
