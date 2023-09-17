@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SS3D.Systems.Inventory.Items;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +19,13 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private string _interactionName;
 
+        [SerializeField]
+        private Item _target;
+
+        [SerializeField]
+        private Item _result;
+
+
         /// <summary>
         /// The items and their respective numbers necessary for the recipe.
         /// </summary>
@@ -32,6 +40,16 @@ namespace SS3D.Systems.Crafting
         /// Name of the necessary interaction to perform the recipe.
         /// </summary>
         public string InteractionName => _interactionName;
+
+        /// <summary>
+        /// The target of the recipe, which is the item on which the player must click to get the crafting interactions.
+        /// </summary>
+        public Item Target => _target;
+
+        /// <summary>
+        /// The result of the crafting.
+        /// </summary>
+        public Item Result => _result;
 
 #if UNITY_EDITOR
 
