@@ -23,7 +23,12 @@ namespace SS3D.Substances
         /// If a range check should be automatically performed
         /// </summary>
         public bool RangeCheck { get; set; }
-        
+
+        public virtual string GetGenericName()
+        {
+            return Name;
+        }
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return null;
