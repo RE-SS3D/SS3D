@@ -16,6 +16,7 @@ MonoBehaviour:
   _type: 2
   IncludedAssetDatabases:
   - {fileID: 11400000, guid: ca2c2a0941deb144b88d6d8cbf4252ee, type: 2}
+  - {fileID: 11400000, guid: c8a3b9b514b2f7543a544259c3c97b81, type: 2}
   - {fileID: 11400000, guid: cdf9511d9049fa14ab0433934f3537ec, type: 2}
   - {fileID: 11400000, guid: c2644d7b34e956743a0bc485e7ca5e37, type: 2}
   - {fileID: 11400000, guid: 3fc0db940ed0bd14cb905a5e15dd32fe, type: 2}
