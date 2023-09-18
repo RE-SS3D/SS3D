@@ -47,6 +47,8 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
                 CraftingRecipe recipe = (CraftingRecipe) asset;
+
+                _recipeOrganiser.TryAdd(recipe.Target, new Dictionary<string, CraftingRecipe>());
                 _recipeOrganiser[recipe.Target][recipe.InteractionName] = recipe;
             }
         }
