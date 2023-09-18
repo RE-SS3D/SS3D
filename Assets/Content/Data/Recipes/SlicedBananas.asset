@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SlicedBananas
   m_EditorClassIdentifier: 
   _executionTime: 2
-  _interactionName: Cut
-  _recipeElements:
-  - _count: 1
-    _itemId: 5
+  _interactionName: Slice
+  _target: 29
+  _result: 5
+  _recipeElements: []
