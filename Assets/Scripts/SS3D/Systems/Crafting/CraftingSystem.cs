@@ -78,10 +78,11 @@ namespace SS3D.Systems.Crafting
             {
                 item.Despawn();
             }
-            Item itemResult = Assets.Get<Item>(AssetDatabases.Items, (int)result);
-            Item product = Instantiate(itemResult, target.Position, target.Rotation);
+
+            GameObject itemResult = Assets.Get<GameObject>(AssetDatabases.Items, (int) result);
+            GameObject product = Instantiate(itemResult, target.Position, target.Rotation);
             target.Despawn();
-            InstanceFinder.ServerManager.Spawn(product.gameObject);
+            InstanceFinder.ServerManager.Spawn(product);
         }
     }
 }
