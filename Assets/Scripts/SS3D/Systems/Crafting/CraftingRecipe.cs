@@ -1,6 +1,8 @@
-﻿using SS3D.Systems.Inventory.Items;
+﻿using SS3D.Data.Enums;
+using SS3D.Systems.Inventory.Items;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Crafting
@@ -9,9 +11,10 @@ namespace SS3D.Systems.Crafting
     /// Crafting recipes allow to replace a bunch of item by another, using a specific interaction.
     /// </summary>
     [CreateAssetMenu(fileName = "Recipe", menuName = "SS3D/Crafting/Recipe")]
-    public class CraftingRecipe : ScriptableObject, ISerializationCallbackReceiver
+    public class CraftingRecipe : ScriptableObject //, ISerializationCallbackReceiver
     {
-        private HashSet<RecipeElement> _elements = new HashSet<RecipeElement>();
+        [SerializeField]
+        private Dictionary<ItemId, int> _elements = new();
 
         [SerializeField]
         private float _executionTime;
@@ -20,16 +23,16 @@ namespace SS3D.Systems.Crafting
         private string _interactionName;
 
         [SerializeField]
-        private Item _target;
+        private ItemId _target;
 
         [SerializeField]
-        private Item _result;
+        private ItemId _result;
 
 
         /// <summary>
         /// The items and their respective numbers necessary for the recipe.
         /// </summary>
-        public HashSet<RecipeElement> Elements => _elements;
+        public Dictionary<ItemId, int> Elements => _elements;
 
         /// <summary>
         /// Time it takes in second for the crafting to finish.
@@ -44,41 +47,77 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// The target of the recipe, which is the item on which the player must click to get the crafting interactions.
         /// </summary>
-        public Item Target => _target;
+        public ItemId Target => _target;
 
         /// <summary>
         /// The result of the crafting.
         /// </summary>
-        public Item Result => _result;
+        public ItemId Result => _result;
 
-#if UNITY_EDITOR
+        public int ElementsNumber => _elements.Sum(x => x.Value);
+
+        #if UNITY_EDITOR
+
+                /// <summary>
+                /// Necessary to be able to edit in editor recipe elements.
+                /// Not straightforward since they are in a Hashset.
+                /// </summary>
+                [SerializeField]
+                private List<RecipeElement> _recipeElements;
+
+                public void OnAfterDeserialize()
+                {
+                    // just transfer things from the list to the dictionnary.
+                    if (_recipeElements == null || _elements == null) return;
+                    foreach (RecipeElement item in _recipeElements)
+                    {
+                        _elements.Add(item.ItemId, item.Count);
+                    }
+                    _recipeElements = null;
+                }
+
+                public void OnBeforeSerialize()
+                {
+                    // just transfer things from the dictionnary to the list.
+                    if (_elements == null) return;
+                    _recipeElements = new List<RecipeElement>();
+                    foreach (ItemId id in _elements.Keys)
+                    {
+                        _recipeElements.Add(new RecipeElement(id, _elements[id]));
+                    }
+                    _elements= null;
+                }
 
         /// <summary>
-        /// Necessary to be able to edit in editor recipe elements.
-        /// Not straightforward since they are in a Hashset.
+        /// A recipe element is simply describing an item and a number of it.
         /// </summary>
-        [SerializeField]
-        private List<RecipeElement> _recipeElements;
-
-        public void OnAfterDeserialize()
+        [System.Serializable]
+        private struct RecipeElement
         {
-            // just transfer things from the list to the hashset.
-            if (_recipeElements == null || _elements == null) return;
-            foreach (RecipeElement item in _recipeElements)
+            /// <summary>
+            /// Number of items.
+            /// </summary>
+            [SerializeField]
+            private int _count;
+
+            /// <summary>
+            /// Id of the item.
+            /// </summary>
+            [SerializeField]
+            private ItemId _itemId;
+
+            public int Count => _count;
+
+            public ItemId ItemId => _itemId;
+
+            public RecipeElement(ItemId id, int count)
             {
-                _elements.Add(item);
+                _count = count;
+                _itemId = id;
             }
-            _recipeElements = null;
         }
 
-        public void OnBeforeSerialize()
-        {
-            // just transfer things from the hashset to the list.
-            if (_elements == null) return;
-            _recipeElements = new List<RecipeElement>(_elements);
-            _elements= null;
-        }
+    #endif
     }
-#endif
 }
 
