@@ -759,9 +759,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2b7b73bc7798c9479dbf2a12f981d4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 1506918116}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1506918116}
 --- !u!1001 &878406318
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1335,7 +1335,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021075485018, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -230
+      value: -230.00006
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468402021449001342, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 61.7782
       objectReference: {fileID: 0}
     - target: {fileID: 4468402022117316798, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1677,6 +1681,7 @@ MonoBehaviour:
   - {fileID: 604587501}
   - {fileID: 439774648}
   - {fileID: 1980231551}
+  - {fileID: 820019862}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 516802435}

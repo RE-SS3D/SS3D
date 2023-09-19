@@ -39,7 +39,7 @@ namespace SS3D.Interactions
 
             return new ClientDelayedInteraction
             {
-                Delay = Delay, LoadingBarPrefab = LoadingBarPrefab
+                Delay = Delay
             };
         }
 
