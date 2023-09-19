@@ -23,6 +23,14 @@ namespace SS3D.Systems.Crafting
             Delay = delay;
         }
 
+        public override bool CanInteract(InteractionEvent interactionEvent)
+        {
+            if(!base.CanInteract(interactionEvent)) return false;
+
+            bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
+            return isInRange;
+        }
+
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
