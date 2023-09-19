@@ -120,17 +120,17 @@ namespace SS3D.Systems.Crafting
             CraftingRecipe recipe)
         {
             // check if there's enough of each item.
-            foreach (ItemId item in recipe.Elements.Keys)
+            foreach (ItemId item in potentialRecipeElements.Keys.ToList())
             {
-                int CloseItemsCount = potentialRecipeElements.GetValueOrDefault(item);
-                if (recipe.Elements[item] > CloseItemsCount)
+                int recipeItemCount = recipe.Elements.GetValueOrDefault(item);
+                if (recipeItemCount > potentialRecipeElements[item])
                 {
                     return false;
                 }
 
                 // We do that for later, easier to check how much items we really need,
                 // and not include too much.
-                potentialRecipeElements[item] = recipe.Elements[item];
+                potentialRecipeElements[item] = recipeItemCount;   
             }
 
             return true;
