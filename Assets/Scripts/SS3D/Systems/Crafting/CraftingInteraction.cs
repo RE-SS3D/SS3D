@@ -62,7 +62,7 @@ namespace SS3D.Systems.Crafting
                 return false;
             }
 
-            BuildListOfItemToConsume(closeItemsFromTarget, potentialRecipeElements);
+            BuildListOfItemToConsume(closeItemsFromTarget, recipe);
 
             return true;
         }
@@ -72,15 +72,17 @@ namespace SS3D.Systems.Crafting
         /// the list than necessary.
         /// </summary>
         private void BuildListOfItemToConsume(List<Item> closeItemsFromTarget,
-            Dictionary<ItemId, int> potentialRecipeElements)
+            CraftingRecipe recipe)
         {
             ItemsToConsume = new List<Item>();
 
+            Dictionary<ItemId, int> recipeElements = new Dictionary<ItemId, int>(recipe.Elements) ;
+
             foreach (Item item in closeItemsFromTarget)
             {
-                if (potentialRecipeElements.GetValueOrDefault(item.ItemId) <= 0) continue;
+                if (recipeElements.GetValueOrDefault(item.ItemId) <= 0) continue;
                 ItemsToConsume.Add(item);
-                potentialRecipeElements[item.ItemId] -= 1;
+                recipeElements[item.ItemId] -= 1;
             }
         }
 
@@ -109,9 +111,7 @@ namespace SS3D.Systems.Crafting
         }
 
         /// <summary>
-        /// Check if there's enough items for the recipe. This method modifies potentialRecipeElements,
-        /// as if there's more items required from a certain type available, we only keep the
-        /// required amount.
+        /// Check if there's enough items for the recipe.
         /// </summary>
         /// <param name="potentialRecipeElements"> Items that can potentially be used </param>
         /// <param name="recipe"> The recipe for which we want to check items</param>
@@ -120,17 +120,13 @@ namespace SS3D.Systems.Crafting
             CraftingRecipe recipe)
         {
             // check if there's enough of each item.
-            foreach (ItemId item in potentialRecipeElements.Keys.ToList())
+            foreach (ItemId item in recipe.Elements.Keys.ToList())
             {
-                int recipeItemCount = recipe.Elements.GetValueOrDefault(item);
-                if (recipeItemCount > potentialRecipeElements[item])
+                int potentialRecipeItemCount = potentialRecipeElements.GetValueOrDefault(item);
+                if (potentialRecipeItemCount < recipe.Elements[item])
                 {
                     return false;
                 }
-
-                // We do that for later, easier to check how much items we really need,
-                // and not include too much.
-                potentialRecipeElements[item] = recipeItemCount;   
             }
 
             return true;
