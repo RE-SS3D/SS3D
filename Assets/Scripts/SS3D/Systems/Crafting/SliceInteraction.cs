@@ -4,6 +4,7 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Logging;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
@@ -29,7 +30,7 @@ namespace SS3D.Systems.Crafting
 
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return GetGenericName() + " " + interactionEvent.Target.ToString();
+            return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
         } 
     }
 }
