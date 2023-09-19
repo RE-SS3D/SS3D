@@ -26,7 +26,7 @@ namespace SS3D.Systems.Crafting
         private ItemId _target;
 
         [SerializeField]
-        private ItemId _result;
+        private List<ItemId> _result;
 
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// The result of the crafting.
         /// </summary>
-        public ItemId Result => _result;
+        public List<ItemId> Result => _result;
 
         public int ElementsNumber => _elements.Sum(x => x.Value);
 

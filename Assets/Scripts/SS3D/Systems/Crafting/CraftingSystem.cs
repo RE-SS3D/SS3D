@@ -53,14 +53,22 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        public CraftingRecipe GetRecipe(Interaction craftingInteraction, Item target)
+        public bool TryGetRecipe(Interaction craftingInteraction, Item target, out CraftingRecipe recipe)
         {
-            // If there's no recipes for this combo.
-            if (_recipeOrganiser[target.ItemId][craftingInteraction.GetGenericName()] == null)
+            if(!_recipeOrganiser.TryGetValue(target.ItemId, out Dictionary<string, CraftingRecipe> dic))
             {
-                return null;
+                recipe = null;
+                return false;
             }
-            else return _recipeOrganiser[target.ItemId][craftingInteraction.GetGenericName()];
+
+            if (!dic.TryGetValue(craftingInteraction.GetGenericName(), out CraftingRecipe recipeSearched))
+            {
+                recipe = null;
+                return false;
+            }
+
+            recipe = recipeSearched;
+            return true;
         }
 
 
@@ -72,17 +80,19 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(Item target, List<Item> itemToConsume, ItemId result)
+        public void Craft(Item target, List<Item> itemToConsume, List<ItemId> result)
         {
-            foreach(Item item in itemToConsume)
+            target.Despawn();
+            foreach (Item item in itemToConsume)
             {
                 item.Despawn();
             }
-
-            GameObject itemResult = Assets.Get<GameObject>(AssetDatabases.Items, (int) result);
-            GameObject product = Instantiate(itemResult, target.Position, target.Rotation);
-            target.Despawn();
-            InstanceFinder.ServerManager.Spawn(product);
+            foreach(ItemId id in result)
+            {
+                GameObject itemResult = Assets.Get<GameObject>(AssetDatabases.Items, (int)id);
+                GameObject product = Instantiate(itemResult, target.Position, target.Rotation);
+                InstanceFinder.ServerManager.Spawn(product);
+            }  
         }
     }
 }

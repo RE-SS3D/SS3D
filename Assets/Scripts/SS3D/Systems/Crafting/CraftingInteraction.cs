@@ -42,8 +42,13 @@ namespace SS3D.Systems.Crafting
             }
 
             Item target = interactionEvent.Target as Item;
-            recipe = craftingSystem.GetRecipe(this, target);
-            List<Item> closeItemsFromTarget = GetCloseItemsFromTarget(target, recipe);
+
+            if(!craftingSystem.TryGetRecipe(this, target, out recipe))
+            {
+                return false;
+            }
+
+            List<Item> closeItemsFromTarget = GetCloseItemsFromTarget(target);
 
             // Transform the list into a dictionnary of itemsID and counts of items.
             // This is some overhead to allow for fast comparison between recipe and 
@@ -84,7 +89,7 @@ namespace SS3D.Systems.Crafting
         /// TODO : only collider for item ? Should then ensure collider of item is on the
         /// same game object as item script for all items. Would avoid the getInParent.
         /// </summary>
-        private List<Item> GetCloseItemsFromTarget(Item target, CraftingRecipe recipe)
+        private List<Item> GetCloseItemsFromTarget(Item target)
         {
             Vector3 center = target.Position;
 
