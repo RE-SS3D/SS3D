@@ -18,6 +18,11 @@ namespace SS3D.Systems.Crafting
 {
     public class SliceInteraction : CraftingInteraction
     {
+        public SliceInteraction(float delay)
+        {
+            Delay = delay;
+        }
+
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
@@ -31,7 +36,12 @@ namespace SS3D.Systems.Crafting
         public override string GetName(InteractionEvent interactionEvent)
         {
             return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
-        } 
+        }
+
+        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            
+        }
     }
 }
 

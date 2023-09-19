@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Crafting
 {
-    public class CraftingInteraction : Interaction, ICraftingInteraction
+    public abstract class CraftingInteraction : DelayedInteraction, ICraftingInteraction
     {
 
         private List<Item> ItemsToConsume;
@@ -141,8 +141,8 @@ namespace SS3D.Systems.Crafting
         [Server]
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Craft(interactionEvent);
-            return false;
+            base.Start(interactionEvent, reference);
+            return true;
         }
 
         [Server]
@@ -158,6 +158,11 @@ namespace SS3D.Systems.Crafting
             Item target = interactionEvent.Target as Item;
 
             craftingSystem.Craft(target, ItemsToConsume, recipe.Result);
+        }
+
+        protected override void StartDelayed(InteractionEvent interactionEvent)
+        {
+            Craft(interactionEvent);
         }
     }
 }

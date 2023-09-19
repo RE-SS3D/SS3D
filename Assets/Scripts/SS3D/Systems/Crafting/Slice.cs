@@ -12,7 +12,7 @@ namespace SS3D.Systems.Crafting
     {
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            var interaction = new SliceInteraction();
+            var interaction = new SliceInteraction(2f);
 
             foreach (IInteractionTarget target in targets)
             {
