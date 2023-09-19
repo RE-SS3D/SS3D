@@ -12,6 +12,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Roles;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Crafting
@@ -93,6 +94,85 @@ namespace SS3D.Systems.Crafting
                 GameObject product = Instantiate(itemResult, target.Position, target.Rotation);
                 InstanceFinder.ServerManager.Spawn(product);
             }  
+        }
+
+        /// <summary>
+        /// Build the list of items we want to consume. Don't add more to
+        /// the list than necessary.
+        /// </summary>
+        public List<Item> BuildListOfItemToConsume(List<Item> closeItemsFromTarget,
+            CraftingRecipe recipe)
+        {
+            List<Item>  ItemsToConsume = new List<Item>();
+
+            Dictionary<ItemId, int> recipeElements = new Dictionary<ItemId, int>(recipe.Elements);
+
+            foreach (Item item in closeItemsFromTarget)
+            {
+                if (recipeElements.GetValueOrDefault(item.ItemId) <= 0) continue;
+                ItemsToConsume.Add(item);
+                recipeElements[item.ItemId] -= 1;
+            }
+
+            return ItemsToConsume;
+        }
+
+        /// <summary>
+        /// Find all items in close proximity from the target of the recipe.
+        /// TODO : only collider for item ? Should then ensure collider of item is on the
+        /// same game object as item script for all items. Would avoid the getInParent.
+        /// </summary>
+        public List<Item> GetCloseItemsFromTarget(Item target)
+        {
+            Vector3 center = target.Position;
+
+            float radius = 0.5f;
+
+            Collider[] hitColliders = Physics.OverlapSphere(center, radius);
+            List<Item> closeItemsFromTarget = new List<Item>();
+
+            foreach (Collider hitCollider in hitColliders)
+            {
+                Item item = hitCollider.GetComponentInParent<Item>();
+                if (item == null) continue;
+                closeItemsFromTarget.Add(item);
+            }
+
+            return closeItemsFromTarget;
+        }
+
+        /// <summary>
+        /// Check if there's enough items for the recipe.
+        /// </summary>
+        /// <param name="potentialRecipeElements"> Items that can potentially be used </param>
+        /// <param name="recipe"> The recipe for which we want to check items</param>
+        /// <returns></returns>
+        public bool CheckEnoughCloseItemsForRecipe(Dictionary<ItemId, int> potentialRecipeElements,
+            CraftingRecipe recipe)
+        {
+            // check if there's enough of each item.
+            foreach (ItemId item in recipe.Elements.Keys.ToList())
+            {
+                int potentialRecipeItemCount = potentialRecipeElements.GetValueOrDefault(item);
+                if (potentialRecipeItemCount < recipe.Elements[item])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public Dictionary<ItemId, int> ItemListToDictionnaryOfRecipeElements(List<Item> closeItemsFromTarget)
+        {
+            // Transform the list into a dictionnary of itemsID and counts of items.
+            // This is some overhead to allow for fast comparison between recipe and 
+            // available items.
+            Dictionary<ItemId, int> potentialRecipeElements = closeItemsFromTarget
+            .GroupBy(item => item.ItemId)
+            .ToDictionary(group => group.Key, group => group.Count());
+
+            return potentialRecipeElements;
         }
     }
 }
