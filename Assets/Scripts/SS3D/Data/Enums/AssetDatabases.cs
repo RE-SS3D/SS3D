@@ -8,6 +8,7 @@ namespace SS3D.Data.Enums
         Items = 3, 
         Scenes = 4, 
         Settings = 5, 
+        UIElements = 6, 
     }
 }
 
