@@ -27,9 +27,11 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         private Dictionary<ItemId, Dictionary<string, CraftingRecipe>> _recipeOrganiser = new();
 
-        public override void OnStartServer()
+        public override void OnStartNetwork()
         {
-            base.OnStartServer();
+            // Need to be called both on server and client,
+            // they both need access to recipes.
+            base.OnStartNetwork();
             FillRecipeOrganiser();
         }
 
@@ -37,6 +39,7 @@ namespace SS3D.Systems.Crafting
         /// organise the recipes in such a way that it'll be easy to sort through the relevant recipes when looking
         /// up which recipes are available for a given interaction and target.
         /// </summary>
+        [ServerOrClient]
         private void FillRecipeOrganiser()
         {
             AssetDatabase recipesDataBase = Assets.GetDatabase(AssetDatabases.CraftingRecipes);
