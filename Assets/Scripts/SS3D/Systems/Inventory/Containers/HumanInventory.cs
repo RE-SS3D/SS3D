@@ -275,7 +275,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            attachedTo.RemoveItem(item);
+            item.SetContainer(null);
         }
 
 
