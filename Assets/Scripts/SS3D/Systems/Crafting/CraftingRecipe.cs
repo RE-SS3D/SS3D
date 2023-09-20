@@ -57,17 +57,18 @@ namespace SS3D.Systems.Crafting
 
         public int ElementsNumber => _elements.Sum(x => x.Value);
 
-        #if UNITY_EDITOR
-
+#if UNITY_EDITOR
         /// <summary>
         /// Necessary to be able to edit in editor recipe elements.
         /// Not straightforward since they are in a Hashset.
         /// </summary>
         [SerializeField]
         private List<RecipeElement> _recipeElements;
+#endif
 
         public void OnAfterDeserialize()
         {
+#if UNITY_EDITOR
             // just transfer things from the list to the dictionnary.
 
             int enumCount = Enum.GetNames(typeof(ItemId)).Length;
@@ -82,10 +83,12 @@ namespace SS3D.Systems.Crafting
                 }
             }
             _recipeElements = null;
+#endif
         }
 
         public void OnBeforeSerialize()
         {
+#if UNITY_EDITOR
             // just transfer things from the dictionnary to the list.
             if (_elements == null) return;
             _recipeElements = new List<RecipeElement>();
@@ -93,38 +96,40 @@ namespace SS3D.Systems.Crafting
             {
                 _recipeElements.Add(new RecipeElement(id, _elements[id]));
             }
+#endif
         }
 
-    /// <summary>
-    /// A recipe element is simply describing an item and a number of it.
-    /// </summary>
-    [System.Serializable]
-    private struct RecipeElement
-    {
+#if UNITY_EDITOR
         /// <summary>
-        /// Number of items.
+        /// A recipe element is simply describing an item and a number of it.
         /// </summary>
-        [SerializeField]
-        private int _count;
-
-        /// <summary>
-        /// Id of the item.
-        /// </summary>
-        [SerializeField]
-        private ItemId _itemId;
-
-        public int Count => _count;
-
-        public ItemId ItemId => _itemId;
-
-        public RecipeElement(ItemId id, int count)
+        [System.Serializable]
+        private struct RecipeElement
         {
-            _count = count;
-            _itemId = id;
+            /// <summary>
+            /// Number of items.
+            /// </summary>
+            [SerializeField]
+            private int _count;
+
+            /// <summary>
+            /// Id of the item.
+            /// </summary>
+            [SerializeField]
+            private ItemId _itemId;
+
+            public int Count => _count;
+
+            public ItemId ItemId => _itemId;
+
+            public RecipeElement(ItemId id, int count)
+            {
+                _count = count;
+                _itemId = id;
+            }
         }
+#endif
     }
 
-    #endif
-    }
 }
 
