@@ -1,4 +1,8 @@
-﻿using EditorTools;
+﻿
+
+#if UNITY_EDITOR
+
+using EditorTools;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -106,3 +110,5 @@ public class RuleSetManager : EditorWindow
         AssetDatabase.Refresh();
     }
 }
+
+#endif
