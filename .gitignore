@@ -8,6 +8,7 @@
 /[Bb]uild/
 /[Bb]uilds/Game/*
 !/[Bb]uilds/Game/Config/
+!/[Bb]uilds/Game/BUILD_THE_GAME_HERE.txt
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
