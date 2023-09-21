@@ -306,13 +306,13 @@ namespace SS3D.Systems.Inventory.Containers
 
             // Can't put an item in its own container
             if (item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(container)){
-				Punpun.Warning(this, "can't put an item in its own container");
+                Log.Warning(this, "can't put an item in its own container");
                 return;
             }
 
             if (container == null)
             {
-                Punpun.Error(this, $"Client sent invalid container reference: NetId {container.ObjectId}");
+                Log.Error(this, $"Client sent invalid container reference: NetId {container.ObjectId}");
                 return;
             }
 

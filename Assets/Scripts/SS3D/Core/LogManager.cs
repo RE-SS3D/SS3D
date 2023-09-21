@@ -1,17 +1,13 @@
 ﻿using Serilog;
 using Serilog.Sinks.Unity3D;
-using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using UnityEngine;
 using FishNet;
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
 using SS3D.Data;
-using FishNet.Configuring;
 using Log = Serilog.Log;
 
 
@@ -25,28 +21,28 @@ namespace SS3D.Core
     /// </summary>
     public static class LogManager
     {
-        private static readonly string defaultUnityLogTemplate;
+        private static readonly string DefaultUnityLogTemplate;
         private static readonly string LogFolderPath;
-        private static bool _isInitialized;
+        private static bool IsInitialized;
 
-        private static LogSettings settings;
+        private static readonly LogSettings Settings;
 
         static LogManager()
         {
-            defaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
+            DefaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
             LogFolderPath = Application.dataPath + "/../Logs/";
 
             if (Application.isPlaying)
             {
-                settings = Assets.Get<LogSettings>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
+                Settings = Assets.Get<LogSettings>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
             }
             
         }
 
         public static void Initialize()
         {
-            if (_isInitialized) return;
-            _isInitialized = true;
+            if (IsInitialized) return;
+            IsInitialized = true;
 
             var configuration = new LoggerConfiguration();
 
@@ -56,7 +52,7 @@ namespace SS3D.Core
             }
 
             // Configure writing to Unity's console, using our custom text formatter.
-            configuration = configuration.WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: defaultUnityLogTemplate));
+            configuration = configuration.WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: DefaultUnityLogTemplate));
 
 
 
@@ -79,9 +75,9 @@ namespace SS3D.Core
 
             // Apply some override on the minimum logging level for some namespaces using the log settings.
             // Does not apply override if the logging level corresponds to the global minimum level.
-            foreach (var levelForNameSpace in settings.SS3DNameSpaces)
+            foreach (var levelForNameSpace in Settings.SS3DNameSpaces)
             {
-                if (levelForNameSpace.Level == settings.defaultLogLevel) continue;
+                if (levelForNameSpace.Level == Settings.defaultLogLevel) continue;
 
                 configuration = configuration.MinimumLevel.Override(levelForNameSpace.Name, levelForNameSpace.Level);
             }
@@ -112,7 +108,7 @@ namespace SS3D.Core
         /// </summary>
         private static LoggerConfiguration ConfigureMinimumLevel(LoggerConfiguration loggerConfiguration)
         {
-             switch (settings.defaultLogLevel)
+             switch (Settings.defaultLogLevel)
              {
                  case LogEventLevel.Verbose: return loggerConfiguration.MinimumLevel.Verbose();
                  case LogEventLevel.Debug: return loggerConfiguration.MinimumLevel.Debug();
