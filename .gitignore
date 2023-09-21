@@ -71,7 +71,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Packed Addressables
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[aA]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
 # Unity3D generated Addressables
 /[Uu]nity[Ee]ngine.[Cc]ontent.[Aa]ddressables.[Bb]uild[Pp]ath/
@@ -93,8 +93,8 @@ crashlytics-build.properties
 /.[Vv]ray[Tt]humbs/
 
 #Some annoying generated files by the project
-Assets/Content/Data/DefaultPrefabObjects.asset
-/Assets/Content/Addressables/Windows/addressables_content_state.bin
-/Assets/Content/Addressables/Windows/addressables_content_state.bin.meta
-/Assets/Content/Addressables/link.xml
-/Assets/Content/Addressables/link.xml.meta
+/[aA]ssets/[cC]ontent/Data/DefaultPrefabObjects.asset
+/[aA]ssets/[cC]ontent/Addressables/Windows/addressables_content_state.bin
+/[aA]ssets/[cC]ontent/Addressables/Windows/addressables_content_state.bin.meta
+/[aA]ssets/[cC]ontent/Addressables/link.xml
+/[aA]ssets/[cC]ontent/Addressables/link.xml.meta
