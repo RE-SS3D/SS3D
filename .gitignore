@@ -6,7 +6,8 @@
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
-/[Bb]uilds/Game
+/[Bb]uilds/Game/*
+!/[Bb]uilds/Game/Config/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
