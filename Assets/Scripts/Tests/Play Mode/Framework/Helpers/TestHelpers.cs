@@ -147,7 +147,7 @@ namespace SS3D.Tests
             GameObject.Find(tabName)?.GetComponent<Button>().onClick.Invoke();
         }
 
-        public static IEnumerator MoveInDirection(SpessPlayModeTest fixture, float xInput = 0, float yInput = 0, float time = 1f)
+        public static IEnumerator MoveInDirection(PlayModeTest fixture, float xInput = 0, float yInput = 0, float time = 1f)
         {
             // Apply the movement input
             fixture.Set((AxisControl)fixture.InputDevice["Movement/x"], xInput);

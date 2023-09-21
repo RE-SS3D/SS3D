@@ -21,7 +21,7 @@ using SS3D.Core.Settings;
 
 namespace SS3D.Tests
 {
-    public class ClientGameActions : SpessPlayModeTest
+    public class ClientGameActions : PlayModeTest
     {
         [UnitySetUp]
         public IEnumerator UnitySetUp()

@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
@@ -112,7 +112,7 @@ namespace SS3D.Tests
             Assert.IsTrue(originalButtonColor == button.GetComponent<Image>().color, $"The button colour did not change when the button was clicked");
         }
 
-        public static IEnumerator PlayerCanDropAndPickUpItem(SpessPlayModeTest fixture)
+        public static IEnumerator PlayerCanDropAndPickUpItem(PlayModeTest fixture)
         {
             // Get local player position, interaction controller and put bikehorn in first hand available.
             var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId.PDA);
@@ -148,7 +148,7 @@ namespace SS3D.Tests
         /// Note: this test is vulnerable to the player being blocked from movement by map features.
         /// </summary>
         /// <param name="controller">The player character.</param>
-        public static IEnumerator PlayerCanMoveInEachDirectionCorrectly(SpessPlayModeTest fixture, HumanoidController controller)
+        public static IEnumerator PlayerCanMoveInEachDirectionCorrectly(PlayModeTest fixture, HumanoidController controller)
         {
             yield return MoveInDirection(fixture, controller, +1, 0);  // East
             yield return MoveInDirection(fixture, controller, -1, 0);  // West
@@ -160,7 +160,7 @@ namespace SS3D.Tests
             yield return MoveInDirection(fixture, controller, +1, -1); // Southeast
         }
 
-        private static IEnumerator MoveInDirection(SpessPlayModeTest fixture, HumanoidController controller, float xInput = 0, float yInput = 0)
+        private static IEnumerator MoveInDirection(PlayModeTest fixture, HumanoidController controller, float xInput = 0, float yInput = 0)
         {
             // Record the original position
             Vector3 originalPosition = controller.Position;

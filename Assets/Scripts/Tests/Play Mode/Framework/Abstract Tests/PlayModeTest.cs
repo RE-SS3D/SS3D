@@ -23,7 +23,7 @@ namespace SS3D.Tests
     /// All play mode tests should inherit from this class. This class set up the mock up controls, contains some utilities for all play tests.
     /// </summary>
     [TestFixture]
-    public abstract class SpessPlayModeTest : InputTestFixture
+    public abstract class PlayModeTest : InputTestFixture
     {
         protected const string ExecutableName = "SS3D";
         protected const string CancelButton = "Cancel";

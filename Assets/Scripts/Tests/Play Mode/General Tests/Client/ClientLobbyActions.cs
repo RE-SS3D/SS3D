@@ -21,7 +21,7 @@ namespace SS3D.Tests
     /// <summary>
     /// All tests related to doing stuff in the lobby as a client.
     /// </summary>
-    public class ClientLobbyActions : SpessPlayModeTest
+    public class ClientLobbyActions : PlayModeTest
     {
         [UnitySetUp]
         public IEnumerator UnitySetUp()

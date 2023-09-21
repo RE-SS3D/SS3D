@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -10,13 +10,12 @@ namespace SS3D.Tests
     /// Base testing class, inherited by PlayModeTest and EditModeTest.
     /// </summary>
     [TestFixture]
-    public abstract class SpessTest
+    public abstract class Test
     {
         /// <summary>
         /// Keep track of any objects instantiated during tests.
         /// </summary>
         public List<GameObject> instantiated;
-
 
         public virtual void SetUp()
         {

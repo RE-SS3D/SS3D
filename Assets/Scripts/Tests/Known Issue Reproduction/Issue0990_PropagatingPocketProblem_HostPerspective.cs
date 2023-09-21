@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
-    public class Issue0990_PropagatingPocketProblem_HostPerspective : SpessPlayModeTest
+    public class Issue0990_PropagatingPocketProblem_HostPerspective : PlayModeTest
     {
 
         [UnitySetUp]

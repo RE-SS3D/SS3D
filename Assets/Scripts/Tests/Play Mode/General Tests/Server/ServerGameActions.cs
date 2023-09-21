@@ -19,7 +19,7 @@ using System.Text;
 
 namespace SS3D.Tests
 {
-    public class ServerGameActions : SpessPlayModeTest
+    public class ServerGameActions : PlayModeTest
     {
 
         protected Process[] clientProcess;

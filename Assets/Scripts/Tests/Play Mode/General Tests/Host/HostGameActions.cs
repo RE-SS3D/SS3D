@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 namespace SS3D.Tests
 {
 
-    public class HostGameActions : SpessPlayModeTest
+    public class HostGameActions : PlayModeTest
     {
         [UnitySetUp]
         public IEnumerator UnitySetUp()

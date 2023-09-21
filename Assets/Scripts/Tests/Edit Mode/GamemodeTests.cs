@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EditorTests
 {
-    public class GamemodeTests : SpessEditModeTest
+    public class GamemodeTests : EditModeTest
     {
         #region Class variables
         /// <summary>
