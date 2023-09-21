@@ -2,6 +2,7 @@
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Combat.Interactions;
 using SS3D.Systems.Crafting;
+using SS3D.Systems.Entities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace SS3D.Systems.Crafting
     {
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            var interaction = new SliceInteraction(2f);
+            SliceInteraction interaction = new SliceInteraction(2f, GetComponent<InteractionSource>().transform);
 
             foreach (IInteractionTarget target in targets)
             {

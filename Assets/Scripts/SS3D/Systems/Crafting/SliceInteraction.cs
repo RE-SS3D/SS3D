@@ -13,22 +13,37 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace SS3D.Systems.Crafting
 {
     public class SliceInteraction : CraftingInteraction
     {
-        public SliceInteraction(float delay)
+        private Transform _characterTransform;
+        private Vector3 _startPosition;
+        
+        public SliceInteraction(float delay, Transform characterTransform)
         {
+            _characterTransform = characterTransform;
+            _startPosition = characterTransform.position;
             Delay = delay;
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if(!base.CanInteract(interactionEvent)) return false;
+            if (interactionEvent.Target is not Item) return false;
 
-            bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
-            return isInRange;
+            // Should only check for movement once the interaction started.
+            if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
+
+            Item target = interactionEvent.Target as Item;
+
+            // Can slice only things out of containers.
+            if (target.Container != null) return false;
+
+            if (!base.CanInteract(interactionEvent)) return false;
+
+            return true;
         }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
@@ -39,6 +54,13 @@ namespace SS3D.Systems.Crafting
         public override string GetGenericName()
         {
             return "Slice";
+        }
+
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            base.Start(interactionEvent, reference);
+            _startPosition = _characterTransform.position;
+            return true;
         }
 
         public override string GetName(InteractionEvent interactionEvent)

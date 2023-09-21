@@ -2,6 +2,7 @@
 using SS3D.Core;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Logging;
 using SS3D.Substances;
 using SS3D.Systems.Inventory.Items;
@@ -35,9 +36,11 @@ namespace SS3D.Systems.Crafting
 
             if (interactionEvent.Target is not Item) return false;
 
+            if (!InteractionExtensions.RangeCheck(interactionEvent)) return false;
+
             Item target = interactionEvent.Target as Item;
 
-            if(!craftingSystem.TryGetRecipe(this, target, out recipe)) return false;
+            if (!craftingSystem.TryGetRecipe(this, target, out recipe)) return false;
 
             List<Item> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(target);
 
