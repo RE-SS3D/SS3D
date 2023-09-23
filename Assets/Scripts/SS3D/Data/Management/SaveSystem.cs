@@ -23,9 +23,6 @@ namespace SS3D.Data.Management
 
         private static bool IsInitialized;
 
-        [NotNull]
-        public static string[] SavedFiles => Directory.GetFiles(SaveFolder, $"*.{SaveExtension}");
-
         public static void Initialize()
         {
 	        if (IsInitialized)
@@ -87,6 +84,11 @@ namespace SS3D.Data.Management
         private static bool TryLoadMostRecentFile(string path, [CanBeNull] out string file)
         {
             DirectoryInfo directoryInfo = new(SaveFolder + path);
+
+            if (!File.Exists(SaveFolder))
+            {
+	            File.Create(SaveFolder);
+            }
 
             // Get all save files
             FileInfo[] saveFiles = directoryInfo.GetFiles( "*." + SaveExtension);
