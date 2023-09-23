@@ -58,11 +58,11 @@ namespace SS3D.Systems.Health
 
 		protected override void SetSuceptibilities()
 		{
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 1.5f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Pressure, 0.5f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 2f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
+            DamageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 1.5f));
+            DamageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Pressure, 0.5f));
+            DamageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 2f));
+            DamageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
+            DamageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
 		}
 
         public double GetOxygenNeeded()

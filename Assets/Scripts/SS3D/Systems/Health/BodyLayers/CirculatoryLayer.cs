@@ -1,15 +1,9 @@
-﻿using Coimbra;
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using JetBrains.Annotations;
+﻿using FishNet.Object;
 using SS3D.Core;
-using SS3D.Data;
-using SS3D.Data.Enums;
 using SS3D.Logging;
 using SS3D.Substances;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 
 namespace SS3D.Systems.Health
@@ -90,9 +84,9 @@ namespace SS3D.Systems.Health
         [Server]
 		protected override void SetSuceptibilities()
 		{
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 2f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Puncture, 2f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
+            DamageSuceptibilities.Add(new(DamageType.Slash, 2f));
+            DamageSuceptibilities.Add(new(DamageType.Puncture, 2f));
+            DamageSuceptibilities.Add(new(DamageType.Toxic, 1.5f));
 		}
 
         /// <summary>
@@ -127,7 +121,7 @@ namespace SS3D.Systems.Health
             foreach (BodyLayer layer in consumers)
             {
                 BodyPart.TryInflictDamage(layer.LayerType,
-                    new DamageTypeQuantity(DamageType.Oxy, (1- fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
+                    new(DamageType.Oxy, (1- fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
             }
         }
 
@@ -194,13 +188,10 @@ namespace SS3D.Systems.Health
         [Server]
         private void SetOxygenNeeded()
         {
-            double totalOxygen = BodyPart.BodyLayers.OfType<IOxygenNeeder>().Sum(x => x.GetOxygenNeeded());
-            int NumberOxygenConsumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>().Count();
-            if (NumberOxygenConsumers > 0)
-            {
-                _oxygenNeeded = totalOxygen / NumberOxygenConsumers;
-            }
-            else _oxygenNeeded = 0;
+            IEnumerable<IOxygenNeeder> oxygenNeeders = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
+            double totalOxygen = oxygenNeeders.Sum(x => x.GetOxygenNeeded());
+            int numberOfConsumers = oxygenNeeders.Count();
+            _oxygenNeeded = numberOfConsumers > 0 ? totalOxygen / numberOfConsumers : 0;
         }
     }
 }
