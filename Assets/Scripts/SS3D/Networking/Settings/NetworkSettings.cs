@@ -9,10 +9,6 @@ namespace SS3D.Networking.Settings
 	[ProjectSettings("SS3D/Core", "Network Settings")]
 	public sealed class NetworkSettings : ScriptableSettings
 	{
-		private const string NetworkSettingsFileName = "network.json";
-
-		private static readonly string NetworkSettingsPath = Paths.GetPath(GamePaths.Config, true) + NetworkSettingsFileName;
-
 		/// <summary>
 		/// Defines what type of connection to start when starting the application.
 		/// Defined via command line args when in a built executable or the value in the Project Settings window.
@@ -40,6 +36,10 @@ namespace SS3D.Networking.Settings
 		/// </summary>
 		public ushort ServerPort = 2222;
 
+		private const string NetworkSettingsFileName = "network.json";
+
+		private static readonly string NetworkSettingsPath = Paths.GetPath(GamePaths.Config, true) + NetworkSettingsFileName;
+
 		/// <summary>
 		/// Enables Fish-net's bandwidth UI in the game.
 		/// </summary>
@@ -53,7 +53,7 @@ namespace SS3D.Networking.Settings
 		{
 			NetworkSettings networkSettings = GetOrFind<NetworkSettings>();
 
-			Log.Information(nameof(NetworkSettings), $"Network settings reset on the built executable");
+			Log.Information(nameof(NetworkSettings), "Network settings reset on the built executable");
 
 			networkSettings.NetworkType = NetworkType.Client;
 			networkSettings.ServerAddress = string.Empty;

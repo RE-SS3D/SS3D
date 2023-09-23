@@ -25,49 +25,26 @@ namespace SS3D.Systems.Inventory.Containers
 
         public event ContainerEventHandler OnContainerClosed;
 
-        private float _nextAccessCheck;
+        public HumanInventory Inventory;
 
         /// <summary>
         /// Container with their UI displayed to the player.
         /// </summary>
         private readonly List<AttachedContainer> _displayedContainers = new();
 
-        // Reference to the player's inventory.
-        public HumanInventory inventory;
+        private float _nextAccessCheck;
 
         public override void OnStartClient()
         {
             base.OnStartClient();
-            if (!IsOwner) { return; }
-            SetupView();
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        }
 
-        private void SetupView()
-        {
-            var containerView = ViewLocator.Get<ContainerView>().First();
-            containerView.Setup(this);
-        }
-
-        /// <summary>
-        /// On containers having OpenWhenContainerViewed set true in AttachedContainer, this set the containers state appropriately.
-        /// If the container belongs to another Inventory, it's already opened, and therefore it does nothing.
-        /// If this Inventory is the first to have it, it triggers the open animation of the object.
-        /// If this Inventory is the last to have it, it closes the container.
-        /// </summary>
-        /// <param name="containerObject"> The container's game object belonging to this inventory.</param>
-        /// <param name="state"> The state to set in the container, true is opened and false is closed.</param>
-        [Server]
-        private void SetOpenState(GameObject containerObject, bool state)
-        {
-            var container = containerObject.GetComponent<AttachedContainer>();
-
-            if (!container.OpenWhenContainerViewed)
+            if (!IsOwner)
             {
                 return;
             }
 
-            container.ContainerInteractive.SetOpenState(state);
+            SetupView();
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         /// <summary>
@@ -82,12 +59,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             // TODO: This root transform check might allow you to take out your own organs down the road O_O
             return _displayedContainers.Contains(container) || container.transform.root == transform;
-        }
-
-        [TargetRpc]
-        private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
-        {
-            OnContainerOpened?.Invoke(container);
         }
 
         /// <summary>
@@ -121,6 +92,45 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+        [ServerRpc]
+        public void CmdContainerClose(AttachedContainer container)
+        {
+            CloseContainerUI(container);
+        }
+
+        /// <summary>
+        /// On containers having OpenWhenContainerViewed set true in AttachedContainer, this set the containers state appropriately.
+        /// If the container belongs to another Inventory, it's already opened, and therefore it does nothing.
+        /// If this Inventory is the first to have it, it triggers the open animation of the object.
+        /// If this Inventory is the last to have it, it closes the container.
+        /// </summary>
+        /// <param name="containerObject"> The container's game object belonging to this inventory.</param>
+        /// <param name="state"> The state to set in the container, true is opened and false is closed.</param>
+        [Server]
+        private void SetOpenState(GameObject containerObject, bool state)
+        {
+            AttachedContainer container = containerObject.GetComponent<AttachedContainer>();
+
+            if (!container.OpenWhenContainerViewed)
+            {
+                return;
+            }
+
+            container.ContainerInteractive.SetOpenState(state);
+        }
+
+        private void SetupView()
+        {
+            ContainerView containerView = ViewLocator.Get<ContainerView>()[0];
+            containerView.Setup(this);
+        }
+
+        [TargetRpc]
+        private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
+        {
+            OnContainerOpened?.Invoke(container);
+        }
+
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             float time = Time.time;
@@ -146,17 +156,10 @@ namespace SS3D.Systems.Inventory.Containers
             _nextAccessCheck = time + 0.5f;
         }
 
-        [ServerRpc]
-        public void CmdContainerClose(AttachedContainer container)
-        {
-            CloseContainerUI(container);
-        }
-
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
             OnContainerClosed?.Invoke(container);
         }
-
     }
 }

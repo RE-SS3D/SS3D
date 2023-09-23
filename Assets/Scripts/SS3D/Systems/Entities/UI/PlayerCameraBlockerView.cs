@@ -13,12 +13,12 @@ namespace SS3D.Systems.Entities.UI
     [RequireComponent(typeof(CanvasGroup))]
     public sealed class PlayerCameraBlockerView : View
     {
+        private const float FadeDuration = 2;
+
         [SerializeField]
         private CanvasGroup _canvasGroup;
 
         private Sequence _alphaSequence;
-
-        private const float FadeDuration = 2;
 
         protected override void OnAwake()
         {
@@ -53,7 +53,7 @@ namespace SS3D.Systems.Entities.UI
             }
             else
             {
-                _alphaSequence.Append(_canvasGroup.DOFade(0, FadeDuration)).OnComplete(() => {   _canvasGroup.blocksRaycasts = false;});
+                _alphaSequence.Append(_canvasGroup.DOFade(0, FadeDuration)).OnComplete(() => { _canvasGroup.blocksRaycasts = false; });
             }
         }
 

@@ -20,7 +20,7 @@ namespace EditorTests
             List<Trait> traits = new();
 
             // ACT
-            Item item = createItemWithRandomTraits(ref traits);
+            Item item = CreateItemWithRandomTraits(ref traits);
 
             // ASSERT
             foreach (Trait trait in traits)
@@ -37,7 +37,7 @@ namespace EditorTests
         public void ShouldBeAbleToAddTraitsToItem()
         {
             // ARRANGE
-            Item item = createItem();
+            Item item = CreateItem();
 
             // ACT
             Trait trait = ScriptableObject.CreateInstance<Trait>();
@@ -58,7 +58,7 @@ namespace EditorTests
         public void ShouldNotHaveUnaddedTraits()
         {
             // ARRANGE
-            Item item = createItem();
+            Item item = CreateItem();
 
             // ACT
             Trait trait = ScriptableObject.CreateInstance<Trait>();
@@ -75,8 +75,7 @@ namespace EditorTests
         /// Creates an Item with Random Traits for testing
         /// </summary>
         /// <param name="traits"></param>
-        /// <returns></returns>
-        private static Item createItemWithRandomTraits(ref List<Trait> traits)
+        private static Item CreateItemWithRandomTraits(ref List<Trait> traits)
         {
             // Create sample traits
             Trait trait1 = ScriptableObject.CreateInstance<Trait>();
@@ -88,8 +87,8 @@ namespace EditorTests
             traits = new List<Trait>() { trait1, trait2 };
 
             // Apply the traits to the item and return it
-            var go = new GameObject();
-            var item = go.AddComponent<Item>();
+            GameObject go = new GameObject();
+            Item item = go.AddComponent<Item>();
             item.Init("TestItem", 1f, traits);
             return item;
         }
@@ -98,11 +97,10 @@ namespace EditorTests
         /// Creates an Item with the given Traits for testing
         /// </summary>
         /// <param name="traits"></param>
-        /// <returns></returns>
-        private static Item createItemWithTraits(List<Trait> traits)
+        private static Item CreateItemWithTraits(List<Trait> traits)
         {
-            var go = new GameObject();
-            var item = go.AddComponent<Item>();
+            GameObject go = new GameObject();
+            Item item = go.AddComponent<Item>();
             item.Init("TestItem", 1f, traits);
             return item;
         }
@@ -110,12 +108,10 @@ namespace EditorTests
         /// <summary>
         /// Creates an Item without traits
         /// </summary>
-        /// <param name="traits"></param>
-        /// <returns></returns>
-        private static Item createItem()
+        private static Item CreateItem()
         {
-            var go = new GameObject();
-            var item = go.AddComponent<Item>();
+            GameObject go = new GameObject();
+            Item item = go.AddComponent<Item>();
             item.Init("TestItem", 1f, new List<Trait>());
             return item;
         }

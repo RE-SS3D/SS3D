@@ -1,5 +1,8 @@
-public enum TraitCategories
+namespace SS3D.Systems.Traits
 {
-    None,
-    IDPermission
+    public enum TraitCategories
+    {
+        None = 0,
+        IDPermission = 1,
+    }
 }

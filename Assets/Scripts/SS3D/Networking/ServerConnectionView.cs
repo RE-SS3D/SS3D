@@ -15,20 +15,33 @@ namespace SS3D.Networking
     public sealed class ServerConnectionView : MonoBehaviour
     {
         [Header("Loading Icon")]
-        [SerializeField] private Transform _loadingIcon;
-        [SerializeField] private Vector3 _loadingMovement = new(0, 0, -360);
-        [SerializeField] private float _loadingIconAnimationDuration;
+        [SerializeField]
+        private Transform _loadingIcon;
 
-        [Header("Buttons")] 
-        [SerializeField] private UiFade _buttonsUiFade;
-        [SerializeField] private GameObject _buttons;
-        [SerializeField] private Button _quitButton;
-        [SerializeField] private Button _retryButton;
-        
-        [SerializeField] private TMP_Text _messageText;
+        [SerializeField]
+        private Vector3 _loadingMovement = new(0, 0, -360);
+
+        [SerializeField]
+        private float _loadingIconAnimationDuration;
+
+        [Header("Buttons")]
+        [SerializeField]
+        private UiFade _buttonsUiFade;
+
+        [SerializeField]
+        private GameObject _buttons;
+
+        [SerializeField]
+        private Button _quitButton;
+
+        [SerializeField]
+        private Button _retryButton;
+
+        [SerializeField]
+        private TMP_Text _messageText;
 
         private bool _connectionFailed;
-        
+
         private void Start()
         {
             ProcessConnectingToServer();
@@ -44,7 +57,7 @@ namespace SS3D.Networking
         private void Setup()
         {
             UpdateMessageText(ApplicationMessages.Network.ConnectingToServer);
-            _buttons.SetActive(false);                            
+            _buttons.SetActive(false);
         }
 
         private void SubscribeToEvents()
@@ -60,7 +73,7 @@ namespace SS3D.Networking
             _quitButton.onClick.RemoveListener(UnityEngine.Application.Quit);
             _retryButton.onClick.RemoveListener(OnRetryButtonPressed);
         }
-        
+
         private void UpdateMessageText(string message)
         {
             _messageText.text = message;
@@ -73,7 +86,7 @@ namespace SS3D.Networking
             {
                 return;
             }
-            
+
             // loops the rotating animation
             _loadingIcon.DOLocalRotate(_loadingMovement, _loadingIconAnimationDuration, RotateMode.LocalAxisAdd).OnComplete(ProcessConnectingToServer).SetEase(Ease.Linear);
         }
@@ -87,14 +100,14 @@ namespace SS3D.Networking
 
             ProcessConnectingToServer();
         }
-        
+
         private void HandleServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
         {
             if (clientConnectionStateArgs.ConnectionState != LocalConnectionState.Stopped)
             {
                 return;
             }
-            
+
             _connectionFailed = true;
             _buttons.SetActive(true);
             _loadingIcon.gameObject.SetActive(false);

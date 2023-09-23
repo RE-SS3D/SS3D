@@ -11,7 +11,6 @@ namespace SS3D.Core.Behaviours
     /// as Unity's getters are a bit slow since they do not cache the Transform and the GameObject. They also used for QOL on code usages,
     /// as the Unity doesn't provide some of them from the get-go.
     /// </summary>
-    /// 
     /// <remarks>
     /// They will also be used for optimization with the Update calls, as Unity's method is slow and the UpdateEvent event solves that issue and guarantees performance.
     /// Follow this link to read more about PlayerLoopTiming events.
@@ -21,6 +20,11 @@ namespace SS3D.Core.Behaviours
     // TODO: Add a Guide into using PlayerLoopTiming events to GitBook.
     public class NetworkActor : NetworkBehaviour, IActor
     {
+        /// <summary>
+        /// The event bus listeners added to this object, cleared on OnDestroy
+        /// </summary>
+        private readonly List<EventHandle> _eventHandles = new();
+
         /// <summary>
         /// Internal cached game object.
         /// </summary>
@@ -36,23 +40,21 @@ namespace SS3D.Core.Behaviours
         /// </summary>
         private bool _initialized;
 
-        /// <summary>
-        /// The event bus listeners added to this object, cleared on OnDestroy
-        /// </summary>
-        private readonly List<EventHandle> _eventHandles = new();
-
         /// <inheritdoc />
         public int Id => GameObject.GetInstanceID();
 
         /// <inheritdoc />
         public Transform Transform => GetTransform();
+
         /// <inheritdoc />
         public GameObject GameObject => GetGameObject();
+
         /// <inheritdoc />
         public RectTransform RectTransform => (RectTransform)Transform;
 
         /// <inheritdoc/>
         public bool ActiveSelf => GameObject.activeSelf;
+
         /// <inheritdoc/>
         public bool ActiveInHierarchy => GameObject.activeInHierarchy;
 
@@ -212,7 +214,7 @@ namespace SS3D.Core.Behaviours
         protected virtual void OnDestroyed() { }
 
         /// <summary>
-        /// Called when the Actor's GameObject is enabled. 
+        /// Called when the Actor's GameObject is enabled.
         /// </summary>
         protected virtual void OnEnabled() { }
 

@@ -1,0 +1,11 @@
+{
+  "name": "com.coimbrastudios.internal",
+  "displayName": "Coimbra Framework Internal",
+  "author": "Bruno Coimbra",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "tool",
+  "unity": "2021.3",
+  "unityRelease": "5f1",
+  "description": "Internal tools to use when developing the Coimbra Framework."
+}

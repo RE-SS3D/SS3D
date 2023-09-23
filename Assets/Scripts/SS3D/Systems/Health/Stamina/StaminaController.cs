@@ -24,17 +24,20 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// The controller for this entity.
         /// </summary>
-        [SerializeField] private HumanoidController _player;
+        [SerializeField]
+        private HumanoidController _player;
 
         /// <summary>
         /// The PlayerControllable component for this entity.
         /// </summary>
-        [SerializeField] private Entity _entity;
+        [SerializeField]
+        private Entity _entity;
 
         /// <summary>
         /// Provides a way for the client to access the current player stamina.
         /// </summary>
-        [SyncVar(OnChange = nameof(SyncCurrentStamina))] private float _currentStamina;
+        [SyncVar(OnChange = nameof(SyncCurrentStamina))]
+        private float _currentStamina;
 
         /// <summary>
         /// Actual stamina data. Will only exist on the server.
@@ -58,13 +61,6 @@ namespace SS3D.Systems.Health
         /// </summary>
         public bool CanContinueInteraction => IsServerOnly ? _stamina.CanContinueInteraction : _currentStamina > 0f;
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        }
-
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -77,10 +73,35 @@ namespace SS3D.Systems.Health
         public override void OnStartClient()
         {
             base.OnStartClient();
-            _staminaBarView = ViewLocator.Get<StaminaBarView>().First();
+            _staminaBarView = ViewLocator.Get<StaminaBarView>()[0];
+
             // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
             SubscribeToEvents();
             InitialAssignViewToControllable();
+        }
+
+        /// <summary>
+        /// Depletes stamina by a set amount. To be called only from server-side scripts (e.g. Interactions)
+        /// </summary>
+        /// /// <param name="amountToDeplete">The amount of stamina to reduce</param>
+        [Server]
+        public void ServerDepleteStamina(float amountToDeplete)
+        {
+            _stamina.ConsumeStamina(amountToDeplete);
+            _currentStamina = _stamina.Current;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            UnsubscribeFromEvents();
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -89,12 +110,6 @@ namespace SS3D.Systems.Health
             {
                 _stamina.RechargeStamina(updateEvent.DeltaTime);
             }
-        }
-
-        protected override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            UnsubscribeFromEvents();
         }
 
         private void SubscribeToEvents()
@@ -107,7 +122,6 @@ namespace SS3D.Systems.Health
         {
             _player.OnSpeedChangeEvent -= DepleteStamina;
             _entity.OnMindChanged -= AssignViewToControllable;
-
         }
 
         [Client]
@@ -121,17 +135,6 @@ namespace SS3D.Systems.Health
             {
                 _staminaBarView.AssignViewToPlayer(this);
             }
-        }
-
-        /// <summary>
-        /// Depletes stamina by a set amount. To be called only from server-side scripts (e.g. Interactions)
-        /// </summary>
-        /// /// <param name="amountToDeplete">The amount of stamina to reduce</param>
-        [Server]
-        public void ServerDepleteStamina(float amountToDeplete)
-        {
-            _stamina.ConsumeStamina(amountToDeplete);
-            _currentStamina = _stamina.Current;
         }
 
         /// <summary>
@@ -170,9 +173,6 @@ namespace SS3D.Systems.Health
             _currentStamina = _stamina.Current;
         }
 
-        private void SyncCurrentStamina(float old, float value, bool asServer)
-        {
-
-        }
+        private void SyncCurrentStamina(float old, float value, bool asServer) { }
     }
 }

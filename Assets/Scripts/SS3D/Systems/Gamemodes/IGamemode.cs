@@ -5,11 +5,11 @@
         /// <summary>
         /// Finalizes the gamemode.
         /// </summary>
-        public void FinalizeGamemode() {}
+        public void FinalizeGamemode() { }
 
         /// <summary>
         /// Initializes the gamemode.
         /// </summary>
-        public virtual void InitializeGamemode() {}
+        public virtual void InitializeGamemode() { }
     }
 }

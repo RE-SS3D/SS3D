@@ -2,8 +2,8 @@
 {
 	public enum GamePaths
 	{
-		Root,
-		Config,
-		Data,
+		Root = 0,
+		Config = 1,
+		Data = 2,
 	}
 }

@@ -19,20 +19,15 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(Animator))]
     public class HumanoidLivingController : HumanoidController
     {
-
         [Header("Components")]
-        [SerializeField] private CharacterController _characterController;
-        [SerializeField] private StaminaController _staminaController;
-		[SerializeField] private FeetController _feetController;
+        [SerializeField]
+        private CharacterController _characterController;
 
-		public override void OnStartClient()
-        {
-            base.OnStartClient();
-            if (!IsOwner)
-            {
-                return;
-            }    
-        }
+        [SerializeField]
+        private StaminaController _staminaController;
+
+        [SerializeField]
+        private FeetController _feetController;
 
         /// <summary>
         /// Executes the movement code and updates the IK targets
@@ -69,5 +64,4 @@ namespace SS3D.Systems.Entities.Humanoid
             _characterController.Move(TargetMovement * ((_feetController.FeetHealthFactor * _movementSpeed) * Time.deltaTime));
         }
     }
-
 }

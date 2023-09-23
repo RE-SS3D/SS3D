@@ -9,14 +9,14 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public class ViewContainerInteraction : Interaction
     {
-        public float MaxDistance { get; set; }
-
         public readonly AttachedContainer AttachedContainer;
 
         public ViewContainerInteraction(AttachedContainer attachedContainer)
         {
             AttachedContainer = attachedContainer;
         }
+
+        public float MaxDistance { get; set; }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
@@ -40,7 +40,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            var containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
+            ContainerViewer containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
             if (containerViewer == null)
             {
                 return false;
@@ -51,12 +51,13 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 return false;
             }
+
             return !containerViewer.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().SelectedHand.CanInteract(AttachedContainer.gameObject);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            var containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
+            ContainerViewer containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
 
             containerViewer.ShowContainerUI(AttachedContainer);
 

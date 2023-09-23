@@ -11,8 +11,8 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public class SavedTileMap
     {
-        public string mapName;
-        public SavedTileChunk[] savedChunkList;
-        public SavedPlacedItemObject[] savedItemList;
+        public string MapName;
+        public SavedTileChunk[] SavedChunkList;
+        public SavedPlacedItemObject[] SavedItemList;
     }
 }

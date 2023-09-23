@@ -10,52 +10,51 @@ namespace SS3D.Systems
     [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
     public class Filter : ScriptableObject
     {
-        public bool mustHaveAll;
-        public List<Trait> acceptedTraits;
-        public List<Trait> deniedTraits;
+        public bool MustHaveAll;
+        public List<Trait> AcceptedTraits;
+        public List<Trait> DeniedTraits;
+
+        private int _hash;
+
+        public int Hash => _hash;
+
+        public static int GetHash(string str)
+        {
+            return Animator.StringToHash(str.ToUpper());
+        }
 
         public bool CanStore(Item item)
         {
             int traitCount = 0;
-            if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
+            if (AcceptedTraits.Count == 0 && DeniedTraits.Count == 0)
+            {
                 return true;
+            }
 
             foreach (Trait trait in item.Traits)
             {
-                if (acceptedTraits.Contains(trait))
+                if (AcceptedTraits.Contains(trait))
                 {
                     traitCount++;
                 }
-                else if (deniedTraits.Contains(trait))
+                else if (DeniedTraits.Contains(trait))
                 {
                     return false;
                 }
             }
 
-            //If mustHaveAll then it will only return true if has all traits, otherwise having any will do
-            if (mustHaveAll)
+            // If mustHaveAll then it will only return true if has all traits, otherwise having any will do
+            if (MustHaveAll)
             {
-                return traitCount == acceptedTraits.Count;
+                return traitCount == AcceptedTraits.Count;
             }
-            else
-            {
-                return traitCount > 0;
-            }
-        }
-        
-        //Hash for identification
-        protected int hash;
-        [HideInInspector] public int Hash => hash;
 
-        [ExecuteInEditMode]
-        private void OnValidate()
-        {
-            hash = GetHash(name);
+            return traitCount > 0;
         }
 
-        public static int GetHash(string str)
+        protected void OnValidate()
         {
-            return Animator.StringToHash(str.ToUpper());
+            _hash = GetHash(name);
         }
     }
 }

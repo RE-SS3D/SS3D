@@ -7,9 +7,10 @@ namespace SS3D.Systems.Lobby.UI
     /// </summary>
     public class LobbyView : MonoBehaviour
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField]
+        private CanvasGroup _canvasGroup;
 
-        private void Awake()
+        protected void Awake()
         {
             Initialize();
         }

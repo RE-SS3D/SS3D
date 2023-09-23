@@ -10,7 +10,7 @@ namespace SS3D.Systems.Rounds.Events
     {
         public readonly List<Player> ReadyPlayers;
 
-        public ReadyPlayersChanged(List<Player>readyPlayers)
+        public ReadyPlayersChanged(List<Player> readyPlayers)
         {
             ReadyPlayers = readyPlayers;
         }

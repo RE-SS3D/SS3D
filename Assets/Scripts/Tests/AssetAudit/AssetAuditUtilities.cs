@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace AssetAudit
 {
-
     public static class AssetAuditUtilities
     {
         public const string PrefabRootPath = "Assets/Content";
@@ -19,7 +18,6 @@ namespace AssetAudit
         private const string SceneSearchTerm = "t:scene";
         private const string TileObjectSoSearchTerm = "t:TileObjectSo";
         private const string ItemObjectSoSearchTerm = "t:ItemObjectSo";
-
 
         public static GameObject[] AllPrefabs()
         {
@@ -51,7 +49,7 @@ namespace AssetAudit
         private static T[] GetAssets<T>(string searchCriteria, string searchPath = GenericRootPath) where T : UnityEngine.Object
         {
             // Find all the assets in the project hierarchy (i.e. NOT in a scene)
-            string[] guids = AssetDatabase.FindAssets(searchCriteria, new[] { searchPath });
+            string[] guids = AssetDatabase.FindAssets(searchCriteria, new string[] { searchPath });
 
             // Create our array of assets
             T[] returnValues = new T[guids.Length];
@@ -71,11 +69,12 @@ namespace AssetAudit
             foreach (MonoBehaviour mono in behaviours)
             {
                 Type monoType = mono.GetType();
-                RequiredLayerAttribute attribute = Attribute.GetCustomAttribute(monoType, typeof(RequiredLayerAttribute)) as RequiredLayerAttribute;
+                RequiredLayerAttribute attribute = (RequiredLayerAttribute)Attribute.GetCustomAttribute(monoType, typeof(RequiredLayerAttribute));
                 if (attribute == null)
                 {
                     continue;
                 }
+
                 // Once we are here, we have found a MonoBehaviour with a RequiredLayerAttribute.
                 // We now need to test the GameObject to see if it is on the layer that is mandated.
 
@@ -89,8 +88,11 @@ namespace AssetAudit
                 // test to be run multiple times (and only identifying a single breach each time).
                 allRelevantMonoBehavioursAreOnTheRightLayer = false;
                 GameObject gameObject = mono.gameObject;
+                #pragma warning disable RCS1197
                 sb.Append($"-> {monoType.Name} script requires object '{gameObject.name}' to be on {attribute.Layer} layer, but it was on {LayerMask.LayerToName(gameObject.layer)} layer.\n");
+                #pragma warning restore RCS1197
             }
+
             return allRelevantMonoBehavioursAreOnTheRightLayer;
         }
 
@@ -100,13 +102,17 @@ namespace AssetAudit
             MonoBehaviour[] monobehaviours = gameobject.GetComponentsInChildren<MonoBehaviour>();
             foreach (MonoBehaviour mono in monobehaviours)
             {
-                if (mono == null)
+                if (mono != null)
                 {
-                    allScriptsExist = false;
-                    sb.Append($"-> Missing script on '{gameobject.name}'.\n");
                     continue;
                 }
+
+                allScriptsExist = false;
+                #pragma warning disable RCS1197
+                sb.Append($"-> Missing script on '{gameobject.name}'.\n");
+                #pragma warning restore RCS1197
             }
+
             return allScriptsExist;
         }
     }

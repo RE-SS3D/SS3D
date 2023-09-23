@@ -31,7 +31,7 @@ namespace SS3D.Interactions.Extensions
                 return true;
             }
 
-            //Block interaction when point is on top of wall or above.
+            // Block interaction when point is on top of wall or above.
             if (IsWallTop(point, 0.1f))
             {
                 return false;
@@ -50,7 +50,7 @@ namespace SS3D.Interactions.Extensions
             }
 
             RangeLimit range = interactionEvent.Source.GetRange();
-            if (range.IsInRange(sourcePosition, point)) 
+            if (range.IsInRange(sourcePosition, point))
             {
                 return true;
             }
@@ -70,7 +70,6 @@ namespace SS3D.Interactions.Extensions
 
             Vector3 closestPointOnRigidBody = targetRigidBody.ClosestPointOnBounds(sourcePosition);
             return range.IsInRange(sourcePosition, closestPointOnRigidBody);
-
         }
 
         private static bool IsWallTop(Vector3 position, float deadzone = 0)

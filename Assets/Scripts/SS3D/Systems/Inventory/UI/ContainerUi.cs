@@ -16,8 +16,8 @@ namespace SS3D.Systems.Inventory.UI
 
         public HumanInventory Inventory
         {
-            set => Grid.Inventory = value;
             get => Grid.Inventory;
+            set => Grid.Inventory = value;
         }
 
         public AttachedContainer AttachedContainer
@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.UI
 
         public void Close()
         {
-            Inventory.containerViewer.CmdContainerClose(_attachedContainer);
+            Inventory.ContainerViewer.CmdContainerClose(_attachedContainer);
             gameObject.Dispose(true);
         }
 
@@ -56,9 +56,9 @@ namespace SS3D.Systems.Inventory.UI
             ContainerName.text = _attachedContainer.ContainerName;
 
             // Position the text correctly inside the UI.
-            Vector3[] v = new Vector3[4];
-            rect.GetLocalCorners(v); 
-            ContainerName.transform.localPosition = v[1] + new Vector3(0.03f * width, -0.02f * height, 0);
+            Vector3[] fourCornersArray = new Vector3[4];
+            rect.GetLocalCorners(fourCornersArray);
+            ContainerName.transform.localPosition = fourCornersArray[1] + new Vector3(0.03f * width, -0.02f * height, 0);
         }
     }
 }

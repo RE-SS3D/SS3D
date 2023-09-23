@@ -2,8 +2,8 @@
 {
     public enum NetworkType
     {
-        DedicatedServer,
-        Client,
-        Host,
+        DedicatedServer = 0,
+        Client = 1,
+        Host = 2,
     }
 }

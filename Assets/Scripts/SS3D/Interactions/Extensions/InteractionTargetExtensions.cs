@@ -5,17 +5,8 @@ namespace SS3D.Interactions.Extensions
 {
     public static class InteractionTargetExtensions
     {
-
-        public static GameObject GetGameObject(this IInteractionTarget target)
-        {
-            if (target is IGameObjectProvider provider)
-            {
-                return provider.GameObject;
-            }
-            return null;
-        }
-
-        public static T GetComponent<T>(this IInteractionTarget target) where T : class
+        public static T GetComponent<T>(this IInteractionTarget target)
+            where T : Component
         {
             if (target is IGameObjectProvider provider)
             {
@@ -25,12 +16,14 @@ namespace SS3D.Interactions.Extensions
             return null;
         }
 
-		/// <summary>
+        /// <summary>
 		/// Get a component T in parent of a IInteraction target.
 		/// </summary>
-		public static T GetComponentInParent<T>(this IInteractionTarget target) where T : class
+		public static T GetComponentInParent<T>(this IInteractionTarget target)
+			where T : Component
 		{
 			GameObject go;
+
 			if (target is IGameObjectProvider provider)
 			{
 				go = provider.GameObject;
@@ -42,11 +35,11 @@ namespace SS3D.Interactions.Extensions
 
 			while (go != null)
 			{
-				var component = go.gameObject.GetComponent<T>();
-				if (component != null)
+				if (go.TryGetComponent<T>(out T component))
 				{
-					return component;
+                    return component;
 				}
+
 				go = go.transform.parent.gameObject;
 			}
 

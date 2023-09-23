@@ -20,7 +20,8 @@ namespace AssetAudit
         /// <summary>
         /// Test to confirm all included asset databases are not null.
         /// </summary>
-        [Test, TestCaseSource(nameof(AllAssetDatabases))]
+        [Test]
+        [TestCaseSource(nameof(AllAssetDatabases))]
         public void IncludedAssetDatabasesAreNotNull(AssetDatabase database)
         {
             Assert.IsTrue(database != null);
@@ -75,7 +76,8 @@ namespace AssetAudit
         /// <summary>
         /// Test to see if there is any null references on any database assets.
         /// </summary>
-        [Test, TestCaseSource(nameof(AllAssetDatabases))]
+        [Test]
+        [TestCaseSource(nameof(AllAssetDatabases))]
         public void IncludedAssetDatabasesDoNotContainNullObjects(AssetDatabase assetDatabase)
         {
             bool hasNullAssets = false;

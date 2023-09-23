@@ -7,9 +7,14 @@ namespace SS3D.UI.Buttons
     public class ButtonStyleAsset : ScriptableObject
     {
         public ButtonTextColorPair NormalColor;
-        [FormerlySerializedAs("HighlightedColor")] public ButtonTextColorPair NormalHighlightedColor;
+
+        [FormerlySerializedAs("HighlightedColor")]
+        public ButtonTextColorPair NormalHighlightedColor;
+
         public ButtonTextColorPair PressedColor;
+
         public ButtonTextColorPair PressedHighlightedColor;
+
         public ButtonTextColorPair DisabledColor;
     }
 }

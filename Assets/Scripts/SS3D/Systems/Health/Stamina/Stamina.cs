@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SS3D.Systems.Health
+namespace SS3D.Systems.Health.Stamina
 {
     /// <summary>
     /// Represents stamina of an individual entity.
@@ -8,27 +8,6 @@ namespace SS3D.Systems.Health
     /// <inheritdoc cref="SS3D.Systems.Health.IStamina" />
     public class Stamina : IStamina
     {
-        /// <summary>
-        /// The current stamina of the entity. This can vary between a lower limit of negative ALLOWABLE_OVERDRAW times _max,
-        /// and an upper limit of _max.
-        /// </summary>
-        private float _current;
-
-        /// <summary>
-        /// The maximum stamina of the entity.
-        /// </summary>
-        private float _max;
-
-        /// <summary>
-        /// Recovery rate of stamina, measured as proportion per second.
-        /// </summary>
-        private readonly float _recoveryRate;
-
-        /// <summary>
-        /// Record of the total amount of stamina spent by the player.
-        /// </summary>
-        private float _spent;
-
         /// <summary>
         /// Allows stamina to be overdrawn for existing interactions; however, new interactions requiring stamina cannot
         /// be started while overdrawn. This prevents rapid transition between walk and run animations (for example).
@@ -46,6 +25,40 @@ namespace SS3D.Systems.Health
         /// </summary>
         private const float TrainingMultiplier = 1.05f;
 
+        /// <summary>
+        /// Recovery rate of stamina, measured as proportion per second.
+        /// </summary>
+        private readonly float _recoveryRate;
+
+        /// <summary>
+        /// The current stamina of the entity. This can vary between a lower limit of negative ALLOWABLE_OVERDRAW times _max,
+        /// and an upper limit of _max.
+        /// </summary>
+        private float _current;
+
+        /// <summary>
+        /// The maximum stamina of the entity.
+        /// </summary>
+        private float _max;
+
+        /// <summary>
+        /// Record of the total amount of stamina spent by the player.
+        /// </summary>
+        private float _spent;
+
+        /// <summary>
+        /// Constructor. Should only be created through the StaminaHelper Create() method.
+        /// </summary>
+        /// <param name="max"></param>
+        /// <param name="recoveryRate"></param>
+        public Stamina(float max, float recoveryRate)
+        {
+            _max = max;
+            _current = max;
+            _recoveryRate = recoveryRate;
+            _spent = 0;
+        }
+
         /// <inheritdoc />
         public float Current => Mathf.Max(_current / _max, 0f);
 
@@ -55,24 +68,14 @@ namespace SS3D.Systems.Health
         /// <inheritdoc />
         public bool CanContinueInteraction => _current > -1f * AllowableOverdraw * _max;
 
-        /// <summary>
-        /// Constructor. Should only be created through the StaminaHelper Create() method.
-        /// </summary>
-        /// <param name="max"></param>
-        /// <param name="recoveryRate"></param>
-        public Stamina (float max, float recoveryRate)
-        {
-            _max = max;
-            _current = max;
-            _recoveryRate = recoveryRate;
-            _spent = 0;
-        }
-
         /// <inheritdoc />
         public void ConsumeStamina(float amount)
         {
             // This method cannot be used to restore stamina.
-            if (amount < 0f) return;
+            if (amount < 0f)
+            {
+                return;
+            }
 
             TrainStamina(amount);
 
@@ -84,7 +87,7 @@ namespace SS3D.Systems.Health
         public void RechargeStamina(float deltaTime)
         {
             // Ensure current stamina remains no larger than max stamina
-            _current = Mathf.Min(_current + deltaTime * _max * _recoveryRate, _max);
+            _current = Mathf.Min(_current + (deltaTime * _max * _recoveryRate), _max);
         }
 
         /// <summary>

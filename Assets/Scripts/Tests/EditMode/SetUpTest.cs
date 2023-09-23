@@ -9,19 +9,18 @@ namespace EditorTests
 	[SetUpFixture]
 	public class SetUpTest
 	{
-
-		private const string QOL_ATTRIBUTES_DEFINE = "DISABLE_QOL_ATTRIBUTES";
+		private const string QolAttributesDefine = "DISABLE_QOL_ATTRIBUTES";
 
 		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
-			bool result = RemoveOrAddDefine(QOL_ATTRIBUTES_DEFINE, true);
+			bool result = RemoveOrAddDefine(QolAttributesDefine, true);
 		}
 
 		[OneTimeTearDown]
 		public void RunAfterAnyTests()
 		{
-			bool result = RemoveOrAddDefine(QOL_ATTRIBUTES_DEFINE, false);
+			bool result = RemoveOrAddDefine(QolAttributesDefine, false);
 		}
 
 		private static bool RemoveOrAddDefine(string define, bool removeDefine)
