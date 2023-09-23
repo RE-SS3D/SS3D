@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using SS3D.Logging;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace SS3D.Data.Management
@@ -85,9 +86,11 @@ namespace SS3D.Data.Management
         {
             DirectoryInfo directoryInfo = new(SaveFolder + path);
 
-            if (!File.Exists(SaveFolder))
+            if (!Directory.Exists(SaveFolder))
             {
-	            File.Create(SaveFolder);
+				Log.Information(nameof(SaveSystem), $"No saves found, creating new folder at {SaveFolder}");
+
+				Directory.CreateDirectory(SaveFolder);
             }
 
             // Get all save files
