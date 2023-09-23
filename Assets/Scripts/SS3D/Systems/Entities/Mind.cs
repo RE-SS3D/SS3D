@@ -12,24 +12,17 @@ namespace SS3D.Systems.Entities
     public class Mind : NetworkActor
     {
         [SyncVar(OnChange = nameof(SyncPlayer))]
-        public Player player;
+        public Player Player;
 
         [SyncVar]
         public Entity Entity;
 
         public static Mind Empty { get; private set; }
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            Empty = Subsystems.Get<MindSystem>().EmptyMind;
-        }
-
         [Server]
         public void SetPlayer(Player player)
         {
-            this.player = player;
+            this.Player = player;
         }
 
         public void SyncPlayer(Player oldPlayer, Player newPlayer, bool asServer)
@@ -40,6 +33,13 @@ namespace SS3D.Systems.Entities
             }
 
             name = $"Mind - {newPlayer.Ckey}";
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            Empty = Subsystems.Get<MindSystem>().EmptyMind;
         }
     }
 }

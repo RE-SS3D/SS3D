@@ -35,7 +35,8 @@ namespace SS3D.Core
         /// </summary>
         /// <typeparam name="T">The Type of object you want to get.</typeparam>
         /// <returns>The found subsystem</returns>
-        public static T Get<T>() where T : MonoBehaviour
+        public static T Get<T>()
+            where T : MonoBehaviour
         {
             if (RegisteredSubsystems.TryGetValue(typeof(T), out object match))
             {
@@ -74,7 +75,7 @@ namespace SS3D.Core
         }
 
         /// <summary>
-        /// Unregister the system from the dictionary. 
+        /// Unregister the system from the dictionary.
         /// </summary>
         /// <param name="system">The system to unregister.</param>
         public static void Unregister([NotNull] object system)

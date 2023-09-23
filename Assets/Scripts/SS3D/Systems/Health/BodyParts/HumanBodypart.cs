@@ -1,15 +1,13 @@
-﻿namespace SS3D.Systems.Health
+﻿using SS3D.Systems.Health.BodyLayers;
+using SS3D.Systems.Health.BodyParts;
+
+namespace SS3D.Systems.Health
 {
 	/// <summary>
 	/// Represent a generic body part for humans, without any particular mechanisms.
 	/// </summary>
 	public class HumanBodypart : BodyPart
 	{
-		public override void Init(BodyPart parent)
-		{
-			base.Init(parent);
-		}
-
 		protected override void AddInitialLayers()
 		{
 			TryAddBodyLayer(new MuscleLayer(this));

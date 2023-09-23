@@ -1,12 +1,9 @@
-﻿using Coimbra.Services.Events;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
 {
     [Serializable]
-    /// <inheritdoc cref="SS3D.Systems.Gamemodes.IGamemodeObjective" />
     public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
         /// <summary>
@@ -15,15 +12,23 @@ namespace SS3D.Systems.Gamemodes
         public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated;
 
         private int _id;
-        [SerializeField] private string _title;
-        [SerializeField] private CollaborationType _collaborationType;
-        [SerializeField] private Alignment _alignmentRequirement;
-        [SerializeField] private int _minAssignees = 1;
-        [SerializeField] private int _maxAssignees = 1;
+
+        [SerializeField]
+        private string _title;
+
+        [SerializeField]
+        private CollaborationType _collaborationType;
+
+        [SerializeField]
+        private Alignment _alignmentRequirement;
+
+        [SerializeField]
+        private int _minAssignees = 1;
+
+        [SerializeField]
+        private int _maxAssignees = 1;
         private ObjectiveStatus _status;
         private string _assigneeCkey;
-
-        [SerializeField] public List<IEvent> ListensToEvent;
 
         /// <summary>
         /// No-arg constructor
@@ -67,7 +72,7 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public int MaxAssignees
         {
-            get => _maxAssignees; 
+            get => _maxAssignees;
             set => _maxAssignees = value;
         }
 
@@ -167,7 +172,6 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// Sets a new author for the gamemode objective. Calls the OnGamemodeObjectiveUpdated event.
         /// </summary>
-        /// <param name="assignee">The new assignee.</param>
         public void SetAssignee(string assigneeCkey)
         {
             _assigneeCkey = assigneeCkey;
@@ -180,7 +184,7 @@ namespace SS3D.Systems.Gamemodes
         /// <param name="id"></param>
         public void SetId(int id)
         {
-            _id = id;
+            this._id = id;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
 

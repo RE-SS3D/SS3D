@@ -9,23 +9,26 @@ using UnityEngine.Serialization;
 namespace SS3D.Systems.Inventory.Containers
 {
     // This handle networking for an Openable object, openable meaning having an animation opening the object.
-    //It allows the open/close state of the object to be synchronized and the animation to be fired
-    //on all observers when updating the open/close state.
+    // It allows the open/close state of the object to be synchronized and the animation to be fired
+    // on all observers when updating the open/close state.
     [RequireComponent(typeof(Animator))]
     public class NetworkedOpenable : InteractionTargetNetworkBehaviour
     {
         protected Animator Animator;
+
+        [FormerlySerializedAs("OpenIcon")]
+        [SerializeField]
+        protected Sprite OverrideOpenIcon;
         private static readonly int OpenAnimation = Animator.StringToHash("Open");
 
         [SyncVar(OnChange = nameof(SyncOpenState))]
         private bool _openState;
 
-        [FormerlySerializedAs("OpenIcon")] [SerializeField] protected Sprite OverrideOpenIcon;
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             OpenInteraction openInteraction = new()
             {
-                Icon = OverrideOpenIcon
+                Icon = OverrideOpenIcon,
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
 
@@ -35,6 +38,13 @@ namespace SS3D.Systems.Inventory.Containers
         public bool IsOpen()
         {
             return _openState;
+        }
+
+        [Server]
+        public void SetOpenState(bool e)
+        {
+            _openState = e;
+            UpdateAnimator();
         }
 
         protected override void OnStart()
@@ -48,6 +58,16 @@ namespace SS3D.Systems.Inventory.Containers
             OpenAllOpenables(sender, e);
             _openState = e;
             UpdateAnimator();
+        }
+
+        protected virtual void SyncOpenState(bool oldVal, bool newVal, bool asServer)
+        {
+            UpdateAnimator();
+        }
+
+        private void UpdateAnimator()
+        {
+            Animator.SetBool(OpenAnimation, _openState);
         }
 
         /// <summary>
@@ -68,23 +88,6 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 openables[i].OpenStateChanged(sender, e);
             }
-        }
-
-        [Server]
-        public void SetOpenState(bool e)
-        {
-            _openState = e;
-            UpdateAnimator();
-        }
-
-        protected virtual void SyncOpenState(bool oldVal, bool newVal, bool asServer)
-        {
-            UpdateAnimator();
-        }
-
-        private void UpdateAnimator()
-        {
-            Animator.SetBool(OpenAnimation, _openState);
         }
     }
 }

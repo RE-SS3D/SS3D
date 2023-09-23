@@ -10,14 +10,17 @@ namespace SS3D.Substances
         /// The container to display
         /// </summary>
         public SubstanceContainer Container;
+
         /// <summary>
         /// The object displaying the fluid level
         /// </summary>
         public GameObject DisplayObject;
+
         /// <summary>
         /// The position of fill when empty
         /// </summary>
         public Vector3 EmptyPosition;
+
         /// <summary>
         /// The position of fill when full
         /// </summary>
@@ -25,77 +28,78 @@ namespace SS3D.Substances
         public AnimationCurve ScaleX;
         public AnimationCurve ScaleY;
         public AnimationCurve ScaleZ;
-        private Renderer meshRenderer;
 
-        // wobble shader stuff
-        Vector3 lastPos;
-        Vector3 velocity;
-        Vector3 lastRot;
-        Vector3 angularVelocity;
         public float MaxWobble = 0.03f;
         public float WobbleSpeed = 1f;
         public float Recovery = 1f;
-        float wobbleAmountX;
-        float wobbleAmountZ;
-        float wobbleAmountToAddX;
-        float wobbleAmountToAddZ;
-        float pulse;
-        float time = 0.5f;
 
-        private void Start()
+        private Renderer _meshRenderer;
+
+        // wobble shader stuff
+        private Vector3 _lastPos;
+        private Vector3 _velocity;
+        private Vector3 _lastRot;
+        private Vector3 _angularVelocity;
+        private float _wobbleAmountX;
+        private float _wobbleAmountZ;
+        private float _wobbleAmountToAddX;
+        private float _wobbleAmountToAddZ;
+        private float _pulse;
+        private float _time = 0.5f;
+
+        protected void Start()
         {
-            meshRenderer = DisplayObject.GetComponent<Renderer>();
+            _meshRenderer = DisplayObject.GetComponent<Renderer>();
+
             if (IsServer)
             {
-                Container.ContentsChanged += container => UpdateDisplay();
+                Container.OnContentsChanged += container => UpdateDisplay();
                 UpdateDisplay();
             }
         }
 
-        private void Update()
+        protected void Update()
         {
-            time += Time.deltaTime;
+            _time += Time.deltaTime;
+
             // decrease wobble over time
-            wobbleAmountToAddX = Mathf.Lerp(wobbleAmountToAddX, 0, Time.deltaTime * (Recovery));
-            wobbleAmountToAddZ = Mathf.Lerp(wobbleAmountToAddZ, 0, Time.deltaTime * (Recovery));
+            _wobbleAmountToAddX = Mathf.Lerp(_wobbleAmountToAddX, 0, Time.deltaTime * Recovery);
+            _wobbleAmountToAddZ = Mathf.Lerp(_wobbleAmountToAddZ, 0, Time.deltaTime * Recovery);
 
             // make a sine wave of the decreasing wobble
-            pulse = 2 * Mathf.PI * WobbleSpeed;
-            wobbleAmountX = wobbleAmountToAddX * Mathf.Sin(pulse * time);
-            wobbleAmountZ = wobbleAmountToAddZ * Mathf.Sin(pulse * time);
+            _pulse = 2 * Mathf.PI * WobbleSpeed;
+            _wobbleAmountX = _wobbleAmountToAddX * Mathf.Sin(_pulse * _time);
+            _wobbleAmountZ = _wobbleAmountToAddZ * Mathf.Sin(_pulse * _time);
 
             // send it to the shader
-            meshRenderer.material.SetFloat("_WobbleX", wobbleAmountX);
-            meshRenderer.material.SetFloat("_WobbleZ", wobbleAmountZ);
+            _meshRenderer.material.SetFloat("_WobbleX", _wobbleAmountX);
+            _meshRenderer.material.SetFloat("_WobbleZ", _wobbleAmountZ);
 
             // velocity
-            velocity = (lastPos - transform.position) / Time.deltaTime;
-            angularVelocity = transform.rotation.eulerAngles - lastRot;
-
+            _velocity = (_lastPos - transform.position) / Time.deltaTime;
+            _angularVelocity = transform.rotation.eulerAngles - _lastRot;
 
             // add clamped velocity to wobble
-            wobbleAmountToAddX += Mathf.Clamp((velocity.x + (angularVelocity.z * 0.2f)) * MaxWobble, -MaxWobble, MaxWobble);
-            wobbleAmountToAddZ += Mathf.Clamp((velocity.z + (angularVelocity.x * 0.2f)) * MaxWobble, -MaxWobble, MaxWobble);
+            _wobbleAmountToAddX += Mathf.Clamp((_velocity.x + (_angularVelocity.z * 0.2f)) * MaxWobble, -MaxWobble, MaxWobble);
+            _wobbleAmountToAddZ += Mathf.Clamp((_velocity.z + (_angularVelocity.x * 0.2f)) * MaxWobble, -MaxWobble, MaxWobble);
 
             // keep last position
-            lastPos = transform.position;
-            lastRot = transform.rotation.eulerAngles;
+            _lastPos = transform.position;
+            _lastRot = transform.rotation.eulerAngles;
         }
 
         [Server]
         private void UpdateDisplay()
         {
-            float relativeVolume = (Container.CurrentVolume / Container.Volume);
+            float relativeVolume = Container.CurrentVolume / Container.Volume;
             Transform trans = DisplayObject.transform;
 
             Color newColor = CalculateColor();
 
-            meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
-            meshRenderer.material.SetColor("_Tint", newColor);
-            meshRenderer.material.SetColor("_TopColor", newColor);
+            _meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
+            _meshRenderer.material.SetColor("_Tint", newColor);
+            _meshRenderer.material.SetColor("_TopColor", newColor);
 
-            //trans.localPosition = Vector3.Lerp(EmptyPosition, FullPosition, Mathf.Min(relativeVolume, 1));
-            //trans.localScale = new Vector3(ScaleX.Evaluate(relativeVolume), ScaleY.Evaluate(relativeVolume), ScaleZ.Evaluate(relativeVolume));
             RpcUpdateDisplay(trans.localPosition, trans.localScale, newColor, relativeVolume);
         }
 
@@ -103,6 +107,7 @@ namespace SS3D.Substances
         {
             float totalMilliMoles = Container.TotalMilliMoles;
             Color color = new Color(0, 0, 0, 0);
+
             foreach (SubstanceEntry entry in Container.Substances)
             {
                 float relativeMoles = entry.MilliMoles / totalMilliMoles;
@@ -110,6 +115,7 @@ namespace SS3D.Substances
             }
 
             color.a = 0.5f;
+
             return color;
         }
 
@@ -117,17 +123,17 @@ namespace SS3D.Substances
         private void RpcUpdateDisplay(Vector3 position, Vector3 scale, Color color, float relativeVolume)
         {
             // Ensure this is initialised.
-            if (meshRenderer == null)
+            if (_meshRenderer == null)
             {
                 Start();
             }
-            
+
             Transform trans = DisplayObject.transform;
             trans.localPosition = position;
             trans.localScale = scale;
-            meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
-            meshRenderer.material.SetColor("_Tint", color);
-            meshRenderer.material.SetColor("_TopColor", color);
+            _meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
+            _meshRenderer.material.SetColor("_Tint", color);
+            _meshRenderer.material.SetColor("_TopColor", color);
         }
     }
 }

@@ -11,8 +11,8 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public struct SavedPlacedItemObject
     {
-        public string itemName;
-        public Vector3 worldPosition;
-        public Quaternion rotation;
+        public string ItemName;
+        public Vector3 WorldPosition;
+        public Quaternion Rotation;
     }
 }

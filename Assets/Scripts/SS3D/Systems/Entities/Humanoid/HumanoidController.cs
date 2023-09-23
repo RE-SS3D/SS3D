@@ -21,22 +21,21 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(Animator))]
     public abstract class HumanoidController : NetworkActor
     {
-        #region Fields
         public event Action<float> OnSpeedChangeEvent;
 
-        [Header("Components")] 
-        [SerializeField] protected Entity _entity;
+        [Header("Components")]
+        [SerializeField]
+        protected Entity _entity;
 
         [Header("Movement Settings")]
-        [SerializeField] protected float _movementSpeed;
-        [SerializeField] protected float _lerpMultiplier;
-        [SerializeField] protected float _rotationLerpMultiplier;
+        [SerializeField]
+        protected float _movementSpeed;
 
-        [Header("Movement IK Targets")]
-        [SerializeField] private Transform _movementTarget;
+        [SerializeField]
+        protected float _lerpMultiplier;
 
-        [Header("Run/Walk")]
-        private bool _isRunning;
+        [SerializeField]
+        protected float _rotationLerpMultiplier;
 
         [Header("Debug Info")]
         protected Vector3 AbsoluteMovement;
@@ -44,24 +43,36 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Vector2 SmoothedInput;
         public Vector3 TargetMovement;
 
-        private Actor _camera;
         protected Controls.MovementActions MovementControls;
         protected Controls.HotkeysActions HotkeysControls;
-        private InputSystem _inputSystem;
-        private const float _walkAnimatorValue = .3f;
-        private const float _runAnimatorValue = 1f;
-        #endregion
 
-        #region Properties
-        public virtual float WalkAnimatorValue => _walkAnimatorValue;
-        public virtual float RunAnimatorValue => _runAnimatorValue;
+        private const float WalkAnimatorFixedValue = .3f;
+        private const float RunAnimatorFixedValue = 1f;
+
+        [Header("Movement IK Targets")]
+        [SerializeField]
+        private Transform _movementTarget;
+
+        [Header("Run/Walk")]
+        private bool _isRunning;
+
+        private Actor _camera;
+        private InputSystem _inputSystem;
+
+        public virtual float WalkAnimatorValue => WalkAnimatorFixedValue;
+
+        public virtual float RunAnimatorValue => RunAnimatorFixedValue;
+
         public bool IsRunning => _isRunning;
-        #endregion
 
         protected override void OnStart()
         {
             base.OnStart();
-            if (!Owner.IsLocalClient) return;
+            if (!Owner.IsLocalClient)
+            {
+                return;
+            }
+
             Setup();
         }
 
@@ -93,47 +104,16 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            UnityEngine.Debug.Log("destroying controller " + gameObject.name);
+
             MovementControls.ToggleRun.performed -= HandleToggleRun;
             _inputSystem.ToggleActionMap(MovementControls, false);
             _inputSystem.ToggleActionMap(HotkeysControls, false);
-        }
-
-        private void HandleControllingPlayerChanged(Mind mind)
-        {
-            OnSpeedChanged(0);
-        }
-
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
-        {
-	        if (!enabled)
-	        {
-		        return;
-	        }
-            if (!IsOwner)
-            {
-                return;
-            }
-            ProcessCharacterMovement();
         }
 
         /// <summary>
         /// Executes the movement code and updates the IK targets
         /// </summary>
         protected abstract void ProcessCharacterMovement();
-    
-        /// <summary>
-        /// Gets the mouse position and updates the mouse IK targets while maintaining the player height
-        /// </summary>
-        private void UpdateMousePositionTransforms()
-        {
-            // Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            // Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
-            // mousePos = new Vector3(mousePos.x, transform.position.y, mousePos.z);
-            
-            // _mouseDirectionTransform.LookAt(mousePos);
-            // _mousePositionTransform.position = mousePos;
-        }
 
         /// <summary>
         /// Moves the movement targets with the given input
@@ -141,10 +121,10 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <param name="movementInput"></param>
          protected void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
          {
-             //makes the movement align to the camera view
+             // makes the movement align to the camera view
              Vector3 newTargetMovement =
-                 movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized +
-                 movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
+                 (movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized) +
+                 (movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized);
 
              // smoothly changes the target movement
              TargetMovement = Vector3.Lerp(TargetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
@@ -168,11 +148,10 @@ namespace SS3D.Systems.Entities.Humanoid
         /// Moves the player to the target movement
         /// </summary>
         protected abstract void MovePlayer();
-        
+
         /// <summary>
         /// Process the player movement input, smoothing it
         /// </summary>
-        /// <returns></returns>
         protected void ProcessPlayerInput()
         {
             float x = MovementControls.Movement.ReadValue<Vector2>().x;
@@ -183,7 +162,7 @@ namespace SS3D.Systems.Entities.Humanoid
             Input = Vector2.ClampMagnitude(new Vector2(x, y), inputFilteredSpeed);
             SmoothedInput = Vector2.Lerp(SmoothedInput, Input, Time.deltaTime * (_lerpMultiplier / 10));
 
-            OnSpeedChanged(Input.magnitude != 0 ? inputFilteredSpeed : 0);
+            HandleSpeedChanged(Input.magnitude != 0 ? inputFilteredSpeed : 0);
         }
 
         protected virtual float FilterSpeed()
@@ -199,10 +178,24 @@ namespace SS3D.Systems.Entities.Humanoid
             _isRunning = !_isRunning;
         }
 
-        protected void OnSpeedChanged(float speed)
+        protected void HandleSpeedChanged(float speed)
         {
             OnSpeedChangeEvent?.Invoke(speed);
         }
-    }
 
+        private void HandleControllingPlayerChanged(Mind mind)
+        {
+            HandleSpeedChanged(0);
+        }
+
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        {
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            ProcessCharacterMovement();
+        }
+    }
 }

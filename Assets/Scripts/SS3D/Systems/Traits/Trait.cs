@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SS3D.Systems.Traits;
+using UnityEngine;
 
 namespace SS3D.Systems
 {
@@ -9,22 +10,25 @@ namespace SS3D.Systems
     public class Trait : ScriptableObject
     {
         // Hash used for identification
-        protected int hash;
+        private int _hash;
+
+        [SerializeField]
+        private TraitCategories _category;
+
         public int Hash
         {
             get
             {
-                if (hash == 0)
+                if (_hash == 0)
                 {
                     GenerateHash();
                 }
 
-                return hash;
+                return _hash;
             }
-            set => hash = value;
+            set => _hash = value;
         }
 
-        [HideInInspector]
         public string Name
         {
             get => name;
@@ -32,43 +36,52 @@ namespace SS3D.Systems
         }
 
         // Categories, used for checking specific types of Traits
-        protected TraitCategories _category;
         public TraitCategories Category
         {
             get => _category;
             set => _category = value;
         }
 
-        //Two different object can have the same hash, it's usually a bad idea to test for equality with hash.
-        protected bool Equals(Trait other)
-        {
-            // Use Hash instead of hash to prevent uninitialized hashes in clients
-            return Hash == other.hash;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Trait)obj);
-        }
-
         public override int GetHashCode()
         {
-            return hash;
+            return _hash;
         }
 
-        [ExecuteInEditMode]
-        private void OnValidate()
+        // Two different object can have the same hash, it's usually a bad idea to test for equality with hash.
+        public override bool Equals(object other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (other.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return Equals((Trait)other);
+        }
+
+        protected void OnValidate()
         {
             GenerateHash();
         }
 
         private void GenerateHash()
         {
-            hash = Animator.StringToHash(name.ToUpper());
+            _hash = Animator.StringToHash(name.ToUpper());
+        }
+
+        private bool Equals(Trait other)
+        {
+            // Use Hash instead of hash to prevent uninitialized hashes in clients
+            return Hash == other._hash;
         }
     }
-
 }

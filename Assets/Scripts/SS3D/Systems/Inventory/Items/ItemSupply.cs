@@ -6,15 +6,15 @@ namespace SS3D.Systems.Inventory.Items
     [Serializable]
     public struct ItemSupply
     {
-        [SerializeField] private ItemSupplyType type;
-        [SerializeField] private int drainRate;
-        [SerializeField] private int maxSupply;
-        [SerializeField] private int currentSupply;
+        [SerializeField]
+        private ItemSupplyType type;
+        [SerializeField]
+        private int drainRate;
+        [SerializeField]
+        private int maxSupply;
 
-        public ItemSupplyType Type => type;
-        public int DrainRate => drainRate;
-        public int MaxSupply => maxSupply;
-        public int CurrentSupply => currentSupply;
+        [SerializeField]
+        private int currentSupply;
 
         public ItemSupply(ItemSupplyType type, int drainRate, int maxSupply, int currentSupply)
         {
@@ -23,6 +23,14 @@ namespace SS3D.Systems.Inventory.Items
             this.maxSupply = maxSupply;
             this.currentSupply = currentSupply;
         }
+
+        public ItemSupplyType Type => type;
+
+        public int DrainRate => drainRate;
+
+        public int MaxSupply => maxSupply;
+
+        public int CurrentSupply => currentSupply;
 
         public ItemSupply WithNewSupplyValue(int newSupply)
         {

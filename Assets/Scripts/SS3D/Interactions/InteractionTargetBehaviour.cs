@@ -10,6 +10,7 @@ namespace SS3D.Interactions
     public abstract class InteractionTargetBehaviour : Actor, IInteractionTarget, IGameObjectProvider
     {
         public new GameObject GameObject => base.GameObject;
+
         public abstract IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent);
     }
 }

@@ -11,13 +11,21 @@ namespace SS3D.UI.Buttons
     [RequiredLayer("UI")]
     public sealed class GenericTabView : Actor
     {
-        [SerializeField] private bool _active;
-        [SerializeField] [NotNull] private Transform _panelUI;
-        [SerializeField] [NotNull] private Button _tabButton;
+        [SerializeField]
+        private bool _active;
+
+        [SerializeField]
+        [NotNull]
+        private Transform _panelUI;
+
+        [SerializeField]
+        [NotNull]
+        private Button _tabButton;
 
         public Button Button => _tabButton;
+
         public bool Active => _active;
-        
+
         public void SetTabActive(bool state)
         {
             if (_tabButton != null)

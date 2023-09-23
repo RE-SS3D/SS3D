@@ -14,12 +14,16 @@ namespace SS3D.Systems.Inventory.UI
     public class ItemDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerClickHandler
     {
         public Image ItemImage;
-        [NonSerialized] public bool ShouldDrop;
-        [NonSerialized] public Vector3 OldPosition;
+        [NonSerialized]
+        public bool ShouldDrop;
+
+        [NonSerialized]
+        public Vector3 OldPosition;
 
         protected InventoryDisplayElement InventoryDisplayElement;
 
-        [SerializeField] private Item _item;
+        [SerializeField]
+        private Item _item;
         private Transform _oldParent;
         private Vector2 _startMousePosition;
         private Vector3 _startPosition;
@@ -27,34 +31,12 @@ namespace SS3D.Systems.Inventory.UI
         private Outline _outlineInner;
         private Outline _outlineOuter;
 
-
         public Item Item
         {
             get => _item;
             set
             {
                 _item = value;
-                UpdateDisplay();
-            }
-        }
-
-        public void Start()
-        {
-            _slotImage = GetComponent<Image>();
-            if (!_outlineInner)
-            {
-                _outlineInner = ItemImage.gameObject.AddComponent<Outline>();
-                _outlineInner.effectColor = new Color(0, 0, 0, 0.4f);
-                _outlineInner.effectDistance = new Vector2(0.6f, 0.6f);
-            }
-            if (!_outlineOuter)
-            {
-                _outlineInner = ItemImage.gameObject.AddComponent<Outline>();
-                _outlineInner.effectColor = new Color(0, 0, 0, 0.2f);
-                _outlineInner.effectDistance = new Vector2(0.8f, 0.8f);
-            }
-            if (_item != null)
-            {
                 UpdateDisplay();
             }
         }
@@ -71,8 +53,8 @@ namespace SS3D.Systems.Inventory.UI
         {
             // Somehow, itemdisplay hides the other IPointerClickHandler in it's parent, so the event OnpointerClick is never
             // called, for exemple in SingleItemContainerSlot. That's why we need to call the events on the parent from there.
-            var pointerDownHandlers = transform.parent.GetComponentsInParent<IPointerClickHandler>();
-            foreach (var pointerHandler in pointerDownHandlers)
+            IPointerClickHandler[] pointerDownHandlers = transform.parent.GetComponentsInParent<IPointerClickHandler>();
+            foreach (IPointerClickHandler pointerHandler in pointerDownHandlers)
             {
                 pointerHandler?.OnPointerClick(eventData);
             }
@@ -81,7 +63,10 @@ namespace SS3D.Systems.Inventory.UI
         public void OnBeginDrag(PointerEventData eventData)
         {
             // Only allow to drag with a left click.
-            if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (eventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
 
             _oldParent = transform.parent;
             if (InventoryDisplayElement == null)
@@ -101,7 +86,10 @@ namespace SS3D.Systems.Inventory.UI
         public void OnDrag(PointerEventData eventData)
         {
             // Only allow to drag with a left click.
-            if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (eventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
 
             Vector3 diff = Mouse.current.position.ReadValue() - _startMousePosition;
             transform.position = _startPosition + diff;
@@ -110,7 +98,10 @@ namespace SS3D.Systems.Inventory.UI
         public void OnEndDrag(PointerEventData eventData)
         {
             // Only allow to drag with a left click.
-            if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (eventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
 
             _slotImage.raycastTarget = true;
 
@@ -131,27 +122,51 @@ namespace SS3D.Systems.Inventory.UI
             }
         }
 
+        public void MakeVisible(bool visible)
+        {
+            Image[] images = GetComponentsInChildren<Image>();
+
+            foreach (Image image in images)
+            {
+                image.enabled = visible;
+            }
+        }
+
+        protected void Start()
+        {
+            _slotImage = GetComponent<Image>();
+            if (!_outlineInner)
+            {
+                _outlineInner = ItemImage.gameObject.AddComponent<Outline>();
+                _outlineInner.effectColor = new Color(0, 0, 0, 0.4f);
+                _outlineInner.effectDistance = new Vector2(0.6f, 0.6f);
+            }
+
+            if (!_outlineOuter)
+            {
+                _outlineInner = ItemImage.gameObject.AddComponent<Outline>();
+                _outlineInner.effectColor = new Color(0, 0, 0, 0.2f);
+                _outlineInner.effectDistance = new Vector2(0.8f, 0.8f);
+            }
+
+            if (_item != null)
+            {
+                UpdateDisplay();
+            }
+        }
+
         private void UpdateDisplay()
         {
-            if(ItemImage == null)
+            if (ItemImage == null)
             {
                 return;
             }
+
             ItemImage.sprite = Item != null ? Item.ItemSprite : null;
 
             Color imageColor = ItemImage.color;
             imageColor.a = ItemImage.sprite != null ? 255 : 0;
             ItemImage.color = imageColor;
         }
-
-		public void MakeVisible(bool visible)
-		{
-			Image[] images = GetComponentsInChildren<Image>();
-			foreach (Image image in images)
-			{
-				image.enabled = visible;
-			}
-		}
-
-	}
+    }
 }

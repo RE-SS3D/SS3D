@@ -27,15 +27,18 @@ namespace SS3D.Systems.Inventory.UI
 
         public void OnDrop(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (eventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
+
             GameObject drag = eventData.pointerDrag;
             if (drag == null)
             {
                 return;
             }
 
-            ItemDisplay display = drag.GetComponent<ItemDisplay>();
-            if (display == null)
+            if (!drag.TryGetComponent<ItemDisplay>(out ItemDisplay display))
             {
                 Log.Warning(this, "dragging on null display");
                 return;

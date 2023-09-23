@@ -1,3 +1,4 @@
+using SS3D.Systems.Tile.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public struct SavedPlacedTileObject
     {
-        public string tileObjectSOName;
-        public Vector2Int origin;
-        public Direction dir;
+        public string TileObjectSOName;
+        public Vector2Int Origin;
+        public Direction Dir;
     }
 }

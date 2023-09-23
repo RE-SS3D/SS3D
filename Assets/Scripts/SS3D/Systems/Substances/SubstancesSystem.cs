@@ -1,29 +1,28 @@
 using SS3D.Core.Behaviours;
+using SS3D.Substances;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Substances
+namespace SS3D.Systems.Substances
 {
     public sealed class SubstancesSystem : NetworkSystem
     {
-        public Dictionary<SubstanceType, Substance> Substances => substances;
-        public Recipe[] Recipes => recipes;
-
         // Only useful to serialize and fill the dictionnary substances.
         [SerializeField]
-        private List<Substance> substancesList;
+        private List<Substance> _substancesList;
 
+        private Dictionary<SubstanceType, Substance> _substances;
 
-        private Dictionary<SubstanceType, Substance> substances;
         [SerializeField]
+        private Recipe[] _recipes;
 
-        private Recipe[] recipes;
+        public Dictionary<SubstanceType, Substance> Substances => _substances;
 
+        public Recipe[] Recipes => _recipes;
 
         /// <summary>
         /// Gets a substance based on id
         /// </summary>
-        /// <param name="id">The id name of the substance</param>
         /// <returns>A substance or null if it wasn't found</returns>
         public Substance FromType(SubstanceType type)
         {
@@ -33,14 +32,13 @@ namespace SS3D.Substances
         protected override void OnAwake()
         {
             base.OnAwake();
-            substances = new Dictionary<SubstanceType, Substance>();
-            foreach (var substance in substancesList)
+            _substances = new Dictionary<SubstanceType, Substance>();
+            foreach (Substance substance in _substancesList)
             {
-                substances[substance.Type] = substance;
+                _substances[substance.Type] = substance;
             }
-            substancesList.Clear();
 
+            _substancesList.Clear();
         }
     }
-
 }

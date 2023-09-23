@@ -20,6 +20,7 @@ namespace SS3D.Editor
 		{
 			ToolbarExtender.RightToolbarGUI.Add(OnRightToolbarGUI);
 		}
+
 		private static void OnRightToolbarGUI()
 		{
 			if (UnityEngine.Application.isPlaying)
@@ -63,7 +64,7 @@ namespace SS3D.Editor
 			NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
 
 			NetworkType networkType = networkSettings.NetworkType;
-			
+
 			List<string> array = Enum.GetNames(typeof(NetworkType)).ToList();
 
 			if (GUILayout.Button(new GUIContent("Network mode: " + networkType), networkModeOptions))

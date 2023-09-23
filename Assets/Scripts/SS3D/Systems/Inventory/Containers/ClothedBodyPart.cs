@@ -14,5 +14,4 @@ namespace SS3D.Systems.Inventory.Containers
 
         public ClothType Type => clothType;
     }
-
 }

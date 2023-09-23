@@ -9,11 +9,6 @@ namespace SS3D.UI.Buttons
     {
         private ToggleLabelButton _button;
 
-        private void OnEnable()
-        {
-            _button = (ToggleLabelButton)target;
-        }
-
         public override void OnInspectorGUI()
         {
             bool state = _button.Highlighted;
@@ -35,6 +30,11 @@ namespace SS3D.UI.Buttons
             }
 
             base.OnInspectorGUI();
+        }
+
+        protected void OnEnable()
+        {
+            _button = (ToggleLabelButton)target;
         }
     }
 }

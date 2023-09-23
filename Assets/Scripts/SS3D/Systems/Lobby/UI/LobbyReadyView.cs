@@ -14,10 +14,13 @@ namespace SS3D.Systems.Lobby.UI
 {
     public sealed class LobbyReadyView : NetworkActor
     {
-        [SerializeField] private ToggleLabelButton _readyButton;
-        [SerializeField] private LabelButton _embarkButton;
+        [SerializeField]
+        private ToggleLabelButton _readyButton;
 
-        protected override void OnAwake()           
+        [SerializeField]
+        private LabelButton _embarkButton;
+
+        protected override void OnAwake()
         {
             base.OnAwake();
 

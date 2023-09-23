@@ -7,11 +7,13 @@
         /// </summary>
         /// <param name="interactionEvent">The source used in the interaction</param>
         bool ClientStart(InteractionEvent interactionEvent);
+
         /// <summary>
         /// Continues the interaction
         /// </summary>
         /// <param name="interactionEvent">The source used in the interaction</param>
         bool ClientUpdate(InteractionEvent interactionEvent);
+
         /// <summary>
         /// Called when the interaction is cancelled
         /// </summary>

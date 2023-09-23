@@ -5,9 +5,9 @@ namespace SS3D.Systems.Gamemodes
     /// </summary>
     public enum ObjectiveStatus
     {
-        InProgress,
-        Success,
-        Failed,
-        Cancelled,
+        InProgress = 0,
+        Success = 1,
+        Failed = 2,
+        Cancelled = 3,
     }
 }

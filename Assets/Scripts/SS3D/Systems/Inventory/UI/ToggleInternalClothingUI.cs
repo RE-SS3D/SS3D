@@ -15,7 +15,7 @@ namespace SS3D.Systems.Inventory.UI
         private CanvasGroup _internalClothingCanvas;
         private bool _isShowing = true;
 
-        private void Start()
+        protected void Start()
         {
             _internalClothingCanvas = GameObject.Find("InternalClothing").GetComponent<CanvasGroup>();
             _expandButton = GetComponent<Button>();
@@ -32,6 +32,7 @@ namespace SS3D.Systems.Inventory.UI
         {
             Toggle();
         }
+
         /// <summary>
         /// Toggle the Internal Clothing UI using transparency and turning on or off the ability to block ray casts.
         /// </summary>
@@ -39,14 +40,15 @@ namespace SS3D.Systems.Inventory.UI
         {
             if (_isShowing)
             {
-                _internalClothingCanvas.alpha = 0f; //this makes everything transparent
-                _internalClothingCanvas.blocksRaycasts = false; //this prevents the UI element to receive input events
+                _internalClothingCanvas.alpha = 0f;
+                _internalClothingCanvas.blocksRaycasts = false;
             }
             else
             {
-                _internalClothingCanvas.alpha = 1f; //this makes it visible again
-                _internalClothingCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
+                _internalClothingCanvas.alpha = 1f;
+                _internalClothingCanvas.blocksRaycasts = true;
             }
+
             _isShowing = !_isShowing;
         }
     }

@@ -10,7 +10,8 @@ namespace SS3D.Networking.Debug
 {
     public class ApplicationModeView : Actor
     {
-        [SerializeField] private TMP_Text _text;
+        [SerializeField]
+        private TMP_Text _text;
 
         protected override void OnAwake()
         {

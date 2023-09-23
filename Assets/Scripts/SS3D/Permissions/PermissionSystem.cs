@@ -18,12 +18,6 @@ namespace SS3D.Permissions
     public sealed class PermissionSystem : NetworkSystem
     {
         /// <summary>
-        /// Dictionary of users and permissions.
-        /// </summary>
-        [SyncObject]
-        private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
-
-        /// <summary>
         /// If the server has loaded the permissions list
         /// </summary>
         [SyncVar]
@@ -37,12 +31,11 @@ namespace SS3D.Permissions
 
         private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + "/" + ConfigFileName;
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            _userPermissions.OnChange += SyncHandleUserPermissionsChanged;
-        }
+        /// <summary>
+        /// Dictionary of users and permissions.
+        /// </summary>
+        [SyncObject]
+        private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
 
         public override void OnStartClient()
         {
@@ -115,6 +108,20 @@ namespace SS3D.Permissions
             }
 
             File.WriteAllText(PermissionsPath, fileContent);
+        }
+
+        public bool IsAtLeast(string ckey, ServerRoleTypes permissionLevelCheck)
+        {
+            TryGetUserRole(ckey, out ServerRoleTypes userPermission);
+
+            return userPermission >= permissionLevelCheck;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _userPermissions.OnChange += SyncHandleUserPermissionsChanged;
         }
 
         /// <summary>

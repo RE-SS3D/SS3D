@@ -16,8 +16,7 @@ namespace SS3D.Systems.Gamemodes
 
         public static GamemodeObjective Create(string title, CollaborationType collaborationType, Alignment alignment, int minAssignees, int maxAssignees)
         {
-            GamemodeObjective newObjective = new GamemodeObjective(
-                title, collaborationType, alignment, minAssignees, maxAssignees);
+            GamemodeObjective newObjective = ScriptableObject.CreateInstance<GamemodeObjective>();
 
             return newObjective;
         }

@@ -9,13 +9,13 @@ namespace SS3D.Systems.Inventory.Containers
     /// <summary>
     /// This allows control over the position of displayed items inside the container.
     /// It also allows to define multiple points where items can be displayed inside the container,
-    /// and items placed in the container appears at those different points in the order defined. 
+    /// and items placed in the container appears at those different points in the order defined.
     /// Take for example a battery compartment, battery should appear side by side when placed inside the compartment container.
     /// Without this they would pile up in the same spot.
     /// </summary>
     public class ContainerItemDisplay : MonoBehaviour
     {
-        public AttachedContainer attachedContainer;
+        public AttachedContainer AttachedContainer;
         public bool Mirrored;
 
         /// <summary>
@@ -23,26 +23,26 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private Item[] _displayedItems;
 
-        public void Start()
+        protected void Start()
         {
-            Assert.IsNotNull(attachedContainer);
-            
-            _displayedItems = new Item[attachedContainer.Displays.Length];
-            attachedContainer.OnItemAttached += ContainerOnItemAttached;
-            attachedContainer.OnItemDetached += ContainerOnItemDetached;
+            Assert.IsNotNull(AttachedContainer);
+
+            _displayedItems = new Item[AttachedContainer.Displays.Length];
+            AttachedContainer.OnItemAttached += ContainerOnItemAttached;
+            AttachedContainer.OnItemDetached += ContainerOnItemDetached;
         }
 
-        public void OnDestroy()
+        protected void OnDestroy()
         {
-            attachedContainer.OnItemAttached -= ContainerOnItemAttached;
-            attachedContainer.OnItemDetached -= ContainerOnItemDetached;
+            AttachedContainer.OnItemAttached -= ContainerOnItemAttached;
+            AttachedContainer.OnItemDetached -= ContainerOnItemDetached;
         }
 
         private void ContainerOnItemAttached(object sender, Item item)
         {
             // Defines the transform of the item to be the first available position.
             int index = -1;
-            for (int i = 0; i < attachedContainer.Displays.Length; i++)
+            for (int i = 0; i < AttachedContainer.Displays.Length; i++)
             {
                 if (_displayedItems[i] == null)
                 {
@@ -71,7 +71,7 @@ namespace SS3D.Systems.Inventory.Containers
                 // HACK: Required because rotation pivot can be different
                 GameObject temporaryPoint = new GameObject("TempPivotPoint");
 
-                temporaryPoint.transform.SetParent(attachedContainer.Displays[index].transform, false);
+                temporaryPoint.transform.SetParent(AttachedContainer.Displays[index].transform, false);
                 temporaryPoint.transform.localPosition = Vector3.zero;
 
                 // Assign parent
@@ -80,16 +80,16 @@ namespace SS3D.Systems.Inventory.Containers
                 // Very sketchy, as the root is not reliable to be things we want them to be.
                 // Maybe we can tweak this in the future
                 temporaryPoint.transform.rotation = attachmentPoint.root.rotation * attachmentPoint.localRotation;
-               
+
                 // Assign the relative position between the attachment point and the object
                 itemTransform.localPosition = -attachmentPoint.localPosition;
                 itemTransform.localRotation = Quaternion.identity;
             }
             else
             {
-                itemTransform.SetParent(attachedContainer.Displays[index].transform, false);
-                itemTransform.localPosition = new Vector3();
-                itemTransform.localRotation = new Quaternion();
+                itemTransform.SetParent(AttachedContainer.Displays[index].transform, false);
+                itemTransform.localPosition = default;
+                itemTransform.localRotation = default;
             }
 
             _displayedItems[index] = item;
@@ -98,7 +98,7 @@ namespace SS3D.Systems.Inventory.Containers
         private void ContainerOnItemDetached(object sender, Item item)
         {
             int index = -1;
-            for (int i = 0; i < attachedContainer.Displays.Length; i++)
+            for (int i = 0; i < AttachedContainer.Displays.Length; i++)
             {
                 if (_displayedItems[i] == item)
                 {
@@ -113,9 +113,10 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Transform itemParent = item.transform.parent;
-            if (itemParent != null && itemParent != attachedContainer.Displays[index])
+            if (itemParent != null && itemParent != AttachedContainer.Displays[index])
             {
                 item.transform.SetParent(null, true);
+
                 // It's currently deleting the game object containing the item, why is this here ?
                 itemParent.gameObject.Dispose(true);
             }

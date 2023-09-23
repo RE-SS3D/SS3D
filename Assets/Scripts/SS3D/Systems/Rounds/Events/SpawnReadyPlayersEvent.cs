@@ -8,7 +8,7 @@ namespace SS3D.Systems.Rounds.Events
     {
         public readonly List<Player> ReadyPlayers;
 
-        public SpawnReadyPlayersEvent(List<Player>readyPlayers)
+        public SpawnReadyPlayersEvent(List<Player> readyPlayers)
         {
             ReadyPlayers = readyPlayers;
         }

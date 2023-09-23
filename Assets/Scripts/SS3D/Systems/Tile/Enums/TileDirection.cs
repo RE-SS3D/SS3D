@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace SS3D.Systems.Tile
+namespace SS3D.Systems.Tile.Enums
 {
     /// <summary>
     /// Enum for each direction.

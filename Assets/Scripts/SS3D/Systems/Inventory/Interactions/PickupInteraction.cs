@@ -41,14 +41,14 @@ namespace SS3D.Systems.Inventory.Interactions
 
                 // we try to get the Item component from the GameObject we just interacted with
                 // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
-                Item item = targetBehaviour.GameObject.GetComponent<Item>();
-                if (item == null)
+                if (!targetBehaviour.GameObject.TryGetComponent<Item>(out Item item))
                 {
                     return false;
                 }
 
                 bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
                 bool notInAContainer = !item.IsInContainer();
+
                 // then we just do a range check, to make sure we can interact
                 // and we check if the item is not in a container, you can only pick things that are not in a container
                 return isInRange && notInAContainer;
@@ -66,9 +66,9 @@ namespace SS3D.Systems.Inventory.Interactions
                 // and then we run the function that adds it to the container
                 hand.Pickup(target);
 
-
-                try {
-                    string ckey = hand.HandsController.Inventory.Body.Mind.player.Ckey;
+                try
+                {
+                    string ckey = hand.HandsController.Inventory.Body.Mind.Player.Ckey;
 
                     // and call the event for picking up items for the Game Mode System
                     new ItemPickedUpEvent(target, ckey).Invoke(this);

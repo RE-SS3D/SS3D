@@ -1,8 +1,10 @@
 ﻿using SS3D.Interactions.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace SS3D.Interactions.Extensions
 {
+    [SuppressMessage("Type Safety", "UNT0014:Invalid type for call to GetComponent", Justification = "Temporary")]
     public static class InteractionSourceExtension
     {
         public static IInteractionSource GetRootSource(this IInteractionSource source)
@@ -16,37 +18,41 @@ namespace SS3D.Interactions.Extensions
             return current;
         }
 
-        public static T GetComponent<T>(this IInteractionSource source) where T : class
+        public static T GetComponent<T>(this IInteractionSource source)
+            where T : class
         {
             GameObject gameObject = (source as IGameObjectProvider)?.GameObject;
             return gameObject != null ? gameObject.GetComponent<T>() : null;
         }
 
-		public static T GetComponentInParent<T>(this IInteractionSource source) where T : class
+		public static T GetComponentInParent<T>(this IInteractionSource source)
+            where T : class
 		{
 			GameObject gameObject = (source as IGameObjectProvider)?.GameObject;
-			return gameObject != null ? gameObject.GetComponentInParent<T>() : null;
+            return gameObject != null ? gameObject.GetComponentInParent<T>() : null;
 		}
 
-		public static T GetComponentInTree<T>(this IInteractionSource source) where T: class
+		public static T GetComponentInTree<T>(this IInteractionSource source)
+            where T : class
         {
             return GetComponentInTree<T>(source, out IGameObjectProvider _);
         }
-        
-        public static T GetComponentInTree<T>(this IInteractionSource source, out IGameObjectProvider provider) where T: class
+
+        public static T GetComponentInTree<T>(this IInteractionSource source, out IGameObjectProvider provider)
+            where T : class
         {
             IInteractionSource current = source;
             while (current != null)
             {
                 if (current is IGameObjectProvider gameObjectProvider)
                 {
-                    T component = gameObjectProvider.GameObject.GetComponent<T>();
-                    if (component != null)
+                    if (gameObjectProvider.GameObject.TryGetComponent<T>(out T component))
                     {
                         provider = gameObjectProvider;
                         return component;
                     }
                 }
+
                 current = current.Source;
             }
 
@@ -69,5 +75,5 @@ namespace SS3D.Interactions.Extensions
         // {
         //     return source.GetRootSource().GetComponent<Entity>();
         // }
-    }    
+    }
 }

@@ -14,38 +14,18 @@ namespace SS3D.Systems.Screens
     /// </summary>
     public class GameScreen : Actor
     {
-        [SerializeField] 
+        [SerializeField]
         private ScreenType _screenType;
 
-        [SerializeField] private CanvasGroup _canvasGroup;
-        [SerializeField] private Transform _holder;
+        [SerializeField]
+        private CanvasGroup _canvasGroup;
+
+        [SerializeField]
+        private Transform _holder;
 
         private Sequence _sequence;
 
         public ScreenType ScreenType => _screenType;
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            GameScreens.Register(this);
-
-            Setup();
-        }
-
-        protected override void OnDestroyed()
-        {
-            base.OnDestroyed();
-
-            GameScreens.Unregister(_screenType);
-        }
-
-        [ServerOrClient]
-        private void Setup()
-        {
-            bool foundCanvas = TryGetComponent(out CanvasGroup canvasGroup);
-            _canvasGroup = foundCanvas ? canvasGroup : GameObject.AddComponent<CanvasGroup>();
-        }
 
         [ServerOrClient]
         public void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
@@ -68,6 +48,29 @@ namespace SS3D.Systems.Screens
             _canvasGroup.DOFade(targetFade, fadeDuration).SetEase(Ease.OutCirc);
             _canvasGroup.interactable = matchesScreenType;
             _canvasGroup.blocksRaycasts = matchesScreenType;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            GameScreens.Register(this);
+
+            Setup();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            GameScreens.Unregister(_screenType);
+        }
+
+        [ServerOrClient]
+        private void Setup()
+        {
+            bool foundCanvas = TryGetComponent(out CanvasGroup canvasGroup);
+            _canvasGroup = foundCanvas ? canvasGroup : GameObject.AddComponent<CanvasGroup>();
         }
     }
 }

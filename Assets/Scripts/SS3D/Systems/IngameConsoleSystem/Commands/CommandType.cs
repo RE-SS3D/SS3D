@@ -6,8 +6,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public enum CommandType
     {
-        Server,
-        Client,
-        Offline
+        Server = 0,
+        Client = 1,
+        Offline = 2,
     }
 }

@@ -38,8 +38,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            transform.position += TargetMovement * ((_movementSpeed) * Time.deltaTime);
+            transform.position += TargetMovement * (_movementSpeed * Time.deltaTime);
         }
     }
-
 }
