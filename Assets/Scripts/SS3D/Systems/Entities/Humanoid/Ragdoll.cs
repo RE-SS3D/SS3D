@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using FishNet;
+using FishNet.Broadcast;
+using FishNet.Connection;
+using FishNet.Object;
+using System;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
-	public class Ragdoll : MonoBehaviour
+	public class Ragdoll : NetworkBehaviour
 	{
 		public Transform ArmatureRoot;
 		private Transform _character;
@@ -76,13 +77,32 @@ namespace SS3D.Systems.Entities.Humanoid
 			ToggleKinematic(true);
 		}
 
+		private void OnEnable()
+		{
+			InstanceFinder.ClientManager.RegisterBroadcast<RagdollBody>(OnRagdollBroadcast);
+			InstanceFinder.ServerManager.RegisterBroadcast<RagdollBody>(OnClientRagdollBroadcast);
+		}
+
+		private void OnDisable()
+		{
+			InstanceFinder.ClientManager.UnregisterBroadcast<RagdollBody>(OnRagdollBroadcast);
+			InstanceFinder.ServerManager.UnregisterBroadcast<RagdollBody>(OnClientRagdollBroadcast);
+		}
+
 		private void Update()
 		{
-			if (Input.GetKeyDown(KeyCode.Y))
+			if ((Input.GetKeyDown(KeyCode.Y)) && (IsOwner))
 			{
-				Knockdown(1f);
-				/*_animator.enabled = false;
-				_standUpFaceDownClip.SampleAnimation(gameObject, 0f);*/
+				//Knockdown(1f);
+				UnityEngine.Debug.Log("Broadcast");
+				if (InstanceFinder.IsServer)
+				{
+					InstanceFinder.ServerManager.Broadcast(new RagdollBody("S1"));
+				}
+				else if (InstanceFinder.IsClient)
+				{
+					InstanceFinder.ClientManager.Broadcast(new RagdollBody("C1"));
+				}
 			}
 			
 			switch (_currentState)
@@ -100,6 +120,28 @@ namespace SS3D.Systems.Entities.Humanoid
 					BonesResetBehavior();
 					break;
 			}
+		}
+
+		private struct RagdollBody : IBroadcast
+		{
+			public string Path;
+
+			public RagdollBody(string path)
+			{
+				Path = path;
+			}
+		}
+
+		private void OnRagdollBroadcast(RagdollBody ragdollBody)
+		{
+			UnityEngine.Debug.Log(ragdollBody.Path);
+			
+		}
+		private void OnClientRagdollBroadcast(NetworkConnection networkConnection, RagdollBody ragdollBody)
+		{
+			UnityEngine.Debug.Log(ragdollBody.Path);
+			RagdollBody newBody = new RagdollBody(ragdollBody.Path + " S");
+			InstanceFinder.ServerManager.Broadcast(newBody);
 		}
 
 		private void WalkingBehavior()
