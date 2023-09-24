@@ -2,6 +2,7 @@
 using FishNet.Broadcast;
 using FishNet.Connection;
 using FishNet.Object;
+using SS3D.Core;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -76,18 +77,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			_currentState = RagdollState.Walking;
 			ToggleKinematic(true);
 		}
-
-		private void OnEnable()
-		{
-			InstanceFinder.ClientManager.RegisterBroadcast<RagdollBody>(OnRagdollBroadcast);
-			InstanceFinder.ServerManager.RegisterBroadcast<RagdollBody>(OnClientRagdollBroadcast);
-		}
-
-		private void OnDisable()
-		{
-			InstanceFinder.ClientManager.UnregisterBroadcast<RagdollBody>(OnRagdollBroadcast);
-			InstanceFinder.ServerManager.UnregisterBroadcast<RagdollBody>(OnClientRagdollBroadcast);
-		}
+		
 
 		private void Update()
 		{
@@ -95,14 +85,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			{
 				//Knockdown(1f);
 				UnityEngine.Debug.Log("Broadcast");
-				if (InstanceFinder.IsServer)
-				{
-					InstanceFinder.ServerManager.Broadcast(new RagdollBody("S1"));
-				}
-				else if (InstanceFinder.IsClient)
-				{
-					InstanceFinder.ClientManager.Broadcast(new RagdollBody("C1"));
-				}
+				Subsystems.Get<RagdollNetwork>().SendBroadcast(this);
 			}
 			
 			switch (_currentState)
@@ -120,28 +103,6 @@ namespace SS3D.Systems.Entities.Humanoid
 					BonesResetBehavior();
 					break;
 			}
-		}
-
-		private struct RagdollBody : IBroadcast
-		{
-			public string Path;
-
-			public RagdollBody(string path)
-			{
-				Path = path;
-			}
-		}
-
-		private void OnRagdollBroadcast(RagdollBody ragdollBody)
-		{
-			UnityEngine.Debug.Log(ragdollBody.Path);
-			
-		}
-		private void OnClientRagdollBroadcast(NetworkConnection networkConnection, RagdollBody ragdollBody)
-		{
-			UnityEngine.Debug.Log(ragdollBody.Path);
-			RagdollBody newBody = new RagdollBody(ragdollBody.Path + " S");
-			InstanceFinder.ServerManager.Broadcast(newBody);
 		}
 
 		private void WalkingBehavior()

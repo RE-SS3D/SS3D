@@ -244,7 +244,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852762468231620
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -259,6 +259,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -397,7 +398,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852762014670918
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -412,6 +413,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -476,7 +478,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852762495497741
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -491,6 +493,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -641,7 +644,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852761210609344
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -656,6 +659,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -739,7 +743,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852759222350558
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -754,6 +758,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -1075,7 +1080,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852761931311011
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -1090,6 +1095,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -1166,7 +1172,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852758797354380
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -1181,6 +1187,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -1264,7 +1271,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852761472596133
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -1279,6 +1286,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -1392,7 +1400,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021075485018, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -230.00006
+      value: -229.99998
       objectReference: {fileID: 0}
     - target: {fileID: 4468402022117316798, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1751,7 +1759,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852761335889925
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -1766,6 +1774,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -1851,7 +1860,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852762284701941
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -1866,6 +1875,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
@@ -1900,6 +1910,101 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1859378123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1859378126}
+  - component: {fileID: 1859378125}
+  - component: {fileID: 1859378124}
+  m_Layer: 0
+  m_Name: RagdollSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1859378124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859378123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  _networkBehaviours:
+  - {fileID: 1859378125}
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  _isNetworked: 1
+  _isGlobal: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: -1
+  _scenePathHash: 2499635508
+  <SceneId>k__BackingField: 10735852760906359850
+  <AssetPathHash>k__BackingField: 0
+  _sceneNetworkObjects:
+  - {fileID: 1859378124}
+  - {fileID: 36466130}
+  - {fileID: 36811087}
+  - {fileID: 246961643}
+  - {fileID: 474682044}
+  - {fileID: 516802435}
+  - {fileID: 616353825}
+  - {fileID: 661652618}
+  - {fileID: 771589493}
+  - {fileID: 778300431}
+  - {fileID: 878406322}
+  - {fileID: 913757968}
+  - {fileID: 914529552}
+  - {fileID: 990295462}
+  - {fileID: 1000564558}
+  - {fileID: 1002102148}
+  - {fileID: 1205760419}
+  - {fileID: 1506918116}
+  - {fileID: 1604094696}
+  - {fileID: 1927660778}
+--- !u!114 &1859378125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859378123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efa6c2cbf5d4f858ce558cfa2cf6141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 1859378124}
+  _networkObjectCache: {fileID: 1859378124}
+--- !u!4 &1859378126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859378123}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.9280257, y: 0.4845114, z: 2.0864818}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1927660776
 GameObject:
@@ -1961,7 +2066,7 @@ MonoBehaviour:
   <SceneId>k__BackingField: 10735852761315043637
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1002102148}
+  - {fileID: 1859378124}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -1976,6 +2081,7 @@ MonoBehaviour:
   - {fileID: 914529552}
   - {fileID: 990295462}
   - {fileID: 1000564558}
+  - {fileID: 1002102148}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
   - {fileID: 1604094696}
