@@ -19,12 +19,12 @@ namespace SS3D.Systems.Health
         
         public static BodyDamageInfo operator +(BodyDamageInfo a, float b)
         {
-            float quantity = Math.Min(a.Quantity + Math.Max(b * a.Suceptibility - a.Resistance, 0), 0);
+            float quantity = Math.Max(a.Quantity + Math.Max(b * a.Suceptibility - a.Resistance, 0), 0);
             return new(a.InjuryType, quantity, a.Suceptibility, a.Resistance);
         }
         public static BodyDamageInfo operator -(BodyDamageInfo a, float b)
         {
-            float quantity = Math.Min(a.Quantity - Math.Max(b * a.Suceptibility - a.Resistance, 0), 0);
+            float quantity = Math.Max(a.Quantity - Math.Max(b * a.Suceptibility - a.Resistance, 0), 0);
             return new(a.InjuryType, quantity, a.Suceptibility, a.Resistance);
         }
 
