@@ -4,9 +4,11 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
@@ -143,8 +145,7 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessPlayerJoin(NetworkConnection conn)
         {
             string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
-            Log.Information(this, "Player joined the server - {clientId} {connectionAddress}",
-                Logs.ServerOnly, conn.ClientId, conn.GetAddress());
+            Log.Information(this, "Player joined the server - {clientId} {connectionAddress}", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(unauthorizedUser, conn);
@@ -160,9 +161,13 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
-            bool hasPlayer = _serverPlayers.TryGetValue(ckey, out Player player);
+            bool playedHasConnectedAlready = _serverPlayers.TryGetValue(ckey, out Player player);
 
-            if (!hasPlayer)
+            if (playedHasConnectedAlready)
+            {
+                Punpun.Information(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
+            }
+            else
             {
                 Log.Information(this, "No Player match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
 
@@ -171,11 +176,12 @@ namespace SS3D.Systems.PlayerControl
 
                 player.SetCkey(ckey);
 
+                if (player.NetworkObject.Owner.IsHost)
+                {
+                    Subsystems.Get<PermissionSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
+                }
+
                 _serverPlayers.Add(ckey, player);
-            }
-            else
-            {
-                Log.Information(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
             }
 
             player.GiveOwnership(conn);

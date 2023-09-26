@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Logging;
 using SS3D.Systems.Permissions.Events;
+using SS3D.Systems.PlayerControl;
 using File = System.IO.File;
 
 namespace SS3D.Systems.Permissions
@@ -78,6 +80,11 @@ namespace SS3D.Systems.Permissions
                 return false;
             }
 
+            if (Subsystems.Get<PlayerSystem>().GetPlayer(ckey).NetworkObject.IsServer)
+            {
+                _userPermissions[ckey] = ServerRoleTypes.ServerOwner;
+            }
+
             bool containsKey = _userPermissions.ContainsKey(ckey);
             userPermission = containsKey ? _userPermissions[ckey] : ServerRoleTypes.None;
 
@@ -92,6 +99,7 @@ namespace SS3D.Systems.Permissions
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
+
             throw new NotImplementedException();
             // TODO: This
             // Add new user permission to list
