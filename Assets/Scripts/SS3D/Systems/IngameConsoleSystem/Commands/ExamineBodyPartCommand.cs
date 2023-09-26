@@ -36,9 +36,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             foreach(BodyLayer layer in bodyPart.BodyLayers)
             {
                 answer += layer.ToString() + ": ";
-                foreach (DamageTypeQuantity damageTypeQuantity in layer.DamageTypeQuantities)
+                foreach (BodyDamageInfo damage in layer.Damages.DamagesInfo.Values)
                 {
-                    answer += damageTypeQuantity.damageType.ToString() + " " + damageTypeQuantity.quantity.ToString();
+                    answer += damage.InjuryType.ToString() + " " + damage.Quantity.ToString();
                 }
                 answer += "\n";
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening.Core.Easing;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,23 +18,26 @@ namespace SS3D.Systems.Health
 
 		}
 
-		public BoneLayer(BodyPart bodyPart,
-		List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
-		: base(bodyPart, damages, susceptibilities, resistances)
+		public BoneLayer(BodyPart bodyPart, DamagesContainer damages)
+		: base(bodyPart, damages)
 		{
 
 		}
 
-		protected override void SetSuceptibilities()
-		{
-            DamageSuceptibilities.Add(new (DamageType.Crush, 2f));
-            DamageSuceptibilities.Add(new (DamageType.Puncture, 1.5f));
-            DamageSuceptibilities.Add(new (DamageType.Pressure, 0f));
-            DamageSuceptibilities.Add(new (DamageType.Cold, 0.5f));
-            DamageSuceptibilities.Add(new (DamageType.Shock, 0.5f));
-            DamageSuceptibilities.Add(new (DamageType.Toxic, 0.8f));
-            DamageSuceptibilities.Add(new (DamageType.Oxy, 0f));
-		}
+        protected override void SetDamagesContainer()
+        {
+            Damages.DamagesInfo.Add(DamageType.Crush, new BodyDamageInfo(DamageType.Crush, 0f, 2f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Slash, new BodyDamageInfo(DamageType.Slash, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Puncture, new BodyDamageInfo(DamageType.Puncture, 0f, 1.5f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Pressure, new BodyDamageInfo(DamageType.Pressure, 0f, 0.2f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Heat, new BodyDamageInfo(DamageType.Heat, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Cold, new BodyDamageInfo(DamageType.Cold, 0f, 0.5f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Shock, new BodyDamageInfo(DamageType.Shock, 0f, 0.5f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Rad, new BodyDamageInfo(DamageType.Rad, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 0.8f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 0f, 0f));
+        }
 
 		/// <summary>
 		/// Generate a certain amount of blood and put it in the circulatory system if there's one.

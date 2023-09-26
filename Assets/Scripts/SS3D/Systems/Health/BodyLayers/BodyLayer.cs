@@ -35,24 +35,15 @@ namespace SS3D.Systems.Health
 
 		public const float MinDamage = 0;
 
-		public float TotalDamage => DamageTypeQuantities.Sum(x => x.quantity);
+		public float TotalDamage => Damages.DamagesInfo.Sum(x => x.Value.Quantity);
 
         public float RelativeDamage => TotalDamage/MaxDamage;
 
         /// <summary>
-        /// Quantity of damages on this bodyLayer for each type of damages.
+        /// Contains everything regarding resistance, susceptibility and quantity of damages for
+        /// each type of damages.
         /// </summary>
-        public List<DamageTypeQuantity> DamageTypeQuantities;
-
-        /// <summary>
-        /// Minimum amount of damage to do to make any actual damage for each type of damages.
-        /// </summary>
-        public List<DamageTypeQuantity> DamageResistances;
-
-        /// <summary>
-        /// Susceptibility to damage, damages are multiplied by this number, for each type of damages.
-        /// </summary>
-        public List<DamageTypeQuantity> DamageSuceptibilities;
+        public DamagesContainer Damages = new();
 
 		/// <summary>
 		/// TODO : Put default damage suceptibility and resistance into a scriptable object and replace those lists with "damage * modifier".
@@ -61,19 +52,13 @@ namespace SS3D.Systems.Health
 		/// <param name="bodyPart">The bodypart this bodylayer belongs to.</param>
 		public BodyLayer(BodyPart bodyPart)
 		{
-            DamageResistances = new();
-            DamageSuceptibilities = new();
-            DamageTypeQuantities = new();
-			SetResistances();
-			SetSuceptibilities();
+            SetDamagesContainer();
 			BodyPart = bodyPart;    
 		}
 
-		public BodyLayer(BodyPart bodyPart, List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
+		public BodyLayer(BodyPart bodyPart, DamagesContainer damages)
 		{
-            DamageResistances = resistances;
-            DamageSuceptibilities = susceptibilities;
-            DamageTypeQuantities = damages;
+
 			BodyPart = bodyPart;
 		}
         
@@ -82,25 +67,9 @@ namespace SS3D.Systems.Health
         /// Doesn't simply add the amount passed in parameters, first apply susceptibility and resistance.
 		/// </summary>
 		/// <param name="damageToInflict">The type and amount of damage to inflict, before applying any modifiers.</param>
-		public virtual void InflictDamage(DamageTypeQuantity damageToInflict)
+		public virtual void InflictDamage(DamageTypeQuantity damage)
 		{
-			DamageTypeQuantity damage = (DamageTypeQuantity) damageToInflict.Clone();
-
-			float currentDamageQuantity = GetDamageTypeQuantity(damage.damageType);
-			damage.quantity = ApplyResistanceAndSusceptibility(damage);
-
-			if (currentDamageQuantity == 0)
-			{
-                damage.quantity = ClampDamage(damage.quantity);
-                DamageTypeQuantities.Add(damage);
-			}
-			else
-			{
-				int damageTypeIndex = DamageTypeQuantities.FindIndex(x => x.damageType == damage.damageType);
-
-				float newDamageQuantity = damage.quantity + DamageTypeQuantities[damageTypeIndex].quantity;
-                DamageTypeQuantities[damageTypeIndex].quantity = ClampDamage(newDamageQuantity);
-            }
+            Damages[damage.damageType] += damage.quantity;
 
 			DamageInflicted(damage);
 		}
@@ -117,20 +86,7 @@ namespace SS3D.Systems.Health
         /// <param name="damage">Quantity and amount of damage to remove.</param>
 		public virtual void HealDamage(DamageTypeQuantity damage)
 		{
-			float currentDamageQuantity = GetDamageTypeQuantity(damage.damageType);
-			if (currentDamageQuantity != 0)
-			{
-                int damageTypeIndex = DamageTypeQuantities.FindIndex(x => x.damageType == damage.damageType);
-                float newDamageQuantity = DamageTypeQuantities[damageTypeIndex].quantity - damage.quantity;
-                if (newDamageQuantity < MinDamage)
-                {
-                    DamageTypeQuantities.RemoveAt(damageTypeIndex);
-                }
-                else
-                {
-                    DamageTypeQuantities[damageTypeIndex].quantity = newDamageQuantity;
-                }
-			}
+            Damages[damage.damageType] -= damage.quantity;
         }
 
 		/// <summary>
@@ -138,18 +94,16 @@ namespace SS3D.Systems.Health
 		/// </summary>
 		public float GetDamageTypeQuantity(DamageType damageType)
 		{
-			int damageTypeIndex = DamageTypeQuantities.FindIndex(x => x.damageType == damageType);
-			return damageTypeIndex == -1 ? MinDamage : DamageTypeQuantities[damageTypeIndex].quantity;
-		}
+            return Damages[damageType].Quantity;
+        }
 
 		/// <summary>
 		/// Return the susceptibility to a particular kind of damage. Susceptibility is one if no modifiers.
 		/// </summary>
 		public float GetDamageTypeSusceptibility(DamageType damageType)
 		{
-			int damageTypeIndex = DamageSuceptibilities.FindIndex(x => x.damageType == damageType);
-			return damageTypeIndex == -1 ? 1 : DamageSuceptibilities[damageTypeIndex].quantity;
-		}
+            return Damages[damageType].Suceptibility;
+        }
 
 		/// <summary>
 		/// Return the damage resistance for a given damage type.
@@ -157,8 +111,7 @@ namespace SS3D.Systems.Health
 		/// </summary>
 		public float GetDamageResistance(DamageType damageType)
 		{
-			int damageTypeIndex = DamageResistances.FindIndex(x => x.damageType == damageType);
-			return damageTypeIndex == -1 ? 0 : DamageSuceptibilities[damageTypeIndex].quantity;
+            return Damages[damageType].Resistance;
 		}
 
 		public virtual bool IsDestroyed()
@@ -189,20 +142,16 @@ namespace SS3D.Systems.Health
         /// <param name="layer"> The layer from which we want the values to copy.</param>
 		public void CopyLayerValues(BodyLayer other)
 		{
-            DamageResistances = other.DamageResistances.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
-            DamageSuceptibilities = other.DamageSuceptibilities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
-            DamageTypeQuantities = other.DamageTypeQuantities.Select(x => new DamageTypeQuantity(x.damageType, x.quantity)).ToList();
+            foreach(KeyValuePair<DamageType, BodyDamageInfo> x in other.Damages.DamagesInfo)
+            {
+                Damages.DamagesInfo[x.Key] = new BodyDamageInfo(x.Value.InjuryType, x.Value.Quantity,
+                    x.Value.Suceptibility, x.Value.Resistance);
+            }
 		}
 
-		/// <summary>
-		/// Set all resistances on this body layer. By default, there are none and resistance is 0.
-		/// </summary>
-		protected virtual void SetResistances() { }
-
-		/// <summary>
-		/// Set all susceptibilities on this body layer. By default, susceptibility is 1.
-		/// </summary>
-		protected virtual void SetSuceptibilities() { }
-
+        /// <summary>
+        /// Set all resistances on this body layer.
+        /// </summary>
+        protected abstract void SetDamagesContainer();
 	}
 }

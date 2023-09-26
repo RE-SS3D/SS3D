@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using SS3D.Logging;
 
 namespace SS3D.Systems.Health
 {
-    public class BodyDamageContainer
+    public class DamagesContainer
     {
         private IDictionary<DamageType, BodyDamageInfo> _damageInfos;
 
-        public BodyDamageContainer()
+        public IDictionary<DamageType, BodyDamageInfo> DamagesInfo => _damageInfos;
+
+        public DamagesContainer()
         {
             _damageInfos = new Dictionary<DamageType, BodyDamageInfo>();
         }
@@ -20,6 +23,7 @@ namespace SS3D.Systems.Health
                 }
                 else
                 {
+                    Punpun.Warning(this, $"no damages of type {damageType} defined for this damage container");
                     return new BodyDamageInfo(damageType);
                 }
             }
