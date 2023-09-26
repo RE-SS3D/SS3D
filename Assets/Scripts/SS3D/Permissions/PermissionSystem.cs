@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FishNet.Object;
+﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Logging;
-using SS3D.Systems.Permissions.Events;
-using SS3D.Systems.PlayerControl;
+using SS3D.Permissions.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using File = System.IO.File;
+using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
 
-namespace SS3D.Systems.Permissions
+namespace SS3D.Permissions
 {
     /// <summary>
     /// Handles user permission on what he can do and can't.
@@ -80,11 +79,6 @@ namespace SS3D.Systems.Permissions
                 return false;
             }
 
-            if (Subsystems.Get<PlayerSystem>().GetPlayer(ckey).NetworkObject.IsServer)
-            {
-                _userPermissions[ckey] = ServerRoleTypes.ServerOwner;
-            }
-
             bool containsKey = _userPermissions.ContainsKey(ckey);
             userPermission = containsKey ? _userPermissions[ckey] : ServerRoleTypes.None;
 
@@ -94,7 +88,7 @@ namespace SS3D.Systems.Permissions
         /// <summary>
         /// Updates a user permission.
         /// </summary>
-        /// <param name="ckey">The desired user to update the permission.</param>
+        /// <param name="ckey">The desired user to update the permission.</param>|
         /// <param name="role">The new user role.</param>
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)

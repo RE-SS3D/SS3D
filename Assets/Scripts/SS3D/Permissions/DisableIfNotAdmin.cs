@@ -1,16 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
-using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Settings;
-using SS3D.Core.Utils;
-using SS3D.Systems.Permissions.Events;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
 
-namespace SS3D.Systems.Permissions
+namespace SS3D.Permissions
 {
     public class DisableIfNotAdmin : NetworkActor
     {

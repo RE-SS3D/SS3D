@@ -2,7 +2,7 @@
 using System.Linq;
 using FishNet.Connection;
 using SS3D.Core;
-using SS3D.Systems.Permissions;
+using SS3D.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {

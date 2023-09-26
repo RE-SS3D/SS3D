@@ -1,8 +1,8 @@
 ﻿using SS3D.Systems.Inventory.Items;
 using UnityEngine;
-using SS3D.Systems.Permissions;
 using FishNet.Object;
 using FishNet.Connection;
+using SS3D.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {

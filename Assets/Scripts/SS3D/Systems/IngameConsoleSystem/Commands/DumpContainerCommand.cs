@@ -1,14 +1,6 @@
 ﻿using FishNet.Connection;
-using FishNet;
-using SS3D.Core;
-using SS3D.Data.Enums;
-using SS3D.Data;
-using SS3D.Systems.Entities;
+using SS3D.Permissions;
 using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Permissions;
-using SS3D.Systems.PlayerControl;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
