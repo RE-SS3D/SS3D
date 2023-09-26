@@ -1,3 +1,4 @@
+using Coimbra;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
@@ -176,8 +177,10 @@ namespace SS3D.Systems.PlayerControl
 
                 player.SetCkey(ckey);
 
-                if (player.NetworkObject.Owner.IsHost)
+                if (conn.IsHost && PermissionSettings.AddServerOwnerPermissionToServerHost)
                 {
+                    Punpun.Information(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
+
                     Subsystems.Get<PermissionSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
                 }
 

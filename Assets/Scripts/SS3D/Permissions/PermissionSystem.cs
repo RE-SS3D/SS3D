@@ -93,11 +93,25 @@ namespace SS3D.Permissions
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
+            ServerRoleTypes previousRole = _userPermissions.TryGetValue(ckey, out ServerRoleTypes permission) ? permission : ServerRoleTypes.None;
 
-            throw new NotImplementedException();
-            // TODO: This
-            // Add new user permission to list
-            // Add new user permission to text file
+            Punpun.Information(this, $"Updating user {ckey} role from {previousRole} to {role}");
+
+            _userPermissions[ckey] = role;
+
+            SaveUserPermissions();
+        }
+
+        public void SaveUserPermissions()
+        {
+            string fileContent = string.Empty;
+
+            foreach (KeyValuePair<string,ServerRoleTypes> userPermission in _userPermissions)
+            {
+                fileContent += $"{userPermission.Key} {userPermission.Value.ToString()}\n";
+            }
+
+            File.WriteAllText(PermissionsPath, fileContent);
         }
 
         /// <summary>
