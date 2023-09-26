@@ -36,6 +36,7 @@ namespace SS3D.Core
                 sceneToLoad = Scenes.Launcher;
             }                                  
 
+            // This call is async and not awaited. Hence the pragma disable.
             #pragma warning disable CS4014
             Scene.LoadAsync(sceneToLoad);
             #pragma warning restore CS4014

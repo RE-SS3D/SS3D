@@ -63,6 +63,7 @@ namespace SS3D.Systems.Tile
         {
 	        if (_currentMap != null)
 	        {
+                Log.Warning(this, $"A map is already loaded. {mapName}");
 		        return;
 	        }
 
