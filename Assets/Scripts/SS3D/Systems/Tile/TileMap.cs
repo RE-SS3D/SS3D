@@ -1,6 +1,8 @@
 using FishNet;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
+using SS3D.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -288,10 +290,11 @@ namespace SS3D.Systems.Tile
             };
         }
 
-        public void Load(SavedTileMap saveObject)
+        public void Load([CanBeNull] SavedTileMap saveObject)
         {
 	        if (saveObject == null)
-	        {
+	        {       
+                Log.Warning(this, "The intended save object is null");
 		        return;
 	        }
 
