@@ -2,6 +2,7 @@
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Items;

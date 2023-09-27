@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: InteractionIcons
   m_EditorClassIdentifier: 
-  EnumNamespaceName: SS3D.Data.Enums
   EnumName: InteractionIcons
   AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}
   Assets:

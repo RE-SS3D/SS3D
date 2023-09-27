@@ -23,12 +23,12 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// The path that the enum will be generated to.
         /// </summary>
-        public const string EnumPath = @"\Scripts\SS3D\Data\Enums";
+        public const string EnumPath = @"\Scripts\SS3D\Data\Generated";
 
         /// <summary>
         ///  The namespace that will be included on the generated Enum.
         /// </summary>
-        public string EnumNamespaceName = "SS3D.Data.Enums";
+        public const string EnumNamespaceName = "SS3D.Data.Generated";
 
         /// <summary>
         ///  The name that the generated enum will have;

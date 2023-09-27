@@ -1,5 +1,5 @@
 ﻿using JetBrains.Annotations;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;

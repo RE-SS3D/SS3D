@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: Items
   m_EditorClassIdentifier: 
-  EnumNamespaceName: SS3D.Data.Enums
   EnumName: ItemId
   AssetGroup: {fileID: 11400000, guid: 8e95016540bf27c4eb11580ec096568a, type: 2}
   Assets:

@@ -8,7 +8,7 @@ using SS3D.Data.Enums;
 using SS3D.Systems.Inventory.Containers;
 using FishNet.Connection;
 using SS3D.Permissions;
-using System;
+using SS3D.Data.Generated;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -19,13 +19,11 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     /// </summary>
     public class AddHandCommand : Command
     {
-        public override string ShortDescription => "Add hand to user";
-        public override string Usage => "(ckey) [(position) (rotation)] \nPosition and rotation are float arrays and written as x y z";
+        public override string LongDescription => "add (ckey) [(position) (rotation)]\n Position and rotation are float arrays and written as x y z";
+        public override string ShortDescription => "add hand to user";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+
         public override CommandType Type => CommandType.Server;
-        
-        private record CalculatedValues(Player Player, Entity Entity, Vector3 Position, Vector3 Rotation) : ICalculatedValues;
-        
         public override string Perform(string[] args, NetworkConnection conn)
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
@@ -47,7 +45,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             Player Player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
             Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(Player);
 
-            GameObject leftHandPrefab = BodyPartsIds.HumanHandLeft;
+            GameObject leftHandPrefab = Bodyparts.HumanHandLeft;
             GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, entity.transform);
             leftHandObject.transform.localPosition = position;
             leftHandObject.transform.localEulerAngles = rotation;
@@ -64,37 +62,30 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         }
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new();
-            if (args.Length != 1 && args.Length != 7) return response.MakeInvalid("Invalid number of arguments");
-            
+            CheckArgsResponse response = new CheckArgsResponse();
+            if (args.Length != 1 && args.Length != 7)
+            {
+                response.IsValid = false;
+                response.InvalidArgs = "Invalid number of arguments";
+                return response;
+            }
             string ckey = args[0];
             Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-            if (player == null) return response.MakeInvalid("This player doesn't exist");
-
-            Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-            if (entity == null) return response.MakeInvalid("This entity doesn't exist");
-            
-            Vector3 position;
-            Vector3 rotation;
-            if (args.Length > 1)
+            if (player == null)
             {
-                try
-                {
-                    position = new(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
-                    rotation = new(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
-                }
-                catch (FormatException)
-                {
-                    return response.MakeInvalid("Incorrect position/rotation format");
-                }
+                response.IsValid = false;
+                response.InvalidArgs = "This player doesn't exist";
+                return response;
             }
-            else
+            Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+            if (entityToKill == null)
             {
-                position = new(0.5f, 0.7f, 0);
-                rotation = new(-50, -270, 90);
+                response.IsValid = false;
+                response.InvalidArgs = "This entity doesn't exist";
+                return response;
             }
-            
-            return response.MakeValid(new CalculatedValues(player, entity, position, rotation));
+            response.IsValid = true;
+            return response;
         }
     }
 }

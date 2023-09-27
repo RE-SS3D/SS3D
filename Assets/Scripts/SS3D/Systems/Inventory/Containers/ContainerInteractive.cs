@@ -7,6 +7,7 @@ using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 
 namespace SS3D.Systems.Inventory.Containers
 {

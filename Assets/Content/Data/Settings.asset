@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  EnumNamespaceName: SS3D.Data.Enums
   EnumName: SettingsId
   AssetGroup: {fileID: 11400000, guid: 9bfbc9d4c2c1bb944942108648547da2, type: 2}
   Assets:

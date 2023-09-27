@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -22,6 +23,11 @@ namespace SS3D.CodeGeneration
 
             string dataPath = Application.dataPath;
             string fullPath = dataPath + path;
+
+            if (!Directory.Exists(fullPath))
+            {
+                Directory.CreateDirectory(fullPath);
+            }
 
             DatabaseAssetWriter.Write(fullPath, classType, className, enums, namespaceName);
 

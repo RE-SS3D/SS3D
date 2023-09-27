@@ -8,7 +8,8 @@ using System;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
 using SS3D.Data;
-using Log = Serilog.Log;
+using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 
 
 namespace SS3D.Core

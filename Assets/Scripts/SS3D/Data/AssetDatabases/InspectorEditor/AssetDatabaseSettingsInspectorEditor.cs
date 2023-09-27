@@ -92,8 +92,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void CreateAssetDatabasesEnum()
         {
-            string dataPath = AssetDatabase.EnumPath;
-
             if (_assetDatabaseSettings == null)
             {
                 return;
