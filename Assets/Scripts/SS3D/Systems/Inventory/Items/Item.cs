@@ -68,7 +68,7 @@ namespace SS3D.Systems.Inventory.Items
         private AttachedContainer _container;
 
         public string Name => _name;
-        public ItemId ItemId { get; set; }
+        public GameObject ItemId { get; set; }
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
         public AttachedContainer Container => _container;

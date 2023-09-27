@@ -33,7 +33,7 @@ namespace SS3D.Launcher
 			networkSettings.ServerAddress = ip;
 			networkSettings.ServerPort = Convert.ToUInt16(port);
 
-			Scene.LoadAsync(Scenes.Intro);
+			Scene.LoadAsync(Scenes.Intro.Name);
 		}
 	}
 }

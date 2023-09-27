@@ -15,12 +15,12 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <summary>
         /// The item id required to complete the objective.
         /// </summary>
-        [FormerlySerializedAs("_targetItemIdId")] [FormerlySerializedAs("_targetItemId")] [SerializeField] private Data.Enums.ItemId _targetItemIdId;
+        [SerializeField] private GameObject _targetItem;
 
         /// <summary>
         /// The item that was picked up.
         /// </summary>
-        private Data.Enums.ItemId _caughtItemIdId;
+        private GameObject _caughtItem;
 
         /// <summary>
         /// The player that picked up the item.
@@ -37,7 +37,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
         public override void FinalizeObjective()
         {
             // Confirm correct item has been picked up by the correct player
-            if (!_caughtItemIdId.Equals(_targetItemIdId) || !_caughtPlayerCkey.Equals(AssigneeCkey))
+            if (!_caughtItem.Equals(_targetItem) || !_caughtPlayerCkey.Equals(AssigneeCkey))
             {
                 return;
             }
@@ -46,12 +46,12 @@ namespace SS3D.Systems.Gamemodes.Objectives
 
         private void HandleItemPickedUpEvent(ref EventContext context, in ItemPickedUpEvent e)
         {
-            Data.Enums.ItemId itemIdId = e.Item.ItemId;
+            GameObject itemIdId = e.Item.ItemId;
             string playerCkey = e.Player;
 
-            if (itemIdId == _targetItemIdId  && playerCkey.Equals(AssigneeCkey))
+            if (itemIdId == _targetItem  && playerCkey.Equals(AssigneeCkey))
             {
-                _caughtItemIdId = itemIdId;
+                _caughtItem = itemIdId;
                 _caughtPlayerCkey = playerCkey;
 
                 FinalizeObjective();

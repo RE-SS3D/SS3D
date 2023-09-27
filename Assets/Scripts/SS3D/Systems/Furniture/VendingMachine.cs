@@ -58,7 +58,7 @@ namespace SS3D.Systems.Furniture
             {
                 new DispenseProductInteraction
                 {
-                    Icon = Icons.Get<Sprite>(InteractionIcons.Take)
+                    Icon = InteractionIcons.Take
                 }
             };
         }

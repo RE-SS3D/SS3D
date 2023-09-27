@@ -39,7 +39,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public Item SpawnItem(string id, Vector3 position, Quaternion rotation)
         {
-            Item itemPrefab = Data.Items.Get<GameObject>(id).GetComponent<Item>();
+            Item itemPrefab = Assets.Get<GameObject>(AssetDatabases.Items, id).GetComponent<Item>();
 
             Item itemInstance = Instantiate(itemPrefab, position, rotation);
             ServerManager.Spawn(itemInstance.GameObject);
@@ -72,7 +72,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public Item SpawnItemInContainer(string id, AttachedContainer attachedContainer)
         {
-            Item itemPrefab = Data.Items.Get<Item>(id);
+            Item itemPrefab = Assets.Get<GameObject>(AssetDatabases.Items, id).GetComponent<Item>();
 
             if (attachedContainer is null)
             {

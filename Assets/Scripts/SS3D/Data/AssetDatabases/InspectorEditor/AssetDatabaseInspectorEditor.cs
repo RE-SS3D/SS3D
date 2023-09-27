@@ -32,8 +32,15 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            _assetDatabase.EnumName = _enumNameTextField.value;
-            _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+            if (_enumNameTextField != null)
+            {
+                _assetDatabase.EnumName = _enumNameTextField.value;
+            }
+
+            if (_assetGroupObjectField != null)
+            {
+                _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+            }
         }
 #endif
 
@@ -65,8 +72,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
             EditorUtility.SetDirty(_assetDatabase);
 
-            string dataPath = AssetDatabase.EnumPath;
-            StaticClassCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets.Values, _assetDatabase.EnumNamespaceName);
+            _assetDatabase.GenerateDatabaseCode();
 
             if (_assetDatabase.Assets != null)
             {
@@ -90,8 +96,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             _assetDatabase.EnumName = _enumNameTextField.value;
 
-            string dataPath = AssetDatabase.EnumPath;
-
             _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             _assetDatabase.LoadAssetsFromAssetGroup();
             _assetsListView.Clear();
@@ -107,7 +111,8 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             }   
 
             EditorUtility.SetDirty(_assetDatabase);
-            StaticClassCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets.Values, _assetDatabase.EnumNamespaceName);
+
+            _assetDatabase.GenerateDatabaseCode();
         }
     }
 }

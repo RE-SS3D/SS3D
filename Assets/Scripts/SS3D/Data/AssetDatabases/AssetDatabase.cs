@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
 using SS3D.Attributes;
+using SS3D.CodeGeneration;
 using UnityEditor;
 using UnityEngine;
 
@@ -122,6 +123,19 @@ namespace SS3D.Data.AssetDatabases
 
             return databases;
         }
+
+        /// <summary>
+        /// Generates a script with the data of this database for easy access.
+        /// </summary>
+        public void GenerateDatabaseCode()
+        {
+            if (AssetDatabaseSettings.SkipCodeGeneration)
+            {
+                return;
+            }
+
+            DatabaseAssetCreator.CreateAtPath(EnumPath, typeof(DatabaseAsset), EnumName, Assets.Values, EnumNamespaceName);
+        } 
 #endif
     }
 }

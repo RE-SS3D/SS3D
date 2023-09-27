@@ -31,18 +31,18 @@ namespace SS3D.Systems.Inventory.Containers
 
             StoreInteraction storeInteraction = new(attachedContainer)
             {
-                Icon = Icons.Get<Sprite>(InteractionIcons.Take)
+                Icon = InteractionIcons.Take
         };
             TakeFirstInteraction takeFirstInteraction = new(attachedContainer)
             {
-                Icon = Icons.Get<Sprite>(InteractionIcons.Take)
+                Icon = InteractionIcons.Take
             };
             ViewContainerInteraction view = new(attachedContainer)
             {
                 MaxDistance = attachedContainer.MaxDistance, Icon = _viewContainerIcon
             };
 
-            view.Icon = Icons.Get<Sprite>(InteractionIcons.Open);
+            view.Icon = InteractionIcons.Open;
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !attachedContainer.OnlyStoreWhenOpen | !attachedContainer.IsOpenable)
@@ -66,14 +66,13 @@ namespace SS3D.Systems.Inventory.Containers
 
             OpenInteraction openInteraction = new(attachedContainer)
             {
-                Icon = Icons.Get<Sprite>(InteractionIcons.Open)
+                Icon = InteractionIcons.Open
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
             interactions.Add(openInteraction);
 
             return interactions.ToArray();
         }
-
 
         protected override void OpenStateChanged(object sender, bool e)
         {

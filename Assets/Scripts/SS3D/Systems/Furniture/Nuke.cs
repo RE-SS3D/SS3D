@@ -12,8 +12,6 @@ namespace SS3D.Systems.Furniture
 {
     public class Nuke : InteractionSource, IInteractionTarget
     {
-        [SerializeField] private Sprite _sprite;
-
         [ServerRpc(RequireOwnership = false)]
         public void Detonate()
         {
@@ -23,9 +21,7 @@ namespace SS3D.Systems.Furniture
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            _sprite = Icons.Get<Sprite>(InteractionIcons.Nuke);
-
-            return new IInteraction[] { new NukeDetonateInteraction { Icon = _sprite } };
+            return new IInteraction[] { new NukeDetonateInteraction { Icon = InteractionIcons.Nuke } };
         }
     }
 }

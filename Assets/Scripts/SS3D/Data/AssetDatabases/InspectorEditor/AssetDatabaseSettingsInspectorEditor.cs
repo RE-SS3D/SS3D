@@ -97,18 +97,18 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             if (_assetDatabaseSettings == null)
             {
                 return;
-            }                               
-            
+            }
+
             if (_assetDatabaseSettings.IncludedAssetDatabases == null || _assetDatabaseSettings.IncludedAssetDatabases.Count == 0)
             {
                 return;
             }
 
-            StaticClassCreator.CreateAtPath(dataPath, "AssetDatabases", _assetDatabaseSettings.IncludedAssetDatabases);
+            _assetDatabaseSettings.GenerateCode();
 
             foreach (AssetDatabase includedAssetDatabase in _assetDatabaseSettings.IncludedAssetDatabases)
             {
-                StaticClassCreator.CreateAtPath(dataPath, includedAssetDatabase.EnumName, includedAssetDatabase.Assets.Values, includedAssetDatabase.EnumNamespaceName);
+                includedAssetDatabase.GenerateDatabaseCode();
             }
         }
 

@@ -34,7 +34,7 @@ namespace SS3D.Core
 
             if (Application.isPlaying)
             {
-                settings = Assets.Get<LogSetting>(AssetDatabases.Settings, SettingsId.LogSettings);
+                settings = SettingsId.LogSettings;
             }
             
         }

@@ -22,7 +22,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Icons.Get<Sprite>(InteractionIcons.Take);
+            return Icon != null ? Icon : InteractionIcons.Take;
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

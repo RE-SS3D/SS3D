@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Coimbra;
 using SS3D.Attributes;
+using SS3D.CodeGeneration;
+using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
 {
@@ -14,5 +16,27 @@ namespace SS3D.Data.AssetDatabases
         [ReadOnly]
 #endif
         public List<AssetDatabase> IncludedAssetDatabases;
+
+#if UNITY_EDITOR
+        [SerializeField]
+        private bool _skipCodeGeneration;
+
+        public static bool SkipCodeGeneration => GetOrFind<AssetDatabaseSettings>()._skipCodeGeneration;
+#endif
+
+        /// <summary>
+        /// Generates the script with the data from this database.
+        /// </summary>
+        public void GenerateCode()
+        {
+            if (SkipCodeGeneration)
+            {
+                return;
+            }
+
+            const string dataPath = AssetDatabase.EnumPath;
+
+            DatabaseAssetCreator.CreateAtPath(dataPath, typeof(DatabaseAsset), "AssetDatabases", IncludedAssetDatabases);
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Icons.Get<Sprite>(InteractionIcons.Discard);
+            return Icon != null ? Icon : InteractionIcons.Discard;
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
