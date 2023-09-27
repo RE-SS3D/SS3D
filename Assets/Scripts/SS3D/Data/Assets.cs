@@ -43,7 +43,7 @@ namespace SS3D.Data
             for (int index = 0; index < assetDatabases.Count; index++)
             {
                 AssetDatabase database = assetDatabases[index];
-                Databases.Add(database.name, database);
+                Databases.Add(database.EnumName, database);
             }
 
             Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);

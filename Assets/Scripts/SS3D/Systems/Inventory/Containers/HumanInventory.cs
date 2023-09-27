@@ -164,13 +164,16 @@ namespace SS3D.Systems.Inventory.Containers
             inventoryView.Setup(this);
         }
 
-        protected override void OnDisabled()
-        {
-            base.OnDisabled();
-            if (!IsOwner) return;
-            var inventoryView = ViewLocator.Get<InventoryView>().First();
-            inventoryView.DestroyAllSlots();
-        }
+		protected override void OnDisabled()
+		{
+			base.OnDisabled();
+			
+			if (!IsOwner) return;
+			
+			InventoryView inventoryView = ViewLocator.Get<InventoryView>().First();
+			inventoryView.DestroyAllSlots();
+
+		}
 
 		/// <summary>
 		/// Add a given container to this inventory, and register to a few events related to the container.

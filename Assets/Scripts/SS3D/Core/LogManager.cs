@@ -1,9 +1,11 @@
-﻿using Serilog;
+﻿using Coimbra.Services.Events;
+using Serilog;
 using Serilog.Sinks.Unity3D;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using UnityEngine;
 using FishNet;
+using SS3D.Core.Events;
 using System;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
@@ -32,18 +34,14 @@ namespace SS3D.Core
         {
             DefaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
             LogFolderPath = Application.dataPath + "/../Logs/";
-
-            if (Application.isPlaying)
-            {
-                settings = SettingsId.LogSettings;
-            }
-            
         }
 
         public static void Initialize()
         {
             if (IsInitialized) return;
             IsInitialized = true;
+
+            settings = SettingsId.LogSettings;
 
             var configuration = new LoggerConfiguration();
 

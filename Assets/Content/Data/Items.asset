@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: Items
   m_EditorClassIdentifier: 
-  EnumName: ItemId
+  EnumName: Items
   AssetGroup: {fileID: 11400000, guid: 8e95016540bf27c4eb11580ec096568a, type: 2}
   Assets:
   - {fileID: 6891363543938182813, guid: 11f824c472e04854e95065dda095e8f4, type: 3}

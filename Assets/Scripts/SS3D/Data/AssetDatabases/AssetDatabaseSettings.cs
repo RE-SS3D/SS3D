@@ -24,6 +24,7 @@ namespace SS3D.Data.AssetDatabases
         public static bool SkipCodeGeneration => GetOrFind<AssetDatabaseSettings>()._skipCodeGeneration;
 #endif
 
+#if UNITY_EDITOR
         /// <summary>
         /// Generates the script with the data from this database.
         /// </summary>
@@ -38,5 +39,6 @@ namespace SS3D.Data.AssetDatabases
 
             DatabaseAssetCreator.CreateAtPath(dataPath, typeof(DatabaseAsset), "AssetDatabases", IncludedAssetDatabases);
         }
+#endif
     }
 }

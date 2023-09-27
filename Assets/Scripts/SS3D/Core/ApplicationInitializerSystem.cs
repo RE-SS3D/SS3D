@@ -1,5 +1,6 @@
 using Coimbra;
 using DG.Tweening;
+using SS3D.Core.Events;
 using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using SS3D.Data;
@@ -58,6 +59,8 @@ namespace SS3D.Core
 
             InitializeSettings();
             InitializeNetworkSession();
+
+            new ApplicationInitializedEvent().Invoke(this);
         }
 
         /// <summary>
