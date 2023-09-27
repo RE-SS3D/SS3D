@@ -16,7 +16,13 @@ MonoBehaviour:
   EnumName: Scenes
   AssetGroup: {fileID: 11400000, guid: bacca0c47905ef441803065410c8978e, type: 2}
   Assets:
-  - {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
-  - {fileID: 102900000, guid: c7d05c35cd4853643a09333ecceff608, type: 3}
-  - {fileID: 102900000, guid: d03a300180bde5646b09bfa4c392679f, type: 3}
-  - {fileID: 102900000, guid: 61687ab4465bb6e4d8164057bedc63db, type: 3}
+    _list:
+    - _key: Boot
+      _value: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
+    - _key: Game
+      _value: {fileID: 102900000, guid: c7d05c35cd4853643a09333ecceff608, type: 3}
+    - _key: Launcher
+      _value: {fileID: 102900000, guid: d03a300180bde5646b09bfa4c392679f, type: 3}
+    - _key: Intro
+      _value: {fileID: 102900000, guid: 61687ab4465bb6e4d8164057bedc63db, type: 3}
+    _new: 

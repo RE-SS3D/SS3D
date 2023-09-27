@@ -1,9 +1,11 @@
 namespace SS3D.Data.Enums
 {
-    public enum SettingsId
+    public class SettingsId
     {
-        ApplicationSettings = 0, 
-        LogSettings = 1, 
+        public static string ApplicationSettings = "ApplicationSettings";
+
+        public static string LogSettings = "LogSettings";
+
     }
 }
 

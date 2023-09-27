@@ -1,13 +1,19 @@
 namespace SS3D.Data.Enums
 {
-    public enum InteractionIcons
+    public class InteractionIcons
     {
-        Power = 0, 
-        Take = 1, 
-        Open = 2, 
-        Discard = 3, 
-        Honk = 4, 
-        Nuke = 5, 
+        public static string Power = "Power";
+
+        public static string Take = "Take";
+
+        public static string Open = "Open";
+
+        public static string Discard = "Discard";
+
+        public static string Honk = "Honk";
+
+        public static string Nuke = "Nuke";
+
     }
 }
 

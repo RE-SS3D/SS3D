@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using SS3D.CodeGeneration;
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
@@ -60,13 +61,20 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _enumNameTextField.value = _assetDatabase.EnumName;
             _assetGroupObjectField.value = _assetDatabase.AssetGroup;
 
+            _assetDatabase.LoadAssetsFromAssetGroup();
+
+            EditorUtility.SetDirty(_assetDatabase);
+
+            string dataPath = AssetDatabase.EnumPath;
+            StaticClassCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets.Values, _assetDatabase.EnumNamespaceName);
+
             if (_assetDatabase.Assets != null)
             {
-                foreach (Object asset in _assetDatabase.Assets)
+                foreach (KeyValuePair<string, Object> asset in _assetDatabase.Assets)
                 {
                     ObjectField objectField = new()
                     {
-                        value = asset
+                        value = asset.Value
                     };
 
                     _assetsListView.Add(objectField);
@@ -88,18 +96,18 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetDatabase.LoadAssetsFromAssetGroup();
             _assetsListView.Clear();
 
-            foreach (Object asset in _assetDatabase.Assets)
+            foreach (KeyValuePair<string, Object> asset in _assetDatabase.Assets)
             {
                 ObjectField objectField = new()
                 {
-                    value = asset
+                    value = asset.Value
                 };
 
                 _assetsListView.Add(objectField);
             }   
 
             EditorUtility.SetDirty(_assetDatabase);
-            EnumCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
+            StaticClassCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets.Values, _assetDatabase.EnumNamespaceName);
         }
     }
 }

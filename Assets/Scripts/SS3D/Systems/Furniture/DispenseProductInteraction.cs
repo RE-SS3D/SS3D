@@ -35,7 +35,7 @@ namespace SS3D.Systems.Furniture
         /// <inheritdoc />
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : Icons.Get<Sprite>(InteractionIcons.Take);
         }
 
         /// <inheritdoc />

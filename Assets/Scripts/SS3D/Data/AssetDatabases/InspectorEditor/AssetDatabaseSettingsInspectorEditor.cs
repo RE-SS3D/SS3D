@@ -22,8 +22,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         private void OnEnable()
         {
             _assetDatabaseSettings = (AssetDatabaseSettings)target;
-
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
         }
         
         public override VisualElement CreateInspectorGUI()
@@ -96,7 +94,22 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             string dataPath = AssetDatabase.EnumPath;
 
-            EnumCreator.CreateAtPath(dataPath, "AssetDatabases", _assetDatabaseSettings.IncludedAssetDatabases);
+            if (_assetDatabaseSettings == null)
+            {
+                return;
+            }                               
+            
+            if (_assetDatabaseSettings.IncludedAssetDatabases == null || _assetDatabaseSettings.IncludedAssetDatabases.Count == 0)
+            {
+                return;
+            }
+
+            StaticClassCreator.CreateAtPath(dataPath, "AssetDatabases", _assetDatabaseSettings.IncludedAssetDatabases);
+
+            foreach (AssetDatabase includedAssetDatabase in _assetDatabaseSettings.IncludedAssetDatabases)
+            {
+                StaticClassCreator.CreateAtPath(dataPath, includedAssetDatabase.EnumName, includedAssetDatabase.Assets.Values, includedAssetDatabase.EnumNamespaceName);
+            }
         }
 
         private void UpdateListVisuals()

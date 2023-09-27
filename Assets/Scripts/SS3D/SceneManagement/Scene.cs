@@ -1,27 +1,32 @@
 ﻿using JetBrains.Annotations;
 using SS3D.Data.Enums;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace SS3D.SceneManagement
 {
 	public static class Scene
-	{
-		[NotNull]
-		public static List<string> Names => Enum.GetNames(typeof(Scenes)).ToList();
+    {
+        #if UNITY_EDITOR
+        [NotNull]
+        public static List<string> Names => new List<string>()
+        {
+            Scenes.Boot,
+            Scenes.Intro,
+            Scenes.Game,
+            Scenes.Launcher,
+        };
+        #endif
 
-		public static void Load(Scenes scenes)
+		public static void Load(string scenes)
 		{
-			SceneManager.LoadScene(scenes.ToString());
+			SceneManager.LoadScene(scenes);
 		}
 
-		public static async Task LoadAsync(Scenes scene)
+		public static async Task LoadAsync(string scene)
 		{
-			SceneManager.LoadSceneAsync(scene.ToString());
+			SceneManager.LoadSceneAsync(scene);
 		}
 	}
 }

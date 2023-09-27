@@ -17,49 +17,13 @@ namespace SS3D.Systems.Inventory.Items
     public sealed class ItemSystem : NetworkSystem
     {
         /// <summary>
-        /// A dictionary of all the preloaded prefabs using the ItemIDs as key.
-        /// </summary>
-        private readonly Dictionary<ItemId, Item> _itemPrefabs = new();
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            LoadItemPrefabs();
-        }
-
-        /// <summary>
-        /// Loads the item prefabs into memory with the item id and setting up the item ids variable in the items.
-        /// </summary>
-        private void LoadItemPrefabs()
-        {
-            AssetDatabase items = Assets.GetDatabase((int)AssetDatabases.Items);
-
-            for (int index = 0; index < items.Assets.Count; index++)
-            {
-                ItemId id = (ItemId)index;
-
-                GameObject itemObject = Assets.Get(id);
-                if(itemObject.TryGetComponent(out Item item))
-                {
-                    item.ItemId = id;
-                    _itemPrefabs.Add(id, item);
-                }
-                else
-                {
-                    Log.Error(this, $"gameobject {itemObject} doesn't have any item component");
-                } 
-            }
-        }
-
-        /// <summary>
         /// Requests to spawn an item.
         /// </summary>
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="position">The desired position to spawn.</param>
         /// <param name="rotation">The desired rotation to apply.</param>
         [ServerRpc(RequireOwnership = false)]
-        public void CmdSpawnItem(ItemId id, Vector3 position, Quaternion rotation)
+        public void CmdSpawnItem(string id, Vector3 position, Quaternion rotation)
         {
             SpawnItem(id, position, rotation);
         }
@@ -73,15 +37,9 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="position">The desired position to spawn.</param>
         /// <param name="rotation">The desired rotation to apply.</param>
         [Server]
-        public Item SpawnItem(ItemId id, Vector3 position, Quaternion rotation)
+        public Item SpawnItem(string id, Vector3 position, Quaternion rotation)
         {
-            bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
-
-            if (!hasValue)
-            {
-                Log.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
-                return null;
-            }
+            Item itemPrefab = Data.Items.Get<GameObject>(id).GetComponent<Item>();
 
             Item itemInstance = Instantiate(itemPrefab, position, rotation);
             ServerManager.Spawn(itemInstance.GameObject);
@@ -112,15 +70,9 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="container">The container to spawn into.</param>
         [Server]
-        public Item SpawnItemInContainer(ItemId id, AttachedContainer attachedContainer)
+        public Item SpawnItemInContainer(string id, AttachedContainer attachedContainer)
         {
-            bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
-
-            if (!hasValue)
-            {
-                Log.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
-                return null;
-            }
+            Item itemPrefab = Data.Items.Get<Item>(id);
 
             if (attachedContainer is null)
             {
@@ -128,7 +80,20 @@ namespace SS3D.Systems.Inventory.Items
                 return null;
             }
 
-            Item itemInstance = Instantiate(itemPrefab, Vector3.zero, Quaternion.identity);
+            return SpawnItemInContainer(itemPrefab.GameObject, attachedContainer);
+        }
+
+        // <summary>
+        /// Spawns an Item inside a container.
+        ///
+        /// TODO: Create a ItemSpawnOptions struct.
+        /// </summary>
+        /// <param name="id">The item ID to spawn.</param>
+        /// <param name="container">The container to spawn into.</param>
+        [Server]
+        public Item SpawnItemInContainer(GameObject item, AttachedContainer attachedContainer)
+        {
+            Item itemInstance = Instantiate(item, Vector3.zero, Quaternion.identity).GetComponent<Item>();
             ServerManager.Spawn(itemInstance.GameObject);
             attachedContainer.AddItem(itemInstance);
 

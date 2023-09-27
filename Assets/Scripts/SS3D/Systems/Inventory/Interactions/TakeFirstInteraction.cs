@@ -6,6 +6,7 @@ using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
@@ -26,7 +27,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : Icons.Get<Sprite>(InteractionIcons.Take);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

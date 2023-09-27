@@ -34,7 +34,7 @@ namespace SS3D.Core
 
             if (Application.isPlaying)
             {
-                Settings = Assets.Get<LogSettings>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
+                settings = Assets.Get<LogSetting>(AssetDatabases.Settings, SettingsId.LogSettings);
             }
             
         }
@@ -53,8 +53,6 @@ namespace SS3D.Core
 
             // Configure writing to Unity's console, using our custom text formatter.
             configuration = configuration.WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: DefaultUnityLogTemplate));
-
-
 
             // Create the logger from the configuration.
             Log.Logger = configuration.CreateLogger();

@@ -1,77 +1,95 @@
 namespace SS3D.Data.Enums
 {
-    public enum ItemId
+    public class ItemId
     {
-        BikeHorn = 0, 
-        NuclearAuthenticationDisk = 1, 
-        ToolboxBlue = 2, 
-        SecurityPDA = 3, 
-        SecurityIDCard = 4, 
-        PDA = 5, 
-        IDCard = 6, 
-        Mug = 7, 
-        SodaCanCola = 8, 
-        SodaCanCannedLaughter = 9, 
-        SodaCanCannedAir = 10, 
-        SodaCanTonic = 11, 
-        SodaCanBeepyLime = 12, 
-        SodaCanBeepsSoda = 13, 
-        SodaCanDukePurpleTea = 14, 
-        Poster = 15, 
-        MedicalPatch = 16, 
-        BrutePatch = 17, 
-        BurnPatch = 18, 
-        DonkPocket = 19, 
-        Boombox = 20, 
-        GreyFloorTile = 21, 
-        SteelReinforcedSheet = 22, 
-        SteelSheet = 23, 
-        Crowbar = 24, 
-        ScrewdriverBlue = 25, 
-        Wrench = 26, 
-        FlashlightBlue = 27, 
-        KitchenKnife = 28, 
-        TruckerCap = 29, 
-        Sunglasses = 30, 
-        FacewearGasMask = 31, 
-        GlovesInsulatedLeft = 32, 
-        GlovesInsulatedRight = 33, 
-        JumpsuitBotany = 34, 
-        JumpsuitEngineer = 35, 
-        JumpsuitGrey = 36, 
-        ShoesHiTopsLeft = 37, 
-        ShoesHiTopsRight = 38, 
-        ShoesJackbootsLeft = 39, 
-        ShoesJackbootsRight = 40, 
-        JumpsuitSecurity = 41, 
-        HeadsetLeft = 42, 
-        HeadsetRight = 43, 
-        HumanArmLeft = 44, 
-        HumanArmRight = 45, 
-        HumanEarLeft = 46, 
-        HumanEarRight = 47, 
-        HumanFootLeft = 48, 
-        HumanFootRight = 49, 
-        HumanHandLeft = 50, 
-        HumanHandRight = 51, 
-        HumanHead = 52, 
-        HumanLegLeft = 53, 
-        HumanTorso = 54, 
-        HumanLegRight = 55, 
-        HumanLungRight = 56, 
-        HumanLungLeft = 57, 
-        HumanStomach = 58, 
-        HumanLiver = 59, 
-        HumanIntestineLarge = 60, 
-        HumanEye = 61, 
-        HumanBrain = 62, 
-        Toolbelt = 63, 
-        Backpack = 64, 
-        HumanHeart = 65, 
-        Wirecutters = 66, 
-        Multitool = 67, 
-        PowerCellAdmin = 68, 
-        PowerCell = 69, 
+        public static string BikeHorn = "BikeHorn";
+
+        public static string NuclearAuthenticationDisk = "NuclearAuthenticationDisk";
+
+        public static string ToolboxBlue = "ToolboxBlue";
+
+        public static string SecurityPDA = "SecurityPDA";
+
+        public static string SecurityIDCard = "SecurityIDCard";
+
+        public static string PDA = "PDA";
+
+        public static string IDCard = "IDCard";
+
+        public static string Mug = "Mug";
+
+        public static string SodaCanCola = "SodaCanCola";
+
+        public static string SodaCanCannedLaughter = "SodaCanCannedLaughter";
+
+        public static string SodaCanCannedAir = "SodaCanCannedAir";
+
+        public static string SodaCanTonic = "SodaCanTonic";
+
+        public static string SodaCanBeepyLime = "SodaCanBeepyLime";
+
+        public static string SodaCanBeepsSoda = "SodaCanBeepsSoda";
+
+        public static string SodaCanDukePurpleTea = "SodaCanDukePurpleTea";
+
+        public static string Poster = "Poster";
+
+        public static string MedicalPatch = "MedicalPatch";
+
+        public static string BrutePatch = "BrutePatch";
+
+        public static string BurnPatch = "BurnPatch";
+
+        public static string DonkPocket = "DonkPocket";
+
+        public static string Boombox = "Boombox";
+
+        public static string GreyFloorTile = "GreyFloorTile";
+
+        public static string SteelReinforcedSheet = "SteelReinforcedSheet";
+
+        public static string SteelSheet = "SteelSheet";
+
+        public static string Crowbar = "Crowbar";
+
+        public static string Screwdriver = "Screwdriver";
+
+        public static string Wrench = "Wrench";
+
+        public static string FlashlightBlue = "FlashlightBlue";
+
+        public static string KitchenKnife = "KitchenKnife";
+
+        public static string TruckerCap = "TruckerCap";
+
+        public static string Sunglasses = "Sunglasses";
+
+        public static string FacewearGasMask = "FacewearGasMask";
+
+        public static string GlovesInsulatedLeft = "GlovesInsulatedLeft";
+
+        public static string GlovesInsulatedRight = "GlovesInsulatedRight";
+
+        public static string JumpsuitBotany = "JumpsuitBotany";
+
+        public static string JumpsuitEngineer = "JumpsuitEngineer";
+
+        public static string JumpsuitGrey = "JumpsuitGrey";
+
+        public static string ShoesHiTopsLeft = "ShoesHiTopsLeft";
+
+        public static string ShoesHiTopsRight = "ShoesHiTopsRight";
+
+        public static string ShoesJackbootsLeft = "ShoesJackbootsLeft";
+
+        public static string ShoesJackbootsRight = "ShoesJackbootsRight";
+
+        public static string JumpsuitSecurity = "JumpsuitSecurity";
+
+        public static string HeadsetLeft = "HeadsetLeft";
+
+        public static string HeadsetRight = "HeadsetRight";
+
     }
 }
 

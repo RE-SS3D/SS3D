@@ -129,7 +129,10 @@ namespace SS3D.Systems.Inventory.Containers
 
             Hands.SetInventory(this);
             SetupView();
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+        }
+
+        public void TriggerInventorySetup()
+        {
             OnInventorySetUp?.Invoke();
         }
 

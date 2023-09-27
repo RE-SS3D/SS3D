@@ -1,11 +1,15 @@
 namespace SS3D.Data.Enums
 {
-    public enum Scenes
+    public class Scenes
     {
-        Boot = 0, 
-        Game = 1, 
-        Launcher = 2, 
-        Intro = 3, 
+        public static string Boot = "Boot";
+
+        public static string Game = "Game";
+
+        public static string Launcher = "Launcher";
+
+        public static string Intro = "Intro";
+
     }
 }
 

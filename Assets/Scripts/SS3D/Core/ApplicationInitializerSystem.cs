@@ -29,7 +29,7 @@ namespace SS3D.Core
             CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            Scenes sceneToLoad = startArgsSystem.HasCommandLineArgs() ? Scenes.Intro : Scenes.Launcher;
+            string sceneToLoad = startArgsSystem.HasCommandLineArgs() ? Scenes.Intro : Scenes.Launcher;
 
             if (applicationSettings.ForceLauncher && !startArgsSystem.HasCommandLineArgs())
             {

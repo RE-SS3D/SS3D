@@ -23,7 +23,7 @@ namespace SS3D.Systems.Combat.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Nuke);
+            return Icon != null ? Icon : Icons.Get<Sprite>(InteractionIcons.Nuke);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

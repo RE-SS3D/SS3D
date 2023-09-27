@@ -28,15 +28,37 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         
         public override string Perform(string[] args, NetworkConnection conn)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-            
-            GameObject leftHandPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanHandLeft);
-            GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, values.Entity.transform);
-            leftHandObject.transform.localPosition = values.Position;
-            leftHandObject.transform.localEulerAngles = values.Rotation;
-            InstanceFinder.ServerManager.Spawn(leftHandObject, values.Player.Owner);
-            values.Entity.GetComponent<HumanInventory>().TryAddContainer(leftHandObject.GetComponent<AttachedContainer>());
-            values.Entity.GetComponent<Hands>().AddHand(leftHandObject.GetComponent<Hand>());
+            CheckArgsResponse checkArgsResponse = CheckArgs(args);
+            if (checkArgsResponse.IsValid == false)
+                return checkArgsResponse.InvalidArgs;
+
+            string ckey = args[0];
+
+            // default transform for hand.
+            Vector3 position = new Vector3(0.5f, 0.7f, 0);
+            Vector3 rotation = new Vector3(-50, -270, 90);
+
+            if (args.Length > 1)
+            {
+                position = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                rotation = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
+            }
+
+            Player Player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
+            Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(Player);
+
+            GameObject leftHandPrefab = Bodyparts.Get<GameObject>(BodyPartsIds.HumanHandLeft);
+            GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, entity.transform);
+            leftHandObject.transform.localPosition = position;
+            leftHandObject.transform.localEulerAngles = rotation;
+
+            Hand leftHand = leftHandObject.GetComponent<Hand>();
+            InstanceFinder.ServerManager.Spawn(leftHandObject, Player.Owner);
+
+            Hands hands = entity.GetComponent<Hands>();
+            HumanInventory inventory = entity.GetComponent<HumanInventory>();
+            inventory.TryAddContainer(leftHandObject.GetComponent<AttachedContainer>());
+            hands.AddHand(leftHand);
 
             return "hand added";
         }

@@ -16,9 +16,17 @@ MonoBehaviour:
   EnumName: InteractionIcons
   AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}
   Assets:
-  - {fileID: 21300000, guid: b22067d36fa963b4bbaf8d6085b0ebc9, type: 2}
-  - {fileID: 21300000, guid: 2db953f2ae8f41d4e9842d9144a9e396, type: 2}
-  - {fileID: 21300000, guid: 1f97d7fac1be1b448824c85e156d9746, type: 2}
-  - {fileID: 21300000, guid: e4d142ab75244e24c89d0c2aec36dbed, type: 2}
-  - {fileID: 21300000, guid: 88c0c549992b597489791caf4a12f18c, type: 2}
-  - {fileID: 21300000, guid: 3030468639c4d15459be5f65d30a42df, type: 2}
+    _list:
+    - _key: Power
+      _value: {fileID: 21300000, guid: b22067d36fa963b4bbaf8d6085b0ebc9, type: 2}
+    - _key: Take
+      _value: {fileID: 21300000, guid: 2db953f2ae8f41d4e9842d9144a9e396, type: 2}
+    - _key: Open
+      _value: {fileID: 21300000, guid: 1f97d7fac1be1b448824c85e156d9746, type: 2}
+    - _key: Discard
+      _value: {fileID: 21300000, guid: e4d142ab75244e24c89d0c2aec36dbed, type: 2}
+    - _key: Honk
+      _value: {fileID: 21300000, guid: 88c0c549992b597489791caf4a12f18c, type: 2}
+    - _key: Nuke
+      _value: {fileID: 21300000, guid: 3030468639c4d15459be5f65d30a42df, type: 2}
+    _new: 

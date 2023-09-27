@@ -22,7 +22,7 @@ namespace SS3D.Systems.Furniture
         /// TODO: Make a new struct for different products, and to support multiple products.
         /// </summary>
         [SerializeField]
-        private ItemId _productToDispense;
+        private GameObject _productToDispense;
 
         /// <summary>
         /// The transform representation of where the dispensed products should spawn at.
@@ -48,7 +48,7 @@ namespace SS3D.Systems.Furniture
             ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
-            itemSystem.SpawnItem(_productToDispense, _dispensingTransform.position, quaternion);
+            itemSystem.SpawnItem(_productToDispense.name, _dispensingTransform.position, quaternion);
         }
 
         /// <inheritdoc />
@@ -58,7 +58,7 @@ namespace SS3D.Systems.Furniture
             {
                 new DispenseProductInteraction
                 {
-                    Icon = Assets.Get(InteractionIcons.Take)
+                    Icon = Icons.Get<Sprite>(InteractionIcons.Take)
                 }
             };
         }

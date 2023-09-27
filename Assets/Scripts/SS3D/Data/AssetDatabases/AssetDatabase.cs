@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Coimbra;
+using JetBrains.Annotations;
+using System.Collections.Generic;
 using Object = UnityEngine.Object;
 using SS3D.Attributes;
+using UnityEditor;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -40,9 +43,9 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// All loaded assets that will be included in the built game.
         /// </summary>
-        [ReadOnly]
+        //[ReadOnly]
 #endif
-        public List<Object> Assets;
+        public SerializableDictionary<string, Object> Assets;
 
 #if UNITY_EDITOR
         /// <summary>
@@ -50,13 +53,14 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public void LoadAssetsFromAssetGroup()
         {
-            if (Assets == null) return;
-            Assets.Clear();
+            Assets ??= new SerializableDictionary<string, Object>();
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)
             {
-                Assets.Add(entry.MainAsset);
+                Assets.TryAdd(entry.MainAsset.name, entry.MainAsset);
             }
+
+            EditorUtility.SetDirty(this);
         }
 #endif
 
@@ -65,12 +69,15 @@ namespace SS3D.Data.AssetDatabases
         ///
         /// WARNING: Not sure how
         /// </summary>
-        /// <param name="index">Uses the ID of the asset cast into a int to get the asset from a list position.</param>
+        /// <param name="id">Uses the ID of the asset cast into a int to get the asset from a list position.</param>
         /// <typeparam name="T">The type of asset to get.</typeparam>
         /// <returns></returns>
-        public T Get<T>(int index) where T : Object
+        [CanBeNull]
+        public T Get<T>(string id) where T : Object
         {
-            return Assets[index] as T;
+            Assets.TryGetValue(id, out Object asset);
+
+            return asset as T;
         }
 
         public bool TryGet<T>(int index, out T asset) where T : Object
@@ -91,7 +98,7 @@ namespace SS3D.Data.AssetDatabases
         /// <typeparam name="TAsset"></typeparam>
         public void Add<TAsset>(Object asset) where TAsset : Object
         {
-            Assets.Add(asset as TAsset);
+            Assets.Add(asset.name, asset as TAsset);
         }
 
 #if UNITY_EDITOR

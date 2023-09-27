@@ -39,9 +39,9 @@ namespace SS3D.SceneManagement.Editor
 			{
 				if (GUILayout.Button(new GUIContent(scene), options))
 				{
-					Enum.TryParse(scene, out Scenes sceneEnum);
+					// Enum.TryParse(scene, out Scenes sceneEnum);
 
-					EditorSceneUtils.StartScene(sceneEnum);
+					EditorSceneUtils.StartScene("sceneEnum");
 				}	
 			}
 		}
