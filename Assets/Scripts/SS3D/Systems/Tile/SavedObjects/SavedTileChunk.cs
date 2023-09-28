@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +13,6 @@ namespace SS3D.Systems.Tile
     {
         public Vector2Int chunkKey;
         public Vector3 originPosition;
-        public SavedTileObject[] tileObjectSaveObjectArray;
+        public ISavedTileLocation[] tileObjectSaveObjectArray;
     }
 }

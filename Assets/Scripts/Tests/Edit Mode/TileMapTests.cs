@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SS3D.Systems.Tile;
 using System.Text;
 using UnityEditor;
@@ -16,11 +16,11 @@ namespace EditorTests
         public void CannotBuildOnNonPlenum()
         {
             // SetUp
-            TileObject[] tileObjects = CreateEmptyTileObjectArray();
+            ITileLocation[] tileLocations = CreateEmptyTileObjectArray();
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
             TileObjectSo testSo = CreateTestWallSo();
 
-            bool canBuild = BuildChecker.CanBuild(tileObjects, testSo, Direction.North, adjacentObjects, false);
+            bool canBuild = BuildChecker.CanBuild(tileLocations, testSo, Direction.North, adjacentObjects, false);
 
             Assert.IsFalse(canBuild);
         }
@@ -28,17 +28,17 @@ namespace EditorTests
         #endregion
 
         #region Helper functions
-        private TileObject[] CreateEmptyTileObjectArray()
+        private ITileLocation[] CreateEmptyTileObjectArray()
         {
             TileLayer[] layers = TileHelper.GetTileLayers();
-            TileObject[] tileObjects = new TileObject[layers.Length];
+            ITileLocation[] tileLocations = new ITileLocation[layers.Length];
 
             for (int i = 0; i < layers.Length; i++)
             {
-                tileObjects[i] = new TileObject(layers[i], 0, 0);
+                tileLocations[i] = TileHelper.CreateTileLocation(layers[i], 0,0);
             }
 
-            return tileObjects;
+            return tileLocations;
         }
 
         private TileObjectSo CreateTestWallSo()
