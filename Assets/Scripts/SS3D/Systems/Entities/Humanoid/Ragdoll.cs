@@ -1,10 +1,8 @@
-﻿using FishNet;
-using FishNet.Broadcast;
-using FishNet.Connection;
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core;
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -83,9 +81,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		{
 			if ((Input.GetKeyDown(KeyCode.Y)) && (IsOwner))
 			{
-				//Knockdown(1f);
-				UnityEngine.Debug.Log("Broadcast");
-				Subsystems.Get<RagdollNetwork>().SendBroadcast(this);
+				Knockdown(1f, true);
 			}
 			
 			switch (_currentState)
@@ -219,8 +215,12 @@ namespace SS3D.Systems.Entities.Humanoid
 		/// Knockdown the character for some time.
 		/// </summary>
 		/// <param name="seconds"></param>
-		public void Knockdown(float seconds)
+		public void Knockdown(float seconds, bool isBroadcast = false)
 		{
+			if (isBroadcast)
+			{
+				Subsystems.Get<RagdollNetwork>().SendBroadcast(this, GetCurrentMethodName(), new object[] { seconds, false });
+			}
 			if (!IsKnockedDown)
 			{
 				_isKnockDownTimed = true;
@@ -231,6 +231,11 @@ namespace SS3D.Systems.Entities.Humanoid
 			{
 				_knockDownEnd = Math.Max(_knockDownEnd, Time.time + seconds);
 			}
+		}
+
+		private string GetCurrentMethodName([CallerMemberName] string methodname = null)
+		{
+			return methodname;
 		}
 
 		private void Knockdown()

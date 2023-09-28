@@ -7,13 +7,17 @@ namespace SS3D.Systems.Entities.Humanoid
 {
 	public class RagdollNetwork : NetworkSystem
 	{
-		private struct RagdollBody : IBroadcast
+		public struct RagdollBody : IBroadcast
 		{
-			public Ragdoll Ragdoll;
+			public Ragdoll RagdollInstance;
+			public string MethodName;
+			public object[] Parameters;
 
-			public RagdollBody(Ragdoll ragdoll)
+			public RagdollBody(Ragdoll ragdollInstance, string methodName, object[] parameters)
 			{
-				Ragdoll =  ragdoll;
+				RagdollInstance = ragdollInstance;
+				MethodName = methodName;
+				Parameters = parameters;
 			}
 		}
 		private void OnEnable()
@@ -28,20 +32,21 @@ namespace SS3D.Systems.Entities.Humanoid
 			InstanceFinder.ServerManager.UnregisterBroadcast<RagdollBody>(OnClientRagdollBroadcast);
 		}
 
-		public void SendBroadcast(Ragdoll ragdoll)
+		public void SendBroadcast(Ragdoll ragdoll, string methodName, object[] parameters)
 		{
+			RagdollBody ragdollBody = new (ragdoll, methodName, parameters);
 			if (InstanceFinder.IsServer)
 			{
-				InstanceFinder.ServerManager.Broadcast(new RagdollBody(ragdoll));
+				InstanceFinder.ServerManager.Broadcast(ragdollBody);
 			}
 			else if (InstanceFinder.IsClient)
 			{
-				InstanceFinder.ClientManager.Broadcast(new RagdollBody(ragdoll));
+				InstanceFinder.ClientManager.Broadcast(ragdollBody);
 			}
 		}
 		private void OnRagdollBroadcast(RagdollBody ragdollBody)
 		{
-			ragdollBody.Ragdoll.Knockdown(1f);
+			typeof(Ragdoll).GetMethod(ragdollBody.MethodName).Invoke(ragdollBody.RagdollInstance, ragdollBody.Parameters);
 		}
 		private void OnClientRagdollBroadcast(NetworkConnection networkConnection, RagdollBody ragdollBody)
 		{
