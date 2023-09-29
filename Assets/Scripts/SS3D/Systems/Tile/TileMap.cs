@@ -4,6 +4,7 @@ using SS3D.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -308,22 +309,13 @@ namespace SS3D.Systems.Tile
             foreach (var savedChunk in saveObject.savedChunkList)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
+                ISavedTileLocation[] singles = savedChunk.savedTileSingleLocations;
+                ISavedTileLocation[] cardinals = savedChunk.savedTileCardinalLocations;
+                ISavedTileLocation[] savedTiles = singles.Concat(cardinals).ToArray();
 
-                foreach (var savedTile in savedChunk.savedTileSingleLocations)
+                foreach (var savedTile in savedTiles)
                 {
                     foreach(SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
-                    {
-                        TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedObject.tileObjectSOName);
-                        Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
-
-                        // Skipping build check here to allow loading tile objects in a non-valid order
-                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false);
-                    }
-                }
-
-                foreach (var savedTile in savedChunk.savedTileCardinalLocations)
-                {
-                    foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
                     {
                         TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedObject.tileObjectSOName);
                         Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
