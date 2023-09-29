@@ -26,7 +26,7 @@ namespace SS3D.Systems.Health
         /// </summary>
         protected override void BeforeDestroyingBodyPart()
         {
-            Punpun.Information(this, "brain dies");
+            Log.Information(this, "brain dies");
             Human entity = GetComponentInParent<Human>();
             entity?.Kill();
         }

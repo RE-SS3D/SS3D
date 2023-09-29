@@ -76,7 +76,7 @@ namespace SS3D.Systems.Health
             }
             else
             {
-                Punpun.Error(this, "Trying to set up a circulatory layer without a BleedingBodyPart component next to the body part." +
+                Log.Error(this, "Trying to set up a circulatory layer without a BleedingBodyPart component next to the body part." +
                     " Please add a BleedingBodyPart component.");
             }
         }

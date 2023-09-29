@@ -23,7 +23,7 @@ namespace SS3D.Systems.Health
                 }
                 else
                 {
-                    Punpun.Warning(this, $"no damages of type {damageType} defined for this damage container");
+                    Log.Warning(this, $"no damages of type {damageType} defined for this damage container");
                     return new BodyDamageInfo(damageType);
                 }
             }

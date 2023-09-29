@@ -579,7 +579,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// </summary>
 		public void Dump()
 		{
-            Punpun.Information(this, "dumping the content of container on" + gameObject);
+            Log.Information(this, "dumping the content of container on" + gameObject);
 			Item[] oldItems = _storedItems.Select(x => x.Item).ToArray();
 			for (int i = 0; i < oldItems.Length; i++)
 			{
