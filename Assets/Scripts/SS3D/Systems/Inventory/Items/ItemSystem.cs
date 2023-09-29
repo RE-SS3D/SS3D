@@ -46,7 +46,7 @@ namespace SS3D.Systems.Inventory.Items
                 }
                 else
                 {
-                    Punpun.Error(this, $"gameobject {itemObject} doesn't have any item component");
+                    Log.Error(this, $"gameobject {itemObject} doesn't have any item component");
                 } 
             }
         }
@@ -78,14 +78,14 @@ namespace SS3D.Systems.Inventory.Items
 
             if (!hasValue)
             {
-                Punpun.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
+                Log.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
                 return null;
             }
 
             Item itemInstance = Instantiate(itemPrefab, position, rotation);
             ServerManager.Spawn(itemInstance.GameObject);
 
-            Punpun.Information(this, "Item {itemInstance} spawned at {position}", Logs.ServerOnly, itemInstance.name, position);
+            Log.Information(this, "Item {itemInstance} spawned at {position}", Logs.ServerOnly, itemInstance.name, position);
             return itemInstance;
         }
 
@@ -103,13 +103,13 @@ namespace SS3D.Systems.Inventory.Items
 
             if (!hasValue)
             {
-                Punpun.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
+                Log.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
                 return null;
             }
 
             if (attachedContainer is null)
             {
-                Punpun.Error(this, "Container does not found!", Logs.ServerOnly);
+                Log.Error(this, "Container does not found!", Logs.ServerOnly);
                 return null;
             }
 
@@ -117,7 +117,7 @@ namespace SS3D.Systems.Inventory.Items
             ServerManager.Spawn(itemInstance.GameObject);
             attachedContainer.AddItem(itemInstance);
 
-            Punpun.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
+            Log.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
             return itemInstance;
         }
     }

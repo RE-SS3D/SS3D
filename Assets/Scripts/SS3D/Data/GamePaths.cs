@@ -4,5 +4,6 @@
 	{
 		Root,
 		Config,
+		Data,
 	}
 }

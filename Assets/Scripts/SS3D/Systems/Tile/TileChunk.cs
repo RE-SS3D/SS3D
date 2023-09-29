@@ -125,7 +125,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                Punpun.Warning(Subsystems.Get<TileSystem>(), "Tried to set tile object outside of chunk boundary");
+                Log.Warning(Subsystems.Get<TileSystem>(), "Tried to set tile object outside of chunk boundary");
             }
         }
 
@@ -137,7 +137,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                Punpun.Warning(Subsystems.Get<TileSystem>(), "Tried to get tile object outside of chunk boundary");
+                Log.Warning(Subsystems.Get<TileSystem>(), "Tried to get tile object outside of chunk boundary");
                 return default;
             }
         }

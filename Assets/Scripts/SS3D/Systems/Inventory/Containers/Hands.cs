@@ -152,13 +152,13 @@ namespace SS3D.Systems.Inventory.Containers
 
             if (hand == selectedContainer)
             {
-                Punpun.Warning(this, "Hand already selected");
+                Log.Warning(this, "Hand already selected");
                 return;
             }
 
             if (!HandContainers.Contains(selectedContainer))
             {
-                Punpun.Warning(this, "no hand with the passed container in parameter");
+                Log.Warning(this, "no hand with the passed container in parameter");
                 return;
             }
 
