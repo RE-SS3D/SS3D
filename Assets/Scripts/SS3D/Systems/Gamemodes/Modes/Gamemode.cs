@@ -114,7 +114,7 @@ namespace SS3D.Systems.GameModes.Modes
             FailOnGoingObjectives();
 
             int succeededObjectives = _roundObjectives.Count(objective => objective.Succeeded);
-            Punpun.Information(this, "Objectives Completed: {succeededObjectives}/{roundObjectivesCount}", 
+            Log.Information(this, "Objectives Completed: {succeededObjectives}/{roundObjectivesCount}", 
                 Logs.Generic, succeededObjectives, _roundObjectives.Count);
 
         }
@@ -127,7 +127,7 @@ namespace SS3D.Systems.GameModes.Modes
 
                 ObjectiveStatus status = objective.Status;
 
-                Punpun.Information(this, "{objectiveTitle} - {status}", Logs.Generic, objective.Title, status);
+                Log.Information(this, "{objectiveTitle} - {status}", Logs.Generic, objective.Title, status);
             }
         }
 
@@ -145,7 +145,7 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         protected virtual void CreateObjectives(List<string> spawnedPlayersCkeys)
         {
-            Punpun.Information(this, "Creating initial objectives", Logs.ServerOnly);
+            Log.Information(this, "Creating initial objectives", Logs.ServerOnly);
 
             // Determine the minimum number of assignees (so every gets an objective)
             int numberOfPlayers = spawnedPlayersCkeys.Count;
@@ -168,7 +168,7 @@ namespace SS3D.Systems.GameModes.Modes
             // Validate that input is correct.
             if (ckeysToAssign.Count != RoundObjectives.Count)
             {
-                Punpun.Error(this, "Number of objective entries ({RoundObjectivesCount}) and players ({ckeysCount}) do not match!",
+                Log.Error(this, "Number of objective entries ({RoundObjectivesCount}) and players ({ckeysCount}) do not match!",
                     Logs.Generic,  RoundObjectives.Count, ckeysToAssign.Count);
             }
 
@@ -281,7 +281,7 @@ namespace SS3D.Systems.GameModes.Modes
             string title = $"[{objective.Id}/{objective.Title}]";
             string playerName = $"[{playerCkey}]".Colorize(LogColors.Blue);
 
-            Punpun.Information(this, "Objective initialized {title} for {playerName}", Logs.ServerOnly, title, playerName);
+            Log.Information(this, "Objective initialized {title} for {playerName}", Logs.ServerOnly, title, playerName);
         }
 
         /// <summary>

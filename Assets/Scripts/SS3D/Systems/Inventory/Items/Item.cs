@@ -79,7 +79,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             if (_initialised)
             {
-                Punpun.Error(this, "Item already initialised, returning");
+                Log.Error(this, "Item already initialised, returning");
                 return;
             }
             _name = itemName ?? string.Empty;
@@ -320,7 +320,7 @@ namespace SS3D.Systems.Inventory.Items
             }
             catch (NullReferenceException)
             {
-                Punpun.Warning(this, "Can't generate icon for " + name + ".");
+                Log.Warning(this, "Can't generate icon for " + name + ".");
                 icon = null;
             }
             // Return stored items back to their parents
@@ -340,7 +340,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             if (_traits.Contains(trait))
             {
-                Punpun.Warning(this, "item already contains trait {trait}", Logs.Generic, trait.Name);
+                Log.Warning(this, "item already contains trait {trait}", Logs.Generic, trait.Name);
                 return;
             }
             _traits.Add(trait);

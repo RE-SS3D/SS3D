@@ -104,7 +104,7 @@ namespace SS3D.Core.Utils
             }
             catch (Exception e)
             {
-                Punpun.Information(this,e,$"Failed to load command line arguments");
+                Log.Information(this,e,$"Failed to load command line arguments");
                 throw;
             }
         }
