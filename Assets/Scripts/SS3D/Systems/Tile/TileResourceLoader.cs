@@ -18,7 +18,7 @@ namespace SS3D.Systems.Tile
 
         public List<GenericObjectSo> Assets { get; private set; }
 
-        public void Start()
+        public void Awake()
         {
             LoadAssets();
         }
@@ -26,6 +26,8 @@ namespace SS3D.Systems.Tile
         private void LoadAssets()
         {
             Assets = new();
+
+			Log.Information(this, "Loading tilemaps content");
 
             GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
             StartCoroutine(LoadAssetsWithIcon(tempAssets));

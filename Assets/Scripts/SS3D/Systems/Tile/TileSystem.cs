@@ -43,13 +43,13 @@ namespace SS3D.Systems.Tile
         [Server]
         private async void Setup()
         {
+	        Loader = GetComponent<TileResourceLoader>();
+
 	        // Server only loads the map
 	        if (!IsServer)
 	        {
 		        return;
 	        }
-
-	        Loader = GetComponent<TileResourceLoader>();
 
 	        CreateMap(UnnamedMapName);
 
