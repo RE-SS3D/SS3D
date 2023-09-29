@@ -193,7 +193,7 @@ namespace SS3D.Systems.Tile
 
                     // Remove an existing object if there
                     if (replaceExisting)
-                        ClearTileObject(gridPosition, tileObjectSo.layer);
+                        ClearTileObject(gridPosition, tileObjectSo.layer, dir);
 
                     // Place new object
                     chunk.GetTileObject(tileObjectSo.layer, gridPosition).AddPlacedObject(placedObject, dir);
@@ -207,10 +207,10 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
-        public void ClearTileObject(Vector3 placePosition, TileLayer layer)
+        public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
         {
             ITileLocation[] tileObjects = GetTileLocations(placePosition);
-            tileObjects[(int)layer].ClearAllPlacedObject();
+            tileObjects[(int)layer].TryClearPlacedObject(dir);
 
             // Update any neighbouring adjacencies
             ResetAdjacencies(placePosition, layer);

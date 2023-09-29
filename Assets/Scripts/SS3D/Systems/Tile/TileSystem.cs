@@ -101,19 +101,13 @@ namespace SS3D.Systems.Tile
             PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
-        [Server]
-        private void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
-        {
-            _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
-        }
-
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition)
+        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
         {
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
-            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer);
+            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
         }
 
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
