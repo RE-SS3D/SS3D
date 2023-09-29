@@ -41,7 +41,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         protected override async UniTask PrepareRound()
         {
-            Punpun.Information(this, "Preparing round", Logs.ServerOnly);
+            Log.Information(this, "Preparing round", Logs.ServerOnly);
 
             RoundState = RoundState.Preparing;
 
@@ -55,7 +55,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         protected override async UniTask ProcessRoundTick()
         {
-            Punpun.Information(this, "Starting {seconds} seconds warmup tick", Logs.ServerOnly, _warmupSeconds);
+            Log.Information(this, "Starting {seconds} seconds warmup tick", Logs.ServerOnly, _warmupSeconds);
 
             RoundSeconds = _warmupSeconds;
             TickCancellationToken = new CancellationTokenSource();
@@ -70,7 +70,7 @@ namespace SS3D.Systems.Rounds
             }
 
             RoundState = RoundState.Ongoing;
-            Punpun.Information(this, "Starting round tick", Logs.ServerOnly);
+            Log.Information(this, "Starting round tick", Logs.ServerOnly);
 
             while (IsOngoing)
             {

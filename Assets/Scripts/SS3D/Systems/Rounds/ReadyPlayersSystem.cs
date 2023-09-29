@@ -86,11 +86,11 @@ namespace SS3D.Systems.Rounds
             switch (ready)
             {
                 case true when !playerIsReady:
-                    Punpun.Information(this, "player is {ckey} is ready", Logs.ServerOnly, player.Ckey);
+                    Log.Information(this, "player is {ckey} is ready", Logs.ServerOnly, player.Ckey);
                     _readyPlayers.Add(player);
                     break;
                 case false when playerIsReady:
-                    Punpun.Information(this, "player is {cCkey} is not ready", Logs.ServerOnly, player.Ckey);
+                    Log.Information(this, "player is {cCkey} is not ready", Logs.ServerOnly, player.Ckey);
                     _readyPlayers.Remove(player);
                     break;
             }

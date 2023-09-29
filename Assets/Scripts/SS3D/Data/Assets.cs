@@ -99,7 +99,7 @@ namespace SS3D.Data
                 Databases.Add(index, database);
             }
 
-            Punpun.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+            Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace SS3D.Data
 
             if (!databaseExists)
             {
-                Punpun.Warning(typeof(Assets), "Database of type {key} not found", Logs.Important, key);
+                Log.Warning(typeof(Assets), "Database of type {key} not found", Logs.Important, key);
             }
 
             return database;
@@ -130,7 +130,7 @@ namespace SS3D.Data
 
             if (!databaseExists)
             {
-                Punpun.Warning(typeof(Assets), "Database of type {key} not found", Logs.Important, key);
+                Log.Warning(typeof(Assets), "Database of type {key} not found", Logs.Important, key);
             }
 
             return database;

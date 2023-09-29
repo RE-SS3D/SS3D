@@ -2,10 +2,10 @@
     "name": "SS3D.Logging",
     "rootNamespace": "",
     "references": [
-        "GUID:0980e432586b1dd4c811ecb5a88e17e7",
         "GUID:ebcad7e3972724c43aa595f17cf4d103",
         "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
-        "GUID:92a1e40b8cccf8645adbdd275ac6371a"
+        "GUID:92a1e40b8cccf8645adbdd275ac6371a",
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

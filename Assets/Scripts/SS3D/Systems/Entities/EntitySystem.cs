@@ -195,7 +195,7 @@ namespace SS3D.Systems.Entities
 
             _spawnedPlayers.Add(entity);
 
-            Punpun.Information(this, "Spawning mind {createdMind} on {entity}", Logs.ServerOnly, createdMind.name, entity.name);
+            Log.Information(this, "Spawning mind {createdMind} on {entity}", Logs.ServerOnly, createdMind.name, entity.name);
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace SS3D.Systems.Entities
 
             if (players.Count == 0)
             {
-                Punpun.Information(this, "No players to spawn", Logs.ServerOnly);
+                Log.Information(this, "No players to spawn", Logs.ServerOnly);
             }
 
             foreach (Player ckey in players)

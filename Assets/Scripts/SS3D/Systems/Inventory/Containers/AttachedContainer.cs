@@ -282,7 +282,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
 			// This seem to be called correctly 2 move and none when moving inside, 2 remove and none when removing, 2 add and none when adding, 2 add 2 remove and none when transferring
-			Punpun.Information(this, "container change type is" + changeType.ToString());
+			Log.Information(this, "container change type is" + changeType.ToString());
 
 			if (changeType == ContainerChangeType.None) {
 				return;
