@@ -182,7 +182,7 @@ namespace SS3D.Systems.Inventory.UI
                     break;
 
                 default:
-                    Punpun.Error(this, $"Unknown or missing container type {container.Type} for this container {container}");
+                    Log.Error(this, $"Unknown or missing container type {container.Type} for this container {container}");
                     slot = null;
                     break;
             }
@@ -244,7 +244,7 @@ namespace SS3D.Systems.Inventory.UI
                         return i;     
                 }
             }
-            Punpun.Warning(this, "returning slot position 0, should not reach this point");
+            Log.Warning(this, "returning slot position 0, should not reach this point");
             return 0;
         }
 
@@ -290,7 +290,7 @@ namespace SS3D.Systems.Inventory.UI
             }
             if (slotOfType == null)
             {
-                Punpun.Warning(this, "no slots of type " + type.ToString() + ", returning index 0 ");
+                Log.Warning(this, "no slots of type " + type.ToString() + ", returning index 0 ");
                 return 0;
             }
             else

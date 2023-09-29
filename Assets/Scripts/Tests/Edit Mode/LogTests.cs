@@ -65,7 +65,7 @@ namespace EditorTests.Log
             _lastUnityConsoleMessage = "";
 
             string color = LogColors.GetLogColor(Logs.Generic);
-            Punpun.Information(this, "{simpleDictionary}", Logs.Generic, _simpleDictionaryToDisplay);
+            SS3D.Logging.Log.Information(this, "{simpleDictionary}", Logs.Generic, _simpleDictionaryToDisplay);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] {{\"one\":1,\"two\":2,\"three\":3}}");
             _lastUnityConsoleMessage = "";
@@ -83,7 +83,7 @@ namespace EditorTests.Log
             _lastUnityConsoleMessage = "";
 
             string color = LogColors.GetLogColor(Logs.Generic);
-            Punpun.Information(this, "{@simpleStructure}", Logs.Generic, _simpleStructureToDisplay);
+            SS3D.Logging.Log.Information(this, "{@simpleStructure}", Logs.Generic, _simpleStructureToDisplay);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] {{\"Name\":\"simple\",\"Count\":3,\"IsCool\":true,\"$type\":\"SimpleStructure\"}}");
             _lastUnityConsoleMessage = "";
@@ -98,7 +98,7 @@ namespace EditorTests.Log
             _lastUnityConsoleMessage = "";
 
             string color = LogColors.GetLogColor(Logs.Generic);
-            Punpun.Information(this, "{list}", Logs.Generic, _floatListToDisplay);
+            SS3D.Logging.Log.Information(this, "{list}", Logs.Generic, _floatListToDisplay);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] [0.4,0.222,4.7E-05,78789]");
             _lastUnityConsoleMessage = "";
@@ -113,43 +113,43 @@ namespace EditorTests.Log
             _lastUnityConsoleMessage = "";
 
             string color = LogColors.GetLogColor(Logs.Generic);
-            Punpun.Information(this, "hello there !", Logs.Generic);
+            SS3D.Logging.Log.Information(this, "hello there !", Logs.Generic);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.External);
-            Punpun.Information(this, "hello there !", Logs.External);
+            SS3D.Logging.Log.Information(this, "hello there !", Logs.External);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.ServerOnly);
-            Punpun.Information(this, "hello there !", Logs.ServerOnly);
+            SS3D.Logging.Log.Information(this, "hello there !", Logs.ServerOnly);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.ClientOnly);
-            Punpun.Information(this, "hello there !", Logs.ClientOnly);
+            SS3D.Logging.Log.Information(this, "hello there !", Logs.ClientOnly);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.None);
-            Punpun.Information(this, "hello there !", Logs.None);
+            SS3D.Logging.Log.Information(this, "hello there !", Logs.None);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.Important);
-            Punpun.Information(this, "hello there !", Logs.Important);
+            SS3D.Logging.Log.Information(this, "hello there !", Logs.Important);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";
 
             color = LogColors.GetLogColor(Logs.Physics);
-            Punpun.Information(this, "hello there !", Logs.Physics);
+            SS3D.Logging.Log.Information(this, "hello there !", Logs.Physics);
             while (_lastUnityConsoleMessage == "") continue;
             Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>LogTests</color>] hello there !");
             _lastUnityConsoleMessage = "";

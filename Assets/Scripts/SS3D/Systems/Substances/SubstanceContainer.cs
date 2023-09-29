@@ -96,7 +96,7 @@ namespace SS3D.Substances
         {
             if (_initialised)
             {
-                Punpun.Warning(this, "already initialised, returning");
+                Log.Warning(this, "already initialised, returning");
                 return;
             }
             _volume = volume;

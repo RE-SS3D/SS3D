@@ -211,16 +211,16 @@ namespace UDiscord
                 activityManager.SendInvite(485905734618447895, ActivityActionType.Join, "", (inviteUserResult) =>
                 {
                     Console.WriteLine("Invite User {0}", inviteUserResult);
-                    Punpun.Information(nameof(DiscordManager), "How is This Working >???", Logs.External);
+                    Log.Information(nameof(DiscordManager), "How is This Working >???", Logs.External);
                 });
 
                 if(res == Result.Ok)
                 {
-                    Punpun.Information(this, "Discord Status Is On!", Logs.External);
+                    Log.Information(this, "Discord Status Is On!", Logs.External);
                 }
                 else
                 {
-                    Punpun.Error(nameof(DiscordManager), "Discord Status Failed!", Logs.External);
+                    Log.Error(nameof(DiscordManager), "Discord Status Failed!", Logs.External);
                 }
             });
         }
@@ -230,7 +230,7 @@ namespace UDiscord
 
         void OnDisable()
         {
-            Punpun.Warning(nameof(DiscordManager), "Discord Shutdown after 10 seconds", Logs.External);
+            Log.Warning(nameof(DiscordManager), "Discord Shutdown after 10 seconds", Logs.External);
 
             Shutdown();
             discord?.Dispose();
