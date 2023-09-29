@@ -13,7 +13,13 @@ namespace SS3D.Systems.Tile
     {
         public Vector2Int chunkKey;
         public Vector3 originPosition;
-        public SavedTileSingleLocation[] savedTileSingleLocations;
-        public SavedTileCardinalLocation[] savedTileCardinalLocations;
+
+        /// <summary>
+        /// Super important to have it as a serialize reference as it allows for polymorphic serialization. 
+        /// TODO : Check if a third party library would allow for polymorphic serialization without using references.
+        /// It's not really bad, but the save files are bigger than what they could be.
+        /// </summary>
+        [SerializeReference]
+        public ISavedTileLocation[] savedTiles;
     }
 }

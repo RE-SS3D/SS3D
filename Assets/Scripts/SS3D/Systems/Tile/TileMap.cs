@@ -309,9 +309,7 @@ namespace SS3D.Systems.Tile
             foreach (var savedChunk in saveObject.savedChunkList)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
-                ISavedTileLocation[] singles = savedChunk.savedTileSingleLocations;
-                ISavedTileLocation[] cardinals = savedChunk.savedTileCardinalLocations;
-                ISavedTileLocation[] savedTiles = singles.Concat(cardinals).ToArray();
+                ISavedTileLocation[] savedTiles = savedChunk.savedTiles;
 
                 foreach (var savedTile in savedTiles)
                 {
