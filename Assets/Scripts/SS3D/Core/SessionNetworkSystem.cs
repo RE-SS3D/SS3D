@@ -35,15 +35,15 @@ namespace SS3D.Core
             switch (networkType)
             {
                 case NetworkType.DedicatedServer:
-                    Punpun.Information(this, "Hosting a new headless server on port {port}", Logs.Important, port);
+                    Log.Information(this, "Hosting a new headless server on port {port}", Logs.Important, port);
                     networkManager.ServerManager.StartConnection(port);
                     break;
                 case NetworkType.Client:
-                    Punpun.Information(this, "Joining server {serverAddress}:{port} as {ckey}", Logs.Important, serverAddress, port, ckey);
+                    Log.Information(this, "Joining server {serverAddress}:{port} as {ckey}", Logs.Important, serverAddress, port, ckey);
                     networkManager.ClientManager.StartConnection(serverAddress, port);
                     break;
                 case NetworkType.Host:
-                    Punpun.Information(this, "Hosting a new server on port {port}", Logs.Important, port);
+                    Log.Information(this, "Hosting a new server on port {port}", Logs.Important, port);
                     networkManager.ServerManager.StartConnection(port);
                     networkManager.ClientManager.StartConnection();
                     break;
@@ -69,11 +69,11 @@ namespace SS3D.Core
             NetworkManager networkManager = InstanceFinder.NetworkManager;
             if (networkManager == null)
             {
-                Punpun.Warning(this, "No NetworkManager found", Logs.Important);
+                Log.Warning(this, "No NetworkManager found", Logs.Important);
                 return;
             }
 
-            Punpun.Information(this, "Closing network session", Logs.Important);
+            Log.Information(this, "Closing network session", Logs.Important);
             networkManager.TransportManager.Transport.Shutdown();
         }
     }

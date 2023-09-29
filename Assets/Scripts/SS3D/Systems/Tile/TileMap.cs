@@ -1,6 +1,8 @@
 ﻿using FishNet;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
+using SS3D.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -300,13 +302,19 @@ namespace SS3D.Systems.Tile
             };
         }
 
-        public void Load(SavedTileMap saveObject)
+        public void Load([CanBeNull] SavedTileMap saveObject)
         {
+	        if (saveObject == null)
+	        {       
+                Log.Warning(this, "The intended save object is null");
+		        return;
+	        }
+
             Clear();
 
             TileSystem tileSystem = Subsystems.Get<TileSystem>();
 
-            foreach (var savedChunk in saveObject.savedChunkList)
+            foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
                 ISavedTileLocation[] savedTiles = savedChunk.savedTiles;
@@ -324,7 +332,7 @@ namespace SS3D.Systems.Tile
                 }
             }
 
-            foreach (var savedItem in saveObject.savedItemList)
+            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
             {
                 ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);

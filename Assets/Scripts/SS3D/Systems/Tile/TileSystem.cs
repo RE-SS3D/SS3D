@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Management;
 using SS3D.Logging;
 using System;
 using System.Collections;
@@ -15,8 +16,12 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class TileSystem : NetworkSystem
     {
-        public TileResourceLoader Loader { get; private set; }
+	    public const string SavePath = "/Tilemaps";
 
+	    public const string UnnamedMapName = "UnnamedMap";
+
+        public TileResourceLoader Loader { get; private set; }
+ 
         private TileMap _currentMap;
 
         [ServerOrClient]
@@ -27,64 +32,68 @@ namespace SS3D.Systems.Tile
         }
 
         [ServerOrClient]
-        private IEnumerator WaitForResourcesLoad()
+        private async UniTask WaitForResourcesLoad()
         {
-            while (!Loader.IsInitialized)
-            {
-                yield return null;
-            }
+	        await UniTask.WaitUntil(() => Loader.IsInitialized);
 
             Load();
         }
 
-        [ServerOrClient]
-        private void Setup()
+        [Server]
+        private async void Setup()
         {
-            Loader = GetComponent<TileResourceLoader>();
+	        Loader = GetComponent<TileResourceLoader>();
 
-            // Server only loads the map
-            if (IsServer)
-            {
-                CreateMap("Test map");
-                StartCoroutine(WaitForResourcesLoad());
-                Punpun.Information(this, "All tiles loaded successfully");
-            }
+	        // Server only loads the map
+	        if (!IsServer)
+	        {
+		        return;
+	        }
+
+	        CreateMap(UnnamedMapName);
+
+	        await WaitForResourcesLoad();
+
+            Log.Information(this, "All tiles loaded successfully");
         }
 
         [ServerOrClient]
         private void CreateMap(string mapName)
         {
-            if (_currentMap == null)
-            {
-                TileMap map = TileMap.Create(mapName);
-                map.transform.SetParent(transform);
-                _currentMap = map;
-            }
+	        if (_currentMap != null)
+	        {
+                Log.Warning(this, $"A map is already loaded. {mapName}");
+		        return;
+	        }
+
+			Log.Information(this, $"Creating new tilemap {mapName}");
+
+	        TileMap map = TileMap.Create(mapName);
+	        map.transform.SetParent(transform);
+	        _currentMap = map;
         }
 
         [ServerOrClient]
-        public GenericObjectSo GetAsset(string assetName)
-        {
-            return Loader.GetAsset(assetName);
-        }
+        public GenericObjectSo GetAsset(string assetName) => Loader.GetAsset(assetName);
 
         [Server]
         private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
-            if (genericObjectSo is TileObjectSo)
-            {
-                return _currentMap.PlaceTileObject((TileObjectSo)genericObjectSo, placePosition, dir, false, replaceExisting);
-            }
-            else if (genericObjectSo is ItemObjectSo)
-            {
-                _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), (ItemObjectSo)genericObjectSo);
-            }
+	        switch (genericObjectSo)
+	        {
+		        case TileObjectSo so:
+			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting);
+		        case ItemObjectSo so:
+			        _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
+			        break;
+	        }
 
-            return true;
+	        return true;
         }
 
+        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
-        [ServerRpc(RequireOwnership = false)] // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        [ServerRpc(RequireOwnership = false)]
         public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
@@ -97,16 +106,18 @@ namespace SS3D.Systems.Tile
             _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
         }
 
+        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
-        [ServerRpc(RequireOwnership = false)] // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        [ServerRpc(RequireOwnership = false)]
         public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition)
         {
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
             _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer);
         }
 
+        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
-        [ServerRpc(RequireOwnership = false)] // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        [ServerRpc(RequireOwnership = false)]
         public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition)
         {
             ItemObjectSo itemObjectSo = (ItemObjectSo)GetAsset(itemObjectSoName);
@@ -122,14 +133,20 @@ namespace SS3D.Systems.Tile
         [Server]
         public void Save()
         {
-            var mapSave = _currentMap.Save();
-            SaveSystem.SaveObject(mapSave);
+			Log.Information(this, $"Saving tilemap {_currentMap.name}");
+
+            SavedTileMap mapSave = _currentMap.Save();
+												    
+            SaveSystem.SaveObject(SavePath + "/" + _currentMap.name, mapSave);
         }
 
         [Server]
         public void Load()
         {
-            var mapSave = SaveSystem.LoadMostRecentObject<SavedTileMap>();
+            Log.Information(this, "Loading most recent tilemap");
+            
+	        SavedTileMap mapSave = SaveSystem.LoadMostRecentObject<SavedTileMap>(SavePath);
+
             _currentMap.Load(mapSave);
         }
 
@@ -138,7 +155,7 @@ namespace SS3D.Systems.Tile
         {
             _currentMap.Clear();
             Save();
-            Punpun.Warning(this, "Tilemap resetted. Existing savefile has been wiped");
+            Log.Warning(this, "Tilemap resetted. Existing savefile has been wiped");
         }
     }
 }

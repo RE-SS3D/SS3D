@@ -13,7 +13,7 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
     /// Custom inspector for the log settings, allow to show the list of namespaces in a convenient manner,
     /// as well as resetting easily all namespaces logging level. 
     /// </summary>
-    [CustomEditor(typeof(LogSetting))]
+    [CustomEditor(typeof(LogSettings))]
     public class LogSettingsInspectorEditor : Editor
     {
         public override void OnInspectorGUI()

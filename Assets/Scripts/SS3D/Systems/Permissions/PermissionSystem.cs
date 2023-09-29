@@ -34,7 +34,7 @@ namespace SS3D.Systems.Permissions
         /// </summary>
         private const string ConfigFileName = "permissions.txt";
 
-        private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + ConfigFileName;
+        private static readonly string PermissionsPath = Paths.GetPath(GamePaths.Config, true) + "/" + ConfigFileName;
 
         protected override void OnStart()
         {
@@ -72,7 +72,7 @@ namespace SS3D.Systems.Permissions
 
             if (string.IsNullOrEmpty(ckey))
             {
-                Punpun.Warning(this, "Ckey null while trying to get user role");
+                Log.Warning(this, "Ckey null while trying to get user role");
 
                 userPermission = ServerRoleTypes.None;
                 return false;
@@ -125,7 +125,7 @@ namespace SS3D.Systems.Permissions
 
                 _userPermissions.Add(ckey, role);
 
-                Punpun.Information(this, "Found user permission {ckey} as {role}", Logs.ServerOnly, ckey, role);
+                Log.Information(this, "Found user permission {ckey} as {role}", Logs.ServerOnly, ckey, role);
             }
 
             HasLoadedPermissions = true;
@@ -139,7 +139,7 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            Punpun.Information(this, "Permissions file not found, creating a new one", Logs.ServerOnly);
+            Log.Information(this, "Permissions file not found, creating a new one", Logs.ServerOnly);
             File.WriteAllText(PermissionsPath, string.Empty);
         }
 

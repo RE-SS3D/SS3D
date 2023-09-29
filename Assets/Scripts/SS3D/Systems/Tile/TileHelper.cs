@@ -12,7 +12,7 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public static class TileHelper
     {
-        private static TileLayer[] tileLayers;
+        private static TileLayer[] TileLayers;
 
         public static Direction GetNextDir(Direction dir)
         {
@@ -33,11 +33,11 @@ namespace SS3D.Systems.Tile
 
         public static TileLayer[] GetTileLayers()
         {
-            if (tileLayers == null)
+            if (TileLayers == null)
             {
-                tileLayers = (TileLayer[])Enum.GetValues(typeof(TileLayer));
+                TileLayers = (TileLayer[])Enum.GetValues(typeof(TileLayer));
             }
-            return tileLayers;
+            return TileLayers;
         }
 
         public static Tuple<int, int> ToCardinalVector(Direction direction)
