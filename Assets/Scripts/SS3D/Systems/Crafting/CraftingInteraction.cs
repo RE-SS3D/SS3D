@@ -66,7 +66,7 @@ namespace SS3D.Systems.Crafting
         {
             if (ItemsToConsume == null)
             {
-                Punpun.Error(this, "List of items to consume is null, call CanInteract first.");
+                Log.Error(this, "List of items to consume is null, call CanInteract first.");
                 return;
             }
 

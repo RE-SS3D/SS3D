@@ -116,7 +116,7 @@ namespace SS3D.Systems.Inventory.Items
 
             if(!Enum.TryParse(itemName, out ItemId id))
             {
-                Punpun.Error(this, $"id with name {itemName} not present in ItemId enums");
+                Log.Error(this, $"id with name {itemName} not present in ItemId enums");
                 return;
             }
 
