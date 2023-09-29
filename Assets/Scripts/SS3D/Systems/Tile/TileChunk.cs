@@ -172,7 +172,8 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public SavedTileChunk Save()
         {
-            List<ISavedTileLocation> tileObjectSaveObjectList = new();
+            List<SavedTileSingleLocation> SavedTileSingleLocations = new();
+            List<SavedTileCardinalLocation> savedTileCardinalLocations = new();
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
@@ -181,17 +182,29 @@ namespace SS3D.Systems.Tile
                     for (int y = 0; y < ChunkSize; y++)
                     {
                         ITileLocation tileLocation = GetTileLocation(layer, x, y);
-                        if (!tileLocation.IsFullyEmpty())
+                        if (tileLocation.IsFullyEmpty())
                         {
-                            tileObjectSaveObjectList.Add(tileLocation.Save());
+                            continue;
                         }
+                        switch (tileLocation)
+                        {
+                            case SingleTileLocation singleTileLocation:
+                                SavedTileSingleLocations.Add((SavedTileSingleLocation)singleTileLocation.Save());
+                                break;
+                            case CardinalTileLocation cardinalTileLocation:
+                                savedTileCardinalLocations.Add((SavedTileCardinalLocation)cardinalTileLocation.Save());
+                                break;
+
+                        }
+                       
                     }
                 }
             }
 
             SavedTileChunk saveObject = new SavedTileChunk
             {
-                tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
+                savedTileSingleLocations = SavedTileSingleLocations.ToArray(),
+                savedTileCardinalLocations = savedTileCardinalLocations.ToArray(),
                 originPosition = _originPosition,
                 chunkKey = _chunkKey,
             };

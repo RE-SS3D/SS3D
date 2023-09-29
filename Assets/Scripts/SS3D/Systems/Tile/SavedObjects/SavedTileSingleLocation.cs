@@ -11,8 +11,15 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public class SavedTileSingleLocation : ISavedTileLocation
     {
-        
+
+        [SerializeField]
         public SavedPlacedTileObject placedSaveObject;
+
+        [SerializeField]
+        public int x;
+
+        [SerializeField]
+        public int y;
 
         public SavedTileSingleLocation(SavedPlacedTileObject placedSaveObject, Vector2Int location, TileLayer layer)
         {
@@ -23,8 +30,8 @@ namespace SS3D.Systems.Tile
 
         public Vector2Int Location
         {
-            get;
-            set;
+            get => new Vector2Int(x,y);
+            set { x = value.x; y = value.y; }
         }
 
         public TileLayer Layer

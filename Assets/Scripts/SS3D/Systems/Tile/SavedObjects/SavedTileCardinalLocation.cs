@@ -8,7 +8,14 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public class SavedTileCardinalLocation : ISavedTileLocation
     {
+        [SerializeField]
         List<SavedPlacedTileObject> _placedSaveObjects = new List<SavedPlacedTileObject>();
+
+        [SerializeField]
+        public int x;
+
+        [SerializeField]
+        public int y;
 
         public SavedTileCardinalLocation(List<SavedPlacedTileObject> placedSaveObjects, Vector2Int location, TileLayer layer)
         {
@@ -17,21 +24,22 @@ namespace SS3D.Systems.Tile
             Layer = layer;
         }
 
+
+        public List<SavedPlacedTileObject> GetPlacedObjects()
+        {
+            return _placedSaveObjects;
+        }
+
         public Vector2Int Location
         {
-            get;
-            set;
+            get => new Vector2Int(x, y);
+            set { x = value.x; y = value.y; }
         }
 
         public TileLayer Layer
         {
             get;
             set;
-        }
-
-        public List<SavedPlacedTileObject> GetPlacedObjects()
-        {
-            return _placedSaveObjects;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace SS3D.Systems.Tile
     {
         public Vector2Int chunkKey;
         public Vector3 originPosition;
-        public ISavedTileLocation[] tileObjectSaveObjectArray;
+        public SavedTileSingleLocation[] savedTileSingleLocations;
+        public SavedTileCardinalLocation[] savedTileCardinalLocations;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -41,7 +42,7 @@ namespace SS3D.Systems.Tile
 
         public bool IsFullyEmpty()
         {
-            return _cardinalPlacedTileObject.Where(x => x != null).Any();
+            return _cardinalPlacedTileObject.Where(x => x != null).Count() == 0;
         }
 
         public ISavedTileLocation Save()
