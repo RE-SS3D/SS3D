@@ -287,7 +287,7 @@ namespace SS3D.Systems.Entities
 			int index = _spawnedPlayers.FindIndex(x => x == oldEntity);
             if (index == -1)
             {
-                Punpun.Warning(this, $"could not find entity {oldEntity} in the list of spawned entity controlled by players");
+                Log.Warning(this, $"could not find entity {oldEntity} in the list of spawned entity controlled by players");
                 return false;
             }
 			_spawnedPlayers[index] = newEntity;
