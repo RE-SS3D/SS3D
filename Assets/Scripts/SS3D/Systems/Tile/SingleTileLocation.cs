@@ -6,7 +6,8 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Represents a single grid in the tilemap. Can contain PlacedTileObject when a prefab is placed.
+    /// Represents a location in the tilemap, at a certain layer. 
+    /// Can contain a single PlacedTileObject when a prefab is placed.
     /// </summary>
     public class SingleTileLocation : ITileLocation
     {

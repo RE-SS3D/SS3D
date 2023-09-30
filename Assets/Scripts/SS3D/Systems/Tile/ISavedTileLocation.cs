@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Interface for saving tile locations.
+/// </summary>
 public interface ISavedTileLocation
 {
     public List<SavedPlacedTileObject> GetPlacedObjects();

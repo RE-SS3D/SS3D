@@ -6,14 +6,23 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+    /// <summary>
+    /// Represent a Tile location able to contain up to 4 tile objects, in each cardinal directions.
+    /// </summary>
     public class CardinalTileLocation : ITileLocation
     {
         private TileLayer _layer;
         private int _x;
         private int _y;
 
+        /// <summary>
+        /// the four potential placed tile objects. 0 is for north, 1 is for east, 2 for south, 3 for west.
+        /// </summary>
         private PlacedTileObject[] _cardinalPlacedTileObject = new PlacedTileObject[4];
 
+        /// <summary>
+        /// The layer this location is on.
+        /// </summary>
         public TileLayer Layer => _layer;
 
         public CardinalTileLocation(TileLayer layer, int x, int y)
@@ -27,7 +36,7 @@ namespace SS3D.Systems.Tile
         {
             for (int i = 0; i < 4; i++)
             {
-                TryClearPlacedObject((Direction)(2*i));
+                TryClearPlacedObject(IndexToDir(i));
             }
         }
 
@@ -37,7 +46,7 @@ namespace SS3D.Systems.Tile
             {
                 return false;
             }
-            return _cardinalPlacedTileObject[(int)direction / 2] == null;
+            return _cardinalPlacedTileObject[DirToIndex(direction)] == null;
         }
 
         public bool IsFullyEmpty()
@@ -63,7 +72,7 @@ namespace SS3D.Systems.Tile
                 return false;
             }
 
-            PlacedTileObject placedObject = _cardinalPlacedTileObject[(int) direction / 2];
+            PlacedTileObject placedObject = _cardinalPlacedTileObject[DirToIndex(direction)];
             if (placedObject != null)
             {
                 placedObject.DestroySelf();
@@ -81,7 +90,7 @@ namespace SS3D.Systems.Tile
                 return false;
             }
 
-            PlacedTileObject currentPlacedObject = _cardinalPlacedTileObject[(int) direction / 2];
+            PlacedTileObject currentPlacedObject = _cardinalPlacedTileObject[DirToIndex(direction)];
             if (currentPlacedObject != null)
             {
                 placedObject = currentPlacedObject;
@@ -99,8 +108,24 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                _cardinalPlacedTileObject[(int)direction / 2] = tileObject;
+                _cardinalPlacedTileObject[DirToIndex(direction)] = tileObject;
             }
+        }
+
+        /// <summary>
+        /// Tie an index array to each cardinal direction.
+        /// </summary>
+        private int DirToIndex(Direction direction)
+        {
+            return (int)direction / 2;
+        }
+
+        /// <summary>
+        /// Tie an index array to each cardinal direction.
+        /// </summary>
+        private Direction IndexToDir(int i)
+        {
+            return (Direction) (i*2);
         }
     }
 }

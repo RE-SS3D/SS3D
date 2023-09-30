@@ -94,6 +94,9 @@ namespace SS3D.Systems.Tile
             return (int) dir == 0 || (int) dir == 2 || (int) dir == 4 || (int) dir == 6 ;
         }
 
+        /// <summary>
+        /// Create the right type of tile location depending on the layer it'll be on.
+        /// </summary>
         public static ITileLocation CreateTileLocation(TileLayer layer, int x, int y)
         {
             switch (layer)

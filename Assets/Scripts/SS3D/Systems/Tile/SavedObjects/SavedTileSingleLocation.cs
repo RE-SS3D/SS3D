@@ -6,32 +6,33 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Saved location used for reconstructing a Tile location and what it contains.
+    /// Saved location used for reconstructing a Tile location and what it contains. 
+    /// Implementation of ISavedTileLocation specifically for single object tile locations.
     /// </summary>
     [Serializable]
     public class SavedTileSingleLocation : ISavedTileLocation
     {
 
         [SerializeField]
-        public SavedPlacedTileObject placedSaveObject;
+        private SavedPlacedTileObject _placedSaveObject;
 
         [SerializeField]
-        public int x;
+        private int _x;
 
         [SerializeField]
-        public int y;
+        private int _y;
 
         public SavedTileSingleLocation(SavedPlacedTileObject placedSaveObject, Vector2Int location, TileLayer layer)
         {
-            this.placedSaveObject = placedSaveObject;
+            _placedSaveObject = placedSaveObject;
             Location = location;
             Layer = layer;
         }
 
         public Vector2Int Location
         {
-            get => new Vector2Int(x,y);
-            set { x = value.x; y = value.y; }
+            get => new Vector2Int(_x,_y);
+            set { _x = value.x; _y = value.y; }
         }
 
         public TileLayer Layer
@@ -42,12 +43,12 @@ namespace SS3D.Systems.Tile
 
         public SavedPlacedTileObject GetPlacedObject(Direction dir = Direction.North)
         {
-            return placedSaveObject;
+            return _placedSaveObject;
         }
 
         public List<SavedPlacedTileObject> GetPlacedObjects()
         {
-            return new List<SavedPlacedTileObject>() { placedSaveObject };
+            return new List<SavedPlacedTileObject>() { _placedSaveObject };
         }
     }
 }

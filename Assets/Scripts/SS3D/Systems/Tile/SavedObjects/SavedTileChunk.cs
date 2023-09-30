@@ -6,7 +6,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// SaveObject used by chunks.
+    /// SaveObject used by chunks, containing their origin position, their key and a list of saved tiles in the chunk.
     /// </summary>
     [Serializable]
     public class SavedTileChunk
