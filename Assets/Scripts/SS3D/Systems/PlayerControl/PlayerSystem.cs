@@ -166,7 +166,7 @@ namespace SS3D.Systems.PlayerControl
 
             if (playedHasConnectedAlready)
             {
-                Punpun.Information(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
+                Log.Information(this, "Player match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
             }
             else
             {
@@ -179,7 +179,7 @@ namespace SS3D.Systems.PlayerControl
 
                 if (conn.IsHost && PermissionSettings.AddServerOwnerPermissionToServerHost)
                 {
-                    Punpun.Information(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
+                    Log.Information(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
 
                     Subsystems.Get<PermissionSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
                 }

@@ -95,7 +95,7 @@ namespace SS3D.Permissions
         {
             ServerRoleTypes previousRole = _userPermissions.TryGetValue(ckey, out ServerRoleTypes permission) ? permission : ServerRoleTypes.None;
 
-            Punpun.Information(this, $"Updating user {ckey} role from {previousRole} to {role}");
+            Log.Information(this, $"Updating user {ckey} role from {previousRole} to {role}");
 
             _userPermissions[ckey] = role;
 
