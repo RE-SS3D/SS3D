@@ -6,7 +6,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Implementation of ISavedTileLocation for saving cardinal tile locations.
+    /// Implementation of ISavedTileLocation for saving cardinal tile locations
     /// </summary>
     [Serializable]
     public class SavedTileCardinalLocation : ISavedTileLocation

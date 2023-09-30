@@ -4,6 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Interface for saving tile locations.
+/// Fields in classes implementing this interface should be public, at least the one that should be serialized.
 /// </summary>
 public interface ISavedTileLocation
 {
