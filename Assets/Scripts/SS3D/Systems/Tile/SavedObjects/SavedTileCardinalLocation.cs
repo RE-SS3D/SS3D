@@ -12,13 +12,13 @@ namespace SS3D.Systems.Tile
     public class SavedTileCardinalLocation : ISavedTileLocation
     {
         [SerializeField]
-        private List<SavedPlacedTileObject> _placedSaveObjects = new List<SavedPlacedTileObject>();
+        public List<SavedPlacedTileObject> _placedSaveObjects = new List<SavedPlacedTileObject>();
 
         [SerializeField]
-        private int x;
+        public int x;
 
         [SerializeField]
-        private int y;
+        public int y;
 
         public Vector2Int Location
         {

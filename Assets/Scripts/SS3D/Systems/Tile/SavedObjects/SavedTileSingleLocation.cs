@@ -14,13 +14,13 @@ namespace SS3D.Systems.Tile
     {
 
         [SerializeField]
-        private SavedPlacedTileObject _placedSaveObject;
+        public SavedPlacedTileObject _placedSaveObject;
 
         [SerializeField]
-        private int _x;
+        public int _x;
 
         [SerializeField]
-        private int _y;
+        public int _y;
 
         public SavedTileSingleLocation(SavedPlacedTileObject placedSaveObject, Vector2Int location, TileLayer layer)
         {
