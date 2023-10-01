@@ -14,6 +14,12 @@
       },
       "url": "https://package.openupm.com"
     },
+    "com.coimbrastudios.internal": {
+      "version": "file:com.coimbrastudios.internal",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.cysharp.unitask": {
       "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
       "depth": 0,

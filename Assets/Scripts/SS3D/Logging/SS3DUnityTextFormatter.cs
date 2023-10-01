@@ -17,9 +17,10 @@ namespace SS3D.Logging
     /// </summary>
     public class Ss3DUnityTextFormatter : ITextFormatter
     {
+        private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
+
         private readonly MessageTemplate _outputTemplate;
         private readonly IFormatProvider _formatProvider;
-        private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
 
         public Ss3DUnityTextFormatter(string outputTemplate, IFormatProvider formatProvider = null)
         {
@@ -28,7 +29,7 @@ namespace SS3D.Logging
         }
 
         /// <summary>
-        /// Format the logEvent to look nice in Unity console. 
+        /// Format the logEvent to look nice in Unity console.
         /// </summary>
         /// <param name="logEvent"></param>
         /// <param name="output"></param>
@@ -52,7 +53,7 @@ namespace SS3D.Logging
 
                 if (pt.PropertyName == OutputProperties.ExceptionPropertyName)
                 {
-                    output.Write(logEvent.Exception == null ? "" : logEvent.Exception + Environment.NewLine);
+                    output.Write(logEvent.Exception == null ? string.Empty : logEvent.Exception + Environment.NewLine);
 
                     continue;
                 }
@@ -96,7 +97,6 @@ namespace SS3D.Logging
         /// <param name="properties"> The properties in the message.</param>
         /// <param name="output"> The output.</param>
         /// <param name="format"></param>
-        /// <param name="formatProvider"></param>
         private void RenderMessageTemplate(MessageTemplate messageTemplate, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output, string format = null)
         {
             foreach (MessageTemplateToken token in messageTemplate.Tokens)
@@ -110,9 +110,11 @@ namespace SS3D.Logging
 
                 PropertyToken pt = (PropertyToken)token;
 
-                //InfoLog property is only used to color SourceContext, see RenderSourceContext method.
+                // InfoLog property is only used to color SourceContext, see RenderSourceContext method.
                 if (pt.PropertyName == "InfoLog")
+                {
                     continue;
+                }
 
                 RenderPropertyToken(pt, properties, output);
             }
