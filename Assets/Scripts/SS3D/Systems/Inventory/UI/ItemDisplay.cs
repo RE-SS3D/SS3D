@@ -143,5 +143,14 @@ namespace SS3D.Systems.Inventory.UI
             ItemImage.color = imageColor;
         }
 
-    }
+		public void MakeVisible(bool visible)
+		{
+			Image[] images = GetComponentsInChildren<Image>();
+			foreach (Image image in images)
+			{
+				image.enabled = visible;
+			}
+		}
+
+	}
 }

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff3f0ffef787c464d8f721719a55afa8, type: 3}
   m_Name: LogSettings
   m_EditorClassIdentifier: 
+  _preload: 1
+  _type: 2
   SS3DNameSpaces:
   - _name: SS3D.Attributes
     _level: 0

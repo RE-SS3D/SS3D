@@ -40,18 +40,12 @@ namespace SS3D.Systems.Inventory.Items
         [FormerlySerializedAs("Weight")]
         [SerializeField] private float _weight;
 
-        [FormerlySerializedAs("Size")]
-        [SerializeField] private Vector2Int _size;
-
         [FormerlySerializedAs("Traits")]
         [SerializeField] private List<Trait> _startingTraits;
 
         [SerializeField] private Rigidbody _rigidbody;
 
         private Sprite _sprite;
-
-        [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
-        public GameObject Prefab;
 
         [Header("Attachment settings")]
 
@@ -68,30 +62,28 @@ namespace SS3D.Systems.Inventory.Items
         private readonly SyncList<Trait> _traits = new();
 
         [SyncVar]
-        private Container _container;
+        private AttachedContainer _container;
 
         public string Name => _name;
         public ItemId ItemId { get; set; }
-        public Vector2Int Size => _size;
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
-        public Container Container => _container;
+        public AttachedContainer Container => _container;
 
         private bool _initialised = false;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
         /// </summary>
-        public void Init(string itemName, float weight, Vector2Int size,  List<Trait> traits)
+        public void Init(string itemName, float weight,  List<Trait> traits)
         {
             if (_initialised)
             {
-                Punpun.Error(this, "Item already initialised, returning");
+                Log.Error(this, "Item already initialised, returning");
                 return;
             }
             _name = itemName ?? string.Empty;
             _weight = weight;
-            _size = size;
             _traits.AddRange(traits);
             _initialised = true;
         }
@@ -144,7 +136,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void Delete()
         {
-            SetContainer(null);
+            Container.RemoveItem(this);
 
             if (GameObject != null)
             {
@@ -165,7 +157,6 @@ namespace SS3D.Systems.Inventory.Items
             var itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
-                Punpun.Debug(this, "item {item} frozen", Logs.Generic, Name);
                 itemCollider.enabled = false;
             }
         }
@@ -243,7 +234,7 @@ namespace SS3D.Systems.Inventory.Items
             {
                 traits += trait.Name + " ";
             }
-            return $"{Name}, size = {Size}, weight = {_weight}, traits = {traits}, container is {_container?.ContainerName}";
+            return $"{Name}, weight = {_weight}, traits = {traits}, container is {_container?.ContainerName}";
         }
 
         /// <summary>
@@ -259,23 +250,12 @@ namespace SS3D.Systems.Inventory.Items
         /// Modify the container of this item, can pass null to make this item not depending on any container.
         /// </summary>
         [Server]
-        public void SetContainer(Container newContainer)
+        public void SetContainer(AttachedContainer newContainer)
         {
             if (_container == newContainer)
             {
                 return;
             }
-
-            if (_container != null && _container.ContainsItem(this))
-            {
-                Container.RemoveItem(this);
-            }
-
-            if (newContainer != null && !newContainer.ContainsItem(this))
-            {
-                newContainer.AddItem(this);
-            }
-
             _container = newContainer;
         }
 
@@ -319,7 +299,7 @@ namespace SS3D.Systems.Inventory.Items
             }
             catch (NullReferenceException)
             {
-                Punpun.Warning(this, "Can't generate icon for " + name + ".");
+                Log.Warning(this, "Can't generate icon for " + name + ".");
                 icon = null;
             }
             // Return stored items back to their parents
@@ -332,26 +312,6 @@ namespace SS3D.Systems.Inventory.Items
         }
 
         /// <summary>
-        /// Check if size is correctly defined, and if not set it as (1,1).
-        /// </summary>
-        [ServerOrClient]
-        public void ValidateSize()
-        {
-            // Items can't have no size
-            if (Size.x <= 0)
-            {
-                _size = new Vector2Int(1, Size.y);
-                Punpun.Warning(this, "item size in x lesser or equal zero, reverting it to 1");
-            }
-
-            if (Size.y <= 0)
-            {
-                _size = new Vector2Int(Size.x, 1);
-                Punpun.Warning(this, "item size in y lesser or equal zero, reverting it to 1");
-            }
-        }
-
-        /// <summary>
         /// Add a new trait to this and sync it
         /// </summary>
         [Server]
@@ -359,7 +319,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             if (_traits.Contains(trait))
             {
-                Punpun.Warning(this, "item already contains trait {trait}", Logs.Generic, trait.Name);
+                Log.Warning(this, "item already contains trait {trait}", Logs.Generic, trait.Name);
                 return;
             }
             _traits.Add(trait);

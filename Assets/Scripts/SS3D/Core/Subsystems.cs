@@ -53,7 +53,7 @@ namespace SS3D.Core
             string message = $"Couldn't find subsystem of {typeof(T).Name} in the scene";
 
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Punpun.Error(typeof(Subsystems), message, Logs.Important);
+            Log.Error(typeof(Subsystems), message, Logs.Important);
 
             return null;
         }

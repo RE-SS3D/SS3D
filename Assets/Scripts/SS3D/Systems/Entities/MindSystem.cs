@@ -100,7 +100,7 @@ namespace SS3D.Systems.Entities
         /// <param name="origin"></param>
         /// <param name="target"></param>
         [Server]
-        private void SwapMinds(Entity origin, Entity target)
+        public void SwapMinds(Entity origin, Entity target)
         {
             Mind originMind = origin.Mind;
             Mind targetMind = target.Mind;

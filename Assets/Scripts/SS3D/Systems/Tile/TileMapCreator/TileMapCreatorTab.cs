@@ -14,7 +14,7 @@ namespace SS3D.Systems.Tile.UI
     {
         private Image _image;
         private GenericObjectSo _genericObjectSo;
-        private TileMapCreator _menu;
+        private TileMapCreator.TileMapCreator _menu;
         
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SS3D.Systems.Tile.UI
             transform.localScale = Vector3.one;
 
             GetComponentInChildren<TMP_Text>().text = nameString;
-            _menu = GetComponentInParent<TileMapCreator>();
+            _menu = GetComponentInParent<TileMapCreator.TileMapCreator>();
             GetComponent<Button>().onClick.AddListener(OnClick);
         }
 

@@ -38,7 +38,7 @@ namespace SS3D.Systems.Inventory.Containers
         public override void OnStartClient()
         {
             base.OnStartClient();
-			if (!IsOwner) { return; }
+            if (!IsOwner) { return; }
             SetupView();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -67,16 +67,6 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            Hands hands = GetComponent<Hands>();
-            foreach (Entity observer in container.Container.ObservingPlayers)
-            {
-                // checks if the container is already viewed by another entity
-                if (HasContainer(container) && observer != hands)
-                {
-                    return;
-                }
-            }
-
             container.ContainerInteractive.SetOpenState(state);
         }
 
@@ -97,15 +87,14 @@ namespace SS3D.Systems.Inventory.Containers
         [TargetRpc]
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
-			OnContainerOpened?.Invoke(container);
-		}
+            OnContainerOpened?.Invoke(container);
+        }
 
         /// <summary>
         /// Make this inventory open an container.
         /// </summary>
         public void ShowContainerUI(AttachedContainer attachedContainer)
         {
-            attachedContainer.Container.AddObserver(GetComponent<Entity>());
             _displayedContainers.Add(attachedContainer);
             SetOpenState(attachedContainer.gameObject, true);
             NetworkConnection client = Owner;
@@ -120,7 +109,6 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void CloseContainerUI(AttachedContainer container)
         {
-            container.Container.RemoveObserver(GetComponent<Entity>());
             if (_displayedContainers.Remove(container))
             {
                 Debug.Log("client call remove");
@@ -167,8 +155,8 @@ namespace SS3D.Systems.Inventory.Containers
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
-			OnContainerClosed?.Invoke(container);
-		}
+            OnContainerClosed?.Invoke(container);
+        }
 
     }
 }

@@ -1,4 +1,4 @@
-using SS3D.Systems.Inventory.Containers;
+﻿using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
@@ -56,12 +56,12 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
-            if (!_container.Container.Empty)
+            if (!_container.Empty)
             {
                 return;
             }
 
-            if (!_container.Container.CanContainItem(display.Item))
+            if (!_container.CanContainItem(display.Item))
             {
                 return;
             }
@@ -72,9 +72,9 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-                display.ShouldDrop = true;
-            ItemDisplay.Item = display.Item;
-            Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
+            display.ShouldDrop = true;
+			display.MakeVisible(false);
+            Inventory.ClientTransferItem(display.Item, Vector2Int.zero, Container);
         }
 
         /// <summary>
@@ -82,9 +82,10 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         private void UpdateDisplay()
         {
-            var item = _container.Container.Items.FirstOrDefault();
-            ItemDisplay.Item = item;
-        }
+            var item = _container.Items.FirstOrDefault();
+			ItemDisplay.Item = item;
+			ItemDisplay.MakeVisible(true);
+		}
 
         /// <summary>
         /// UpdateContainer modify the container that this slot display, replacing the old one with newContainer.
@@ -98,14 +99,14 @@ namespace SS3D.Systems.Inventory.UI
 
             if (_container != null)
             {
-                _container.Container.OnContentsChanged -= ContainerContentsChanged;
+                _container.OnContentsChanged -= ContainerContentsChanged;
             }
 
-            newContainer.Container.OnContentsChanged += ContainerContentsChanged;
+            newContainer.OnContentsChanged += ContainerContentsChanged;
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerContentsChanged(AttachedContainer _, Item oldItem, Item newItem, ContainerChangeType type)
         {
             if (type != ContainerChangeType.Move)
             {
@@ -117,10 +118,10 @@ namespace SS3D.Systems.Inventory.UI
         {
             Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0, 0));
 
-			if(ContainerType == ContainerType.Hand)
-			{
-				Inventory.ActivateHand(_container);
-			}   
+            if(ContainerType == ContainerType.Hand)
+            {
+                Inventory.ActivateHand(_container);
+            }   
         }
 
         public GameObject GetCurrentGameObjectInSlot()

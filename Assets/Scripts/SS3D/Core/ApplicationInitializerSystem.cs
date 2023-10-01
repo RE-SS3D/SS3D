@@ -4,6 +4,7 @@ using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using SS3D.Data;
 using SS3D.Data.Enums;
+using SS3D.Data.Management;
 using SS3D.Logging;
 using SS3D.SceneManagement;
 using UDiscord;
@@ -35,7 +36,10 @@ namespace SS3D.Core
                 sceneToLoad = Scenes.Launcher;
             }                                  
 
+            // This call is async and not awaited. Hence the pragma disable.
+            #pragma warning disable CS4014
             Scene.LoadAsync(sceneToLoad);
+            #pragma warning restore CS4014
         }
 
         /// <summary>
@@ -43,9 +47,11 @@ namespace SS3D.Core
         /// </summary>
         public void InitializeApplication()
         {
-            Punpun.Information(this, "Initializing application", Logs.Important);
+            Log.Information(this, "Initializing application", Logs.Important);
 
             DOTween.Init();
+
+			SaveSystem.Initialize();
 
             InitializeDiscordIntegration();
             InitializeAssetData();
@@ -103,7 +109,7 @@ namespace SS3D.Core
         /// </summary>
         private void InitializeNetworkSession()
         {
-            Punpun.Information(this, "Initializing network session", Logs.Important);
+            Log.Information(this, "Initializing network session", Logs.Important);
 
             SessionNetworkSystem sessionNetworkSystem = Subsystems.Get<SessionNetworkSystem>();
             sessionNetworkSystem.InitializeNetworkSession();
