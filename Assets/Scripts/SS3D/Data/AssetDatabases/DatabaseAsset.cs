@@ -40,9 +40,9 @@ namespace SS3D.Data.AssetDatabases
             return asset.Get<Sprite>();
         }
 
-        public static implicit operator LogSetting(DatabaseAsset asset)
+        public static implicit operator LogSettings(DatabaseAsset asset)
         {
-            return asset.Get<LogSetting>();
+            return asset.Get<LogSettings>();
 
         }
     }

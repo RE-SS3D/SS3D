@@ -12,6 +12,7 @@ using SS3D.Logging;
 using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Data.Generated;
+using Log = Serilog.Log;
 
 
 namespace SS3D.Core
@@ -28,7 +29,7 @@ namespace SS3D.Core
         private static readonly string LogFolderPath;
         private static bool IsInitialized;
 
-        private static readonly LogSettings Settings;
+        private static LogSettings Settings;
 
         static LogManager()
         {
@@ -41,7 +42,7 @@ namespace SS3D.Core
             if (IsInitialized) return;
             IsInitialized = true;
 
-            settings = SettingsId.LogSettings;
+            Settings = SettingsId.LogSettings;
 
             var configuration = new LoggerConfiguration();
 
