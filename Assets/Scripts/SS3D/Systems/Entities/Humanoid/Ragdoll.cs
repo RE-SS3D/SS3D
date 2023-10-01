@@ -1,5 +1,5 @@
 ﻿using FishNet.Object;
-using SS3D.Core;
+using FishNet.Object.Synchronizing;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -19,13 +19,16 @@ namespace SS3D.Systems.Entities.Humanoid
 		private HumanoidLivingController _humanoidLivingController;
 		private CharacterController _characterController;
 		private Transform[] _ragdollParts;
-		private float _knockDownEnd;
 		private float _elapsedResetBonesTime;
 		/// <summary>
 		/// If knockdown is going to expire
 		/// </summary>
-		private bool _isKnockDownTimed;
-		public bool IsKnockedDown { get; private set; }
+		[SyncVar]
+		private bool _isKnockdownTimed;
+		[SyncVar]
+		private float _knockdownTimer;
+		[SyncVar(OnChange = nameof(Test))]
+		public bool IsKnockedDown;
 		[SerializeField]
 		private string _standUpFaceUpStateName;
 		[SerializeField]
@@ -35,6 +38,19 @@ namespace SS3D.Systems.Entities.Humanoid
 		private AnimationClip _standUpFaceUpClip;
 		[SerializeField]
 		private AnimationClip _standUpFaceDownClip;
+
+		private void Test(bool prev, bool next, bool asServer)
+		{
+			UnityEngine.Debug.Log("New _isKnockedDown: " + next + " Prev: " + prev + " isServer: " + IsServer);
+			if (next)
+			{
+				Knockdown();
+			}
+			else
+			{
+				Recover();
+			}
+		}
 
 		private enum RagdollState
 		{
@@ -58,6 +74,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
 		private void Start()
 		{
+			_knockdownTimer = 0;
 			_character = ArmatureRoot.parent;
 			_hips = ArmatureRoot.GetChild(0);
 			_animator = _character.GetComponent<Animator>();
@@ -81,7 +98,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		{
 			if ((Input.GetKeyDown(KeyCode.Y)) && (IsOwner))
 			{
-				Knockdown(1f, true);
+				Knockdown(1);
 			}
 			
 			switch (_currentState)
@@ -109,9 +126,13 @@ namespace SS3D.Systems.Entities.Humanoid
 		private void RagdollBehavior()
 		{
 			AlignToHips();
-			if ((IsKnockedDown) && (Time.time > _knockDownEnd) && (_isKnockDownTimed))
+			if (_isKnockdownTimed)
 			{
-				BonesReset();
+				_knockdownTimer -= Time.deltaTime;
+				if ((IsKnockedDown) && (_knockdownTimer <= 0))
+				{
+					BonesReset();
+				}
 			}
 		}
 		private void AlignToHips()
@@ -181,12 +202,12 @@ namespace SS3D.Systems.Entities.Humanoid
 			if (elapsedPercentage >= 1)
 			{
 				StandUp();
-				IsKnockedDown = false;
 			}
 		}
 
 		private void StandUp()
 		{
+			UnityEngine.Debug.Log("Standup called isServer " + IsServer);
 			_animator.enabled = true;
 			_currentState = RagdollState.StandingUp;
 			_animator.Play(_isFacingDown ? _standUpFaceDownStateName : _standUpFaceUpStateName, 0, 0);
@@ -197,7 +218,6 @@ namespace SS3D.Systems.Entities.Humanoid
 			string standUpName = (_isFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip).name;
 			if (_animator.GetCurrentAnimatorStateInfo(0).IsName(standUpName) == false)
 			{
-				_currentState = RagdollState.Walking;
 				Recover();
 			}
 		}
@@ -207,7 +227,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		/// </summary>
 		public void KnockdownTimeless()
 		{
-			_isKnockDownTimed = false;
+			_isKnockdownTimed = false;
 			Knockdown();
 		}
 
@@ -215,27 +235,11 @@ namespace SS3D.Systems.Entities.Humanoid
 		/// Knockdown the character for some time.
 		/// </summary>
 		/// <param name="seconds"></param>
-		public void Knockdown(float seconds, bool isBroadcast = false)
+		public void Knockdown(float seconds)
 		{
-			if (isBroadcast)
-			{
-				Subsystems.Get<RagdollNetwork>().SendBroadcast(this, GetCurrentMethodName(), new object[] { seconds, false });
-			}
-			if (!IsKnockedDown)
-			{
-				_isKnockDownTimed = true;
-				_knockDownEnd = Time.time + seconds;
-				Knockdown();
-			}
-			else
-			{
-				_knockDownEnd = Math.Max(_knockDownEnd, Time.time + seconds);
-			}
-		}
-
-		private string GetCurrentMethodName([CallerMemberName] string methodname = null)
-		{
-			return methodname;
+			_isKnockdownTimed = true;
+			_knockdownTimer += seconds;
+			Knockdown();
 		}
 
 		private void Knockdown()
@@ -256,9 +260,13 @@ namespace SS3D.Systems.Entities.Humanoid
 
 		public void Recover()
 		{
+			UnityEngine.Debug.Log("Recover isServer" + " " + IsServer);
 			_characterController.enabled = true;
 			_humanoidLivingController.enabled = true;
+			_animator.enabled = false;
+			_knockdownTimer = 0;
 			IsKnockedDown = false;
+			_currentState = RagdollState.Walking;
 		}
 
 		private void ToggleKinematic(bool isKinematic)

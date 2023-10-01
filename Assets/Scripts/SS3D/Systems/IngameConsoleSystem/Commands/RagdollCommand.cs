@@ -6,6 +6,7 @@ using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using System.Globalization;
+using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -37,6 +38,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			{
 				if (ragdoll.IsKnockedDown)
 				{
+					Debug.Log("Console called Recover on server side");
 					ragdoll.Recover();
 				}
 				else
@@ -57,25 +59,6 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 				response.InvalidArgs = "Invalid number of arguments";
 				return response;
 			}
-			
-			// Use dot as separator
-			NumberFormatInfo nfi = new();
-			nfi.NumberDecimalSeparator = ".";
-			if (float.TryParse(args[1], NumberStyles.Any, nfi, out float time))
-			{
-				if (time <= 0)
-				{
-					response.IsValid = false;
-					response.InvalidArgs = "Invalid time";
-					return response;
-				}
-			}
-			else
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "Invalid time";
-				return response;
-			}
 			string ckey = args[0];
 			Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
 			if (player == null)
@@ -92,6 +75,31 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 				return response;
 			}
 			response.IsValid = true;
+			// Use dot as separator
+			if (args.Length > 1)
+			{
+				NumberFormatInfo nfi = new();
+				nfi.NumberDecimalSeparator = ".";
+
+				if (float.TryParse(args[1], NumberStyles.Any, nfi, out float time))
+				{
+					if (time <= 0)
+					{
+						response.IsValid = false;
+						response.InvalidArgs = "Invalid time";
+
+						return response;
+					}
+				}
+				else
+				{
+					response.IsValid = false;
+					response.InvalidArgs = "Invalid time";
+
+					return response;
+				}
+			}
+
 			return response;
 		}
 	}
