@@ -83,17 +83,17 @@ namespace SS3D.Systems.Health
 
         protected override void SetDamagesContainer()
         {
-            Damages.DamagesInfo.Add(DamageType.Crush, new BodyDamageInfo(DamageType.Crush, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Slash, new BodyDamageInfo(DamageType.Slash, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Puncture, new BodyDamageInfo(DamageType.Puncture, 0f, 2f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Pressure, new BodyDamageInfo(DamageType.Pressure, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Heat, new BodyDamageInfo(DamageType.Heat, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Cold, new BodyDamageInfo(DamageType.Cold, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Shock, new BodyDamageInfo(DamageType.Shock, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Rad, new BodyDamageInfo(DamageType.Rad, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 1.5f, 0f));
-            Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 1f, 0f));
+            Damages[DamageType.Crush] = new (DamageType.Crush);
+            Damages[DamageType.Slash] = new (DamageType.Slash);
+            Damages[DamageType.Puncture] = new (DamageType.Puncture, 0f, 2f);
+            Damages[DamageType.Pressure] = new (DamageType.Pressure);
+            Damages[DamageType.Heat] = new (DamageType.Heat);
+            Damages[DamageType.Cold] = new (DamageType.Cold);
+            Damages[DamageType.Shock] = new (DamageType.Shock);
+            Damages[DamageType.Rad] = new (DamageType.Rad);
+            Damages[DamageType.Acid] = new (DamageType.Acid);
+            Damages[DamageType.Toxic] = new (DamageType.Toxic, 0f, 1.5f);
+            Damages[DamageType.Oxy] = new (DamageType.Oxy);
         }
 
         /// <summary>

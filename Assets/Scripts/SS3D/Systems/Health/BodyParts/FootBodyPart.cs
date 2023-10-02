@@ -21,14 +21,8 @@
 			InvokeOnBodyPartLayerAdded();
 		}
 
-        protected override void AfterSpawningCopiedBodyPart()
-        {
-            return;
-        }
+        protected override void AfterSpawningCopiedBodyPart() { }
 
-        protected override void BeforeDestroyingBodyPart()
-        {
-            return;
-        }
+        protected override void BeforeDestroyingBodyPart() { }
     }
 }
