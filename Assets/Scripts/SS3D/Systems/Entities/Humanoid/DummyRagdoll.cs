@@ -20,6 +20,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private float _knockdownTimer;
 		[SyncVar(OnChange = nameof(OnSyncKnockdown))]
 		public bool IsKnockedDown;
+        [SyncVar(OnChange = nameof(OnSyncStandingUp))]
         public bool IsStandingUp;
         [SyncVar]
         private bool _isFacingDown;
@@ -253,15 +254,6 @@ namespace SS3D.Systems.Entities.Humanoid
                 boneTransforms[boneIndex].Rotation = _ragdollParts[boneIndex].localRotation;
             }
         }
-
-		/// <summary>
-		/// Client says to server that they are knockdown (or not anymore)
-		/// </summary>
-		[ServerRpc]
-		private void CommandSetKnockdown(bool knockdown)
-		{
-			IsKnockedDown = knockdown;
-		}
         [ServerRpc]
         public void KnockdownTimeless()
         {
