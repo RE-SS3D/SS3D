@@ -8,6 +8,7 @@ namespace SS3D.Systems.Health
 	/// Bodylayers are not networked object, keep in mind they are server side only.
     /// If you need to query anything from them, you'll have to go through bodypart.
     /// Bodylayers should only exists as a part of Bodypart.
+    /// TODO : put the default values for resistance and susceptibilities in scriptable objects, for each type of layer.
 	/// </summary>
 	public abstract class BodyLayer
 	{
