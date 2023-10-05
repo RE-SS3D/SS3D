@@ -27,7 +27,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _isKnockdownTimed;
         [SyncVar]
         private float _knockdownTimer;
-        [SyncVar(OnChange = nameof(Test))]
+        [SyncVar(OnChange = nameof(OnSyncKnockDown))]
         public bool IsKnockedDown;
 		[SerializeField]
 		private string _standUpFaceUpStateName;
@@ -39,7 +39,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		[SerializeField]
 		private AnimationClip _standUpFaceDownClip;
 
-		private void Test(bool prev, bool next, bool asServer)
+		private void OnSyncKnockDown(bool prev, bool next, bool asServer)
 		{
 			UnityEngine.Debug.Log("New _isKnockedDown: " + next + " Prev: " + prev + " isServer: " + IsServer);
 			if (next)
