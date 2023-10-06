@@ -1,4 +1,4 @@
-using FishNet;
+﻿using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
@@ -123,7 +123,7 @@ namespace SS3D.Systems.Tile
             return tileObjects;
         }
 
-        private PlacedTileObject[] GetNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        public PlacedTileObject[] GetNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
         {
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
 

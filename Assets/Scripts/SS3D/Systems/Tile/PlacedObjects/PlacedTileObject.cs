@@ -1,4 +1,4 @@
-using FishNet;
+﻿using FishNet;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Logging;
@@ -70,6 +70,8 @@ namespace SS3D.Systems.Tile
         public TileObjectGenericType GenericType => _tileObjectSo.genericType;
 
         public TileObjectSpecificType SpecificType => _tileObjectSo.specificType;
+
+        public Direction Direction => _dir;
 
         public string NameString => _tileObjectSo.nameString;
 

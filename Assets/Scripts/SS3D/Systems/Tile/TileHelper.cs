@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,6 +50,17 @@ namespace SS3D.Systems.Tile
         {
             return new Vector3(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
         }
+
+        public static Direction GetRelativeDirection(Direction to, Direction from)
+        {
+            return (Direction)((((int)to - (int)from) + 8) % 8);
+        }
+
+        public static int GetDirectionIndex(Direction dir)
+        {
+            return (int)dir / 2;
+        }
+
 
         public static List<Direction> CardinalDirections()
         {
