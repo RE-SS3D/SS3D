@@ -2,10 +2,11 @@
 using UnityEngine;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using Coimbra;
+using FishNet.Object;
 
 namespace SS3D.Systems.Tile.Connections
 {
-    public class Door : MonoBehaviour, IAdjacencyConnector
+    public class DoorAdjacencyConnector : NetworkBehaviour, IAdjacencyConnector
     {
         public enum DoorType
         {
