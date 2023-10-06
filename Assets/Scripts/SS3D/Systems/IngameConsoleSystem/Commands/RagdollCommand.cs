@@ -38,7 +38,6 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			{
 				if (ragdoll.IsKnockedDown)
 				{
-					Debug.Log("Console called Recover on server side");
 					ragdoll.Recover();
 				}
 				else
