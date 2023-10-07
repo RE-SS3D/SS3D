@@ -71,6 +71,8 @@ namespace SS3D.Systems.Tile
 
         public TileObjectSpecificType SpecificType => _tileObjectSo.specificType;
 
+        public TileLayer Layer => _tileObjectSo.layer;
+
         public Direction Direction => _dir;
 
         public string NameString => _tileObjectSo.nameString;

@@ -1,4 +1,4 @@
-using FishNet;
+﻿using FishNet;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Logging;
@@ -197,6 +197,25 @@ namespace SS3D.Systems.Tile
             };
 
             return saveObject;
+        }
+
+        /// <summary>
+        /// Get all placed tile objects on this chunk.
+        /// </summary>
+        public List<PlacedTileObject> GetAllTilePlacedObjects()
+        {
+            var list = new List<PlacedTileObject>();
+            foreach(TileGrid grid in _tileGridList)
+            {
+                foreach(TileObject obj in grid.TileObjectsGrid)
+                {
+                    if(obj.PlacedObject != null)
+                    {
+                        list.Add(obj.PlacedObject);
+                    }
+                }
+            }
+            return list;
         }
     }
 }

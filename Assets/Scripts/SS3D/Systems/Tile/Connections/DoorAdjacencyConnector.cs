@@ -27,6 +27,29 @@ namespace SS3D.Systems.Tile.Connections
         private TileMap map;
         public PlacedTileObject placedTileObject;
 
+        private bool _initialized = false;
+
+        // WallCap gameobjects, North, East, South, West. Null if not present.
+        private GameObject[] wallCaps = new GameObject[4];
+        private AdjacencyMap adjacencyMap = new AdjacencyMap();
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            Setup();
+        }
+
+        private void Setup()
+        {
+            if (!_initialized)
+            {
+                adjacencyMap = new AdjacencyMap();
+
+                placedTileObject = GetComponent<PlacedTileObject>();
+                _initialized = true;
+            }
+        }
+
         public void CleanAdjacencies()
         {
             if (!map)
@@ -44,7 +67,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public bool UpdateSingle(Direction direction, PlacedTileObject placedObject, bool updateNeighbours)
         {
-
+            Setup();
             if (UpdateSingleConnection(direction, placedObject))
                 UpdateWallCaps();
 
@@ -54,6 +77,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
+            Setup();
             if (!map)
                 map = GetComponentInParent<TileMap>();
 
@@ -148,10 +172,6 @@ namespace SS3D.Systems.Tile.Connections
 
             return placedTileObject.Direction;
         }
-
-        // WallCap gameobjects, North, East, South, West. Null if not present.
-        private GameObject[] wallCaps = new GameObject[4];
-        private AdjacencyMap adjacencyMap = new AdjacencyMap();
     }
 
 }

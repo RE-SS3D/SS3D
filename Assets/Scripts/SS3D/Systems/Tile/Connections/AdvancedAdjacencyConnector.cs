@@ -66,6 +66,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public bool UpdateSingle(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
+            Setup();
             bool isConnected = false;
             bool isUpdated = false;
 

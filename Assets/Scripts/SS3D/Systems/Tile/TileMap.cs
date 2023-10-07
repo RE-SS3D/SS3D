@@ -23,6 +23,8 @@ namespace SS3D.Systems.Tile
 
         public int ChunkCount => _chunks.Count;
 
+        public event EventHandler OnMapLoaded;
+
         public static TileMap Create(string name)
         {
             GameObject mapObject = new GameObject(name);
@@ -165,7 +167,8 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
-        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool skipBuildCheck, bool replaceExisting)
+        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
+            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency)
         {
             bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
 
@@ -189,9 +192,12 @@ namespace SS3D.Systems.Tile
                     chunk.GetTileObject(tileObjectSo.layer, gridPosition).PlacedObject = placedObject;
                 }
 
-                // Handle Adjacency connectors
-                var neighbourTiles = GetNeighbourPlacedObjects(tileObjectSo.layer, placePosition);
-                placedObject.UpdateAdjacencies(neighbourTiles);
+                // Handle Adjacency connectors, can skip it particulary when loading the map.
+                if (!skipAdjacency){
+                    var neighbourTiles = GetNeighbourPlacedObjects(tileObjectSo.layer, placePosition);
+                    placedObject.UpdateAdjacencies(neighbourTiles);
+                }
+               
             }
 
             return canBuild;
@@ -314,7 +320,7 @@ namespace SS3D.Systems.Tile
                     Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
 
                     // Skipping build check here to allow loading tile objects in a non-valid order
-                    PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true, false);
+                    PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true, false, true);
                 }
             }
 
@@ -322,6 +328,27 @@ namespace SS3D.Systems.Tile
             {
                 ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+            }
+
+            OnMapLoaded?.Invoke(this, EventArgs.Empty);
+            UpdateAllAdjacencies();
+        }
+
+        /// <summary>
+        /// Update every adjacency of each placed tile object when the map is loaded.
+        /// </summary>
+        private void UpdateAllAdjacencies()
+        {
+            foreach(TileChunk chunk in _chunks.Values)
+            {
+                foreach(PlacedTileObject obj in chunk.GetAllTilePlacedObjects())
+                {
+                    if (obj.HasAdjacencyConnector)
+                    {
+                        var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
+                        obj.UpdateAdjacencies(GetNeighbourPlacedObjects(obj.Layer, pos));
+                    }
+                }
             }
         }
     }
