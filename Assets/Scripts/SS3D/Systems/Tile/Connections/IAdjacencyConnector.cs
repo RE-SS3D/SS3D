@@ -5,7 +5,8 @@
     /// </summary>
     public interface IAdjacencyConnector
     {
-        bool UpdateSingle(Direction direction, PlacedTileObject neighbourObject, bool updateNeighbour);
-        void UpdateAll(PlacedTileObject[] neighbourObjects);
+        bool UpdateSingleConnection(Direction direction, PlacedTileObject neighbourObject, bool updateNeighbour);
+        void UpdateAllConnections(PlacedTileObject[] neighbourObjects);
+        bool IsConnected(Direction dir, PlacedTileObject neighbourObject);
     }
 }

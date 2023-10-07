@@ -78,20 +78,15 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public bool UpdateSingle(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
+        public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
-            bool isConnected = false;
+            Setup();
 
-            if (neighbourObject != null)
-            {
-                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
-                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
-                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
+            bool isConnected = IsConnected(dir, neighbourObject);
 
-                // Update our neighbour as well
-                if (isConnected && updateNeighbour)
-                    neighbourObject.UpdateSingleAdjacency(_placedObject, TileHelper.GetOpposite(dir));
-            }
+            // Update our neighbour as well
+            if (isConnected && updateNeighbour)
+                neighbourObject.UpdateSingleAdjacency(_placedObject, TileHelper.GetOpposite(dir));
 
             bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
 
@@ -123,20 +118,32 @@ namespace SS3D.Systems.Tile.Connections
             transform.localRotation = localRotation;
         }
 
-        public void UpdateAll(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
             Setup();
 
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
-                changed |= UpdateSingle((Direction)i, neighbourObjects[i], true);
+                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
             }
 
             if (changed)
             {
                 UpdateMeshAndDirection();
             }
+        }
+
+        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        {
+            bool isConnected = false;
+            if (neighbourObject != null)
+            {
+                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
+                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
+                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
+            }
+            return isConnected;
         }
     }
 }

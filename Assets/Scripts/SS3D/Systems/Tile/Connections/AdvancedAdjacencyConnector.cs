@@ -64,22 +64,15 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public bool UpdateSingle(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
+        public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             Setup();
-            bool isConnected = false;
-            bool isUpdated = false;
+            bool isConnected = IsConnected(dir, neighbourObject);
+            bool isUpdated;
 
-            if (neighbourObject)
-            {
-                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
-                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
-                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
-
-                // Update our neighbour as well
-                if (isConnected && updateNeighbour)
-                    neighbourObject.UpdateSingleAdjacency(_placedObject, TileHelper.GetOpposite(dir));
-            }
+            // Update our neighbour as well
+            if (isConnected && updateNeighbour)
+                neighbourObject.UpdateSingleAdjacency(_placedObject, TileHelper.GetOpposite(dir));
 
             isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
             if (isUpdated)
@@ -91,14 +84,26 @@ namespace SS3D.Systems.Tile.Connections
             return isUpdated;
         }
 
-        public void UpdateAll(PlacedTileObject[] neighbourObjects)
+        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        {
+            bool isConnected = false;
+            if (neighbourObject)
+            {
+                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
+                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
+                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
+            }
+            return isConnected;
+        }
+
+        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
             Setup();
 
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
-                changed |= UpdateSingle((Direction)i, neighbourObjects[i], true);
+                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
             }
 
             if (changed)

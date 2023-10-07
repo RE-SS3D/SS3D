@@ -103,13 +103,13 @@ namespace SS3D.Systems.Tile
         public void UpdateAdjacencies(PlacedTileObject[] neighbourObjects)
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateAll(neighbourObjects);
+                _connector.UpdateAllConnections(neighbourObjects);
         }
 
         public void UpdateSingleAdjacency(PlacedTileObject neighbourObject, Direction dir)
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateSingle(dir, neighbourObject, false);
+                _connector.UpdateSingleConnection(dir, neighbourObject, false);
         }
 
         public SavedPlacedTileObject Save()

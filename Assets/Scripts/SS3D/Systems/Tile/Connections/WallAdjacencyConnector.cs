@@ -65,10 +65,10 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public bool UpdateSingle(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
+        public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             Setup();
-            bool isConnected = false;
+            bool isConnected = IsConnected(dir, neighbourObject);
             bool isUpdated = false;
 
             if (neighbourObject != null)
@@ -98,14 +98,14 @@ namespace SS3D.Systems.Tile.Connections
             return isUpdated;
         }
 
-        public void UpdateAll(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
             Setup();
 
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
-                changed |= UpdateSingle((Direction)i, neighbourObjects[i], true);
+                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
             }
 
             if (changed)
@@ -157,7 +157,6 @@ namespace SS3D.Systems.Tile.Connections
 
         private bool IsConnectedToDoor(PlacedTileObject neighbourObject)
         {
-            bool isConnected = false;
             var doorConnector = neighbourObject.GetComponent<DoorAdjacencyConnector>();
             var door = doorConnector.placedTileObject;
             if (door != null)
@@ -167,6 +166,23 @@ namespace SS3D.Systems.Tile.Connections
             }
 
             return false;
+        }
+
+        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        {
+            if(neighbourObject == null) return false;
+
+            bool isConnected = (neighbourObject.HasAdjacencyConnector);
+
+            isConnected &= neighbourObject.GenericType == TileObjectGenericType.Wall ||
+                neighbourObject.GenericType == TileObjectGenericType.Door;
+
+            if (neighbourObject.GetComponent<DoorAdjacencyConnector>() != null)
+            {
+                isConnected &= IsConnectedToDoor(neighbourObject);
+            }
+
+            return isConnected;
         }
     }
 }

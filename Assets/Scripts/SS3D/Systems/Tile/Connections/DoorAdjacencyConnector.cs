@@ -65,17 +65,20 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public bool UpdateSingle(Direction direction, PlacedTileObject placedObject, bool updateNeighbours)
+        public bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject, bool updateNeighbours)
         {
             Setup();
-            if (UpdateSingleConnection(direction, placedObject))
+
+            bool isConnected = IsConnected(direction, placedObject);
+            bool update = adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
+
+            if (update)
                 UpdateWallCaps();
 
-            // TODO should check if connection was actually updated.
             return true;
         }
 
-        public void UpdateAll(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
             Setup();
             if (!map)
@@ -88,7 +91,7 @@ namespace SS3D.Systems.Tile.Connections
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
                 bool updatedSingle = false;
-                updatedSingle = UpdateSingleConnection((Direction)i, neighbourObjects[i]);
+                updatedSingle = UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
                 if (updatedSingle && neighbourObjects[i])
                     neighbourObjects[i].UpdateSingleAdjacency(currentObject, TileHelper.GetOpposite((Direction)i));
 
@@ -99,18 +102,6 @@ namespace SS3D.Systems.Tile.Connections
             {
                 UpdateWallCaps();
             }
-        }
-
-        /// <summary>
-        /// Adjusts the connections value based on the given new tile.
-        /// </summary>
-        /// <returns> Returns whether value changed.</returns>
-        private bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject)
-        {
-            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector &&
-                placedObject.GenericType == TileObjectGenericType.Wall);
-
-            return adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
         }
 
         private void CreateWallCaps(bool isPresent, Direction direction)
@@ -171,6 +162,12 @@ namespace SS3D.Systems.Tile.Connections
             }
 
             return placedTileObject.Direction;
+        }
+
+        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        {
+            return (neighbourObject && neighbourObject.HasAdjacencyConnector &&
+                neighbourObject.GenericType == TileObjectGenericType.Wall);
         }
     }
 
