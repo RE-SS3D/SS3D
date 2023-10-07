@@ -39,7 +39,7 @@ namespace SS3D.Systems.Tile
             if (InstanceFinder.ServerManager != null)
             {
                 if (placedObject.GetComponent<NetworkObject>() == null)
-                    Punpun.Information(Subsystems.Get<TileSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
+                    Log.Information(Subsystems.Get<TileSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
                         Logs.Generic, placedObject.NameString);
                 else
                     InstanceFinder.ServerManager.Spawn(placedGameObject);

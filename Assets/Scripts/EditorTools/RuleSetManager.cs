@@ -1,5 +1,3 @@
-﻿
-
 #if UNITY_EDITOR
 
 using EditorTools;

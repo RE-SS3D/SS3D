@@ -149,7 +149,7 @@ namespace SS3D.Systems.Inventory.Containers
             foreach (var container in attachedContainers)
             {
                 AddContainer(container);
-                Punpun.Information(this, "Adding {container} container to inventory", Logs.Generic, container);
+                Log.Information(this, "Adding {container} container to inventory", Logs.Generic, container);
             }
         }
 
@@ -275,7 +275,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            item.SetContainer(null);
+            attachedTo.RemoveItem(item);
         }
 
 
@@ -306,13 +306,13 @@ namespace SS3D.Systems.Inventory.Containers
 
             // Can't put an item in its own container
             if (item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(container)){
-				Punpun.Warning(this, "can't put an item in its own container");
+                Log.Warning(this, "can't put an item in its own container");
                 return;
             }
 
             if (container == null)
             {
-                Punpun.Error(this, $"Client sent invalid container reference: NetId {container.ObjectId}");
+                Log.Error(this, $"Client sent invalid container reference: NetId {container.ObjectId}");
                 return;
             }
 
@@ -434,7 +434,7 @@ namespace SS3D.Systems.Inventory.Containers
                 if (ContainersOnPlayer.Contains(container))
                 {
                     RemoveContainer(container);
-                    Punpun.Warning(this, $"invoke {container} removed");
+                    Log.Warning(this, $"invoke {container} removed");
                 }
             }
         }

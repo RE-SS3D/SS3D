@@ -57,7 +57,7 @@ namespace SS3D.Systems.Screens
             string message = $"No screen of type {screenType} found.";
 
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Punpun.Error(typeof(GameScreens), message, Logs.Important, typeof(T).Name);
+            Log.Error(typeof(GameScreens), message, Logs.Important, typeof(T).Name);
 
             screen = null;
             return false;
@@ -69,7 +69,7 @@ namespace SS3D.Systems.Screens
             LastScreen = ActiveScreen;
             ActiveScreen = screenToSwitchTo;
 
-            Punpun.Information(typeof(GameScreens), $"Switching game screen to {screenToSwitchTo}");
+            Log.Information(typeof(GameScreens), $"Switching game screen to {screenToSwitchTo}");
 
             foreach (KeyValuePair<ScreenType,GameScreen> screenEntry in Screens)
             {

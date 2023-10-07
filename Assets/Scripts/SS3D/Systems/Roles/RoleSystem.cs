@@ -47,7 +47,7 @@ namespace SS3D.Systems.Roles
         {
             if (_rolesAvailable == null)
             {
-                Punpun.Error(this, "Initial Available Roles not set!");
+                Log.Error(this, "Initial Available Roles not set!");
             }
 
             foreach (RolesData role in _rolesAvailable.Roles)
@@ -146,7 +146,7 @@ namespace SS3D.Systems.Roles
             {
                 RoleData roleData = rolePlayer.Value.Value;
 
-                Punpun.Information(this, entity.Ckey + " embarked with role " + roleData.Name);
+                Log.Information(this, entity.Ckey + " embarked with role " + roleData.Name);
                 SpawnIdentificationItems(entity, roleData);
 
                 if (roleData.Loadout != null)
@@ -181,7 +181,7 @@ namespace SS3D.Systems.Roles
             foreach (IDPermission permission in role.Permissions)
             {
                 idCard.AddPermission(permission);
-                Punpun.Information(this, "Added " + permission.Name + " permission to IDCard of " + entity.Ckey);
+                Log.Information(this, "Added " + permission.Name + " permission to IDCard of " + entity.Ckey);
             }
 
             pda.StartingIDCard = idCardItem;
