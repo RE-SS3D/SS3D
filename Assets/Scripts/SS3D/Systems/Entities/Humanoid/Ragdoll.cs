@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
+    [RequireComponent(typeof(Animator), typeof(NetworkAnimator), typeof(CharacterController))]
+    [RequireComponent(typeof(HumanoidLivingController))]
 	public class Ragdoll : NetworkBehaviour
 	{
 		public Transform ArmatureRoot;
@@ -18,6 +20,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		private Transform[] _ragdollParts;
         private bool _isKnockdownTimed;
         private float _knockdownTimer;
+        public GameObject Forearm;
 		[SyncVar(OnChange = nameof(OnSyncKnockdown))]
 		public bool IsKnockedDown;
         [field: SyncVar(OnChange = nameof(OnSyncStandingUp))]
@@ -53,6 +56,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			// or reactivate them if not knowckdown anymore.
 			if (next)
 			{
+                _animator.SetFloat("Speed", 0);
                 if (!IsOwner)
                 {
                     EnableAnimatorAndController(false);
@@ -133,7 +137,14 @@ namespace SS3D.Systems.Entities.Humanoid
 
 			if (Input.GetKeyDown(KeyCode.Y))
 			{
-                Knockdown(1f);
+                if (IsKnockedDown)
+                {
+                    Recover();
+                }
+                else
+                {
+                    KnockdownTimeless();
+                }
 			}
 			if (Input.GetKeyDown(KeyCode.V))
 			{
@@ -182,7 +193,10 @@ namespace SS3D.Systems.Entities.Humanoid
             desiredDirection.y = 0;
             desiredDirection.Normalize();
             Quaternion originalHipsRotation = _hips.rotation;
-            transform.rotation *= Quaternion.FromToRotation(transform.forward, desiredDirection);
+            Vector3 desiredRotation = Quaternion.FromToRotation(transform.forward, desiredDirection).eulerAngles;
+            desiredDirection.x = 0;
+            desiredDirection.z = 0;
+            transform.rotation *= Quaternion.Euler(desiredRotation);
             _hips.rotation = originalHipsRotation;
         }
         private void BonesReset()
@@ -336,7 +350,7 @@ namespace SS3D.Systems.Entities.Humanoid
 			int randForceY = UnityEngine.Random.Range(-20, 20);
 			int randForceZ = UnityEngine.Random.Range(-20, 20);
 			Vector3 randForce = new Vector3(randForceX,randForceY, randForceZ);
-			_ragdollParts[randPart].GetComponent<Rigidbody>().AddForce(randForce, ForceMode.VelocityChange);
+			Forearm.GetComponent<Rigidbody>().AddForce(randForce, ForceMode.VelocityChange);
 		}
 	}
 }
