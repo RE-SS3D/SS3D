@@ -4409,7 +4409,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_LowTwistLimit:
-    limit: -125
+    limit: -100
     bounciness: 0
     contactDistance: 0
   m_HighTwistLimit:
@@ -8069,7 +8069,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_LowTwistLimit:
-    limit: -125
+    limit: -100
     bounciness: 0
     contactDistance: 0
   m_HighTwistLimit:

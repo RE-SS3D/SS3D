@@ -20,7 +20,6 @@ namespace SS3D.Systems.Entities.Humanoid
 		private Transform[] _ragdollParts;
         private bool _isKnockdownTimed;
         private float _knockdownTimer;
-        public GameObject Forearm;
 		[SyncVar(OnChange = nameof(OnSyncKnockdown))]
 		public bool IsKnockedDown;
         [field: SyncVar(OnChange = nameof(OnSyncStandingUp))]
@@ -51,10 +50,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		private void OnSyncKnockdown(bool prev, bool next, bool asServer)
 		{
 			if (prev == next) return;
-
-			// As the non owner, simply disable animating and controlling components to avoid jittering
-			// or reactivate them if not knowckdown anymore.
-			if (next)
+            if (next)
 			{
                 _animator.SetFloat("Speed", 0);
                 if (!IsOwner)
@@ -145,10 +141,6 @@ namespace SS3D.Systems.Entities.Humanoid
                 {
                     KnockdownTimeless();
                 }
-			}
-			if (Input.GetKeyDown(KeyCode.V))
-			{
-				RandomlyKick();
 			}
             switch (_currentState)
             {
@@ -270,7 +262,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 boneTransforms[boneIndex].Rotation = _ragdollParts[boneIndex].localRotation;
             }
         }
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         public void KnockdownTimeless()
         {
             _isKnockdownTimed = false;
@@ -280,7 +272,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// Knockdown the character for some time.
         /// </summary>
         /// <param name="seconds"></param>
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         public void Knockdown(float seconds)
         {
             _isKnockdownTimed = true;
@@ -288,7 +280,7 @@ namespace SS3D.Systems.Entities.Humanoid
             IsKnockedDown = true;
         }
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         public void Recover()
         {
             IsKnockedDown = false;
@@ -338,19 +330,5 @@ namespace SS3D.Systems.Entities.Humanoid
 			_animator.enabled = enable;
 			_networkAnimator.enabled = enable;
 		}
-
-		/// <summary>
-		/// Debug method to show the ragdoll sync, randomly kick a body part in a random direction.
-		/// </summary>
-		private void RandomlyKick()
-		{
-			int parts = _ragdollParts.Count();
-			int randPart = UnityEngine.Random.Range(0, parts);
-			int randForceX = UnityEngine.Random.Range(-20, 20);
-			int randForceY = UnityEngine.Random.Range(-20, 20);
-			int randForceZ = UnityEngine.Random.Range(-20, 20);
-			Vector3 randForce = new Vector3(randForceX,randForceY, randForceZ);
-			Forearm.GetComponent<Rigidbody>().AddForce(randForce, ForceMode.VelocityChange);
-		}
-	}
+    }
 }
