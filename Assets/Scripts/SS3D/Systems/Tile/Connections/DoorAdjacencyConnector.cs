@@ -25,7 +25,7 @@ namespace SS3D.Systems.Tile.Connections
         private DoorType doorType;
 
         private TileMap map;
-        private PlacedTileObject placedTileObject;
+        public PlacedTileObject placedTileObject;
 
         public void CleanAdjacencies()
         {
@@ -56,7 +56,6 @@ namespace SS3D.Systems.Tile.Connections
 
         public void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
-            // Because we are on a Furniture layer and walls are on the Turf. Discard furniture neighbours and get the turf neighbours.
             if (!map)
                 map = GetComponentInParent<TileMap>();
 
@@ -80,47 +79,16 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        /**
-            * Adjusts the connections value based on the given new tile.
-            * Returns whether value changed.
-            */
+        /// <summary>
+        /// Adjusts the connections value based on the given new tile.
+        /// </summary>
+        /// <returns> Returns whether value changed.</returns>
         private bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject)
         {
-            SetPerpendicularBlocked(true);
             bool isConnected = (placedObject && placedObject.HasAdjacencyConnector &&
                 placedObject.GenericType == TileObjectGenericType.Wall);
 
             return adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
-        }
-
-        /// <summary>
-        /// Walls will try to connect to us. Block or unblock that connects if we are not facing the wall
-        /// </summary>
-        private void SetPerpendicularBlocked(bool isBlocked)
-        {
-            // Door can have rotated in the time between
-            Direction doorDirection = GetDoorDirection();
-            if (map == null)
-                return;
-            // map = GetComponentInParent<TileMap>();
-
-            var neighbourObjects = map.GetNeighbourPlacedObjects(TileLayer.Turf, transform.position);
-            Direction opposite = TileHelper.GetOpposite(doorDirection);
-
-            MultiAdjacencyConnector wallConnector = null;
-            if (neighbourObjects[(int)doorDirection] != null)
-                wallConnector = neighbourObjects[(int)doorDirection].GetComponent<MultiAdjacencyConnector>();
-
-            if (wallConnector)
-                wallConnector.SetBlockedDirection(opposite, isBlocked);
-
-            // Opposite side of door
-            wallConnector = null;
-            if (neighbourObjects[(int)opposite] != null)
-                wallConnector = neighbourObjects[(int)opposite].GetComponent<MultiAdjacencyConnector>();
-
-            if (wallConnector)
-                wallConnector.SetBlockedDirection(doorDirection, isBlocked);
         }
 
         private void CreateWallCaps(bool isPresent, Direction direction)
@@ -144,38 +112,13 @@ namespace SS3D.Systems.Tile.Connections
             if (wallCapPrefab == null)
                 return;
 
-            // Door may have rotated in the editor
             Direction outFacing = TileHelper.GetNextDir(GetDoorDirection());
 
             bool isPresent = adjacencyMap.HasConnection(outFacing);
-            CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
+            CreateWallCaps(isPresent, outFacing);
 
             isPresent = adjacencyMap.HasConnection(TileHelper.GetOpposite(outFacing));
-            CreateWallCaps(isPresent, outFacing);
-        }
-
-        private void ValidateChildren()
-        {
-            // Note: This only needs to run on the server, which loads from the scene.
-            // Anywhere else (including clients, mostly), doesn't really need this.
-            for (int i = transform.childCount - 1; i > 0; --i)
-            {
-                var child = transform.GetChild(i);
-                if (child.name.StartsWith("WallCap"))
-                {
-                    bool success = int.TryParse(child.name.Substring(7), out int num);
-
-                    // Remove if no int, int out of bounds, or duplicate
-                    if (!success || num > wallCaps.Length || num < 0 || (wallCaps[num] != null && !ReferenceEquals(wallCaps[num], child.gameObject)))
-                    {
-                        Debug.LogWarning($"Unusual child found whilst searching for wall caps: {child.name}, deleting");
-                        child.gameObject.Dispose(true);
-                        continue;
-                    }
-
-                    wallCaps[num] = child.gameObject;
-                }
-            }
+            CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
         }
 
         /**
@@ -194,7 +137,7 @@ namespace SS3D.Systems.Tile.Connections
 
             wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
             wallCap.transform.localPosition = new Vector3(cardinal.Item1 * WALL_CAP_DISTANCE_FROM_CENTRE, 0, cardinal.Item2 * WALL_CAP_DISTANCE_FROM_CENTRE);
-
+            Spawn(wallCap);
             return wallCap;
         }
 

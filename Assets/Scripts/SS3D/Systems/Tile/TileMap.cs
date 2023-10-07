@@ -11,7 +11,9 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Class used for storing and modifying a tile map.
+    /// Class used for storing and modifying a tile map. Coordinates on the tile map follows the following :
+    /// - South North  is the Y axis with North going toward positives.
+    /// - East West is the X axis with east going toward positives.
     /// </summary>
     public class TileMap : NetworkBehaviour
     {

@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Management;
@@ -24,6 +24,7 @@ namespace SS3D.Systems.Tile
         public TileResourceLoader Loader { get; private set; }
  
         private TileMap _currentMap;
+        public TileMap CurrentMap => _currentMap;
 
         [ServerOrClient]
         protected override void OnStart()

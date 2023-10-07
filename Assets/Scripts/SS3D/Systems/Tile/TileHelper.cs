@@ -1,6 +1,8 @@
-﻿using System;
+﻿using SS3D.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -21,6 +23,22 @@ namespace SS3D.Systems.Tile
                 case Direction.West: return Direction.North;
                 case Direction.North: return Direction.East;
                 case Direction.East: return Direction.South;
+            }
+        }
+
+        public static Direction GetNextCardinalDir(Direction dir)
+        {
+            switch (dir)
+            {
+                default:
+                case Direction.South: return Direction.West;
+                case Direction.SouthWest: return Direction.NorthWest;
+                case Direction.West: return Direction.North;
+                case Direction.NorthWest: return Direction.NorthEast;
+                case Direction.North: return Direction.East;
+                case Direction.NorthEast: return Direction.SouthEast;
+                case Direction.East: return Direction.South;
+                case Direction.SouthEast: return Direction.SouthWest;
             }
         }
 
@@ -97,5 +115,49 @@ namespace SS3D.Systems.Tile
         {
             return (Direction)(((int)direction + 4) % 8);
         }
+
+        /// <summary>
+        /// Return the difference in coordinates for a neighbour tile in front of another one facing
+        /// a particular direction.
+        /// e.g If the original one is facing north, return (0,1), because, the tile in front of the original
+        /// one will be just north of the original one (hence plus one on the y axis).
+        /// </summary>
+        public static Vector2Int CoordinateDifferenceInFrontFacingDirection(Direction direction)
+        {
+            switch(direction)
+            {
+                case Direction.North:
+                    return new Vector2Int(0, 1);
+
+                case Direction.NorthEast:
+                    return new Vector2Int(1, 1);
+
+                case Direction.East:
+                    return new Vector2Int(1, 0);
+
+                case Direction.SouthEast:
+                    return new Vector2Int(1, -1);
+
+                case Direction.South:
+                    return new Vector2Int(0, -1);
+
+                case Direction.SouthWest:
+                    return new Vector2Int(-1, -1);
+
+                case Direction.West:
+                    return new Vector2Int(-1, 0);
+
+                case Direction.NorthWest:
+                    return new Vector2Int(-1, 1);
+
+                default:
+                    Debug.LogError("direction not handled, returning (0,0)");
+                    return new Vector2Int(0, 0);
+            }
+        }
+
+
+
+
     }
 }

@@ -119,5 +119,51 @@ namespace SS3D.Systems.Tile
                 dir = _dir,
             };
         }
+
+        /// <summary>
+        /// Is this in front of the other object ?
+        /// </summary>
+        public bool IsInFront(PlacedTileObject other)
+        {
+            if(Origin == other.Origin + TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Is this behind the other object ?
+        /// </summary>
+        public bool IsBehind(PlacedTileObject other)
+        {
+            if (Origin == other.Origin - TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Is this on the right of the other object ?
+        /// </summary>
+        public bool IsOnRight(PlacedTileObject other)
+        {
+            Direction dirOnRight = TileHelper.GetNextCardinalDir(other.Direction);
+            if (Origin == other.Origin + TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnRight))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Is this on the left of the other object ?
+        /// </summary>
+        public bool IsOnLeft(PlacedTileObject other)
+        {
+            Direction dirOnLeft = TileHelper.GetNextCardinalDir(other.Direction);
+            if (Origin == other.Origin - TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnLeft))
+                return true;
+
+            return false;
+        }
     }
 }
