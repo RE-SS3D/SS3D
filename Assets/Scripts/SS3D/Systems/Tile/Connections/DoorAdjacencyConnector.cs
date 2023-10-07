@@ -34,8 +34,6 @@ namespace SS3D.Systems.Tile.Connections
                 map = GetComponentInParent<TileMap>();
             }
 
-            SetPerpendicularBlocked(false);
-
             var neighbourObjects = map.GetNeighbourPlacedObjects(TileLayer.Turf, transform.position);
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
