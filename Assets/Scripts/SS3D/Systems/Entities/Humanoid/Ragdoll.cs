@@ -1,4 +1,4 @@
-using FishNet.Component.Animating;
+﻿using FishNet.Component.Animating;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
@@ -10,8 +10,6 @@ namespace SS3D.Systems.Entities.Humanoid
     /// <summary>
     /// Component for character's gameobject, that controlls ragdoll
     /// </summary>
-    [RequireComponent(typeof(Animator), typeof(NetworkAnimator), typeof(CharacterController))]
-    [RequireComponent(typeof(HumanoidLivingController))]
 	public class Ragdoll : NetworkBehaviour
 	{
         [SerializeField]
