@@ -8516,6 +8516,7 @@ GameObject:
   - component: {fileID: 5283895024578974260}
   - component: {fileID: 5164211669966765644}
   - component: {fileID: 8358346980019529144}
+  - component: {fileID: 6282983976573159881}
   m_Layer: 11
   m_Name: Human
   m_TagString: Untagged
@@ -8992,6 +8993,20 @@ MonoBehaviour:
   _armatureRoot: {fileID: 8356004225170572391}
   _standUpFaceUpClip: {fileID: 7400000, guid: 819462e6a707a0147a647482f5d2a038, type: 2}
   _standUpFaceDownClip: {fileID: 7400000, guid: 3b44d4082074d7f4cb19f2036c9c9a01, type: 2}
+--- !u!114 &6282983976573159881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 524774ef343211042b18bd7442ba4ee5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ragdoll: {fileID: 8358346980019529144}
+  _timeRagdolled: 4
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
