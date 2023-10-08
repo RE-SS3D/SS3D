@@ -146,7 +146,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void Delete()
         {
-            SetContainer(null);
+            Container.RemoveItem(this);
 
             if (GameObject != null)
             {
@@ -266,17 +266,6 @@ namespace SS3D.Systems.Inventory.Items
             {
                 return;
             }
-
-            if (_container != null && _container.ContainsItem(this))
-            {
-                Container.RemoveItem(this);
-            }
-
-            if (newContainer != null && !newContainer.ContainsItem(this))
-            {
-                newContainer.AddItem(this);
-            }
-
             _container = newContainer;
         }
 

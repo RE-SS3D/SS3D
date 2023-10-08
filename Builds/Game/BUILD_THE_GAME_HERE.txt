@@ -1,0 +1,1 @@
+You should build your game in the folder where this file is.
