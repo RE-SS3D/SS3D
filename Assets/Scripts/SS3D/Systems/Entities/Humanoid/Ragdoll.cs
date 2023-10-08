@@ -1,6 +1,7 @@
 using FishNet.Component.Animating;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -10,7 +11,8 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(HumanoidLivingController))]
 	public class Ragdoll : NetworkBehaviour
 	{
-		public Transform ArmatureRoot;
+        [SerializeField]
+		private Transform _armatureRoot;
         private Transform _hips;
         private Transform _character;
 		private Animator _animator;
@@ -18,13 +20,16 @@ namespace SS3D.Systems.Entities.Humanoid
 		private HumanoidLivingController _humanoidLivingController;
 		private CharacterController _characterController;
 		private Transform[] _ragdollParts;
+        /// <summary>
+        /// If knockdown is supposed to expire
+        /// </summary>
         private bool _isKnockdownTimed;
+        /// <summary>
+        /// How many seconds are left before the ragdoll expires
+        /// </summary>
         private float _knockdownTimer;
-		[SyncVar(OnChange = nameof(OnSyncKnockdown))]
-		public bool IsKnockedDown;
-        [field: SyncVar(OnChange = nameof(OnSyncStandingUp))]
-        public bool IsStandingUp { get; [ServerRpc] set; }
-        private bool _isFacingDown;
+        private float _elapsedResetBonesTime;
+        private float _timeToResetBones = 0.5f;
         private enum RagdollState
         {
             Walking,
@@ -38,58 +43,38 @@ namespace SS3D.Systems.Entities.Humanoid
             public Vector3 Position;
             public Quaternion Rotation;
         }
+        /// <summary>
+        /// Bones Transforms (position and rotation) in the first frame of StandUp animation
+        /// </summary>
         private BoneTransform[] _standUpBones;
+        /// <summary>
+        /// Bones Transforms (position and rotation) during the Ragdoll state
+        /// </summary>
         private BoneTransform[] _ragdollBones;
+        [NonSerialized]
+        [SyncVar(OnChange = nameof(OnSyncKnockdown))]
+        public bool IsKnockedDown;
+        [field: NonSerialized]
+        [field: SyncVar]
+        private bool IsFacingDown { get; [ServerRpc] set; }
         [SerializeField]
         private AnimationClip _standUpFaceUpClip;
         [SerializeField]
         private AnimationClip _standUpFaceDownClip;
-        private float _elapsedResetBonesTime;
-        private float _timeToResetBones = 0.5f;
 
-		private void OnSyncKnockdown(bool prev, bool next, bool asServer)
+        private void OnSyncKnockdown(bool prev, bool next, bool asServer)
 		{
 			if (prev == next) return;
             if (next)
 			{
-                _animator.SetFloat("Speed", 0);
-                if (!IsOwner)
-                {
-                    EnableAnimatorAndController(false);
-                    return;
-                }
-                _currentState = RagdollState.Ragdoll;
                 Knockdown();
             }
 			else
             {
-                _currentState = RagdollState.Walking;
 				BonesReset();
 			}
 		}
-
-        private void OnSyncStandingUp(bool prev, bool next, bool asServer)
-        {
-            if ((prev == next) || IsOwner) return;
-
-            if (next)
-            {
-                _isFacingDown = _hips.transform.forward.y < 0;
-                _animator.enabled = true;
-                _networkAnimator.enabled = true;
-                _animator.Play(_isFacingDown ? _standUpFaceDownClip.name : _standUpFaceUpClip.name, 0, 0);
-            }
-            else
-            {
-                _humanoidLivingController.enabled = true;
-                _characterController.enabled = true;
-            }
-        }
-
-		/// <summary>
-		/// On Start network to set up things both on clients and host, only once. 
-		/// </summary>
-		public override void OnStartNetwork()
+        public override void OnStartNetwork()
 		{
 			base.OnStartNetwork();
 
@@ -98,13 +83,9 @@ namespace SS3D.Systems.Entities.Humanoid
 			_characterController = GetComponent<CharacterController>();
 			_networkAnimator = GetComponent<NetworkAnimator>();
             _knockdownTimer = 0;
-            _hips = ArmatureRoot.GetChild(0);
-            _character = ArmatureRoot.parent;
-            if (IsClient)
-            {
-                _currentState = RagdollState.Walking;
-            }
-
+            _hips = _armatureRoot.GetChild(0);
+            _character = _armatureRoot.parent;
+            _currentState = RagdollState.Walking;
             _ragdollParts = (from part in GetComponentsInChildren<RagdollPart>() select part.transform.GetComponent<Transform>()).ToArray();
             _standUpBones = new BoneTransform[_ragdollParts.Length];
             _ragdollBones = new BoneTransform[_ragdollParts.Length];
@@ -114,7 +95,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 _standUpBones[boneIndex] = new();
                 _ragdollBones[boneIndex] = new();
             }
-            // All rigid bodies get kinematic, only the owner should be able to change that afterwards.
+            // All rigid bodies are kinematic at start, only the owner should be able to change that afterwards.
 			ToggleKinematic(true);
 		}
         
@@ -128,20 +109,6 @@ namespace SS3D.Systems.Entities.Humanoid
                     Recover();
                 }
             }
-			// Only owners gets to control their ragdoll through pushing buttons.
-			if (!IsOwner) return;
-
-			if (Input.GetKeyDown(KeyCode.Y))
-			{
-                if (IsKnockedDown)
-                {
-                    Recover();
-                }
-                else
-                {
-                    KnockdownTimeless();
-                }
-			}
             switch (_currentState)
             {
                 case RagdollState.Walking:
@@ -157,111 +124,12 @@ namespace SS3D.Systems.Entities.Humanoid
                     StandingUpBehavior();
                     break;
             }
-		}
+        }
 
         private void WalkingBehavior() { }
-
-        private void RagdollBehavior()
-        {
-            if (IsOwner)
-            {
-                AlignToHips();
-            }
-        }
-
-        private void AlignToHips()
-        {
-            Vector3 originalHipsPosition = _hips.position;
-            Vector3 newPosition = _hips.position;
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo))
-            {
-                newPosition.y = hitInfo.point.y + 0.0051f;
-            }
-            _character.position = newPosition;
-            _hips.position = originalHipsPosition;
-			
-            _isFacingDown = _hips.transform.forward.y < 0;
-            Vector3 desiredDirection = _hips.up * (_isFacingDown ? 1 : -1);
-            desiredDirection.y = 0;
-            desiredDirection.Normalize();
-            Quaternion originalHipsRotation = _hips.rotation;
-            Vector3 desiredRotation = Quaternion.FromToRotation(transform.forward, desiredDirection).eulerAngles;
-            desiredRotation.x = 0;
-            desiredRotation.z = 0;
-            transform.rotation *= Quaternion.Euler(desiredRotation);
-            _hips.rotation = originalHipsRotation;
-        }
-        private void BonesReset()
-        {
-            _currentState = RagdollState.BonesReset;
-            // This is important, because otherwise the character will fly away after disabling its animator
-            ToggleKinematic(true);
-            _elapsedResetBonesTime = 0;
-            PopulateBoneTransforms(_ragdollBones);
-            PopulateStandUpBoneTransforms(_isFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip);
-            BonesResetBehavior();
-        }
-        private void BonesResetBehavior()
-        {
-            _elapsedResetBonesTime += Time.deltaTime;
-            float elapsedPercentage = _elapsedResetBonesTime / _timeToResetBones;
-            for (int partIndex = 0; partIndex < _ragdollParts.Length; partIndex++)
-            {
-                _ragdollParts[partIndex].localPosition = Vector3.Lerp(_ragdollBones[partIndex].Position, _standUpBones[partIndex].Position, elapsedPercentage);
-                _ragdollParts[partIndex].localRotation = Quaternion.Lerp(_ragdollBones[partIndex].Rotation, _standUpBones[partIndex].Rotation, elapsedPercentage);
-            }
-            if (elapsedPercentage >= 1)
-            {
-                StandUp();
-            }
-        }
-        private void StandUp()
-        {
-            _animator.enabled = true;
-            _networkAnimator.enabled = true;
-            _currentState = RagdollState.StandingUp;
-            _animator.Play(_isFacingDown ? _standUpFaceDownClip.name : _standUpFaceUpClip.name, 0, 0);
-            IsStandingUp = true;
-        }
-
-        private void StandingUpBehavior()
-        {
-            string standUpName = (_isFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip).name;
-            if (_animator.GetCurrentAnimatorStateInfo(0).IsName(standUpName) == false)
-            {
-                Walk();
-            }
-        }
-
-        private void Walk()
-        {
-            IsStandingUp = false;
-            _characterController.enabled = true;
-            _humanoidLivingController.enabled = true;
-            _currentState = RagdollState.Walking;
-        }
-        
-        private void PopulateStandUpBoneTransforms(AnimationClip animationClip)
-        {
-            Vector3 armaturePositionBefore = ArmatureRoot.localPosition;
-            Quaternion armatureRotationBefore = ArmatureRoot.localRotation;
-            animationClip.SampleAnimation(gameObject, 0f);
-            Vector3 hipsPositionBefore = _hips.position;
-            Quaternion hipsRotationBefore = _hips.rotation;
-            ArmatureRoot.localPosition = armaturePositionBefore;
-            ArmatureRoot.localRotation = armatureRotationBefore;
-            _hips.position = hipsPositionBefore;
-            _hips.rotation = hipsRotationBefore;
-            PopulateBoneTransforms(_standUpBones);
-        }
-        private void PopulateBoneTransforms(BoneTransform[] boneTransforms)
-        {
-            for (int boneIndex = 0; boneIndex < _ragdollParts.Length; boneIndex++)
-            {
-                boneTransforms[boneIndex].Position = _ragdollParts[boneIndex].localPosition;
-                boneTransforms[boneIndex].Rotation = _ragdollParts[boneIndex].localRotation;
-            }
-        }
+        /// <summary>
+        /// Cast knockdown, that isn't going to expire until Recover()
+        /// </summary>
         [ServerRpc(RequireOwnership = false)]
         public void KnockdownTimeless()
         {
@@ -279,56 +147,189 @@ namespace SS3D.Systems.Entities.Humanoid
             _knockdownTimer += seconds;
             IsKnockedDown = true;
         }
+        private void Knockdown()
+        {
+            _currentState = RagdollState.Ragdoll;
+            ToggleController(false);
+            ToggleAnimator(false);
+            
+            if (!IsOwner) return;
+            Vector3 movement = _humanoidLivingController.TargetMovement * 3;
+            ToggleKinematic(false);
+            foreach (Transform part in _ragdollParts)
+            {
+                part.GetComponent<Rigidbody>().AddForce(movement, ForceMode.VelocityChange);
+            }
+        }
 
+        private void RagdollBehavior()
+        {
+            // Only the owner handles ragdoll's physics
+            if (!IsOwner) return;
+            AlignToHips();
+        }
+        /// <summary>
+        /// Adjust player's position and rotation
+        /// </summary>
+        private void AlignToHips()
+        {
+            IsFacingDown = _hips.transform.forward.y < 0;
+            Vector3 originalHipsPosition = _hips.position;
+            Vector3 newPosition = _hips.position;
+            // Get the lowest position
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo))
+            {
+                // It's important to use + 0.0051f, because otherwise the player gets stuck
+                newPosition.y = hitInfo.point.y + 0.0051f;
+            }
+            _character.position = newPosition;
+            _hips.position = originalHipsPosition;
+            
+            Vector3 desiredDirection = _hips.up * (IsFacingDown ? 1 : -1);
+            desiredDirection.y = 0;
+            desiredDirection.Normalize();
+            Quaternion originalHipsRotation = _hips.rotation;
+            Vector3 rotationDifference = Quaternion.FromToRotation(transform.forward, desiredDirection).eulerAngles;
+            // Make sure that rotation is only around Y axis
+            rotationDifference.x = 0;
+            rotationDifference.z = 0;
+            transform.rotation *= Quaternion.Euler(rotationDifference);
+            _hips.rotation = originalHipsRotation;
+        }
+        /// <summary>
+        /// Start of moving bones to their first positions in StandUp animation
+        /// </summary>
+        private void BonesReset()
+        {
+            _currentState = RagdollState.BonesReset;
+            _elapsedResetBonesTime = 0;
+            // Only the owner handles ragdoll's physics
+            if (IsOwner)
+            {
+                ToggleKinematic(true);
+                PopulatePartsTransforms(_ragdollBones);
+                PopulateStandUpPartsTransforms(_standUpBones, IsFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip);
+            }
+        }
+        /// <summary>
+        /// Smoothly move bones to their first positions in StandUp animation
+        /// </summary>
+        private void BonesResetBehavior()
+        {
+            _elapsedResetBonesTime += Time.deltaTime;
+            float elapsedPercentage = _elapsedResetBonesTime / _timeToResetBones;
+            if (elapsedPercentage >= 1)
+            {
+                StandUp();
+            }
+            
+            // Only the owner handles ragdoll's physics
+            if (!IsOwner) return;
+            for (int partIndex = 0; partIndex < _ragdollParts.Length; partIndex++)
+            {
+                _ragdollParts[partIndex].localPosition = Vector3.Lerp(_ragdollBones[partIndex].Position, _standUpBones[partIndex].Position, elapsedPercentage);
+                _ragdollParts[partIndex].localRotation = Quaternion.Lerp(_ragdollBones[partIndex].Rotation, _standUpBones[partIndex].Rotation, elapsedPercentage);
+            }
+        }
+        /// <summary>
+        /// End the BonesReset state and start StandUp animation
+        /// </summary>
+        private void StandUp()
+        {
+            _currentState = RagdollState.StandingUp;
+            ToggleAnimator(true);
+            // State names have to be the same as animation names
+            _animator.Play(IsFacingDown ? _standUpFaceDownClip.name : _standUpFaceUpClip.name, 0, 0);
+        }
+        /// <summary>
+        /// Wait till StandUp animation is done
+        /// </summary>
+        private void StandingUpBehavior()
+        {
+            string standUpName = (IsFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip).name;
+            // If animation has ended, switch to walking
+            if (_animator.GetCurrentAnimatorStateInfo(0).IsName(standUpName) == false)
+            {
+                Walk();
+            }
+        }
+        /// <summary>
+        /// Switch state to Walking
+        /// </summary>
+        private void Walk()
+        {
+            _currentState = RagdollState.Walking;
+            ToggleController(true);
+        }
+        /// <summary>
+        /// Copy current ragdoll parts positions to array
+        /// </summary>
+        /// <param name="partsTransforms">Array, that receives ragdoll parts positions</param>
+        private void PopulatePartsTransforms(BoneTransform[] partsTransforms)
+        {
+            for (int partIndex = 0; partIndex < _ragdollParts.Length; partIndex++)
+            {
+                partsTransforms[partIndex].Position = _ragdollParts[partIndex].localPosition;
+                partsTransforms[partIndex].Rotation = _ragdollParts[partIndex].localRotation;
+            }
+        }
+
+        /// <summary>
+        /// Copy ragdoll parts position in first frame of StandUp animation to array
+        /// </summary>
+        /// <param name = "partsTransforms">Array, that receives ragdoll parts positions</param>
+        /// <param name="animationClip"></param>
+        private void PopulateStandUpPartsTransforms(BoneTransform[] partsTransforms, AnimationClip animationClip)
+        {
+            BoneTransform[] originalTransforms = (BoneTransform[])_ragdollBones.Clone();
+            Vector3 originalArmaturePosition = _armatureRoot.localPosition;
+            Quaternion originalArmatureRotation = _armatureRoot.localRotation;
+            // Put character into first frame of animation
+            animationClip.SampleAnimation(gameObject, 0f);
+            Vector3 originalHipsPosition = _hips.position;
+            Quaternion originalHipsRotation = _hips.rotation;
+            _armatureRoot.localPosition = originalArmaturePosition;
+            _armatureRoot.localRotation = originalArmatureRotation;
+            _hips.position = originalHipsPosition;
+            _hips.rotation = originalHipsRotation;
+            PopulatePartsTransforms(partsTransforms);
+            
+            // Move bones back to their original positions
+            for (int partIndex = 0; partIndex < _ragdollParts.Length; partIndex++)
+            {
+                _ragdollParts[partIndex].localPosition = originalTransforms[partIndex].Position;
+                _ragdollParts[partIndex].localRotation = originalTransforms[partIndex].Rotation;
+            }
+        }
         [ServerRpc(RequireOwnership = false)]
         public void Recover()
         {
             IsKnockedDown = false;
             _knockdownTimer = 0;
         }
-
+        
 		/// <summary>
-		/// Movement is client authoritative,
-		/// so only call that on the owner, since it handles adding forces to body parts.
+		/// Switch isKinematic for each ragdoll part
 		/// </summary>
-		[Client]
-		private void Knockdown()
-		{
-			if (!IsOwner) return;
-			Vector3 movement = _humanoidLivingController.TargetMovement * 3;
-			EnableAnimatorAndController(false);
-			ToggleKinematic(false);
-			foreach (Transform part in _ragdollParts)
-			{
-				part.GetComponent<Rigidbody>().AddForce(movement, ForceMode.VelocityChange);
-			}
-		}
-
-		/// <summary>
-		/// Toggle kinematic to true for all clients, then only the owner should toggle it to false,
-		/// since only the owner handle the physics.
-		/// </summary>
-		[ServerOrClient]
 		private void ToggleKinematic(bool isKinematic)
 		{
-			if (!IsOwner && !isKinematic) return;
 			foreach (Transform part in _ragdollParts)
 			{
 				part.GetComponent<Rigidbody>().isKinematic = isKinematic;
 			}
 		}
-
-		/// <summary>
-		/// When enable is false, simply disablecomponents that could mess with the other physics based components,
-		/// to avoid jittering.
-		/// </summary>
-		[ServerOrClient]
-		private void EnableAnimatorAndController(bool enable)
-		{
-			_humanoidLivingController.enabled = enable;
-			_characterController.enabled = enable;
-			_animator.enabled = enable;
-			_networkAnimator.enabled = enable;
-		}
+        private void ToggleController(bool enable)
+        {
+            _humanoidLivingController.enabled = enable;
+            _characterController.enabled = enable;
+        }
+        private void ToggleAnimator(bool enable)
+        {
+            // Speed=0 prevents animator from choosing Walking animations after enabling it
+            if (!enable)
+                _animator.SetFloat("Speed", 0);
+            _animator.enabled = enable;
+            _networkAnimator.enabled = enable;
+        }
     }
 }

@@ -2771,7 +2771,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -3421,7 +3421,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -4231,7 +4231,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -4469,7 +4469,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -5416,7 +5416,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -6582,7 +6582,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -8129,7 +8129,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -8464,7 +8464,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -8989,9 +8989,7 @@ MonoBehaviour:
   _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  ArmatureRoot: {fileID: 8356004225170572391}
-  IsKnockedDown: 0
-  <IsStandingUp>k__BackingField: 0
+  _armatureRoot: {fileID: 8356004225170572391}
   _standUpFaceUpClip: {fileID: 7400000, guid: 819462e6a707a0147a647482f5d2a038, type: 2}
   _standUpFaceDownClip: {fileID: 7400000, guid: 3b44d4082074d7f4cb19f2036c9c9a01, type: 2}
 --- !u!1 &6418095482179841189
@@ -9693,7 +9691,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -10351,7 +10349,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -11150,7 +11148,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -11441,7 +11439,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -12554,7 +12552,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 2
+  _interpolation: 5
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
