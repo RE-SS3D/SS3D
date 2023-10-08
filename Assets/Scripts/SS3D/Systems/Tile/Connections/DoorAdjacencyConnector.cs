@@ -6,13 +6,17 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Tile.Connections
 {
-    public class DoorAdjacencyConnector : NetworkBehaviour, IAdjacencyConnector
+    public class DoorAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
     {
-        public enum DoorType
+        private enum DoorType
         {
             Single,
             Double
         };
+
+        public Direction DoorDirection => _placedObject.Direction;
+
+        protected override IMeshAndDirectionResolver AdjacencyResolver => null;
 
         /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
         private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0f;
@@ -24,84 +28,21 @@ namespace SS3D.Systems.Tile.Connections
         [SerializeField]
         private DoorType doorType;
 
-        private TileMap map;
-        public PlacedTileObject placedTileObject;
-
-        private bool _initialized = false;
-
         // WallCap gameobjects, North, East, South, West. Null if not present.
         private GameObject[] wallCaps = new GameObject[4];
-        private AdjacencyMap adjacencyMap = new AdjacencyMap();
 
-        public override void OnStartClient()
+        public override bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject, bool updateNeighbours)
         {
-            base.OnStartClient();
-            Setup();
-        }
-
-        private void Setup()
-        {
-            if (!_initialized)
-            {
-                adjacencyMap = new AdjacencyMap();
-
-                placedTileObject = GetComponent<PlacedTileObject>();
-                _initialized = true;
-            }
-        }
-
-        public void CleanAdjacencies()
-        {
-            if (!map)
-            {
-                map = GetComponentInParent<TileMap>();
-            }
-
-            var neighbourObjects = map.GetNeighbourPlacedObjects(TileLayer.Turf, transform.position);
-            for (int i = 0; i < neighbourObjects.Length; i++)
-            {
-                neighbourObjects[i]?.UpdateSingleAdjacency(placedTileObject,
-                    TileHelper.GetOpposite((Direction)i));
-            }
-        }
-
-        public bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject, bool updateNeighbours)
-        {
-            Setup();
-
-            bool isConnected = IsConnected(direction, placedObject);
-            bool update = adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
-
+            bool update = base.UpdateSingleConnection(direction, placedObject, updateNeighbours);
             if (update)
                 UpdateWallCaps();
-
-            return true;
+            return update;
         }
 
-        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public override void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
-            Setup();
-            if (!map)
-                map = GetComponentInParent<TileMap>();
-
-            neighbourObjects = map.GetNeighbourPlacedObjects(TileLayer.Turf, transform.position);
-            PlacedTileObject currentObject = GetComponent<PlacedTileObject>();
-
-            bool changed = false;
-            for (int i = 0; i < neighbourObjects.Length; i++)
-            {
-                bool updatedSingle = false;
-                updatedSingle = UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
-                if (updatedSingle && neighbourObjects[i])
-                    neighbourObjects[i].UpdateSingleAdjacency(currentObject, TileHelper.GetOpposite((Direction)i));
-
-                changed |= updatedSingle;
-            }
-
-            if (changed)
-            {
-                UpdateWallCaps();
-            }
+            base.UpdateAllConnections(neighbourObjects);
+            UpdateWallCaps();
         }
 
         private void CreateWallCaps(bool isPresent, Direction direction)
@@ -125,27 +66,26 @@ namespace SS3D.Systems.Tile.Connections
             if (wallCapPrefab == null)
                 return;
 
-            Direction outFacing = TileHelper.GetNextDir(GetDoorDirection());
+            Direction outFacing = TileHelper.GetNextDir(DoorDirection);
 
-            bool isPresent = adjacencyMap.HasConnection(outFacing);
+            bool isPresent = _adjacencyMap.HasConnection(outFacing);
             CreateWallCaps(isPresent, outFacing);
 
-            isPresent = adjacencyMap.HasConnection(TileHelper.GetOpposite(outFacing));
+            isPresent = _adjacencyMap.HasConnection(TileHelper.GetOpposite(outFacing));
             CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
         }
 
         /**
-            * <summary>Spawns a wall cap facing a direction, with appropriate position & settings</summary>
-            * <param name="direction">Direction from the centre of the door</param>
-            */
+        * <summary>Spawns a wall cap facing a direction, with appropriate position & settings</summary>
+        * <param name="direction">Direction from the centre of the door</param>
+        */
         private GameObject SpawnWallCap(Direction direction)
         {
             var wallCap = Instantiate(wallCapPrefab, transform);
-            Direction doorDirection = GetDoorDirection();
 
-            Direction cardinalDirectionInput = TileHelper.GetRelativeDirection(direction, doorDirection);
+            Direction cardinalDirectionInput = TileHelper.GetRelativeDirection(direction, DoorDirection);
             var cardinal = TileHelper.ToCardinalVector(cardinalDirectionInput);
-            float rotation = TileHelper.AngleBetween(direction, doorDirection);
+            float rotation = TileHelper.AngleBetween(direction, DoorDirection);
 
 
             wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
@@ -154,17 +94,7 @@ namespace SS3D.Systems.Tile.Connections
             return wallCap;
         }
 
-        private Direction GetDoorDirection()
-        {
-            if (placedTileObject == null)
-            {
-                placedTileObject = GetComponent<PlacedTileObject>();
-            }
-
-            return placedTileObject.Direction;
-        }
-
-        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public override bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
         {
             return (neighbourObject && neighbourObject.HasAdjacencyConnector &&
                 neighbourObject.GenericType == TileObjectGenericType.Wall);

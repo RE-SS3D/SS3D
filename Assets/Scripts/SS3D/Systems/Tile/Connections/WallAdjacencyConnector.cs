@@ -158,7 +158,7 @@ namespace SS3D.Systems.Tile.Connections
         private bool IsConnectedToDoor(PlacedTileObject neighbourObject)
         {
             var doorConnector = neighbourObject.GetComponent<DoorAdjacencyConnector>();
-            var door = doorConnector.placedTileObject;
+            var door = doorConnector.PlacedObject;
             if (door != null)
             {
                 if (_placedObject.IsOnLeft(door) || _placedObject.IsOnRight(door))

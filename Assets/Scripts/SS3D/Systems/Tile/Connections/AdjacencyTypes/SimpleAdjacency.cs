@@ -7,7 +7,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
     /// Adjacency type used for objects that do not require complex connections.
     /// </summary>
     [Serializable]
-    public struct SimpleConnector
+    public struct SimpleConnector : IMeshAndDirectionResolver
     {
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;

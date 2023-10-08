@@ -115,7 +115,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 0}
+  - {fileID: 3040907911380660968}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -144,12 +144,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 6999522401175031449}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 6999522401175031449}
   _genericType: 9
   _specificType: 5
-  _advancedAdjacency:
+  _syncedConnections: 0
+  advancedAdjacency:
     o: {fileID: 6313828114514605112, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
     u: {fileID: 1428770310312528737, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
     i: {fileID: -1544124563803091405, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
@@ -167,4 +168,3 @@ MonoBehaviour:
     xQuad: {fileID: 9022132694264211953, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
     viewObstacles: []
     opaque: 0
-  _syncedConnections: 0
