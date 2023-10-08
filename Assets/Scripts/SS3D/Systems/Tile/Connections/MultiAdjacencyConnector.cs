@@ -1,4 +1,4 @@
-using FishNet.Object;
+﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
@@ -72,8 +72,9 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public bool UpdateSingle(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
+        public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
+            Setup();
             bool isConnected = false;
             bool isUpdated = false;
 
@@ -98,14 +99,14 @@ namespace SS3D.Systems.Tile.Connections
             return isUpdated;
         }
 
-        public void UpdateAll(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
             Setup();
 
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
-                changed |= UpdateSingle((Direction)i, neighbourObjects[i], true);
+                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
             }
 
             if (changed)
@@ -153,6 +154,11 @@ namespace SS3D.Systems.Tile.Connections
                 _adjacencyMap.DeserializeFromByte(newValue);
                 UpdateMeshAndDirection();
             }
+        }
+
+        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
