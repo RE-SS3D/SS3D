@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using math = SS3D.Utils.MathUtility;
 
 namespace SS3D.Systems.Tile
 {
@@ -127,7 +128,10 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public bool IsInFront(PlacedTileObject other)
         {
-            if(Origin == other.Origin + TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction))
+            Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction);
+            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x + diff.x, TileConstants.ChunkSize),
+                math.mod(other.Origin.y + diff.y, TileConstants.ChunkSize));
+            if (Origin == OtherMoved)
                 return true;
 
             return false;
@@ -138,7 +142,10 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public bool IsBehind(PlacedTileObject other)
         {
-            if (Origin == other.Origin - TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction))
+            Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction);
+            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x - diff.x, TileConstants.ChunkSize),
+                math.mod(other.Origin.y - diff.y, TileConstants.ChunkSize));
+            if (Origin == OtherMoved)
                 return true;
 
             return false;
@@ -150,7 +157,10 @@ namespace SS3D.Systems.Tile
         public bool IsOnRight(PlacedTileObject other)
         {
             Direction dirOnRight = TileHelper.GetNextCardinalDir(other.Direction);
-            if (Origin == other.Origin + TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnRight))
+            Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnRight);
+            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x + diff.x, TileConstants.ChunkSize),
+                math.mod(other.Origin.y + diff.y, TileConstants.ChunkSize));
+            if (Origin == OtherMoved)
                 return true;
 
             return false;
@@ -162,7 +172,10 @@ namespace SS3D.Systems.Tile
         public bool IsOnLeft(PlacedTileObject other)
         {
             Direction dirOnLeft = TileHelper.GetNextCardinalDir(other.Direction);
-            if (Origin == other.Origin - TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnLeft))
+            Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnLeft);
+            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x - diff.x, TileConstants.ChunkSize),
+                math.mod(other.Origin.y - diff.y, TileConstants.ChunkSize));
+            if (Origin == OtherMoved)
                 return true;
 
             return false;

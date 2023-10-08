@@ -97,9 +97,9 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case AdjacencyShape.XSingle:
                     mesh = xSingle;
                     Direction connectingDiagonal = adjacencyMap.GetSingleConnection(false);
-                    rotation = connectingDiagonal == Direction.NorthEast ? 0f :
-                        connectingDiagonal == Direction.SouthEast ? 90f :
-                        connectingDiagonal == Direction.SouthWest ? 180f : -90f;
+                    rotation = connectingDiagonal == Direction.NorthEast ? 180f :
+                        connectingDiagonal == Direction.SouthEast ? 270f :
+                        connectingDiagonal == Direction.SouthWest ? 0f : 90f;
                     break;
                 case AdjacencyShape.XOpposite:
                     mesh = xOpposite;
