@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
+    /// <summary>
+    /// Component for character's gameobject, that controlls ragdoll
+    /// </summary>
     [RequireComponent(typeof(Animator), typeof(NetworkAnimator), typeof(CharacterController))]
     [RequireComponent(typeof(HumanoidLivingController))]
 	public class Ragdoll : NetworkBehaviour
@@ -15,11 +18,11 @@ namespace SS3D.Systems.Entities.Humanoid
 		private Transform _armatureRoot;
         private Transform _hips;
         private Transform _character;
-		private Animator _animator;
-		private NetworkAnimator _networkAnimator;
-		private HumanoidLivingController _humanoidLivingController;
-		private CharacterController _characterController;
-		private Transform[] _ragdollParts;
+        private Animator _animator; 
+        private NetworkAnimator _networkAnimator; 
+        private HumanoidLivingController _humanoidLivingController; 
+        private CharacterController _characterController; 
+        private Transform[] _ragdollParts;
         /// <summary>
         /// If knockdown is supposed to expire
         /// </summary>
@@ -27,9 +30,13 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>
         /// How many seconds are left before the ragdoll expires
         /// </summary>
-        private float _knockdownTimer;
-        private float _elapsedResetBonesTime;
+        private float _knockdownTimer; 
+        private float _elapsedResetBonesTime; 
         private float _timeToResetBones = 0.5f;
+        /// <summary>
+        /// Determines how much higher than the lowest point character will be during AlignToHips(). This var prevent character from getting stuck in the floor 
+        /// </summary>
+        private const float AlignmentYDelta = 0.0051f;
         private enum RagdollState
         {
             Walking,
@@ -98,8 +105,13 @@ namespace SS3D.Systems.Entities.Humanoid
             // All rigid bodies are kinematic at start, only the owner should be able to change that afterwards.
 			ToggleKinematic(true);
 		}
-        
-		private void Update()
+
+        private void OnDisable()
+        {
+            Recover();
+        }
+
+        private void Update()
 		{
             if (IsServer && _isKnockdownTimed && IsKnockedDown)
             {
@@ -133,6 +145,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [ServerRpc(RequireOwnership = false)]
         public void KnockdownTimeless()
         {
+            if (!enabled) return;
             _isKnockdownTimed = false;
             IsKnockedDown = true;
         }
@@ -143,6 +156,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [ServerRpc(RequireOwnership = false)]
         public void Knockdown(float seconds)
         {
+            if (!enabled) return;
             _isKnockdownTimed = true;
             _knockdownTimer += seconds;
             IsKnockedDown = true;
@@ -169,7 +183,8 @@ namespace SS3D.Systems.Entities.Humanoid
             AlignToHips();
         }
         /// <summary>
-        /// Adjust player's position and rotation
+        /// Adjust player's position and rotation. Character's x and z coords equals hips coords, y is at lowest positon.
+        /// Character's y rotation is aligned with hips forwards direction.
         /// </summary>
         private void AlignToHips()
         {
@@ -179,8 +194,7 @@ namespace SS3D.Systems.Entities.Humanoid
             // Get the lowest position
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo))
             {
-                // It's important to use + 0.0051f, because otherwise the player gets stuck
-                newPosition.y = hitInfo.point.y + 0.0051f;
+                newPosition.y = hitInfo.point.y + AlignmentYDelta;
             }
             _character.position = newPosition;
             _hips.position = originalHipsPosition;
@@ -197,7 +211,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _hips.rotation = originalHipsRotation;
         }
         /// <summary>
-        /// Start of moving bones to their first positions in StandUp animation
+        /// Switch to BonesReset state and prepare for BonesResetBehavior
         /// </summary>
         private void BonesReset()
         {
@@ -211,7 +225,7 @@ namespace SS3D.Systems.Entities.Humanoid
             PopulateStandUpPartsTransforms(_standUpBones, IsFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip);
         }
         /// <summary>
-        /// Smoothly move bones to their first positions in StandUp animation
+        /// Interpolate bones between their lates ragdoll transform and their transform at the first frame of StandUp animation
         /// </summary>
         private void BonesResetBehavior()
         {
