@@ -203,13 +203,12 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _currentState = RagdollState.BonesReset;
             _elapsedResetBonesTime = 0;
+            
             // Only the owner handles ragdoll's physics
-            if (IsOwner)
-            {
-                ToggleKinematic(true);
-                PopulatePartsTransforms(_ragdollBones);
-                PopulateStandUpPartsTransforms(_standUpBones, IsFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip);
-            }
+            if (!IsOwner) return;
+            ToggleKinematic(true);
+            PopulatePartsTransforms(_ragdollBones);
+            PopulateStandUpPartsTransforms(_standUpBones, IsFacingDown ? _standUpFaceDownClip : _standUpFaceUpClip);
         }
         /// <summary>
         /// Smoothly move bones to their first positions in StandUp animation
@@ -217,13 +216,13 @@ namespace SS3D.Systems.Entities.Humanoid
         private void BonesResetBehavior()
         {
             _elapsedResetBonesTime += Time.deltaTime;
-            float elapsedPercentage = _elapsedResetBonesTime / _timeToResetBones;
-            if (elapsedPercentage >= 1)
+            if (_elapsedResetBonesTime >= _timeToResetBones)
             {
                 StandUp();
             }
             
             // Only the owner handles ragdoll's physics
+            float elapsedPercentage = _elapsedResetBonesTime / _timeToResetBones;
             if (!IsOwner) return;
             for (int partIndex = 0; partIndex < _ragdollParts.Length; partIndex++)
             {
