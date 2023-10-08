@@ -186,8 +186,8 @@ namespace SS3D.Systems.Entities.Humanoid
             desiredDirection.Normalize();
             Quaternion originalHipsRotation = _hips.rotation;
             Vector3 desiredRotation = Quaternion.FromToRotation(transform.forward, desiredDirection).eulerAngles;
-            desiredDirection.x = 0;
-            desiredDirection.z = 0;
+            desiredRotation.x = 0;
+            desiredRotation.z = 0;
             transform.rotation *= Quaternion.Euler(desiredRotation);
             _hips.rotation = originalHipsRotation;
         }
