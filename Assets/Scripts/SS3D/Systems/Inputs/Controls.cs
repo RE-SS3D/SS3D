@@ -663,6 +663,15 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Ragdoll"",
+                    ""type"": ""Button"",
+                    ""id"": ""789515c7-61e9-4ba7-ad2a-82508ecf70db"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -740,6 +749,17 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Toggle Runtime Editor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""13c6e68f-bef5-47b0-986c-77bb4782e2c9"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Ragdoll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -917,6 +937,7 @@ namespace SS3D.Systems.Inputs
             m_Other_ToggleMenu = m_Other.FindAction("Toggle Menu", throwIfNotFound: true);
             m_Other_SpawnCans = m_Other.FindAction("Spawn Cans", throwIfNotFound: true);
             m_Other_ToggleRuntimeEditor = m_Other.FindAction("Toggle Runtime Editor", throwIfNotFound: true);
+            m_Other_Ragdoll = m_Other.FindAction("Ragdoll", throwIfNotFound: true);
             // Tile Creator
             m_TileCreator = asset.FindActionMap("Tile Creator", throwIfNotFound: true);
             m_TileCreator_ToggleMenu = m_TileCreator.FindAction("Toggle Menu", throwIfNotFound: true);
@@ -1221,6 +1242,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Other_ToggleMenu;
         private readonly InputAction m_Other_SpawnCans;
         private readonly InputAction m_Other_ToggleRuntimeEditor;
+        private readonly InputAction m_Other_Ragdoll;
         public struct OtherActions
         {
             private @Controls m_Wrapper;
@@ -1232,6 +1254,7 @@ namespace SS3D.Systems.Inputs
             public InputAction @ToggleMenu => m_Wrapper.m_Other_ToggleMenu;
             public InputAction @SpawnCans => m_Wrapper.m_Other_SpawnCans;
             public InputAction @ToggleRuntimeEditor => m_Wrapper.m_Other_ToggleRuntimeEditor;
+            public InputAction @Ragdoll => m_Wrapper.m_Other_Ragdoll;
             public InputActionMap Get() { return m_Wrapper.m_Other; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1262,6 +1285,9 @@ namespace SS3D.Systems.Inputs
                     @ToggleRuntimeEditor.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleRuntimeEditor;
                     @ToggleRuntimeEditor.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleRuntimeEditor;
                     @ToggleRuntimeEditor.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleRuntimeEditor;
+                    @Ragdoll.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnRagdoll;
+                    @Ragdoll.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnRagdoll;
+                    @Ragdoll.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnRagdoll;
                 }
                 m_Wrapper.m_OtherActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1287,6 +1313,9 @@ namespace SS3D.Systems.Inputs
                     @ToggleRuntimeEditor.started += instance.OnToggleRuntimeEditor;
                     @ToggleRuntimeEditor.performed += instance.OnToggleRuntimeEditor;
                     @ToggleRuntimeEditor.canceled += instance.OnToggleRuntimeEditor;
+                    @Ragdoll.started += instance.OnRagdoll;
+                    @Ragdoll.performed += instance.OnRagdoll;
+                    @Ragdoll.canceled += instance.OnRagdoll;
                 }
             }
         }
@@ -1426,6 +1455,7 @@ namespace SS3D.Systems.Inputs
             void OnToggleMenu(InputAction.CallbackContext context);
             void OnSpawnCans(InputAction.CallbackContext context);
             void OnToggleRuntimeEditor(InputAction.CallbackContext context);
+            void OnRagdoll(InputAction.CallbackContext context);
         }
         public interface ITileCreatorActions
         {
