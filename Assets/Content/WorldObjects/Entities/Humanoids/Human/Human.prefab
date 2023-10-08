@@ -2685,7 +2685,7 @@ Rigidbody:
   m_GameObject: {fileID: 1772429314456052628}
   serializedVersion: 2
   m_Mass: 12.5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -3335,7 +3335,7 @@ Rigidbody:
   m_GameObject: {fileID: 2150520291421741415}
   serializedVersion: 2
   m_Mass: 5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -4145,7 +4145,7 @@ Rigidbody:
   m_GameObject: {fileID: 2716332713394458792}
   serializedVersion: 2
   m_Mass: 7.5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -4182,7 +4182,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_Swing1Limit:
-    limit: 0
+    limit: 10
     bounciness: 0
     contactDistance: 0
   m_Swing2Limit:
@@ -4370,10 +4370,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.04
-  m_Height: 0.24
+  m_Radius: 0.06
+  m_Height: 0.3
   m_Direction: 1
-  m_Center: {x: 0.00000006647069, y: 0.17658089, z: -0.0000013460045}
+  m_Center: {x: 0.010000006, y: 0.20708054, z: -0.00000160798}
 --- !u!54 &5313804527427833997
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4383,7 +4383,7 @@ Rigidbody:
   m_GameObject: {fileID: 3146009794794091675}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -5330,7 +5330,7 @@ Rigidbody:
   m_GameObject: {fileID: 3786064091942543194}
   serializedVersion: 2
   m_Mass: 7.5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -6496,7 +6496,7 @@ Rigidbody:
   m_GameObject: {fileID: 4866882200861722142}
   serializedVersion: 2
   m_Mass: 7.5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -8030,10 +8030,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.04
-  m_Height: 0.24
+  m_Radius: 0.06
+  m_Height: 0.3
   m_Direction: 1
-  m_Center: {x: -0.000000031569375, y: 0.17387971, z: -0.0000000069762893}
+  m_Center: {x: -0.01000001, y: 0.20399535, z: -0.0000000020435051}
 --- !u!54 &50542481282957646
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8043,7 +8043,7 @@ Rigidbody:
   m_GameObject: {fileID: 6200983958115876081}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -8365,10 +8365,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.04
+  m_Radius: 0.06
   m_Height: 0.24888593
   m_Direction: 1
-  m_Center: {x: -0.009448917, y: 0.13159677, z: 0}
+  m_Center: {x: 0.01, y: 0.13159677, z: 0}
 --- !u!54 &1959571873118445697
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8378,7 +8378,7 @@ Rigidbody:
   m_GameObject: {fileID: 6297666854416341505}
   serializedVersion: 2
   m_Mass: 5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -8990,7 +8990,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   ArmatureRoot: {fileID: 8356004225170572391}
-  Forearm: {fileID: 3146009794794091675}
   IsKnockedDown: 0
   <IsStandingUp>k__BackingField: 0
   _standUpFaceUpClip: {fileID: 7400000, guid: 819462e6a707a0147a647482f5d2a038, type: 2}
@@ -9608,7 +9607,7 @@ Rigidbody:
   m_GameObject: {fileID: 7117039680706093616}
   serializedVersion: 2
   m_Mass: 5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -10253,10 +10252,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.02
+  m_Radius: 0.05
   m_Height: 0.1
   m_Direction: 1
-  m_Center: {x: 0.000000004189193, y: 0.05681151, z: -0.00976061}
+  m_Center: {x: 0.000000004189193, y: 0.05681151, z: 0}
 --- !u!54 &3057989039550494453
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10266,7 +10265,7 @@ Rigidbody:
   m_GameObject: {fileID: 8070994560484445144}
   serializedVersion: 2
   m_Mass: 5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -11065,7 +11064,7 @@ Rigidbody:
   m_GameObject: {fileID: 8327591943400095719}
   serializedVersion: 2
   m_Mass: 7.5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -11102,7 +11101,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_Swing1Limit:
-    limit: 0
+    limit: 10
     bounciness: 0
     contactDistance: 0
   m_Swing2Limit:
@@ -11402,7 +11401,7 @@ Rigidbody:
   m_GameObject: {fileID: 8565450559166660275}
   serializedVersion: 2
   m_Mass: 12.5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -12456,7 +12455,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.02
+  m_Radius: 0.05
   m_Height: 0.1
   m_Direction: 1
   m_Center: {x: 0, y: 0.056811504, z: 0}
@@ -12469,7 +12468,7 @@ Rigidbody:
   m_GameObject: {fileID: 9177992485008970741}
   serializedVersion: 2
   m_Mass: 5
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
