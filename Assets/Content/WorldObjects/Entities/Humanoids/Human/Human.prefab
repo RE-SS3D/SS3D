@@ -9097,7 +9097,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 4652682359255614497}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 885d5a9c5776fd64ab1cf595e0cfd9d8, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 321651474590079853}
 --- !u!137 &4652682359255614497
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
