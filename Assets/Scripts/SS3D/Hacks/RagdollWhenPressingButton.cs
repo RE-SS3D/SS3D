@@ -1,4 +1,5 @@
 ﻿using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inputs;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace SS3D.Hacks
     /// <summary>
     /// Currenytly using button Y to ragdoll, might change in the future.
     /// </summary>
-    public class RagdollWhenPressingButton : MonoBehaviour
+    public class RagdollWhenPressingButton : NetworkActor
     {
         [SerializeField]
         private Ragdoll _ragdoll;
@@ -20,11 +21,15 @@ namespace SS3D.Hacks
 
         private Controls.OtherActions _controls;
 
-        private void Start()
+        public override void OnStartClient()
         {
+            base.OnStartClient();
+            if (!IsOwner) return;
+
             _controls = Subsystems.Get<InputSystem>().Inputs.Other;
             _controls.Ragdoll.performed += HandleKnockdown;
         }
+
 
         private void HandleKnockdown(InputAction.CallbackContext context)
         {
