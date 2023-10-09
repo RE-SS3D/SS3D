@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
@@ -434,7 +434,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
 					{
 						TileLayer.Wire,
 						TileLayer.Disposal,
-						TileLayer.Pipes
+						TileLayer.PipeLeft,
+                        TileLayer.PipeRight,
+                        TileLayer.PipeSurface,
+                        TileLayer.PipeMiddle
 					}, false);
 
 					break;

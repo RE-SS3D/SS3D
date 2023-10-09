@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,11 +13,14 @@ namespace SS3D.Systems.Tile
         Turf,
         Wire,
         Disposal,
-        Pipes,
+        PipeSurface,
         WallMountHigh,
         WallMountLow,
         FurnitureBase,
         FurnitureTop,
-        Overlays
+        Overlays,
+        PipeMiddle,
+        PipeLeft,
+        PipeRight,
     }
 }
