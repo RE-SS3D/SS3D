@@ -82,13 +82,15 @@ namespace SS3D.Systems.Interactions
         /// Runs the most prioritised interaction
         /// </summary>
         [Client]
-        private void HandleRunPrimary(InputAction.CallbackContext callbackContext)
+        public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
+            
+            Debug.Log("run primary : " + Mouse.current.position.ReadValue());
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
             if (viableInteractions.Count <= 0)
@@ -112,7 +114,7 @@ namespace SS3D.Systems.Interactions
             {
                 return;
             }
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
             ViewTargetInteractions(viableInteractions, interactionEvent, ray);
@@ -156,7 +158,7 @@ namespace SS3D.Systems.Interactions
                 CmdRunInteraction(ray, interactionName);
             }
 
-            _radialView.SetInteractions(interactions, interactionEvent, Input.mousePosition);
+            _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
             _radialView.OnInteractionSelected += handleInteractionSelected;
             _radialView.ShowInteractionsMenu();
         }
@@ -190,7 +192,7 @@ namespace SS3D.Systems.Interactions
 
             if (showMenu && interactions.Count > 0)
             {
-                Vector3 mousePosition = Input.mousePosition;
+                Vector3 mousePosition = Mouse.current.position.ReadValue();
                 mousePosition.y = Mathf.Max(_radialView.RectTransform.rect.height, mousePosition.y);
 
                 _radialView.SetInteractions(interactions, interactionEvent, mousePosition);

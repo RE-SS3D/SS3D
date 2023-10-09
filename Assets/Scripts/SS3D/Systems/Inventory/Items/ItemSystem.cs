@@ -5,6 +5,7 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Logging;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
@@ -89,6 +90,20 @@ namespace SS3D.Systems.Inventory.Items
             return itemInstance;
         }
 
+
+        /// <summary>
+        /// Requests to spawn an item in a given container.
+        /// </summary>
+        /// <param name="id">The item ID to spawn.</param>
+        /// <param name="position">The desired position to spawn.</param>
+        /// <param name="rotation">The desired rotation to apply.</param>
+        [ServerRpc(RequireOwnership = false)]
+        public void CmdSpawnItemInContainer(ItemId id, AttachedContainer attachedContainer)
+        {
+            SpawnItemInContainer(id, attachedContainer);
+        }
+
+
         /// <summary>
         /// Spawns an Item inside a container.
         ///
@@ -120,5 +135,16 @@ namespace SS3D.Systems.Inventory.Items
             Log.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
             return itemInstance;
         }
+
+        /// <summary>
+        /// Return the item in the active hand of the given player entity.
+        /// </summary>
+        public Item GetItemInHand(Entity playerEntity)
+        {
+            Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;
+            return hands.SelectedHand.ItemInHand;
+        }
+
+
     }
 }

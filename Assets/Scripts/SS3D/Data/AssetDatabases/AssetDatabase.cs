@@ -73,6 +73,17 @@ namespace SS3D.Data.AssetDatabases
             return Assets[index] as T;
         }
 
+        public bool TryGet<T>(int index, out T asset) where T : Object
+        {
+            if(index >= 0 && index < Assets.Count)
+            {
+                asset =  Assets[index] as T;
+                return true;
+            }
+            asset = null;
+            return false;      
+        }
+
         /// <summary>
         /// Adds abd asset to the asset database. Should be used only for additional content or runtime stuff.
         /// </summary>

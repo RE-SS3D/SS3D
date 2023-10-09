@@ -20,6 +20,8 @@ jobs:
       - run: npm install fs
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
+        with:
+          testMode: editmode
         env:
           UNITY_LICENSE_FILE: ../Documents/UnityLicense.ulf
       - name: Produce summary output
