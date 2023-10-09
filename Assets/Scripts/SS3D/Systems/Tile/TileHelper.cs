@@ -14,18 +14,12 @@ namespace SS3D.Systems.Tile
     {
         private static TileLayer[] TileLayers;
 
-        public static Direction GetNextDir(Direction dir)
-        {
-            switch (dir)
-            {
-                default:
-                case Direction.South: return Direction.West;
-                case Direction.West: return Direction.North;
-                case Direction.North: return Direction.East;
-                case Direction.East: return Direction.South;
-            }
-        }
 
+        /// <summary>
+        /// Get a direction 90 degree clockwise from the one passed in parameter.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
         public static Direction GetNextCardinalDir(Direction dir)
         {
             switch (dir)
@@ -42,11 +36,18 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        /// <summary>
+        /// Get the rotation angle of a particular dir.
+        /// E.g. assuming north is the initial position (should be), north return 0, north-east 45 ...
+        /// </summary>
         public static int GetRotationAngle(Direction dir)
         {
             return (int)dir * 45;
         }
 
+        /// <summary>
+        /// Get all different kind of tile layers.
+        /// </summary>
         public static TileLayer[] GetTileLayers()
         {
             if (TileLayers == null)
@@ -56,6 +57,9 @@ namespace SS3D.Systems.Tile
             return TileLayers;
         }
 
+        /// <summary>
+        /// Get the offset in coordinates in a given direction.
+        /// </summary>
         public static Tuple<int, int> ToCardinalVector(Direction direction)
         {
             return new Tuple<int, int>(
@@ -64,32 +68,43 @@ namespace SS3D.Systems.Tile
             );
         }
 
+        /// <summary>
+        /// Get the closest round number world position on the plane where y = 0.
+        /// </summary>
         public static Vector3 GetClosestPosition(Vector3 worldPosition)
         {
             return new Vector3(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
         }
 
+        /// <summary>
+        /// Get the relative direction between two direction. 
+        /// E.g : to = North-East, from = South-West, return South.
+        /// TODO : maybe swith name of to and from, currently it feels it's the inverse way around.
+        /// </summary>
         public static Direction GetRelativeDirection(Direction to, Direction from)
         {
             return (Direction)((((int)to - (int)from) + 8) % 8);
         }
 
-        public static int GetDirectionIndex(Direction dir)
-        {
-            return (int)dir / 2;
-        }
-
-
+        /// <summary>
+        /// Return a list of the cardinal directions.
+        /// </summary>
         public static List<Direction> CardinalDirections()
         {
             return new List<Direction> { Direction.North, Direction.East, Direction.South, Direction.West };
         }
 
+        /// <summary>
+        /// Return a list of the diagonal directions.
+        /// </summary>
         public static List<Direction> DiagonalDirections()
         {
             return new List<Direction> { Direction.NorthEast, Direction.SouthEast, Direction.SouthWest, Direction.NorthWest };
         }
 
+        /// <summary>
+        /// Return the diagonal direction between two cardinal directions.
+        /// </summary>
         public static Direction GetDiagonalBetweenTwoCardinals(Direction cardinal1, Direction cardinal2)
         {
             List<Direction> givenCardinals = new List<Direction> { cardinal1, cardinal2 };
@@ -98,6 +113,9 @@ namespace SS3D.Systems.Tile
                 givenCardinals.Contains(Direction.West) ? Direction.NorthWest : Direction.NorthEast;
         }
 
+        /// <summary>
+        /// Return the cardinal direction between two diagonal directions.
+        /// </summary>
         public static Direction GetCardinalBetweenTwoDiagonals(Direction diagonal1, Direction diagonal2)
         {
             List<Direction> givenDiagonals = new List<Direction> { diagonal1, diagonal2 };
@@ -106,11 +124,18 @@ namespace SS3D.Systems.Tile
                 givenDiagonals.Contains(Direction.SouthWest) ? Direction.West : Direction.North;
         }
 
+        /// <summary>
+        /// Return the angle between two directions, clock wise is positive.
+        /// </summary>
         public static float AngleBetween(Direction from, Direction to)
         {
             return ((int)to - (int)from) * 45.0f;
         }
 
+        /// <summary>
+        /// Get the opposite direction from the one in parameter.
+        /// E.g : North opposite is south. South-East opposite is North-West.
+        /// </summary>
         public static Direction GetOpposite(Direction direction)
         {
             return (Direction)(((int)direction + 4) % 8);
@@ -121,6 +146,7 @@ namespace SS3D.Systems.Tile
         /// a particular direction.
         /// e.g If the original one is facing north, return (0,1), because, the tile in front of the original
         /// one will be just north of the original one (hence plus one on the y axis).
+        /// TODO : isn't "to cardinal vector" method doing the same thing ?
         /// </summary>
         public static Vector2Int CoordinateDifferenceInFrontFacingDirection(Direction direction)
         {

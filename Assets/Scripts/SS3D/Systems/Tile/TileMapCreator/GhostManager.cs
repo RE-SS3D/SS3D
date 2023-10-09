@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using UnityEngine;
 using Actor = SS3D.Core.Behaviours.Actor;
 
@@ -108,7 +108,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void SetNextRotation()
         {
-            Dir = TileHelper.GetNextDir(Dir);
+            Dir = TileHelper.GetNextCardinalDir(Dir);
         }
     }
 }

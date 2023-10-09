@@ -10,6 +10,15 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Abstract class implementing the IAdjacencyConnector interface. 
+    /// Idea of this class is to provide a basic implementation for all adjacency connector working mostly
+    /// on the same layer. This is because it uses the adjacencyMap, which consider only 8 possible connections.
+    /// It should be generic enough to work as a base class for most IAdjacencyConnector working with same
+    /// layer connections (so almost all of them).
+    /// It leaves to child classes to implement isConnected method, as this may vary greatly from one connector
+    /// to another.
+    /// </summary>
     public abstract class AbstractHorizontalConnector : NetworkActor, IAdjacencyConnector
     {
         protected TileObjectGenericType _genericType;
@@ -22,6 +31,7 @@ namespace SS3D.Systems.Tile.Connections
         protected AdjacencyMap _adjacencyMap;
 
         protected MeshFilter _filter;
+
         protected PlacedTileObject _placedObject;
 
         public PlacedTileObject PlacedObject => _placedObject;
@@ -31,12 +41,22 @@ namespace SS3D.Systems.Tile.Connections
 
         private bool _initialized;
 
+        /// <summary>
+        /// Abstract method, as from one connector to another, the code to check for connection greatly changes.
+        /// </summary>
+        public abstract bool IsConnected(Direction dir, PlacedTileObject neighbourObject);
+
+
         public override void OnStartClient()
         {
             base.OnStartClient();
             Setup();
         }
 
+        /// <summary>
+        /// Simply set things up, including creating new references, and fetching generic and specific type
+        /// from the associated scriptable object.
+        /// </summary>
         private void Setup()
         {
             if (!_initialized)
@@ -59,8 +79,9 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public abstract bool IsConnected(Direction dir, PlacedTileObject neighbourObject);
-
+        /// <summary>
+        /// Update all connections around this connector, updating mesh and directions eventually.
+        /// </summary>
         public virtual void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
             Setup();
@@ -77,6 +98,9 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
+        /// <summary>
+        /// Update a single connection, in a specific direction. Eventually also update the neighbour connection.
+        /// </summary>
         public virtual bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             Setup();
@@ -98,6 +122,9 @@ namespace SS3D.Systems.Tile.Connections
             return isUpdated;
         }
 
+        /// <summary>
+        /// Sync adjacency map on client, and update mesh and direction using this new map.
+        /// </summary>
         private void SyncAdjacencies(byte oldValue, byte newValue, bool asServer)
         {
             if (!asServer)
@@ -113,6 +140,7 @@ namespace SS3D.Systems.Tile.Connections
         protected void UpdateMeshAndDirection()
         {
             // Some connectors might not have to update mesh or direction at all.
+            // E.g : door connectors.
             if (AdjacencyResolver == null) return;
 
             MeshDirectionInfo info = new();
@@ -133,10 +161,9 @@ namespace SS3D.Systems.Tile.Connections
         }
 
         /// <summary>
-        /// Sets a given direction blocked. This means that it will no longer be allowed to connect on that direction.
+        /// Sets a given direction blocked or unblocked. 
+        /// If blocked, this means that it will no longer be allowed to connect on that direction (until further update).
         /// </summary>
-        /// <param name="dir"></param>
-        /// <param name="value"></param>
         public void SetBlockedDirection(Direction dir, bool value)
         {
             _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));

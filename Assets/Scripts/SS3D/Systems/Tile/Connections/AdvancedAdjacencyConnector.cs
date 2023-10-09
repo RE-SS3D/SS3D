@@ -9,6 +9,9 @@ using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Basic connector using the Advanced connector struct for resolving shape and direction.
+    /// </summary>
     public class AdvancedAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
     {
         [SerializeField] private AdvancedConnector advancedAdjacency;

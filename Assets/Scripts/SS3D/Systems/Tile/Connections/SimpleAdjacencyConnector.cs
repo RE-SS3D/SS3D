@@ -11,7 +11,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// Good for stuff that connects on the same layer only, horizontally, of the same specific and generic type.
+    /// Basic connector using the simple connector struct for resolving shape and direction.
     /// </summary>
     public class SimpleAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
     {

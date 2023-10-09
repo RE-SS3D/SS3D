@@ -6,6 +6,10 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Connector for doors, handling adding wall caps, creating custom floor tile under the door.
+    /// TODO : add the custom floor.
+    /// </summary>
     public class DoorAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
     {
         private enum DoorType
@@ -45,9 +49,12 @@ namespace SS3D.Systems.Tile.Connections
             UpdateWallCaps();
         }
 
+        /// <summary>
+        /// Destroy or add a wall cap.
+        /// </summary>
         private void CreateWallCaps(bool isPresent, Direction direction)
         {
-            int capIndex = TileHelper.GetDirectionIndex(direction);
+            int capIndex = GetWallCapIndex(direction);
             if (isPresent && wallCaps[capIndex] == null)
             {
 
@@ -66,7 +73,7 @@ namespace SS3D.Systems.Tile.Connections
             if (wallCapPrefab == null)
                 return;
 
-            Direction outFacing = TileHelper.GetNextDir(DoorDirection);
+            Direction outFacing = TileHelper.GetNextCardinalDir(DoorDirection);
 
             bool isPresent = _adjacencyMap.HasConnection(outFacing);
             CreateWallCaps(isPresent, outFacing);
@@ -75,10 +82,9 @@ namespace SS3D.Systems.Tile.Connections
             CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
         }
 
-        /**
-        * <summary>Spawns a wall cap facing a direction, with appropriate position & settings</summary>
-        * <param name="direction">Direction from the centre of the door</param>
-        */
+        
+        /// <summary> Spawns a wall cap facing a direction, with appropriate position & settings </summary>
+        ///<param name="direction">Direction from the centre of the door</param>
         private GameObject SpawnWallCap(Direction direction)
         {
             var wallCap = Instantiate(wallCapPrefab, transform);
@@ -98,6 +104,14 @@ namespace SS3D.Systems.Tile.Connections
         {
             return (neighbourObject && neighbourObject.HasAdjacencyConnector &&
                 neighbourObject.GenericType == TileObjectGenericType.Wall);
+        }
+
+        /// <summary>
+        /// Get the index of a wallcap in the wallcap Array.
+        /// </summary>
+        private int GetWallCapIndex(Direction dir)
+        {
+            return (int)dir / 2;
         }
     }
 
