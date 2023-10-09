@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -20,7 +21,7 @@ namespace SS3D.Systems.Inventory.UI
 
         [SerializeField] private Item _item;
         private Transform _oldParent;
-        private Vector3 _startMousePosition;
+        private Vector2 _startMousePosition;
         private Vector3 _startPosition;
         private Image _slotImage;
         private Outline _outlineInner;
@@ -63,7 +64,7 @@ namespace SS3D.Systems.Inventory.UI
         public void OnPointerDown(PointerEventData eventData)
         {
             _startPosition = transform.position;
-            _startMousePosition = Input.mousePosition;
+            _startMousePosition = Mouse.current.position.ReadValue();
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -102,7 +103,7 @@ namespace SS3D.Systems.Inventory.UI
             // Only allow to drag with a left click.
             if (eventData.button != PointerEventData.InputButton.Left) return;
 
-            Vector3 diff = Input.mousePosition - _startMousePosition;
+            Vector3 diff = Mouse.current.position.ReadValue() - _startMousePosition;
             transform.position = _startPosition + diff;
         }
 

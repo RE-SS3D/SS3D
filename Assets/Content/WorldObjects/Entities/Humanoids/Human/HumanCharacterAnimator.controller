@@ -45,7 +45,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: GettingUpFaceUp
-  m_Speed: 0.75
+  m_Speed: 0.74
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 295217125740093890}

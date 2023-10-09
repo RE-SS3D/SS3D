@@ -32,6 +32,16 @@ namespace SS3D.Data
             return GetDatabase(databaseId).Get<TAsset>(assetId);
         }
 
+        public static bool TryGet<TAsset>(int databaseId, int assetId, out TAsset asset) where TAsset : Object
+        {
+            if(GetDatabase(databaseId).TryGet(assetId, out asset))
+            {
+                return true;
+            }
+            asset= null;
+            return false;
+        }
+
         /// <summary>
         /// Generic getter, supports all databases and all asset database enums.
         /// </summary>

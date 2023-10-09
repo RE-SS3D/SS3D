@@ -123,7 +123,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void UpdateMousePositionTransforms()
         {
-            // Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            // Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
             // Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
             // mousePos = new Vector3(mousePos.x, transform.position.y, mousePos.z);
             
