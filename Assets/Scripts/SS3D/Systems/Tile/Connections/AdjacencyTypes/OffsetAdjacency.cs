@@ -42,14 +42,14 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
         public Mesh lSE;
         [Tooltip("A mesh where the south & west edges are connected")]
         public Mesh lSW;
+        [Tooltip("A mesh where the South, west, & east edges are connected")]
+        public Mesh tSWE;
         [Tooltip("A mesh where the north, east, & west edges are connected")]
         public Mesh tNEW;
         [Tooltip("A mesh where the north, south, & west edges are connected")]
         public Mesh tNSW;
         [Tooltip("A mesh where the north, south, & east edges are connected")]
         public Mesh tNSE;
-        [Tooltip("A mesh where the South, west, & east edges are connected")]
-        public Mesh tSWE;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
 
@@ -81,7 +81,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case AdjacencyShape.USouth:
                     mesh = uSouth;
                     _orientation = OffsetOrientation.USouth;
-                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleConnection());
                     break;
                 case AdjacencyShape.I:
                     mesh = i;

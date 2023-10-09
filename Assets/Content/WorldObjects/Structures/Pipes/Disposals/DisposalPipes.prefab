@@ -135,11 +135,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -7727686409064562107}
   _genericType: 1
   _specificType: 0
-  _simpleAdjacency:
+  _syncedConnections: 0
+  simpleAdjacency:
     o: {fileID: -6725049071555871357, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
     u: {fileID: -6725049071555871357, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
     i: {fileID: -6725049071555871357, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
     l: {fileID: -7002929985465626668, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
     t: {fileID: 7767200051770316982, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
     x: {fileID: -7993494061914831054, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
-  _syncedConnections: 0
