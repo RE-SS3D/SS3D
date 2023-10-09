@@ -1,5 +1,6 @@
 ﻿using FishNet.Object.Synchronizing;
 using JetBrains.Annotations;
+using SS3D.Attributes;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
@@ -11,19 +12,9 @@ namespace SS3D.Systems.Tile.Connections
 {
     public abstract class AbstractHorizontalConnector : NetworkActor, IAdjacencyConnector
     {
-
-        /// <summary>
-        /// A type that specifies to which objects to connect to.
-        /// </summary>
-        [Tooltip("Generic ID that adjacent objects must be to count. If empty, any id is accepted.")]
-        [SerializeField]
         protected TileObjectGenericType _genericType;
 
-        /// <summary>
-        /// Specific ID to differentiate objects when the generic is the same.
-        /// </summary>
-        [Tooltip("Specific ID to differentiate objects when the generic is the same.")]
-        [SerializeField]
+
         protected TileObjectSpecificType _specificType;
 
         protected abstract IMeshAndDirectionResolver AdjacencyResolver { get; }
