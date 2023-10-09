@@ -241,11 +241,6 @@ namespace SS3D.Systems.Interactions
         [ObserversRpc]
         private void RpcExecuteClientInteraction(Ray ray, string interactionName, int referenceId)
         {
-            if (IsServer)
-            {
-                return;
-            }
-
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
             InteractionEntry interaction =
                 viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);

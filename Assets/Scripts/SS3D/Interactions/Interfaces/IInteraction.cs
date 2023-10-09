@@ -21,6 +21,13 @@ namespace SS3D.Interactions.Interfaces
         string GetName(InteractionEvent interactionEvent);
 
         /// <summary>
+        /// Get the generic name of interaction. Pickup interaction should return "Pickup".
+        /// GetName should return "Pickup item" with item the name of the item to pickup.
+        /// </summary>
+        /// <returns></returns>
+        string GetGenericName();
+
+        /// <summary>
         /// Gets the interaction icon
         /// </summary>
         Sprite GetIcon(InteractionEvent interactionEvent);
