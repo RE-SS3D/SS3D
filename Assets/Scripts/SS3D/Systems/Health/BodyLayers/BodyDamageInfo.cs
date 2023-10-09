@@ -9,7 +9,7 @@ namespace SS3D.Systems.Health
         public float Suceptibility;
         public float Resistance;
 
-        public BodyDamageInfo(DamageType damageType, float quantity = 0, float suceptibility = 0, float resistance = 0)
+        public BodyDamageInfo(DamageType damageType, float quantity = 0, float suceptibility = 1, float resistance = 0)
         {
             InjuryType = damageType;
             Quantity = quantity;

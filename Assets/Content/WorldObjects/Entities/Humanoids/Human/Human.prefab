@@ -430,7 +430,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 8304794297218136879}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 983acf51173ef60479e35c5e35946162, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 3233858438047360200}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
 --- !u!137 &8304794297218136879
@@ -2446,7 +2446,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 8793278027620475813}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 4d59bb658831172479995d721f8cbd6c, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 1503068000312408174}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
 --- !u!137 &8793278027620475813
@@ -2947,7 +2947,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 1037560153012890605}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 2d0913074150cca43b88c90ec658aacb, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 7004274367669955809}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 9100
 --- !u!137 &1037560153012890605
@@ -3291,7 +3291,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 949421968142360378}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 9659c4cc7bea07c4ba38b492f407ef7f, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 5957969264668744151}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
 --- !u!137 &949421968142360378
@@ -4121,7 +4121,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 6840993320086561213}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 2f664501d8d74774c9427f7fb6d50ae6, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 1471950008773350561}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 2600
 --- !u!137 &6840993320086561213
@@ -4504,7 +4504,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1267633661366518328}
-  - component: {fileID: 4220394823444319275}
   - component: {fileID: 4801334323162635196}
   - component: {fileID: 5313804527427833997}
   - component: {fileID: 9092931419345746643}
@@ -4535,19 +4534,6 @@ Transform:
   m_Father: {fileID: 9053177843097342720}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4220394823444319275
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146009794794091675}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.1, y: 0.3928955, z: 0.1}
-  m_Center: {x: 0.000000008353355, y: 0.022139462, z: -0.0000000011352201}
 --- !u!136 &4801334323162635196
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6147,6 +6133,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 9
+--- !u!1 &4127238172761884466
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6994247970310072217}
+  - component: {fileID: 5957969264668744151}
+  m_Layer: 0
+  m_Name: BodyColliderArm_l
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6994247970310072217
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4127238172761884466}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2089153385561551699}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5957969264668744151
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4127238172761884466}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.08757967, y: 0.35864305, z: 0.083990104}
+  m_Center: {x: -0.0076885326, y: 0.030124959, z: 0.004340694}
 --- !u!1 &4209142530063844385
 GameObject:
   m_ObjectHideFlags: 0
@@ -7337,7 +7368,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 7063966259298033300}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 60890cc80962a7e44b97b4ba3b0518e3, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 1490189817795883494}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 1300
 --- !u!137 &7063966259298033300
@@ -8374,6 +8405,7 @@ Transform:
   m_Children:
   - {fileID: 6355804955344212816}
   - {fileID: 2561159763559213326}
+  - {fileID: 6994247970310072217}
   m_Father: {fileID: 8040713312746122184}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9612,7 +9644,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 4652682359255614497}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 885d5a9c5776fd64ab1cf595e0cfd9d8, type: 3}
   _internalBodyParts: {fileID: 5209421398917094837}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 2619973390650449415}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 25300
   heart: {fileID: 1872609562917901822}
@@ -11332,7 +11364,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 2879367628846680322}
   _bodyPartItem: {fileID: 5774385816057912484, guid: c19eccca279beee4186432a03257a7b9, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 5694751844136662217}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
   _hand: {fileID: 5948957322531814959}
@@ -13301,7 +13333,7 @@ MonoBehaviour:
   _skinnedMeshRenderer: {fileID: 6217532572249875957}
   _bodyPartItem: {fileID: 5774385816057912484, guid: df85b75fd341a244c8364ebb9c4fcfef, type: 3}
   _internalBodyParts: {fileID: 0}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 6678433723894724694}
   HealthController: {fileID: 5857269694861021747}
   _bodyPartVolume: 650
   _hand: {fileID: 7572883762844705701}
@@ -13699,6 +13731,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: HumanBrainItem
       objectReference: {fileID: 0}
+    - target: {fileID: 6413963789752772095, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
+      propertyPath: _networkObjectCache
+      value: 
+      objectReference: {fileID: 5382335363686172928}
+    - target: {fileID: 6413963789752772095, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
+      propertyPath: _componentIndexCache
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7596600830642500397, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -13752,9 +13792,17 @@ PrefabInstance:
       value: 41
       objectReference: {fileID: 0}
     - target: {fileID: 8532088199163376958, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
+      propertyPath: _networkBehaviours.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8532088199163376958, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
+      propertyPath: _networkBehaviours.Array.data[3]
+      value: 
+      objectReference: {fileID: 7339475864071461313}
     - target: {fileID: 8532088199163376958, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
       propertyPath: <ParentNetworkObject>k__BackingField
       value: 
@@ -13828,6 +13876,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7596600830642500397, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
   m_PrefabInstance: {fileID: 4384804525801143358}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7339475864071461313 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6413963789752772095, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
+  m_PrefabInstance: {fileID: 4384804525801143358}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7852950855619272858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7852950855619272858 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5774385816057912484, guid: 229b5ce92c3d9164e845f68308a037a2, type: 3}
