@@ -162,11 +162,11 @@ namespace SS3D.Systems.Entities.Humanoid
         private void Knockdown()
         {
             _currentState = RagdollState.Ragdoll;
+            Vector3 movement = _humanoidLivingController.TargetMovement * 3;
             ToggleController(false);
             ToggleAnimator(false);
             
             if (!IsOwner) return;
-            Vector3 movement = _humanoidLivingController.TargetMovement * 3;
             ToggleKinematic(false);
             foreach (Transform part in _ragdollParts)
             {
