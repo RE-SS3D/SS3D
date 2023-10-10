@@ -1,4 +1,5 @@
-﻿using Coimbra.Services.Events;
+﻿using Coimbra;
+using Coimbra.Services.Events;
 using Serilog;
 using Serilog.Sinks.Unity3D;
 using Serilog.Events;
@@ -42,7 +43,7 @@ namespace SS3D.Core
             if (IsInitialized) return;
             IsInitialized = true;
 
-            Settings = SettingsId.LogSettings;
+            Settings = ScriptableSettings.GetOrFind<LogSettings>();
 
             var configuration = new LoggerConfiguration();
 

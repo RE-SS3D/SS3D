@@ -68,7 +68,7 @@ namespace SS3D.Systems.Inventory.Items
         private AttachedContainer _container;
 
         public string Name => _name;
-        public GameObject ItemId { get; set; }
+        public string ItemId { get; set; }
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
         public AttachedContainer Container => _container;
@@ -117,13 +117,7 @@ namespace SS3D.Systems.Inventory.Items
 
             string itemName = gameObject.name.Split('(')[0];
 
-            if(!Enum.TryParse(itemName, out ItemId id))
-            {
-                Log.Error(this, $"id with name {itemName} not present in ItemId enums");
-                return;
-            }
-
-            ItemId = id;
+            ItemId = itemName;
         }
 
         public override void OnStartServer()

@@ -10,14 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
-  m_Name: Settings
+  m_Name: WorldSpaceUI
   m_EditorClassIdentifier: 
-  EnumName: SettingsId
-  AssetGroup: {fileID: 11400000, guid: 9bfbc9d4c2c1bb944942108648547da2, type: 2}
+  EnumName: WorldSpaceUI
+  AssetGroup: {fileID: 11400000, guid: dd394b793b56e43418a2c11a61130663, type: 2}
   Assets:
     _list:
-    - _key: ApplicationSettings
-      _value: {fileID: 11400000, guid: 443046479504c5640b8f5902a102c09f, type: 2}
-    - _key: LogSettings
-      _value: {fileID: 11400000, guid: 2024dd0c65f45424f98ac0c8a6979181, type: 2}
+    - _key: LoadingBar
+      _value: {fileID: 1998198171871307260, guid: 03bcc1824d3b20748b912ca532f86bb9, type: 3}
     _new: 

@@ -56,11 +56,10 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="position">The desired position to spawn.</param>
         /// <param name="rotation">The desired rotation to apply.</param>
         [ServerRpc(RequireOwnership = false)]
-        public void CmdSpawnItemInContainer(ItemId id, AttachedContainer attachedContainer)
+        public void CmdSpawnItemInContainer(Item id, AttachedContainer attachedContainer)
         {
-            SpawnItemInContainer(id, attachedContainer);
+            SpawnItemInContainer(id.Name, attachedContainer);
         }
-
 
         /// <summary>
         /// Spawns an Item inside a container.

@@ -1,15 +1,15 @@
 ﻿using FishNet;
-using FishNet.Connection;
-using FishNet.Managing.Client;
 using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Data;
+using SS3D.Data.Enums;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.UI.Buttons;
 using System.Collections;
-using UnityEditor;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
@@ -41,6 +41,7 @@ namespace SS3D.Tests
         public static bool ApproximatelyEqual(float a, float b)
         {
             bool result = ((a - b) * (a - b)) < 0.001f;
+
             return result;
         }
 
@@ -58,27 +59,39 @@ namespace SS3D.Tests
         /// <returns>IEnumerator for yielding in UnityTest.</returns>
         public static IEnumerator StartRound(float delay = 0.5f)
         {
-            SetTabActive(ServerSettingsTabName); yield return new WaitForSeconds(delay);
-            PressButton(StartRoundButtonName); yield return new WaitForSeconds(delay);
+            SetTabActive(ServerSettingsTabName);
+
+            yield return new WaitForSeconds(delay);
+            PressButton(StartRoundButtonName);
+
+            yield return new WaitForSeconds(delay);
         }
 
         public static IEnumerator LateJoinRound()
         {
             // Fire up the game
-            SetTabActive(ServerSettingsTabName); yield return new WaitForSeconds(1f);
-            PressButton(StartRoundButtonName); yield return new WaitForSeconds(1f);
+            SetTabActive(ServerSettingsTabName);
+
+            yield return new WaitForSeconds(1f);
+            PressButton(StartRoundButtonName);
+
+            yield return new WaitForSeconds(1f);
 
             // Give a few moments pause before we try and late join
             yield return new WaitForSeconds(5f);
 
             // Now we join.
-            PressButton(EmbarkButtonName); yield return new WaitForSeconds(3f);
+            PressButton(EmbarkButtonName);
+
+            yield return new WaitForSeconds(3f);
 
         }
 
         public static IEnumerator Embark()
         {
-            PressButton(EmbarkButtonName); yield return new WaitForSeconds(3f);
+            PressButton(EmbarkButtonName);
+
+            yield return new WaitForSeconds(3f);
         }
 
         public static IEnumerator ContinueFreePlayUntilControlAltBackspacePressed()
@@ -108,11 +121,16 @@ namespace SS3D.Tests
             //TODO: ScriptedInput input = UserInput.GetInputService() as ScriptedInput;
             //input.HandleButton(CancelButton, true);
             yield return null;
+
             //input.HandleButton(CancelButton, false);
 
             // Change to the server settings tab, and cancel the round
-            SetTabActive(ServerSettingsTabName); yield return new WaitForSeconds(1f);
-            PressButton(StartRoundButtonName); yield return new WaitForSeconds(1f);
+            SetTabActive(ServerSettingsTabName);
+
+            yield return new WaitForSeconds(1f);
+            PressButton(StartRoundButtonName);
+
+            yield return new WaitForSeconds(1f);
 
             // Give a moment's pause before test formally concludes. (It takes a while for the round to reset).
             yield return new WaitForSeconds(4f);
@@ -127,18 +145,22 @@ namespace SS3D.Tests
         {
             LabelButton button = GetButton(buttonName);
             float startTime = Time.time;
+
             while (button == null)
             {
                 Assert.IsTrue(Time.time < startTime + timeout, $"Timeout of {timeout} reached when trying to press {buttonName} button");
+
                 yield return new WaitForSeconds(1f);
                 button = GetButton(buttonName);
             }
+
             button.Press();
         }
 
         public static LabelButton GetButton(string buttonName)
         {
             LabelButton button = GameObject.Find(buttonName)?.GetComponent<LabelButton>();
+
             return button;
         }
 
@@ -161,29 +183,32 @@ namespace SS3D.Tests
             fixture.Set((AxisControl)fixture.InputDevice["Movement/y"], 0);
         }
 
-        public static AttachedContainer LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId item)
+        public static AttachedContainer LocalPlayerSpawnItemInFirstHandAvailable(string item)
         {
             ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
             EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetOwnedEntity( InstanceFinder.ClientManager.Connection ,out Entity entity);
+            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
             HumanInventory inventory = entity.gameObject.GetComponent<HumanInventory>();
-            foreach(Hand hand in inventory.Hands.PlayerHands)
+
+            foreach (Hand hand in inventory.Hands.PlayerHands.Where(hand => hand.Container.Empty))
             {
-                if (!hand.Container.Empty) continue;
-                else
-                {
-                    itemSystem.CmdSpawnItemInContainer(item, hand.Container);
-                    return hand.Container;
-                }
+                Item itemToSpawn = Assets.Get<GameObject>(AssetDatabases.Items, item).GetComponent<Item>();
+
+                itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+
+                return hand.Container;
             }
+
             Debug.Log("No free hands.");
+
             return null;
         }
 
         public static InteractionController GetLocalInteractionController()
         {
             EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
-            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection ,out Entity entity);
+            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
+
             return entity.gameObject.GetComponent<InteractionController>();
         }
 
@@ -191,6 +216,7 @@ namespace SS3D.Tests
         {
             EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
             entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
+
             return entity.gameObject.transform.position;
         }
     }

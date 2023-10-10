@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Coimbra;
+using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using UnityEngine;
@@ -23,14 +24,20 @@ namespace SS3D.Data
         /// <summary>
         /// Generic getter, supports all databases and all asset database enums.
         /// </summary>
-        /// <param name="databaseId"></param>
-        /// <param name="assetId"></param>
-        /// <typeparam name="TAsset"></typeparam>
-        /// <returns></returns>
+        [CanBeNull]
         public static TAsset Get<TAsset>(string databaseId, string assetId) where TAsset : Object
         {
             return GetDatabase(databaseId).Get<TAsset>(assetId);
         }
+
+        /// <summary>
+        /// Generic getter, supports all databases and all asset database enums.
+        /// </summary>
+        public static bool TryGet<TAsset>(string databaseId, string assetId, [CanBeNull] out TAsset asset) where TAsset : Object
+        {
+            return GetDatabase(databaseId).TryGet(assetId, out asset);
+        }
+
         /// <summary>
         /// Loads the databases in the project from the AssetDatabaseSettings, saves it in a Dictionary for easy & performant access.
         /// </summary>

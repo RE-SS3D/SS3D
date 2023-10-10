@@ -14,8 +14,7 @@ namespace SS3D.Systems.Crafting
     [CreateAssetMenu(fileName = "Recipe", menuName = "SS3D/Crafting/Recipe")]
     public class CraftingRecipe : ScriptableObject, ISerializationCallbackReceiver
     {
-
-        private Dictionary<ItemId, int> _elements = new();
+        private Dictionary<Item, int> _elements = new();
 
         [SerializeField]
         private float _executionTime;
@@ -24,16 +23,15 @@ namespace SS3D.Systems.Crafting
         private string _interactionName;
 
         [SerializeField]
-        private ItemId _target;
+        private Item _target;
 
         [SerializeField]
-        private List<ItemId> _result;
-
+        private List<Item> _result;
 
         /// <summary>
         /// The items and their respective numbers necessary for the recipe.
         /// </summary>
-        public Dictionary<ItemId, int> Elements => _elements;
+        public Dictionary<Item, int> Elements => _elements;
 
         /// <summary>
         /// Time it takes in second for the crafting to finish.
@@ -48,12 +46,12 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// The target of the recipe, which is the item on which the player must click to get the crafting interactions.
         /// </summary>
-        public ItemId Target => _target;
+        public Item Target => _target;
 
         /// <summary>
         /// The result of the crafting.
         /// </summary>
-        public List<ItemId> Result => _result;
+        public List<Item> Result => _result;
 
         public int ElementsNumber => _elements.Sum(x => x.Value);
 
@@ -70,17 +68,10 @@ namespace SS3D.Systems.Crafting
         {
 #if UNITY_EDITOR
             // just transfer things from the list to the dictionnary.
-
-            int enumCount = Enum.GetNames(typeof(ItemId)).Length;
-            _elements = new Dictionary<ItemId, int>();
+            _elements = new();
             foreach (RecipeElement item in _recipeElements)
             {
-                int i = 0;
-                
-                while (!_elements.TryAdd((ItemId) (((int)item.ItemId + i) % enumCount), item.Count))
-                {
-                    i++;
-                }
+	            _elements.TryAdd(item.ItemId, item.Count);
             }
             _recipeElements = null;
 #endif
@@ -90,9 +81,13 @@ namespace SS3D.Systems.Crafting
         {
 #if UNITY_EDITOR
             // just transfer things from the dictionnary to the list.
-            if (_elements == null) return;
+            if (_elements == null)
+            {
+	            return;
+            }
+
             _recipeElements = new List<RecipeElement>();
-            foreach (ItemId id in _elements.Keys)
+            foreach (Item id in _elements.Keys)
             {
                 _recipeElements.Add(new RecipeElement(id, _elements[id]));
             }
@@ -116,13 +111,13 @@ namespace SS3D.Systems.Crafting
             /// Id of the item.
             /// </summary>
             [SerializeField]
-            private ItemId _itemId;
+            private Item _itemId;
 
             public int Count => _count;
 
-            public ItemId ItemId => _itemId;
+            public Item ItemId => _itemId;
 
-            public RecipeElement(ItemId id, int count)
+            public RecipeElement(Item id, int count)
             {
                 _count = count;
                 _itemId = id;

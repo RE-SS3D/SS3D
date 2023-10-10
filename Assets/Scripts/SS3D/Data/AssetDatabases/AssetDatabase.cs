@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
-using SS3D.Attributes;
 using SS3D.CodeGeneration;
 using UnityEditor;
 using UnityEngine;
@@ -44,7 +43,6 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// All loaded assets that will be included in the built game.
         /// </summary>
-        //[ReadOnly]
 #endif
         public SerializableDictionary<string, Object> Assets;
 
@@ -74,22 +72,22 @@ namespace SS3D.Data.AssetDatabases
         /// <typeparam name="T">The type of asset to get.</typeparam>
         /// <returns></returns>
         [CanBeNull]
-        public T Get<T>(string id) where T : Object
+        public T Get<T>([NotNull] string id)
+            where T : Object
         {
             Assets.TryGetValue(id, out Object asset);
 
             return asset as T;
         }
 
-        public bool TryGet<T>(int index, out T asset) where T : Object
+        public bool TryGet<T>([NotNull] string index, [CanBeNull] out T asset)
+            where T : Object
         {
-            if(index >= 0 && index < Assets.Count)
-            {
-                asset =  Assets[index] as T;
-                return true;
-            }
-            asset = null;
-            return false;      
+            bool hasValue = Assets.TryGetValue(index, out Object foundValue);
+
+            asset = foundValue as T;
+
+            return hasValue;
         }
 
         /// <summary>
@@ -97,7 +95,8 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         /// <param name="asset"></param>
         /// <typeparam name="TAsset"></typeparam>
-        public void Add<TAsset>(Object asset) where TAsset : Object
+        public void Add<TAsset>(Object asset)
+            where TAsset : Object
         {
             Assets.Add(asset.name, asset as TAsset);
         }
@@ -135,7 +134,7 @@ namespace SS3D.Data.AssetDatabases
             }
 
             DatabaseAssetCreator.CreateAtPath(EnumPath, typeof(DatabaseAsset), EnumName, Assets.Values, EnumNamespaceName);
-        } 
+        }
 #endif
     }
 }

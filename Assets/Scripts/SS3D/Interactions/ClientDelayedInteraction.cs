@@ -3,6 +3,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using SS3D.Data;
+using SS3D.Data.Generated;
 
 namespace SS3D.Interactions
 {
@@ -30,9 +31,9 @@ namespace SS3D.Interactions
                 return true;
             }
 
-            GameObject loadingBarPrefab = Assets.Get<GameObject>(Data.Enums.AssetDatabases.UIElements, (int)Data.Enums.UIElementIds.LoadingBar);
-            
-            _loadingBarInstance = Object.Instantiate(loadingBarPrefab, source.GameObject.transform);
+            _loadingBarInstance = WorldSpaceUI.LoadingBar.New();
+
+            _loadingBarInstance.transform.SetParent(source.GameObject.transform);
             _loadingBarInstance.GetComponent<LoadingBar>().Duration = Delay;
             return true;
         }

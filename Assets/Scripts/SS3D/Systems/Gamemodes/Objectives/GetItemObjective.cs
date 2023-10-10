@@ -46,7 +46,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
 
         private void HandleItemPickedUpEvent(ref EventContext context, in ItemPickedUpEvent e)
         {
-            GameObject itemIdId = e.Item.ItemId;
+            GameObject itemIdId = e.Item.GameObject;
             string playerCkey = e.Player;
 
             if (itemIdId == _targetItem  && playerCkey.Equals(AssigneeCkey))

@@ -44,7 +44,7 @@ namespace SS3D.Systems.Crafting
 
             List<Item> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(target);
 
-            Dictionary<ItemId, int> potentialRecipeElements = craftingSystem.
+            Dictionary<Item, int> potentialRecipeElements = craftingSystem.
                 ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
 
             if (!craftingSystem.CheckEnoughCloseItemsForRecipe(potentialRecipeElements, recipe)) return false;

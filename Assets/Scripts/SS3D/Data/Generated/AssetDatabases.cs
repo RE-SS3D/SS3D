@@ -6,10 +6,11 @@ namespace SS3D.Data.Enums
     public static class AssetDatabases
     {
         public static DatabaseAsset Bodyparts = new DatabaseAsset("Bodyparts", "AssetDatabases");
+        public static DatabaseAsset CraftingRecipes = new DatabaseAsset("CraftingRecipes", "AssetDatabases");
         public static DatabaseAsset InteractionIcons = new DatabaseAsset("InteractionIcons", "AssetDatabases");
         public static DatabaseAsset Items = new DatabaseAsset("Items", "AssetDatabases");
         public static DatabaseAsset Scenes = new DatabaseAsset("Scenes", "AssetDatabases");
-        public static DatabaseAsset Settings = new DatabaseAsset("Settings", "AssetDatabases");
+        public static DatabaseAsset WorldSpaceUI = new DatabaseAsset("WorldSpaceUI", "AssetDatabases");
     }
 }
 

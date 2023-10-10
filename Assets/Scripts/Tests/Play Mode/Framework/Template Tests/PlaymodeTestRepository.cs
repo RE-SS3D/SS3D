@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SS3D.Core;
+using SS3D.Data.Generated;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Rounds;
@@ -115,7 +116,7 @@ namespace SS3D.Tests
         public static IEnumerator PlayerCanDropAndPickUpItem(PlayModeTest fixture)
         {
             // Get local player position, interaction controller and put bikehorn in first hand available.
-            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Data.Enums.ItemId.PDA);
+            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Items.PDA);
             var playerPosition = TestHelpers.GetLocalPlayerPosition();
 
             yield return new WaitForSeconds(0.2f);

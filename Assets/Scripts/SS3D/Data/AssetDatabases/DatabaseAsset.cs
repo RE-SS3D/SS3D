@@ -3,15 +3,30 @@ using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
 {
+    /// <summary>
+    /// Represents an asset data asset, contains the name of the asset and the related database.
+    /// </summary>
     public class DatabaseAsset
     {
+        /// <summary>
+        /// The name of the asset.
+        /// </summary>
         public readonly string Name;
 
+        /// <summary>
+        /// The database this asset belongs to.
+        /// </summary>
         public readonly string DatabaseName;
 
+        /// <summary>
+        /// Returns the prefab of this asset as a GameObject.
+        /// </summary>
         public GameObject Prefab => Get<GameObject>();
-
-        public GameObject New => GameObject.Instantiate(Prefab);
+        
+        /// <summary>
+        /// Instantiates a new GameObject of this asset's prefab
+        /// </summary>
+        public GameObject New() => GameObject.Instantiate(Prefab);
 
         public DatabaseAsset(string name, string databaseName)
         {
@@ -19,6 +34,11 @@ namespace SS3D.Data.AssetDatabases
             DatabaseName = databaseName;
         }
 
+        /// <summary>
+        /// Gets this asset as T.
+        /// </summary>
+        /// <typeparam name="T">The type to cast the asset to.</typeparam>
+        /// <returns>The casted asset.</returns>
         public T Get<T>()
             where T : Object
         {
@@ -28,7 +48,7 @@ namespace SS3D.Data.AssetDatabases
         public static implicit operator string(DatabaseAsset asset)
         {
             return asset.Name;
-        }
+        } 
 
         public static implicit operator GameObject(DatabaseAsset asset)
         {
@@ -43,7 +63,6 @@ namespace SS3D.Data.AssetDatabases
         public static implicit operator LogSettings(DatabaseAsset asset)
         {
             return asset.Get<LogSettings>();
-
         }
     }
 }

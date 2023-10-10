@@ -21,6 +21,9 @@ namespace SS3D.Data.AssetDatabases
         [SerializeField]
         private bool _skipCodeGeneration;
 
+        /// <summary>
+        /// If ticked the asset data system won't try to generate the generated asset data code.
+        /// </summary>
         public static bool SkipCodeGeneration => GetOrFind<AssetDatabaseSettings>()._skipCodeGeneration;
 #endif
 
