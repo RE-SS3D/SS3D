@@ -102,6 +102,9 @@ namespace SS3D.Permissions
             SaveUserPermissions();
         }
 
+        /// <summary>
+        /// Saves the permissions text file with the updated permissions list.
+        /// </summary>
         public void SaveUserPermissions()
         {
             string fileContent = string.Empty;
@@ -180,6 +183,12 @@ namespace SS3D.Permissions
             SyncUserPermissions();
         }
 
+        /// <summary>
+        /// Returns if the user is at least at a level of access.
+        /// </summary>
+        /// <param name="ckey">The user to check permission for</param>
+        /// <param name="permissionLevelCheck">The lowest required permission to perform the action.</param>
+        /// <returns></returns>
         public bool IsAtLeast(string ckey, ServerRoleTypes permissionLevelCheck)
         {
             TryGetUserRole(ckey, out ServerRoleTypes userPermission);

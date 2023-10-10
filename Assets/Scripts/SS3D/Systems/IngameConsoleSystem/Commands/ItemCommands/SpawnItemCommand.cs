@@ -1,22 +1,14 @@
-﻿using SS3D.Core;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Permissions;
-using SS3D.Systems.PlayerControl;
-using SS3D.Systems;
+﻿using FishNet.Connection;
+using SS3D.Core;
 using SS3D.Data;
-using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
+using SS3D.Permissions;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Utils;
-using SS3D.Core.Settings;
 using UnityEngine;
-using UnityEngine.UIElements;
-using FishNet.Managing.Server;
-using FishNet;
-using FishNet.Connection;
-using UnityEngine.InputSystem;
 
-namespace SS3D.Systems.IngameConsoleSystem.Commands
+namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
 {
     public class SpawnItemCommand : Command
     {
