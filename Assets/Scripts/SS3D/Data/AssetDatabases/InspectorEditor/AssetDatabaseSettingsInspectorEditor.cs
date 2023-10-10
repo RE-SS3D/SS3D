@@ -1,11 +1,13 @@
 ﻿#if UNITY_EDITOR
 using SS3D.CodeGeneration;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
@@ -25,8 +27,8 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         }
         
         public override VisualElement CreateInspectorGUI()
-        {
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
+        { 
+            // FindAndLoadAllAssetsDatabasesAddressablesGroups();
 
             return SetupUIToolkitCustomInspectorEditor();
         }
@@ -40,20 +42,19 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void SetupCustomInspectorEditor()
         {
-            EditorApplication.projectChanged += HandleProjectChanged;
+            // EditorApplication.projectChanged += HandleProjectChanged;
 
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
+            // FindAndLoadAllAssetsDatabasesAddressablesGroups();
 
             if (GUILayout.Button("Find and load asset databases", GUILayout.Width(350)))
             {
-                List<AssetDatabase> foundDatabases = AssetDatabase.FindAllAssetDatabases();
-                _assetDatabaseSettings.IncludedAssetDatabases = foundDatabases;
+                HandleLoadDatabasesButtonPressedGUI();
             }
         }
 
         private VisualElement SetupUIToolkitCustomInspectorEditor()
         {
-            EditorApplication.projectChanged += HandleProjectChanged;
+            // EditorApplication.projectChanged += HandleProjectChanged;
 
             VisualElement root = new();
             _assetDatabaseSettingsVisualTree.CloneTree(root);
@@ -107,6 +108,30 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             foreach (AssetDatabase includedAssetDatabase in _assetDatabaseSettings.IncludedAssetDatabases)
             {
                 includedAssetDatabase.GenerateDatabaseCode();
+
+                string path = "Assets/Content/Data/WorldObjectAssetReferences/";
+
+                foreach (Object asset in includedAssetDatabase.Assets.Values)
+                {
+                    if (asset is not GameObject)
+                    {
+                        continue;
+                    }
+
+                    WorldObjectAssetReference worldObjectAssetReference = CreateInstance<WorldObjectAssetReference>();
+
+                    worldObjectAssetReference.Id = asset.name;
+                    worldObjectAssetReference.Database = includedAssetDatabase.name;
+
+                    if (!UnityEditor.AssetDatabase.Contains(worldObjectAssetReference))
+                    {
+                        UnityEditor.AssetDatabase.CreateAsset(worldObjectAssetReference, $"{path}{worldObjectAssetReference.Id}.asset");   
+                    }
+                    else
+                    {
+                        Destroy(worldObjectAssetReference);
+                    }
+                }
             }
         }
 
@@ -125,16 +150,20 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             }
         }
 
-        private void HandleProjectChanged()
-        {
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
-        }
-
         private void HandleLoadDatabasesButtonPressed()
         {
             LoadDatabases();
 
+            FindAndLoadAllAssetsDatabasesAddressablesGroups();
+
             UpdateListVisuals();
+        }
+
+        private void HandleLoadDatabasesButtonPressedGUI()
+        {
+            LoadDatabases();
+
+            FindAndLoadAllAssetsDatabasesAddressablesGroups();
         }
     }
 }

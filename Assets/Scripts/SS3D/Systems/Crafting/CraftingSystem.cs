@@ -111,7 +111,7 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public List<Item> BuildListOfItemToConsume(List<Item> closeItemsFromTarget, CraftingRecipe recipe)
         {
-            List<Item> ItemsToConsume = new List<Item>();
+            List<Item> itemsToConsume = new List<Item>();
 
             Dictionary<Item, int> recipeElements = new Dictionary<Item, int>(recipe.Elements);
 
@@ -122,11 +122,11 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
 
-                ItemsToConsume.Add(item);
+                itemsToConsume.Add(item);
                 recipeElements[item] -= 1;
             }
 
-            return ItemsToConsume;
+            return itemsToConsume;
         }
 
         /// <summary>

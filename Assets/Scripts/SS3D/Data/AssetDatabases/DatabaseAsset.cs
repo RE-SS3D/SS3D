@@ -6,7 +6,7 @@ namespace SS3D.Data.AssetDatabases
     /// <summary>
     /// Represents an asset data asset, contains the name of the asset and the related database.
     /// </summary>
-    public class DatabaseAsset
+    public sealed class DatabaseAsset
     {
         /// <summary>
         /// The name of the asset.

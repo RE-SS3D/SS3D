@@ -17,7 +17,7 @@ namespace SS3D.Data.AssetDatabases
     /// It is used to find assets using IDs in a very convenient manner throughout the project.
     /// </summary>
     [CreateAssetMenu(menuName = "SS3D/AssetDatabase", fileName = "AssetDatabase", order = 0)]
-    public class AssetDatabase : ScriptableObject
+    public sealed class AssetDatabase : ScriptableObject
     {
         /// <summary>
         /// The path that the enum will be generated to.

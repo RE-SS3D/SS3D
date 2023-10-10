@@ -1,4 +1,5 @@
-﻿using FishNet.Object;
+﻿using Cysharp.Threading.Tasks;
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
@@ -73,7 +74,7 @@ namespace SS3D.Systems.Crafting
             Subsystems.TryGet(out CraftingSystem craftingSystem);
             Item target = interactionEvent.Target as Item;
 
-            craftingSystem.Craft(target, ItemsToConsume, recipe.Result);
+            craftingSystem.Craft(target, ItemsToConsume, recipe.Result.Select(o => o.GetComponent<Item>()).ToList());
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)
