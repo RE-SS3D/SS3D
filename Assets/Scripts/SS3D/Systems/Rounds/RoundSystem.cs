@@ -104,5 +104,23 @@ namespace SS3D.Systems.Rounds
             TimeSpan second = TimeSpan.FromMilliseconds(500);
             await UniTask.Delay(second);
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// This method facilitates automated testing, and is not to be used in production.
+        /// It simulates a ChangeRoundStateMessage broadcast received from a client, and
+        /// is handled normally by the server. Method required because the server cannot
+        /// broadcast to itself. Note that authentication in RoundSystemBase has been
+        /// bypassed by this method.
+        /// </summary>
+        /// <param name="m">The ChangeRoundStateMessage apparently broadcast</param>
+        [Server]
+        public void ChangeRoundStateMessageStubBroadcast(ChangeRoundStateMessage m)
+        {
+            #pragma warning disable CS4014
+            ProcessChangeRoundState(m);
+            #pragma warning restore CS4014
+        }
+#endif
     }
 }

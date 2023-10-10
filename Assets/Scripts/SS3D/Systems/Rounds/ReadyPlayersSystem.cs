@@ -129,5 +129,23 @@ namespace SS3D.Systems.Rounds
             ReadyPlayersChanged readyPlayersChanged = new(_readyPlayers.ToList());
             readyPlayersChanged.Invoke(this);
         }
+
+        public int Count => _readyPlayers.Count;
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// This method facilitates automated testing, and is not to be used in production.
+        /// It simulates a ChangePlayerReadyMessage broadcast received from a client, and
+        /// is handled normally by the server. Method required because the server cannot
+        /// broadcast to itself.
+        /// </summary>
+        /// <param name="sender">The client the message is apparently from</param>
+        /// <param name="m">The ChangePlayerReadyMessage apparently broadcast</param>
+        [Server]
+        public void ChangePlayerReadyMessageStubBroadcast(NetworkConnection sender, ChangePlayerReadyMessage m)
+        {
+            HandleChangePlayerReady(sender, m);
+        }
+#endif
     }
 }
