@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
@@ -7,8 +7,10 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Core.Settings;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
@@ -146,6 +148,20 @@ namespace SS3D.Systems.Entities
         public void CmdSpawnLatePlayer(Player player, NetworkConnection networkConnection = null)
         {
             SpawnLatePlayer(player);
+        }
+
+        public bool TryGetOwnedEntity(NetworkConnection conn, out Entity entity)
+        {
+            foreach(Entity e in SpawnedPlayers)
+            {
+                if(e.Owner == conn)
+                {
+                    entity = e;
+                    return true;
+                }
+            }
+            entity = null;
+            return false;
         }
 
         /// <summary>

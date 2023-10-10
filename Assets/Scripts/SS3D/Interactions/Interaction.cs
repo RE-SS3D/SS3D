@@ -19,6 +19,11 @@ namespace SS3D.Interactions
             return new ClientDelayedInteraction();
         }
 
+        public virtual string GetGenericName()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the name when interacted with a source
         /// </summary>

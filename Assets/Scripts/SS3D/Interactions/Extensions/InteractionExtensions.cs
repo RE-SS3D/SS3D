@@ -5,6 +5,15 @@ namespace SS3D.Interactions.Extensions
 {
     public static class InteractionExtensions
     {
+        /// <summary>
+        /// Check if position of player changed, if it did by a distance above tolerance, should return false;
+        /// </summary>>
+        public static bool CharacterMoveCheck(Vector3 startingPosition, Vector3 currentPosition, float tolerance = 0.1f)
+        {
+            return Vector3.Distance(startingPosition, currentPosition) < tolerance;
+        }
+
+
         public static bool RangeCheck(InteractionEvent interactionEvent)
         {
             Vector3 point = interactionEvent.Point;

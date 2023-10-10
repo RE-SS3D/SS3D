@@ -111,6 +111,16 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
+
+            string itemName = gameObject.name.Split('(')[0];
+
+            if(!Enum.TryParse(itemName, out ItemId id))
+            {
+                Log.Error(this, $"id with name {itemName} not present in ItemId enums");
+                return;
+            }
+
+            ItemId = id;
         }
 
         public override void OnStartServer()
