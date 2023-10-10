@@ -94,7 +94,7 @@ namespace SS3D.Systems.Tile
             return chunk;
         }
 
-        private TileChunk GetChunk(Vector3 worldPosition)
+        public TileChunk GetChunk(Vector3 worldPosition)
         {
             Vector2Int key = GetKey(worldPosition);
 

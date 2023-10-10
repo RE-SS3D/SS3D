@@ -137,7 +137,7 @@ namespace SS3D.Systems.Tile.Connections
         }
 
 
-        protected void UpdateMeshAndDirection()
+        protected virtual void UpdateMeshAndDirection()
         {
             // Some connectors might not have to update mesh or direction at all.
             // E.g : door connectors.
