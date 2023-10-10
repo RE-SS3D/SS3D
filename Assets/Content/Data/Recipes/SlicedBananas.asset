@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _executionTime: 2
   _interactionName: Slice
-  _target: 29
-  _result: 0e000000190000000d000000
+  _target: {fileID: -1938953542191470901, guid: 1ef3c21a685ec2d4e9f0876719839d5f, type: 3}
+  _result:
+  - {fileID: 5987248117953462373, guid: 177428b73bad0fb4a89d1a64b85629bf, type: 3}
+  - {fileID: 6800495836141411361, guid: 9c8363ee7f934bd4b8ee5a2e30da1269, type: 3}
+  - {fileID: 8032254855245068578, guid: f490a74616c067c4f83995017e10b420, type: 3}
   _recipeElements: []

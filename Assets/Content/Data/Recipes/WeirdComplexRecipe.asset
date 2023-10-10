@@ -14,10 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _executionTime: 0
   _interactionName: Slice
-  _target: 0
-  _result: 2000000021000000
-  _recipeElements:
-  - _count: 2
-    _itemId: 7
-  - _count: 1
-    _itemId: 30
+  _target: {fileID: 5398674181771020985, guid: 11f824c472e04854e95065dda095e8f4, type: 3}
+  _result:
+  - {fileID: 983871327887632920, guid: f1aeab0a35c29314a8a3f823de9815c1, type: 3}
+  - {fileID: 6984312597055688722, guid: 8725b7f8f45d28a4ba6063318904cc8a, type: 3}
+  _elements:
+    _list:
+    - _key: {fileID: 3278785340214204199, guid: d9aabfd5d726a7f499b8e360d919eba4, type: 3}
+      _value: 2
+    - _key: {fileID: -2012658674781697945, guid: 9b9f6bd470226a74b903e74dbe9e423a, type: 3}
+      _value: 1
+    _new: {fileID: 0}
