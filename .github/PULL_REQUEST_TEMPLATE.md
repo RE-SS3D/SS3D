@@ -12,8 +12,10 @@
 
 #### PR checklist
 - [ ] The game builds properly without errors.
-- [ ] No unrelated changes are present. (ex. "Update BikeHorn prefab" changed HumanOrgans.fbx for some reason).
-- [ ] No "trash" files are committed. (ex. An auto-generated Unity file that if updated when you open Unity, if necessary, update .gitignore).
+<!--  (ex. "Update BikeHorn prefab" changed HumanOrgans.fbx for some reason) -->
+- [ ] No unrelated changes are present.
+<!--  (ex. An auto-generated Unity file that if updated when you open Unity, if necessary, update .gitignore). -->
+- [ ] No "trash" files are committed.
 <!-- optional, if no code -->
 - [ ] Relevant code is documented.
 <!-- optional, if doc is needed -->
@@ -31,11 +33,16 @@
 
 <!-- The networking checklist is optional if your feature doesn't require that. You can remove this list if unused. -->
 #### Networking checklist
-- [ ] Works from host in host mode. (ex. The host can open a door.).
-- [ ] Works from server in server mode. (ex. The server can open a door, even if not interacting directly.).
-- [ ] Works on server in client mode. (ex. The client tries to open a door, and the server opens it. The client and the server have to see the same thing. This would fail if only the client sees this interaction.).
-- [ ] Works and is syncronized across different clients. (ex. The client tries to open a door, the server opens it, and another client sees that interaction.).
-- [ ] Is persistent. (ex. The client opens a door, the server opens it. The client closes the game, reopens it, and rejoins the server. The client sees the door open.).
+<!-- (ex. The host can open a door.) -->
+- [ ] Works from host in host mode.
+<!-- (ex. The server can open a door, even if not interacting directly.) -->
+- [ ] Works from server in server mode.
+<!-- (ex. The client tries to open a door, and the server opens it. The client and the server have to see the same thing. This would fail if only the client sees this interaction.). -->
+- [ ] Works on server in client mode.
+<!-- (ex. The client tries to open a door, the server opens it, and another client sees that interaction.). -->
+- [ ] Works and is syncronized across different clients.
+<!-- (ex. The client opens a door, the server opens it. The client closes the game, reopens it, and rejoins the server. The client sees the door open.). -->
+- [ ] Is persistent.
 
 <!-- optional, but encouraged to give technical context. -->
 <!-- changes to files, technical notes and known issues. -->
