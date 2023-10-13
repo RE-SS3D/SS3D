@@ -6,7 +6,8 @@
         "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
         "GUID:6e00473804df0f0468c07310fbce5737",
         "GUID:92a1e40b8cccf8645adbdd275ac6371a",
-        "GUID:0d835944b7c304149ad6e6fd114de512"
+        "GUID:0d835944b7c304149ad6e6fd114de512",
+        "SS3D.Networking"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

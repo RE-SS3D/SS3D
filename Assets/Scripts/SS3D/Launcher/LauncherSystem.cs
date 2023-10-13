@@ -1,6 +1,8 @@
 ﻿using Coimbra;
 using SS3D.Core.Settings;
-using SS3D.Data.Generated;
+using SS3D.Data.Enums;
+using SS3D.Networking;
+using SS3D.Networking.Settings;
 using SS3D.SceneManagement;
 using System;
 using UnityEngine;

@@ -1,38 +1,46 @@
 using Coimbra;
 using DG.Tweening;
-using SS3D.Core.Events;
-using SS3D.Core.Settings;
-using SS3D.Core.Utils;
+using SS3D.Application.Events;
+using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Data.Management;
 using SS3D.Logging;
+using SS3D.Networking;
+using SS3D.Networking.Settings;
 using SS3D.SceneManagement;
+using System;
 using UDiscord;
-using UnityEngine;
 
-namespace SS3D.Core
+// ReSharper disable HeuristicUnreachableCode
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+namespace SS3D.Application
 {
     /// <summary>
     /// Initializes all the core information needed, subsystems and assets pre-loading.
     /// </summary>
-    public sealed class ApplicationInitializerSystem : Behaviours.System
+    public sealed class ApplicationInitializerSystem : Core.Behaviours.System
     {
-        protected override void OnAwake()
+        protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
 
-            InitializeLauncher();
+            StartApplication();
         }
 
-        private void InitializeLauncher()
+        private void StartApplication()
         {
-            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            string sceneToLoad = startArgsSystem.HasCommandLineArgs() ? Scenes.Intro : Scenes.Launcher;
+            bool isUsingCommandLineArgs = 
+#if UNITY_EDITOR
+                true;
+#else
+                Environment.GetCommandLineArgs().Length > 0;
+#endif
+            Scenes sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
 
-            if (applicationSettings.ForceLauncher && !startArgsSystem.HasCommandLineArgs())
+            if (applicationSettings.ForceLauncher || !isUsingCommandLineArgs)
             {
                 sceneToLoad = Scenes.Launcher;
             }                                  
@@ -51,15 +59,19 @@ namespace SS3D.Core
             Log.Information(this, "Initializing application", Logs.Important);
 
             DOTween.Init();
-            SaveSystem.Initialize();
+
+			LocalSave.Initialize();
 
             InitializeDiscordIntegration();
             InitializeAssetData();
 
             InitializeSettings();
+
+            new ApplicationInitializing().Invoke(this);
+
             InitializeNetworkSession();
 
-            new ApplicationInitializedEvent().Invoke(this);
+            new ApplicationInitialized().Invoke(this);
         }
 
         /// <summary>
@@ -67,18 +79,22 @@ namespace SS3D.Core
         /// </summary>
         private void InitializeSettings()
         {
-            CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            if (!startArgsSystem.HasCommandLineArgs() ||applicationSettings.ForceLauncher || Application.isEditor)
+            bool isUsingCommandLineArgs =
+#if UNITY_EDITOR
+                true;
+#else
+                Environment.GetCommandLineArgs().Length > 0;
+#endif
+
+            if (!isUsingCommandLineArgs || applicationSettings.ForceLauncher || UnityEngine.Application.isEditor)
             {
                 return;
             }
 
             NetworkSettings.ResetOnBuiltApplication();
             ApplicationSettings.ResetOnBuiltApplication();
-
-            startArgsSystem.ProcessCommandLineArgs();
         }
 
         /// <summary>

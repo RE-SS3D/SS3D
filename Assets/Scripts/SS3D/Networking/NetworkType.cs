@@ -1,4 +1,4 @@
-﻿namespace SS3D.Core.Settings
+﻿namespace SS3D.Networking
 {
     public enum NetworkType
     {

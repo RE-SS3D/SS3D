@@ -1,10 +1,10 @@
 using Coimbra;
 using DG.Tweening;
-using SS3D.Core.Settings;
+using SS3D.Core;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace SS3D.Core.Intro
+namespace SS3D.Application.Intro
 {
     /// <summary>
     /// This class simply manages the UI in the intro

@@ -11,7 +11,7 @@ namespace SS3D.Data.Management
     /// <summary>
     /// Class for the saving and loading of serialized objects. Uses Generics and can be adapted for any serializable object.
     /// </summary>
-    public static class SaveSystem
+    public static class LocalSave
     {
 		/// <summary>
 		/// The saved files extension. 
@@ -58,11 +58,11 @@ namespace SS3D.Data.Management
             try
             {
 	            File.WriteAllText(SaveFolder + saveFileName + "." + SaveExtension, saveString);
-	            Log.Information(typeof(SaveSystem), $"Saved file {fileName}");
+	            Log.Information(typeof(LocalSave), $"Saved file {fileName}");
             }
             catch (Exception e)
             {
-	            Log.Error(typeof(SaveSystem), $"Something went wrong when saving {fileName}: {e.Message}");
+	            Log.Error(typeof(LocalSave), $"Something went wrong when saving {fileName}: {e.Message}");
 
 	            return false;
             }
@@ -89,7 +89,7 @@ namespace SS3D.Data.Management
 
             if (!Directory.Exists(SaveFolder))
             {
-				Log.Information(nameof(SaveSystem), $"No saves found, creating new folder at {SaveFolder}");
+				Log.Information(nameof(LocalSave), $"No saves found, creating new folder at {SaveFolder}");
 
 				Directory.CreateDirectory(SaveFolder);
             }
@@ -117,13 +117,13 @@ namespace SS3D.Data.Management
             // If theres a save file, load it, if not return null
             if (mostRecentFile == null)
             {
-				Log.Error(typeof(SaveSystem), $"Failed to find the most recent file at {path}");
+				Log.Error(typeof(LocalSave), $"Failed to find the most recent file at {path}");
 
 	            file = null;
 	            return false;
             }
 
-            Log.Information(typeof(SaveSystem), $"Loaded the the most recent file at {path}");
+            Log.Information(typeof(LocalSave), $"Loaded the the most recent file at {path}");
 
             file = File.ReadAllText(mostRecentFile.FullName);
             return true;

@@ -2,6 +2,7 @@
 using System.Threading;
 using NUnit.Framework;
 using SS3D.Core.Settings;
+using SS3D.Networking;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.TestTools;

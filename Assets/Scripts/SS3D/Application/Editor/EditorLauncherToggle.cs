@@ -1,5 +1,7 @@
 ﻿#if UNITY_EDITOR
 using Coimbra;
+using SS3D.Networking;
+using SS3D.Networking.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,7 @@ using UnityEngine;
 using UnityToolbarExtender;
 using Random = UnityEngine.Random;
 
-namespace SS3D.Core.Settings.Editor
+namespace SS3D.Application.Editor
 {
 	[InitializeOnLoad]
 	public sealed class EditorLauncherToggle
@@ -19,7 +21,7 @@ namespace SS3D.Core.Settings.Editor
 		}
 		private static void OnRightToolbarGUI()
 		{
-			if (Application.isPlaying)
+			if (UnityEngine.Application.isPlaying)
 			{
 				return;
 			}

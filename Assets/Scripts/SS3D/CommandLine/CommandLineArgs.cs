@@ -1,4 +1,4 @@
-namespace SS3D.Core.Utils
+namespace SS3D.CommandLine
 {
 	/// <summary>
 	/// Stores all the constants for CMD arguments for easy access and readability.

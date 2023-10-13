@@ -8,6 +8,7 @@ using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
 using System.Linq;
+using Tests.Play_Mode.Framework.Helpers;
 
 namespace SS3D.Tests
 {

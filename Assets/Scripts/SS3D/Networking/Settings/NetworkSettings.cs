@@ -1,10 +1,10 @@
 ﻿using Coimbra;
-using JetBrains.Annotations;
+using SS3D.Core.Settings;
 using SS3D.Data;
 using SS3D.Logging;
 using UnityEngine;
 
-namespace SS3D.Core.Settings
+namespace SS3D.Networking.Settings
 {
 	[ProjectSettings("SS3D/Core", "Network Settings")]
 	public sealed class NetworkSettings : ScriptableSettings
@@ -39,6 +39,12 @@ namespace SS3D.Core.Settings
 		/// Defined via command line args when in a built executable or the EditorServerAddress when in the Editor.
 		/// </summary>
 		public ushort ServerPort = 2222;
+
+		/// <summary>
+		/// Enables Fish-net's bandwidth UI in the game.
+		/// </summary>
+		[Header("Debug Settings")]
+		public bool EnableNetworkBandwidthUsageStats;
 
 		/// <summary>
 		/// Resets the configurations to what a Client should initially be like, then we load it from the JSON file, followed by the overrides from the command line args.

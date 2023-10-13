@@ -1,28 +1,43 @@
-﻿using System;
+﻿using Coimbra;
+using Coimbra.Services.Events;
+using SS3D.Logging;
+using SS3D.Networking;
+using SS3D.Networking.Settings;
+using SS3D.Utils;
+using SS3D.Application;
+using SS3D.Application.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Coimbra;
-using SS3D.Core.Settings;
-using SS3D.Logging;
-using SS3D.Utils;
-using UnityEngine;
 
-namespace SS3D.Core.Utils
+namespace SS3D.CommandLine
 {
     /// <summary>
     /// Loads the command line args and processes them for the application settings.
     /// </summary>
-    public sealed class CommandLineArgsSystem : Behaviours.System
+    public sealed class CommandLineArgsSystem : Core.Behaviours.System
     {
         private List<string> _commandLineArgs;
 
         private NetworkSettings _networkSettings;
         private ApplicationSettings _applicationSettings;
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            ApplicationInitializing.AddListener(HandleApplicationInitializing);
+        }
+
+        private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
+        {
+            ProcessCommandLineArgs();
+        }
+
         /// <summary>
         /// Loads and processes all command line args
         /// </summary>
-        public void ProcessCommandLineArgs()
+        private void ProcessCommandLineArgs()
         {
             LoadCommandLineArgs();
 

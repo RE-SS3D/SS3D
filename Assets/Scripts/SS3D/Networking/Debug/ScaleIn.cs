@@ -2,7 +2,7 @@ using DG.Tweening;
 using SS3D.Core.Behaviours;
 using UnityEngine;
 
-namespace SS3D.Networking
+namespace SS3D.Networking.Debug
 {
     public class ScaleIn : NetworkActor
     {

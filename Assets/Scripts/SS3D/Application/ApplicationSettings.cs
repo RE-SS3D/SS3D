@@ -1,7 +1,7 @@
 ﻿using Coimbra;
 using UnityEngine;
 
-namespace SS3D.Core.Settings
+namespace SS3D.Application
 {
     /// <summary>
     /// Used to define settings for the overall SS3D application in the Project Settings.

@@ -1,17 +1,16 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
-using System;
-using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 using Random = UnityEngine.Random;
 
-namespace SS3D.Networking
+namespace SS3D.Networking.Debug
 {
     public class NetworkPhysicsDebug : NetworkActor
     {

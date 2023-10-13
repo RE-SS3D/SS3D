@@ -1,20 +1,18 @@
-using System;
 using Coimbra;
 using FishNet;
 using FishNet.Managing;
-using FishNet.Managing.Server;
-using SS3D.Core.Events;
 using SS3D.Core.Settings;
 using SS3D.Logging;
-using UnityEngine;
+using SS3D.Networking.Settings;
+using System;
 
-namespace SS3D.Core
+namespace SS3D.Networking
 {
     /// <summary>
     /// Helps the NetworkManager to understand what we should do in this instance,
     /// if we are a server, or a client, and process respective data.
     /// </summary>
-    public sealed class SessionNetworkSystem : Behaviours.System
+    public sealed class SessionNetworkSystem : Core.Behaviours.System
     {
         /// <summary>
         /// Uses the processed args to proceed with game network initialization

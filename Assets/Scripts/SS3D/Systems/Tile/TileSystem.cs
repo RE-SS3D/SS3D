@@ -144,7 +144,7 @@ namespace SS3D.Systems.Tile
         {
             Log.Information(this, "Loading most recent tilemap");
             
-	        SavedTileMap mapSave = SaveSystem.LoadMostRecentObject<SavedTileMap>(SavePath);
+	        SavedTileMap mapSave = LocalSave.LoadMostRecentObject<SavedTileMap>(SavePath);
 
             _currentMap.Load(mapSave);
         }

@@ -17,20 +17,24 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: e18ea8489b90bd7488de5c242bac11c6
   m_SerializeEntries:
-  - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
-    m_Address: Assets/Content/Scenes/Boot.unity
+  - m_GUID: 61687ab4465bb6e4d8164057bedc63db
+    m_Address: Assets/Content/Scenes/Intro.unity
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: c7d05c35cd4853643a09333ecceff608
     m_Address: Assets/Content/Scenes/Game.unity
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: d03a300180bde5646b09bfa4c392679f
-    m_Address: Assets/Content/Scenes/Launcher.unity
+  - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
+    m_Address: Assets/Content/Scenes/Boot.unity
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 61687ab4465bb6e4d8164057bedc63db
-    m_Address: Assets/Content/Scenes/Intro.unity
+  - m_GUID: a7a0fb29f301d364a822be64003a90cb
+    m_Address: Assets/Content/Scenes/Empty.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d03a300180bde5646b09bfa4c392679f
+    m_Address: Assets/Content/Scenes/Launcher.unity
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

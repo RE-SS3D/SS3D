@@ -1,7 +1,6 @@
 ﻿using Coimbra.Services.Events;
-using SS3D.Core.Settings;
 
-namespace SS3D.Core.Events
+namespace SS3D.Networking
 {
     public partial struct NetworkSessionStartedEvent : IEvent
     {
