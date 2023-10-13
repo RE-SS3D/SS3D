@@ -585,7 +585,11 @@ namespace SS3D.Systems.Inventory.Containers
 			{
 				oldItems[i].SetContainer(null);
 			}
-			_storedItems.Clear();
+
+            for(int i= _storedItems.Count-1; i>=0; i--)
+            {
+                RemoveStoredItem(i);
+            }
 
 			LastModification = Time.time;
 		}
