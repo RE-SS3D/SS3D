@@ -16,6 +16,8 @@
 - [ ] No "trash" files are committed. (ex. An auto-generated Unity file that if updated when you open Unity, if necessary, update .gitignore).
 <!-- optional, if no code -->
 - [ ] Relevant code is documented.
+<!-- optional, if doc is needed -->
+- [ ] Update the related GitBook document, or create a new one if needed.
 
 <!-- optional. -->
 # Pictures/Videos)
