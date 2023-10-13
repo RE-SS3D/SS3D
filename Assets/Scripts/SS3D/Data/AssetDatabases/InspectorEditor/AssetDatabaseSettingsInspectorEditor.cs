@@ -28,7 +28,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         
         public override VisualElement CreateInspectorGUI()
         { 
-            // FindAndLoadAllAssetsDatabasesAddressablesGroups();
+            FindAndLoadAllAssetsDatabasesAddressablesGroups();
 
             return SetupUIToolkitCustomInspectorEditor();
         }
@@ -42,7 +42,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void SetupCustomInspectorEditor()
         {
-            // EditorApplication.projectChanged += HandleProjectChanged;
+            EditorApplication.projectChanged += HandleProjectChanged;
 
             // FindAndLoadAllAssetsDatabasesAddressablesGroups();
 
@@ -54,7 +54,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private VisualElement SetupUIToolkitCustomInspectorEditor()
         {
-            // EditorApplication.projectChanged += HandleProjectChanged;
+            EditorApplication.projectChanged += HandleProjectChanged;
 
             VisualElement root = new();
             _assetDatabaseSettingsVisualTree.CloneTree(root);
@@ -157,6 +157,13 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             FindAndLoadAllAssetsDatabasesAddressablesGroups();
 
             UpdateListVisuals();
+        }
+
+        public void HandleProjectChanged()
+        {
+            LoadDatabases();
+
+            FindAndLoadAllAssetsDatabasesAddressablesGroups();
         }
 
         private void HandleLoadDatabasesButtonPressedGUI()
