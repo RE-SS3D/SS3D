@@ -22,7 +22,7 @@ namespace SS3D.Systems.Tile.Connections
         [SyncVar(OnChange = nameof(SyncVertical))]
         protected bool _verticalConnection;
 
-        protected MeshFilter[] _filters = new MeshFilter[4];
+        protected MeshFilter _filter;
 
         protected PlacedTileObject _placedObject;
 
@@ -41,7 +41,7 @@ namespace SS3D.Systems.Tile.Connections
             if (!_initialized)
             {
                 _adjacencyMap = new AdjacencyMap();
-                _filters = GetComponentsInChildren<MeshFilter>();
+                _filter = GetComponent<MeshFilter>();
 
                 _placedObject = GetComponent<PlacedTileObject>();
                 if (_placedObject == null)
@@ -169,24 +169,19 @@ namespace SS3D.Systems.Tile.Connections
 
         protected virtual void UpdateMeshAndDirection()
         {
-            var infos = _pipeAdjacency.GetMeshesAndDirections(_adjacencyMap, _verticalConnection);
+            var info = _pipeAdjacency.GetMeshAndDirection(_adjacencyMap, _verticalConnection);
             transform.localRotation = Quaternion.identity;
+            _filter.transform.localPosition = Vector3.zero;
 
-            int i = 0;
-            foreach(var info in infos)
+            if (info.Mesh == _pipeAdjacency.verticalMesh)
             {
-                _filters[i].transform.localPosition = Vector3.zero;
-                if (info.Mesh == _pipeAdjacency.verticalMesh)
-                {
-                    _filters[i].transform.localPosition -= new Vector3(0,0.67f,0);
-                }
-                _filters[i].mesh = info.Mesh;
-                Quaternion localRotation = _filters[i].transform.localRotation;
-                Vector3 eulerRotation = localRotation.eulerAngles;
-                localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
-                _filters[i].transform.localRotation = localRotation;
-                i++;
+                _filter.transform.localPosition -= new Vector3(0,0.67f,0);
             }
+            _filter.mesh = info.Mesh;
+            Quaternion localRotation = _filter.transform.localRotation;
+            Vector3 eulerRotation = localRotation.eulerAngles;
+            localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
+            _filter.transform.localRotation = localRotation;
         }
 
         /// <summary>

@@ -26,71 +26,53 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
         [Tooltip("A mesh where the South & south edges are connected")]
         public Mesh verticalMesh;
 
-        public MeshDirectionInfo[] GetMeshesAndDirections(AdjacencyMap adjacencyMap, bool vertical)
+        public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap, bool vertical)
         {
             // Determine rotation and mesh specially for every single case.
-            float[] rotation;
-            Mesh[] mesh;
+            float rotation = 0;
+            Mesh mesh;
 
             AdjacencyShape shape = GetPipeShape(adjacencyMap, vertical);
             switch (shape)
             {
                 case AdjacencyShape.Vertical:
-                    mesh = new Mesh[adjacencyMap.CardinalConnectionCount];
-                    rotation = new float[adjacencyMap.CardinalConnectionCount];
-                    int j = 0;
-                    foreach (Direction dir in TileHelper.CardinalDirections())
-                    {
-                        if (!adjacencyMap.HasConnection(dir)) continue;
-                        mesh[j] = verticalMesh;
-                        rotation[j] = TileHelper.AngleBetween(Direction.North, dir);
-                        j++;
-                    }
+                    mesh = verticalMesh;
                     break;
 
                 case AdjacencyShape.O:
-                    mesh = new Mesh[] { o };
-                    rotation = new float[] { 0 };
+                    mesh = o ;
                     break;
                 case AdjacencyShape.U:
-                    mesh = new Mesh[] { u };
-                    rotation = new float[1] { TileHelper.AngleBetween(Direction.North,
-                        adjacencyMap.GetSingleConnection()) };
+                    mesh = u ;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
                     break;
 
                 case AdjacencyShape.I:
-                    mesh = new Mesh[] { i };
-                    rotation = new float[1] { TileHelper.AngleBetween(Direction.North,
-                        adjacencyMap.HasConnection(Direction.South) ? Direction.South : Direction.West) };
+                    mesh =  i ;
+                    rotation = TileHelper.AngleBetween(Direction.North,
+                        adjacencyMap.HasConnection(Direction.South) ? Direction.South : Direction.West);
                     break;
                 case AdjacencyShape.L:
-                    mesh = new Mesh[] { l };
-                    rotation = new float[] { TileHelper.AngleBetween(Direction.NorthEast,
-                        adjacencyMap.GetDirectionBetweenTwoConnections()) };
+                    mesh = l ;
+                    rotation = TileHelper.AngleBetween(Direction.NorthEast,
+                        adjacencyMap.GetDirectionBetweenTwoConnections());
                     break;
                 case AdjacencyShape.T:
-                    mesh = new Mesh[] { t };
-                    rotation = new float[] { TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection()) };
+                    mesh =  t ;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.X:
-                    mesh = new Mesh[] { x };
-                    rotation = new float[] { 0 };
+                    mesh = x ;
                     break;
                 default:
                     Debug.LogError($"Received unexpected shape from simple shape resolver: {shape}");
-                    mesh = new Mesh[] { i };
-                    rotation = new float[] { 0 };
+                    mesh = i ;
                     break;
             }
 
-            MeshDirectionInfo[] MeshesAndDirections = new MeshDirectionInfo[mesh.Length]; 
+            MeshDirectionInfo MeshAndDirection = new MeshDirectionInfo { Mesh = mesh, Rotation = rotation } ; 
 
-            for(int i=0; i< mesh.Length; i++)
-            {
-                MeshesAndDirections[i] = new MeshDirectionInfo { Mesh = mesh[i], Rotation = rotation[i] };
-            }
-
-            return MeshesAndDirections;
+            return MeshAndDirection;
         }
 
         private AdjacencyShape GetPipeShape(AdjacencyMap adjacencyMap, bool vertical)
