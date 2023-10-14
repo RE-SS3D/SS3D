@@ -17,7 +17,10 @@ namespace SS3D.Substances
 
         [SerializeField] private SubstanceContainer _container;
 
-        [ReadOnly] public List<SubstanceEntry> Substances;
+        #if UNITY_EDITOR 
+        [ReadOnly]
+        #endif
+        public List<SubstanceEntry> Substances;
 
         // Update is called once per frame
         void Update()

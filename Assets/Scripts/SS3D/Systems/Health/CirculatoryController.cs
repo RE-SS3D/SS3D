@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
-using static Codice.Client.Common.WebApi.WebApiEndpoints;
 
 namespace SS3D.Systems.Health
 {
