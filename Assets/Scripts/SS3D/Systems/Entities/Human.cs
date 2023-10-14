@@ -14,6 +14,7 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class Human : Entity
     {
+        // prefab for the ghost 
 		public GameObject Ghost;
 		private GameObject _spawnedGhost;
 
@@ -30,11 +31,17 @@ namespace SS3D.Systems.Entities
             MindSystem mindSystem = Subsystems.Get<MindSystem>();
             mindSystem.SwapMinds(originEntity, ghostEntity);
 
-			RpcDestroyObjects(originEntity);
-			RpcUpdateGhostPosition(originEntity, ghostEntity);
+            RpcUpdateGhostPosition(originEntity, ghostEntity);
+            RpcDestroyObjects(originEntity);
+			
 		}
 
-		[ObserversRpc]
+
+        /// <summary>
+        /// This method should probably be called turn in corpse, and instead of destroying components it should deactivate them.
+        /// Should also trigger the ragdoll.
+        /// </summary>
+		[ObserversRpc(RunLocally = true)]
 		private void RpcDestroyObjects(Entity originEntity)
 		{
 			GameObject originEntityGameObject = originEntity.gameObject;
@@ -50,10 +57,11 @@ namespace SS3D.Systems.Entities
 		/// <summary>
 		/// Put Ghost at the same place as the deceased player.
 		/// </summary>
-		[ObserversRpc]
+		[ObserversRpc(RunLocally = true)]
 		private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
 		{
 			ghostEntity.Transform.SetPositionAndRotation(originEntity.Transform.position, originEntity.Transform.rotation);
+            // Little rotation to have the ghost starting on the floor. Can be improved.
 			originEntity.Transform.Rotate(new Vector3(90, 0, 0));
 		}
 

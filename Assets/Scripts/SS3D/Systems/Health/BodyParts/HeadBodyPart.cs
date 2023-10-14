@@ -43,6 +43,9 @@ namespace SS3D.Systems.Health
 
         protected override void AfterSpawningCopiedBodyPart()
         {
+
+            GetComponentInParent<Human>()?.DeactivateComponents();
+
             // When detached, spawn a head and set player's mind to be in the head,
             // so that player can still play as a head (death is near though..).
             MindSystem mindSystem = Subsystems.Get<MindSystem>();
@@ -60,6 +63,7 @@ namespace SS3D.Systems.Health
 
         protected override void BeforeDestroyingBodyPart()
         {
+            GetComponentInParent<Human>()?.DeactivateComponents();
             return;
         }
     }
