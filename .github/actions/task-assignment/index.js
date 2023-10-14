@@ -2,11 +2,14 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const { Octokit } = require('@octokit/core');
 
+import fetch from "node-fetch";
+
 async function addAssignee(octokit, Owner, Repo, IssueNumber, Assignee) {
     await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/assignees', {
         owner: Owner,
         repo: Repo,
         issue_number: IssueNumber,
+        fetch: fetch,
         assignees: [
             Assignee
         ],
