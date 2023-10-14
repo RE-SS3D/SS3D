@@ -171,11 +171,17 @@ namespace SS3D.Systems.Tile.Connections
         {
             var info = _pipeAdjacency.GetMeshAndDirection(_adjacencyMap, _verticalConnection);
             transform.localRotation = Quaternion.identity;
-            _filter.transform.localPosition = Vector3.zero;
+
+            var pos = transform.position;
 
             if (info.Mesh == _pipeAdjacency.verticalMesh)
             {
-                _filter.transform.localPosition -= new Vector3(0,0.67f,0);
+                transform.position = new Vector3(pos.x, -0.67f, pos.z);
+            }
+            else if (_filter.mesh == _pipeAdjacency.verticalMesh)
+            {
+                transform.position = new Vector3(pos.x, 0f, pos.z);
+                return;
             }
             _filter.mesh = info.Mesh;
             Quaternion localRotation = _filter.transform.localRotation;
