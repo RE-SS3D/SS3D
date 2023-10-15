@@ -22,7 +22,7 @@ namespace SS3D.Systems.Entities.Humanoid
     public abstract class HumanoidController : NetworkActor
     {
         #region Fields
-        public event Action<float> SpeedChangeEvent;
+        public event Action<float> OnSpeedChangeEvent;
 
         [Header("Components")] 
         [SerializeField] protected Entity _entity;
@@ -89,7 +89,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            
+            UnityEngine.Debug.Log("destroying controller " + gameObject.name);
             MovementControls.ToggleRun.performed -= HandleToggleRun;
             _inputSystem.ToggleActionMap(MovementControls, false);
             _inputSystem.ToggleActionMap(HotkeysControls, false);
@@ -173,6 +173,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             float x = MovementControls.Movement.ReadValue<Vector2>().x;
             float y = MovementControls.Movement.ReadValue<Vector2>().y;
+
             float inputFilteredSpeed = FilterSpeed();
 
             Input = Vector2.ClampMagnitude(new Vector2(x, y), inputFilteredSpeed);
@@ -196,7 +197,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void OnSpeedChanged(float speed)
         {
-            SpeedChangeEvent?.Invoke(speed);
+            OnSpeedChangeEvent?.Invoke(speed);
         }
     }
 

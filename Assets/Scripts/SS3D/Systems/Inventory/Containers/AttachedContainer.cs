@@ -7,6 +7,7 @@ using SS3D.Data.Enums;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
+using System.Collections;
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -18,6 +19,7 @@ using System.Linq;
 using FishNet.Object;
 using SS3D.Logging;
 using System.Drawing;
+using UnityEditor;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -112,7 +114,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         #endregion
 
-        // If you define setters for the properties of this region in the future, be careful and make sure they modify the related container fields as well in Container.cs.
         #region ContainerAndAttachedContainerFieldsAndProperties
 
         public string ContainerName => gameObject.name;
@@ -221,6 +222,7 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
+            if(!IsServer) { return; }
             Purge();
         }
 
@@ -281,8 +283,10 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-			// This seem to be called correctly 2 move and none when moving inside, 2 remove and none when removing, 2 add and none when adding, 2 add 2 remove and none when transferring
-			Log.Information(this, "container change type is" + changeType.ToString());
+            if(changeType == ContainerChangeType.Remove)
+            {
+                //Punpun.Information(this, "from container " + this.gameObject + ", removing item" + oldItem.Item?.name);
+            }
 
 			if (changeType == ContainerChangeType.None) {
 				return;
@@ -575,12 +579,17 @@ namespace SS3D.Systems.Inventory.Containers
 		/// </summary>
 		public void Dump()
 		{
+            Log.Information(this, "dumping the content of container on" + gameObject);
 			Item[] oldItems = _storedItems.Select(x => x.Item).ToArray();
 			for (int i = 0; i < oldItems.Length; i++)
 			{
 				oldItems[i].SetContainer(null);
 			}
-			_storedItems.Clear();
+
+            for(int i= _storedItems.Count-1; i>=0; i--)
+            {
+                RemoveStoredItem(i);
+            }
 
 			LastModification = Time.time;
 		}
@@ -592,6 +601,7 @@ namespace SS3D.Systems.Inventory.Containers
 		{
 			for (int i = 0; i < _storedItems.Count; i++)
 			{
+                if (_storedItems[i].Item == null) continue;
 				_storedItems[i].Item.Delete();
 			}
 			_storedItems.Clear();

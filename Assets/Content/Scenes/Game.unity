@@ -524,7 +524,56 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b8980899917cbe5448c75ab705a4751e, type: 2}
   - {fileID: 11400000, guid: 051216e4e5bce264385ffe2c70500d9f, type: 2}
   - {fileID: 11400000, guid: e1163ff5257b4c04aa9df8bb85fa6188, type: 2}
+  - {fileID: 11400000, guid: 2030145386ed160418f9a07c5d68774f, type: 2}
+  - {fileID: 11400000, guid: 02eff39cd6b70a64abc4a59e3cc1b4d3, type: 2}
   recipes: []
+--- !u!1 &606666308
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 606666309}
+  - component: {fileID: 606666310}
+  m_Layer: 0
+  m_Name: OxygenConsumerSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &606666309
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606666308}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1506918115}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &606666310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606666308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec289a6c0bd24ed40abf0457a8690915, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: 1506918116}
+  _networkObjectCache: {fileID: 1506918116}
 --- !u!1 &616353822
 GameObject:
   m_ObjectHideFlags: 0

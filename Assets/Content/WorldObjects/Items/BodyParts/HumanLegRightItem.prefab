@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 103478066480505861}
   - component: {fileID: -3306444986174074399}
   - component: {fileID: -4360250799920595422}
+  - component: {fileID: -2653413583359283205}
   m_Layer: 10
   m_Name: HumanLegRightItem
   m_TagString: Untagged
@@ -246,11 +247,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -4360250799920595422}
   _name: 
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
   AttachmentPoint: {fileID: 8087437400747043343}
   AttachmentPointAlt: {fileID: 0}
+  _container: {fileID: 0}
 --- !u!114 &-3306444986174074399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,6 +272,8 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 0}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
+  HealthController: {fileID: 0}
+  _bodyPartVolume: 9100
 --- !u!114 &-4360250799920595422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,6 +293,7 @@ MonoBehaviour:
   - {fileID: 6576413314991157836}
   - {fileID: 103478066480505861}
   - {fileID: -3306444986174074399}
+  - {fileID: -2653413583359283205}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -301,8 +305,25 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 71
+  <PrefabId>k__BackingField: 72
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7755468517748877228
+--- !u!114 &-2653413583359283205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -4360250799920595422}
+  _networkObjectCache: {fileID: -4360250799920595422}
+  _bodyPart: {fileID: -3306444986174074399}
+  isBleeding: 0
