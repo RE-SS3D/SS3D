@@ -1,7 +1,9 @@
 ﻿using Coimbra;
+using SS3D.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
@@ -26,8 +28,8 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="adjacencyMap"></param>
-        /// <param name="direction"></param>
+        /// <param name="adjacencyMap"> The connection with this directionnal.</param>
+        /// <param name="direction"> this Directionnal direction, toward what it looks.</param>
         /// <param name="NeighboursDirection">Neigthbours direction are only cardinal neighbours</param>
         /// <returns></returns>
         public Tuple<Direction, MeshDirectionInfo> GetMeshAndDirectionAndRotation(AdjacencyMap adjacencyMap, Direction direction, List<Direction> neighboursDirection)
@@ -38,7 +40,10 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 
             AdjacencyShape shape = GetSimpleShape(adjacencyMap, direction, neighboursDirection);
 
-
+            // TODO : should set LIN and LOut shape toward the middle direction between their two connections, such that they are always
+            // in a diagonal direction.
+            // TODO : All other shape should have their direction reset to an appropriate value. That is necessary for a shape going from
+            // LIN LOut to a simple one connection shape.
             switch (shape)
             {
                 case AdjacencyShape.O:
@@ -47,10 +52,18 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     break;
                 case AdjacencyShape.ULeft:
                     mesh = uLeft;
+                    var closestsOfNeighbour = TileHelper.ClosestCardinalAdjacentTo(neighboursDirection[0]);
+                    var closestsOfThis = TileHelper.ClosestCardinalAdjacentTo(direction);
+                    var closest = closestsOfNeighbour.Intersect(closestsOfThis);
+                    direction = closest.FirstOrDefault();
                     rotation = TileHelper.AngleBetween(Direction.North, direction);
                     break;
                 case AdjacencyShape.URight:
                     mesh = uRight;
+                    closestsOfNeighbour = TileHelper.ClosestCardinalAdjacentTo(neighboursDirection[0]);
+                    closestsOfThis = TileHelper.ClosestCardinalAdjacentTo(direction);
+                    closest = closestsOfNeighbour.Intersect(closestsOfThis);
+                    direction = closest.FirstOrDefault();
                     rotation = TileHelper.AngleBetween(Direction.North, direction);
                     break;
                 case AdjacencyShape.I:
@@ -59,11 +72,14 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     break;
                 case AdjacencyShape.LIn:
                     mesh = lIn;
+                    // TODO : neighbours can also be LIn or LOut so their directions can be diagonal as well.
                     rotation = LOutLinRotation(adjacencyMap);
+                    direction = LInLOutDirection(neighboursDirection[0], neighboursDirection[1]);
                     break;
                 case AdjacencyShape.LOut:
                     mesh = lOut;
                     rotation = LOutLinRotation(adjacencyMap);
+                    direction = LInLOutDirection(neighboursDirection[0], neighboursDirection[1]);
                     break;
                 default:
                     Debug.LogError($"Received unexpected shape from simple shape resolver: {shape}");
@@ -82,18 +98,27 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case 0:
                     return AdjacencyShape.O;
                 case 1:
+                    // TODO should check if the single neighbour connection is adjacent, not only the same.
+                    // currently prevents correct U connection with LIn LOut shapes.
                     var directionConnection = adjacencyMap.GetSingleConnection(true);
-                    var relative =TileHelper.GetRelativeDirection(dir, directionConnection);
-                    if(!NeighboursDirection.Contains(dir)) return AdjacencyShape.O;
+                    var relative = TileHelper.GetRelativeDirection(dir, directionConnection);
+                    if(!TileHelper.GetAdjacentAndMiddleDirection(dir).Contains(NeighboursDirection[0])) 
+                        return AdjacencyShape.O;
                     if (relative == Direction.East)
                         return AdjacencyShape.ULeft;
                     else return AdjacencyShape.URight;
                 //When two connections, checks if they're opposite or adjacent
                 case 2:
 
-                    // TODO : should not connect in I if two sofas are facing away, except if those two sofas are taking LIN or LOut shape.
-                     if (adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South)) 
-                        return AdjacencyShape.I;
+                     if (adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South))
+                     {
+                        // To get a I, neighbours directionnal need to be oriented the same way as this directionnal, or
+                        // in an adjacent direction (basically if they take a LIn or LOut shape)
+                        if (TileHelper.GetAdjacentAndMiddleDirection(dir).Contains(NeighboursDirection[0]) &&
+                            TileHelper.GetAdjacentAndMiddleDirection(dir).Contains(NeighboursDirection[1]))
+                            return AdjacencyShape.I;
+                        else return AdjacencyShape.O;
+                     } 
 
                     if (IsInsideConfiguration(adjacencyMap, dir))
                         return AdjacencyShape.LIn;
@@ -122,17 +147,21 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
             switch (dir)
             {
                 case Direction.North:
-                    return adjacencies.Contains(Direction.North) &&
-                        (adjacencies.Contains(Direction.East) || adjacencies.Contains(Direction.West));
+                    return adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.North)) &&
+                        ( adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.East)) ||
+                        adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.West)));
                 case Direction.East:
-                    return adjacencies.Contains(Direction.East) &&
-                        (adjacencies.Contains(Direction.North) || adjacencies.Contains(Direction.South));
+                    return adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.East)) &&
+                        (adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.North)) ||
+                        adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.South)));
                 case Direction.South:
-                    return adjacencies.Contains(Direction.South) &&
-                        (adjacencies.Contains(Direction.East) || adjacencies.Contains(Direction.West));
+                    return adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.South)) &&
+                        (adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.East)) ||
+                        adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.West)));
                 case Direction.West:
-                    return adjacencies.Contains(Direction.West) &&
-                        (adjacencies.Contains(Direction.South) || adjacencies.Contains(Direction.North));
+                    return adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.West)) &&
+                        (adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.South)) ||
+                        adjacencies.ContainsAny(TileHelper.GetAdjacentAndMiddleDirection(Direction.North)));
                 default:
                     return false;
             }
@@ -161,6 +190,35 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
             }
 
             return 0f;
+        }
+
+        private static Direction LInLOutDirection(Direction firstNeighbour, Direction secondNeighbour)
+        {
+            if((TileHelper.GetAdjacentAndMiddleDirection(Direction.East).Contains(firstNeighbour) 
+                && TileHelper.GetAdjacentAndMiddleDirection(Direction.North).Contains(secondNeighbour)) ||
+                (TileHelper.GetAdjacentAndMiddleDirection(Direction.East).Contains(secondNeighbour)
+                && TileHelper.GetAdjacentAndMiddleDirection(Direction.North).Contains(firstNeighbour)))
+            {
+                return Direction.NorthEast;
+            }
+            else if ((TileHelper.GetAdjacentAndMiddleDirection(Direction.East).Contains(firstNeighbour)
+                && TileHelper.GetAdjacentAndMiddleDirection(Direction.South).Contains(secondNeighbour)) ||
+                (TileHelper.GetAdjacentAndMiddleDirection(Direction.East).Contains(secondNeighbour)
+                && TileHelper.GetAdjacentAndMiddleDirection(Direction.South).Contains(firstNeighbour)))
+            {
+                return Direction.SouthEast;
+            }
+            else if ((TileHelper.GetAdjacentAndMiddleDirection(Direction.West).Contains(firstNeighbour)
+                && TileHelper.GetAdjacentAndMiddleDirection(Direction.South).Contains(secondNeighbour)) ||
+                (TileHelper.GetAdjacentAndMiddleDirection(Direction.West).Contains(secondNeighbour)
+                && TileHelper.GetAdjacentAndMiddleDirection(Direction.South).Contains(firstNeighbour)))
+            {
+                return Direction.SouthWest;
+            }
+            else
+            {
+                return Direction.NorthWest;
+            }
         }
     }
 }
