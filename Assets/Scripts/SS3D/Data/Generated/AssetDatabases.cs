@@ -11,6 +11,7 @@ namespace SS3D.Data.Enums
         public static DatabaseAsset Items = new DatabaseAsset("Items", "AssetDatabases");
         public static DatabaseAsset Scenes = new DatabaseAsset("Scenes", "AssetDatabases");
         public static DatabaseAsset WorldSpaceUI = new DatabaseAsset("WorldSpaceUI", "AssetDatabases");
+        public static DatabaseAsset ParticlesEffects = new DatabaseAsset("ParticlesEffects", "AssetDatabases");
     }
 }
 

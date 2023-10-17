@@ -49,6 +49,22 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset JumpsuitSecurity = new DatabaseAsset("JumpsuitSecurity", "Items");
         public static DatabaseAsset HeadsetLeft = new DatabaseAsset("HeadsetLeft", "Items");
         public static DatabaseAsset HeadsetRight = new DatabaseAsset("HeadsetRight", "Items");
+        public static DatabaseAsset HumanArmLeftItem = new DatabaseAsset("HumanArmLeftItem", "Items");
+        public static DatabaseAsset HumanArmRightItem = new DatabaseAsset("HumanArmRightItem", "Items");
+        public static DatabaseAsset HumanBrainItem = new DatabaseAsset("HumanBrainItem", "Items");
+        public static DatabaseAsset HumanEarLeftItem = new DatabaseAsset("HumanEarLeftItem", "Items");
+        public static DatabaseAsset HumanEarRightItem = new DatabaseAsset("HumanEarRightItem", "Items");
+        public static DatabaseAsset HumanFootLeftItem = new DatabaseAsset("HumanFootLeftItem", "Items");
+        public static DatabaseAsset HumanFootRightItem = new DatabaseAsset("HumanFootRightItem", "Items");
+        public static DatabaseAsset HumanHandLeftItem = new DatabaseAsset("HumanHandLeftItem", "Items");
+        public static DatabaseAsset HumanHandRightItem = new DatabaseAsset("HumanHandRightItem", "Items");
+        public static DatabaseAsset HumanHeadItem = new DatabaseAsset("HumanHeadItem", "Items");
+        public static DatabaseAsset HumanLegLeftItem = new DatabaseAsset("HumanLegLeftItem", "Items");
+        public static DatabaseAsset HumanLegRightItem = new DatabaseAsset("HumanLegRightItem", "Items");
+        public static DatabaseAsset HumanLungLeftItem = new DatabaseAsset("HumanLungLeftItem", "Items");
+        public static DatabaseAsset HumanLungRightItem = new DatabaseAsset("HumanLungRightItem", "Items");
+        public static DatabaseAsset HumanTorsoItem = new DatabaseAsset("HumanTorsoItem", "Items");
+        public static DatabaseAsset HumanHeartItem = new DatabaseAsset("HumanHeartItem", "Items");
     }
 }
 
