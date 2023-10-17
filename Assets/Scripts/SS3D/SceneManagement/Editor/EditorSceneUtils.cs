@@ -11,19 +11,19 @@ namespace SS3D.SceneManagement.Editor
 		private static string SceneToOpen;
 
         public static void StartScene(string sceneName)
-		{
+        {
             EditorApplication.update += OnUpdate;
 
-			if (EditorApplication.isPlaying)
-			{
-				EditorApplication.isPlaying = false;
-			}
+            if (EditorApplication.isPlaying)
+            {
+                EditorApplication.isPlaying = false;
+            }
 
-			SceneToOpen = sceneName;
-			EditorApplication.update += OnUpdate;
-		}
+            SceneToOpen = sceneName;
+            EditorApplication.update += OnUpdate;
+        }
 
-		private static void OnUpdate()
+        private static void OnUpdate()
 		{
 			if (SceneToOpen == null ||
 				EditorApplication.isPlaying || EditorApplication.isPaused ||
