@@ -106,7 +106,7 @@ namespace SS3D.Systems.Tile.Connections
             return changed;
         }
 
-        private List<Direction> GetAdjacencies(bool cardinal)
+        public List<Direction> GetAdjacencies(bool cardinal)
         {
             //Are we getting adjacencies for cardinal or diagonal directions?
             List<int> directionIndexes = cardinal ?

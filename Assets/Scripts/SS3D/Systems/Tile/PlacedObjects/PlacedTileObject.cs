@@ -123,6 +123,11 @@ namespace SS3D.Systems.Tile
             };
         }
 
+        public void SetDirection(Direction dir)
+        {
+            _dir = dir;
+        }
+
         /// <summary>
         /// Is this in front of the other object ?
         /// </summary>

@@ -108,7 +108,7 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        private TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
             TileChunk chunk = GetOrCreateChunk(worldPosition); // TODO: creates unnessary empty chunk when checking whether building can be done
             return chunk.GetTileObject(layer, worldPosition);

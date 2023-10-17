@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using SS3D.Utils;
 
 namespace SS3D.Systems.Tile
 {
@@ -57,6 +58,12 @@ namespace SS3D.Systems.Tile
             return TileLayers;
         }
 
+        public static Tuple<Direction,Direction> GetAdjacentDirections(Direction dir)
+        {
+            return new Tuple<Direction, Direction>( (Direction) MathUtility.mod((int) dir + 1, 8),
+                (Direction)MathUtility.mod((int)dir - 1, 8) );
+        }
+
         /// <summary>
         /// Get the offset in coordinates in a given direction.
         /// </summary>
@@ -78,12 +85,10 @@ namespace SS3D.Systems.Tile
 
         /// <summary>
         /// Get the relative direction between two direction. 
-        /// E.g : to = North-East, from = South-West, return South.
-        /// TODO : maybe swith name of to and from, currently it feels it's the inverse way around.
         /// </summary>
-        public static Direction GetRelativeDirection(Direction to, Direction from)
+        public static Direction GetRelativeDirection(Direction from, Direction to)
         {
-            return (Direction)((((int)to - (int)from) + 8) % 8);
+            return (Direction)((((int)from - (int)to) + 8) % 8);
         }
 
         /// <summary>
@@ -92,6 +97,15 @@ namespace SS3D.Systems.Tile
         public static List<Direction> CardinalDirections()
         {
             return new List<Direction> { Direction.North, Direction.East, Direction.South, Direction.West };
+        }
+
+        /// <summary>
+        /// Return a list of the cardinal directions.
+        /// </summary>
+        public static List<Direction> AllDirections()
+        {
+            return new List<Direction> { Direction.North, Direction.NorthEast, Direction.East, Direction.SouthEast,
+                Direction.South, Direction.SouthWest, Direction.West, Direction.NorthWest };
         }
 
         /// <summary>

@@ -35,6 +35,8 @@ namespace SS3D.Systems.Tile.Connections
 
         protected TileObjectSpecificType _specificType;
 
+        private bool _isVertical = false;
+
 
         private void Setup()
         {
@@ -172,20 +174,37 @@ namespace SS3D.Systems.Tile.Connections
             var info = _pipeAdjacency.GetMeshAndDirection(_adjacencyMap, _verticalConnection);
             transform.localRotation = Quaternion.identity;
 
-            var pos = transform.position;
+            Vector3 pos = transform.position;
+            Quaternion localRotation = _filter.transform.localRotation;
+            Vector3 eulerRotation = localRotation.eulerAngles;
+            _filter.mesh = info.Mesh;
 
             if (info.Mesh == _pipeAdjacency.verticalMesh)
             {
+                _isVertical= true;
                 transform.position = new Vector3(pos.x, -0.67f, pos.z);
+                _filter.transform.localRotation = Quaternion.Euler(eulerRotation.x, TileHelper.GetRotationAngle(_placedObject.Direction), eulerRotation.z);
+
+                if (!_isVertical)
+                {
+                    var directions = TileHelper.AllDirections();
+                    directions.Remove(TileHelper.GetOpposite(_placedObject.Direction));
+                    SetBlockedDirection(directions, false);
+
+                }
+                
+                return;
             }
             else if (_filter.mesh == _pipeAdjacency.verticalMesh)
             {
                 transform.position = new Vector3(pos.x, 0f, pos.z);
-                return;
             }
-            _filter.mesh = info.Mesh;
-            Quaternion localRotation = _filter.transform.localRotation;
-            Vector3 eulerRotation = localRotation.eulerAngles;
+
+            if (info.Mesh != _pipeAdjacency.verticalMesh)
+            {
+                _isVertical = false;
+            }
+
             localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
             _filter.transform.localRotation = localRotation;
         }
@@ -216,6 +235,20 @@ namespace SS3D.Systems.Tile.Connections
                 _verticalConnection = newValue;
                 UpdateMeshAndDirection();
             }
+        }
+
+        /// <summary>
+        /// Sets a given direction blocked or unblocked. 
+        /// If blocked, this means that it will no longer be allowed to connect on that direction (until further update).
+        /// </summary>
+        private void SetBlockedDirection(List<Direction> directions, bool value)
+        {
+            foreach(var dir in directions)
+            {
+                _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));  
+            }
+
+            UpdateMeshAndDirection();
         }
     }
 }
