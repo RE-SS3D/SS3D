@@ -2,38 +2,38 @@
 using Coimbra;
 using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
-using UnityEngine;
 using SS3D.Logging;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data
 {
     /// <summary>
-    /// Assets is used to load assets using enums or ints, with the addition of an enum generator for easy "id" of items.
+    /// A class to get specific assets on the project, without having to assign them on the inspector or hardcoding Resources.Load.
+    ///
+    /// A more concise and in depth explanation on how this system works and how to use is present on the GitBook page for AssetData.
     /// </summary>
     public static class Assets
     {
         /// <summary>
-        /// All loaded databases.
+        /// A dictionary of the loaded databases, useful to get the databases quickly with the name of it.
         /// </summary>
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
 
-        // TODO: Find a way to automate the getters, this is a nightmare way of doing it.
-
         /// <summary>
-        /// Generic getter, supports all databases and all asset database enums.
+        /// Returns an asset from a  database casting the object found to TAsset.
         /// </summary>
         [CanBeNull]
-        public static TAsset Get<TAsset>(string databaseId, string assetId) where TAsset : Object
+        public static TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
+            where TAsset : Object
         {
             return GetDatabase(databaseId).Get<TAsset>(assetId);
         }
 
         /// <summary>
-        /// Generic getter, supports all databases and all asset database enums.
+        /// Returns an asset from a database casting the object found to TAsset.
         /// </summary>
-        public static bool TryGet<TAsset>(string databaseId, string assetId, [CanBeNull] out TAsset asset) where TAsset : Object
+        public static bool TryGet<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] out TAsset asset)
+            where TAsset : Object
         {
             return GetDatabase(databaseId).TryGet(assetId, out asset);
         }
@@ -57,22 +57,24 @@ namespace SS3D.Data
         }
 
         /// <summary>
-        /// Helper function to find a database in the database list. Used to link the enum to which database to find.
+        /// Helper function to find a database in the database dict.
         /// </summary>
-        /// <param name="key">The enum name used to identify which database to load.</param>
+        /// <param name="databaseId">The id used to identify which database to load.</param>
         /// <returns></returns>
-        public static AssetDatabase GetDatabase(string key)
+        [CanBeNull]
+        public static AssetDatabase GetDatabase([NotNull] string databaseId)
         {
+            // TODO: Move this to the new initialization flow.
             if (Databases.Count == 0)
             {
                 LoadAssetDatabases();
             }
 
-            bool databaseExists = Databases.TryGetValue(key, out AssetDatabase database);
+            bool databaseExists = Databases.TryGetValue(databaseId, out AssetDatabase database);
 
             if (!databaseExists)
             {
-                Log.Warning(typeof(Assets), "Database of type {key} not found", Logs.Important, key);
+                Log.Warning(typeof(Assets), $"Database of type {databaseId} not found", Logs.Important);
             }
 
             return database;

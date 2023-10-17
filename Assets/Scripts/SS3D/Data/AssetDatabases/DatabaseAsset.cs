@@ -28,6 +28,11 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public GameObject New() => GameObject.Instantiate(Prefab);
 
+        /// <summary>
+        /// This constructor specifies which databaseID to use and which asset ID, or name, to use.
+        ///
+        /// This is used by the AssetData system and is automated, you don't need to create an DatabaseAsset manually.
+        /// </summary>
         public DatabaseAsset(string name, string databaseName)
         {
             Name = name;

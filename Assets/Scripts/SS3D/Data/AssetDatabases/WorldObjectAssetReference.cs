@@ -1,4 +1,5 @@
-﻿using SS3D.Attributes;
+﻿using JetBrains.Annotations;
+using SS3D.Attributes;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -9,6 +10,10 @@ namespace SS3D.Data.AssetDatabases
 	/// </summary>
 	public sealed class WorldObjectAssetReference : ScriptableObject
 	{
+		/// <summary>
+		/// The prefab of this asset reference. Here for quick access.
+		/// </summary>
+		[CanBeNull]
 		public GameObject Prefab => Assets.Get<GameObject>(Database, Id);
 
 #if UNITY_EDITOR
