@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using SS3D.Utils;
+using Coimbra;
 
 namespace SS3D.Systems.Tile
 {
@@ -58,10 +59,31 @@ namespace SS3D.Systems.Tile
             return TileLayers;
         }
 
-        public static Tuple<Direction,Direction> GetAdjacentDirections(Direction dir)
+        /// <summary>
+        /// Return the closest cardinal directions from a given other direction.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        public static List<Direction> ClosestCardinalAdjacentTo(Direction dir)
         {
-            return new Tuple<Direction, Direction>( (Direction) MathUtility.mod((int) dir + 1, 8),
-                (Direction)MathUtility.mod((int)dir - 1, 8) );
+            if(CardinalDirections().Contains(dir)) return new List<Direction> { dir };
+            return GetAdjacentDirections(dir);
+        }
+
+        public static List<Direction> GetAdjacentDirections(Direction dir)
+        {
+            return new List<Direction>{ (Direction)MathUtility.mod((int)dir + 1, 8),
+                (Direction)MathUtility.mod((int)dir - 1, 8) };
+        }
+
+        /// <summary>
+        /// Return the three adjacent directions to Direction dir including itself.
+        /// </summary>
+        public static List<Direction> GetAdjacentAndMiddleDirection(Direction dir)
+        {
+            var list = new List<Direction> { dir };
+            list.AddRange(GetAdjacentDirections(dir));
+            return list;
         }
 
         /// <summary>
