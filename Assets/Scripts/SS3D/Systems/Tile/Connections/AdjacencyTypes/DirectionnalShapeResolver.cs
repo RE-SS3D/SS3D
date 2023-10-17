@@ -59,11 +59,11 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     break;
                 case AdjacencyShape.LIn:
                     mesh = lIn;
-                    rotation = LInRotation(adjacencyMap);
+                    rotation = LOutLinRotation(adjacencyMap);
                     break;
                 case AdjacencyShape.LOut:
                     mesh = lOut;
-                    rotation = LOutRotation(adjacencyMap);
+                    rotation = LOutLinRotation(adjacencyMap);
                     break;
                 default:
                     Debug.LogError($"Received unexpected shape from simple shape resolver: {shape}");
@@ -91,6 +91,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 //When two connections, checks if they're opposite or adjacent
                 case 2:
 
+                    // TODO : should not connect in I if two sofas are facing away, except if those two sofas are taking LIN or LOut shape.
                      if (adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South)) 
                         return AdjacencyShape.I;
 
@@ -137,31 +138,14 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
             }
         }
 
-        private static float LOutRotation(AdjacencyMap connections)
+        /// <summary>
+        /// Simply find the 0 rotation of the LOut and LIn models, and depending on the adjacencies position of connected stuff,
+        /// rotate accordingly.
+        /// </summary>
+        private static float LOutLinRotation(AdjacencyMap connections)
         {
             var adjacencies = connections.GetAdjacencies(true);
             if(adjacencies.Contains(Direction.South) && adjacencies.Contains(Direction.East))
-            {
-                return 90f;
-            }
-
-            if (adjacencies.Contains(Direction.South) && adjacencies.Contains(Direction.West))
-            {
-                return 180f;
-            }
-
-            if (adjacencies.Contains(Direction.North) && adjacencies.Contains(Direction.West))
-            {
-                return 270f;
-            }
-
-            return 0f;
-        }
-
-        private static float LInRotation(AdjacencyMap connections)
-        {
-            var adjacencies = connections.GetAdjacencies(true);
-            if (adjacencies.Contains(Direction.South) && adjacencies.Contains(Direction.East))
             {
                 return 90f;
             }
