@@ -26,10 +26,10 @@ namespace SS3D.CommandLine
         {
             base.OnAwake();
 
-            ApplicationInitializing.AddListener(HandleApplicationInitializing);
+            ApplicationPreInitializing.AddListener(HandleApplicationPreInitializing);
         }
 
-        private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
+        private void HandleApplicationPreInitializing(ref EventContext context, in ApplicationPreInitializing e)
         {
             ProcessCommandLineArgs();
         }
@@ -39,8 +39,16 @@ namespace SS3D.CommandLine
         /// </summary>
         private void ProcessCommandLineArgs()
         {
+            Log.Information(this, "Getting command line args", Logs.Important);
+
             LoadCommandLineArgs();
 
+            if (!UnityEngine.Application.isEditor)
+            {
+                NetworkSettings.ResetOnBuiltApplication();
+                ApplicationSettings.ResetOnBuiltApplication();
+            }
+            
             _networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
             _applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 

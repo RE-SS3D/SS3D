@@ -6,10 +6,7 @@
         "Coimbra.Services",
         "Coimbra.Services.Events",
         "SS3D.Core",
-        "SS3D.Data",
-        "SS3D.SceneManagement",
         "SS3D.Logging",
-        "SS3D.Networking",
         "UltimateDiscordSDK",
         "ToolbarExtender.Editor",
         "DOTween.Modules"

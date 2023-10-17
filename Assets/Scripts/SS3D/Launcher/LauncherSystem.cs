@@ -1,6 +1,7 @@
 ﻿using Coimbra;
 using SS3D.Core.Settings;
 using SS3D.Data.Enums;
+using SS3D.Logging;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
 using SS3D.SceneManagement;
@@ -23,19 +24,16 @@ namespace SS3D.Launcher
 		/// <param name="port">The port number to use.</param>
 		public void LaunchGame(NetworkType networkType, string ckey, string ip, string port)
 		{
-			if (!Application.isEditor)
-			{
-				NetworkSettings.ResetOnBuiltApplication();
-			}
-
-			NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
+            NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
 
 			networkSettings.NetworkType = networkType;
 			networkSettings.Ckey = ckey;
 			networkSettings.ServerAddress = ip;
 			networkSettings.ServerPort = Convert.ToUInt16(port);
 
-			Scene.LoadAsync(Scenes.Intro.Name);
+            Log.Information(this, $"Launching game with on {networkType} for {ip} {port} as {ckey}", Logs.Important);
+
+			Scene.LoadAsync(Scenes.Intro);
 		}
 	}
 }

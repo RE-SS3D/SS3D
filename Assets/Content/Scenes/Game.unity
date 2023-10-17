@@ -4670,7 +4670,7 @@ PrefabInstance:
       objectReference: {fileID: 1927660778}
     - target: {fileID: 7875182825432581153, guid: ad573dedc3cb2d74fa42bedc463ffd75, type: 3}
       propertyPath: m_Name
-      value: ServerStartedListener
+      value: NetworkConnectionStartedListener
       objectReference: {fileID: 0}
     - target: {fileID: 7875182825432581182, guid: ad573dedc3cb2d74fa42bedc463ffd75, type: 3}
       propertyPath: m_RootOrder

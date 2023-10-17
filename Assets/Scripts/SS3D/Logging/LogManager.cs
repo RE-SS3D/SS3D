@@ -1,17 +1,15 @@
 ﻿using Coimbra;
+using FishNet;
 using Serilog;
-using Serilog.Sinks.Unity3D;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
-using UnityEngine;
-using FishNet;
-using System;
+using Serilog.Sinks.Unity3D;
 using SS3D.Logging.LogSettings;
-using SS3D.Logging;
-using Log = Serilog.Log;
+using System;
+using UnityEngine;
 
 
-namespace SS3D.Core
+namespace SS3D.Logging
 {
     /// <summary>
     /// Set up Serilog's Logger for clients, host and server. 
@@ -25,51 +23,53 @@ namespace SS3D.Core
         private static readonly string LogFolderPath;
         private static bool IsInitialized;
 
-        private static LogSettings Settings;
+        private static readonly LogSettings.LogSettings Settings;
 
         static LogManager()
         {
             DefaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
             LogFolderPath = Application.dataPath + "/../Logs/";
-        }
-
-        public static void Initialize()
-        {
-            if (IsInitialized) return;
-            IsInitialized = true;
-
-            Settings = ScriptableSettings.GetOrFind<LogSettings>();
-
-            var configuration = new LoggerConfiguration();
 
             if (Application.isPlaying)
             {
-                configuration = ConfigureForPlayMode(configuration);
+                Settings = ScriptableSettings.GetOrFind<LogSettings.LogSettings>();
+            }
+            
+        }
+
+        public static void Initialize(string logPath = null)
+        {
+            if (IsInitialized)
+            {
+                return;
+            }
+
+            IsInitialized = true;
+
+            LoggerConfiguration configuration = new LoggerConfiguration();
+
+            if (Application.isPlaying)
+            {
+                configuration = ConfigureForPlayMode(configuration, logPath);
             }
 
             // Configure writing to Unity's console, using our custom text formatter.
             configuration = configuration.WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: DefaultUnityLogTemplate));
 
             // Create the logger from the configuration.
-            Log.Logger = configuration.CreateLogger();
+            Serilog.Log.Logger = configuration.CreateLogger();
+
+            Log.Information(typeof(LogManager), "Logging settings loaded and initialized", Logs.Important);
         }
 
-        /// <summary>
-        /// Suscribe to event ServerOrClientStarted, to initialize Log Manager when stuff networking wise are correctly set up.
-        /// </summary>
-        public static void OnServerStarted(object sender, EventArgs e)
-        {
-            Initialize();
-        }
-
-        private static LoggerConfiguration ConfigureForPlayMode(LoggerConfiguration configuration)
+        private static LoggerConfiguration ConfigureForPlayMode(LoggerConfiguration configuration, string overrideLogPath = null)
         {
             configuration.Enrich.With(new ClientIdEnricher());
             configuration = ConfigureMinimumLevel(configuration);
 
             // Apply some override on the minimum logging level for some namespaces using the log settings.
             // Does not apply override if the logging level corresponds to the global minimum level.
-            foreach (var levelForNameSpace in Settings.SS3DNameSpaces)
+            foreach (NamespaceLogLevel levelForNameSpace in Settings.SS3DNameSpaces)
             {
                 if (levelForNameSpace.Level == Settings.defaultLogLevel) continue;
 
@@ -79,21 +79,32 @@ namespace SS3D.Core
             // Configure writing to log files using a CompactJsonFormatter.
             // The path of the log file depends if connection is host, server only, or client.
             // Write in a different file depending on client's connection id.
-            if (InstanceFinder.IsHost)
+            string path = string.Empty;
+
+            if (!string.IsNullOrEmpty(overrideLogPath))
             {
-                configuration = configuration.WriteTo.File(new CompactJsonFormatter()
-                , LogFolderPath + "LogHost.json");
+                path = overrideLogPath;
             }
-            else if (InstanceFinder.IsClientOnly)
+            else
             {
-                configuration = configuration.WriteTo.File(new CompactJsonFormatter()
-                , LogFolderPath + "LogClient" + InstanceFinder.NetworkManager.ClientManager.Connection.ClientId + ".json");
+                if (InstanceFinder.IsHost)
+                {
+                    path = "LogHost.json";
+                }
+                else if (InstanceFinder.IsClientOnly)
+                {
+                    path = "LogClient" + InstanceFinder.NetworkManager.ClientManager.Connection.ClientId + ".json";
+                }
+                else if (InstanceFinder.IsServerOnly)
+                {
+                    path = "LogServer.json";
+                }
             }
-            else if (InstanceFinder.IsServerOnly)
-            {
-                configuration = configuration.WriteTo.File(new CompactJsonFormatter()
-                , LogFolderPath + "LogServer.json");
-            }
+
+            path = LogFolderPath + path;
+
+            configuration = configuration.WriteTo.File(new CompactJsonFormatter(), LogFolderPath + path);
+
             return configuration;
         }
 

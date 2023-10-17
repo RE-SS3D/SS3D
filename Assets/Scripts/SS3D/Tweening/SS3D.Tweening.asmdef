@@ -1,19 +1,12 @@
 {
-    "name": "SS3D.Core",
+    "name": "SS3D.Tweening",
     "rootNamespace": "",
     "references": [
-        "SS3D.Logging",
-        "SS3D.Utils",
-        "FishNet.Runtime",
-        "UltimateDiscordSDK",
-        "DOTween.Modules",
-        "Serilog.Sinks.Unity3D",
-        "SerilogExternal",
-        "ToolbarExtender.Editor",
-        "Analysers",
         "Coimbra",
-        "Coimbra.Services.Events",
-        "Coimbra.Services"
+        "SS3D.Application",
+        "DOTween.Modules",
+        "SS3D.Core",
+        "Coimbra.Services.Events"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

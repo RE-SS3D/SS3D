@@ -1,10 +1,12 @@
 using Coimbra;
 using DG.Tweening;
+using SS3D.Application;
 using SS3D.Core;
+using SS3D.Networking;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace SS3D.Application.Intro
+namespace SS3D.Systems.Intro
 {
     /// <summary>
     /// This class simply manages the UI in the intro
@@ -33,20 +35,19 @@ namespace SS3D.Application.Intro
         {
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            if (applicationSettings.SkipIntro)
-            {
-                Destroy(_temporaryAudioSource);
-
-                ApplicationInitializerSystem applicationInitializerSystem = Subsystems.Get<ApplicationInitializerSystem>();
-                applicationInitializerSystem.InitializeApplication();
-
-                _introUiCanvasGroup.alpha = 0;
-                _connectionUiCanvasGroup.alpha = 1;
-            }
-            else
-            {
-                TurnOnConnectionUIAfterFade();
-            }
+             if (applicationSettings.SkipIntro)
+             {
+                 Destroy(_temporaryAudioSource);
+            
+                Subsystems.Get<NetworkSessionSystem>().StartNetworkSession();
+            
+                 _introUiCanvasGroup.alpha = 0;
+                 _connectionUiCanvasGroup.alpha = 1;
+             }
+             else
+             {
+                 TurnOnConnectionUIAfterFade();
+             }
         }
 
         // Please don't mess with this, its disgusting
@@ -58,8 +59,7 @@ namespace SS3D.Application.Intro
             {
                 _introUiCanvasGroup.DOFade(0, _fadeOutDuration).SetDelay(_splashScreenFreezeDuration).OnComplete(() =>
                 {
-                    ApplicationInitializerSystem applicationInitializerSystem = Subsystems.Get<ApplicationInitializerSystem>();
-                    applicationInitializerSystem.InitializeApplication();
+                    Subsystems.Get<NetworkSessionSystem>().StartNetworkSession();
 
                     _connectionUiCanvasGroup.DOFade(1, _fadeInDuration).SetDelay(2);
                 });

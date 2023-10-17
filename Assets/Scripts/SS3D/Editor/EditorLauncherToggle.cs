@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using Coimbra;
+using SS3D.Application;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
 using System;
@@ -10,7 +11,7 @@ using UnityEngine;
 using UnityToolbarExtender;
 using Random = UnityEngine.Random;
 
-namespace SS3D.Application.Editor
+namespace SS3D.Editor
 {
 	[InitializeOnLoad]
 	public sealed class EditorLauncherToggle

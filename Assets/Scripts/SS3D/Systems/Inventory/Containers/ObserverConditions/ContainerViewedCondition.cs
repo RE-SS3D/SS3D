@@ -1,11 +1,9 @@
-
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Observing;
-using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
-namespace SS3D.Networking.ObserverConditions
+namespace SS3D.Systems.Inventory.Containers.ObserverConditions
 {
     [CreateAssetMenu(menuName = "FishNet/SS3D/Observers/ContainerViewed Condition", fileName = "New ContainerViewed Condition")]
     public class ContainerViewedCondition : ObserverCondition

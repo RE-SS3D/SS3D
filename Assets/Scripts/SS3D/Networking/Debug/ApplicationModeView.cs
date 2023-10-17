@@ -1,14 +1,12 @@
-﻿using System;
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using SS3D.Core.Behaviours;
-using SS3D.Core.Events;
 using SS3D.Logging;
-using SS3D.Networking;
 using SS3D.Utils;
+using System;
 using TMPro;
 using UnityEngine;
 
-namespace SS3D.Core.Utils
+namespace SS3D.Networking.Debug
 {
     public class ApplicationModeView : Actor
     {
@@ -25,9 +23,9 @@ namespace SS3D.Core.Utils
         {
             string ckey = e.Ckey.Colorize(LogColors.GetLogColor(Logs.Generic));
             string mode = e.NetworkType.ToString().Colorize(LogColors.GetLogColor(Logs.Physics));
-            string appName = Application.productName.Colorize(LogColors.GetLogColor(Logs.Important));
-            string appVersion = $"{Application.version}".Colorize(LogColors.GetLogColor(Logs.ServerOnly));
-            string unityVersion = $"{Application.unityVersion}".Colorize(LogColors.GetLogColor(Logs.ClientOnly));
+            string appName = UnityEngine.Application.productName.Colorize(LogColors.GetLogColor(Logs.Important));
+            string appVersion = $"{UnityEngine.Application.version}".Colorize(LogColors.GetLogColor(Logs.ServerOnly));
+            string unityVersion = $"{UnityEngine.Application.unityVersion}".Colorize(LogColors.GetLogColor(Logs.ClientOnly));
 
             string date = $"{DateTime.Now.Day:00}/{DateTime.Now.Month:00}/{DateTime.Now.Year:0000}".Colorize(LogColors.GetLogColor(Logs.Generic));
 

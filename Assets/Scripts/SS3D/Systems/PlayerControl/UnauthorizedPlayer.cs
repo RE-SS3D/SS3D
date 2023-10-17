@@ -1,11 +1,9 @@
-using Coimbra;
 using FishNet.Object;
 using SS3D.Core.Settings;
 using SS3D.Logging;
 using SS3D.Systems.PlayerControl.Messages;
-using UnityEngine;
 
-namespace SS3D.Networking
+namespace SS3D.Systems.PlayerControl
 {
     /// <summary>
     /// Class that exists until the player sends auth information
@@ -24,7 +22,7 @@ namespace SS3D.Networking
         {
             string ckey = LocalPlayer.Ckey;
 
-            bool testingServerOnlyInEditor = IsServer && !IsHost && Application.isEditor;
+            bool testingServerOnlyInEditor = IsServer && !IsHost && UnityEngine.Application.isEditor;
             if (testingServerOnlyInEditor)
             {
                 return;
