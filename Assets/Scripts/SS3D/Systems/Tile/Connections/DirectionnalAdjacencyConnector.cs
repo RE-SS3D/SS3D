@@ -79,6 +79,8 @@ namespace SS3D.Systems.Tile.Connections
 
             if (!TileHelper.CardinalDirections().Contains(dir)) return false;
 
+            if (_adjacencyMap.CardinalConnectionCount == 2) return false;
+
             // add a check to see if connected to another neighbour object instead of the cardinal connection count.
 
             bool isConnected = true;
@@ -177,5 +179,7 @@ namespace SS3D.Systems.Tile.Connections
             transform.localRotation = localRotation;
         }
     }
+
+
 }
 
