@@ -1,4 +1,5 @@
 using Coimbra;
+using DynamicPanels;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
@@ -42,6 +43,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 		private List<GenericObjectSo> _objectDatabase;
 		private Controls.TileCreatorActions _controls;
 		private InputSystem _inputSystem;
+        private PanelTab _tab;
 
 		public bool IsDeleting
 		{
@@ -62,16 +64,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
 		protected override void OnStart()
 		{
 			base.OnStart();
-			ShowUI(false);
-			_inputSystem = Subsystems.Get<InputSystem>();
+            _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
+            ShowUI(false);
+            _inputSystem = Subsystems.Get<InputSystem>();
 			_controls = _inputSystem.Inputs.TileCreator;
 			_inputSystem.ToggleAction(_controls.ToggleMenu, true);
-
-			_controls.ToggleMenu.performed += HandleToggleMenu;
+            
+            _controls.ToggleMenu.performed += HandleToggleMenu;
 			_controls.Replace.performed += HandleReplace;
 			_controls.Replace.canceled += HandleReplace;
 			_controls.Place.performed += HandlePlace;
 			_controls.Rotate.performed += HandleRotate;
+            
 		}
 
 		private void HandleToggleMenu(InputAction.CallbackContext context)
@@ -271,6 +275,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
 		[ServerOrClient]
 		private void ShowUI(bool show)
 		{
+            if (!show)
+            {
+                _tab.Detach();
+            }
+            _tab.Panel.gameObject.SetActive(show);
 			_menuRoot.SetActive(show);
 		}
 
