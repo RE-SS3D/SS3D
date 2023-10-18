@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 7244337257717968850}
   - component: {fileID: 6047619831351193847}
   - component: {fileID: 8869621938725342091}
+  - component: {fileID: -8435056193936671747}
   m_Layer: 10
   m_Name: HumanHandLeftItem
   m_TagString: Untagged
@@ -266,7 +267,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 141
+  <PrefabId>k__BackingField: 142
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -288,11 +289,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8532088199163376958}
   _name: hand left
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits: []
   _rigidbody: {fileID: 3362323121630547519}
   AttachmentPoint: {fileID: 8087437400747043343}
   AttachmentPointAlt: {fileID: 8087437400747043343}
+  _container: {fileID: 0}
 --- !u!114 &949826828486068756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,7 +334,6 @@ MonoBehaviour:
   _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 6047619831351193847}
   ContainerItemDisplay: {fileID: 0}
-  inventory: {fileID: 0}
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 0
@@ -349,7 +349,6 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _displayAsSlotInUI: 1
-  _containerName: hand left
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
@@ -412,4 +411,23 @@ MonoBehaviour:
   _bodyPartItem: {fileID: 0}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
+  HealthController: {fileID: 0}
+  _bodyPartVolume: 650
   _hand: {fileID: 0}
+--- !u!114 &-8435056193936671747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 8532088199163376958}
+  _networkObjectCache: {fileID: 0}
+  _bodyPart: {fileID: 8869621938725342091}
+  isBleeding: 0

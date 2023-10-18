@@ -298,10 +298,16 @@ namespace SS3D.Systems.Entities
             }
         }
 
-		public void TransferEntity(Entity oldEntity, Entity newEntity)
+		public bool TryTransferEntity(Entity oldEntity, Entity newEntity)
 		{
 			int index = _spawnedPlayers.FindIndex(x => x == oldEntity);
+            if (index == -1)
+            {
+                Log.Warning(this, $"could not find entity {oldEntity} in the list of spawned entity controlled by players");
+                return false;
+            }
 			_spawnedPlayers[index] = newEntity;
+            return true;
 		}
 	}
 }

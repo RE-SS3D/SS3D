@@ -8,18 +8,17 @@ namespace SS3D.Systems.Health
 
 		[SerializeField] private Hand _hand;
 
-		public override void Init(BodyPart parent)
-		{
-			base.Init(parent);
-		}
-
 		protected override void AddInitialLayers()
 		{
 			TryAddBodyLayer(new MuscleLayer(this));
 			TryAddBodyLayer(new BoneLayer(this));
-			TryAddBodyLayer(new CirculatoryLayer(this));
+			TryAddBodyLayer(new CirculatoryLayer(this, 5f));
 			TryAddBodyLayer(new NerveLayer(this));
 			InvokeOnBodyPartLayerAdded();
 		}
-	}
+
+        protected override void AfterSpawningCopiedBodyPart() { }
+
+        protected override void BeforeDestroyingBodyPart() { }
+    }
 }

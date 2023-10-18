@@ -366,7 +366,10 @@ namespace SS3D.Systems.Inventory.UI
                 dummySlot.transform.SetSiblingIndex(clothPosition);
             }
 
-            Slots[indexToRemove].gameObject.Dispose(true);
+            SingleItemContainerSlot slot = Slots[indexToRemove];
+            if (slot == null) return;
+
+            slot?.gameObject.Dispose(true);
             Slots.RemoveAt(indexToRemove);
         }
 
