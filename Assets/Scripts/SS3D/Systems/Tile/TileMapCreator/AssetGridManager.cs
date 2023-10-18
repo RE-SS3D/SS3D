@@ -22,6 +22,8 @@ public class AssetGridManager : MonoBehaviour
     void Update()
     {
         float width = transform.parent.GetComponent<RectTransform>().rect.width;
-        _grid.constraintCount = Convert.ToInt32(Math.Floor((width + paddingWidth) / (cellWidth + paddingWidth)));
+        int constraintCount = Convert.ToInt32(Math.Floor(width / (cellWidth + paddingWidth)));
+        if (constraintCount != _grid.constraintCount)
+            _grid.constraintCount = constraintCount;
     }
 }
