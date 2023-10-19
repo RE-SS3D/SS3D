@@ -185,5 +185,26 @@ namespace SS3D.Systems.Tile
 
             return false;
         }
+
+        /// <summary>
+        /// TODO don't use chunk if possible, or chunk coordinate as well.
+        /// Is this at the direction of the other object ? (has to be adjacent).
+        /// </summary>
+        public bool AtDirectionOf(PlacedTileObject other, Direction dir)
+        {
+            switch (dir)
+            {
+                case Direction.North:
+                    return math.mod(other.Origin.y - 1, TileConstants.ChunkSize) == Origin.y;
+                case Direction.South:
+                    return math.mod(other.Origin.y + 1, TileConstants.ChunkSize) == Origin.y;
+                case Direction.East:
+                    return math.mod(other.Origin.x - 1, TileConstants.ChunkSize) == Origin.x;
+                case Direction.West:
+                    return math.mod(other.Origin.x + 1, TileConstants.ChunkSize) == Origin.x;
+                default: return false;
+            }
+            
+        }
     }
 }
