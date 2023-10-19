@@ -77,8 +77,13 @@ namespace SS3D.Systems.Tile.Connections
         {
             if (neighbourObject == null) return false;
 
+            // don't connect on an already connected neighbour with two connections.
+            if(TileHelper.DiagonalDirections().Contains(neighbourObject.Direction)) return false;
+
+            // don't connect on neighbours not in cardinal positions.
             if (!TileHelper.CardinalDirections().Contains(dir)) return false;
 
+            // don't connect to anything new if already two connections.
             if (_adjacencyMap.CardinalConnectionCount == 2) return false;
 
             // add a check to see if connected to another neighbour object instead of the cardinal connection count.
@@ -150,18 +155,18 @@ namespace SS3D.Systems.Tile.Connections
             var neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
 
 
-            List<Direction> neighboursFacingDirection = new();
+            List<PlacedTileObject> neighboursFacingDirection = new();
 
             // TODO not solid code if order of neighbours gets changed
             foreach (Direction dir in TileHelper.CardinalDirections())
             {
                 if(_adjacencyMap.HasConnection(dir))
                 {
-                    neighboursFacingDirection.Add(neighbours[(int)dir].Direction);
+                    neighboursFacingDirection.Add(neighbours[(int)dir]);
                 }
             }
 
-            info = AdjacencyResolver.GetMeshAndDirectionAndRotation(_adjacencyMap, PlacedObjectDirection, neighboursFacingDirection);
+            info = AdjacencyResolver.GetMeshAndDirectionAndRotation(_adjacencyMap, PlacedObjectDirection, neighboursFacingDirection, _placedObject);
 
             _placedObject.SetDirection(info.Item1);
 
