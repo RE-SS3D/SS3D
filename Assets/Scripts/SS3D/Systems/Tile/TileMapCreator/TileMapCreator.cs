@@ -152,13 +152,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
 			{
 				return;
 			}
-
 			// Clean-up if we are not building
-			if (!_enabled || _selectedObject == null)
+			if (_selectedObject == null)
 			{
-				_ghostManager.DestroyGhost();
-
-				return;
+                _ghostManager.DestroyGhost();
+                return;
 			}
 
 			_ghostManager.CreateGhost(_selectedObject.prefab);
@@ -277,6 +275,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
 		{
             if (!show)
             {
+                if (_ghostManager)
+                {
+                    _ghostManager.DestroyGhost();
+                }
                 _tab.Detach();
             }
             _tab.Panel.gameObject.SetActive(show);
