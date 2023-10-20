@@ -140,6 +140,21 @@ namespace SS3D.Systems.Tile
             return adjacentObjects;
         }
 
+
+        public PlacedTileObject[] GetCardinalNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        {
+            PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction+= 2)
+            {
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
+                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).PlacedObject;
+            }
+
+            return adjacentObjects;
+        }
+
+
         /// <summary>
         /// Returns whether the specified object can be successfully build for a given position and direction.
         /// </summary>
