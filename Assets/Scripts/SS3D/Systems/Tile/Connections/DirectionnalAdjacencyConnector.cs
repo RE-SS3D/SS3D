@@ -14,6 +14,11 @@ using UnityEngine.PlayerLoop;
 
 namespace SS3D.Systems.Tile.Connections
 {
+
+    /// <summary>
+    /// ISSUE : I connectors not connecting when one side isn't straight.
+    /// ISSUE : can't alternate between LIN LOUT diagonnally.
+    /// </summary>
     public class DirectionnalAdjacencyConnector : NetworkActor, IAdjacencyConnector
     {
 
