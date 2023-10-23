@@ -8709,6 +8709,7 @@ GameObject:
   - component: {fileID: 5164211669966765644}
   - component: {fileID: 8358346980019529144}
   - component: {fileID: 6282983976573159881}
+  - component: {fileID: 8972329104735164725}
   m_Layer: 11
   m_Name: Human
   m_TagString: Player
@@ -9203,6 +9204,18 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _ragdoll: {fileID: 8358346980019529144}
   _timeRagdolled: 4
+--- !u!114 &8972329104735164725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
@@ -9245,6 +9258,7 @@ GameObject:
   - component: {fileID: 6806139853968569792}
   - component: {fileID: 5839020956740199093}
   - component: {fileID: 4652682359255614497}
+  - component: {fileID: 1433214901217828326}
   m_Layer: 12
   m_Name: HumanTorso
   m_TagString: Untagged
@@ -9393,6 +9407,18 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
     m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
   m_DirtyAABB: 0
+--- !u!114 &1433214901217828326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6497759491280381115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6618192393620894408
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,19 +15,19 @@ namespace SS3D.Systems.Selection
     /// the cursor; however, other Systems (e.g. Examine, Interaction) may make
     /// use of the results.
     /// </summary>
-    public class SelectionSystem : SS3D.Core.Behaviours.System
+    public class SelectionSystem
     {
+        public event SelectableChangedHandler OnSelectableChanged;
+
+        public delegate void SelectableChangedHandler();
+
         private Dictionary<Color32, Selectable> _selectables;
         private uint nextColour;
-        private bool initialized = false;
         private Selectable _current;
 
-
-        protected override void OnStart()
+        public SelectionSystem()
         {
-            base.OnStart();
             GenerateSelectableDictionary();
-
         }
 
         /// <summary>
@@ -35,16 +35,9 @@ namespace SS3D.Systems.Selection
         /// a unique color for rendering by the Selection Camera.
         /// </summary>
         /// <param name="selectable"></param>
-        /// <returns></returns>
+        /// <returns>The color that the Selectable will be rendered in.</returns>
         public Color32 RegisterSelectable(Selectable selectable)
         {
-            // Just in case Selectables are initialized before the Selection System is.
-            if (!initialized)
-            {
-                GenerateSelectableDictionary();
-            }
-
-            // Register the selectable, and return the unique colour.
             Color32 col = UIntToColor(nextColour);
             _selectables.Add(col, selectable);
             nextColour++;
@@ -62,8 +55,32 @@ namespace SS3D.Systems.Selection
             _selectables.TryGetValue(color, out _current);
             if (previous != _current)
             {
-                Debug.Log($"Current selectable is {_current?.name}.");
+                OnSelectableChanged?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// Called by systems that use the Selection System to get the selectable object
+        /// in their desired type. In most instances, the selectable object will be the
+        /// one stored in the _current variable.
+        /// </summary>
+        /// <typeparam name="T">The component type sought by the external system (e.g. IExaminable for Examine System)</typeparam>
+        /// <returns>A component of type T attached to the currently hovered selectable or their nearest ancestor.</returns>
+        public T GetCurrentSelectable<T>()
+        {
+            // See if the desired selectable type is on the currently hovered gameobject.
+            GameObject go = _current.gameObject;
+            T returnValue = go.GetComponent<T>();
+
+            // If not, search ancestors until we find the type, or there are no more ancestors.
+            while (returnValue == null && go.transform?.parent != null)
+            {
+                go = go.transform.parent.gameObject;
+                returnValue = go.GetComponent<T>();
+            }
+
+            // Return the relevant object (or null)
+            return returnValue;
         }
 
         /// <summary>
@@ -91,8 +108,6 @@ namespace SS3D.Systems.Selection
         /// </summary>
         private void GenerateSelectableDictionary()
         {
-            if (initialized) return;
-            initialized = true; // Set this immediately so we don't hit a stack overflow.
             _selectables = new Dictionary<Color32, Selectable>();
             nextColour = 0;
             RegisterSelectable(null);

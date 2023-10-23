@@ -6,20 +6,28 @@ using SS3D.Core;
 
 namespace SS3D.Systems.Selection {
 
-
+    [DisallowMultipleComponent]
     public class Selectable : Actor
     {
+        /// <summary>
+        /// The color that this Selectable will be rendered by the Selection Camera
+        /// </summary>
+        Color32 _selectionColor;
 
-        [SerializeField] private MaterialPropertyBlock propertyBlock;
+        /// <summary>
+        /// The color that this Selectable will be rendered by the Selection Camera
+        /// </summary>
+        public Color32 SelectionColor
+        {
+            get => _selectionColor;
+            set => _selectionColor = value;
+        }
 
         protected override void OnStart()
         {
-
-            Color32 color = Subsystems.Get<SelectionSystem>().RegisterSelectable(this);
-            propertyBlock = new MaterialPropertyBlock();
-            //Color32 color = new Color32((byte)Random.Range(0, 256), (byte)Random.Range(0, 256), (byte)Random.Range(0, 256), (byte)255);
-            //propertyBlock.SetColor("_SelectionColor", color);
-            SetColorRecursively(this.gameObject, color, this);
+            base.OnStart();
+            _selectionColor = Subsystems.Get<SelectionSystemController>().RegisterSelectable(this);
+            SetColorRecursively(this.gameObject, _selectionColor, this);
             
         }
 
@@ -33,10 +41,10 @@ namespace SS3D.Systems.Selection {
             Renderer renderer = go.GetComponent<Renderer>();
             if (renderer != null)
             {
-                MaterialPropertyBlock MPB = new MaterialPropertyBlock();
-                renderer.GetPropertyBlock(MPB);
-                MPB.SetColor("_SelectionColor", color);
-                renderer.SetPropertyBlock(MPB);
+                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+                renderer.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor("_SelectionColor", color);
+                renderer.SetPropertyBlock(propertyBlock);
             }
 
             // Call this for all children
@@ -46,60 +54,5 @@ namespace SS3D.Systems.Selection {
             }
 
         }
-
-        /*
-        private void AddExaminablesRecursive(GameObject gameObject, IExaminable current = null)
-        {
-            if (!gameObject.activeInHierarchy)
-            {
-                return;
-            }
-
-            IExaminable old = current;
-            current = gameObject.GetComponent<IExaminable>();
-
-            if (current == null)
-            {
-                current = old;
-            }
-            else if (old != current)
-            {
-                GameObject examinable = ((MonoBehaviour)current).gameObject;
-                if (identifiers.HasExaminable(examinable))
-                {
-                    return;
-                }
-
-                identifiers.AddExaminable(examinable);
-            }
-
-            if (current != null)
-            {
-                var meshFilter = gameObject.GetComponent<MeshFilter>();
-                if (meshFilter)
-                {
-                    identifiers.AddMesh(meshFilter.sharedMesh, gameObject, ((MonoBehaviour)current).gameObject);
-                }
-                else
-                {
-                    var meshRenderer = gameObject.GetComponent<SkinnedMeshRenderer>();
-                    if (meshRenderer)
-                    {
-                        var mesh = new Mesh();
-                        meshRenderer.BakeMesh(mesh);
-                        identifiers.AddMesh(mesh, gameObject, ((MonoBehaviour)current).gameObject);
-                    }
-                }
-            }
-
-            Transform objectTransform = gameObject.transform;
-            int childCount = objectTransform.childCount;
-            for (var i = 0; i < childCount; i++)
-            {
-                AddExaminablesRecursive(objectTransform.GetChild(i).gameObject, current);
-            }
-        }
-        */
-
     }
 }

@@ -41,7 +41,7 @@ namespace SS3D.Systems.Selection
         /// <summary>
         /// Overarching System that performs all Selection-related processing.
         /// </summary>
-        private SelectionSystem _system;
+        private SelectionSystemController _system;
 
         /// <summary>
         /// Debug Mode allows the user to see the RenderTexture on screen, to facilitate debugging.
@@ -55,7 +55,7 @@ namespace SS3D.Systems.Selection
 
         protected override void OnStart()
         {
-            _system = Subsystems.Get<SelectionSystem>();
+            _system = Subsystems.Get<SelectionSystemController>();
             _camera = GetComponent<Camera>();
             _camera.SetReplacementShader(_shader, "");
 
@@ -110,11 +110,15 @@ namespace SS3D.Systems.Selection
             else
             {
                 _readbackTexture.ReadPixels(new Rect(pos.x, Screen.height - pos.y, 1, 1), 0, 0, false);
-                //Color32 col = _readbackTexture.GetPixel((int)pos.x, (int)pos.y).ToString()}
                 col = _readbackTexture.GetPixel(0, 0);
             }
 
             _system.UpdateColourFromCamera(col);
+        }
+
+        private void OnDestroy()
+        {
+            _renderTexture.Release();
         }
     }
 }
