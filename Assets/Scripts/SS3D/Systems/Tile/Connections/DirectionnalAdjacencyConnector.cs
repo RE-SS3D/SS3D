@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UIElements;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 using static UnityEngine.ParticleSystem;
 
@@ -45,6 +46,8 @@ namespace SS3D.Systems.Tile.Connections
         private bool _initialized;
 
         private float _currentRotation;
+
+        private int _currentConnections;
 
         private AdjacencyShape _currentShape;
 
@@ -109,17 +112,20 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
             var neighbours = GetNeighbourDirectionnal();
+            int connections = 0;
 
             Tuple<Mesh, float, Direction, AdjacencyShape> results;
 
             if (HasSingleConnection(neighbours, out PlacedTileObject neighbour))
             {
                 results = SelectMeshDirectionRotationSingleConnection(neighbours);
+                connections = 1;
             }
 
             else if (HasDoubleConnection(neighbours, out PlacedTileObject first, out PlacedTileObject second))
             {
                 results = SelectMeshDirectionRotationDoubleConnection(neighbours);
+                connections = 2;
             }
 
             // no connections then
@@ -127,9 +133,10 @@ namespace SS3D.Systems.Tile.Connections
             {
                 results = new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.o,
                     TileHelper.AngleBetween(Direction.North, _placedObject.Direction), _placedObject.Direction, AdjacencyShape.O);
+                connections = 0;
             }
 
-            bool updated = UpdateMeshRotationDirection(results.Item1, results.Item2, results.Item3, results.Item4);
+            bool updated = UpdateMeshRotationDirection(results.Item1, results.Item2, results.Item3, results.Item4, connections);
 
            
 
@@ -142,14 +149,17 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        private bool UpdateMeshRotationDirection(Mesh mesh, float rotation, Direction direction, AdjacencyShape shape)
+        private bool UpdateMeshRotationDirection(Mesh mesh, float rotation, Direction direction, AdjacencyShape shape, int connectionNumbers)
         {
             bool updated = direction != _placedObject.Direction;
             updated |= rotation != _currentRotation;
             updated |= shape != _currentShape;
+            updated |= connectionNumbers != _currentConnections;
 
             _currentShape = shape;
             _currentRotation = rotation;
+            _currentConnections = connectionNumbers;
+            
 
             _placedObject.SetDirection(direction);
             _filter.mesh = mesh;
@@ -223,7 +233,14 @@ namespace SS3D.Systems.Tile.Connections
             float rotation;
             Direction direction;
 
-            if (IsFirstLInConfiguration(neighbours,out var first, out var second))
+            if (IsIConfiguration(neighbours, out var first, out var second))
+            {
+                rotation = TileHelper.AngleBetween(Direction.North, _placedObject.Direction);
+                direction = _placedObject.Direction;
+                return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.i, rotation, direction, AdjacencyShape.I);
+            }
+
+            if (IsFirstLInConfiguration(neighbours,out first, out second))
             {
                 rotation = TileHelper.AngleBetween(Direction.North, second.Direction);
                 direction = _placedObject.Direction;
@@ -251,13 +268,6 @@ namespace SS3D.Systems.Tile.Connections
                 rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetOpposite(second.Direction));
                 direction = _placedObject.Direction;
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lOut, rotation, direction, AdjacencyShape.LOut);
-            }
-
-            if(IsIConfiguration(neighbours, out first, out second))
-            {
-                rotation = TileHelper.AngleBetween(Direction.North, _placedObject.Direction);
-                direction = _placedObject.Direction;
-                return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.i, rotation, direction, AdjacencyShape.I);
             }
 
             Debug.LogError("should not reach this point");
@@ -346,19 +356,13 @@ namespace SS3D.Systems.Tile.Connections
 
             if (!(hasLeft && hasRight)) return false;
 
-            var firstConnector = firstNeighbour.GetComponent<DirectionnalAdjacencyConnector>();
-            var secondConnector = secondNeighbour.GetComponent<DirectionnalAdjacencyConnector>();
-
-            var neighboursOfFirst = firstConnector.GetNeighbourDirectionnal().Where(x => x != _placedObject).ToList();
-            var neighboursOfSecond = secondConnector.GetNeighbourDirectionnal().Where(x => x != _placedObject).ToList();
-
             bool firstGoodDirection = _placedObject.Direction == firstNeighbour.Direction 
                 || (firstNeighbour.Direction != TileHelper.GetOpposite(_placedObject.Direction) 
-                    && firstConnector.HasSingleConnection(neighboursOfFirst, out var n1));
+                    && DirectionnalHasSingleConnection(firstNeighbour, out var n1, true));
 
             bool secondGoodDirection = _placedObject.Direction == secondNeighbour.Direction
                 || (secondNeighbour.Direction != TileHelper.GetOpposite(_placedObject.Direction)
-                    && secondConnector.HasSingleConnection(neighboursOfSecond, out n1));
+                    && DirectionnalHasSingleConnection(secondNeighbour, out n1, true));
 
             return firstGoodDirection && secondGoodDirection;
         }
@@ -368,8 +372,11 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsULeftConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject single)
         {
-            bool hasLeft = HasNeighbourOnLeft(neighbours, out single);
-            return hasLeft && single.Direction == _placedObject.Direction;
+            if(!HasNeighbourOnLeft(neighbours, out single)) return false;
+
+            bool firstCondition = single.Direction == _placedObject.Direction;
+            bool secondCondition = !DirectionnalHasTwoConnections(single, out var n1, out var n2, true);
+            return firstCondition && secondCondition;
         }
 
         /// <summary>
@@ -377,8 +384,10 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsURightConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject single)
         {
-            bool hasRight = HasNeighbourOnRight(neighbours, out single);
-            return hasRight && single.Direction == _placedObject.Direction;
+            if (!HasNeighbourOnRight(neighbours, out single)) return false;
+
+            return single.Direction == _placedObject.Direction
+                && !DirectionnalHasTwoConnections(single, out var n1, out var n2, true);
         }
 
         /// <summary>
@@ -388,11 +397,12 @@ namespace SS3D.Systems.Tile.Connections
         {
             if(!HasNeighbourOnRight(neighbours, out single)) return false;
 
-            var neighbourConnector = single.GetComponent<DirectionnalAdjacencyConnector>();
-            var neighbourNeighbours = neighbourConnector.GetNeighbourDirectionnal();
-            if (neighbourConnector.HasDoubleConnection(neighbourNeighbours, out var first, out var second))
+            if (DirectionnalHasTwoConnections(single, out var first, out var second, false))
             {
-                if (first == _placedObject || second == _placedObject) return true;
+                if (first == _placedObject || second == _placedObject)
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -405,11 +415,12 @@ namespace SS3D.Systems.Tile.Connections
         {
             if (!HasNeighbourOnLeft(neighbours, out single)) return false;
 
-            var neighbourConnector = single.GetComponent<DirectionnalAdjacencyConnector>();
-            var neighbourNeighbours = neighbourConnector.GetNeighbourDirectionnal();
-            if (neighbourConnector.HasDoubleConnection(neighbourNeighbours, out var first, out var second))
+            if (DirectionnalHasTwoConnections(single, out var first, out var second, false))
             {
-                if (first == _placedObject || second == _placedObject) return true;
+                if (first == _placedObject || second == _placedObject)
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -473,6 +484,24 @@ namespace SS3D.Systems.Tile.Connections
 
             onLeft = null;
             return false;
+        }
+
+        private bool DirectionnalHasTwoConnections(PlacedTileObject directionnal,
+            out PlacedTileObject first, out PlacedTileObject second, bool excludingThis)
+        {
+            var directionnalConnector = directionnal.GetComponent<DirectionnalAdjacencyConnector>();
+            var directionnalNeighbours = directionnalConnector.GetNeighbourDirectionnal();
+            if (excludingThis) directionnalNeighbours.Remove(_placedObject);
+            return directionnalConnector.HasDoubleConnection(directionnalNeighbours, out first, out second);
+        }
+
+        private bool DirectionnalHasSingleConnection(PlacedTileObject directionnal, out PlacedTileObject first,
+            bool excludingThis)
+        {
+            var directionnalConnector = directionnal.GetComponent<DirectionnalAdjacencyConnector>();
+            var directionnalNeighbours = directionnalConnector.GetNeighbourDirectionnal();
+            if(excludingThis) directionnalNeighbours.Remove(_placedObject);
+            return directionnalConnector.HasSingleConnection(directionnalNeighbours, out first);
         }
     }
 
