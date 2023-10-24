@@ -96,7 +96,10 @@ namespace SS3D.Systems.Tile.Connections
         // ignore param
         public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
         {
-            UpdateAllAndNeighbours();
+            foreach(var neighbourObject in neighbourObjects)
+            {
+                UpdateAllAndNeighbours(neighbourObject != null);
+            }
         }
 
         
@@ -104,11 +107,11 @@ namespace SS3D.Systems.Tile.Connections
         // ignore param
         public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
-            UpdateAllAndNeighbours();
+            UpdateAllAndNeighbours(neighbourObject != null);
             return true;
         }
 
-        private void UpdateAllAndNeighbours()
+        private void UpdateAllAndNeighbours(bool neighbourPresent)
         {
             Setup();
             var neighbours = GetNeighbourDirectionnal();
@@ -144,7 +147,7 @@ namespace SS3D.Systems.Tile.Connections
             {
                 foreach(var adjacent in neighbours)
                 {
-                    adjacent.GetComponent<DirectionnalAdjacencyConnector>().UpdateAllAndNeighbours();
+                    adjacent.GetComponent<DirectionnalAdjacencyConnector>().UpdateAllAndNeighbours(adjacent != null);
                 }
             }
         }
@@ -397,7 +400,12 @@ namespace SS3D.Systems.Tile.Connections
         {
             if(!HasNeighbourOnRight(neighbours, out single)) return false;
 
-            if (DirectionnalHasTwoConnections(single, out var first, out var second, false))
+            if(DirectionnalHasTwoConnections(single, out var first, out var second, true))
+            {
+                return false;
+            }
+
+            if (DirectionnalHasTwoConnections(single, out first, out second, false))
             {
                 if (first == _placedObject || second == _placedObject)
                 {
@@ -415,7 +423,12 @@ namespace SS3D.Systems.Tile.Connections
         {
             if (!HasNeighbourOnLeft(neighbours, out single)) return false;
 
-            if (DirectionnalHasTwoConnections(single, out var first, out var second, false))
+            if (DirectionnalHasTwoConnections(single, out var first, out var second, true))
+            {
+                return false;
+            }
+
+            if (DirectionnalHasTwoConnections(single, out first, out second, false))
             {
                 if (first == _placedObject || second == _placedObject)
                 {
