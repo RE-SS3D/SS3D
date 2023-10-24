@@ -184,9 +184,7 @@ namespace SS3D.Systems.Tile.Connections
             // has double connection, therefore not a single one.
             if(HasDoubleConnection(neighbours, out var first, out var second)) return false;
 
-            return IsULeftBisConfiguration(neighbours, out var single)
-                || IsURightBisConfiguration(neighbours, out single)
-                || IsULeftConfiguration(neighbours, out single)
+            return IsULeftConfiguration(neighbours, out var single)
                 || IsURightConfiguration(neighbours, out single);
         }
 
@@ -215,12 +213,12 @@ namespace SS3D.Systems.Tile.Connections
         {
             float rotation = TileHelper.AngleBetween(Direction.North, _placedObject.Direction);
 
-            if (IsULeftConfiguration(neighbours, out var single) || IsULeftBisConfiguration(neighbours, out single))
+            if (IsULeftConfiguration(neighbours, out var single))
             {
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.uLeft, rotation, _placedObject.Direction, AdjacencyShape.ULeft);
             }
 
-            if (IsURightConfiguration(neighbours, out single) || IsURightBisConfiguration(neighbours, out single))
+            if (IsURightConfiguration(neighbours, out single))
             {
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.uRight, rotation, _placedObject.Direction, AdjacencyShape.URight);
             }
@@ -248,7 +246,9 @@ namespace SS3D.Systems.Tile.Connections
             if (IsFirstLInConfiguration(neighbours,out first, out second))
             {
                 rotation = TileHelper.AngleBetween(Direction.North, second.Direction);
-                direction = _placedObject.Direction;
+                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
+                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
+                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lIn, rotation, direction, AdjacencyShape.LIn);
             }
 
@@ -257,21 +257,27 @@ namespace SS3D.Systems.Tile.Connections
                 // if the second neighbour is on left (the one facing the same direction), then the other 
                 // other side of the Lin couch should be linked to it, so we need to do a -90 degree rotation compared to neighbour on right.
                 rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetPreviousCardinalDir(second.Direction));
-                direction = _placedObject.Direction;
+                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
+                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
+                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lIn, rotation, direction, AdjacencyShape.LIn);
             }
 
             if (IsFirstLOutConfiguration(neighbours, out first, out second))
             {
-                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetNextCardinalDir(second.Direction));
-                direction = _placedObject.Direction;
+                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetNextCardinalDir(first.Direction));
+                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
+                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
+                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lOut, rotation, direction, AdjacencyShape.LOut);
             }
 
             if (IsSecondLOutConfiguration(neighbours, out first, out second))
             {
                 rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetOpposite(second.Direction));
-                direction = _placedObject.Direction;
+                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
+                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
+                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lOut, rotation, direction, AdjacencyShape.LOut);
             }
 
@@ -287,13 +293,41 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsFirstLInConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
-            bool hasFront = HasNeighbourInFront(neighbours, out firstNeighbour);
-            bool hasRight = HasNeighbourOnRight(neighbours, out secondNeighbour);
+            // Seems to work ! Need to do the same for all L config and I config.
+            bool hasFirstCorrect;
+            bool hasSecondCorrect;
+            List<Direction> firstAllowedDirections;
+            List<Direction> secondAllowedDirections;
 
-            if (!(hasFront && hasRight)) return false;
+            // check front and right when this placed object is facing a cardinal direction,
+            // otherwise check if directionnables are at adjacent directions.
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                hasFirstCorrect = HasNeighbourInFront(neighbours, out firstNeighbour);
+                hasSecondCorrect = HasNeighbourOnRight(neighbours, out secondNeighbour);
+            }
+            else
+            {
+                var directions = TileHelper.GetAdjacentDirections(_placedObject.Direction);
+                hasFirstCorrect = HasNeighbourAtDirection(neighbours, out firstNeighbour, directions[1]);
+                hasSecondCorrect = HasNeighbourAtDirection(neighbours, out secondNeighbour, directions[0]);
+            }
 
-            bool firstCondition = firstNeighbour.Direction == TileHelper.GetNextCardinalDir(_placedObject.Direction);
-            bool secondCondition = secondNeighbour.Direction == _placedObject.Direction;
+            if (!(hasFirstCorrect && hasSecondCorrect)) return false;
+
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(TileHelper.GetPreviousCardinalDir(firstNeighbour.Direction));
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+            else
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+
+            bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
+            bool secondCondition = secondAllowedDirections.Contains(_placedObject.Direction);
             return firstCondition && secondCondition;
         }
 
@@ -304,14 +338,41 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsSecondLInConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
-            bool hasFront = HasNeighbourInFront(neighbours, out firstNeighbour);
-            bool hasLeft = HasNeighbourOnLeft(neighbours, out secondNeighbour);
+            // Seems to work ! Need to do the same for all L config and I config.
+            bool hasFirstCorrect;
+            bool hasSecondCorrect;
+            List<Direction> firstAllowedDirections;
+            List<Direction> secondAllowedDirections;
 
-            if (!(hasFront && hasLeft)) return false;
+            // check front and right when this placed object is facing a cardinal direction,
+            // otherwise check if directionnables are at adjacent directions.
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                hasFirstCorrect = HasNeighbourInFront(neighbours, out firstNeighbour);
+                hasSecondCorrect = HasNeighbourOnLeft(neighbours, out secondNeighbour);
+            }
+            else
+            {
+                var directions = TileHelper.GetAdjacentDirections(_placedObject.Direction);
+                hasFirstCorrect = HasNeighbourAtDirection(neighbours, out firstNeighbour, directions[1]);
+                hasSecondCorrect = HasNeighbourAtDirection(neighbours, out secondNeighbour, directions[0]);
+            }
 
-            bool firstCondition = firstNeighbour.Direction == TileHelper.GetPreviousCardinalDir(_placedObject.Direction);
-            bool secondCondition = secondNeighbour.Direction == _placedObject.Direction;
+            if (!(hasFirstCorrect && hasSecondCorrect)) return false;
 
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(TileHelper.GetNextCardinalDir(firstNeighbour.Direction));
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+            else
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+
+            bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
+            bool secondCondition = secondAllowedDirections.Contains(_placedObject.Direction);
             return firstCondition && secondCondition;
         }
 
@@ -322,14 +383,41 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsFirstLOutConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
-            bool hasBehind = HasNeighbourBehind(neighbours, out firstNeighbour);
-            bool hasRight = HasNeighbourOnRight(neighbours, out secondNeighbour);
+            // Seems to work ! Need to do the same for all L config and I config.
+            bool hasFirstCorrect;
+            bool hasSecondCorrect;
+            List<Direction> firstAllowedDirections;
+            List<Direction> secondAllowedDirections;
 
-            if (!(hasBehind && hasRight)) return false;
+            // check front and right when this placed object is facing a cardinal direction,
+            // otherwise check if directionnables are at adjacent directions.
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                hasFirstCorrect = HasNeighbourBehind(neighbours, out firstNeighbour);
+                hasSecondCorrect = HasNeighbourOnRight(neighbours, out secondNeighbour);
+            }
+            else
+            {
+                var directions = TileHelper.GetAdjacentDirections(_placedObject.Direction);
+                hasFirstCorrect = HasNeighbourAtDirection(neighbours, out firstNeighbour, TileHelper.GetOpposite(directions[1]));
+                hasSecondCorrect = HasNeighbourAtDirection(neighbours, out secondNeighbour, TileHelper.GetOpposite(directions[0]));
+            }
 
-            bool firstCondition = firstNeighbour.Direction == TileHelper.GetPreviousCardinalDir(_placedObject.Direction);
-            bool secondCondition = secondNeighbour.Direction == _placedObject.Direction;
+            if (!(hasFirstCorrect && hasSecondCorrect)) return false;
 
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(TileHelper.GetNextCardinalDir(firstNeighbour.Direction));
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+            else
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+
+            bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
+            bool secondCondition = secondAllowedDirections.Contains(_placedObject.Direction);
             return firstCondition && secondCondition;
         }
 
@@ -340,14 +428,41 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsSecondLOutConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
-            bool hasBehind = HasNeighbourBehind(neighbours, out firstNeighbour);
-            bool hasLeft = HasNeighbourOnLeft(neighbours, out secondNeighbour);
+            // Seems to work ! Need to do the same for all L config and I config.
+            bool hasFirstCorrect;
+            bool hasSecondCorrect;
+            List<Direction> firstAllowedDirections;
+            List<Direction> secondAllowedDirections;
 
-            if (!(hasBehind && hasLeft)) return false;
+            // check front and right when this placed object is facing a cardinal direction,
+            // otherwise check if directionnables are at adjacent directions.
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                hasFirstCorrect = HasNeighbourBehind(neighbours, out firstNeighbour);
+                hasSecondCorrect = HasNeighbourOnLeft(neighbours, out secondNeighbour);
+            }
+            else
+            {
+                var directions = TileHelper.GetAdjacentDirections(_placedObject.Direction);
+                hasFirstCorrect = HasNeighbourAtDirection(neighbours, out firstNeighbour, TileHelper.GetOpposite(directions[1]));
+                hasSecondCorrect = HasNeighbourAtDirection(neighbours, out secondNeighbour, TileHelper.GetOpposite(directions[0]));
+            }
 
-            bool firstCondition = firstNeighbour.Direction == TileHelper.GetNextCardinalDir(_placedObject.Direction);
-            bool secondCondition = secondNeighbour.Direction == _placedObject.Direction;
+            if (!(hasFirstCorrect && hasSecondCorrect)) return false;
 
+            if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(TileHelper.GetPreviousCardinalDir(firstNeighbour.Direction));
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+            else
+            {
+                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+            }
+
+            bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
+            bool secondCondition = secondAllowedDirections.Contains(_placedObject.Direction);
             return firstCondition && secondCondition;
         }
 
@@ -361,13 +476,11 @@ namespace SS3D.Systems.Tile.Connections
 
             if (!(hasLeft && hasRight)) return false;
 
-            bool firstGoodDirection = _placedObject.Direction == firstNeighbour.Direction 
-                || (firstNeighbour.Direction != TileHelper.GetOpposite(_placedObject.Direction) 
-                    && DirectionnalHasSingleConnection(firstNeighbour, out var n1, true));
+            var AllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(_placedObject.Direction);
 
-            bool secondGoodDirection = _placedObject.Direction == secondNeighbour.Direction
-                || (secondNeighbour.Direction != TileHelper.GetOpposite(_placedObject.Direction)
-                    && DirectionnalHasSingleConnection(secondNeighbour, out n1, true));
+            bool firstGoodDirection = AllowedDirections.Contains(firstNeighbour.Direction);
+
+            bool secondGoodDirection = AllowedDirections.Contains(secondNeighbour.Direction);
 
             return firstGoodDirection && secondGoodDirection;
         }
@@ -379,7 +492,9 @@ namespace SS3D.Systems.Tile.Connections
         {
             if(!HasNeighbourOnLeft(neighbours, out single)) return false;
 
-            bool firstCondition = single.Direction == _placedObject.Direction;
+            var AllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(_placedObject.Direction);      
+            bool firstCondition = AllowedDirections.Contains(single.Direction);
+
             return firstCondition;
         }
 
@@ -390,44 +505,10 @@ namespace SS3D.Systems.Tile.Connections
         {
             if (!HasNeighbourOnRight(neighbours, out single)) return false;
 
-            return single.Direction == _placedObject.Direction;
-                
-        }
+            var AllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(_placedObject.Direction);
+            bool firstCondition = AllowedDirections.Contains(single.Direction);
 
-        /// <summary>
-        /// Neighbour is on right and has a double connection with one connection with this object
-        /// </summary>
-        private bool IsURightBisConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject single)
-        {
-            if(!HasNeighbourOnRight(neighbours, out single)) return false;
-
-            if (DirectionnalHasTwoConnections(single, out var first, out var second, false))
-            {
-                if (first == _placedObject || second == _placedObject)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Neighbour is on left and has a double connection with one connection with this object
-        /// </summary>
-        private bool IsULeftBisConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject single)
-        {
-            if (!HasNeighbourOnLeft(neighbours, out single)) return false;
-
-            if (DirectionnalHasTwoConnections(single, out var first, out var second, false))
-            {
-                if (first == _placedObject || second == _placedObject)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return firstCondition;    
         }
 
         private bool HasNeighbourBehind(List<PlacedTileObject> neighbours, out PlacedTileObject behind)
@@ -487,6 +568,21 @@ namespace SS3D.Systems.Tile.Connections
             }
 
             onLeft = null;
+            return false;
+        }
+
+        private bool HasNeighbourAtDirection(List<PlacedTileObject> neighbours, out PlacedTileObject atDirection, Direction dir)
+        {
+            foreach (var neighbour in neighbours)
+            {
+                if (_placedObject.AtDirectionOf(neighbour, dir))
+                {
+                    atDirection = neighbour;
+                    return true;
+                }
+            }
+
+            atDirection = null;
             return false;
         }
 
