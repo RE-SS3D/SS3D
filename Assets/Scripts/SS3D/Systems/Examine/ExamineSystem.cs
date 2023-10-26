@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Experimental.Rendering;
 using System;
 using SS3D.Systems.Selection;
+using SS3D.Core;
 
 namespace SS3D.Systems.Examine
 {
@@ -16,25 +17,38 @@ namespace SS3D.Systems.Examine
     /// </summary>
     public class ExamineSystem : NetworkSystem
     {
-        private SelectionSystem _selectionSystem;
-        private float MIN_UPDATES_PER_SECOND = 3f;
-        private float _updateFrequency;
-        private float updateTimer;
+        public event ExaminableChangedHandler OnExaminableChanged;
+
+        public delegate void ExaminableChangedHandler(IExaminable examinable);
+
+        private SelectionSystemController _selectionSystem;
+
+
 
         protected override void OnStart()
         {
             base.OnStart();
-            _selectionSystem = GetComponent<SelectionSystem>();
-
-
+            _selectionSystem = Subsystems.Get<SelectionSystemController>();
         }
 
-        private void OnExaminableChanged(GameObject go)
+        protected override void OnEnabled()
         {
-            if (go != null)
-            {
-                
-            }
+            base.OnEnabled();
+            if(_selectionSystem) _selectionSystem.OnSelectableChanged += UpdateExaminable;
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+            if (_selectionSystem) _selectionSystem.OnSelectableChanged -= UpdateExaminable;
+        }
+
+        private void UpdateExaminable()
+        {
+            // Get the examinable under the cursor
+            IExaminable _current = _selectionSystem.GetCurrentSelectable<IExaminable>();
+            Debug.Log(_current?.GetData().NameKey);
+            OnExaminableChanged?.Invoke(_current);
         }
     }
 }

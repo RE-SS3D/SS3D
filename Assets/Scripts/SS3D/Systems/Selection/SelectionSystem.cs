@@ -68,12 +68,15 @@ namespace SS3D.Systems.Selection
         /// <returns>A component of type T attached to the currently hovered selectable or their nearest ancestor.</returns>
         public T GetCurrentSelectable<T>()
         {
+            // Return null if no selectables are under cursor.
+            if (_current == null) return default(T);
+
             // See if the desired selectable type is on the currently hovered gameobject.
             GameObject go = _current.gameObject;
             T returnValue = go.GetComponent<T>();
 
             // If not, search ancestors until we find the type, or there are no more ancestors.
-            while (returnValue == null && go.transform?.parent != null)
+            while (returnValue == null && go?.transform?.parent != null)
             {
                 go = go.transform.parent.gameObject;
                 returnValue = go.GetComponent<T>();

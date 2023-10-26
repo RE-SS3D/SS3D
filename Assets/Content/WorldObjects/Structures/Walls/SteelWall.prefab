@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: -2900075557854325373}
   - component: {fileID: 1492278076387892290}
   - component: {fileID: 3186530541550136361}
+  - component: {fileID: 2764910494526461860}
   m_Layer: 0
   m_Name: SteelWall
   m_TagString: Untagged
@@ -341,6 +342,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2764910494526461860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: c8e320c604f095048a0cc4aeccc5eabb, type: 2}
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

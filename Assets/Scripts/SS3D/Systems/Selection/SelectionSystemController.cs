@@ -45,7 +45,7 @@ namespace SS3D.Systems.Selection
 
         private void SelectableChanged()
         {
-            OnSelectableChanged.Invoke();
+            OnSelectableChanged?.Invoke();
         }
 
         private void InitializeSelectionSystem()

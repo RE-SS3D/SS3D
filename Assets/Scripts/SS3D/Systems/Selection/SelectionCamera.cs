@@ -46,29 +46,22 @@ namespace SS3D.Systems.Selection
         /// <summary>
         /// Debug Mode allows the user to see the RenderTexture on screen, to facilitate debugging.
         /// </summary>
-        [SerializeField] private bool DebugMode = true;
+        private bool DebugMode = false;
 
         /// <summary>
-        /// Image that Debug Mode draws to.
+        /// The Main Camera on the scene. Required here only for Debug Mode.
         /// </summary>
-        [SerializeField] private RawImage _display;
+        private Camera _playerCamera;
 
         protected override void OnStart()
         {
             _system = Subsystems.Get<SelectionSystemController>();
             _camera = GetComponent<Camera>();
+            _playerCamera = transform.parent.GetComponent<Camera>();
             _camera.SetReplacementShader(_shader, "");
 
             GenerateRenderTexture();
             GenerateReadbackTexture();
-            GenerateDebugDisplay();
-        }
-
-        private void GenerateDebugDisplay()
-        {
-            if (!DebugMode) return;
-            _display.gameObject.SetActive(true);
-            _display.texture = _renderTexture;
         }
 
         private void GenerateReadbackTexture()
@@ -116,9 +109,39 @@ namespace SS3D.Systems.Selection
             _system.UpdateColourFromCamera(col);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroyed()
         {
             _renderTexture.Release();
+        }
+
+        /// <summary>
+        /// Uses the selection shader to render directly to screen.
+        /// To be removed from production code.
+        /// </summary>
+        public void ToggleDebugMode()
+        {
+            if (DebugMode)
+            {
+                _playerCamera.ResetReplacementShader();
+                DebugMode = false;
+            }
+            else
+            {
+                _playerCamera.SetReplacementShader(_shader, "");
+                DebugMode = true;
+            }
+        }
+
+        /// <summary>
+        /// Temporary method to demonstrate the implementation of Selection System.
+        /// To be removed from production code.
+        /// </summary>
+        protected void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                ToggleDebugMode();
+            }
         }
     }
 }

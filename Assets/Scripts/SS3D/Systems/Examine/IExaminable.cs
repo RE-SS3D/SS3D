@@ -2,7 +2,7 @@
 {
     public interface IExaminable
     {
-        IExamineRequirement GetRequirements();
-        IExamineData GetData();
+        //IExamineRequirement GetRequirements();
+        ExamineData GetData();
     }
 }
