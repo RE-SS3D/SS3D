@@ -10,8 +10,10 @@ using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Examine;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
+using SS3D.Systems.Selection;
 using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -28,8 +30,9 @@ namespace SS3D.Systems.Inventory.Items
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
+    [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSource, IInteractionTarget
+    public class Item : InteractionSource, IInteractionTarget, IExaminable
     {
         #region Item
         [Header("Item settings")]
@@ -71,6 +74,8 @@ namespace SS3D.Systems.Inventory.Items
         public AttachedContainer Container => _container;
 
         private bool _initialised = false;
+
+        [SerializeField] private ExamineData _examineData;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
@@ -344,6 +349,10 @@ namespace SS3D.Systems.Inventory.Items
              _traits.Remove(trait);
         }
 
+        public ExamineData GetData()
+        {
+            return _examineData;
+        }
 
         #endregion
 

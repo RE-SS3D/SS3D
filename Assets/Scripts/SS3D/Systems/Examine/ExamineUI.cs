@@ -28,7 +28,7 @@ namespace SS3D.Systems.Examine
 
         private void UpdateHoverText(IExaminable examinable)
         {
-            if (examinable == null)
+            if (examinable?.GetData() == null)
             {
                 HoverName.text = "";
             }

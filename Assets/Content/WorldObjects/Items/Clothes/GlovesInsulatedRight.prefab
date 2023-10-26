@@ -212,7 +212,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 49
+  <PrefabId>k__BackingField: 76
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -240,6 +240,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 4300571028311695952}
   AttachmentPointAlt: {fileID: 4300571028311695952}
   _container: {fileID: 0}
+  _examineData: {fileID: 11400000, guid: cf117d68f1bc58c478bdf94436b24bbf, type: 2}
 --- !u!64 &7041145045412855027
 MeshCollider:
   m_ObjectHideFlags: 0

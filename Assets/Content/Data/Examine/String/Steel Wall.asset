@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Steel Wall
   m_EditorClassIdentifier: 
   NameKey: SteelWallName
-  DescriptionKey: WallDesc
+  DescriptionKey: SteelWallDesc

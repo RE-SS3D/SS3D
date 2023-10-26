@@ -34,6 +34,98 @@ MonoBehaviour:
     m_Localized: Human
     m_Metadata:
       m_Items: []
+  - m_Id: 1056730675986432
+    m_Localized: PDA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1056814658535424
+    m_Localized: ID Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057367492968448
+    m_Localized: Security PDA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057504948699136
+    m_Localized: Security ID Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057590063710208
+    m_Localized: Nuclear Authentication Disc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057710721253376
+    m_Localized: Bike Horn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057761363279872
+    m_Localized: Engineering Borg
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073380590665728
+    m_Localized: Carpet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073451365351424
+    m_Localized: Light Bulb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073524144914432
+    m_Localized: Light Tube
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073601106198528
+    m_Localized: Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073676016467968
+    m_Localized: Maintenance Panel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076665888325632
+    m_Localized: Fire Alarm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076674801221632
+    m_Localized: Air Alarm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076676529274880
+    m_Localized: APC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076678676758528
+    m_Localized: NukeCart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076680471920640
+    m_Localized: Security Locker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076872906588160
+    m_Localized: Locker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1080119822172160
+    m_Localized: Light Switch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082387917225984
+    m_Localized: Glove (left)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082553629982720
+    m_Localized: Glove (right)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082618306150400
+    m_Localized: Cap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082672207151104
+    m_Localized: Jumpsuit
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -260,6 +260,7 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 8331927218376188167}
   _container: {fileID: 0}
+  _examineData: {fileID: 11400000, guid: ac987950b2194df4ab8766ca5be9a25a, type: 2}
   testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
   StartingIDCard: {fileID: 0}
 --- !u!114 &-3412952555245330052

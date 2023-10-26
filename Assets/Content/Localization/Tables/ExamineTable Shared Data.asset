@@ -31,6 +31,98 @@ MonoBehaviour:
     m_Key: HumanName
     m_Metadata:
       m_Items: []
+  - m_Id: 1056730675986432
+    m_Key: PDAName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1056814658535424
+    m_Key: IDCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057367492968448
+    m_Key: SecurityPDAName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057504948699136
+    m_Key: SecurityIDCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057590063710208
+    m_Key: NuclearAuthenticationDiscName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057710721253376
+    m_Key: BikeHornName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1057761363279872
+    m_Key: EngineeringBorgName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073380590665728
+    m_Key: FancyCarpetName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073451365351424
+    m_Key: LightBulbName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073524144914432
+    m_Key: LightTubeName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073601106198528
+    m_Key: CivilianAirlockName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1073676016467968
+    m_Key: AirlockMaintenancePanelName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076665888325632
+    m_Key: FireAlarmName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076674801221632
+    m_Key: AirAlarmName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076676529274880
+    m_Key: APCName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076678676758528
+    m_Key: NukeCartName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076680471920640
+    m_Key: SecurityLockerName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076872906588160
+    m_Key: LockerName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1080119822172160
+    m_Key: LightSwitchName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082387917225984
+    m_Key: GloveInsulatedLeftName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082553629982720
+    m_Key: GloveInsulatedRightName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082618306150400
+    m_Key: CapName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1082672207151104
+    m_Key: JumpsuitName
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Grey Tile
   m_EditorClassIdentifier: 
   NameKey: GreyTileName
-  DescriptionKey: TileDesc
+  DescriptionKey: GreyTileDesc
