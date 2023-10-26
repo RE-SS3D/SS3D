@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace SS3D.CodeGeneration
+namespace SS3D.CodeGeneration.Creators
 {
     public static class EnumCreator
     {
@@ -20,6 +20,8 @@ namespace SS3D.CodeGeneration
             IEnumerable<string> enums = assets.Select(reference => reference.name);
 
             List<string> enumerable = enums.ToList();
+
+            // Added to support the option to not select an enum.
             enumerable.Insert(0, "None");
 
             string dataPath = Application.dataPath;

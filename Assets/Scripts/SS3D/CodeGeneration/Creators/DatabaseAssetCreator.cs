@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,18 +7,15 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace SS3D.CodeGeneration
+namespace SS3D.CodeGeneration.Creators
 {
     public static class DatabaseAssetCreator
     {
          #if UNITY_EDITOR
         /// <summary>
-        /// Creates an enum in the object path, with the defined enum name and using a list of provided assets as its elements.
+        /// Creates a list of database assets in the object path, with the defined class name and using a list of provided assets as its elements.
         /// </summary>
-        /// <param name="assetPathSource"></param>
-        /// <param name="enumName"></param>
-        /// <param name="assets"></param>
-        public static void CreateAtPath(string path, Type classType, string className, IEnumerable<Object> assets, string namespaceName = "SS3D.Data.Enums")
+        public static void CreateAtPath(string path, Type classType, string className, [NotNull] IEnumerable<Object> assets, string namespaceName = "SS3D.Data.Generated")
         {
             IEnumerable<string> enums = assets.Select(reference => reference.name);
 
