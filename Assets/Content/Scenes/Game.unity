@@ -1607,6 +1607,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HoverName: {fileID: 1137081523}
+  _tableReference:
+    m_TableCollectionName: ExamineTable
 --- !u!1 &1127411102
 GameObject:
   m_ObjectHideFlags: 0

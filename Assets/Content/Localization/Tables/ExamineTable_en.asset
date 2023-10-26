@@ -19,11 +19,11 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 138211803136
-    m_Localized: Tile
+    m_Localized: Grey Tile
     m_Metadata:
       m_Items: []
   - m_Id: 518387712000
-    m_Localized: Wall
+    m_Localized: Steel Wall
     m_Metadata:
       m_Items: []
   - m_Id: 860370288640

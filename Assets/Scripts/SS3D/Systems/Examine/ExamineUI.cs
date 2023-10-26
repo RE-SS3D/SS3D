@@ -4,12 +4,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Tables;
 
 namespace SS3D.Systems.Examine
 {
     public class ExamineUI : Actor
     {
         [SerializeField] private TMP_Text HoverName;
+        [SerializeField] private TableReference _tableReference;
 
         protected override void OnEnabled()
         {
@@ -25,14 +28,15 @@ namespace SS3D.Systems.Examine
 
         private void UpdateHoverText(IExaminable examinable)
         {
-            Debug.Log($"UpdateHoverText called!!");
             if (examinable == null)
             {
                 HoverName.text = "";
             }
             else
             {
-                HoverName.text = examinable.GetData().NameKey;
+                LocalizedString displayText = new LocalizedString(_tableReference, examinable.GetData().NameKey);
+                //HoverName.text = examinable.GetData().NameKey;
+                HoverName.text = displayText.GetLocalizedString();
             }
         }
     }

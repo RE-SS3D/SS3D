@@ -16,19 +16,19 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: b4df143c42b4e154d80b443af51945c6
   m_Entries:
   - m_Id: 138211803136
-    m_Key: Tile
+    m_Key: GreyTileName
     m_Metadata:
       m_Items: []
   - m_Id: 518387712000
-    m_Key: Wall
+    m_Key: SteelWallName
     m_Metadata:
       m_Items: []
   - m_Id: 860370288640
-    m_Key: Plenum
+    m_Key: PlenumName
     m_Metadata:
       m_Items: []
   - m_Id: 1039567732736
-    m_Key: Human
+    m_Key: HumanName
     m_Metadata:
       m_Items: []
   m_Metadata:

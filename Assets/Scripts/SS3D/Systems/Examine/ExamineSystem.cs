@@ -47,7 +47,6 @@ namespace SS3D.Systems.Examine
         {
             // Get the examinable under the cursor
             IExaminable _current = _selectionSystem.GetCurrentSelectable<IExaminable>();
-            Debug.Log(_current?.GetData().NameKey);
             OnExaminableChanged?.Invoke(_current);
         }
     }
