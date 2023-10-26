@@ -145,6 +145,7 @@ namespace SS3D.Systems.Tile.Connections
 
            
             // update all neighbours the first time, then update only neighbours if this is updated.
+            // TODO update only the connected ones ?
             if (updated || updateNeighbour)
             {
                 foreach(var adjacent in neighbours)
@@ -338,13 +339,12 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsSecondLInConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
-            // Seems to work ! Need to do the same for all L config and I config.
             bool hasFirstCorrect;
             bool hasSecondCorrect;
             List<Direction> firstAllowedDirections;
             List<Direction> secondAllowedDirections;
 
-            // check front and right when this placed object is facing a cardinal direction,
+            // check front and left when this placed object is facing a cardinal direction,
             // otherwise check if directionnables are at adjacent directions.
             if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
             {
