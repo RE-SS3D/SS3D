@@ -234,7 +234,7 @@ MonoBehaviour:
     - content: {fileID: 9191455379462354299}
       id: a6e2e728-5908-449c-bd69-7764153746c7
       minimumSize: {x: 100, y: 190}
-      tabLabel: Panel
+      tabLabel: Construction
       tabIcon: {fileID: 0}
   initialPanelsAnchoredSerialized:
   - panel:
@@ -1238,6 +1238,42 @@ PrefabInstance:
       propertyPath: _sceneNetworkObjects.Array.data[14]
       value: 
       objectReference: {fileID: 8720228674029226883}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.Position.x
+      value: 315.46954
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.Position.y
+      value: 7.705841
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.LocalScale.x
+      value: 1.3615595
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.LocalScale.y
+      value: 1.3615595
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
+      propertyPath: SerializedTransformProperties.LocalScale.z
+      value: 1.3615595
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af039f84b4a245049b5b62799af01384, type: 3}
 --- !u!1 &2110225533454929485 stripped
