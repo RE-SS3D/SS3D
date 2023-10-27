@@ -65,7 +65,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
 		{
 			base.OnStart();
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
-            Debug.Log(_tab.name);
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
 			_controls = _inputSystem.Inputs.TileCreator;
