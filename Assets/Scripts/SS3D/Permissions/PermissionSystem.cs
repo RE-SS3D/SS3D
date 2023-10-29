@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FishNet.Object;
+﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Logging;
-using SS3D.Systems.Permissions.Events;
+using SS3D.Permissions.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using File = System.IO.File;
+using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
 
-namespace SS3D.Systems.Permissions
+namespace SS3D.Permissions
 {
     /// <summary>
     /// Handles user permission on what he can do and can't.
@@ -87,15 +88,33 @@ namespace SS3D.Systems.Permissions
         /// <summary>
         /// Updates a user permission.
         /// </summary>
-        /// <param name="ckey">The desired user to update the permission.</param>
+        /// <param name="ckey">The desired user to update the permission.</param>|
         /// <param name="role">The new user role.</param>
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
-            throw new NotImplementedException();
-            // TODO: This
-            // Add new user permission to list
-            // Add new user permission to text file
+            ServerRoleTypes previousRole = _userPermissions.TryGetValue(ckey, out ServerRoleTypes permission) ? permission : ServerRoleTypes.None;
+
+            Log.Information(this, $"Updating user {ckey} role from {previousRole} to {role}");
+
+            _userPermissions[ckey] = role;
+
+            SaveUserPermissions();
+        }
+
+        /// <summary>
+        /// Saves the permissions text file with the updated permissions list.
+        /// </summary>
+        public void SaveUserPermissions()
+        {
+            string fileContent = string.Empty;
+
+            foreach (KeyValuePair<string,ServerRoleTypes> userPermission in _userPermissions)
+            {
+                fileContent += $"{userPermission.Key} {userPermission.Value.ToString()}\n";
+            }
+
+            File.WriteAllText(PermissionsPath, fileContent);
         }
 
         /// <summary>
@@ -164,6 +183,12 @@ namespace SS3D.Systems.Permissions
             SyncUserPermissions();
         }
 
+        /// <summary>
+        /// Returns if the user is at least at a level of access.
+        /// </summary>
+        /// <param name="ckey">The user to check permission for</param>
+        /// <param name="permissionLevelCheck">The lowest required permission to perform the action.</param>
+        /// <returns></returns>
         public bool IsAtLeast(string ckey, ServerRoleTypes permissionLevelCheck)
         {
             TryGetUserRole(ckey, out ServerRoleTypes userPermission);

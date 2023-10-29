@@ -1,7 +1,7 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
+using SS3D.Permissions;
 using SS3D.Systems.Health;
-using SS3D.Systems.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

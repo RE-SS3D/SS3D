@@ -1,7 +1,6 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
-using SS3D.Systems.Permissions;
-using System.Collections;
+using SS3D.Permissions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

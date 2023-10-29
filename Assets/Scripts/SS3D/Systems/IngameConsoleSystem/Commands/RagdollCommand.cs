@@ -1,12 +1,11 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using System.Globalization;
-using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
