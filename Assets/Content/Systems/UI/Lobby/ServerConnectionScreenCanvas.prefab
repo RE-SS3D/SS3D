@@ -778,8 +778,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: SPACE STATION 3D
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 686b2ac321bf10947a917bd1fb28664b, type: 2}
-  m_sharedMaterial: {fileID: -5327258657527903640, guid: 686b2ac321bf10947a917bd1fb28664b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9b7da2d4f3e593b47ba5f51ac8f3263d, type: 2}
+  m_sharedMaterial: {fileID: 3331439540769704798, guid: 9b7da2d4f3e593b47ba5f51ac8f3263d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1037,8 +1037,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: '[C] CentCom Softworks DATA SYSTEMS'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 686b2ac321bf10947a917bd1fb28664b, type: 2}
-  m_sharedMaterial: {fileID: -5327258657527903640, guid: 686b2ac321bf10947a917bd1fb28664b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9b7da2d4f3e593b47ba5f51ac8f3263d, type: 2}
+  m_sharedMaterial: {fileID: 3331439540769704798, guid: 9b7da2d4f3e593b47ba5f51ac8f3263d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
