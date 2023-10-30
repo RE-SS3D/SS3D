@@ -43,6 +43,16 @@ namespace SS3D.Systems.Tile
             return (Direction) MathUtility.mod((int)dir - 2, 8);
         }
 
+        public static Direction GetPreviousDir(Direction dir)
+        {
+            return (Direction)MathUtility.mod((int)dir - 1, 8);
+        }
+
+        public static Direction GetNextDir(Direction dir)
+        {
+            return (Direction)MathUtility.mod((int)dir + 1, 8);
+        }
+
         /// <summary>
         /// Get the rotation angle of a particular dir.
         /// E.g. assuming north is the initial position (should be), north return 0, north-east 45 ...

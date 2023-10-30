@@ -297,10 +297,9 @@ namespace SS3D.Systems.Tile.Connections
 
             if (IsFirstLInConfiguration(neighbours,out first, out second))
             {
-                rotation = TileHelper.AngleBetween(Direction.North, second.Direction);
-                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
-                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
-                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
+                
+                direction = TileHelper.ClosestDiagonalFromTwo(first.Direction, second.Direction);
+                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetPreviousDir(direction));
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lIn, rotation, direction, AdjacencyShape.LIn);
             }
 
@@ -308,28 +307,29 @@ namespace SS3D.Systems.Tile.Connections
             {
                 // if the second neighbour is on left (the one facing the same direction), then the other 
                 // other side of the Lin couch should be linked to it, so we need to do a -90 degree rotation compared to neighbour on right.
-                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetPreviousCardinalDir(second.Direction));
-                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
-                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
-                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
+                
+                direction = TileHelper.ClosestDiagonalFromTwo(first.Direction, second.Direction);
+                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetPreviousDir(direction));
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lIn, rotation, direction, AdjacencyShape.LIn);
             }
 
             if (IsFirstLOutConfiguration(neighbours, out first, out second))
             {
-                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetNextCardinalDir(first.Direction));
-                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
-                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
-                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
+                
+                direction = TileHelper.ClosestDiagonalFromTwo(first.Direction, second.Direction);
+                var toRotate = TileHelper.GetOpposite(direction);
+                toRotate = TileHelper.GetPreviousDir(toRotate);
+                rotation = TileHelper.AngleBetween(Direction.North, toRotate);
+
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lOut, rotation, direction, AdjacencyShape.LOut);
             }
 
             if (IsSecondLOutConfiguration(neighbours, out first, out second))
             {
-                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetOpposite(second.Direction));
-                var firstAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(first.Direction);
-                var secondAdjacentDirections = TileHelper.GetAdjacentAndMiddleDirection(second.Direction);
-                direction = firstAdjacentDirections.Intersect(secondAdjacentDirections).First();
+                direction = TileHelper.ClosestDiagonalFromTwo(first.Direction, second.Direction);
+                var toRotate = TileHelper.GetOpposite(direction);
+                toRotate = TileHelper.GetPreviousDir(toRotate);
+                rotation = TileHelper.AngleBetween(Direction.North, toRotate);
                 return new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.lOut, rotation, direction, AdjacencyShape.LOut);
             }
 
@@ -441,7 +441,7 @@ namespace SS3D.Systems.Tile.Connections
             List<Direction> secondAllowedDirections;
 
             // check front and right when this placed object is facing a cardinal direction,
-            // otherwise check if directionnables are at adjacent directions.
+            // otherwise check if directionnables are at adjacent directions (the two cardinal adjacent ones).
             if (TileHelper.CardinalDirections().Contains(_placedObject.Direction))
             {
                 hasFirstCorrect = HasNeighbourBehind(neighbours, out firstNeighbour);
