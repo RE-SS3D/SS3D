@@ -233,6 +233,11 @@ namespace SS3D.Systems.Tile
             return DiagonalDirections().Contains(dir);
         }
 
+        public static bool IsCardinal(Direction dir)
+        {
+            return CardinalDirections().Contains(dir);
+        }
+
         /// <summary>
         /// Return the angle between two directions, clock wise is positive.
         /// </summary>
