@@ -102,6 +102,19 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
+        /// Return the 5 adjacent directions to Direction dir including itself.
+        /// </summary>
+        public static List<Direction> GetFiveAdjacents(Direction dir)
+        {
+            return new List<Direction>{ dir,
+                (Direction)MathUtility.mod((int)dir + 1, 8),
+                (Direction)MathUtility.mod((int)dir - 1, 8),
+                (Direction)MathUtility.mod((int)dir - 2, 8),
+                (Direction)MathUtility.mod((int)dir +2, 8),
+            };
+        }
+
+        /// <summary>
         /// Get the offset in coordinates in a given direction.
         /// </summary>
         public static Tuple<int, int> ToCardinalVector(Direction direction)

@@ -345,7 +345,6 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool IsFirstLInConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
-            // Seems to work ! Need to do the same for all L config and I config.
             bool hasFirstCorrect;
             bool hasSecondCorrect;
             List<Direction> firstAllowedDirections;
@@ -374,8 +373,8 @@ namespace SS3D.Systems.Tile.Connections
             }
             else
             {
-                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
-                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+                firstAllowedDirections = TileHelper.GetFiveAdjacents(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetFiveAdjacents(secondNeighbour.Direction);
             }
 
             bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
@@ -418,8 +417,8 @@ namespace SS3D.Systems.Tile.Connections
             }
             else
             {
-                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
-                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+                firstAllowedDirections = TileHelper.GetFiveAdjacents(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetFiveAdjacents(secondNeighbour.Direction);
             }
 
             bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
@@ -463,8 +462,8 @@ namespace SS3D.Systems.Tile.Connections
             }
             else
             {
-                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
-                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+                firstAllowedDirections = TileHelper.GetFiveAdjacents(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetFiveAdjacents(secondNeighbour.Direction);
             }
 
             bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
@@ -507,8 +506,8 @@ namespace SS3D.Systems.Tile.Connections
             }
             else
             {
-                firstAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(firstNeighbour.Direction);
-                secondAllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(secondNeighbour.Direction);
+                firstAllowedDirections = TileHelper.GetFiveAdjacents(firstNeighbour.Direction);
+                secondAllowedDirections = TileHelper.GetFiveAdjacents(secondNeighbour.Direction);
             }
 
             bool firstCondition = firstAllowedDirections.Contains(_placedObject.Direction);
@@ -543,6 +542,7 @@ namespace SS3D.Systems.Tile.Connections
             Direction original = _placedObject.Direction;
             bool diagonal = false;
             List<Direction> adjacents = TileHelper.GetAdjacentDirections(_placedObject.Direction);
+            List<Direction> AllowedDirections;
 
             if (!TileHelper.CardinalDirections().Contains(original)) diagonal = true;
 
@@ -556,17 +556,18 @@ namespace SS3D.Systems.Tile.Connections
                 if (hasNeighbourFirstCardinal) single = firstCardinal;
                 else if (hasNeighbourSecondCardinal) single = secondCardinal;
                 else single = null;
+                _placedObject.SetDirection(original);
+                AllowedDirections = TileHelper.GetFiveAdjacents(_placedObject.Direction);
+
             }
             else
             {
+                AllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(_placedObject.Direction);
                 HasNeighbourOnLeft(neighbours, out single);
             }
 
-            _placedObject.SetDirection(original);
-
             if (single == null) return false;
 
-            var AllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(_placedObject.Direction);
             bool firstCondition = AllowedDirections.Contains(single.Direction);
 
             return firstCondition;
@@ -583,6 +584,8 @@ namespace SS3D.Systems.Tile.Connections
 
             if (!TileHelper.CardinalDirections().Contains(original)) diagonal = true;
 
+            List<Direction> AllowedDirections;
+
             if (diagonal)
             {
                 _placedObject.SetDirection(adjacents[0]);
@@ -593,17 +596,19 @@ namespace SS3D.Systems.Tile.Connections
                 if (hasNeighbourFirstCardinal) single = firstCardinal;
                 else if (hasNeighbourSecondCardinal) single = secondCardinal;
                 else single = null;
+                _placedObject.SetDirection(original);
+                AllowedDirections = TileHelper.GetFiveAdjacents(_placedObject.Direction);
             }
             else
             {
+                AllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(_placedObject.Direction);
                 HasNeighbourOnRight(neighbours, out single);
             }
 
-            _placedObject.SetDirection(original);
+            
 
             if (single == null)  return false;
 
-            var AllowedDirections = TileHelper.GetAdjacentAndMiddleDirection(_placedObject.Direction);
             bool firstCondition = AllowedDirections.Contains(single.Direction);
 
             return firstCondition;    
