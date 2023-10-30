@@ -166,6 +166,51 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
+        /// Shortest distance between two directions, in the sense of the number of 45 degree rotation needed
+        /// to get from one direction to another.
+        /// </summary>
+        public static int DistanceBetweenDir(Direction dir1, Direction dir2) 
+        {
+            int dist1 = MathUtility.mod(dir1 - dir2, 8);
+            int dist2 = MathUtility.mod(dir2 - dir1, 8);
+            return Math.Min(dist1, dist2);
+        }
+
+        /// <summary>
+        /// return the closest diagonal from two other directions.
+        /// There isn't necessarily a single diagonal which works, take the case of two opposite directions,
+        /// then all diagonals work. In case of two adjacent diagonals, it returns the first one.
+        /// </summary>
+        public static Direction ClosestDiagonalFromTwo(Direction dir1, Direction dir2)
+        {
+            if(IsDiagonal(dir1) && IsDiagonal(dir2) && DistanceBetweenDir(dir1, dir2) == 2)
+            {
+                return dir1;
+            }
+
+            Direction res = Direction.NorthEast;
+            int minDistance = int.MaxValue;
+            int distance;
+            foreach(Direction diagonal in DiagonalDirections())
+            { 
+                distance = (int) Math.Pow(DistanceBetweenDir(dir1, diagonal),2) +
+                    (int) Math.Pow(DistanceBetweenDir(dir2, diagonal),2);
+                if(distance < minDistance)
+                {
+                    minDistance = distance;
+                    res = diagonal;
+                }
+            }
+
+            return res;
+        }
+
+        public static bool IsDiagonal(Direction dir)
+        {
+            return DiagonalDirections().Contains(dir);
+        }
+
+        /// <summary>
         /// Return the angle between two directions, clock wise is positive.
         /// </summary>
         public static float AngleBetween(Direction from, Direction to)
