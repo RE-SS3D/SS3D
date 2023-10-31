@@ -206,5 +206,64 @@ namespace SS3D.Systems.Tile
             }
             
         }
+
+        public bool HasNeighbourFrontBack(List<PlacedTileObject> neighbours,
+    out PlacedTileObject inFrontOrBack, bool front)
+        {
+            foreach (var neighbour in neighbours)
+            {
+                if (front && neighbour.IsInFront(this))
+                {
+                    inFrontOrBack = neighbour;
+                    return true;
+                }
+
+                if (!front && neighbour.IsBehind(this))
+                {
+                    inFrontOrBack = neighbour;
+                    return true;
+                }
+            }
+
+            inFrontOrBack = null;
+            return false;
+        }
+
+        public bool HasNeighbourOnSide(List<PlacedTileObject> neighbours,
+            out PlacedTileObject onSide, bool left)
+        {
+            foreach (var neighbour in neighbours)
+            {
+                if (!left && neighbour.IsOnRight(this))
+                {
+                    onSide = neighbour;
+                    return true;
+                }
+
+                if (left && neighbour.IsOnLeft(this))
+                {
+                    onSide = neighbour;
+                    return true;
+                }
+            }
+
+            onSide = null;
+            return false;
+        }
+
+        public bool HasNeighbourAtDirection(List<PlacedTileObject> neighbours, out PlacedTileObject atDirection, Direction dir)
+        {
+            foreach (var neighbour in neighbours)
+            {
+                if (AtDirectionOf(neighbour, dir))
+                {
+                    atDirection = neighbour;
+                    return true;
+                }
+            }
+
+            atDirection = null;
+            return false;
+        }
     }
 }
