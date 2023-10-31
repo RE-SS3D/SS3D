@@ -5,8 +5,22 @@
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
+
 /[Bb]uild/
-/[Bb]uilds/
+!application/
+
+application/*
+!application/language/
+
+application/language/*
+!application/language/gr/
+
+/[Bb]uilds/*
+!Builds/Game/
+
+Builds/Game/*
+!Builds/Game/Data/
+
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
