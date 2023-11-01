@@ -37,6 +37,8 @@ namespace SS3D.Systems.Tile.Connections
 
         private bool _isVertical = false;
 
+        public int HorizontalConnectionCount => _adjacencyMap.CardinalConnectionCount;
+
 
         private void Setup()
         {
