@@ -109,15 +109,11 @@ namespace SS3D.Systems.Tile.Connections
 
             bool isConnected = IsConnected(neighbourObject);
 
-
-            // Update our neighbour as well
-            if (isConnected && updateNeighbour)
-                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
-
             bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
 
             if (isUpdated)
             {
+                neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
                 _syncedConnections = _adjacencyMap.SerializeToByte();
                 UpdateMeshAndDirection();
             }
