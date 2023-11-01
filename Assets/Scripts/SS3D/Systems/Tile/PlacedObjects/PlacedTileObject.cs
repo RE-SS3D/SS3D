@@ -111,10 +111,10 @@ namespace SS3D.Systems.Tile
                 _connector.UpdateAllConnections(neighbourObjects);
         }
 
-        public void UpdateSingleAdjacency(Direction dir, PlacedTileObject neighbourObject)
+        public void UpdateSingleAdjacency(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateSingleConnection(dir, neighbourObject, false);
+                _connector.UpdateSingleConnection(dir, neighbourObject, updateNeighbour);
         }
 
         public SavedPlacedTileObject Save()

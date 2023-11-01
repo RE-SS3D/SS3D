@@ -26,7 +26,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
         [Tooltip("A mesh where the South & south edges are connected")]
         public Mesh verticalMesh;
 
-        public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap, bool vertical)
+        public Tuple<Mesh, float, AdjacencyShape> GetMeshRotationShape(AdjacencyMap adjacencyMap, bool vertical)
         {
             // Determine rotation and mesh specially for every single case.
             float rotation = 0;
@@ -70,9 +70,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     break;
             }
 
-            MeshDirectionInfo MeshAndDirection = new MeshDirectionInfo { Mesh = mesh, Rotation = rotation } ; 
-
-            return MeshAndDirection;
+            return new Tuple<Mesh, float, AdjacencyShape>(mesh, rotation, shape);
         }
 
         private AdjacencyShape GetPipeShape(AdjacencyMap adjacencyMap, bool vertical)

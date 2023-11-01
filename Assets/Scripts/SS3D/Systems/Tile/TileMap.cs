@@ -237,11 +237,19 @@ namespace SS3D.Systems.Tile
 
         private void ResetAdjacencies(PlacedTileObject placed, TileObject location, List<PlacedTileObject> neighbours)
         {
+            List<Direction> neighboursAtDirection= new List<Direction>();
             foreach (PlacedTileObject neighbour in neighbours)
             {
-                placed.NeighbourAtDirectionOf(neighbour, out var dir);
-                location.ClearPlacedObject();
-                neighbour?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), null);
+               placed.NeighbourAtDirectionOf(neighbour, out var dir);
+               neighboursAtDirection.Add(dir);
+            }
+            location.ClearPlacedObject();
+            int i = 0;
+            foreach (PlacedTileObject neighbour in neighbours)
+            {
+                Direction dir = neighboursAtDirection[i];
+                neighbour?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), null, false);
+                i++;
             }
         }
 

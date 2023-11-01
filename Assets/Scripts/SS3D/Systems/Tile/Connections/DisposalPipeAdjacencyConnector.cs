@@ -6,6 +6,7 @@ using SS3D.Logging;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,8 @@ namespace SS3D.Systems.Tile.Connections
 
         public int HorizontalConnectionCount => _adjacencyMap.CardinalConnectionCount;
 
+        private AdjacencyShape _currentShape;
+
 
         private void Setup()
         {
@@ -65,33 +68,79 @@ namespace SS3D.Systems.Tile.Connections
         {
             if (neighbourObject == null) return false;
 
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            var map = tileSystem.CurrentMap;
+            if (_verticalConnection == true 
+                    && neighbourObject.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnector))
+                return IsVerticalAndNeighbourInRightPosition(neighbourObject);
 
-            TryGetDisposalElementAbovePipe(out var aboveDisposalElement);
+            if (neighbourObject.TryGetComponent<IDisposalElement>(out var disposalFurniture))
+                return IsConnectedToDisposalFurniture(neighbourObject);
 
-            if(neighbourObject.TryGetComponent<IDisposalElement>(out var neighbourElement) 
-                && neighbourElement == aboveDisposalElement)
-            {
-                return true;
-            }
+            if(neighbourObject.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnectorAgain)
+                && neighbourConnectorAgain._verticalConnection == true)
+                return IsConnectedToVerticalPipe(neighbourObject);
 
             bool isConnected;
-            isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
+            isConnected = neighbourObject.HasAdjacencyConnector;
             isConnected &= neighbourObject.SpecificType == _specificType;
             return isConnected;
         }
 
-        private bool TryGetDisposalElementAbovePipe(out IDisposalElement disposalOutlet)
+        /// <summary>
+        /// check if the neighbour disposal pipe of this is connected to this, when this is a vertical pipe.
+        /// Basically check if the neighbour is positionned in front of the vertical pipe.
+        /// </summary>
+        private bool IsVerticalAndNeighbourInRightPosition(PlacedTileObject neighbourObject)
+        {
+            bool isConnected = neighbourObject != null;
+            isConnected &= _placedObject.NeighbourAtDirectionOf(neighbourObject, out Direction direction);
+            isConnected &= _placedObject.Direction == direction;
+            return isConnected;
+        }
+
+        /// <summary>
+        /// Check if neighbour is the disposal furniture just above this disposal pipe.
+        /// </summary>
+        private bool IsConnectedToDisposalFurniture(PlacedTileObject neighbourObject)
+        {
+            // check if neighbour is the disposal furniture just above this.
+            bool IsDisposalFurnitureAbove = false;
+            TryGetDisposalElementAbovePipe(out var aboveDisposalFurniture);
+
+            if (neighbourObject.TryGetComponent<IDisposalElement>(out var disposalFurniture)
+                && disposalFurniture == aboveDisposalFurniture)
+            {
+                IsDisposalFurnitureAbove = true;
+            }
+
+            return IsDisposalFurnitureAbove && HorizontalConnectionCount < 2;
+        }
+
+        /// <summary>
+        /// Check if this disposal pipe is connected to its neighbour disposal pipe, when the neighbour is a vertical pipe.
+        /// </summary>
+        private bool IsConnectedToVerticalPipe(PlacedTileObject neighbourObject)
+        {
+            bool isConnected = neighbourObject != null;
+            isConnected &= neighbourObject.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnector);
+            isConnected &= neighbourConnector._verticalConnection == true;
+            isConnected &= neighbourConnector._placedObject.NeighbourAtDirectionOf(_placedObject, out Direction direction);
+            isConnected &= neighbourConnector._placedObject.Direction == direction;
+            return isConnected;
+        }
+
+        /// <summary>
+        /// Try to get the Disposal furniture (e.g : disposal bin) just above this disposal pipe, if it exists.
+        /// </summary>
+        private bool TryGetDisposalElementAbovePipe(out IDisposalElement disposalFurniture)
         {
             TileSystem tileSystem = Subsystems.Get<TileSystem>();
             var map = tileSystem.CurrentMap;
 
             TileChunk currentChunk = map.GetChunk(_placedObject.gameObject.transform.position);
             var furnitureLocation = currentChunk.GetTileObject(TileLayer.FurnitureBase, _placedObject.Origin.x, _placedObject.Origin.y);
-            disposalOutlet = furnitureLocation.PlacedObject?.GetComponent<IDisposalElement>();
+            disposalFurniture = furnitureLocation.PlacedObject?.GetComponent<IDisposalElement>();
 
-            return disposalOutlet != null;
+            return disposalFurniture != null;
         }
 
         /// <summary>
@@ -102,67 +151,46 @@ namespace SS3D.Systems.Tile.Connections
             Setup();
 
             bool isConnected = IsConnected(neighbourObject);
+            bool isUpdated;
 
-            bool isUpdated = false;
-            bool isVertical;
-
-
-            if(neighbourObject != null)
+            // If neighbour is a disposal furniture and this disposal pipe is connected to it
+            if (isConnected && IsConnectedToDisposalFurniture(neighbourObject))
             {
-                if (neighbourObject.GetComponent<IDisposalElement>() != null)
-                {
-                    isVertical = true;
-                    isUpdated = _verticalConnection != isVertical;
-                }
-                else
-                {
-                    isVertical = false;
-                    isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
-                }
-
-                if (isUpdated && !isVertical)
-                {
-                    _syncedConnections = _adjacencyMap.SerializeToByte();
-                    UpdateMeshAndDirection();
-                }
-
-                if (isUpdated && isVertical)
-                {
-                    _verticalConnection = isVertical;
-                    UpdateMeshAndDirection();
-                }
-
-                // Update our neighbour as well
-                if (isUpdated && updateNeighbour)
-                    neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
-
-                return isUpdated;
+                isUpdated = _verticalConnection != true;
+                _verticalConnection = true;
             }
+
+            // If neighbour is a removed disposal furniture which used to be connected to this disposal pipe.
+            else if (neighbourObject == null 
+                && !TryGetDisposalElementAbovePipe(out IDisposalElement disposalFurniture) 
+                && _verticalConnection == true)
+            {
+                isUpdated = true;
+                _verticalConnection = false;
+            }
+
+            // Else it's not a disposal furniture and we simply use the adjacency map for horizontal connections
+            // with other Disposal pipes.
             else
             {
-                // the disposal above gets removed
-                if(!TryGetDisposalElementAbovePipe(out var disposalFurniture) && _verticalConnection == true)
-                {
-                    _verticalConnection = false;
-                    isUpdated = true;
-                }
-                // another pipe get removed
-                else
-                {
-                    isUpdated = _adjacencyMap.SetConnection(dir,
-                        new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
-                }
+                isUpdated = _adjacencyMap.SetConnection(dir,
+                    new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
+            }
 
-                if (isUpdated)
+            if (isUpdated)
+            {
+                UpdateMeshAndDirection();
+            }
+
+            if (isUpdated && updateNeighbour)
+            {
+                var connector = neighbourObject?.GetComponent<DisposalPipeAdjacencyConnector>();
+                if(connector != null)
                 {
-                    UpdateMeshAndDirection();
+                    connector.UpdateAllConnections(new PlacedTileObject[] { });
                 }
             }
-            
-            // Update our neighbour as well
-            if (isUpdated && updateNeighbour)
-                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
-
+                
             return isUpdated;
         }
 
@@ -172,16 +200,14 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            bool changed = false;
-            for (int i = 0; i < neighbourObjects.Length; i++)
-            {
-                changed |= UpdateSingleConnection((Direction) i,neighbourObjects[i], true);
-            }
+            neighbourObjects = GetNeighbours().ToArray();
 
-            if(TryGetDisposalElementAbovePipe(out IDisposalElement disposalElement))
+            bool changed = false;
+
+            foreach (var neighbourObject in neighbourObjects)
             {
-                var placedDisposal = disposalElement.GameObject.GetComponent<PlacedTileObject>();
-                changed |= UpdateSingleConnection(Direction.North, placedDisposal, false) ;
+                _placedObject.NeighbourAtDirectionOf(neighbourObject, out Direction dir);
+                changed |= UpdateSingleConnection(dir, neighbourObject, true);
             }
 
             if (changed)
@@ -192,42 +218,29 @@ namespace SS3D.Systems.Tile.Connections
 
         protected virtual void UpdateMeshAndDirection()
         {
-            var info = _pipeAdjacency.GetMeshAndDirection(_adjacencyMap, _verticalConnection);
+            var info = _pipeAdjacency.GetMeshRotationShape(_adjacencyMap, _verticalConnection);
             transform.localRotation = Quaternion.identity;
 
             Vector3 pos = transform.position;
             Quaternion localRotation = _filter.transform.localRotation;
             Vector3 eulerRotation = localRotation.eulerAngles;
-            _filter.mesh = info.Mesh;
+            _filter.mesh = info.Item1;
 
-            if (info.Mesh == _pipeAdjacency.verticalMesh)
+
+            if (info.Item3 == AdjacencyShape.Vertical)
             {
-                _isVertical= true;
-                transform.position = new Vector3(pos.x, -0.67f, pos.z);
+                // remove some y so the vertical model is at the right place in the ground.
+                transform.position = new Vector3(pos.x, -0.67f, pos.z); 
                 _filter.transform.localRotation = Quaternion.Euler(eulerRotation.x, TileHelper.GetRotationAngle(_placedObject.Direction), eulerRotation.z);
-
-                if (!_isVertical)
-                {
-                    var directions = TileHelper.AllDirections();
-                    directions.Remove(TileHelper.GetOpposite(_placedObject.Direction));
-                    SetBlockedDirection(directions, false);
-
-                }
-                
-                return;
             }
-            else if (_filter.mesh == _pipeAdjacency.verticalMesh)
+            else
             {
+                // reinitialize y to 0 if the model is non vertical.
                 transform.position = new Vector3(pos.x, 0f, pos.z);
+                _filter.transform.localRotation = Quaternion.Euler(eulerRotation.x, info.Item2, eulerRotation.z);
             }
 
-            if (info.Mesh != _pipeAdjacency.verticalMesh)
-            {
-                _isVertical = false;
-            }
-
-            localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
-            _filter.transform.localRotation = localRotation;
+            _currentShape = info.Item3;
         }
 
         /// <summary>
@@ -245,46 +258,32 @@ namespace SS3D.Systems.Tile.Connections
         }
 
         /// <summary>
-        /// Sync adjacency map on client, and update mesh and direction using this new map.
+        /// Sync vertical on client, and update mesh and direction.
         /// </summary>
         private void SyncVertical(bool oldValue, bool newValue, bool asServer)
         {
             if (!asServer)
             {
                 Setup();
-
-                _verticalConnection = newValue;
                 UpdateMeshAndDirection();
             }
-        }
-
-        /// <summary>
-        /// Sets a given direction blocked or unblocked. 
-        /// If blocked, this means that it will no longer be allowed to connect on that direction (until further update).
-        /// </summary>
-        private void SetBlockedDirection(List<Direction> directions, bool value)
-        {
-            foreach(var dir in directions)
-            {
-                _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));  
-            }
-
-            UpdateMeshAndDirection();
         }
 
         public List<PlacedTileObject> GetNeighbours()
         {
             PlacedTileObject placedDisposal = null;
-            List<PlacedTileObject> neighbours;
+            List<PlacedTileObject> neighbours = new();
             if (TryGetDisposalElementAbovePipe(out IDisposalElement disposalElement))
             {
                 placedDisposal = disposalElement.GameObject.GetComponent<PlacedTileObject>();
             }
+            if (placedDisposal != null)
+                neighbours.Add(placedDisposal);
+
             TileSystem tileSystem = Subsystems.Get<TileSystem>();
             var map = tileSystem.CurrentMap;
-            neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
-            if(placedDisposal != null)
-                neighbours.Add(placedDisposal);
+            neighbours.AddRange(map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position));
+            neighbours.RemoveAll(x => x == null);
             return neighbours;
         }
     }

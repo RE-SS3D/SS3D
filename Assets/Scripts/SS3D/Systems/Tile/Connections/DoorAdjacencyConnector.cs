@@ -22,7 +22,7 @@ namespace SS3D.Systems.Tile.Connections
 
         protected override IMeshAndDirectionResolver AdjacencyResolver => null;
 
-        /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
+        // Based on peculiarities of the model, the appropriate position of the wall cap
         private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0f;
 
         // As is the standard in the rest of the code, wallCap should face east.

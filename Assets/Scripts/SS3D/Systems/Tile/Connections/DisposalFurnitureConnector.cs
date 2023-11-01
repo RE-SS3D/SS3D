@@ -59,7 +59,7 @@ namespace SS3D.Systems.Tile.Connections
 
             // Update our neighbour as well
             if (isConnected && updateNeighbour)
-                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
+                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, true);
 
             return updated;
         }

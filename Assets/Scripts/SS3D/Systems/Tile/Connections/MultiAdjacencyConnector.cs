@@ -88,7 +88,7 @@ namespace SS3D.Systems.Tile.Connections
 
                 // Update our neighbour as well
                 if (isConnected && updateNeighbour)
-                    neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
+                    neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, false);
             }
             
             isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));

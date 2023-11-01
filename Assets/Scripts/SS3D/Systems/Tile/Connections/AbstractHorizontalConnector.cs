@@ -113,7 +113,7 @@ namespace SS3D.Systems.Tile.Connections
 
             if (isUpdated)
             {
-                neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
+                neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, false);
                 _syncedConnections = _adjacencyMap.SerializeToByte();
                 UpdateMeshAndDirection();
             }
