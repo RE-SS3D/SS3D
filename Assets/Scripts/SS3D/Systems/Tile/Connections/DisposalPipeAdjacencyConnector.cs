@@ -8,6 +8,7 @@ using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
@@ -60,7 +61,7 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public bool IsConnected(PlacedTileObject neighbourObject)
         {
             if (neighbourObject == null) return false;
 
@@ -100,14 +101,11 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            bool isConnected = IsConnected(dir, neighbourObject);
+            bool isConnected = IsConnected(neighbourObject);
 
-            // Update our neighbour as well
-            if (isConnected && updateNeighbour)
-                neighbourObject.UpdateSingleAdjacency(_placedObject, TileHelper.GetOpposite(dir));
-
-            bool isUpdated;
+            bool isUpdated = false;
             bool isVertical;
+
 
             if(neighbourObject != null)
             {
@@ -134,15 +132,36 @@ namespace SS3D.Systems.Tile.Connections
                     UpdateMeshAndDirection();
                 }
 
+                // Update our neighbour as well
+                if (isUpdated && updateNeighbour)
+                    neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
+
                 return isUpdated;
             }
-            
-
-            isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
-            if (isUpdated) 
+            else
             {
-                UpdateMeshAndDirection();
+                // the disposal above gets removed
+                if(!TryGetDisposalElementAbovePipe(out var disposalFurniture) && _verticalConnection == true)
+                {
+                    _verticalConnection = false;
+                    isUpdated = true;
+                }
+                // another pipe get removed
+                else
+                {
+                    isUpdated = _adjacencyMap.SetConnection(dir,
+                        new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
+                }
+
+                if (isUpdated)
+                {
+                    UpdateMeshAndDirection();
+                }
             }
+            
+            // Update our neighbour as well
+            if (isUpdated && updateNeighbour)
+                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
 
             return isUpdated;
         }
@@ -156,13 +175,13 @@ namespace SS3D.Systems.Tile.Connections
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
-                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
+                changed |= UpdateSingleConnection((Direction) i,neighbourObjects[i], true);
             }
 
             if(TryGetDisposalElementAbovePipe(out IDisposalElement disposalElement))
             {
                 var placedDisposal = disposalElement.GameObject.GetComponent<PlacedTileObject>();
-                changed |= UpdateSingleConnection(0, placedDisposal, false);
+                changed |= UpdateSingleConnection(Direction.North, placedDisposal, false) ;
             }
 
             if (changed)
@@ -251,6 +270,22 @@ namespace SS3D.Systems.Tile.Connections
             }
 
             UpdateMeshAndDirection();
+        }
+
+        public List<PlacedTileObject> GetNeighbours()
+        {
+            PlacedTileObject placedDisposal = null;
+            List<PlacedTileObject> neighbours;
+            if (TryGetDisposalElementAbovePipe(out IDisposalElement disposalElement))
+            {
+                placedDisposal = disposalElement.GameObject.GetComponent<PlacedTileObject>();
+            }
+            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            var map = tileSystem.CurrentMap;
+            neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
+            if(placedDisposal != null)
+                neighbours.Add(placedDisposal);
+            return neighbours;
         }
     }
 }

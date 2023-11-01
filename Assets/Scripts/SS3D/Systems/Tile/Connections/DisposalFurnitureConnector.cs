@@ -23,7 +23,7 @@ namespace SS3D.Systems.Tile.Connections
             _placedObject = GetComponent<PlacedTileObject>();
         }
 
-        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public bool IsConnected(PlacedTileObject neighbourObject)
         {
             if(neighbourObject == null) return false;
 
@@ -50,16 +50,16 @@ namespace SS3D.Systems.Tile.Connections
             };
         }
 
-        public bool UpdateSingleConnection(Direction direction, PlacedTileObject neighbourObject, bool updateNeighbour)
+        public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             Setup();
 
-            bool isConnected = IsConnected(direction, neighbourObject);
+            bool isConnected = IsConnected(neighbourObject);
             bool updated = _connectedToPipe != isConnected;
 
             // Update our neighbour as well
             if (isConnected && updateNeighbour)
-                neighbourObject.UpdateSingleAdjacency(_placedObject, direction);
+                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
 
             return updated;
         }
@@ -74,6 +74,13 @@ namespace SS3D.Systems.Tile.Connections
             pipe = pipeLocation.PlacedObject;
 
             return pipe != null;
+        }
+
+        public List<PlacedTileObject> GetNeighbours()
+        {
+            bool hasNeighbour = TryGetPipeBelow(out PlacedTileObject pipe);
+            if (hasNeighbour) return new List<PlacedTileObject> { pipe };
+            else return new List<PlacedTileObject>();  
         }
     }
 }

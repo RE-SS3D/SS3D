@@ -1,9 +1,11 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -86,7 +88,7 @@ namespace SS3D.Systems.Tile.Connections
 
                 // Update our neighbour as well
                 if (isConnected && updateNeighbour)
-                    neighbourObject.UpdateSingleAdjacency(_placedObject, TileHelper.GetOpposite(dir));
+                    neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
             }
             
             isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
@@ -156,9 +158,16 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public bool IsConnected(PlacedTileObject neighbourObject)
         {
             throw new System.NotImplementedException();
+        }
+
+        public List<PlacedTileObject> GetNeighbours()
+        {
+            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            var map = tileSystem.CurrentMap;
+            return map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
         }
     }
 }

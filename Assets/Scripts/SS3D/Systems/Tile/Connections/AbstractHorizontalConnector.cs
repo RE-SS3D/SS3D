@@ -1,11 +1,13 @@
 ﻿using FishNet.Object.Synchronizing;
 using JetBrains.Annotations;
 using SS3D.Attributes;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
@@ -44,7 +46,7 @@ namespace SS3D.Systems.Tile.Connections
         /// <summary>
         /// Abstract method, as from one connector to another, the code to check for connection greatly changes.
         /// </summary>
-        public abstract bool IsConnected(Direction dir, PlacedTileObject neighbourObject);
+        public abstract bool IsConnected(PlacedTileObject neighbourObject);
 
 
         public override void OnStartClient()
@@ -89,7 +91,7 @@ namespace SS3D.Systems.Tile.Connections
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
-                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
+                changed |= UpdateSingleConnection((Direction) i, neighbourObjects[i], true);
             }
 
             if (changed)
@@ -105,11 +107,12 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            bool isConnected = IsConnected(dir, neighbourObject);
+            bool isConnected = IsConnected(neighbourObject);
+
 
             // Update our neighbour as well
             if (isConnected && updateNeighbour)
-                neighbourObject.UpdateSingleAdjacency(_placedObject, TileHelper.GetOpposite(dir));
+                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject);
 
             bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
 
@@ -168,6 +171,13 @@ namespace SS3D.Systems.Tile.Connections
         {
             _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));
             UpdateMeshAndDirection();
+        }
+
+        public List<PlacedTileObject> GetNeighbours()
+        {
+            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            var map = tileSystem.CurrentMap;
+            return map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
         }
     }
 }

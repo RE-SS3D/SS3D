@@ -3,10 +3,12 @@ using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Logging;
+using SS3D.Systems.Tile.Connections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 namespace SS3D.Systems.Tile
 {
@@ -206,27 +208,40 @@ namespace SS3D.Systems.Tile
         public void ClearTileObject(Vector3 placePosition, TileLayer layer)
         {
             TileObject[] tileObjects = GetTileObjects(placePosition);
-            tileObjects[(int)layer].ClearPlacedObject();
+            TileObject tileObject = tileObjects[(int)layer];
+            PlacedTileObject placed = tileObject.PlacedObject;
 
-            // Update any neighbouring adjacencies
-            ResetAdjacencies(placePosition, layer);
+
+            if (placed != null && placed.TryGetComponent(out IAdjacencyConnector connector))
+            {
+                List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                ResetAdjacencies(placed, tileObject, neighbours);
+            }
 
             // Remove any invalid tile combinations
             List<TileObject> toRemoveObjects = BuildChecker.GetToBeDestroyedObjects(tileObjects);
 
             foreach (TileObject removeObject in toRemoveObjects)
             {
+                placed = removeObject.PlacedObject;
+
+                if (placed != null && placed.TryGetComponent(out connector))
+                {
+                    List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                    ResetAdjacencies(placed, removeObject, neighbours);
+                }
+
                 removeObject.ClearPlacedObject();
-                ResetAdjacencies(placePosition, removeObject.Layer);
             }
         }
 
-        private void ResetAdjacencies(Vector3 placePosition, TileLayer layer)
+        private void ResetAdjacencies(PlacedTileObject placed, TileObject location, List<PlacedTileObject> neighbours)
         {
-            var neighbourTiles = GetNeighbourPlacedObjects(layer, placePosition);
-            for (int i = 0; i < neighbourTiles.Length; i++)
+            foreach (PlacedTileObject neighbour in neighbours)
             {
-                neighbourTiles[i]?.UpdateSingleAdjacency(null, TileHelper.GetOpposite((Direction)i));
+                placed.NeighbourAtDirectionOf(neighbour, out var dir);
+                location.ClearPlacedObject();
+                neighbour?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), null);
             }
         }
 

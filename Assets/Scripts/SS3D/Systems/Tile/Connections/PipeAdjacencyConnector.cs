@@ -12,7 +12,7 @@ namespace SS3D.Systems.Tile.Connections
         private OffsetConnector _connector;
         protected override IMeshAndDirectionResolver AdjacencyResolver => _connector;
 
-        public override bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public override bool IsConnected(PlacedTileObject neighbourObject)
         {
             bool isConnected = false;
             if (neighbourObject != null)

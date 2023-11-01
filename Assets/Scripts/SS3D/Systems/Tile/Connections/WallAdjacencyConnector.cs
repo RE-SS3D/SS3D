@@ -55,7 +55,7 @@ namespace SS3D.Systems.Tile.Connections
             return false;
         }
 
-        public override bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public override bool IsConnected(PlacedTileObject neighbourObject)
         {
             if(neighbourObject == null) return false;
 
