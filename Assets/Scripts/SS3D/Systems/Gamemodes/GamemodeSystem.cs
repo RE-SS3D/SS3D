@@ -37,7 +37,7 @@ namespace SS3D.Systems.Gamemodes
         protected override void OnStart()
         {
             base.OnStart();
-            Setup();
+            if (base.IsServer) Setup();
         }
 
         public override void OnStartClient()

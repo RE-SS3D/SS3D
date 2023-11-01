@@ -1,7 +1,6 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
-using SS3D.Systems.Permissions;
-using System.Collections;
+using SS3D.Permissions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -36,9 +35,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             foreach(BodyLayer layer in bodyPart.BodyLayers)
             {
                 answer += layer.ToString() + ": ";
-                foreach (DamageTypeQuantity damageTypeQuantity in layer.DamageTypeQuantities)
+                foreach (BodyDamageInfo damage in layer.Damages.DamagesInfo.Values)
                 {
-                    answer += damageTypeQuantity.damageType.ToString() + " " + damageTypeQuantity.quantity.ToString();
+                    answer += damage.InjuryType.ToString() + " " + damage.Quantity.ToString();
                 }
                 answer += "\n";
             }

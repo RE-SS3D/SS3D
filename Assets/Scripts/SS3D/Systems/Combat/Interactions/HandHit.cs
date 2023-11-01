@@ -17,6 +17,7 @@ namespace SS3D.Systems.Combat.Interactions
 
 			foreach (IInteractionTarget target in targets)
 			{
+                // Todo : unnecessary check, the interaction controller takes care of that.
 				if (interaction.CanInteract(new InteractionEvent(gameObject.GetComponent<Hand>(), target)))
 				{
 					interactions.Add(new InteractionEntry(target, interaction));

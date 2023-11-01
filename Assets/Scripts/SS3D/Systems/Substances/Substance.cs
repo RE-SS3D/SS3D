@@ -9,6 +9,8 @@ namespace SS3D.Substances
     {
         public SubstanceType Type;
         public Color Color;
-        public float MillilitersPerMole;
+
+        // Todo : Is this in "normal conditions" ? (1 atm, ambient room temperature around 27 celsius degree)
+        public float MillilitersPerMilliMoles;
     }
 }

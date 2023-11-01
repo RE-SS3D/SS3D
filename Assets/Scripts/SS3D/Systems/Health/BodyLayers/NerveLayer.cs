@@ -4,10 +4,15 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Health
 {
-	public class NerveLayer : BodyLayer
+    /// <summary>
+    /// NerveLayer layer mostly determines the ability to feel things 
+    /// TODO : It should send a down top signal to brain, representing how much pain it has.
+    /// Too much pain should make the player drop things, or fall.
+    /// </summary>
+    public class NerveLayer : BodyLayer, IOxygenNeeder
 	{
 
-		public NetworkBehaviour GetNetworkBehaviour => BodyPart;
+        public NetworkBehaviour GetNetworkBehaviour => BodyPart;
 
 
 		public NetworkObject getNetworkedObject
@@ -45,19 +50,35 @@ namespace SS3D.Systems.Health
 		}
 
 		public NerveLayer(BodyPart bodyPart,
-			List<DamageTypeQuantity> damages, List<DamageTypeQuantity> susceptibilities, List<DamageTypeQuantity> resistances)
-			: base(bodyPart, damages, susceptibilities, resistances)
+			DamagesContainer damages)
+			: base(bodyPart, damages)
 		{
 
 		}
 
-		protected override void SetSuceptibilities()
-		{
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Slash, 1.5f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Pressure, 0.5f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Shock, 2f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
-			_damageSuceptibilities.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
-		}
-	}
+        protected override void SetDamagesContainer()
+        {
+            Damages.DamagesInfo.Add(DamageType.Crush, new BodyDamageInfo(DamageType.Crush, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Slash, new BodyDamageInfo(DamageType.Slash, 0f, 1.5f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Puncture, new BodyDamageInfo(DamageType.Puncture, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Pressure, new BodyDamageInfo(DamageType.Pressure, 0f, 0.5f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Heat, new BodyDamageInfo(DamageType.Heat, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Cold, new BodyDamageInfo(DamageType.Cold, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Shock, new BodyDamageInfo(DamageType.Shock, 0f, 2f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Rad, new BodyDamageInfo(DamageType.Rad, 0f, 1.5f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 1.2f, 0f));
+            Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 1f, 0f));
+        }
+
+        public double GetOxygenNeeded()
+        {
+            return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
+        }
+
+        public override void Cleanlayer()
+        {
+
+        }
+    }
 }

@@ -1,16 +1,9 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
-using SS3D.Core;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Permissions;
-using SS3D.Systems.PlayerControl;
-using System;
-using System.Collections;
+using SS3D.Permissions;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -36,7 +29,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
             BodyPart bodyPart = bodyParts.First();
 
-            bodyPart.DestroyBodyPart();
+            bodyPart.InflictDamageToAllLayer(new Health.DamageTypeQuantity(Health.DamageType.Heat, 10000000000));
             return "BodyPart hurt";
         }
 

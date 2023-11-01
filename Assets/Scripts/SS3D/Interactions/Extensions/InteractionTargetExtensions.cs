@@ -5,6 +5,16 @@ namespace SS3D.Interactions.Extensions
 {
     public static class InteractionTargetExtensions
     {
+
+        public static GameObject GetGameObject(this IInteractionTarget target)
+        {
+            if (target is IGameObjectProvider provider)
+            {
+                return provider.GameObject;
+            }
+            return null;
+        }
+
         public static T GetComponent<T>(this IInteractionTarget target) where T : class
         {
             if (target is IGameObjectProvider provider)

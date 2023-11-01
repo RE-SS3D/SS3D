@@ -1,4 +1,4 @@
-﻿using Coimbra.Services.Events;
+using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
@@ -16,12 +16,13 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
+    [RequireComponent(typeof(Entity))]
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(Animator))]
     public abstract class HumanoidController : NetworkActor
     {
         #region Fields
-        public event Action<float> SpeedChangeEvent;
+        public event Action<float> OnSpeedChangeEvent;
 
         [Header("Components")] 
         [SerializeField] protected Entity _entity;
@@ -41,7 +42,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Vector3 AbsoluteMovement;
         protected Vector2 Input;
         protected Vector2 SmoothedInput;
-        protected Vector3 TargetMovement;
+        public Vector3 TargetMovement;
 
         private Actor _camera;
         protected Controls.MovementActions MovementControls;
@@ -79,10 +80,16 @@ namespace SS3D.Systems.Entities.Humanoid
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
+        protected override void OnDisabled()
+        {
+	        base.OnDisabled();
+	        TargetMovement = Vector3.zero;
+        }
+
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            
+            UnityEngine.Debug.Log("destroying controller " + gameObject.name);
             MovementControls.ToggleRun.performed -= HandleToggleRun;
             _inputSystem.ToggleActionMap(MovementControls, false);
             _inputSystem.ToggleActionMap(HotkeysControls, false);
@@ -94,12 +101,15 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
-        { 
+        {
+	        if (!enabled)
+	        {
+		        return;
+	        }
             if (!IsOwner)
             {
                 return;
             }
-
             ProcessCharacterMovement();
         }
 
@@ -113,7 +123,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void UpdateMousePositionTransforms()
         {
-            // Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            // Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
             // Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
             // mousePos = new Vector3(mousePos.x, transform.position.y, mousePos.z);
             
@@ -137,7 +147,6 @@ namespace SS3D.Systems.Entities.Humanoid
 
              Vector3 resultingMovement = TargetMovement + Position;
             AbsoluteMovement = resultingMovement;
-
              _movementTarget.position = AbsoluteMovement;
          }
 
@@ -164,6 +173,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             float x = MovementControls.Movement.ReadValue<Vector2>().x;
             float y = MovementControls.Movement.ReadValue<Vector2>().y;
+
             float inputFilteredSpeed = FilterSpeed();
 
             Input = Vector2.ClampMagnitude(new Vector2(x, y), inputFilteredSpeed);
@@ -187,7 +197,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void OnSpeedChanged(float speed)
         {
-            SpeedChangeEvent?.Invoke(speed);
+            OnSpeedChangeEvent?.Invoke(speed);
         }
     }
 

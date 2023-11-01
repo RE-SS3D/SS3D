@@ -111,6 +111,16 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
+
+            string itemName = gameObject.name.Split('(')[0];
+
+            if(!Enum.TryParse(itemName, out ItemId id))
+            {
+                Log.Error(this, $"id with name {itemName} not present in ItemId enums");
+                return;
+            }
+
+            ItemId = id;
         }
 
         public override void OnStartServer()
@@ -136,7 +146,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void Delete()
         {
-            SetContainer(null);
+            Container.RemoveItem(this);
 
             if (GameObject != null)
             {
@@ -256,17 +266,6 @@ namespace SS3D.Systems.Inventory.Items
             {
                 return;
             }
-
-            if (_container != null && _container.ContainsItem(this))
-            {
-                Container.RemoveItem(this);
-            }
-
-            if (newContainer != null && !newContainer.ContainsItem(this))
-            {
-                newContainer.AddItem(this);
-            }
-
             _container = newContainer;
         }
 

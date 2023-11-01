@@ -57,7 +57,7 @@ namespace SS3D.Systems.Entities
 
         private void InvokeLocalPlayerObjectChanged()
         {
-            if (Mind == null) return;
+            if (Mind == null || Mind.player == null) return;
 
             if (!Mind.player.IsLocalConnection)
             {
@@ -101,5 +101,10 @@ namespace SS3D.Systems.Entities
 		{
 			throw new NotImplementedException();
 		}
+
+        public virtual void DeactivateComponents()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
