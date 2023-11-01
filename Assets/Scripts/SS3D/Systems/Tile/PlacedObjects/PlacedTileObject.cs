@@ -35,7 +35,7 @@ namespace SS3D.Systems.Tile
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
             }
 
-            placedObject.Setup(tileObjectSo, origin, dir);
+            placedObject.Setup(tileObjectSo, origin, worldPosition, dir);
 
             if (InstanceFinder.ServerManager != null)
             {
@@ -59,6 +59,7 @@ namespace SS3D.Systems.Tile
         private Vector2Int _origin;
         private Direction _dir;
         private IAdjacencyConnector _connector;
+        private Vector2Int _worldOrigin;
 
         /// <summary>
         /// Returns a list of all grids positions that object occupies.
@@ -67,6 +68,8 @@ namespace SS3D.Systems.Tile
         public List<Vector2Int> GridOffsetList => _tileObjectSo.GetGridOffsetList(_dir);
 
         public Vector2Int Origin => _origin;
+
+        public Vector2Int WorldOrigin => _worldOrigin;
 
         public TileObjectGenericType GenericType => _tileObjectSo.genericType;
 
@@ -85,12 +88,13 @@ namespace SS3D.Systems.Tile
         /// </summary>
         /// <param name="tileObjectSo"></param>
         /// <param name="dir"></param>
-        private void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Direction dir)
+        private void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Vector3 worldPosition, Direction dir)
         {
             _tileObjectSo = tileObjectSo;
             _origin = origin;
             _dir = dir;
             _connector = GetComponent<IAdjacencyConnector>();
+            _worldOrigin = new Vector2Int((int)Math.Round(worldPosition.x), (int)Math.Round(worldPosition.z));
         }
 
         /// <summary>
@@ -196,7 +200,7 @@ namespace SS3D.Systems.Tile
         {
             direction = Direction.North;
             if (other == null) return false;
-            Vector2Int coordinateDifference = other.Origin - Origin;
+            Vector2Int coordinateDifference = other.WorldOrigin - WorldOrigin;
 
             if(coordinateDifference == Vector2Int.up)
                 direction = Direction.North;
