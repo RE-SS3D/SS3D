@@ -107,7 +107,7 @@ namespace SS3D.Systems.Tile
                 _connector.UpdateAllConnections(neighbourObjects);
         }
 
-        public void UpdateSingleAdjacency(PlacedTileObject neighbourObject, Direction dir)
+        public void UpdateSingleAdjacency(Direction dir, PlacedTileObject neighbourObject)
         {
             if (HasAdjacencyConnector)
                 _connector.UpdateSingleConnection(dir, neighbourObject, false);
@@ -184,6 +184,39 @@ namespace SS3D.Systems.Tile
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Other is a neighbour, placed at some direction from this.
+        /// </summary>
+        /// <param name="other">another placedTileObject, which should be neighbouring this.</param>
+        /// <param name="direction"> the found direction, north by default</param>
+        /// <returns>true if other is a neighbour of this in term of coordinates</returns>
+        public bool NeighbourAtDirectionOf(PlacedTileObject other, out Direction direction)
+        {
+            direction = Direction.North;
+            if (other == null) return false;
+            Vector2Int coordinateDifference = other.Origin - Origin;
+
+            if(coordinateDifference == Vector2Int.up)
+                direction = Direction.North;
+            else if(coordinateDifference == Vector2Int.down) 
+                direction = Direction.South;
+            else if (coordinateDifference == Vector2Int.left)
+                direction = Direction.West;
+            else if (coordinateDifference == Vector2Int.right)
+                direction = Direction.East;
+            else if (coordinateDifference == Vector2Int.up + Vector2Int.right)
+                direction = Direction.NorthEast;
+            else if (coordinateDifference == Vector2Int.up + Vector2Int.left)
+                direction = Direction.NorthWest;
+            else if (coordinateDifference == Vector2Int.down + Vector2Int.left)
+                direction = Direction.SouthWest;
+            else if (coordinateDifference == Vector2Int.down + Vector2Int.right)
+                direction = Direction.SouthEast;
+            else return false;
+
+            return true;
         }
     }
 }
