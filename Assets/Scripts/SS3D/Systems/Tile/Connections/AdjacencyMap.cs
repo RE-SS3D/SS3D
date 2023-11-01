@@ -25,6 +25,11 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         public int DiagonalConnectionCount => GetAdjacencies(false).Count;
 
+        /// <summary>
+        /// Get the total number of connections.
+        /// </summary>
+        public int ConnectionCount => GetAdjacencies(true).Count + GetAdjacencies(false).Count;
+
         public AdjacencyMap()
         {
             _connections = new [] {
