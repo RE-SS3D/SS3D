@@ -16,15 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: a8f988e8c8dd50c4ea7f7f7e5f300082
-  m_SerializeEntries:
-  - m_GUID: c19eccca279beee4186432a03257a7b9
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHandRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: df85b75fd341a244c8364ebb9c4fcfef
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHandLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

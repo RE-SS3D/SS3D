@@ -1,9 +1,10 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Permissions;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Health;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -24,7 +25,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             string ckey = args[0];
             Player playerToKill= Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
             Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerToKill);
-            entityToKill.GetComponent<HealthController>().Kill();
+            entityToKill.Kill();
             return "Player killed";
         }
 

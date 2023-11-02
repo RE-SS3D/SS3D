@@ -48,7 +48,7 @@ namespace SS3D.Hacks
 				return;
 			}
 
-			BodyPart target = GetComponentsInChildren<BodyPart>().Where(x => x.BodyCollider == hit.collider).First();
+            BodyPart target = GetComponentsInChildren<BodyPart>().Where(x => x.BodyCollider == hit.collider).FirstOrDefault();
 
 			if (!target)
 			{

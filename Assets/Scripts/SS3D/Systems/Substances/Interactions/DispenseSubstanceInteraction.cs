@@ -23,7 +23,12 @@ namespace SS3D.Substances
         /// If a range check should be automatically performed
         /// </summary>
         public bool RangeCheck { get; set; }
-        
+
+        public virtual string GetGenericName()
+        {
+            return Name;
+        }
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return null;
@@ -74,7 +79,7 @@ namespace SS3D.Substances
                 SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
                 if (container != null)
                 {
-                    container.AddSubstance(Substance.Substance, Substance.Moles);
+                    container.AddSubstance(Substance.Substance, Substance.MilliMoles);
                     container.SetDirty();
                 }
             }

@@ -82,6 +82,8 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         private void UpdateDisplay()
         {
+            if (ItemDisplay == null) return;
+
             var item = _container.Items.FirstOrDefault();
 			ItemDisplay.Item = item;
 			ItemDisplay.MakeVisible(true);
