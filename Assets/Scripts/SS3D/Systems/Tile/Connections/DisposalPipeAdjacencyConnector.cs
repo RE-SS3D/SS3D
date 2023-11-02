@@ -149,9 +149,6 @@ namespace SS3D.Systems.Tile.Connections
             return disposalFurniture != null;
         }
 
-        /// <summary>
-        /// Update a single connection, in a specific direction. Eventually also update the neighbour connection.
-        /// </summary>
         public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             Setup();
