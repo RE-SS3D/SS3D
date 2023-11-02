@@ -17,7 +17,8 @@ namespace SS3D.Systems.Tile
     public class PlacedTileObject: NetworkBehaviour
     {
         /// <summary>
-        /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. Uses NetworkServer.Spawn() if a server is running.
+        /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. 
+        /// Uses NetworkServer.Spawn() if a server is running.
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <param name="dir"></param>
@@ -37,6 +38,8 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(tileObjectSo, origin, worldPosition, dir);
 
+            // TODO : Spawning the placed game object does not spawn with it everything. In particular, the values
+            // such as tileobjectSO, origin or world position are not spawned. This might (or not) be an issue later on.
             if (InstanceFinder.ServerManager != null)
             {
                 if (placedObject.GetComponent<NetworkObject>() == null)

@@ -58,8 +58,8 @@ namespace SS3D.Systems.Tile.Connections
             bool updated = _connectedToPipe != isConnected;
 
             // Update our neighbour as well
-            if (isConnected && updateNeighbour)
-                neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, true);
+            if (updated)
+                neighbourObject.UpdateAdjacencies(new PlacedTileObject[0]);
 
             return updated;
         }

@@ -24,6 +24,9 @@ namespace SS3D.Systems.Tile.Connections
         [SyncVar(OnChange = nameof(SyncVertical))]
         protected bool _verticalConnection;
 
+        [SyncVar(OnChange = nameof(SyncDirection))]
+        protected Direction _direction;
+
         protected MeshFilter _filter;
 
         protected PlacedTileObject _placedObject;
@@ -50,16 +53,19 @@ namespace SS3D.Systems.Tile.Connections
             {
                 _adjacencyMap = new AdjacencyMap();
                 _filter = GetComponent<MeshFilter>();
-
-                _placedObject = GetComponent<PlacedTileObject>();
-                if (_placedObject == null)
+                if (IsServer)
                 {
-                    _specificType = TileObjectSpecificType.None;
+                    _placedObject = GetComponent<PlacedTileObject>();
+                    if (_placedObject == null)
+                    {
+                        _specificType = TileObjectSpecificType.None;
+                    }
+                    else
+                    {
+                        _specificType = _placedObject.SpecificType;
+                    }
                 }
-                else
-                {
-                    _specificType = _placedObject.SpecificType;
-                }
+                
                 _initialized = true;
             }
         }
@@ -152,6 +158,7 @@ namespace SS3D.Systems.Tile.Connections
 
             bool isConnected = IsConnected(neighbourObject);
             bool isUpdated;
+            bool neighbourIsRemovedDisposalFurniture = false;
 
             // If neighbour is a disposal furniture and this disposal pipe is connected to it
             if (isConnected && IsConnectedToDisposalFurniture(neighbourObject))
@@ -165,6 +172,7 @@ namespace SS3D.Systems.Tile.Connections
                 && !TryGetDisposalElementAbovePipe(out IDisposalElement disposalFurniture) 
                 && _verticalConnection == true)
             {
+                neighbourIsRemovedDisposalFurniture = true;
                 isUpdated = true;
                 _verticalConnection = false;
             }
@@ -179,15 +187,17 @@ namespace SS3D.Systems.Tile.Connections
 
             if (isUpdated)
             {
+                _syncedConnections = _adjacencyMap.SerializeToByte();
+                _direction = _placedObject.Direction;
                 UpdateMeshAndDirection();
-            }
-
-            if (isUpdated && updateNeighbour)
-            {
                 var connector = neighbourObject?.GetComponent<DisposalPipeAdjacencyConnector>();
                 if(connector != null)
                 {
                     connector.UpdateAllConnections(new PlacedTileObject[] { });
+                }
+                if (neighbourIsRemovedDisposalFurniture)
+                {
+                    UpdateAllConnections(new PlacedTileObject[] { });
                 }
             }
                 
@@ -231,7 +241,7 @@ namespace SS3D.Systems.Tile.Connections
             {
                 // remove some y so the vertical model is at the right place in the ground.
                 transform.position = new Vector3(pos.x, -0.67f, pos.z); 
-                _filter.transform.localRotation = Quaternion.Euler(eulerRotation.x, TileHelper.GetRotationAngle(_placedObject.Direction), eulerRotation.z);
+                _filter.transform.localRotation = Quaternion.Euler(eulerRotation.x, TileHelper.GetRotationAngle(_direction), eulerRotation.z);
             }
             else
             {
@@ -261,6 +271,15 @@ namespace SS3D.Systems.Tile.Connections
         /// Sync vertical on client, and update mesh and direction.
         /// </summary>
         private void SyncVertical(bool oldValue, bool newValue, bool asServer)
+        {
+            if (!asServer)
+            {
+                Setup();
+                UpdateMeshAndDirection();
+            }
+        }
+
+        private void SyncDirection(Direction oldValue, Direction newValue, bool asServer)
         {
             if (!asServer)
             {
