@@ -193,11 +193,11 @@ namespace SS3D.Systems.Tile.Connections
                 var connector = neighbourObject?.GetComponent<DisposalPipeAdjacencyConnector>();
                 if(connector != null)
                 {
-                    connector.UpdateAllConnections(new PlacedTileObject[] { });
+                    connector.UpdateAllConnections();
                 }
                 if (neighbourIsRemovedDisposalFurniture)
                 {
-                    UpdateAllConnections(new PlacedTileObject[] { });
+                    UpdateAllConnections();
                 }
             }
                 
@@ -206,11 +206,11 @@ namespace SS3D.Systems.Tile.Connections
 
         // TODO : maybe interface should let updateAllconnections handle retrieving neighbours
         // object, as it might not mean the same thing for different connectors.
-        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections()
         {
             Setup();
 
-            neighbourObjects = GetNeighbours().ToArray();
+            var neighbourObjects = GetNeighbours();
 
             bool changed = false;
 

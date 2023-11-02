@@ -9,7 +9,7 @@ namespace SS3D.Systems.Tile.Connections
     public interface IAdjacencyConnector
     {
         bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour);
-        void UpdateAllConnections(PlacedTileObject[] neighbourObjects);
+        void UpdateAllConnections();
         bool IsConnected(PlacedTileObject neighbourObject);
         List<PlacedTileObject> GetNeighbours();
     }

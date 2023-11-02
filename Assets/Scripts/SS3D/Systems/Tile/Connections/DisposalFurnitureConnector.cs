@@ -39,7 +39,7 @@ namespace SS3D.Systems.Tile.Connections
             return true;
         }
 
-        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections()
         {
             // update pipe just below.
             Setup();
@@ -59,7 +59,7 @@ namespace SS3D.Systems.Tile.Connections
 
             // Update our neighbour as well
             if (updated)
-                neighbourObject.UpdateAdjacencies(new PlacedTileObject[0]);
+                neighbourObject.UpdateAdjacencies();
 
             return updated;
         }

@@ -195,8 +195,7 @@ namespace SS3D.Systems.Tile
 
                 // Handle Adjacency connectors, can skip it particulary when loading the map.
                 if (!skipAdjacency){
-                    var neighbourTiles = GetNeighbourPlacedObjects(tileObjectSo.layer, placePosition);
-                    placedObject.UpdateAdjacencies(neighbourTiles);
+                    placedObject.UpdateAdjacencies();
                 }
                
             }
@@ -368,7 +367,7 @@ namespace SS3D.Systems.Tile
                     if (obj.HasAdjacencyConnector)
                     {
                         var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
-                        obj.UpdateAdjacencies(GetNeighbourPlacedObjects(obj.Layer, pos));
+                        obj.UpdateAdjacencies();
                     }
                 }
             }

@@ -43,9 +43,9 @@ namespace SS3D.Systems.Tile.Connections
             return update;
         }
 
-        public override void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public override void UpdateAllConnections()
         {
-            base.UpdateAllConnections(neighbourObjects);
+            base.UpdateAllConnections();
             UpdateWallCaps();
         }
 

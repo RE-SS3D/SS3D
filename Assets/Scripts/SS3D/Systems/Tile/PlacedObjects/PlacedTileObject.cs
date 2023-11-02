@@ -108,10 +108,10 @@ namespace SS3D.Systems.Tile
             InstanceFinder.ServerManager.Despawn(gameObject);
         }
 
-        public void UpdateAdjacencies(PlacedTileObject[] neighbourObjects)
+        public void UpdateAdjacencies()
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateAllConnections(neighbourObjects);
+                _connector.UpdateAllConnections();
         }
 
         public void UpdateSingleAdjacency(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)

@@ -84,14 +84,17 @@ namespace SS3D.Systems.Tile.Connections
         /// <summary>
         /// Update all connections around this connector, updating mesh and directions eventually.
         /// </summary>
-        public virtual void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public virtual void UpdateAllConnections()
         {
             Setup();
 
+            var neighbourObjects = GetNeighbours();
+
             bool changed = false;
-            for (int i = 0; i < neighbourObjects.Length; i++)
+            foreach (var neighbourObject in neighbourObjects)
             {
-                changed |= UpdateSingleConnection((Direction) i, neighbourObjects[i], true);
+                _placedObject.NeighbourAtDirectionOf(neighbourObject, out Direction dir);
+                changed |= UpdateSingleConnection(dir, neighbourObject, true);
             }
 
             if (changed)
@@ -173,7 +176,9 @@ namespace SS3D.Systems.Tile.Connections
         {
             TileSystem tileSystem = Subsystems.Get<TileSystem>();
             var map = tileSystem.CurrentMap;
-            return map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
+            var neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
+            neighbours.RemoveAll(x => x == null);
+            return neighbours;
         }
     }
 }

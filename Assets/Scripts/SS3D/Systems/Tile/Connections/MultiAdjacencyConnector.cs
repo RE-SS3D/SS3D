@@ -101,14 +101,17 @@ namespace SS3D.Systems.Tile.Connections
             return isUpdated;
         }
 
-        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections()
         {
             Setup();
 
+            var neighbourObjects = GetNeighbours();
+
             bool changed = false;
-            for (int i = 0; i < neighbourObjects.Length; i++)
+            foreach (var neighbourObject in neighbourObjects)
             {
-                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i], true);
+                _placedObject.NeighbourAtDirectionOf(neighbourObject, out Direction dir);
+                changed |= UpdateSingleConnection(dir, neighbourObject, true);
             }
 
             if (changed)
