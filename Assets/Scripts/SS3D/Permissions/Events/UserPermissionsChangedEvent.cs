@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
+using System.Collections.Generic;
 
-namespace SS3D.Systems.Permissions.Events
+namespace SS3D.Permissions.Events
 {
     public partial struct UserPermissionsChangedEvent : IEvent
     {

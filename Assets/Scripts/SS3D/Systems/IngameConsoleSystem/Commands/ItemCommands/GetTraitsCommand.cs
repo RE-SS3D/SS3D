@@ -1,6 +1,6 @@
 ﻿using FishNet.Connection;
+using SS3D.Permissions;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {

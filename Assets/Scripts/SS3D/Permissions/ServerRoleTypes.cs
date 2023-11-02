@@ -1,4 +1,4 @@
-﻿namespace SS3D.Systems.Permissions
+﻿namespace SS3D.Permissions
 {
     public enum ServerRoleTypes
     {

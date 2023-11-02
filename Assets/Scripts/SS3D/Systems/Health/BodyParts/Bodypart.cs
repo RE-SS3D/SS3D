@@ -1,4 +1,5 @@
-﻿using FishNet.Object;
+﻿using Coimbra;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,6 @@ using SS3D.Systems.Health;
 using System.Linq;
 using System.Collections.ObjectModel;
 using FishNet;
-using Coimbra;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
