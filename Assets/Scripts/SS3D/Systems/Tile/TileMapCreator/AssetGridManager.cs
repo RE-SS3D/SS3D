@@ -2,28 +2,31 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Component, that changes GridLayoutGroup contstraintCount to fit it's width
-/// </summary>
-[RequireComponent(typeof(GridLayoutGroup))]
-public class AssetGridManager : MonoBehaviour
+namespace SS3D.Systems.Tile.TileMapCreator
 {
-    private GridLayoutGroup _grid;
-    private float cellWidth;
-    private float paddingWidth;
-    void Start()
+    /// <summary>
+    /// Component, that changes number of columns in GridLayoutGroup to fit it's width. Elements of the group will take as much width as possible, but won't exceed it. 
+    /// </summary>
+    [RequireComponent(typeof(GridLayoutGroup))]
+    public class AssetGridManager : MonoBehaviour
     {
-        _grid = GetComponent<GridLayoutGroup>();
-        cellWidth = _grid.cellSize.x;
-        paddingWidth = _grid.spacing.x;
-    }
+        private GridLayoutGroup _grid;
+        private float _cellWidth;
+        private float _paddingWidth;
+        private void Start()
+        {
+            _grid = GetComponent<GridLayoutGroup>();
+            _cellWidth = _grid.cellSize.x;
+            _paddingWidth = _grid.spacing.x;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        float width = transform.parent.GetComponent<RectTransform>().rect.width;
-        int constraintCount = Convert.ToInt32(Math.Floor(width / (cellWidth + paddingWidth)));
-        if (constraintCount != _grid.constraintCount)
-            _grid.constraintCount = constraintCount;
+        private void Update()
+        {
+            float width = transform.parent.GetComponent<RectTransform>().rect.width;
+            int constraintCount = Convert.ToInt32(Math.Floor(width / (_cellWidth + _paddingWidth)));
+
+            if (constraintCount != _grid.constraintCount)
+                _grid.constraintCount = constraintCount;
+        }
     }
 }
