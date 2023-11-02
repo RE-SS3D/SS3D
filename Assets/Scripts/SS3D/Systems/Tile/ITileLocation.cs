@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+    /// <summary>
+    /// Abstract representation of a tile location. A tile location can contain one or multiple
+    /// tile objects in one or multiple directions. It is bounded to a given layer.
+    /// </summary>
     public interface ITileLocation
     {
         public TileLayer Layer
