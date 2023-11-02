@@ -4,7 +4,8 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 {
     /// <summary>
-    /// 
+    /// Script helping disposal pipes to determine their shape, mesh and rotation.
+    /// Disposal pipes are a bit special because they can connect vertically with disposal furniture.
     /// </summary>
     [Serializable]
     public struct DisposalPipeConnector
@@ -26,9 +27,14 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
         [Tooltip("A mesh where the South & south edges are connected")]
         public Mesh verticalMesh;
 
+        /// <summary>
+        /// Get all info needed to update correctly disposal pipes.
+        /// </summary>
+        /// <param name="adjacencyMap"> Disposal pipe connections with all horizontal neighbours </param>
+        /// <param name="vertical"> Disposal pipe connections with its single potential
+        /// vertical neighbour. True if it exists.</param>
         public Tuple<Mesh, float, AdjacencyShape> GetMeshRotationShape(AdjacencyMap adjacencyMap, bool vertical)
         {
-            // Determine rotation and mesh specially for every single case.
             float rotation = 0;
             Mesh mesh;
 

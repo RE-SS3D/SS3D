@@ -236,12 +236,20 @@ namespace SS3D.Systems.Tile
         private void ResetAdjacencies(PlacedTileObject placed, TileObject location, List<PlacedTileObject> neighbours)
         {
             List<Direction> neighboursAtDirection= new List<Direction>();
+
+            // First get the directions of all neighbours, relative to this placed object.
+            // Direction is not always relevant (e.g disposal pipes with disposal furnitures)
+            // but it is in most cases. It's up to the connectors to choose what they do with this info.
             foreach (PlacedTileObject neighbour in neighbours)
             {
                placed.NeighbourAtDirectionOf(neighbour, out var dir);
                neighboursAtDirection.Add(dir);
             }
+            // then destroy this placed object. It's important to do it here, before updating
+            // adjacencies, as some connectors might be looking for it.
             location.ClearPlacedObject();
+
+            // Then update all neighbours, using their directions.
             int i = 0;
             foreach (PlacedTileObject neighbour in neighbours)
             {

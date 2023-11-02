@@ -12,6 +12,11 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Connector for disposal furniture. e.g disposal outlets and disposal bins.
+    /// It doesn't do much, except checking for an available pipe just below itself, and 
+    /// signaling this pipe to update itself upon adding or clearing the disposal furniture.
+    /// </summary>
     public class DisposalFurnitureConnector : NetworkActor, IAdjacencyConnector
     {
         private PlacedTileObject _placedObject;
@@ -23,6 +28,10 @@ namespace SS3D.Systems.Tile.Connections
             _placedObject = GetComponent<PlacedTileObject>();
         }
 
+        /// <summary>
+        /// Disposal furnitures are connected when they have a disposal pipe just below them
+        /// and this pipe has less than two connections already.
+        /// </summary>
         public bool IsConnected(PlacedTileObject neighbourObject)
         {
             if(neighbourObject == null) return false;
@@ -41,10 +50,11 @@ namespace SS3D.Systems.Tile.Connections
 
         public void UpdateAllConnections()
         {
-            // update pipe just below.
+            
             Setup();
 
-            if(TryGetPipeBelow(out PlacedTileObject pipe))
+            // update pipe just below.
+            if (TryGetPipeBelow(out PlacedTileObject pipe))
             {
                 UpdateSingleConnection(Direction.North, pipe, true);
             };
@@ -57,13 +67,15 @@ namespace SS3D.Systems.Tile.Connections
             bool isConnected = IsConnected(neighbourObject);
             bool updated = _connectedToPipe != isConnected;
 
-            // Update our neighbour as well
             if (updated)
                 neighbourObject.UpdateAdjacencies();
 
             return updated;
         }
 
+        /// <summary>
+        /// Just get the pipe below the disposal furniture if it exists.
+        /// </summary>
         private bool TryGetPipeBelow(out PlacedTileObject pipe)
         {
             TileSystem tileSystem = Subsystems.Get<TileSystem>();
@@ -76,6 +88,9 @@ namespace SS3D.Systems.Tile.Connections
             return pipe != null;
         }
 
+        /// <summary>
+        /// The only neighbour of a disposal furniture is the eventual disposal pipe just below it.
+        /// </summary>
         public List<PlacedTileObject> GetNeighbours()
         {
             bool hasNeighbour = TryGetPipeBelow(out PlacedTileObject pipe);

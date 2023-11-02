@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Simple connector for pipes with a possible offset, such as atmos pipes.
+    /// </summary>
     public class PipeAdjacencyConnector : AbstractHorizontalConnector
     {
         [SerializeField]

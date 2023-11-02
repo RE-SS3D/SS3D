@@ -58,6 +58,11 @@ namespace SS3D.Systems.Tile
             return TileLayers;
         }
 
+        /// <summary>
+        /// Get the two adjacent directions from dir passed in parameter.
+        /// e.g if dir is North, return NorthWest and NorthEast.
+        /// </summary>
+
         public static Tuple<Direction,Direction> GetAdjacentDirections(Direction dir)
         {
             return new Tuple<Direction, Direction>( (Direction) MathUtility.mod((int) dir + 1, 8),
@@ -100,7 +105,7 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Return a list of the cardinal directions.
+        /// Return a list of all existing directions.
         /// </summary>
         public static List<Direction> AllDirections()
         {

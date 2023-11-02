@@ -15,36 +15,62 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections
 
 {
+    /// <summary>
+    /// Connector for disposal pipes only.
+    /// </summary>
     public class DisposalPipeAdjacencyConnector : NetworkActor, IAdjacencyConnector
     {
+        /// <summary>
+        /// Structure helping to determine disposal pipes shape and rotation.
+        /// </summary>
         [SerializeField] private DisposalPipeConnector _pipeAdjacency;
 
-        protected AdjacencyMap _adjacencyMap;
+        /// <summary>
+        /// Adjacency map for all horizontal connections.
+        /// </summary>
+        private AdjacencyMap _adjacencyMap;
 
+        /// <summary>
+        /// true if connected to a disposal furniture.
+        /// </summary>
         [SyncVar(OnChange = nameof(SyncVertical))]
-        protected bool _verticalConnection;
+        private bool _verticalConnection;
 
+        /// <summary>
+        /// Direction of the disposal pipe. Useful to update it on client.
+        /// </summary>
         [SyncVar(OnChange = nameof(SyncDirection))]
-        protected Direction _direction;
+        private Direction _direction;
 
-        protected MeshFilter _filter;
+        /// <summary>
+        /// The mesh of the disposal pipe.
+        /// </summary>
+        private MeshFilter _filter;
 
-        protected PlacedTileObject _placedObject;
+        /// <summary>
+        /// The placed object for this disposal pipe.
+        /// </summary>
+        private PlacedTileObject _placedObject;
 
-        public PlacedTileObject PlacedObject => _placedObject;
 
+        /// <summary>
+        /// A byte, representing the 8 possible connections with other pipes neighbours.
+        /// </summary>
         [SyncVar(OnChange = nameof(SyncAdjacencies))]
         private byte _syncedConnections;
 
+        /// <summary>
+        /// Upon Setup, this should stay true.
+        /// </summary>
         private bool _initialized;
 
-        protected TileObjectSpecificType _specificType;
 
-        private bool _isVertical = false;
+        private TileObjectGenericType _disposalType = TileObjectGenericType.Disposal;
 
+        /// <summary>
+        /// Number of horizontal connections of the disposal pipe, only count cardinal connections.
+        /// </summary>
         public int HorizontalConnectionCount => _adjacencyMap.CardinalConnectionCount;
-
-        private AdjacencyShape _currentShape;
 
 
         private void Setup()
@@ -53,23 +79,17 @@ namespace SS3D.Systems.Tile.Connections
             {
                 _adjacencyMap = new AdjacencyMap();
                 _filter = GetComponent<MeshFilter>();
-                if (IsServer)
-                {
-                    _placedObject = GetComponent<PlacedTileObject>();
-                    if (_placedObject == null)
-                    {
-                        _specificType = TileObjectSpecificType.None;
-                    }
-                    else
-                    {
-                        _specificType = _placedObject.SpecificType;
-                    }
-                }
-                
+                _placedObject = GetComponent<PlacedTileObject>();
                 _initialized = true;
             }
         }
 
+        /// <summary>
+        /// Connection for disposal pipes is not completely trivial. Disposal pipes should
+        /// not connect to neighbour pipe if they are vertical, unless they are in front of them.
+        /// If there is a disposal furniture above them, they should connected to it if they have a single
+        /// connection or none. They otherwise connect only to other disposal pipes.
+        /// </summary>
         public bool IsConnected(PlacedTileObject neighbourObject)
         {
             if (neighbourObject == null) return false;
@@ -85,10 +105,7 @@ namespace SS3D.Systems.Tile.Connections
                 && neighbourConnectorAgain._verticalConnection == true)
                 return IsConnectedToVerticalPipe(neighbourObject);
 
-            bool isConnected;
-            isConnected = neighbourObject.HasAdjacencyConnector;
-            isConnected &= neighbourObject.SpecificType == _specificType;
-            return isConnected;
+            return neighbourObject.HasAdjacencyConnector && neighbourObject.GenericType == _disposalType;
         }
 
         /// <summary>
@@ -187,6 +204,9 @@ namespace SS3D.Systems.Tile.Connections
                 _syncedConnections = _adjacencyMap.SerializeToByte();
                 _direction = _placedObject.Direction;
                 UpdateMeshAndDirection();
+
+                // Update neighbour connector if they are pipes,
+                // and itself in all directions if it just removed a furniture above
                 var connector = neighbourObject?.GetComponent<DisposalPipeAdjacencyConnector>();
                 if(connector != null)
                 {
@@ -201,8 +221,6 @@ namespace SS3D.Systems.Tile.Connections
             return isUpdated;
         }
 
-        // TODO : maybe interface should let updateAllconnections handle retrieving neighbours
-        // object, as it might not mean the same thing for different connectors.
         public void UpdateAllConnections()
         {
             Setup();
@@ -246,8 +264,6 @@ namespace SS3D.Systems.Tile.Connections
                 transform.position = new Vector3(pos.x, 0f, pos.z);
                 _filter.transform.localRotation = Quaternion.Euler(eulerRotation.x, info.Item2, eulerRotation.z);
             }
-
-            _currentShape = info.Item3;
         }
 
         /// <summary>
@@ -276,6 +292,9 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
+        /// <summary>
+        /// Sync direction on the client, and update mesh and direction.
+        /// </summary>
         private void SyncDirection(Direction oldValue, Direction newValue, bool asServer)
         {
             if (!asServer)
@@ -285,6 +304,10 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
+        /// <summary>
+        /// Get the neighbours of this disposal pipe. This include all disposal pipes
+        /// adjacents (cardinal and diagonal) and eventually the disposal furniture above it.
+        /// </summary>
         public List<PlacedTileObject> GetNeighbours()
         {
             PlacedTileObject placedDisposal = null;
