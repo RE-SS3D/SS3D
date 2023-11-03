@@ -221,14 +221,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanFootRightItem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: df85b75fd341a244c8364ebb9c4fcfef
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHandLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: c19eccca279beee4186432a03257a7b9
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHandRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 9ac7c2cd12db800479e566335ff7440b
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHeadItem.prefab
     m_ReadOnly: 0
@@ -255,6 +247,14 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 8b2b80e8392e44944a184d9166ce97b1
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHeartItem.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 35dfc7c3f708a5b48a206b4a44e7ab49
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7f5954f009d06b2439ca637b43920440
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
