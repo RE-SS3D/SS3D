@@ -205,20 +205,8 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootLeft.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 57d15c94003230048bd96a5bc7115bc2
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanLungLeftItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9d475ae6ec7b7a749abae10066b336be
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanLungRightItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 4a9d34a6cf84ef045a740513d8ae30b1
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanTorso.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 8b2b80e8392e44944a184d9166ce97b1
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHeartItem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 35dfc7c3f708a5b48a206b4a44e7ab49
@@ -247,6 +235,18 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: cc54bc74b2f4c2349b1f84b501b0a091
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHead.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a019475d05ec8824494b0fa88e2282d8
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a8b265034e3f79344a6067b406e1bff6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ea5b9b571f8df3948b52b7023aa66c99
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
