@@ -193,14 +193,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 9659c4cc7bea07c4ba38b492f407ef7f
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanArmLeftItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2f664501d8d74774c9427f7fb6d50ae6
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanArmRightItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 229b5ce92c3d9164e845f68308a037a2
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanBrainItem.prefab
     m_ReadOnly: 0
@@ -225,14 +217,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHeadItem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 2d0913074150cca43b88c90ec658aacb
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanLegLeftItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 983acf51173ef60479e35c5e35946162
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanLegRightItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 57d15c94003230048bd96a5bc7115bc2
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanLungLeftItem.prefab
     m_ReadOnly: 0
@@ -241,8 +225,8 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanLungRightItem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 885d5a9c5776fd64ab1cf595e0cfd9d8
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanTorsoItem.prefab
+  - m_GUID: 4a9d34a6cf84ef045a740513d8ae30b1
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanTorso.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8b2b80e8392e44944a184d9166ce97b1
@@ -255,6 +239,22 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 7f5954f009d06b2439ca637b43920440
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ecaf79b0a74bdb443a350e88daa94a66
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 242a937784a622f4f8a6e6d097e0737c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 06b6be83779804245b7f6411fe07b851
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 432a4ad70e41e5c4f8f913f76fe0e66c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
