@@ -373,8 +373,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [Server]
     public bool TryInflictDamage(BodyLayerType type, DamageTypeQuantity damageTypeQuantity)
     {
-        // Should not inflict damages if already destroyed or severed.
-        if(IsDestroyed || IsSevered) return false;
+        // Should not inflict damages if already destroyed.
+        if(IsDestroyed) return false;
 
         BodyLayer layer = FirstBodyLayerOfType(type);
         if (!BodyLayers.Contains(layer)) return false;
