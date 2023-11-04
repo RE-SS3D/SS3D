@@ -192,7 +192,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 				}
 				else
 				{
-					_tileSystem.RpcClearTileObject(_selectedObject.nameString, snappedPosition);
+					_tileSystem.RpcClearTileObject(_selectedObject.nameString, snappedPosition, _ghostManager.Dir);
 				}
 			}
 			else
