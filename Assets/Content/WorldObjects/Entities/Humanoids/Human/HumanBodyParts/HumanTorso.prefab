@@ -951,6 +951,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6158070572286981653, guid: a8b265034e3f79344a6067b406e1bff6, type: 3}
+      propertyPath: <PrefabId>k__BackingField
+      value: 127
+      objectReference: {fileID: 0}
+    - target: {fileID: 6158070572286981653, guid: a8b265034e3f79344a6067b406e1bff6, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
       value: 2
       objectReference: {fileID: 0}
@@ -1065,6 +1069,10 @@ PrefabInstance:
     - target: {fileID: 4159476743201579799, guid: ea5b9b571f8df3948b52b7023aa66c99, type: 3}
       propertyPath: <IsNested>k__BackingField
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159476743201579799, guid: ea5b9b571f8df3948b52b7023aa66c99, type: 3}
+      propertyPath: <PrefabId>k__BackingField
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 4159476743201579799, guid: ea5b9b571f8df3948b52b7023aa66c99, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
