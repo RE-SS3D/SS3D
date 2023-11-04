@@ -1006,7 +1006,6 @@ MonoBehaviour:
   - {fileID: 896175495867455565}
   - {fileID: 4614592055160549442}
   - {fileID: 8844287404223158147}
-  - {fileID: 0}
   - {fileID: 6336386848008735701}
   - {fileID: 6551821992144761648}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
@@ -1228,7 +1227,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 4176238770325068939}
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 5982081358960133349}
-  _bodyPartItem: {fileID: 8006468508714419156}
+  _bodyPartItem: {fileID: 0}
   _isInternalChild: 0
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
@@ -1464,7 +1463,7 @@ PrefabInstance:
       objectReference: {fileID: 4176238770325068939}
     - target: {fileID: 703057308930207394, guid: e02f11b9239b52748a5ed5afd1c5cbd3, type: 3}
       propertyPath: _componentIndexCache
-      value: 12
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 1127755808114252367, guid: e02f11b9239b52748a5ed5afd1c5cbd3, type: 3}
       propertyPath: m_IsActive
@@ -1573,7 +1572,7 @@ PrefabInstance:
       objectReference: {fileID: 4176238770325068939}
     - target: {fileID: 4259797456202353733, guid: 30794a01d5f4c174a9d20b2c632f2dca, type: 3}
       propertyPath: _componentIndexCache
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7769968773620805975, guid: 30794a01d5f4c174a9d20b2c632f2dca, type: 3}
       propertyPath: m_RootOrder
