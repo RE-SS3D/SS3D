@@ -20,7 +20,6 @@ namespace SS3D.Systems.Health
     public override void OnStartServer()
     {
         base.OnStartServer();
-		AddInternalBodyPart(brain);
     }
 
 		protected override void AddInitialLayers()

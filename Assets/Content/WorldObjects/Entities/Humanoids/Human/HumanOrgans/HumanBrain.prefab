@@ -317,7 +317,7 @@ MonoBehaviour:
   _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 0}
-  _internalBodyParts: {fileID: 0}
+  _isInternalChild: 0
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 1300

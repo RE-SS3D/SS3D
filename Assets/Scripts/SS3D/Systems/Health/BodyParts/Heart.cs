@@ -169,12 +169,8 @@ namespace SS3D.Systems.Health
         private List<BodyPart> GetAllBodyPartAttachedToHeart()
         {
             List<BodyPart> connectedToHeart = new List<BodyPart>();
-
-            if (IsInsideBodyPart)
-            {
-                BodyPart heartContainer = ExternalBodyPart;
-                GetAllBodyPartAttachedToHeartRecursion(connectedToHeart, heartContainer);
-            }
+            BodyPart torso = ParentBodyPart;
+            GetAllBodyPartAttachedToHeartRecursion(connectedToHeart, torso);
             return connectedToHeart;
         }
 
@@ -187,14 +183,6 @@ namespace SS3D.Systems.Health
             if (current.ContainsLayer(BodyLayerType.Circulatory))
             {
                 connectedToHeart.Add(current);
-            }
-
-            if (current.HasInternalBodyPart)
-            {
-                foreach (var part in current.InternalBodyParts)
-                {
-                    connectedToHeart.Add(part);
-                }
             }
 
             foreach (BodyPart bodyPart in current.ChildBodyParts.Where(x => x.ContainsLayer(BodyLayerType.Circulatory)))

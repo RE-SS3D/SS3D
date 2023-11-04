@@ -39,6 +39,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [SerializeField]
     protected GameObject _bodyPartItem;
 
+    [SerializeField]
+    protected bool _isInternalChild;
+
     /// <summary>
     /// List of body parts child of this one. 
     /// </summary>
@@ -48,19 +51,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// List of body layers composing a body part.
     /// </summary>
     protected readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
-
-
-	private BodyPart _externalBodyPart;
-
-	public BodyPart ExternalBodyPart => _externalBodyPart;
-
-	public bool IsInsideBodyPart => _externalBodyPart != null;
-
-    /// <summary>
-    /// A container containing all internal body parts. The head has a brain for an internal body part. Internal body parts should be destroyed
-    /// </summary>
-    [SerializeField]
-    private AttachedContainer _internalBodyParts;
 
     /// <summary>
     /// Collider registering hits on this bodypart. It should usually be on the armature of the Entity, so it follows animations.
@@ -91,24 +81,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         get { return _childBodyParts.AsReadOnly(); }
     }
-
-    public List<BodyPart> InternalBodyParts
-    {
-        get 
-        {
-            List<BodyPart> bodyParts = new List<BodyPart>();
-            foreach (Item item in _internalBodyParts.Items)
-            {
-                if(item != null && item.TryGetComponent(out BodyPart bodyPart))
-                {
-                    bodyParts.Add(bodyPart);
-                }
-            }
-            return bodyParts;
-        }
-    }
-
-    public bool HasInternalBodyPart => _internalBodyParts != null && _internalBodyParts.Items.Count() != 0;
 
     /// <summary>
     /// The volume in mililiters of a given bodypart
@@ -223,7 +195,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         for (int i = _childBodyParts.Count - 1; i >= 0; i--)
         {
-            _childBodyParts[i].DetachBodyPart();
+            if (!_childBodyParts[i]._isInternalChild) _childBodyParts[i].DetachBodyPart();
         }
     }
 
@@ -271,17 +243,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
         DetachChildBodyParts();
 
-        // Destroy all internal body parts i
-        if (_internalBodyParts != null){
-
-            foreach (BodyPart part in InternalBodyParts)
-            {
-                if(!part.IsDestroyed)
-                    part.DestroyBodyPart();
-            }
-            _internalBodyParts.Purge();
+        for (int i = _childBodyParts.Count - 1; i >= 0; i--)
+        {
+            if (_childBodyParts[i]._isInternalChild) _childBodyParts[i].DestroyBodyPart();
         }
-
         // Dispose of this body part
         InvokeOnBodyPartDestroyed();
         Dispose(true);
@@ -294,14 +259,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [Server]
     private void Dispose(bool purgeContainersContent)
     {
-        if (HasInternalBodyPart)
-        {
-            foreach (BodyPart part in InternalBodyParts)
-            {
-                part.Dispose(true);
-            }
-        }
-
         RemoveChildAndParent();
         DumpOrPurgeContainers(purgeContainersContent);
         CleanLayers();
@@ -526,20 +483,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         return new IInteraction[] {};
     }
-
-    [Server]
-    public void AddInternalBodyPart(BodyPart part)
-	{
-		_internalBodyParts.AddItem(part.gameObject.GetComponent<Item>());
-		part._externalBodyPart = this;
-	}
-
-    [Server]
-    public void RemoveInternalBodyPart(BodyPart part)
-	{
-		_internalBodyParts.RemoveItem(part.gameObject.GetComponent<Item>());
-		part._externalBodyPart = null;
-	}
 
     /// <summary>
     /// Hide a freshly cut body part on the player.
