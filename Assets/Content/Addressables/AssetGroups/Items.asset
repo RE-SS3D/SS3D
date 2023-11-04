@@ -213,12 +213,12 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanEarRightItem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 60890cc80962a7e44b97b4ba3b0518e3
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanFootLeftItem.prefab
+  - m_GUID: e60ba1e09be8316448e419ecbdfb64a6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 4d59bb658831172479995d721f8cbd6c
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanFootRightItem.prefab
+  - m_GUID: 94aaf82bb6ab002418e01d9cc7c6eaaa
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootLeft.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9ac7c2cd12db800479e566335ff7440b
