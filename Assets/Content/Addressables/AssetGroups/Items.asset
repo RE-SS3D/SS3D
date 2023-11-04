@@ -193,16 +193,8 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 229b5ce92c3d9164e845f68308a037a2
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanBrainItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2081061d3c98e50408979ea90372c244
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanEarLeftItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6687a95358e52a348aaf6179f3c252f2
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanEarRightItem.prefab
+  - m_GUID: 7579883b8dd8801448a176adace4860b
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanBrain.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: e60ba1e09be8316448e419ecbdfb64a6
@@ -211,10 +203,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 94aaf82bb6ab002418e01d9cc7c6eaaa
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9ac7c2cd12db800479e566335ff7440b
-    m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHeadItem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 57d15c94003230048bd96a5bc7115bc2
@@ -255,6 +243,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 432a4ad70e41e5c4f8f913f76fe0e66c
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: cc54bc74b2f4c2349b1f84b501b0a091
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHead.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
