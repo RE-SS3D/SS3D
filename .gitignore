@@ -6,10 +6,16 @@
 !/Library/FishNet.Runtime.Editor.PrefabObjects.Generation.Settings.json
 /[Tt]emp/
 /[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/Game/*
+
+/[Bb]uilds/*
+!Builds/Game/
+
+Builds/Game/*
+!Builds/Game/Data/
 !/[Bb]uilds/Game/Config/
 !/[Bb]uilds/Game/BUILD_THE_GAME_HERE.txt
+
+
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 

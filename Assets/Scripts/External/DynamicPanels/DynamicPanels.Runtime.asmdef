@@ -1,0 +1,6 @@
+﻿{
+    "name": "DynamicPanels.Runtime",
+    "references": [
+        "Unity.InputSystem"
+    ]
+}
