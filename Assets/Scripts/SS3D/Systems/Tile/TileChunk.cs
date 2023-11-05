@@ -209,11 +209,12 @@ namespace SS3D.Systems.Tile
             var list = new List<PlacedTileObject>();
             foreach(TileGrid grid in _tileGridList)
             {
-                foreach(TileObject obj in grid.TileObjectsGrid)
+                foreach(ITileLocation location in grid.TileObjectsGrid)
                 {
-                    if(obj.PlacedObject != null)
+
+                    if(location != null)
                     {
-                        list.Add(obj.PlacedObject);
+                        list.AddRange(location.GetAllPlacedObject());
                     }
                 }
             }

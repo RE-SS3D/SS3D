@@ -21,6 +21,8 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public bool TryGetPlacedObject(out PlacedTileObject placedObject, Direction direction = Direction.North);
 
+        public List<PlacedTileObject> GetAllPlacedObject();
+
         /// <summary>
         /// Check if the tile is empty for a given direction.
         /// </summary>

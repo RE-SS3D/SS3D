@@ -127,5 +127,10 @@ namespace SS3D.Systems.Tile
         {
             return (Direction) (i*2);
         }
+
+        public List<PlacedTileObject> GetAllPlacedObject()
+        {
+            return _cardinalPlacedTileObject.Where(x => x!= null).ToList();
+        }
     }
 }

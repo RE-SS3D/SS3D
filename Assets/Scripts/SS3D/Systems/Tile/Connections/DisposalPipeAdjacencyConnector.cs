@@ -160,7 +160,7 @@ namespace SS3D.Systems.Tile.Connections
             var map = tileSystem.CurrentMap;
 
             TileChunk currentChunk = map.GetChunk(_placedObject.gameObject.transform.position);
-            var furnitureLocation = currentChunk.GetTileObject(TileLayer.FurnitureBase, _placedObject.Origin.x, _placedObject.Origin.y);
+            SingleTileLocation furnitureLocation = (SingleTileLocation) currentChunk.GetTileLocation(TileLayer.FurnitureBase, _placedObject.Origin.x, _placedObject.Origin.y);
             disposalFurniture = furnitureLocation.PlacedObject?.GetComponent<IDisposalElement>();
 
             return disposalFurniture != null;

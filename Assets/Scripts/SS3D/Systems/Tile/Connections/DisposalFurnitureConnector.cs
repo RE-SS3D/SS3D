@@ -82,7 +82,8 @@ namespace SS3D.Systems.Tile.Connections
             var map = tileSystem.CurrentMap;
 
             TileChunk currentChunk = map.GetChunk(_placedObject.gameObject.transform.position);
-            var pipeLocation = currentChunk.GetTileObject(TileLayer.Disposal, _placedObject.Origin.x, _placedObject.Origin.y);
+            SingleTileLocation pipeLocation = (SingleTileLocation) currentChunk.GetTileLocation(TileLayer.Disposal,
+                _placedObject.Origin.x, _placedObject.Origin.y);
             pipe = pipeLocation.PlacedObject;
 
             return pipe != null;

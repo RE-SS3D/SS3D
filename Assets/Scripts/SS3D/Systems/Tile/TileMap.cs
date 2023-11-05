@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 namespace SS3D.Systems.Tile
 {
@@ -139,7 +140,7 @@ namespace SS3D.Systems.Tile
         /// <param name="layer"></param>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        private PlacedTileObject[] GetNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        public PlacedTileObject[] GetNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
         {
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
 
@@ -217,11 +218,9 @@ namespace SS3D.Systems.Tile
 
         public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
         {
-            TileObject[] tileObjects = GetTileObjects(placePosition);
-            TileObject tileObject = tileObjects[(int)layer];
-            PlacedTileObject placed = tileObject.PlacedObject;
             ITileLocation[] tileObjects = GetTileLocations(placePosition);
-            tileObjects[(int)layer].TryClearPlacedObject(dir);
+            ITileLocation tileObject = tileObjects[(int)layer];
+            tileObject.TryGetPlacedObject(out var placed, dir);
 
 
             if (placed != null && placed.TryGetComponent(out IAdjacencyConnector connector))
@@ -235,21 +234,22 @@ namespace SS3D.Systems.Tile
 
             foreach (ITileLocation clearLocation in toClearLocations)
             {
-                placed = removeObject.PlacedObject;
+                var allPlaced = clearLocation.GetAllPlacedObject();
 
-                if (placed != null && placed.TryGetComponent(out connector))
+                foreach (PlacedTileObject placedToClear in allPlaced)
                 {
-                    List<PlacedTileObject> neighbours = connector.GetNeighbours();
-                    ResetAdjacencies(placed, removeObject, neighbours);
+                    if (placed != null && placedToClear.TryGetComponent(out connector))
+                    {
+                        List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                        ResetAdjacencies(placed, clearLocation, neighbours);
+                    }
                 }
 
-                removeObject.ClearPlacedObject();
                 clearLocation.ClearAllPlacedObject();
-                ResetAdjacencies(placePosition, clearLocation.Layer);
             }
         }
 
-        private void ResetAdjacencies(PlacedTileObject placed, TileObject location, List<PlacedTileObject> neighbours)
+        private void ResetAdjacencies(PlacedTileObject placed, ITileLocation location, List<PlacedTileObject> neighbours)
         {
             List<Direction> neighboursAtDirection= new List<Direction>();
 
@@ -263,7 +263,7 @@ namespace SS3D.Systems.Tile
             }
             // then destroy this placed object. It's important to do it here, before updating
             // adjacencies, as some connectors might be looking for it.
-            location.ClearPlacedObject();
+            location.ClearAllPlacedObject();
 
             // Then update all neighbours, using their directions.
             int i = 0;
@@ -345,11 +345,11 @@ namespace SS3D.Systems.Tile
 
         public void Load([CanBeNull] SavedTileMap saveObject)
         {
-	        if (saveObject == null)
-	        {       
+            if (saveObject == null)
+            {
                 Log.Warning(this, "The intended save object is null");
-		        return;
-	        }
+                return;
+            }
 
             Clear();
 
@@ -362,24 +362,25 @@ namespace SS3D.Systems.Tile
 
                 foreach (var savedTile in savedTiles)
                 {
-                    foreach(SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
+                    foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
                     {
                         TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedObject.tileObjectSOName);
                         Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
 
-                    // Skipping build check here to allow loading tile objects in a non-valid order
-                    PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true, false, true);
+                        // Skipping build check here to allow loading tile objects in a non-valid order
+                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true);
+                    }
                 }
-            }
 
-            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
-            {
-                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
-                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
-            }
+                foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+                {
+                    ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
+                    PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                }
 
-            OnMapLoaded?.Invoke(this, EventArgs.Empty);
-            UpdateAllAdjacencies();
+                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                UpdateAllAdjacencies();
+            }
         }
 
         /// <summary>
