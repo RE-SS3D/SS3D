@@ -1,12 +1,19 @@
 ﻿using Coimbra;
+using JetBrains.Annotations;
 using Serilog;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
 {
+    /// <summary>
+    /// Calls all the methods for generating code for the AssetData system.
+    /// </summary>
     public static class AssetDatabasesCodeGenerator
     {
+        /// <summary>
+        /// The path in the project where to put the WorldObjectAssetReference assets.
+        /// </summary>
         private const string WorldObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
 
         /// <summary>
@@ -33,39 +40,37 @@ namespace SS3D.Data.AssetDatabases
             foreach (AssetDatabase includedAssetDatabase in settings.IncludedAssetDatabases)
             {
                 CreateDatabaseCode(includedAssetDatabase);
-                CreateWorldObjectReferences(includedAssetDatabase);
+                CreateWorldObjectAssetReferences(includedAssetDatabase);
             }
         }
 
-        private static void CreateDatabaseCode(AssetDatabase includedAssetDatabase)
+        /// <summary>
+        /// Calls the method to generate all the code for a database.
+        /// </summary>
+        private static void CreateDatabaseCode(AssetDatabase assetDatabase)
         {
-            includedAssetDatabase.GenerateDatabaseCode();
+            assetDatabase.GenerateDatabaseCode();
         }
 
-        private static void CreateWorldObjectReferences(AssetDatabase includedAssetDatabase)
+        /// <summary>
+        /// Creates all the WorldObjectAssetReferences for a database. 
+        /// </summary>
+        private static void CreateWorldObjectAssetReferences(AssetDatabase assetDatabase)
         {
             List<Object> worldObjectAssetsToDestroy = new List<Object>();
 
-            foreach (Object asset in includedAssetDatabase.Assets.Values)
+            foreach (Object asset in assetDatabase.Assets.Values)
             {
                 if (asset is not GameObject gameObject)
                 {
                     continue;
                 }
 
-                WorldObjectAssetReference worldObjectAssetReference = ScriptableObject.CreateInstance<WorldObjectAssetReference>();
-
-                worldObjectAssetReference.Id = gameObject.name;
-                worldObjectAssetReference.Database = includedAssetDatabase.name;
+                WorldObjectAssetReference worldObjectAssetReference = CreateWorldObjectAssetReference(gameObject, assetDatabase.DatabaseName);
 
                 if (!UnityEditor.AssetDatabase.Contains(worldObjectAssetReference))
                 {
                     UnityEditor.AssetDatabase.CreateAsset(worldObjectAssetReference, $"{WorldObjectAssetPath}{worldObjectAssetReference.Id}.asset");
-
-                    if (gameObject.TryGetComponent(out IWorldObjectAsset worldObjectAsset))
-                    {
-                        worldObjectAsset.Asset = worldObjectAssetReference;
-                    }
                 }
                 else
                 {
@@ -77,6 +82,27 @@ namespace SS3D.Data.AssetDatabases
             {
                 Object.DestroyImmediate(asset);
             }
+        }
+
+        /// <summary>
+        /// Creates the WorldObjectAssetReference asset in the correct path.
+        /// </summary>
+        /// <param name="gameObject">The asset to include in this WorldObjectAsset.</param>
+        /// <param name = "assetDatabaseName">The related database.</param>
+        [NotNull]
+        private static WorldObjectAssetReference CreateWorldObjectAssetReference(GameObject gameObject, string assetDatabaseName)
+        {
+            WorldObjectAssetReference worldObjectAssetReference = ScriptableObject.CreateInstance<WorldObjectAssetReference>();
+
+            worldObjectAssetReference.Id = gameObject.name;
+            worldObjectAssetReference.Database = assetDatabaseName;
+
+            if (gameObject.TryGetComponent(out IWorldObjectAsset worldObjectAsset))
+            {
+                worldObjectAsset.Asset = worldObjectAssetReference;
+            }
+
+            return worldObjectAssetReference;
         }
     }
 }

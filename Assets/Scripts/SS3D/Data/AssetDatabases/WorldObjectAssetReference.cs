@@ -15,13 +15,18 @@ namespace SS3D.Data.AssetDatabases
 		/// The prefab of this asset reference. Here for quick access.
 		/// </summary>
 		[CanBeNull]
-		public GameObject Prefab => Assets.Get<GameObject>(Database, Id);
+		public GameObject Prefab => Asset.Get<GameObject>();
 
         /// <summary>
         /// Short access to the database asset.
         /// </summary>
         public DatabaseAsset Asset => new DatabaseAsset(Id, Database);
 
+        /// <summary>
+        /// Short access to the Assets.Get function.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T Get<T>() where T : Object => Asset.Get<T>();
 
 #if UNITY_EDITOR
