@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using Serilog;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -101,6 +102,9 @@ namespace SS3D.Data.AssetDatabases
             {
                 worldObjectAsset.Asset = worldObjectAssetReference;
             }
+
+            EditorUtility.SetDirty(gameObject);
+            EditorUtility.SetDirty(worldObjectAssetReference);
 
             return worldObjectAssetReference;
         }

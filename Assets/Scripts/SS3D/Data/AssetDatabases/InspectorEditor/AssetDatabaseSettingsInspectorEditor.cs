@@ -110,9 +110,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void HandleLoadDatabasesButtonPressed()
         {
-            LoadDatabases();
-
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
+            EditorUtility.SetDirty(_assetDatabaseSettings);
 
             UpdateListVisuals();
         }

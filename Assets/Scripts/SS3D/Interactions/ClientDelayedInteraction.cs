@@ -1,4 +1,5 @@
 ﻿using Coimbra;
+using Serilog;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
@@ -35,6 +36,8 @@ namespace SS3D.Interactions
 
             _loadingBarInstance.transform.SetParent(source.GameObject.transform);
             _loadingBarInstance.GetComponent<LoadingBar>().Duration = Delay;
+
+            Log.Information("spawned loading bar");
             return true;
         }
 
