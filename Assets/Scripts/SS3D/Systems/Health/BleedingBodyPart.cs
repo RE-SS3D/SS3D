@@ -1,7 +1,5 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Data.Enums;
-using SS3D.Data;
 using UnityEngine;
 using Coimbra;
 using SS3D.Data.Generated;

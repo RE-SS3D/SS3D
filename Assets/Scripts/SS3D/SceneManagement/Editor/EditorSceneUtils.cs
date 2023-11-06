@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using SS3D.Data.Enums;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

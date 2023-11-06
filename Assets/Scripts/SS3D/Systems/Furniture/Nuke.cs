@@ -2,12 +2,9 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Data;
-using SS3D.Data.Enums;
 using SS3D.Data.Generated;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.Inventory.Items.Generic;
-using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {

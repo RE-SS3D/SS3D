@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: WorldSpaceUI
   m_EditorClassIdentifier: 
-  EnumName: WorldSpaceUI
+  DatabaseName: WorldSpaceUI
   AssetGroup: {fileID: 11400000, guid: dd394b793b56e43418a2c11a61130663, type: 2}
   Assets:
     _list:

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: CraftingRecipes
   m_EditorClassIdentifier: 
-  EnumName: CraftingRecipes
+  DatabaseName: CraftingRecipes
   AssetGroup: {fileID: 11400000, guid: ead2cce9e35a7304ab5b8cc67d03347b, type: 2}
   Assets:
     _list:

@@ -1,10 +1,6 @@
 ﻿using Coimbra;
 using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Utils;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

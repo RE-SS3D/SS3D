@@ -1,13 +1,10 @@
-﻿using SS3D.Data;
-using SS3D.Data.Enums;
-using SS3D.Data.Generated;
+﻿using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace SS3D.Systems.Inventory.Interactions
 {

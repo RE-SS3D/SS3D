@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
-using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;

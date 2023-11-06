@@ -6,18 +6,17 @@ using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
-using SS3D.Data.Enums;
+using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
-using SS3D.Systems.Selection;
-using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using AssetDatabase = UnityEditor.AssetDatabase;
 #if UNITY_EDITOR
 
 #endif
@@ -32,11 +31,17 @@ namespace SS3D.Systems.Inventory.Items
     [RequireComponent(typeof(NetworkTransform))]
     [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSource, IInteractionTarget
+    public class Item : InteractionSource, IInteractionTarget, IWorldObjectAsset
     {
+        [SerializeField]
+#if UNITY_EDITOR
+        [ReadOnly]
+        [Header("This field is filled automatically by the AssetData system.")]
+#endif
+        private WorldObjectAssetReference _asset;
+
         #region Item
         [Header("Item settings")]
-
         [FormerlySerializedAs("Name")]
         [SerializeField] private string _name;
 
@@ -68,12 +73,27 @@ namespace SS3D.Systems.Inventory.Items
         private AttachedContainer _container;
 
         public string Name => _name;
-        public string ItemId { get; set; }
+
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
         public AttachedContainer Container => _container;
 
         private bool _initialised = false;
+
+        public WorldObjectAssetReference Asset
+        {
+            get => _asset;
+            set
+            {
+                if (Application.isPlaying)
+                {
+                    Serilog.Log.Warning($"Field {nameof(Asset)} is being modified in runtime. This should not happen in normal conditions.");
+                }
+                _asset = value;
+            }
+        }
+
+        public Item Prefab => Asset.Get<Item>();
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
@@ -114,10 +134,6 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
-
-            string itemName = gameObject.name.Split('(')[0];
-
-            ItemId = itemName;
         }
 
         public override void OnStartServer()

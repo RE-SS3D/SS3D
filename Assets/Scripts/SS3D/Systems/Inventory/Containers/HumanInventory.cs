@@ -134,6 +134,14 @@ namespace SS3D.Systems.Inventory.Containers
         public void TriggerInventorySetup()
         {
             OnInventorySetUp?.Invoke();
+
+            RpcInventorySetup();
+        }
+
+        [ObserversRpc]
+        private void RpcInventorySetup()
+        {
+            OnInventorySetUp?.Invoke();
         }
 
         public override void OnStartServer()

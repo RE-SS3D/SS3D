@@ -1,9 +1,6 @@
 ﻿#if UNITY_EDITOR
-using SS3D.CodeGeneration;
-using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -88,51 +85,12 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 assetDatabase.LoadAssetsFromAssetGroup();
             }
 
-            CreateAssetDatabasesEnum();
+            GenerateAssetDatabasesCode();
         }
 
-        private void CreateAssetDatabasesEnum()
+        private void GenerateAssetDatabasesCode()
         {
-            if (_assetDatabaseSettings == null)
-            {
-                return;
-            }
-
-            if (_assetDatabaseSettings.IncludedAssetDatabases == null || _assetDatabaseSettings.IncludedAssetDatabases.Count == 0)
-            {
-                return;
-            }
-
-            _assetDatabaseSettings.GenerateCode();
-
-            foreach (AssetDatabase includedAssetDatabase in _assetDatabaseSettings.IncludedAssetDatabases)
-            {
-                includedAssetDatabase.GenerateDatabaseCode();
-
-                string path = "Assets/Content/Data/WorldObjectAssetReferences/";
-
-                foreach (Object asset in includedAssetDatabase.Assets.Values)
-                {
-                    if (asset is not GameObject)
-                    {
-                        continue;
-                    }
-
-                    WorldObjectAssetReference worldObjectAssetReference = CreateInstance<WorldObjectAssetReference>();
-
-                    worldObjectAssetReference.Id = asset.name;
-                    worldObjectAssetReference.Database = includedAssetDatabase.name;
-
-                    if (!UnityEditor.AssetDatabase.Contains(worldObjectAssetReference))
-                    {
-                        UnityEditor.AssetDatabase.CreateAsset(worldObjectAssetReference, $"{path}{worldObjectAssetReference.Id}.asset");   
-                    }
-                    else
-                    {
-                        Destroy(worldObjectAssetReference);
-                    }
-                }
-            }
+            AssetDatabasesCodeGenerator.GenerateAssetDatabasesCode();
         }
 
         private void UpdateListVisuals()

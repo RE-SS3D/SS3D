@@ -2,7 +2,6 @@
 using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
-using SS3D.Systems.Entities.Events;
 using Coimbra.Services.Events;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Logging;
@@ -12,7 +11,6 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Core;
-using SS3D.Data.Enums;
 using SS3D.Systems.Inventory.Items.Generic;
 
 namespace SS3D.Systems.Roles

@@ -1,18 +1,13 @@
 ﻿using Coimbra;
-using Coimbra.Services.Events;
 using Serilog;
 using Serilog.Sinks.Unity3D;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using UnityEngine;
 using FishNet;
-using SS3D.Core.Events;
 using System;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
-using SS3D.Data;
-using SS3D.Data.Enums;
-using SS3D.Data.Generated;
 using Log = Serilog.Log;
 
 

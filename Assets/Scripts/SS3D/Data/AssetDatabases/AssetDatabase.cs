@@ -1,11 +1,14 @@
 ﻿using Coimbra;
 using JetBrains.Annotations;
+using Serilog;
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
 using SS3D.CodeGeneration;
 using SS3D.CodeGeneration.Creators;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #if UNITY_EDITOR
 using UnityEditor.AddressableAssets.Settings;
@@ -33,7 +36,8 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         ///  The name that the generated enum will have;
         /// </summary>
-        public string EnumName;
+        [FormerlySerializedAs("EnumName")]
+        public string DatabaseName;
 
 #if UNITY_EDITOR
         /// <summary>
@@ -66,8 +70,6 @@ namespace SS3D.Data.AssetDatabases
 
         /// <summary>
         /// Gets an asset based on its ID (index).
-        ///
-        /// WARNING: Not sure how
         /// </summary>
         /// <param name="id">Uses the ID of the asset cast into a int to get the asset from a list position.</param>
         /// <typeparam name="T">The type of asset to get.</typeparam>
@@ -76,7 +78,16 @@ namespace SS3D.Data.AssetDatabases
         public T Get<T>([NotNull] string id)
             where T : Object
         {
-            Assets.TryGetValue(id, out Object asset);
+            if (!Assets.TryGetValue(id, out Object asset))
+            {
+                Log.Error($"{nameof(AssetDatabase)} Asset of {id} is not found on the {DatabaseName} database.");
+                return null;
+            }
+
+            if (typeof(T) != typeof(GameObject) && asset is GameObject gameObject)
+            {
+                return gameObject.GetComponent<T>();
+            }
 
             return asset as T;
         }
@@ -134,7 +145,7 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            DatabaseAssetCreator.CreateAtPath(EnumPath, typeof(DatabaseAsset), EnumName, Assets.Values, EnumNamespaceName);
+            DatabaseAssetCreator.CreateAtPath(EnumPath, typeof(DatabaseAsset), DatabaseName, Assets.Values, EnumNamespaceName);
         }
 #endif
     }

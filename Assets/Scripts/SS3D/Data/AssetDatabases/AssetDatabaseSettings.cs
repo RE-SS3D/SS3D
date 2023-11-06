@@ -32,7 +32,7 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// Generates the script with the data from this database.
         /// </summary>
-        public void GenerateCode()
+        public void CreateDatabaseCode()
         {
             if (SkipCodeGeneration)
             {

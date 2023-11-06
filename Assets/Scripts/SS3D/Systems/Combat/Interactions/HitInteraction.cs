@@ -5,8 +5,6 @@ using UnityEngine;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Health;
-using SS3D.Data;
-using SS3D.Data.Enums;
 using SS3D.Data.Generated;
 
 namespace SS3D.Systems.Combat.Interactions

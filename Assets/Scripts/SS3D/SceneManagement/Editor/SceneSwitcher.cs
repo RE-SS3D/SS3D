@@ -1,6 +1,4 @@
 #if UNITY_EDITOR
-using SS3D.Data.Enums;
-using System;
 using UnityEditor;
 using UnityEngine;
 using UnityToolbarExtender;

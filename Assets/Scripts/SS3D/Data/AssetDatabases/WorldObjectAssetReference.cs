@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using SS3D.Attributes;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -15,6 +16,13 @@ namespace SS3D.Data.AssetDatabases
 		/// </summary>
 		[CanBeNull]
 		public GameObject Prefab => Assets.Get<GameObject>(Database, Id);
+
+        /// <summary>
+        /// Short access to the database asset.
+        /// </summary>
+        public DatabaseAsset Asset => new DatabaseAsset(Id, Database);
+
+        public T Get<T>() where T : Object => Asset.Get<T>();
 
 #if UNITY_EDITOR
 		[ReadOnly]

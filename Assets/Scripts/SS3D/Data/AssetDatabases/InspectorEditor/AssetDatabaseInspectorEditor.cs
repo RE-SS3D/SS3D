@@ -34,7 +34,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             if (_enumNameTextField != null)
             {
-                _assetDatabase.EnumName = _enumNameTextField.value;
+                _assetDatabase.DatabaseName = _enumNameTextField.value;
             }
 
             if (_assetGroupObjectField != null)
@@ -65,7 +65,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetsListView = root.Q<ScrollView>("assets-list");
 
             _assetDatabaseLabel.text = $"{_assetDatabase.name} ASSET DATABASE";
-            _enumNameTextField.value = _assetDatabase.EnumName;
+            _enumNameTextField.value = _assetDatabase.DatabaseName;
             _assetGroupObjectField.value = _assetDatabase.AssetGroup;
 
             _assetDatabase.LoadAssetsFromAssetGroup();
@@ -94,7 +94,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void HandleLoadAssetsButtonPressed()
         {
-            _assetDatabase.EnumName = _enumNameTextField.value;
+            _assetDatabase.DatabaseName = _enumNameTextField.value;
 
             _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             _assetDatabase.LoadAssetsFromAssetGroup();

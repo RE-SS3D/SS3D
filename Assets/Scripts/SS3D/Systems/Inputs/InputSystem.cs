@@ -11,7 +11,9 @@ namespace SS3D.Systems.Inputs
     public class InputSystem : SS3D.Core.Behaviours.System
     {
         public Controls Inputs { get; private set; }
+
         public float MouseSensitivity { get; private set; }
+
         private Dictionary<InputAction, int> _actionDisables;
 
         protected override void OnAwake()
@@ -22,20 +24,22 @@ namespace SS3D.Systems.Inputs
 
             MouseSensitivity = 0.001f;
             Inputs = new Controls();
+
             _actionDisables = new();
             foreach (InputAction action in Inputs)
             {
                 _actionDisables.Add(action, 1);
             }
+
             ToggleActionMap(Inputs.Other, true);
         }
+
         /// <summary>
         /// Substract one set of actions from another
         /// </summary>
         /// <param name="actions"></param>
         /// <param name="exclude"></param>
         /// <returns></returns>
-
         private InputAction[] Exclude(InputAction[] actions, InputAction[] exclude)
         {
             if (exclude == null)
@@ -47,12 +51,12 @@ namespace SS3D.Systems.Inputs
                 return actions.Where(x => !exclude.Contains(x)).ToArray();
             }
         }
+
         /// <summary>
         /// Set actions to enabled or disabled. If ToggleAction(actions, true) was called less then ToggleAction(actions, false), the actions stay disabled
         /// </summary>
         /// <param name="actions"></param>
         /// <param name="isEnable">True - enable, false - disable</param>
-
         public void ToggleActions(InputAction[] actions, bool isEnable)
         {
             foreach (InputAction action in actions)
@@ -175,6 +179,7 @@ namespace SS3D.Systems.Inputs
                     }
                 }
             }
+
             ToggleActions(Exclude(collisions.ToArray(), exclude), isEnable);
         }
 

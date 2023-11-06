@@ -3,8 +3,6 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
 using FishNet;
-using SS3D.Data;
-using SS3D.Data.Enums;
 using SS3D.Systems.Inventory.Containers;
 using FishNet.Connection;
 using SS3D.Permissions;

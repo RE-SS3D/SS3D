@@ -1,16 +1,11 @@
 ﻿using FishNet;
 using FishNet.Object;
-using JetBrains.Annotations;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
-using SS3D.Logging.LogSettings;
-using SS3D.Substances;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Roles;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -60,7 +55,7 @@ namespace SS3D.Systems.Crafting
 
         public bool TryGetRecipe(Interaction craftingInteraction, Item target, out CraftingRecipe recipe)
         {
-            if (!_recipeOrganiser.TryGetValue(target, out Dictionary<string, CraftingRecipe> dic))
+            if (!_recipeOrganiser.TryGetValue(target.Prefab, out Dictionary<string, CraftingRecipe> dic))
             {
                 recipe = null;
 
@@ -99,7 +94,7 @@ namespace SS3D.Systems.Crafting
 
             foreach (Item id in result)
             {
-                GameObject itemResult = Assets.Get<GameObject>(AssetDatabases.Items, id.Name);
+                GameObject itemResult = id.Prefab.GameObject;
                 GameObject product = Instantiate(itemResult, target.Position, target.Rotation);
                 InstanceFinder.ServerManager.Spawn(product);
             }
