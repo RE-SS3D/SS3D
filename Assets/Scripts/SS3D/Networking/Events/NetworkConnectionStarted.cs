@@ -2,8 +2,8 @@
 
 namespace SS3D.Networking.Events
 {
-    public partial struct NetworkConnectionStarted : IEvent
-    {
-        
-    }
+    /// <summary>
+    /// Called when a network connection is stablished or started.
+    /// </summary>
+    public partial struct NetworkConnectionStarted : IEvent { }
 }

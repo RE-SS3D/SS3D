@@ -5,6 +5,9 @@ using SS3D.Logging;
 
 namespace SS3D.Data
 {
+    /// <summary>
+    /// Triggers the initialization of the AssetData system.
+    /// </summary>
 	public class AssetsInitializationTrigger : Actor
 	{
 		protected override void OnAwake()

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using FishNet.Connection;
-using SS3D.Systems.Permissions;
-using UnityEngine.Device;
+using SS3D.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
