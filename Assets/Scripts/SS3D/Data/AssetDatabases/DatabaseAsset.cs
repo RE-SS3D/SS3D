@@ -22,11 +22,24 @@ namespace SS3D.Data.AssetDatabases
         /// Returns the prefab of this asset as a GameObject.
         /// </summary>
         public GameObject Prefab => Get<GameObject>();
-        
+
         /// <summary>
         /// Instantiates a new GameObject of this asset's prefab
         /// </summary>
-        public GameObject New() => GameObject.Instantiate(Prefab);
+        public GameObject Create(Transform parent = null) => GameObject.Instantiate(Prefab, parent);
+
+        /// <summary>
+        /// Instantiates a new GameObject of this asset's prefab and gets a component in its main object.
+        /// </summary>
+        public GameObject CreateAs<T>(out T component, Transform parent = null)
+            where T : class
+        {
+            GameObject gameObject = GameObject.Instantiate(Prefab, parent);
+
+            component = gameObject.GetComponent(typeof(T)) as T; 
+
+            return gameObject;
+        }
 
         /// <summary>
         /// This constructor specifies which databaseID to use and which asset ID, or name, to use.
