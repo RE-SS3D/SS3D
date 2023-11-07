@@ -1,3 +1,4 @@
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace SS3D.Systems.Inputs
     /// <summary>
     /// Contains player's controls in Inputs
     /// </summary>
-    public class InputSystem : SS3D.Core.Behaviours.System
+    public sealed class InputSystem : SS3D.Core.Behaviours.System
     {
         public Controls Inputs { get; private set; }
 
@@ -22,10 +23,16 @@ namespace SS3D.Systems.Inputs
             
             base.OnAwake();
 
+            Setup();
+        }
+
+        private void Setup()
+        {
             MouseSensitivity = 0.001f;
             Inputs = new Controls();
 
-            _actionDisables = new();
+            _actionDisables = new();     
+
             foreach (InputAction action in Inputs)
             {
                 _actionDisables.Add(action, 1);

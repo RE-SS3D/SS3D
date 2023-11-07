@@ -1,4 +1,5 @@
-﻿using Coimbra;
+﻿#if UNITY_EDITOR
+using Coimbra;
 using JetBrains.Annotations;
 using Serilog;
 using System.Collections.Generic;
@@ -110,3 +111,4 @@ namespace SS3D.Data.AssetDatabases
         }
     }
 }
+#endif
