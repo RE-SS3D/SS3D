@@ -99,14 +99,20 @@ namespace SS3D.Data.AssetDatabases
             worldObjectAssetReference.Id = gameObject.name;
             worldObjectAssetReference.Database = assetDatabaseName;
 
-            if (gameObject.TryGetComponent(out IWorldObjectAsset worldObjectAsset))
+            if (!gameObject.TryGetComponent(out IWorldObjectAsset worldObjectAsset))
             {
-                worldObjectAsset.Asset = worldObjectAssetReference;
+                return worldObjectAssetReference;
             }
+
+            if (worldObjectAsset.Asset == worldObjectAssetReference)
+            {
+                return worldObjectAssetReference;
+            }
+
+            worldObjectAsset.Asset = worldObjectAssetReference;
 
             EditorUtility.SetDirty(gameObject);
             EditorUtility.SetDirty(worldObjectAssetReference);
-
             return worldObjectAssetReference;
         }
     }
