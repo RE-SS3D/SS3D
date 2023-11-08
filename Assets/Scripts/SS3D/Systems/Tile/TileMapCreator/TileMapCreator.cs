@@ -475,7 +475,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (_inputField.text.Contains(' '))
             {
+                // Replace spaces with underscores, since all asset names contain underscores
                 _inputField.text = _inputField.text.Replace(' ', '_');
+                // Prevent executing the same code twice
                 return;
             }
             foreach (GenericObjectSo asset in _objectDatabase)
