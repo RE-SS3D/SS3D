@@ -26,6 +26,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 		public GameObject _contentRoot;
 		public GameObject _slotPrefab;
 		public TMP_Dropdown _layerPlacementDropdown;
+        [SerializeField]
+        private TMP_InputField _inputField;
 
 		private bool _enabled = false;
 		private bool _initalized = false;
@@ -467,7 +469,37 @@ namespace SS3D.Systems.Tile.TileMapCreator
 			}
 		}
 
-		[ServerOrClient]
+        public void OnInputFieldChanged()
+        {
+            ClearGrid();
+
+            if (_inputField.text.Contains(' '))
+            {
+                // Replace spaces with underscores, since all asset names contain underscores
+                _inputField.text = _inputField.text.Replace(' ', '_');
+                // Prevent executing the same code twice
+                return;
+            }
+            foreach (GenericObjectSo asset in _objectDatabase)
+            {
+                if (!asset.nameString.Contains(_inputField.text)) continue;
+                GameObject slot = Instantiate(_slotPrefab, _contentRoot.transform, true);
+                TileMapCreatorTab tab = slot.AddComponent<TileMapCreatorTab>();
+                tab.Setup(asset);
+            }
+        }
+
+        public void OnInputFieldSelect()
+        {
+            _inputSystem.ToggleAllActions(false);
+        }
+
+        public void OnInputFieldDeselect()
+        {
+            _inputSystem.ToggleAllActions(true);
+        }
+
+        [ServerOrClient]
 		public void OnPointerEnter(PointerEventData eventData)
 		{
 			_mouseOverUI = true;
