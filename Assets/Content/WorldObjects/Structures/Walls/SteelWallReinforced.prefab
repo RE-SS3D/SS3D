@@ -255,7 +255,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 0}
+  - {fileID: 3011383631706744183}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -267,7 +267,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 138
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -284,9 +284,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3995769f8fecf9469d1783a30e75625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -2900075557854325373}
   _syncedConnections: 0
   _advancedAdjacency:
     o: {fileID: -3335109427502187752, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
@@ -303,7 +303,7 @@ MonoBehaviour:
     xSide: {fileID: 9163509131738271192, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xOpposite: {fileID: -7744038958267161825, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xTriple: {fileID: 5869884649093938551, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    xQuad: {fileID: 5869884649093938551, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    xQuad: {fileID: 4199670461815796357, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     viewObstacles: []
     opaque: 0
 --- !u!1 &7790124558541205835
