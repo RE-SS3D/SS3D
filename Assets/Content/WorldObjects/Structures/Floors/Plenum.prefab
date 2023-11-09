@@ -180,6 +180,7 @@ GameObject:
   - component: {fileID: 2586358896294450200}
   - component: {fileID: 5107901468329445811}
   - component: {fileID: 7564222845035831833}
+  - component: {fileID: 9057318044260736153}
   m_Layer: 0
   m_Name: Plenum
   m_TagString: Untagged
@@ -299,3 +300,37 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 1135847911748521981
+--- !u!114 &9057318044260736153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028539322119499722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 7564222845035831833}
+  _networkObjectCache: {fileID: 0}
+  _syncedConnections: 0
+  advancedAdjacency:
+    o: {fileID: -1186837388861869702, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    u: {fileID: 8670779871488701567, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    i: {fileID: 2136686312440598757, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    lNone: {fileID: 4400090147443950985, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    lSingle: {fileID: 4907585101989539511, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    tNone: {fileID: -5997185706695327500, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    tSingleRight: {fileID: -7342849457706584406, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    tSingleLeft: {fileID: -4854898696076092651, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    tDouble: {fileID: -53862880159183297, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    xNone: {fileID: 77848856100225938, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    xSingle: {fileID: -8966661648484664196, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    xSide: {fileID: -513754039711199066, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    xOpposite: {fileID: 6731330203905936185, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    xTriple: {fileID: 4104832187742309709, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    xQuad: {fileID: 2496505603022733099, guid: 4c8857a063a69ee4b8abb5e9e668b2bf, type: 3}
+    viewObstacles: []
+    opaque: 0
