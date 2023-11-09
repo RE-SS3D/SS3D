@@ -101,11 +101,11 @@ namespace SS3D.Substances
 
         private Color CalculateColor()
         {
-            float totalMoles = Container.TotalMoles;
+            float totalMilliMoles = Container.TotalMilliMoles;
             Color color = new Color(0, 0, 0, 0);
             foreach (SubstanceEntry entry in Container.Substances)
             {
-                float relativeMoles = entry.Moles / totalMoles;
+                float relativeMoles = entry.MilliMoles / totalMilliMoles;
                 color += entry.Substance.Color * relativeMoles;
             }
 

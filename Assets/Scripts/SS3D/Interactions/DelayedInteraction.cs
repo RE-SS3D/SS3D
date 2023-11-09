@@ -22,8 +22,12 @@ namespace SS3D.Interactions
         /// </summary>
         protected float CheckInterval { get; set; }
 
+        private bool _hasStarted;
+
         private float _startTime;
         private float _lastCheck;
+
+        public bool HasStarted => _hasStarted;
 
         /// <summary>
         /// Creates a client-side interaction object for this interaction
@@ -39,7 +43,7 @@ namespace SS3D.Interactions
 
             return new ClientDelayedInteraction
             {
-                Delay = Delay, LoadingBarPrefab = LoadingBarPrefab
+                Delay = Delay
             };
         }
 
@@ -56,6 +60,7 @@ namespace SS3D.Interactions
         {
             _startTime = Time.time;
             _lastCheck = _startTime;
+            _hasStarted= true;
             return true;
         }
 

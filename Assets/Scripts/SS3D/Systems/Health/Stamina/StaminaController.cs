@@ -1,4 +1,4 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System.Linq;
 using FishNet.Object;
@@ -99,13 +99,13 @@ namespace SS3D.Systems.Health
 
         private void SubscribeToEvents()
         {
-            _player.SpeedChangeEvent += DepleteStamina;
+            _player.OnSpeedChangeEvent += DepleteStamina;
             _entity.OnMindChanged += AssignViewToControllable;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _player.SpeedChangeEvent -= DepleteStamina;
+            _player.OnSpeedChangeEvent -= DepleteStamina;
             _entity.OnMindChanged -= AssignViewToControllable;
 
         }

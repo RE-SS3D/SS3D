@@ -3,6 +3,7 @@ using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Items.Generic
@@ -25,7 +26,13 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
             IInteractionTarget target = interactionEvent.Target;
+            IInteractionSource source = interactionEvent.Source;
             bool inRange = InteractionExtensions.RangeCheck(interactionEvent);
+
+            if(source is not Hand)
+            {
+                return false;
+            }
 
             if (target is not BikeHorn horn)
             {

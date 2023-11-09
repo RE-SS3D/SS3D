@@ -299,5 +299,42 @@ namespace SS3D.Systems.Tile
 
 
 
+        public static bool IsCardinalDirection(Direction dir)
+        {
+            return (int) dir == 0 || (int) dir == 2 || (int) dir == 4 || (int) dir == 6 ;
+        }
+
+        /// <summary>
+        /// Create the right type of tile location depending on the layer it'll be on.
+        /// </summary>
+        public static ITileLocation CreateTileLocation(TileLayer layer, int x, int y)
+        {
+            switch (layer)
+            {
+                case TileLayer.Plenum:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.Turf:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.Wire:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.Disposal:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.Pipes:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.WallMountHigh:
+                    return new CardinalTileLocation(layer, x, y);
+                case TileLayer.WallMountLow:
+                    return new CardinalTileLocation(layer, x, y);
+                case TileLayer.FurnitureBase:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.FurnitureTop:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.Overlays:
+                    return new SingleTileLocation(layer, x, y);
+                default:
+                    Debug.LogError($"no objects defined for layer {layer}, add a case to this switch.");
+                    return null;
+            }
+        }
     }
 }

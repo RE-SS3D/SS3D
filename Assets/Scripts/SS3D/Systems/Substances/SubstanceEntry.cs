@@ -6,12 +6,12 @@ namespace SS3D.Substances
     public struct SubstanceEntry
     {
         public Substance Substance;
-        public float Moles;
+        public float MilliMoles;
 
-        public SubstanceEntry(Substance substance, float moles)
+        public SubstanceEntry(Substance substance, float millimoles)
         {
             Substance = substance;
-            Moles = moles;
+            MilliMoles = millimoles;
         }
     }
 }

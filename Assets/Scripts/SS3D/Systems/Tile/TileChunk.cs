@@ -25,7 +25,7 @@ namespace SS3D.Systems.Tile
         private struct TileGrid
         {
             public TileLayer Layer;
-            public TileObject[] TileObjectsGrid;
+            public ITileLocation[] TileObjectsGrid;
         }
 
         /// <summary>
@@ -68,14 +68,14 @@ namespace SS3D.Systems.Tile
             TileGrid grid = new TileGrid { Layer = layer };
 
             int gridSize = ChunkSize * ChunkSize;
-            grid.TileObjectsGrid = new TileObject[gridSize];
+            grid.TileObjectsGrid = new ITileLocation[gridSize];
 
 
             for (int x = 0; x < ChunkSize; x++)
             {
                 for (int y = 0; y < ChunkSize; y++)
                 {
-                    grid.TileObjectsGrid[y * ChunkSize + x] = new TileObject(layer, x, y);
+                    grid.TileObjectsGrid[y * ChunkSize + x] = TileHelper.CreateTileLocation(layer,x,y);
                 }
             }
 
@@ -117,7 +117,7 @@ namespace SS3D.Systems.Tile
         }
 
 
-        public void SetTileObject(TileLayer layer, int x, int y, TileObject value)
+        public void SetTileObject(TileLayer layer, int x, int y, ITileLocation value)
         {
             if (x >= 0 && y >= 0 && x < ChunkSize && y < ChunkSize)
             {
@@ -129,7 +129,7 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public TileObject GetTileObject(TileLayer layer, int x, int y)
+        public ITileLocation GetTileLocation(TileLayer layer, int x, int y)
         {
             if (x >= 0 && y >= 0 && x < ChunkSize && y < ChunkSize)
             {
@@ -142,10 +142,10 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        public ITileLocation GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
             Vector2Int vector = GetXY(worldPosition);
-            return GetTileObject(layer, vector.x, vector.y);
+            return GetTileLocation(layer, vector.x, vector.y);
         }
 
         /// <summary>
@@ -159,8 +159,8 @@ namespace SS3D.Systems.Tile
                 {
                     for (int y = 0; y < ChunkSize; y++)
                     {
-                        TileObject tileObject = GetTileObject(layer, x, y);
-                        tileObject.ClearPlacedObject();
+                        ITileLocation tileLocation = GetTileLocation(layer, x, y);
+                        tileLocation.ClearAllPlacedObject();
                     }
                 }
             }
@@ -172,7 +172,8 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public SavedTileChunk Save()
         {
-            var tileObjectSaveObjectList = new List<SavedTileObject>();
+            List<ISavedTileLocation> SavedTiles = new();
+
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
@@ -180,18 +181,19 @@ namespace SS3D.Systems.Tile
                 {
                     for (int y = 0; y < ChunkSize; y++)
                     {
-                        TileObject tileObject = GetTileObject(layer, x, y);
-                        if (!tileObject.IsEmpty)
+                        ITileLocation tileLocation = GetTileLocation(layer, x, y);
+                        if (tileLocation.IsFullyEmpty())
                         {
-                            tileObjectSaveObjectList.Add(tileObject.Save());
+                            continue;
                         }
+                        SavedTiles.Add(tileLocation.Save());       
                     }
                 }
             }
 
             SavedTileChunk saveObject = new SavedTileChunk
             {
-                tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
+                savedTiles = SavedTiles.ToArray(),
                 originPosition = _originPosition,
                 chunkKey = _chunkKey,
             };

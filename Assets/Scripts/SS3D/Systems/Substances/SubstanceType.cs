@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +9,7 @@ Ale,
 Amylase,
 Beer,
 BlackRussian,
+Blood,
 Calcium,
 Champagne,
 Cognac,
@@ -29,4 +30,5 @@ Vodka,
 Water,
 Whisky,
 Wine,
+Oxygen,
 }

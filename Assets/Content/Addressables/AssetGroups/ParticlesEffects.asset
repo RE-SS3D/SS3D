@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: ParticlesEffects
+  m_EditorClassIdentifier: 
+  m_GroupName: ParticlesEffects
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 90d7cf41494026c4899d24b5f410eb0a
+  m_SerializeEntries:
+  - m_GUID: 17b0d9163e9cdf14aa557557e7d9d76b
+    m_Address: Assets/Content/WorldObjects/World/VFX/Health/AttackParticles.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a6a77c26ee7edd94c804f4ddd851c8ba
+    m_Address: Assets/Content/WorldObjects/World/VFX/Health/BleedingParticle.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4221eb55b08b232489669132cc6b4c77, type: 2}
+    - {fileID: 11400000, guid: f368c33b8ccc665489c2c53c5a4bf163, type: 2}

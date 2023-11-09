@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
@@ -7,8 +7,10 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Core.Settings;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
@@ -148,6 +150,20 @@ namespace SS3D.Systems.Entities
             SpawnLatePlayer(player);
         }
 
+        public bool TryGetOwnedEntity(NetworkConnection conn, out Entity entity)
+        {
+            foreach(Entity e in SpawnedPlayers)
+            {
+                if(e.Owner == conn)
+                {
+                    entity = e;
+                    return true;
+                }
+            }
+            entity = null;
+            return false;
+        }
+
         /// <summary>
         /// Spawns a player after the round has started
         /// </summary>
@@ -282,10 +298,16 @@ namespace SS3D.Systems.Entities
             }
         }
 
-		public void TransferEntity(Entity oldEntity, Entity newEntity)
+		public bool TryTransferEntity(Entity oldEntity, Entity newEntity)
 		{
 			int index = _spawnedPlayers.FindIndex(x => x == oldEntity);
+            if (index == -1)
+            {
+                Log.Warning(this, $"could not find entity {oldEntity} in the list of spawned entity controlled by players");
+                return false;
+            }
 			_spawnedPlayers[index] = newEntity;
+            return true;
 		}
 	}
 }
