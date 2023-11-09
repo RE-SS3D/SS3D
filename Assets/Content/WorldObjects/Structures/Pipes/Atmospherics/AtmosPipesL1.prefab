@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 2229135679135330135}
+  - component: {fileID: -2184613742833408818}
   m_Layer: 0
   m_Name: AtmosPipesL1
   m_TagString: Untagged
@@ -63,7 +64,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 80
+  <PrefabId>k__BackingField: 81
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -133,8 +134,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -7727686409064562107}
   _networkObjectCache: {fileID: -7727686409064562107}
-  _genericType: 1
-  _specificType: 0
   _syncedConnections: 0
   _connector:
     o: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
@@ -145,8 +144,21 @@ MonoBehaviour:
     lNW: {fileID: 2974487339661499261, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     lSE: {fileID: -8284340391569421606, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     lSW: {fileID: -710663454644857736, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tSWE: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     tNEW: {fileID: -4415080472327585715, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     tNSW: {fileID: -8084914691331622005, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     tNSE: {fileID: -7828955826838884863, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tSWE: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     x: {fileID: 5978052073093224489, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+--- !u!114 &-2184613742833408818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
