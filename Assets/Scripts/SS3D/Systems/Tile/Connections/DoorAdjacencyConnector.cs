@@ -22,7 +22,7 @@ namespace SS3D.Systems.Tile.Connections
 
         protected override IMeshAndDirectionResolver AdjacencyResolver => null;
 
-        /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
+        // Based on peculiarities of the model, the appropriate position of the wall cap
         private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0f;
 
         // As is the standard in the rest of the code, wallCap should face east.
@@ -35,17 +35,17 @@ namespace SS3D.Systems.Tile.Connections
         // WallCap gameobjects, North, East, South, West. Null if not present.
         private GameObject[] wallCaps = new GameObject[4];
 
-        public override bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject, bool updateNeighbours)
+        public override bool UpdateSingleConnection(Direction dir, PlacedTileObject placedObject, bool updateNeighbours)
         {
-            bool update = base.UpdateSingleConnection(direction, placedObject, updateNeighbours);
+            bool update = base.UpdateSingleConnection(dir, placedObject, updateNeighbours);
             if (update)
                 UpdateWallCaps();
             return update;
         }
 
-        public override void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public override void UpdateAllConnections()
         {
-            base.UpdateAllConnections(neighbourObjects);
+            base.UpdateAllConnections();
             UpdateWallCaps();
         }
 
@@ -100,7 +100,7 @@ namespace SS3D.Systems.Tile.Connections
             return wallCap;
         }
 
-        public override bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public override bool IsConnected(PlacedTileObject neighbourObject)
         {
             return (neighbourObject && neighbourObject.HasAdjacencyConnector &&
                 neighbourObject.GenericType == TileObjectGenericType.Wall);

@@ -17,7 +17,7 @@ namespace SS3D.Systems.Tile.Connections
         [SerializeField] private AdvancedConnector advancedAdjacency;
         protected override IMeshAndDirectionResolver AdjacencyResolver => advancedAdjacency;
 
-        public override bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public override bool IsConnected(PlacedTileObject neighbourObject)
         {
             bool isConnected = false;
             if (neighbourObject)

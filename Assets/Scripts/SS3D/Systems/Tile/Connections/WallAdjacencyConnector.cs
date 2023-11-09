@@ -11,13 +11,24 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Walls are mostly simply working like advanced connectors, but there is a few exceptions,
+    /// in particular with the way they connect with doors, hence why they need their own connector
+    /// script.
+    /// </summary>
     public class WallAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
     {
-
+        /// <summary>
+        /// Script to help walls to choose their shape.
+        /// </summary>
         [SerializeField] private AdvancedConnector _advancedAdjacency;
 
         protected override IMeshAndDirectionResolver AdjacencyResolver => _advancedAdjacency;
 
+        /// <summary>
+        /// Check if this wall is conencted to the neighbour object when it's a door.
+        /// Walls only connect to doors when they are on left or on right of doors.
+        /// </summary>
         private bool IsConnectedToDoor(PlacedTileObject neighbourObject)
         {
             var doorConnector = neighbourObject.GetComponent<DoorAdjacencyConnector>();
@@ -33,6 +44,9 @@ namespace SS3D.Systems.Tile.Connections
             return false;
         }
 
+        /// <summary>
+        /// Try to get a door on the left or on the right of this wall.
+        /// </summary>
         private bool TryGetOnLeftOrRightDoor(out PlacedTileObject door)
         {
             var tileSystem = Subsystems.Get<TileSystem>();
@@ -55,7 +69,11 @@ namespace SS3D.Systems.Tile.Connections
             return false;
         }
 
-        public override bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        /// <summary>
+        /// Walls connect to other walls, and to doors, when doors are placed on their left or on their
+        /// right.
+        /// </summary>
+        public override bool IsConnected(PlacedTileObject neighbourObject)
         {
             if(neighbourObject == null) return false;
 
@@ -77,7 +95,8 @@ namespace SS3D.Systems.Tile.Connections
             // This is to avoid the wall considering there's 3 connections, because if it does, it takes
             // a L2 shape which allow to see through the wall.
 
-            if(TryGetOnLeftOrRightDoor(out PlacedTileObject door) && neighbourObject.GetComponent<WallAdjacencyConnector>() != null)
+            if(TryGetOnLeftOrRightDoor(out PlacedTileObject door) 
+                && neighbourObject.GetComponent<WallAdjacencyConnector>() != null)
             {
                 if (neighbourObject.IsInFront(door) || neighbourObject.IsBehind(door))
                 {

@@ -84,5 +84,11 @@ namespace SS3D.Systems.Tile
         {
             PlacedObject = tileObject;
         }
+
+        public List<PlacedTileObject> GetAllPlacedObject()
+        {
+            return PlacedObject != null ? 
+                new List<PlacedTileObject> { PlacedObject } : new List<PlacedTileObject>();
+        }
     }
 }

@@ -17,7 +17,8 @@ namespace SS3D.Systems.Tile
     public class PlacedTileObject: NetworkBehaviour
     {
         /// <summary>
-        /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. Uses NetworkServer.Spawn() if a server is running.
+        /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. 
+        /// Uses NetworkServer.Spawn() if a server is running.
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <param name="dir"></param>
@@ -35,8 +36,10 @@ namespace SS3D.Systems.Tile
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
             }
 
-            placedObject.Setup(tileObjectSo, origin, dir);
+            placedObject.Setup(tileObjectSo, origin, worldPosition, dir);
 
+            // TODO : Spawning the placed game object does not spawn with it everything. In particular, the values
+            // such as tileobjectSO, origin or world position are not spawned. This might (or not) be an issue later on.
             if (InstanceFinder.ServerManager != null)
             {
                 if (placedObject.GetComponent<NetworkObject>() == null)
@@ -59,6 +62,7 @@ namespace SS3D.Systems.Tile
         private Vector2Int _origin;
         private Direction _dir;
         private IAdjacencyConnector _connector;
+        private Vector2Int _worldOrigin;
 
         /// <summary>
         /// Returns a list of all grids positions that object occupies.
@@ -67,6 +71,8 @@ namespace SS3D.Systems.Tile
         public List<Vector2Int> GridOffsetList => _tileObjectSo.GetGridOffsetList(_dir);
 
         public Vector2Int Origin => _origin;
+
+        public Vector2Int WorldOrigin => _worldOrigin;
 
         public TileObjectGenericType GenericType => _tileObjectSo.genericType;
 
@@ -85,12 +91,13 @@ namespace SS3D.Systems.Tile
         /// </summary>
         /// <param name="tileObjectSo"></param>
         /// <param name="dir"></param>
-        private void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Direction dir)
+        private void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Vector3 worldPosition, Direction dir)
         {
             _tileObjectSo = tileObjectSo;
             _origin = origin;
             _dir = dir;
             _connector = GetComponent<IAdjacencyConnector>();
+            _worldOrigin = new Vector2Int((int)Math.Round(worldPosition.x), (int)Math.Round(worldPosition.z));
         }
 
         /// <summary>
@@ -101,16 +108,16 @@ namespace SS3D.Systems.Tile
             InstanceFinder.ServerManager.Despawn(gameObject);
         }
 
-        public void UpdateAdjacencies(PlacedTileObject[] neighbourObjects)
+        public void UpdateAdjacencies()
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateAllConnections(neighbourObjects);
+                _connector.UpdateAllConnections();
         }
 
-        public void UpdateSingleAdjacency(PlacedTileObject neighbourObject, Direction dir)
+        public void UpdateSingleAdjacency(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateSingleConnection(dir, neighbourObject, false);
+                _connector.UpdateSingleConnection(dir, neighbourObject, updateNeighbour);
         }
 
         public SavedPlacedTileObject Save()
@@ -264,6 +271,36 @@ namespace SS3D.Systems.Tile
 
             atDirection = null;
             return false;
+        /// Other is a neighbour, placed at some direction from this.
+        /// </summary>
+        /// <param name="other">another placedTileObject, which should be neighbouring this.</param>
+        /// <param name="direction"> the found direction, north by default</param>
+        /// <returns>true if other is a neighbour of this in term of coordinates</returns>
+        public bool NeighbourAtDirectionOf(PlacedTileObject other, out Direction direction)
+        {
+            direction = Direction.North;
+            if (other == null) return false;
+            Vector2Int coordinateDifference = other.WorldOrigin - WorldOrigin;
+
+            if(coordinateDifference == Vector2Int.up)
+                direction = Direction.North;
+            else if(coordinateDifference == Vector2Int.down) 
+                direction = Direction.South;
+            else if (coordinateDifference == Vector2Int.left)
+                direction = Direction.West;
+            else if (coordinateDifference == Vector2Int.right)
+                direction = Direction.East;
+            else if (coordinateDifference == Vector2Int.up + Vector2Int.right)
+                direction = Direction.NorthEast;
+            else if (coordinateDifference == Vector2Int.up + Vector2Int.left)
+                direction = Direction.NorthWest;
+            else if (coordinateDifference == Vector2Int.down + Vector2Int.left)
+                direction = Direction.SouthWest;
+            else if (coordinateDifference == Vector2Int.down + Vector2Int.right)
+                direction = Direction.SouthEast;
+            else return false;
+
+            return true;
         }
     }
 }

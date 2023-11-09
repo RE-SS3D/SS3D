@@ -22,7 +22,8 @@ namespace SS3D.Systems.Tile
         Counter,
         Cable,
         Wire,
-        Door
+        Door,
+        Disposal,
     }
 
     /// <summary>

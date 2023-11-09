@@ -12,13 +12,15 @@ namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Basic connector using the simple connector struct for resolving shape and direction.
+    /// Things do not need special connections in corners.
+    /// The only condition to connect to a neighbour is that they share generic and specific type.
     /// </summary>
     public class SimpleAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
     {
         [SerializeField] private SimpleConnector simpleAdjacency;
         protected override IMeshAndDirectionResolver AdjacencyResolver => simpleAdjacency;
 
-        public override bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public override bool IsConnected(PlacedTileObject neighbourObject)
         {
             bool isConnected = false;
             if (neighbourObject != null)

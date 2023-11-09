@@ -150,7 +150,7 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Return a list of the cardinal directions.
+        /// Return a list of all existing directions.
         /// </summary>
         public static List<Direction> AllDirections()
         {
@@ -319,7 +319,13 @@ namespace SS3D.Systems.Tile
                     return new SingleTileLocation(layer, x, y);
                 case TileLayer.Disposal:
                     return new SingleTileLocation(layer, x, y);
-                case TileLayer.Pipes:
+                case TileLayer.PipeSurface:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.PipeMiddle:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.PipeRight:
+                    return new SingleTileLocation(layer, x, y);
+                case TileLayer.PipeLeft:
                     return new SingleTileLocation(layer, x, y);
                 case TileLayer.WallMountHigh:
                     return new CardinalTileLocation(layer, x, y);
