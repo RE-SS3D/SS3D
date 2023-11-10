@@ -176,7 +176,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8833760637642068360}
   - component: {fileID: 2081909342595332650}
-  - component: {fileID: 2784390906683938893}
   - component: {fileID: 3298710121668139635}
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7727612398117917681}
@@ -220,24 +219,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2784390906683938893
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 135ecf6db6e77e945ac1a661c0831cd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 3258417366846669140}
-  _networkObjectCache: {fileID: 0}
-  Locked: 0
-  permissionToUnlock: {fileID: 0}
-  LockLight: {fileID: 0}
 --- !u!114 &3298710121668139635
 MonoBehaviour:
   m_ObjectHideFlags: 0
