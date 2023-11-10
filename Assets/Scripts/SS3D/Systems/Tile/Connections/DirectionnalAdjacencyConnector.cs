@@ -88,18 +88,27 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
+        public List<PlacedTileObject> GetNeighbours()
+        {
+            Setup();
+            /*List<PlacedTileObject> neighbours = new();
+            if(_firstNeighbour != null) neighbours.Add(_firstNeighbour);
+            if (_secondNeighbour != null) neighbours.Add(_secondNeighbour);*/
+            return GetNeighbourDirectionnal();
+        }
+
         /// <summary>
         /// implement
         /// </summary>
-        public bool IsConnected(Direction dir, PlacedTileObject neighbourObject)
+        public bool IsConnected(PlacedTileObject neighbourObject)
         {
-            return true;
+            return neighbourObject == _firstNeighbour || neighbourObject == _secondNeighbour;
         }
 
         // ignore param
-        public void UpdateAllConnections(PlacedTileObject[] neighbourObjects)
+        public void UpdateAllConnections()
         {
-            foreach(var neighbourObject in neighbourObjects)
+            foreach(var neighbourObject in GetNeighbours())
             {
                 UpdateAllAndNeighbours(true);
             }

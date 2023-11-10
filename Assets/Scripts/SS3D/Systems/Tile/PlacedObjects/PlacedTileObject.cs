@@ -271,6 +271,7 @@ namespace SS3D.Systems.Tile
 
             atDirection = null;
             return false;
+        }
         /// Other is a neighbour, placed at some direction from this.
         /// </summary>
         /// <param name="other">another placedTileObject, which should be neighbouring this.</param>

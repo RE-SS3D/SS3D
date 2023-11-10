@@ -154,14 +154,15 @@ namespace SS3D.Systems.Tile
         }
 
 
-        public PlacedTileObject[] GetCardinalNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        public List<PlacedTileObject> GetCardinalNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
         {
-            PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
+            List<PlacedTileObject> adjacentObjects = new();
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction+= 2)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).PlacedObject;
+                adjacentObjects.AddRange(
+                    GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetAllPlacedObject());
             }
 
             return adjacentObjects;
