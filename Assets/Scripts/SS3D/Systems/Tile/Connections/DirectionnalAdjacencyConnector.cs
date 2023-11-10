@@ -45,14 +45,29 @@ namespace SS3D.Systems.Tile.Connections
 
         private bool _initialized;
 
+        /// <summary>
+        /// The current rotation of this directionnal
+        /// </summary>
         private float _currentRotation;
 
+        /// <summary>
+        /// The current number of connected neighbours to this directionnal
+        /// </summary>
         private int _currentConnections;
 
+        /// <summary>
+        /// The current shape the directionnal is taking
+        /// </summary>
         private AdjacencyShape _currentShape;
 
+        /// <summary>
+        /// First connected neighbour of the directionnal
+        /// </summary>
         private PlacedTileObject _firstNeighbour;
 
+        /// <summary>
+        /// Second connected neighbour of the directionnal
+        /// </summary>
         private PlacedTileObject _secondNeighbour;
 
 
@@ -91,9 +106,6 @@ namespace SS3D.Systems.Tile.Connections
         public List<PlacedTileObject> GetNeighbours()
         {
             Setup();
-            /*List<PlacedTileObject> neighbours = new();
-            if(_firstNeighbour != null) neighbours.Add(_firstNeighbour);
-            if (_secondNeighbour != null) neighbours.Add(_secondNeighbour);*/
             return GetNeighbourDirectionnal();
         }
 
@@ -114,9 +126,10 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        
-
-        // ignore param
+        /// <summary>
+        /// Directionnals should update only their connected neighbours, and should do each time a connection
+        /// is updated. They can't update a single connection like other connectables.
+        /// </summary>
         public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             UpdateAllAndNeighbours(true);
@@ -127,6 +140,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
             var neighbours = GetNeighbourDirectionnal();
+            // We don't want to update neighbours which are already fully connected, they should stay as they are.
             neighbours = neighbours.Where(x => !DirectionnalAlreadyHasTwoConnections(x, true)).ToList();
             int connections = 0;
 
@@ -147,8 +161,7 @@ namespace SS3D.Systems.Tile.Connections
                 _firstNeighbour = first;
                 _secondNeighbour = second;
             }
-
-            // no connections then
+ 
             else
             {
                 results = new Tuple<Mesh, float, Direction, AdjacencyShape>(AdjacencyResolver.o,
