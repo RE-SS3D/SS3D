@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 6696866361892651655}
   - component: {fileID: 7033236083530598125}
   - component: {fileID: -2900075557854325373}
-  - component: {fileID: 1492278076387892290}
+  - component: {fileID: 3395800597640737248}
   m_Layer: 0
   m_Name: SteelWall
   m_TagString: Untagged
@@ -253,19 +253,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isGlobal: 0
+  _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 65535
+  <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11535764229462028423
-  _sceneNetworkObjects: []
---- !u!114 &1492278076387892290
+--- !u!114 &3395800597640737248
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -274,20 +280,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3591147544166670882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53a5cd0d46abb6d4d8686d11153009c2, type: 3}
+  m_Script: {fileID: 11500000, guid: d3995769f8fecf9469d1783a30e75625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: 0}
-  SelectedAdjacencyType: 1
-  _simpleAdjacency:
-    o: {fileID: 0}
-    u: {fileID: 0}
-    i: {fileID: 0}
-    l: {fileID: 0}
-    t: {fileID: 0}
-    x: {fileID: 0}
+  _genericType: 3
+  _specificType: 3
   _advancedAdjacency:
     o: {fileID: -6490088118889457342, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     u: {fileID: -6723024526652964136, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
@@ -306,20 +306,6 @@ MonoBehaviour:
     xQuad: {fileID: 4199670461815796357, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     viewObstacles: []
     opaque: 0
-  _offsetAdjacency:
-    o: {fileID: 0}
-    uNorth: {fileID: 0}
-    uSouth: {fileID: 0}
-    i: {fileID: 0}
-    lNE: {fileID: 0}
-    lNW: {fileID: 0}
-    lSE: {fileID: 0}
-    lSW: {fileID: 0}
-    tNEW: {fileID: 0}
-    tNSW: {fileID: 0}
-    tNSE: {fileID: 0}
-    tSWE: {fileID: 0}
-    x: {fileID: 0}
   _syncedConnections: 0
 --- !u!1 &7790124558541205835
 GameObject:

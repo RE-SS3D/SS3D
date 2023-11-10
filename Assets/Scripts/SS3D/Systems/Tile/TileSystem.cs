@@ -24,6 +24,7 @@ namespace SS3D.Systems.Tile
         public TileResourceLoader Loader { get; private set; }
  
         private TileMap _currentMap;
+        public TileMap CurrentMap => _currentMap;
 
         [ServerOrClient]
         protected override void OnStart()
@@ -83,7 +84,7 @@ namespace SS3D.Systems.Tile
 	        switch (genericObjectSo)
 	        {
 		        case TileObjectSo so:
-			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting);
+			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false);
 		        case ItemObjectSo so:
 			        _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
 			        break;

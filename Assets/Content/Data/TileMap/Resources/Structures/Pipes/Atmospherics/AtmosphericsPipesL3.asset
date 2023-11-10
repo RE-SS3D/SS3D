@@ -15,8 +15,8 @@ MonoBehaviour:
   nameString: pipe_atmos3
   prefab: {fileID: 2802364579275783218, guid: adc07a7f0fee8304691f45a201509b13, type: 3}
   icon: {fileID: 0}
-  layer: 4
-  genericType: 0
+  layer: 12
+  genericType: 1
   specificType: 0
   width: 1
   height: 1

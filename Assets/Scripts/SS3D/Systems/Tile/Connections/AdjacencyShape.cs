@@ -36,5 +36,7 @@
         TNorthSouthWest,
         TNorthSouthEast,
         TSouthWestEast,
+        //Vertical
+        Vertical,
     }
 }

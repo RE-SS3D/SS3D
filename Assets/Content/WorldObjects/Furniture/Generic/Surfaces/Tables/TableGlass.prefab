@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1422391141370617402}
   - component: {fileID: 2885897057548802505}
   - component: {fileID: 8860121059280945640}
-  - component: {fileID: 7988096599566893515}
   - component: {fileID: 6244957436306937818}
+  - component: {fileID: 2130642872359250283}
   m_Layer: 0
   m_Name: TableGlass
   m_TagString: Untagged
@@ -100,7 +100,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.75, z: 1}
   m_Center: {x: 0, y: 0.375, z: 0}
---- !u!114 &7988096599566893515
+--- !u!114 &6244957436306937818
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -109,21 +109,46 @@ MonoBehaviour:
   m_GameObject: {fileID: 2839728781945606427}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53a5cd0d46abb6d4d8686d11153009c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours: []
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 65535
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 10426574306644170534
+--- !u!114 &2130642872359250283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: 6244957436306937818}
-  _networkObjectCache: {fileID: 6244957436306937818}
-  SelectedAdjacencyType: 1
-  _simpleAdjacency:
-    o: {fileID: 0}
-    u: {fileID: 0}
-    i: {fileID: 0}
-    l: {fileID: 0}
-    t: {fileID: 0}
-    x: {fileID: 0}
-  _advancedAdjacency:
+  _networkObjectCache: {fileID: 0}
+  _syncedConnections: 0
+  advancedAdjacency:
     o: {fileID: -6474879442438147634, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
     u: {fileID: -7482589699367499308, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
     i: {fileID: -2157360573737795375, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
@@ -141,45 +166,3 @@ MonoBehaviour:
     xQuad: {fileID: 2518676867277241252, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
     viewObstacles: []
     opaque: 0
-  _offsetAdjacency:
-    o: {fileID: 0}
-    uNorth: {fileID: 0}
-    uSouth: {fileID: 0}
-    i: {fileID: 0}
-    lNE: {fileID: 0}
-    lNW: {fileID: 0}
-    lSE: {fileID: 0}
-    lSW: {fileID: 0}
-    tNEW: {fileID: 0}
-    tNSW: {fileID: 0}
-    tNSE: {fileID: 0}
-    tSWE: {fileID: 0}
-    x: {fileID: 0}
-  _syncedConnections: 0
---- !u!114 &6244957436306937818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2839728781945606427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <IsNested>k__BackingField: 0
-  <ComponentIndex>k__BackingField: 0
-  _networkBehaviours:
-  - {fileID: 7988096599566893515}
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
-  _isNetworked: 1
-  _isGlobal: 0
-  _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 10426574306644170534
-  _sceneNetworkObjects: []

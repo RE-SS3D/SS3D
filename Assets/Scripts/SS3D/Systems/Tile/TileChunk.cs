@@ -17,7 +17,7 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Number of TileObjects that should go in a chunk. 16 x 16
         /// </summary>
-        public const int ChunkSize = 16;
+        public const int ChunkSize = TileConstants.ChunkSize;
 
         /// <summary>
         /// Grid for grouping TileObjects per layer. Can be used for walking through objects on the same layer fast.
@@ -199,6 +199,26 @@ namespace SS3D.Systems.Tile
             };
 
             return saveObject;
+        }
+
+        /// <summary>
+        /// Get all placed tile objects on this chunk.
+        /// </summary>
+        public List<PlacedTileObject> GetAllTilePlacedObjects()
+        {
+            var list = new List<PlacedTileObject>();
+            foreach(TileGrid grid in _tileGridList)
+            {
+                foreach(ITileLocation location in grid.TileObjectsGrid)
+                {
+
+                    if(location != null)
+                    {
+                        list.AddRange(location.GetAllPlacedObject());
+                    }
+                }
+            }
+            return list;
         }
     }
 }
