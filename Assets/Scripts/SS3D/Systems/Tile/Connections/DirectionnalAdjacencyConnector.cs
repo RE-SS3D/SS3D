@@ -1,4 +1,5 @@
-﻿using FishNet.Object.Synchronizing;
+﻿using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
@@ -61,12 +62,12 @@ namespace SS3D.Systems.Tile.Connections
         private AdjacencyShape _currentShape;
 
         /// <summary>
-        /// First connected neighbour of the directionnal
+        /// First connected neighbour of the directionnal, server only
         /// </summary>
         private PlacedTileObject _firstNeighbour;
 
         /// <summary>
-        /// Second connected neighbour of the directionnal
+        /// Second connected neighbour of the directionnal, server only
         /// </summary>
         private PlacedTileObject _secondNeighbour;
 
@@ -173,6 +174,11 @@ namespace SS3D.Systems.Tile.Connections
 
             bool updated = UpdateMeshRotationDirection(results.Item1, results.Item2, results.Item3, results.Item4, connections);
 
+            if (updated)
+            {
+                RpcUpdateOnClient(results.Item2, results.Item4);
+            }
+
             if (updated || updateNeighbour)
             {
                 foreach(var adjacent in neighbours)
@@ -180,6 +186,8 @@ namespace SS3D.Systems.Tile.Connections
                     adjacent.GetComponent<DirectionnalAdjacencyConnector>().UpdateAllAndNeighbours(false);
                 }
             }
+
+
         }
 
         /// <summary>
@@ -210,6 +218,18 @@ namespace SS3D.Systems.Tile.Connections
             transform.localRotation = localRotation;
 
             return updated;
+        }
+
+        [ObserversRpc(ExcludeOwner = false, BufferLast = true)]
+        private void RpcUpdateOnClient(float rotation, AdjacencyShape shape)
+        {
+            Quaternion localRotation = transform.localRotation;
+            Vector3 eulerRotation = localRotation.eulerAngles;
+            localRotation = Quaternion.Euler(eulerRotation.x, rotation, eulerRotation.z);
+            transform.localRotation = localRotation;
+            Mesh mesh = AdjacencyResolver.ShapeToMesh(shape);
+            _filter.mesh = mesh;
+
         }
 
         /// <summary>

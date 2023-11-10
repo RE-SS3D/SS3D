@@ -175,6 +175,22 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
             return 0f;
         }
 
+        public Mesh ShapeToMesh(AdjacencyShape shape)
+        {
+            switch(shape)
+            {
+                case AdjacencyShape.O: return o;
+                case AdjacencyShape.ULeft: return uLeft;
+                case AdjacencyShape.URight: return uRight;
+                case AdjacencyShape.LIn: return lIn;
+                case AdjacencyShape.LOut: return lOut;
+                case AdjacencyShape.I: return i;
+                default:
+                    Debug.LogError("adjacency shape not found, returning mesh o");
+                    return o;
+            }
+        }
+
         private static Direction LInLOutDirection(Direction firstNeighbour, Direction secondNeighbour)
         {
             if((TileHelper.GetAdjacentAndMiddleDirection(Direction.East).Contains(firstNeighbour) 
@@ -203,5 +219,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 return Direction.NorthWest;
             }
         }
+
+        
     }
 }
