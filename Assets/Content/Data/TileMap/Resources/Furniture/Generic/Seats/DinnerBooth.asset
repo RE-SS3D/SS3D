@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: DinnerBooth
   m_EditorClassIdentifier: 
-  nameString: 
+  nameString: DinnerBooth
   prefab: {fileID: 8085678556641831659, guid: 85fa4c9b76b4b23458dcf24a745a1dfe, type: 3}
   icon: {fileID: 0}
   layer: 7
