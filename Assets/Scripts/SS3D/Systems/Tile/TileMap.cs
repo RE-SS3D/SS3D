@@ -375,16 +375,16 @@ namespace SS3D.Systems.Tile
                         PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true);
                     }
                 }
-
-                foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
-                {
-                    ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
-                    PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
-                }
-
-                OnMapLoaded?.Invoke(this, EventArgs.Empty);
-                UpdateAllAdjacencies();
             }
+
+            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+            {
+                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
+                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+            }
+
+            OnMapLoaded?.Invoke(this, EventArgs.Empty);
+            UpdateAllAdjacencies();
         }
 
         /// <summary>
