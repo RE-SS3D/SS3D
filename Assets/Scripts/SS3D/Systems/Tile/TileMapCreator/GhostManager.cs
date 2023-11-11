@@ -26,31 +26,29 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public Direction Dir { get; private set; } = Direction.North;
 
-        public void CreateGhost(GameObject prefab)
+        public void CreateGhost(GameObject prefab, Vector3 position)
         {
-            if (_ghostObject == null)
+            if (_ghostObject != null) return;
+            
+            _ghostObject = Instantiate(prefab, position, Quaternion.identity);
+            if (_ghostObject.TryGetComponent(out Rigidbody ghostRigidbody))
             {
-                _ghostObject = Instantiate(prefab);
-
-                if (_ghostObject.TryGetComponent<Rigidbody>(out var ghostRigidbody))
-                {
-                    ghostRigidbody.useGravity = false;
-                    ghostRigidbody.isKinematic = true;
-                }
-                var colliders = _ghostObject.GetComponentsInChildren<Collider>();
-                foreach (Collider col in colliders)
-                {
-                    col.enabled = false;
-                }
+                ghostRigidbody.useGravity = false;
+                ghostRigidbody.isKinematic = true;
+            }
+            var colliders = _ghostObject.GetComponentsInChildren<Collider>();
+            foreach (Collider col in colliders)
+            {
+                col.enabled = false;
             }
         }
         public void DestroyGhost()
         {
-            if (_ghostObject != null)
-            {
-                _ghostObject.Dispose(true);
-                _ghostObject = null;
-            }
+            if (_ghostObject == null) return;
+            
+            _ghostObject.Dispose(true);
+            _ghostObject = null;
+            
         }
 
         public void SetTargetPosition(Vector3 target)

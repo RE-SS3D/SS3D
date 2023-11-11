@@ -119,12 +119,24 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandlePlace(InputAction.CallbackContext context)
         {
-            if (_mouseOverUI)
+            if (_mouseOverUI) return;
+            if (_isDeleting)
             {
-                return;
+                if (_itemPlacement)
+                {
+                    FindAndDeleteItem(_lastSnappedPosition);
+                }
+                else
+                {
+                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, _lastSnappedPosition, _ghostManager.Dir);
+                }
             }
-
-            HandleMouseClick(_lastSnappedPosition, _controls.Replace.phase == InputActionPhase.Performed);
+            else
+            {
+                if (_selectedObject == null) return;
+                _tileSystem.RpcPlaceObject(_selectedObject.nameString, _lastSnappedPosition, _ghostManager.Dir, _controls.Replace.phase == InputActionPhase.Performed);
+                RefreshGhost();
+            }
         }
 
         [ServerOrClient]
@@ -150,63 +162,32 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [ServerOrClient]
         private void Update()
         {
-            if (!_initalized)
-            {
-                return;
-            }
+            if (!_initalized) return;
+            
             // Clean-up if we are not building
             if (_selectedObject == null)
             {
                 _ghostManager.DestroyGhost();
                 return;
             }
-
-            _ghostManager.CreateGhost(_selectedObject.prefab);
-
-            // Check if mouse moved
-            Vector3 snappedPosition = TileHelper.GetClosestPosition(GetMousePosition());
-
-            if (snappedPosition != _lastSnappedPosition && !_itemPlacement)
-            {
-                _ghostManager.SetTargetPosition(snappedPosition);
-                _lastSnappedPosition = snappedPosition;
-                RefreshGhost();
-            }
-
+            
             if (_itemPlacement)
             {
                 Vector3 newPosition = GetMousePosition();
                 _ghostManager.SetTargetPosition(newPosition);
                 _lastSnappedPosition = newPosition;
             }
-
-            _ghostManager.MoveGhost();
-        }
-
-        [ServerOrClient]
-        private void HandleMouseClick(Vector3 snappedPosition, bool replaceExisting)
-        {
-            if (_isDeleting)
-            {
-                if (_itemPlacement)
-                {
-                    FindAndDeleteItem(snappedPosition);
-                }
-                else
-                {
-                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, snappedPosition, _ghostManager.Dir);
-                }
-            }
             else
             {
-                if (_selectedObject == null)
+                Vector3 snappedPosition = TileHelper.GetClosestPosition(GetMousePosition());
+                if (snappedPosition != _lastSnappedPosition)
                 {
-                    return;
+                    _ghostManager.SetTargetPosition(snappedPosition);
+                    _lastSnappedPosition = snappedPosition;
+                    RefreshGhost();
                 }
-
-                _tileSystem.RpcPlaceObject(_selectedObject.nameString, snappedPosition, _ghostManager.Dir, replaceExisting);
-                RefreshGhost();
             }
+            _ghostManager.MoveGhost();
         }
 
         [ServerOrClient]
@@ -370,7 +351,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             _selectedObject = genericObjectSo;
             _ghostManager.DestroyGhost();
-            _ghostManager.CreateGhost(genericObjectSo.prefab);
+            _ghostManager.CreateGhost(genericObjectSo.prefab, _itemPlacement? GetMousePosition() : TileHelper.GetClosestPosition(GetMousePosition()));
 
             RefreshGhost();
         }
