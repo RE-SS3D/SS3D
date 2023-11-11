@@ -1,5 +1,6 @@
 ﻿using Coimbra;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public Material deleteConstruction;
 
         private GameObject _ghostObject;
-        private Vector3 _targetPosition;
+        public Vector3 TargetPosition;
 
         public enum BuildMatMode
         {
@@ -36,7 +37,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 ghostRigidbody.useGravity = false;
                 ghostRigidbody.isKinematic = true;
             }
-            var colliders = _ghostObject.GetComponentsInChildren<Collider>();
+            Collider[] colliders = _ghostObject.GetComponentsInChildren<Collider>();
             foreach (Collider col in colliders)
             {
                 col.enabled = false;
@@ -48,13 +49,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             
             _ghostObject.Dispose(true);
             _ghostObject = null;
-            
-        }
-
-        public void SetTargetPosition(Vector3 target)
-        {
-            // Small offset is added so that meshes don't overlap with already placed objects.
-            _targetPosition = target + new Vector3(0, 0.1f, 0);
         }
 
         /// <summary>
@@ -64,8 +58,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             // Required if the object has a network script attached
             _ghostObject.SetActive(true);
-
-            _ghostObject.transform.position = Vector3.Lerp(_ghostObject.transform.position, _targetPosition, Time.deltaTime * 15f);
+            // Small offset is added so that meshes don't overlap with already placed objects.
+            _ghostObject.transform.position = Vector3.Lerp(_ghostObject.transform.position, TargetPosition + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
             _ghostObject.transform.rotation = Quaternion.Lerp(_ghostObject.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(Dir), 0), Time.deltaTime * 15f);
         }
 

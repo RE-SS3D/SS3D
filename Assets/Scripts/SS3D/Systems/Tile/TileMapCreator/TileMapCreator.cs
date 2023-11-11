@@ -52,11 +52,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
             get => _isDeleting;
             set
             {
-                if (_selectedObject == null)
+                if (_isDeleting && !value)
                 {
-                    return;
+                    _inputSystem.ToggleAction(_controls.Delete, false);
+                    _inputSystem.ToggleAction(_controls.Place, true);
                 }
-
+                if (!_isDeleting && value)
+                {
+                    _inputSystem.ToggleAction(_controls.Delete, true);
+                    _inputSystem.ToggleAction(_controls.Place, false);
+                }
+                
                 _isDeleting = value;
                 RefreshGhost();
             }
@@ -70,14 +76,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
-            _inputSystem.ToggleAction(_controls.ToggleMenu, true);
             
+            _inputSystem.ToggleAction(_controls.ToggleMenu, true);
+            _inputSystem.ToggleAction(_controls.Delete, false);
             _controls.ToggleMenu.performed += HandleToggleMenu;
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
             _controls.Place.performed += HandlePlace;
             _controls.Rotate.performed += HandleRotate;
-            
+            _controls.Delete.performed += HandleDelete;
         }
 
         private void HandleToggleMenu(InputAction.CallbackContext context)
@@ -119,23 +126,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandlePlace(InputAction.CallbackContext context)
         {
-            if (_mouseOverUI) return;
-            if (_isDeleting)
+            if (_selectedObject == null) return;
+            
+            _tileSystem.RpcPlaceObject(_selectedObject.nameString, _ghostManager.TargetPosition, _ghostManager.Dir, _controls.Replace.phase == InputActionPhase.Performed);
+            RefreshGhost();
+        }
+
+        private void HandleDelete(InputAction.CallbackContext context)
+        {
+            if (_itemPlacement)
             {
-                if (_itemPlacement)
-                {
-                    FindAndDeleteItem(_lastSnappedPosition);
-                }
-                else
-                {
-                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, _lastSnappedPosition, _ghostManager.Dir);
-                }
+                FindAndDeleteItem(_lastSnappedPosition);
             }
             else
             {
-                if (_selectedObject == null) return;
-                _tileSystem.RpcPlaceObject(_selectedObject.nameString, _lastSnappedPosition, _ghostManager.Dir, _controls.Replace.phase == InputActionPhase.Performed);
-                RefreshGhost();
+                _tileSystem.RpcClearTileObject(_selectedObject.nameString, _lastSnappedPosition, _ghostManager.Dir);
             }
         }
 
@@ -174,7 +179,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (_itemPlacement)
             {
                 Vector3 newPosition = GetMousePosition();
-                _ghostManager.SetTargetPosition(newPosition);
+                _ghostManager.TargetPosition = newPosition;
                 _lastSnappedPosition = newPosition;
             }
             else
@@ -182,7 +187,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 Vector3 snappedPosition = TileHelper.GetClosestPosition(GetMousePosition());
                 if (snappedPosition != _lastSnappedPosition)
                 {
-                    _ghostManager.SetTargetPosition(snappedPosition);
+                    _ghostManager.TargetPosition = snappedPosition;
                     _lastSnappedPosition = snappedPosition;
                     RefreshGhost();
                 }
@@ -487,14 +492,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
-            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", false);
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            _inputSystem.ToggleActions(new []{_controls.Place, _controls.Delete}, false);
         }
 
         [ServerOrClient]
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
-            Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", true);
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+            _inputSystem.ToggleActions(new []{_controls.Place, _controls.Delete}, true);
         }
     }
 }

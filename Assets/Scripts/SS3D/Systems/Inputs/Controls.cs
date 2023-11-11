@@ -804,6 +804,15 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Delete"",
+                    ""type"": ""Button"",
+                    ""id"": ""f4257e8f-54a4-4181-839c-930d11200e42"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -848,6 +857,17 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Toggle Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7febaa41-8117-4a99-b7cc-af81c91346dd"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Delete"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -944,6 +964,7 @@ namespace SS3D.Systems.Inputs
             m_TileCreator_Place = m_TileCreator.FindAction("Place", throwIfNotFound: true);
             m_TileCreator_Replace = m_TileCreator.FindAction("Replace", throwIfNotFound: true);
             m_TileCreator_Rotate = m_TileCreator.FindAction("Rotate", throwIfNotFound: true);
+            m_TileCreator_Delete = m_TileCreator.FindAction("Delete", throwIfNotFound: true);
             // Interactions
             m_Interactions = asset.FindActionMap("Interactions", throwIfNotFound: true);
             m_Interactions_RunPrimary = m_Interactions.FindAction("Run Primary", throwIfNotFound: true);
@@ -1328,6 +1349,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_TileCreator_Place;
         private readonly InputAction m_TileCreator_Replace;
         private readonly InputAction m_TileCreator_Rotate;
+        private readonly InputAction m_TileCreator_Delete;
         public struct TileCreatorActions
         {
             private @Controls m_Wrapper;
@@ -1336,6 +1358,7 @@ namespace SS3D.Systems.Inputs
             public InputAction @Place => m_Wrapper.m_TileCreator_Place;
             public InputAction @Replace => m_Wrapper.m_TileCreator_Replace;
             public InputAction @Rotate => m_Wrapper.m_TileCreator_Rotate;
+            public InputAction @Delete => m_Wrapper.m_TileCreator_Delete;
             public InputActionMap Get() { return m_Wrapper.m_TileCreator; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1357,6 +1380,9 @@ namespace SS3D.Systems.Inputs
                     @Rotate.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnRotate;
                     @Rotate.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnRotate;
                     @Rotate.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnRotate;
+                    @Delete.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnDelete;
+                    @Delete.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnDelete;
+                    @Delete.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnDelete;
                 }
                 m_Wrapper.m_TileCreatorActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1373,6 +1399,9 @@ namespace SS3D.Systems.Inputs
                     @Rotate.started += instance.OnRotate;
                     @Rotate.performed += instance.OnRotate;
                     @Rotate.canceled += instance.OnRotate;
+                    @Delete.started += instance.OnDelete;
+                    @Delete.performed += instance.OnDelete;
+                    @Delete.canceled += instance.OnDelete;
                 }
             }
         }
@@ -1463,6 +1492,7 @@ namespace SS3D.Systems.Inputs
             void OnPlace(InputAction.CallbackContext context);
             void OnReplace(InputAction.CallbackContext context);
             void OnRotate(InputAction.CallbackContext context);
+            void OnDelete(InputAction.CallbackContext context);
         }
         public interface IInteractionsActions
         {
