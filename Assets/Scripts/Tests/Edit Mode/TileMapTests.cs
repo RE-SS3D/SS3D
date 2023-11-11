@@ -3,6 +3,7 @@ using SS3D.Systems.Tile;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace EditorTests
 {
@@ -10,7 +11,7 @@ namespace EditorTests
     {
         #region Tests
         /// <summary>
-        /// Tests if an object can be built without a plenum by trying to build a wall on an empty tile;
+        /// Tests if an object can be built without a plenum by trying to build a disposal pipe on an empty tile;
         /// </summary>
         [Test]
         public void CannotBuildOnNonPlenum()
@@ -18,9 +19,10 @@ namespace EditorTests
             // SetUp
             ITileLocation[] tileLocations = CreateEmptyTileObjectArray();
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
-            TileObjectSo testSo = CreateTestWallSo();
+            TileObjectSo disposalPipeSo = CreateTestSo("disposal_pipe_test", 1, 1,
+                TileLayer.Disposal, TileObjectGenericType.Pipe);
 
-            bool canBuild = BuildChecker.CanBuild(tileLocations, testSo, Direction.North,
+            bool canBuild = BuildChecker.CanBuild(tileLocations, disposalPipeSo, Direction.North,
                 new Vector3(0,0,0), adjacentObjects, false);
 
             Assert.IsFalse(canBuild);
@@ -42,14 +44,15 @@ namespace EditorTests
             return tileLocations;
         }
 
-        private TileObjectSo CreateTestWallSo()
+        private TileObjectSo CreateTestSo(string name, int width, int height,
+            TileLayer layer, TileObjectGenericType genericType)
         {
             TileObjectSo testSo = (TileObjectSo)ScriptableObject.CreateInstance(typeof(TileObjectSo));
             testSo.nameString = "wall_test";
             testSo.width = 1;
             testSo.height = 1;
             testSo.layer = TileLayer.Turf;
-            testSo.genericType = TileObjectGenericType.Wall;
+            testSo.genericType = TileObjectGenericType.Pipe;
 
             return testSo;
         }
