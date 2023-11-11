@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8860121059280945640}
   - component: {fileID: 6244957436306937818}
   - component: {fileID: 2130642872359250283}
-  - component: {fileID: 3107603588170915162}
+  - component: {fileID: 1323214974002075212}
   m_Layer: 0
   m_Name: TableGlass
   m_TagString: Untagged
@@ -116,39 +116,6 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours:
-  - {fileID: 2130642872359250283}
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
-  SerializedTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
-  _isNetworked: 1
-  _isGlobal: 0
-  _initializeOrder: 0
-  _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 100
-  <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 0
-  <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 10426574306644170534
---- !u!114 &2130642872359250283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2839728781945606427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <IsNested>k__BackingField: 0
-  <ComponentIndex>k__BackingField: 0
-  <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -180,7 +147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 6244957436306937818}
-  _networkObjectCache: {fileID: 6244957436306937818}
+  _networkObjectCache: {fileID: 0}
   _syncedConnections: 0
   advancedAdjacency:
     o: {fileID: -6474879442438147634, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
@@ -200,7 +167,7 @@ MonoBehaviour:
     xQuad: {fileID: 2518676867277241252, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
     viewObstacles: []
     opaque: 0
---- !u!114 &3107603588170915162
+--- !u!114 &1323214974002075212
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
