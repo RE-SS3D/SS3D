@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7033236083530598125}
   - component: {fileID: -2900075557854325373}
   - component: {fileID: 4137545864262984256}
+  - component: {fileID: 4546650457145234162}
   m_Layer: 0
   m_Name: SteelWindowReinforced
   m_TagString: Untagged
@@ -116,7 +117,8 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 4137545864262984256}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -128,7 +130,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 23
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -145,9 +147,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3995769f8fecf9469d1783a30e75625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -2900075557854325373}
   _syncedConnections: 0
   _advancedAdjacency:
     o: {fileID: 2802706056601887283, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
@@ -167,3 +169,17 @@ MonoBehaviour:
     xQuad: {fileID: -4842746724093398965, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     viewObstacles: []
     opaque: 0
+--- !u!114 &4546650457145234162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000

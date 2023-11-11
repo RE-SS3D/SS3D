@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7514870336629038223}
   - component: {fileID: 9015187684533357890}
   - component: {fileID: 617431495096137990}
+  - component: {fileID: -8267408200744649365}
   m_Layer: 0
   m_Name: TableWood
   m_TagString: Untagged
@@ -115,7 +116,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 0}
+  - {fileID: 617431495096137990}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -127,7 +128,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 86
+  <PrefabId>k__BackingField: 92
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -144,11 +145,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 9015187684533357890}
-  _networkObjectCache: {fileID: 0}
-  _genericType: 7
-  _specificType: 4
+  _networkObjectCache: {fileID: 9015187684533357890}
   _syncedConnections: 0
   advancedAdjacency:
     o: {fileID: 3156538240660671990, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
@@ -168,3 +167,17 @@ MonoBehaviour:
     xQuad: {fileID: -6010099680322335773, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
     viewObstacles: []
     opaque: 0
+--- !u!114 &-8267408200744649365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000
