@@ -22,7 +22,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void Update()
         {
-            float width = transform.parent.GetComponent<RectTransform>().rect.width;
+            float width = transform.parent.parent.GetComponent<RectTransform>().rect.width;
             int constraintCount = Convert.ToInt32(Math.Floor(width / (_cellWidth + _paddingWidth)));
 
             if (constraintCount != _grid.constraintCount)

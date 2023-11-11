@@ -217,19 +217,23 @@ namespace SS3D.Systems.Tile
 
         public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
         {
-            ITileLocation[] tileObjects = GetTileLocations(placePosition);
-            ITileLocation tileObject = tileObjects[(int)layer];
-            tileObject.TryGetPlacedObject(out var placed, dir);
+            ITileLocation[] tileLocations = GetTileLocations(placePosition);
+            ITileLocation tileLocation = tileLocations[(int)layer];
+            tileLocation.TryGetPlacedObject(out var placed, dir);
 
 
             if (placed != null && placed.TryGetComponent(out IAdjacencyConnector connector))
             {
                 List<PlacedTileObject> neighbours = connector.GetNeighbours();
-                ResetAdjacencies(placed, tileObject, neighbours);
+                ResetAdjacencies(placed, tileLocation, neighbours);
+            }
+            else
+            {
+                tileLocation.ClearAllPlacedObject();
             }
 
             // Remove any invalid tile combinations
-            List<ITileLocation> toClearLocations = BuildChecker.GetToBeClearedLocations(tileObjects);
+            List<ITileLocation> toClearLocations = BuildChecker.GetToBeClearedLocations(tileLocations);
 
             foreach (ITileLocation clearLocation in toClearLocations)
             {
@@ -380,6 +384,27 @@ namespace SS3D.Systems.Tile
                 OnMapLoaded?.Invoke(this, EventArgs.Empty);
                 UpdateAllAdjacencies();
             }
+        }
+
+        /// <summary>
+        /// Update every adjacency of each placed tile object when the map is loaded.
+        /// </summary>
+        private void UpdateAllAdjacencies()
+        {
+            foreach(TileChunk chunk in _chunks.Values)
+            {
+                foreach(PlacedTileObject obj in chunk.GetAllTilePlacedObjects())
+                {
+                    if (obj.HasAdjacencyConnector)
+                    {
+                        var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
+                        obj.UpdateAdjacencies();
+                    }
+                }
+            }
+
+            OnMapLoaded?.Invoke(this, EventArgs.Empty);
+            UpdateAllAdjacencies();
         }
 
         /// <summary>

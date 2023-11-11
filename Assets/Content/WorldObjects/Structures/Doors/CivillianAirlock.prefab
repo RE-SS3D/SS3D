@@ -386,6 +386,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDirection: 0
   AllowedDirections: 0000000002000000
+  _genericType: 13
+  _specificType: 3
+  _syncedConnections: 0
+  connector:
+    unique: {fileID: 0}
+  wallCapPrefab: {fileID: 3591147544166670882, guid: 9682b163cae64f74a93b6e84ce84ae5b, type: 3}
+  doorType: 0
 --- !u!1001 &2157331936072973061
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -145,9 +145,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: 9015187684533357890}
-  _networkObjectCache: {fileID: 9015187684533357890}
+  _networkObjectCache: {fileID: 0}
+  _genericType: 7
+  _specificType: 4
   _syncedConnections: 0
   advancedAdjacency:
     o: {fileID: 3156538240660671990, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}

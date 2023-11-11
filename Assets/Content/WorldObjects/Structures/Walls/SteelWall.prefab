@@ -289,6 +289,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
   _syncedConnections: 0
+  _networkObjectCache: {fileID: 0}
+  _genericType: 3
+  _specificType: 3
   _advancedAdjacency:
     o: {fileID: -6490088118889457342, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     u: {fileID: -6723024526652964136, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
