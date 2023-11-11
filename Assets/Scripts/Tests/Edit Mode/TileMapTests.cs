@@ -20,7 +20,8 @@ namespace EditorTests
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
             TileObjectSo testSo = CreateTestWallSo();
 
-            bool canBuild = BuildChecker.CanBuild(tileLocations, testSo, Direction.North, adjacentObjects, false);
+            bool canBuild = BuildChecker.CanBuild(tileLocations, testSo, Direction.North,
+                new Vector3(0,0,0), adjacentObjects, false);
 
             Assert.IsFalse(canBuild);
         }
