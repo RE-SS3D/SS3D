@@ -2,11 +2,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
+using SS3D.Animation;
 
 namespace SS3D.Systems.Furniture
 {
+    /// <summary>
+    /// Script controlling the opening and closing of airlocks.
+    /// </summary>
     public class AirLockOpener : NetworkBehaviour
     {
         private const float DOOR_WAIT_CLOSE_TIME = 2.0f;
@@ -64,7 +67,7 @@ namespace SS3D.Systems.Furniture
             SetOpen(false);
         }
 
-        public void SetOpen(bool open)
+        private void SetOpen(bool open)
         {
             _animator.SetBool(OpenId, open);
         }
