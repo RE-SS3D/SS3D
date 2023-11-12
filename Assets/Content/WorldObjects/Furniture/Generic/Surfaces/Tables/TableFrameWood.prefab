@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4229887190052127918}
   - component: {fileID: 7514870336629038223}
   - component: {fileID: -908405258838932631}
+  - component: {fileID: -5435112872193954414}
   m_Layer: 0
   m_Name: TableFrameWood
   m_TagString: Untagged
@@ -125,8 +126,21 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 84
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 8281807739186328886
+--- !u!114 &-5435112872193954414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000
