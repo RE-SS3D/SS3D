@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Coimbra;
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data;
+using SS3D.Data.Enums;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace SS3D.Systems.Audio
 {
-    public class AudioSystem : Core.Behaviours.System
+    public class AudioSystem : Core.Behaviours.NetworkSystem
     {
         protected override void OnAwake()
         {
@@ -41,25 +45,37 @@ namespace SS3D.Systems.Audio
         /// <summary>
         /// Grabs an unused audio source and plays an audio clip at the desired location.
         /// </summary>
-        public void PlayAudioSource(AudioClip audioClip, Vector3 position)
+        [Server]
+        public void PlayAudioSource(AudiosIds audioClipId, Vector3 position)
         {
-            PlayAudioSource(audioClip, position, gameObject);
+            PlayAudioSource(audioClipId, position, NetworkObject);
         }
 
         /// <summary>
         /// Grabs a free audio source and parents it to a specific object before playing it.
         /// </summary>
-        public void PlayAudioSource(AudioClip audioClip, GameObject parent)
+        [Server]
+        public void PlayAudioSource(AudiosIds audioClipId, NetworkObject parent)
         {
-            PlayAudioSource(audioClip, parent.transform.position, parent);
+            PlayAudioSource(audioClipId, parent.transform.position, parent);
+            RpcPlayAudioSource(audioClipId, parent.transform.position, parent);
         }
 
         /// <summary>
         /// Plays a sound clip at a position, parent, with specific volume, pitch, and ranges.
         /// Volume, pitch, and ranges are optional.
         /// </summary>
-        public void PlayAudioSource(AudioClip audioClip, Vector3 position, GameObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        [Server]
+        public void PlayAudioSource(AudiosIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
+            RpcPlayAudioSource(audioClipId, position, parent, volume, pitch, minRange, maxRange);   
+        }
+
+
+        [ObserversRpc]
+        public void RpcPlayAudioSource(AudiosIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        {
+            var audioClip = Assets.Get<AudioClip>((int)AssetDatabases.Audios, (int)audioClipId);
             var audioSource = FindAvailableAudioSource();
             audioSource.gameObject.transform.position = position;
             audioSource.clip = audioClip;
@@ -68,25 +84,8 @@ namespace SS3D.Systems.Audio
             audioSource.minDistance = minRange;
             audioSource.maxDistance = maxRange;
             //If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
-            //This is useful for things that are obviously creating the sound, like a mouse's squeak -- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
-            audioSource.transform.parent = parent == null ? null : parent.transform;
-            audioSource.Play();
-        }
-
-        /// <summary>
-        /// Plays a sound clip using a specific audio source at a position, parent, with specific volume, pitch, and ranges.
-        /// Volume, pitch, and ranges are optional. 
-        /// </summary>
-        public void PlayAudioSourceSpecific(AudioSource audioSource, AudioClip audioClip, Vector3 position, GameObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
-        {
-            audioSource.gameObject.transform.position = position;
-            audioSource.clip = audioClip;
-            audioSource.volume = volume;
-            audioSource.pitch = pitch;
-            audioSource.minDistance = minRange;
-            audioSource.maxDistance = maxRange;
-            //If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
-            //This is useful for things that are obviously creating the sound, like a mouse's squeak -- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
+            //This is useful for things that are obviously creating the sound, like a mouse's squeak
+            //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
             audioSource.transform.parent = parent == null ? null : parent.transform;
             audioSource.Play();
         }
