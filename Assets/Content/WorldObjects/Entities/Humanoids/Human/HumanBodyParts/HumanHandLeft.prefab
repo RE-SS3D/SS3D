@@ -232,7 +232,7 @@ GameObject:
   - component: {fileID: 636696804841796911}
   - component: {fileID: 3617335994165229519}
   - component: {fileID: 3121450657523103103}
-  m_Layer: 12
+  m_Layer: 10
   m_Name: HumanHandLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,11 +274,11 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 7380375041138074868}
+  - {fileID: 3804509484627004799}
   - {fileID: 2043125828508283566}
   - {fileID: 1996247818362525544}
   - {fileID: 636696804841796911}
   - {fileID: 3617335994165229519}
-  - {fileID: 3804509484627004799}
   - {fileID: 9077970806922634082}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -472,7 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 5
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 171912613050136349}
   _networkObjectCache: {fileID: 171912613050136349}
   _name: human hand left
@@ -494,7 +494,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83a3281d5348d93498a0d8d0e3b7751d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 171912613050136349}
   _networkObjectCache: {fileID: 171912613050136349}
   _parentBodyPart: {fileID: 0}
@@ -517,7 +517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 171912613050136349}
   _networkObjectCache: {fileID: 171912613050136349}
   _automaticContainerSetUp: 0
@@ -569,7 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60c09e136263a44eb7996c9a5dc742a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 171912613050136349}
   _networkObjectCache: {fileID: 171912613050136349}
   Container: {fileID: 1996247818362525544}
@@ -591,7 +591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 171912613050136349}
   _networkObjectCache: {fileID: 171912613050136349}
   _bodyPart: {fileID: 2043125828508283566}

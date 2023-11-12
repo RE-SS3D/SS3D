@@ -281,7 +281,7 @@ GameObject:
   - component: {fileID: 2397838539606738385}
   - component: {fileID: 5308582014386986525}
   - component: {fileID: 2667861044257637155}
-  m_Layer: 12
+  m_Layer: 10
   m_Name: HumanTorso
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -348,7 +348,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 55
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0

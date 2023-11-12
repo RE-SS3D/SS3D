@@ -1035,7 +1035,7 @@ GameObject:
   - component: {fileID: 996878099285015069}
   - component: {fileID: 3065600715364136503}
   - component: {fileID: 3854834578962148855}
-  m_Layer: 12
+  m_Layer: 10
   m_Name: HumanHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}

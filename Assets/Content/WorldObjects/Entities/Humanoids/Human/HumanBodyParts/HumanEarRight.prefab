@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 4259797456202353733}
   - component: {fileID: 286891394951643036}
   - component: {fileID: 3626868207557942187}
-  m_Layer: 12
+  m_Layer: 10
   m_Name: HumanEarRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 52
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0

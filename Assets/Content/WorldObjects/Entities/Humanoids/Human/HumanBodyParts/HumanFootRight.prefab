@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 8338643013850178505}
   - component: {fileID: 5996738223769901781}
   - component: {fileID: 7610292138979804179}
-  m_Layer: 12
+  m_Layer: 10
   m_Name: HumanFootRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 150
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0

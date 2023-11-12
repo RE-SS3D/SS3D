@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 9157174363040288740}
   - component: {fileID: 9190760884376883877}
   - component: {fileID: -5030209921304096726}
-  m_Layer: 12
+  m_Layer: 10
   m_Name: HumanLegLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 19
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
