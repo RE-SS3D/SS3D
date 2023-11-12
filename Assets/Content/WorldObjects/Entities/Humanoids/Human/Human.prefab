@@ -7051,7 +7051,7 @@ MonoBehaviour:
   attackType: 0
   damageAmount: 10
   _inflictToSingleLayer: 1
-  _bodyLayerType: 1
+  _bodyLayerType: 0
 --- !u!114 &5283895024578974260
 MonoBehaviour:
   m_ObjectHideFlags: 0
