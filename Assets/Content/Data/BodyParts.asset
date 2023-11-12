@@ -15,6 +15,4 @@ MonoBehaviour:
   EnumNamespaceName: SS3D.Data.Enums
   EnumName: BodyPartsIds
   AssetGroup: {fileID: 11400000, guid: ee54898534212cd4a97b528a9d620c75, type: 2}
-  Assets:
-  - {fileID: 5774385816057912484, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
-  - {fileID: 5774385816057912484, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
+  Assets: []
