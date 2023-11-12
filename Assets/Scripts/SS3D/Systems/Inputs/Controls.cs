@@ -784,7 +784,7 @@ namespace SS3D.Systems.Inputs
                     ""id"": ""fb428f7f-c99e-4c81-b825-65cea417ee0d"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press(behavior=1)"",
                     ""initialStateCheck"": false
                 },
                 {
