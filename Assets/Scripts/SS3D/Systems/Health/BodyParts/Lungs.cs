@@ -64,6 +64,11 @@ namespace SS3D.Systems.Health
         private void Breath()
         {
             OnBreath?.Invoke(this, EventArgs.Empty);
+
+            //TODO : temporary fix for lungs when they are not attached to a health controller. Should eventually prevent breathing
+            // when lungs are detached from head.
+            if (HealthController == null) return;
+
             SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
             if (HealthController.Circulatory.Container.GetSubstanceQuantity(oxygen) > HealthController.Circulatory.MaxOxygenQuantity)
