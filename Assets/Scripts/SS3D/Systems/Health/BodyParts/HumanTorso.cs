@@ -23,6 +23,9 @@ public class HumanTorso : BodyPart
     private IEnumerator AddInternalOrgans()
     {
         yield return null;
+        AddInternalBodyPart(heart);
+        AddInternalBodyPart(leftLung);
+        AddInternalBodyPart(rightLung);
     }
 
     protected override void AddInitialLayers()
