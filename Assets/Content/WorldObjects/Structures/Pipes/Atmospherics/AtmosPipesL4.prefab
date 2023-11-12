@@ -134,9 +134,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -7727686409064562107}
   _networkObjectCache: {fileID: -7727686409064562107}
-  _networkObjectCache: {fileID: 0}
-  _genericType: 1
-  _specificType: 0
   _syncedConnections: 0
   simpleAdjacency:
     o: {fileID: 5763238997108834030, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
