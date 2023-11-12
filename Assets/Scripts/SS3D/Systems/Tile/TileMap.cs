@@ -229,7 +229,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                tileLocation.ClearAllPlacedObject();
+                tileLocation.TryClearPlacedObject(dir);
             }
 
             // Remove any invalid tile combinations
