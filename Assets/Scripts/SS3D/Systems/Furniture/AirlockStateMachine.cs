@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Systems.Tile.Connections;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,11 +41,33 @@ namespace SS3D.Systems.Furniture
 
         private void ChangeColors(Color color, Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            var renderers = animator.GetComponentsInChildren<MeshRenderer>();
+            var renderers = animator.GetComponent<AirLockOpener>().MeshesToColor;
+            var skinnedRenderers = animator.GetComponent<AirLockOpener>().SkinnedMeshesToColor;
             foreach (var renderer in renderers)
             {
                 renderer.materials[DOOR_LIGHT_MATERIAL_INDEX].color = color;
             }
+
+            foreach (var skinnedRenderer in skinnedRenderers)
+            {
+                if (color == _openingColor)
+                {
+                    skinnedRenderer.SetBlendShapeWeight(1, 100);
+                    skinnedRenderer.SetBlendShapeWeight(2, 0);
+                }
+                else if (color == _closingColor)
+                {
+                    skinnedRenderer.SetBlendShapeWeight(1, 0);
+                    skinnedRenderer.SetBlendShapeWeight(2, 100);
+                }
+                else
+                {
+                    skinnedRenderer.SetBlendShapeWeight(1, 0);
+                    skinnedRenderer.SetBlendShapeWeight(2, 0);
+                }
+                
+            }
+
         }
     }
 }
