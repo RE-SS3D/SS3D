@@ -7,6 +7,7 @@ namespace SS3D.Systems.Furniture
 {
     /// <summary>
     /// State machine behaviour to update colors upon change of state in the Airlock animator.
+    /// This behaviour should go on state Open and Enter of the airlock state machine.
     /// </summary>
     public class AirlockStateMachine : StateMachineBehaviour
     {
