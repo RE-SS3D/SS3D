@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4229887190052127918}
   - component: {fileID: 7514870336629038223}
   - component: {fileID: -9158575437637332483}
+  - component: {fileID: 2673028181256196774}
   m_Layer: 0
   m_Name: TableFrameSteel
   m_TagString: Untagged
@@ -125,8 +126,22 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 176
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 18267481566877926774
+--- !u!114 &2673028181256196774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000

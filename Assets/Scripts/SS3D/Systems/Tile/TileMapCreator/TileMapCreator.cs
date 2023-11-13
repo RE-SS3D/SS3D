@@ -441,17 +441,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
                         TileLayer.WallMountLow
                     }, false);
 
-                    break;
-                case 4:
-                    LoadObjectGrid(new[]
-                    {
-                        TileLayer.Wire,
-                        TileLayer.Disposal,
-                        TileLayer.PipeLeft,
+					break;
+				case 4:
+					LoadObjectGrid(new[]
+					{
+						TileLayer.Wire,
+						TileLayer.Disposal,
+						TileLayer.PipeLeft,
                         TileLayer.PipeRight,
                         TileLayer.PipeSurface,
                         TileLayer.PipeMiddle
-                    }, false);
+					}, false);
 
                     break;
                 case 5:

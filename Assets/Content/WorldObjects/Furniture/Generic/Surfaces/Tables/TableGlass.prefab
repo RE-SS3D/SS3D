@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8860121059280945640}
   - component: {fileID: 6244957436306937818}
   - component: {fileID: 2130642872359250283}
+  - component: {fileID: 1323214974002075212}
   m_Layer: 0
   m_Name: TableGlass
   m_TagString: Untagged
@@ -166,3 +167,17 @@ MonoBehaviour:
     xQuad: {fileID: 2518676867277241252, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
     viewObstacles: []
     opaque: 0
+--- !u!114 &1323214974002075212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000

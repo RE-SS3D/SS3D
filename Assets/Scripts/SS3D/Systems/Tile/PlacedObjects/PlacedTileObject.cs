@@ -194,6 +194,84 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
+        /// TODO don't use chunk if possible, or chunk coordinate as well.
+        /// Is this at the direction of the other object ? (has to be adjacent).
+        /// </summary>
+        public bool AtDirectionOf(PlacedTileObject other, Direction dir)
+        {
+            switch (dir)
+            {
+                case Direction.North:
+                    return math.mod(other.Origin.y - 1, TileConstants.ChunkSize) == Origin.y;
+                case Direction.South:
+                    return math.mod(other.Origin.y + 1, TileConstants.ChunkSize) == Origin.y;
+                case Direction.East:
+                    return math.mod(other.Origin.x - 1, TileConstants.ChunkSize) == Origin.x;
+                case Direction.West:
+                    return math.mod(other.Origin.x + 1, TileConstants.ChunkSize) == Origin.x;
+                default: return false;
+            }
+            
+        }
+
+        public bool HasNeighbourFrontBack(List<PlacedTileObject> neighbours,
+    out PlacedTileObject inFrontOrBack, bool front)
+        {
+            foreach (var neighbour in neighbours)
+            {
+                if (front && neighbour.IsInFront(this))
+                {
+                    inFrontOrBack = neighbour;
+                    return true;
+                }
+
+                if (!front && neighbour.IsBehind(this))
+                {
+                    inFrontOrBack = neighbour;
+                    return true;
+                }
+            }
+
+            inFrontOrBack = null;
+            return false;
+        }
+
+        public bool HasNeighbourOnSide(List<PlacedTileObject> neighbours,
+            out PlacedTileObject onSide, bool left)
+        {
+            foreach (var neighbour in neighbours)
+            {
+                if (!left && neighbour.IsOnRight(this))
+                {
+                    onSide = neighbour;
+                    return true;
+                }
+
+                if (left && neighbour.IsOnLeft(this))
+                {
+                    onSide = neighbour;
+                    return true;
+                }
+            }
+
+            onSide = null;
+            return false;
+        }
+
+        public bool HasNeighbourAtDirection(List<PlacedTileObject> neighbours, out PlacedTileObject atDirection, Direction dir)
+        {
+            foreach (var neighbour in neighbours)
+            {
+                if (AtDirectionOf(neighbour, dir))
+                {
+                    atDirection = neighbour;
+                    return true;
+                }
+            }
+
+            atDirection = null;
+            return false;
+        }
         /// Other is a neighbour, placed at some direction from this.
         /// </summary>
         /// <param name="other">another placedTileObject, which should be neighbouring this.</param>
