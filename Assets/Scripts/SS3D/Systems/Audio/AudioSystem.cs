@@ -71,6 +71,24 @@ namespace SS3D.Systems.Audio
             RpcPlayAudioSource(audioClipId, position, parent, volume, pitch, minRange, maxRange);   
         }
 
+        [Server]
+        public void StopAudioSource(NetworkObject parent)
+        {
+            RpcStopAudioSource(parent);
+        }
+
+        [Server]
+        public void SetTimeAudioSource(NetworkObject parent, float time)
+        {
+            RPCSetTimeAudioSource(parent, time);
+        }
+
+        [ObserversRpc]
+        public void RPCSetTimeAudioSource(NetworkObject parent, float time)
+        {
+            parent.GetComponentInChildren<AudioSource>().time = time;
+        }
+
 
         [ObserversRpc]
         public void RpcPlayAudioSource(AudiosIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
@@ -88,6 +106,12 @@ namespace SS3D.Systems.Audio
             //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
             audioSource.transform.parent = parent == null ? null : parent.transform;
             audioSource.Play();
+        }
+
+        [ObserversRpc]
+        public void RpcStopAudioSource(NetworkObject parent)
+        {
+            parent.GetComponentInChildren<AudioSource>().Stop();
         }
 
         /// <summary>
