@@ -20,54 +20,55 @@ namespace SS3D.Systems.Tile.Connections
 {
 
     /// <summary>
-    /// ISSUE : I connectors not connecting when one side isn't straight.
-    /// ISSUE : can't alternate between LIN LOUT diagonnally.
+    /// Use this script for things such as booths or other models for which direction matters for connections. 
+    /// It should mostly work with models such as booth, bench, and other connectable seats.
+    /// DO NOT MODIFY WITHOUT A LOT OF CARE. There's a lot of edge cases and it's easy to break it. You've been warned.
     /// </summary>
     public class DirectionnalAdjacencyConnector : NetworkActor, IAdjacencyConnector
     {
 
-        protected TileObjectGenericType _genericType;
-
-
-        protected TileObjectSpecificType _specificType;
-
-        
+        /// <summary>
+        /// Struct to help find the right shape, direction and rotation for a given directional.
+        /// </summary>
         public DirectionnalShapeResolver AdjacencyResolver;
 
-        protected AdjacencyMap _adjacencyMap;
-
+       /// <summary>
+       /// The mesh filter of the current directional.
+       /// </summary>
         protected MeshFilter _filter;
 
+        /// <summary>
+        /// The current placed object associated with this connector.
+        /// </summary>
         protected PlacedTileObject _placedObject;
 
-        public PlacedTileObject PlacedObject => _placedObject;
-
-        public Direction PlacedObjectDirection => _placedObject.Direction;
-
+        /// <summary>
+        /// True if the script has been initialized.
+        /// </summary>
         private bool _initialized;
 
         /// <summary>
-        /// The current rotation of this directionnal
+        /// The current rotation of this directionnal.
         /// </summary>
         private float _currentRotation;
 
         /// <summary>
-        /// The current number of connected neighbours to this directionnal
+        /// The current number of connected neighbours to this directionnal.
         /// </summary>
         private int _currentConnections;
 
         /// <summary>
-        /// The current shape the directionnal is taking
+        /// The current shape the directionnal is taking.
         /// </summary>
         private AdjacencyShape _currentShape;
 
         /// <summary>
-        /// First connected neighbour of the directionnal, server only
+        /// First connected neighbour of the directionnal, server only.
         /// </summary>
         private PlacedTileObject _firstNeighbour;
 
         /// <summary>
-        /// Second connected neighbour of the directionnal, server only
+        /// Second connected neighbour of the directionnal, server only.
         /// </summary>
         private PlacedTileObject _secondNeighbour;
 
@@ -86,28 +87,26 @@ namespace SS3D.Systems.Tile.Connections
         {
             if (!_initialized)
             {
-                _adjacencyMap = new AdjacencyMap();
                 _filter = GetComponent<MeshFilter>();
 
                 _placedObject = GetComponent<PlacedTileObject>();
-                if (_placedObject == null)
-                {
-                    _genericType = TileObjectGenericType.None;
-                    _specificType = TileObjectSpecificType.None;
-                }
-                else
-                {
-                    _genericType = _placedObject.GenericType;
-                    _specificType = _placedObject.SpecificType;
-                }
                 _initialized = true;
             }
         }
 
+        /// <summary>
+        /// Get all neighbour directionals, in cardinal directions from this. 
+        /// </summary>
+        /// <returns> a list of found neighbours.</returns>
         public List<PlacedTileObject> GetNeighbours()
         {
             Setup();
-            return GetNeighbourDirectionnal();
+            var tileSystem = Subsystems.Get<TileSystem>();
+            var map = tileSystem.CurrentMap;
+
+            var neighbours = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
+            return neighbours.Where(x => x != null &&
+                x.TryGetComponent<DirectionnalAdjacencyConnector>(out var component)).ToList();
         }
 
         /// <summary>
@@ -140,7 +139,7 @@ namespace SS3D.Systems.Tile.Connections
         private void UpdateAllAndNeighbours(bool updateNeighbour)
         {
             Setup();
-            var neighbours = GetNeighbourDirectionnal();
+            var neighbours = GetNeighbours();
             // We don't want to update neighbours which are already fully connected, they should stay as they are.
             neighbours = neighbours.Where(x => !DirectionnalAlreadyHasTwoConnections(x, true)).ToList();
             int connections = 0;
@@ -277,21 +276,6 @@ namespace SS3D.Systems.Tile.Connections
                 || IsSecondLInConfiguration(neighbours, out first, out second)
                 || IsFirstLOutConfiguration(neighbours, out first, out second)
                 || IsSecondLOutConfiguration(neighbours, out first, out second);
-        }
-
-
-        /// <summary>
-        /// Get all neighbour directionnal, in cardinal directions from this. 
-        /// </summary>
-        /// <returns> a list of found neighbours.</returns>
-        private List<PlacedTileObject> GetNeighbourDirectionnal()
-        {
-            var tileSystem = Subsystems.Get<TileSystem>();
-            var map = tileSystem.CurrentMap;
-
-            var neighbours = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
-            return neighbours.Where(x => x != null &&
-                x.TryGetComponent<DirectionnalAdjacencyConnector>(out var component)).ToList();
         }
 
         /// <summary>
