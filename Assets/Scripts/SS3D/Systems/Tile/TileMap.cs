@@ -1,17 +1,21 @@
-using FishNet;
+﻿using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Logging;
+using SS3D.Systems.Tile.Connections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Class used for storing and modifying a tile map.
+    /// Class used for storing and modifying a tile map. Coordinates on the tile map follows the following :
+    /// - South North  is the Y axis with North going toward positives.
+    /// - East West is the X axis with east going toward positives.
     /// </summary>
     public class TileMap : NetworkBehaviour
     {
@@ -20,6 +24,8 @@ namespace SS3D.Systems.Tile
         private string _mapName;
 
         public int ChunkCount => _chunks.Count;
+
+        public event EventHandler OnMapLoaded;
 
         public static TileMap Create(string name)
         {
@@ -90,7 +96,7 @@ namespace SS3D.Systems.Tile
             return chunk;
         }
 
-        private TileChunk GetChunk(Vector3 worldPosition)
+        public TileChunk GetChunk(Vector3 worldPosition)
         {
             Vector2Int key = GetKey(worldPosition);
 
@@ -104,37 +110,64 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        private TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        private ITileLocation GetTileLocation(TileLayer layer, Vector3 worldPosition)
         {
             TileChunk chunk = GetOrCreateChunk(worldPosition); // TODO: creates unnessary empty chunk when checking whether building can be done
             return chunk.GetTileObject(layer, worldPosition);
         }
 
 
-        private TileObject[] GetTileObjects(Vector3 worldPosition)
+        private ITileLocation[] GetTileLocations(Vector3 worldPosition)
         {
-            TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayers().Length];
+            ITileLocation[] tileObjects = new ITileLocation[TileHelper.GetTileLayers().Length];
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                tileObjects[(int)layer] = GetTileObject(layer, worldPosition);
+                tileObjects[(int)layer] = GetTileLocation(layer, worldPosition);
             }
 
             return tileObjects;
         }
 
-        private PlacedTileObject[] GetNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        /// <summary>
+        /// Returns an array of the 8 neighbouring placed objects of a given tile location.
+        /// It should be noted that if the tile location is not a single object tile location (e.g a cardinal tile location),
+        /// then it checks if on the tile next to it, an item is present in the opposite direction.
+        /// Therefore it doesn't consider neighbours two objects on adjacent tiles, unless they're placed in opposite
+        /// direction. For single object tile location, direction does not matter of course.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
+        public PlacedTileObject[] GetNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
         {
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).PlacedObject;
+                ITileLocation neighbourLocation = GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
+                neighbourLocation.TryGetPlacedObject(out PlacedTileObject neighbourObject, TileHelper.GetOpposite(direction));
+                adjacentObjects[(int)direction] = neighbourObject;
+            }
+            return adjacentObjects;
+        }
+
+
+        public List<PlacedTileObject> GetCardinalNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        {
+            List<PlacedTileObject> adjacentObjects = new();
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction+= 2)
+            {
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
+                adjacentObjects.AddRange(
+                    GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetAllPlacedObject());
             }
 
             return adjacentObjects;
         }
+
 
         /// <summary>
         /// Returns whether the specified object can be successfully build for a given position and direction.
@@ -156,14 +189,15 @@ namespace SS3D.Systems.Tile
                 // Verify if we are allowed to build for this grid position
                 Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
 
-                canBuild &= BuildChecker.CanBuild(GetTileObjects(gridPosition), tileObjectSo, dir, 
+                canBuild &= BuildChecker.CanBuild(GetTileLocations(gridPosition), tileObjectSo, dir, gridPosition,
                     GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition), replaceExisting);
             }
             
             return canBuild;
         }
 
-        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool skipBuildCheck, bool replaceExisting)
+        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
+            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency)
         {
             bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
 
@@ -181,44 +215,82 @@ namespace SS3D.Systems.Tile
 
                     // Remove an existing object if there
                     if (replaceExisting)
-                        ClearTileObject(gridPosition, tileObjectSo.layer);
+                        ClearTileObject(gridPosition, tileObjectSo.layer, dir);
 
                     // Place new object
-                    chunk.GetTileObject(tileObjectSo.layer, gridPosition).PlacedObject = placedObject;
+                    chunk.GetTileObject(tileObjectSo.layer, gridPosition).AddPlacedObject(placedObject, dir);
                 }
 
-                // Handle Adjacency connectors
-                var neighbourTiles = GetNeighbourPlacedObjects(tileObjectSo.layer, placePosition);
-                placedObject.UpdateAdjacencies(neighbourTiles);
+                // Handle Adjacency connectors, can skip it particulary when loading the map.
+                if (!skipAdjacency){
+                    placedObject.UpdateAdjacencies();
+                }
+               
             }
 
             return canBuild;
         }
 
-        public void ClearTileObject(Vector3 placePosition, TileLayer layer)
+        public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
         {
-            TileObject[] tileObjects = GetTileObjects(placePosition);
-            tileObjects[(int)layer].ClearPlacedObject();
+            ITileLocation[] tileLocations = GetTileLocations(placePosition);
+            ITileLocation tileLocation = tileLocations[(int)layer];
+            tileLocation.TryGetPlacedObject(out var placed, dir);
 
-            // Update any neighbouring adjacencies
-            ResetAdjacencies(placePosition, layer);
+
+            if (placed != null && placed.TryGetComponent(out IAdjacencyConnector connector))
+            {
+                List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                ResetAdjacencies(placed, tileLocation, neighbours);
+            }
+            else
+            {
+                tileLocation.TryClearPlacedObject(dir);
+            }
 
             // Remove any invalid tile combinations
-            List<TileObject> toRemoveObjects = BuildChecker.GetToBeDestroyedObjects(tileObjects);
+            List<ITileLocation> toClearLocations = BuildChecker.GetToBeClearedLocations(tileLocations);
 
-            foreach (TileObject removeObject in toRemoveObjects)
+            foreach (ITileLocation clearLocation in toClearLocations)
             {
-                removeObject.ClearPlacedObject();
-                ResetAdjacencies(placePosition, removeObject.Layer);
+                var allPlaced = clearLocation.GetAllPlacedObject();
+
+                foreach (PlacedTileObject placedToClear in allPlaced)
+                {
+                    if (placed != null && placedToClear.TryGetComponent(out connector))
+                    {
+                        List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                        ResetAdjacencies(placed, clearLocation, neighbours);
+                    }
+                }
+
+                clearLocation.ClearAllPlacedObject();
             }
         }
 
-        private void ResetAdjacencies(Vector3 placePosition, TileLayer layer)
+        private void ResetAdjacencies(PlacedTileObject placed, ITileLocation location, List<PlacedTileObject> neighbours)
         {
-            var neighbourTiles = GetNeighbourPlacedObjects(layer, placePosition);
-            for (int i = 0; i < neighbourTiles.Length; i++)
+            List<Direction> neighboursAtDirection= new List<Direction>();
+
+            // First get the directions of all neighbours, relative to this placed object.
+            // Direction is not always relevant (e.g disposal pipes with disposal furnitures)
+            // but it is in most cases. It's up to the connectors to choose what they do with this info.
+            foreach (PlacedTileObject neighbour in neighbours)
             {
-                neighbourTiles[i]?.UpdateSingleAdjacency(null, TileHelper.GetOpposite((Direction)i));
+               placed.NeighbourAtDirectionOf(neighbour, out var dir);
+               neighboursAtDirection.Add(dir);
+            }
+            // then destroy this placed object. It's important to do it here, before updating
+            // adjacencies, as some connectors might be looking for it.
+            location.ClearAllPlacedObject();
+
+            // Then update all neighbours, using their directions.
+            int i = 0;
+            foreach (PlacedTileObject neighbour in neighbours)
+            {
+                Direction dir = neighboursAtDirection[i];
+                neighbour?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), null, false);
+                i++;
             }
         }
 
@@ -292,11 +364,11 @@ namespace SS3D.Systems.Tile
 
         public void Load([CanBeNull] SavedTileMap saveObject)
         {
-	        if (saveObject == null)
-	        {       
+            if (saveObject == null)
+            {
                 Log.Warning(this, "The intended save object is null");
-		        return;
-	        }
+                return;
+            }
 
             Clear();
 
@@ -305,21 +377,46 @@ namespace SS3D.Systems.Tile
             foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
+                ISavedTileLocation[] savedTiles = savedChunk.savedTiles;
 
-                foreach (SavedTileObject savedTile in savedChunk.tileObjectSaveObjectArray)
+                foreach (var savedTile in savedTiles)
                 {
-                    TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedTile.placedSaveObject.tileObjectSOName);
-                    Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
+                    foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
+                    {
+                        TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedObject.tileObjectSOName);
+                        Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
 
-                    // Skipping build check here to allow loading tile objects in a non-valid order
-                    PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true, false);
+                        // Skipping build check here to allow loading tile objects in a non-valid order
+                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true);
+                    }
                 }
-            }
 
-            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+                foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+                {
+                    ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
+                    PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                }
+
+                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                UpdateAllAdjacencies();
+            }
+        }
+
+        /// <summary>
+        /// Update every adjacency of each placed tile object when the map is loaded.
+        /// </summary>
+        private void UpdateAllAdjacencies()
+        {
+            foreach(TileChunk chunk in _chunks.Values)
             {
-                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
-                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                foreach(PlacedTileObject obj in chunk.GetAllTilePlacedObjects())
+                {
+                    if (obj.HasAdjacencyConnector)
+                    {
+                        var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
+                        obj.UpdateAdjacencies();
+                    }
+                }
             }
         }
     }

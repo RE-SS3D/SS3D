@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using UnityEngine;
 using Actor = SS3D.Core.Behaviours.Actor;
 
@@ -24,13 +24,22 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Deleting
         }
 
-        public Direction Dir { get; private set; } = Direction.North;
+        public Direction Dir { get; private set; }
 
         public void CreateGhost(GameObject prefab)
         {
             if (_ghostObject == null)
             {
                 _ghostObject = Instantiate(prefab);
+
+                if (_ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+                {
+                    Dir = customRotationComponent.DefaultDirection;
+                }
+                else
+                {
+                    Dir = Direction.North;
+                }
 
                 if (_ghostObject.TryGetComponent<Rigidbody>(out var ghostRigidbody))
                 {
@@ -108,7 +117,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void SetNextRotation()
         {
-            Dir = TileHelper.GetNextDir(Dir);
+            if (_ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+            {
+                Dir = customRotationComponent.GetNextDirection(Dir);
+            }
+            else
+            {
+                Dir = TileHelper.GetNextCardinalDir(Dir);
+            }
+            
         }
     }
 }

@@ -25,6 +25,11 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         public int DiagonalConnectionCount => GetAdjacencies(false).Count;
 
+        /// <summary>
+        /// Get the total number of connections.
+        /// </summary>
+        public int ConnectionCount => GetAdjacencies(true).Count + GetAdjacencies(false).Count;
+
         public AdjacencyMap()
         {
             _connections = new [] {
@@ -106,7 +111,7 @@ namespace SS3D.Systems.Tile.Connections
             return changed;
         }
 
-        private List<Direction> GetAdjacencies(bool cardinal)
+        public List<Direction> GetAdjacencies(bool cardinal)
         {
             //Are we getting adjacencies for cardinal or diagonal directions?
             List<int> directionIndexes = cardinal ?
