@@ -346,11 +346,10 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 7942135432533076774}
   _networkObjectCache: {fileID: 7942135432533076774}
-  _objectsToRecolor: []
   _animator: {fileID: 6205019768642409540}
   doorTriggerLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2048
 --- !u!65 &3215555771586221794
 BoxCollider:
   m_ObjectHideFlags: 0
