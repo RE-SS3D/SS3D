@@ -21,6 +21,18 @@ MonoBehaviour:
     m_Address: Assets/Art/Sound/Items/Cosmetic/BikeHorn.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: ec8b849764a7e9147b2a565f81a1ca42
+    m_Address: Assets/Art/Sound/World/Music/title1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3f51862f0b88a5243a8cceb97147489d
+    m_Address: Assets/Art/Sound/World/Music/title2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fd331e360db5fbb448e66367e41d1893
+    m_Address: Assets/Art/Sound/World/Music/title3.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
