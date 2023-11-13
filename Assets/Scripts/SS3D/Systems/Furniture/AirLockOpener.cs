@@ -22,16 +22,13 @@ namespace SS3D.Systems.Furniture
         [SerializeField] private LayerMask doorTriggerLayers = -1;
 
 
-        private bool openState; // Server and Client
-
-
         private int playersInTrigger; // Server Only
         private Coroutine closeTimer; // Server Only
 
 
         public void OnTriggerEnter(Collider other)
         {
-            
+            if (!IsServer) return;
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
 
             if (playersInTrigger == 0)
@@ -49,6 +46,7 @@ namespace SS3D.Systems.Furniture
 
         public void OnTriggerExit(Collider other)
         {
+            if(!IsServer) return;
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
 
             if (playersInTrigger == 1)
@@ -66,6 +64,7 @@ namespace SS3D.Systems.Furniture
             SetOpen(false);
         }
 
+        [Server]
         private void SetOpen(bool open)
         {
             _animator.SetBool(OpenId, open);
