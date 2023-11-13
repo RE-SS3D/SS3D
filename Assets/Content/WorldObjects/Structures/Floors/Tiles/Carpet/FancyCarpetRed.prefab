@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 37166840573251760}
   - component: {fileID: 6999522401175031449}
   - component: {fileID: 3040907911380660968}
+  - component: {fileID: -8129327122462613158}
   m_Layer: 0
   m_Name: FancyCarpetRed
   m_TagString: Untagged
@@ -127,7 +128,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 42
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -147,8 +148,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 6999522401175031449}
   _networkObjectCache: {fileID: 6999522401175031449}
-  _genericType: 9
-  _specificType: 5
   _syncedConnections: 0
   advancedAdjacency:
     o: {fileID: 6313828114514605112, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
@@ -168,3 +167,17 @@ MonoBehaviour:
     xQuad: {fileID: 9022132694264211953, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
     viewObstacles: []
     opaque: 0
+--- !u!114 &-8129327122462613158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000

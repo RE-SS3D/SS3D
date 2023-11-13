@@ -173,7 +173,7 @@ namespace SS3D.Systems.Tile
                 // Verify if we are allowed to build for this grid position
                 Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
 
-                canBuild &= BuildChecker.CanBuild(GetTileLocations(gridPosition), tileObjectSo, dir, 
+                canBuild &= BuildChecker.CanBuild(GetTileLocations(gridPosition), tileObjectSo, dir, gridPosition,
                     GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition), replaceExisting);
             }
             
@@ -229,7 +229,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                tileLocation.ClearAllPlacedObject();
+                tileLocation.TryClearPlacedObject(dir);
             }
 
             // Remove any invalid tile combinations
@@ -374,16 +374,16 @@ namespace SS3D.Systems.Tile
                         PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true);
                     }
                 }
-            }
 
-            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
-            {
-                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
-                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
-            }
+                foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+                {
+                    ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
+                    PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                }
 
-            OnMapLoaded?.Invoke(this, EventArgs.Empty);
-            UpdateAllAdjacencies();
+                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                UpdateAllAdjacencies();
+            }
         }
 
         /// <summary>
