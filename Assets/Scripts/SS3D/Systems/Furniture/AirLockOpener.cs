@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Animation;
 
 namespace SS3D.Systems.Furniture
 {

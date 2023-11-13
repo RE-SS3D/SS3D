@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Animation
+namespace SS3D.Systems.Furniture
 {
     /// <summary>
     /// State machine behaviour to update colors upon change of state in the Airlock animator.
