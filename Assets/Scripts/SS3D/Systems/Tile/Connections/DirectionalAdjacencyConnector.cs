@@ -24,7 +24,7 @@ namespace SS3D.Systems.Tile.Connections
     /// It should mostly work with models such as booth, bench, and other connectable seats.
     /// DO NOT MODIFY WITHOUT A LOT OF CARE. There's a lot of edge cases and it's easy to break it. You've been warned.
     /// </summary>
-    public class DirectionnalAdjacencyConnector : NetworkActor, IAdjacencyConnector
+    public class DirectionalAdjacencyConnector : NetworkActor, IAdjacencyConnector
     {
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace SS3D.Systems.Tile.Connections
 
             var neighbours = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
             return neighbours.Where(x => x != null &&
-                x.TryGetComponent<DirectionnalAdjacencyConnector>(out var component)).ToList();
+                x.TryGetComponent<DirectionalAdjacencyConnector>(out var component)).ToList();
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace SS3D.Systems.Tile.Connections
             {
                 foreach(var adjacent in neighbours)
                 {
-                    adjacent.GetComponent<DirectionnalAdjacencyConnector>().UpdateAllAndNeighbours(false);
+                    adjacent.GetComponent<DirectionalAdjacencyConnector>().UpdateAllAndNeighbours(false);
                 }
             }
 
@@ -675,12 +675,12 @@ namespace SS3D.Systems.Tile.Connections
         /// <returns></returns>
         private bool DirectionnalAlreadyHasTwoConnections(PlacedTileObject directionnal, bool excludingThis)
         {
-            var neighbourConnector = directionnal.GetComponent<DirectionnalAdjacencyConnector>();
+            var neighbourConnector = directionnal.GetComponent<DirectionalAdjacencyConnector>();
             if (neighbourConnector._currentConnections == 2)
             {
                 if (excludingThis && 
-                    (neighbourConnector._firstNeighbour.GetComponent<DirectionnalAdjacencyConnector>() == this
-                    || neighbourConnector._secondNeighbour.GetComponent<DirectionnalAdjacencyConnector>() == this))
+                    (neighbourConnector._firstNeighbour.GetComponent<DirectionalAdjacencyConnector>() == this
+                    || neighbourConnector._secondNeighbour.GetComponent<DirectionalAdjacencyConnector>() == this))
                 {
                     return false;
                 }
@@ -721,7 +721,7 @@ namespace SS3D.Systems.Tile.Connections
                    && TileHelper.GetOpposite(first.Direction) != second.Direction
                    && first.Direction != second.Direction)
             {
-                if (first.GetComponent<DirectionnalAdjacencyConnector>()._currentShape == shapeToCheck)
+                if (first.GetComponent<DirectionalAdjacencyConnector>()._currentShape == shapeToCheck)
                 {
                     direction = first.Direction;
                 }
