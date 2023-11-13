@@ -18,7 +18,10 @@ namespace SS3D.Systems.Audio
 
         // is it playing music
 
+        [SyncVar]
         public bool radioOn;
+
+        [SyncVar]
         public int currentMusic;
 
         // I hate my life
