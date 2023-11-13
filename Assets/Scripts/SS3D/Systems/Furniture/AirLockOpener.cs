@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -37,6 +38,18 @@ namespace SS3D.Systems.Furniture
         /// Coroutine to eventually close the door when no one is around.
         /// </summary>
         private Coroutine closeTimer; // Server Only
+
+
+        [SerializeField]
+        private List<MeshRenderer> _meshesToColor;
+
+        public ReadOnlyCollection<MeshRenderer> MeshesToColor => _meshesToColor.AsReadOnly();
+
+
+        [SerializeField]
+        private List<SkinnedMeshRenderer> _skinnedMeshesToColor;
+
+        public ReadOnlyCollection<SkinnedMeshRenderer> SkinnedMeshesToColor => _skinnedMeshesToColor.AsReadOnly();
 
 
         public void OnTriggerEnter(Collider other)

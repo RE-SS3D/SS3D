@@ -213,6 +213,7 @@ GameObject:
   - component: {fileID: 6205019768642409540}
   - component: {fileID: -4307161852691552683}
   - component: {fileID: 3215555771586221794}
+  - component: {fileID: -8803244943247255707}
   m_Layer: 0
   m_Name: CivillianAirlock
   m_TagString: Untagged
@@ -311,25 +312,6 @@ MonoBehaviour:
   _syncedConnections: 0
   wallCapPrefab: {fileID: 3591147544166670882, guid: 9682b163cae64f74a93b6e84ce84ae5b, type: 3}
   doorType: 0
---- !u!114 &-8803244943247255707
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7133738675197207439}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _defaultDirection: 0
-  AllowedDirections: 0000000002000000
-  _genericType: 13
-  _specificType: 3
-  _syncedConnections: 0
-  wallCapPrefab: {fileID: 3591147544166670882, guid: 9682b163cae64f74a93b6e84ce84ae5b, type: 3}
-  doorType: 0
 --- !u!95 &6205019768642409540
 Animator:
   serializedVersion: 4
@@ -369,6 +351,12 @@ MonoBehaviour:
   doorTriggerLayers:
     serializedVersion: 2
     m_Bits: 2048
+  _meshesToColor:
+  - {fileID: 7941901518868879156}
+  - {fileID: 6060823761219191581}
+  _skinnedMeshesToColor:
+  - {fileID: 1610574527409645708}
+  - {fileID: 1526798170224380914}
 --- !u!65 &3215555771586221794
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -382,6 +370,20 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1728351, y: 1.9892919, z: 1.1313548}
   m_Center: {x: 0.010370135, y: 0.9621948, z: 0.010370135}
+--- !u!114 &-8803244943247255707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 0000000002000000
 --- !u!1001 &2157331936072973061
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -391,7 +393,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 362297111316997015, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_Name
-      value: AirlockPanel
+      value: LeftPanel
       objectReference: {fileID: 0}
     - target: {fileID: 840353475596866441, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[0]
@@ -443,6 +445,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+--- !u!137 &1610574527409645708 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 840353475596866441, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+  m_PrefabInstance: {fileID: 2157331936072973061}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8506334560056334608 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
@@ -457,7 +464,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 362297111316997015, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_Name
-      value: AirlockPanel
+      value: RightPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_RootOrder
@@ -505,6 +512,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+--- !u!137 &1526798170224380914 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 840353475596866441, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+  m_PrefabInstance: {fileID: 2205021985594382459}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8459233521711643246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
