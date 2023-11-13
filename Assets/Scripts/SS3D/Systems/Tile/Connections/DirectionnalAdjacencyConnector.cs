@@ -408,7 +408,7 @@ namespace SS3D.Systems.Tile.Connections
         /// FirstLIn is when a neighbour is in front, 
         /// looking toward east, south-east or north-east and another neighbour on the right,
         /// looking toward north, north-east or north-west.
-        /// This method checks that neighbours are respecting those different possibilities.
+        /// This method checks that this placed object and its neighbours are respecting this configuration.
         /// </summary>
         private bool IsFirstLInConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
@@ -458,8 +458,10 @@ namespace SS3D.Systems.Tile.Connections
 
         /// <summary>
         /// (in case of this placed object turned toward north) 
-        /// SecondLIn is when a neighbour is in front, looking toward west, and another neighbour on the left,
-        /// looking toward north as well.
+        /// SecondLIn is when a neighbour is in front, looking toward west, south-west or north-west, and another neighbour on the left,
+        /// looking toward north, north-west or north-east as well.
+        /// If the placed object is looking in a direction different from north. Just apply the description above with rotating everything.
+        /// This method checks that this placed object and its neighbours are respecting this configuration.
         /// </summary>
         private bool IsSecondLInConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
@@ -505,8 +507,10 @@ namespace SS3D.Systems.Tile.Connections
 
         /// <summary>
         /// (in case of this placed object turned toward north) 
-        /// FirstLOut is when a neighbour is behind, looking toward west, and another neighbour on the right,
-        /// looking toward north as well.
+        /// FirstLOut is when a neighbour is behind, looking toward west, south-west or north-west, and another neighbour on the right,
+        /// looking toward north, north-west or north-east as well.
+        /// If the placed object is looking in a direction different from north. Just apply the description above with rotating everything.
+        /// This method checks that this placed object and its neighbours are respecting this configuration.
         /// </summary>
         private bool IsFirstLOutConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
@@ -553,8 +557,10 @@ namespace SS3D.Systems.Tile.Connections
 
         /// <summary>
         /// (in case of this placed object turned toward north) 
-        /// SecondLOut is when a neighbour is behind, looking toward east, and another neighbour on the left,
-        /// looking toward north as well.
+        /// SecondLOut is when a neighbour is behind, looking toward east, south-east or north-east, and another neighbour on the left,
+        /// looking toward north, north-west or north-east as well.
+        /// If the placed object is looking in a direction different from north. Just apply the description above with rotating everything.
+        /// This method checks that this placed object and its neighbours are respecting this configuration.
         /// </summary>
         private bool IsSecondLOutConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
@@ -599,7 +605,9 @@ namespace SS3D.Systems.Tile.Connections
         }
 
         /// <summary>
-        /// 
+        /// An I Configuration is when a directional has two neighbour next to it, on its left and on its right, such that
+        /// each neighbour is either facing the same direction, or an adjacent one (45 degree direction difference).
+        /// This method checks that this placed object and its neighbours are respecting this configuration.
         /// </summary>
         private bool IsIConfiguration(List<PlacedTileObject> neighbours, out PlacedTileObject firstNeighbour, out PlacedTileObject secondNeighbour)
         {
@@ -618,7 +626,9 @@ namespace SS3D.Systems.Tile.Connections
         }
 
         /// <summary>
-        /// Neighbour is on left and looking in the same direction, it's a connection (Ushape)
+        /// An U Configuration is when a directional has a single neighbour next to it, on its left or right, such that
+        /// the neighbour is either facing the same direction, or an adjacent one (45 degree direction difference).
+        /// This method checks that this placed object and its neighbours are respecting this configuration.
         /// </summary>
         private bool IsUConfiguration(List<PlacedTileObject> neighbours,
             out PlacedTileObject single, bool left)
@@ -656,6 +666,13 @@ namespace SS3D.Systems.Tile.Connections
             return AllowedDirections.Contains(single.Direction);
         }
 
+        /// <summary>
+        /// Check if the placed object, which must have a directional adjacency connector component, has already two connections.
+        /// </summary>
+        /// <param name="directionnal">The placed object we want to test.</param>
+        /// <param name="excludingThis"> check if the direction has already two connection without taking into consideration
+        /// the placed object of this instance.</param>
+        /// <returns></returns>
         private bool DirectionnalAlreadyHasTwoConnections(PlacedTileObject directionnal, bool excludingThis)
         {
             var neighbourConnector = directionnal.GetComponent<DirectionnalAdjacencyConnector>();
@@ -694,7 +711,7 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         /// <param name="first">first neighbour part of the LIn configuration.</param>
         /// <param name="second">second neighbour part of the LIn configuration.</param>
-        /// <param name="LIn">if the middle (this) is in LIn configuration.</param>
+        /// <param name="LIn">if the middle (this placed object) is in LIn configuration.</param>
         /// <returns>the good direction for the middle directionnal.</returns>
         private Direction DirectionInLConfiguration(PlacedTileObject first, PlacedTileObject second, bool LIn)
         {
