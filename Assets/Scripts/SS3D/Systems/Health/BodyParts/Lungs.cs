@@ -35,6 +35,27 @@ namespace SS3D.Systems.Health
 
         public float SecondsBetweenBreaths => _breathFrequency > 0 ? 60f / _breathFrequency : float.MaxValue;
 
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            StartCoroutine(DelayInit());
+        }
+
+        /// <summary>
+        /// Necessary to prevent issue with body part not getting attached ...
+        /// TODO : Implement a proper pipeline of initialisation.
+        /// </summary>
+        private IEnumerator DelayInit()
+        {
+            yield return null;
+            yield return null;
+
+            if(HealthController == null)
+            {
+                HealthController = GetComponentInParent<HealthController>();
+            }
+        }
+
         [Server]
         protected override void AddInitialLayers()
         {

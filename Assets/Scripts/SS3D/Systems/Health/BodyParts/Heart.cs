@@ -43,6 +43,12 @@ namespace SS3D.Systems.Health
         {
             yield return null;
             yield return null;
+
+            if (HealthController == null)
+            {
+                HealthController = GetComponentInParent<HealthController>();
+            }
+
             _connectedToHeart = GetAllBodyPartAttachedToHeart();
 
             OnPulse += HandleHeartPulse;
