@@ -153,6 +153,22 @@ namespace SS3D.Systems.Tile
             return adjacentObjects;
         }
 
+
+        public List<PlacedTileObject> GetCardinalNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        {
+            List<PlacedTileObject> adjacentObjects = new();
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction+= 2)
+            {
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
+                adjacentObjects.AddRange(
+                    GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetAllPlacedObject());
+            }
+
+            return adjacentObjects;
+        }
+
+
         /// <summary>
         /// Returns whether the specified object can be successfully build for a given position and direction.
         /// </summary>
@@ -374,16 +390,16 @@ namespace SS3D.Systems.Tile
                         PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true);
                     }
                 }
-
-                foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
-                {
-                    ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
-                    PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
-                }
-
-                OnMapLoaded?.Invoke(this, EventArgs.Empty);
-                UpdateAllAdjacencies();
             }
+
+            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+            {
+                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
+                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+            }
+
+            OnMapLoaded?.Invoke(this, EventArgs.Empty);
+            UpdateAllAdjacencies();
         }
 
         /// <summary>
