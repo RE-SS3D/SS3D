@@ -1475,7 +1475,6 @@ GameObject:
   - component: {fileID: 6060677056020711314}
   - component: {fileID: 2747704420924042145}
   - component: {fileID: 6924109542537538210}
-  - component: {fileID: 2765977658088937921}
   - component: {fileID: 9154675693299657064}
   m_Layer: 5
   m_Name: ConstructionMenu
@@ -1563,22 +1562,9 @@ MonoBehaviour:
   _slotPrefab: {fileID: 4285405521571209506, guid: 484315627df23dd428819ee4c9e05603, type: 3}
   _layerPlacementDropdown: {fileID: 2409669378435090507}
   _inputField: {fileID: 5558970035109273631}
---- !u!114 &2765977658088937921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965414683581951142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d16ab4eb1127ca4eac3cb229241649e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  validConstruction: {fileID: 2100000, guid: 6d2a18aa72cbaf94694dce9f8451160b, type: 2}
-  invalidConstruction: {fileID: 2100000, guid: e9b99cfb2e59ffa40a062c2f4b88b729, type: 2}
-  deleteConstruction: {fileID: 2100000, guid: ed5a1263eb564c94abc6407ac0919ea7, type: 2}
-  TargetPosition: {x: 0, y: 0, z: 0}
+  _validConstruction: {fileID: 2100000, guid: 6d2a18aa72cbaf94694dce9f8451160b, type: 2}
+  _invalidConstruction: {fileID: 2100000, guid: e9b99cfb2e59ffa40a062c2f4b88b729, type: 2}
+  _deleteConstruction: {fileID: 2100000, guid: ed5a1263eb564c94abc6407ac0919ea7, type: 2}
 --- !u!114 &9154675693299657064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4330,7 +4316,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2287788854832640797}
   m_HandleRect: {fileID: 3379647602017452814}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

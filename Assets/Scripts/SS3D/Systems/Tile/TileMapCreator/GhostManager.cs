@@ -1,6 +1,6 @@
-﻿using Coimbra;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -10,11 +10,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public class GhostManager: Actor
     {
-        public Material validConstruction;
-        public Material invalidConstruction;
-        public Material deleteConstruction;
-
-        private GameObject _ghostObject;
+        private Material _validConstruction;
+        private Material _invalidConstruction;
+        private Material _deleteConstruction;
         public Vector3 TargetPosition;
 
         public enum BuildMatMode
@@ -26,41 +24,34 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         public Direction Dir { get; private set; } = Direction.North;
-
-        public void CreateGhost(GameObject prefab, Vector3 position)
+        public void SetupMaterials(Material validConstruction, Material invalidConstruction, Material deleteConstruction)
         {
-            if (_ghostObject != null) return;
-            
-            _ghostObject = Instantiate(prefab, position, Quaternion.identity);
-            if (_ghostObject.TryGetComponent(out Rigidbody ghostRigidbody))
+            _validConstruction = validConstruction;
+            _invalidConstruction = invalidConstruction;
+            _deleteConstruction = deleteConstruction;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            if (TryGetComponent(out Rigidbody ghostRigidbody))
             {
                 ghostRigidbody.useGravity = false;
                 ghostRigidbody.isKinematic = true;
             }
-            Collider[] colliders = _ghostObject.GetComponentsInChildren<Collider>();
+            Collider[] colliders = GetComponentsInChildren<Collider>();
             foreach (Collider col in colliders)
             {
                 col.enabled = false;
             }
         }
-        public void DestroyGhost()
-        {
-            if (_ghostObject == null) return;
-            
-            _ghostObject.Dispose(true);
-            _ghostObject = null;
-        }
 
-        /// <summary>
-        /// Moves a ghost object to the target position via a lerp over time.
-        /// </summary>
-        public void MoveGhost()
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            // Required if the object has a network script attached
-            _ghostObject.SetActive(true);
             // Small offset is added so that meshes don't overlap with already placed objects.
-            _ghostObject.transform.position = Vector3.Lerp(_ghostObject.transform.position, TargetPosition + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
-            _ghostObject.transform.rotation = Quaternion.Lerp(_ghostObject.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(Dir), 0), Time.deltaTime * 15f);
+            transform.position = Vector3.Lerp(transform.position, TargetPosition + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(Dir), 0), Time.deltaTime * 15f);
         }
 
         /// <summary>
@@ -74,19 +65,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
             switch (mode)
             {
                 case BuildMatMode.Valid:
-                    ghostMat = validConstruction;
+                    ghostMat = _validConstruction;
                     break;
                 case BuildMatMode.Invalid:
-                    ghostMat = invalidConstruction;
+                    ghostMat = _invalidConstruction;
                     break;
                 case BuildMatMode.Building:
                     break;
                 case BuildMatMode.Deleting:
-                    ghostMat = deleteConstruction;
+                    ghostMat = _deleteConstruction;
                     break;
             }
 
-            foreach (MeshRenderer mr in _ghostObject.GetComponentsInChildren<MeshRenderer>())
+            foreach (MeshRenderer mr in GetComponentsInChildren<MeshRenderer>())
             {
                 Material[] materials = mr.materials;
                 for (int i = 0; i < materials.Length; i++)

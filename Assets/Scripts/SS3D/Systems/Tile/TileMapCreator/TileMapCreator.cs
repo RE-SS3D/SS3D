@@ -7,6 +7,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.UI;
+using SS3D.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -30,7 +31,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private TMP_InputField _inputField;
 
         private bool _enabled = false;
-        private bool _initalized = false;
         private bool _isDeleting = false;
         private bool _itemPlacement = false;
         private bool _mouseOverUI = false;
@@ -39,7 +39,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private GenericObjectSo _selectedObject;
 
         private TileSystem _tileSystem;
-        private GhostManager _ghostManager;
+        private List<GhostManager> _buildGhosts;
         private Plane _plane;
 
         private List<GenericObjectSo> _objectDatabase;
@@ -47,46 +47,24 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private InputSystem _inputSystem;
         private PanelTab _tab;
 
-        public bool IsDeleting
-        {
-            get => _isDeleting;
-            set
-            {
-                if (_isDeleting && !value)
-                {
-                    _inputSystem.ToggleAction(_controls.Delete, false);
-                    _inputSystem.ToggleAction(_controls.Place, true);
-                }
-                if (!_isDeleting && value)
-                {
-                    _inputSystem.ToggleAction(_controls.Delete, true);
-                    _inputSystem.ToggleAction(_controls.Place, false);
-                }
-                
-                _isDeleting = value;
-                RefreshGhost();
-            }
-        }
+        [SerializeField]
+        private Material _validConstruction;
+        [SerializeField]
+        private Material _invalidConstruction;
+        [SerializeField]
+        private Material _deleteConstruction;
 
-        [ServerOrClient]
         protected override void OnStart()
         {
             base.OnStart();
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
+            _buildGhosts = new();
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
-            
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
-            _inputSystem.ToggleAction(_controls.Delete, false);
             _controls.ToggleMenu.performed += HandleToggleMenu;
-            _controls.Replace.performed += HandleReplace;
-            _controls.Replace.canceled += HandleReplace;
-            _controls.Place.performed += HandlePlace;
-            _controls.Rotate.performed += HandleRotate;
-            _controls.Delete.performed += HandleDelete;
         }
-
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
             if (_enabled)
@@ -95,7 +73,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 {
                     _controls.ToggleMenu
                 });
-
                 _inputSystem.ToggleCollisions(_controls, true);
             }
             else
@@ -104,206 +81,73 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 {
                     _controls.ToggleMenu
                 });
-
                 _inputSystem.ToggleCollisions(_controls, false);
             }
-
             _enabled = !_enabled;
             ShowUI(_enabled);
-            Initialize();
-        }
-
-        private void HandleRotate(InputAction.CallbackContext context)
-        {
-            _ghostManager.SetNextRotation();
-            RefreshGhost();
-        }
-
-        private void HandleReplace(InputAction.CallbackContext context)
-        {
-            RefreshGhost();
-        }
-
-        private void HandlePlace(InputAction.CallbackContext context)
-        {
-            if (_selectedObject == null) return;
-            
-            _tileSystem.RpcPlaceObject(_selectedObject.nameString, _ghostManager.TargetPosition, _ghostManager.Dir, _controls.Replace.phase == InputActionPhase.Performed);
-            RefreshGhost();
-        }
-
-        private void HandleDelete(InputAction.CallbackContext context)
-        {
-            if (_itemPlacement)
-            {
-                FindAndDeleteItem(_lastSnappedPosition);
-            }
-            else
-            {
-                _tileSystem.RpcClearTileObject(_selectedObject.nameString, _lastSnappedPosition, _ghostManager.Dir);
-            }
-        }
-
-        [ServerOrClient]
-        private void Initialize()
-        {
-            if (_initalized)
-            {
-                return;
-            }
-
             _tileSystem = Subsystems.Get<TileSystem>();
-            _ghostManager = GetComponent<GhostManager>();
-            _plane = new Plane(Vector3.up, 0);
+            _plane = new(Vector3.up, 0);
 
-            LoadObjectGrid(new[]
-            {
-                TileLayer.Plenum
-            }, false);
-
-            _initalized = true;
+            LoadObjectGrid(new[] { TileLayer.Plenum }, false);
         }
 
-        [ServerOrClient]
         private void Update()
         {
-            if (!_initalized) return;
-            
-            // Clean-up if we are not building
-            if (_selectedObject == null)
+            if (!_buildGhosts.IsNullOrEmpty())
             {
-                _ghostManager.DestroyGhost();
-                return;
-            }
-            
-            if (_itemPlacement)
-            {
-                Vector3 newPosition = GetMousePosition();
-                _ghostManager.TargetPosition = newPosition;
-                _lastSnappedPosition = newPosition;
-            }
-            else
-            {
-                Vector3 snappedPosition = TileHelper.GetClosestPosition(GetMousePosition());
-                if (snappedPosition != _lastSnappedPosition)
-                {
-                    _ghostManager.TargetPosition = snappedPosition;
-                    _lastSnappedPosition = snappedPosition;
-                    RefreshGhost();
-                }
-            }
-            _ghostManager.MoveGhost();
-        }
-
-        [ServerOrClient]
-        private void FindAndDeleteItem(Vector3 worldPosition)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hitInfo))
-            {
-                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
-
-                if (placedItem != null)
-                {
-                    _tileSystem.RpcClearItemObject(placedItem.NameString, worldPosition);
-                }
+                _buildGhosts.Last().TargetPosition = GetMousePosition();
+                Debug.Log(_buildGhosts.Last().gameObject.activeSelf);
             }
         }
-
-        [ServerOrClient]
-        private Vector3 GetMousePosition()
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (_plane.Raycast(ray, out float distance))
-            {
-                return ray.GetPoint(distance);
-            }
-
-            return Vector3.zero;
-        }
-
-        [ServerOrClient]
-        private void CheckBuildValidity(Vector3 placePosition, bool replaceExisting)
-        {
-            RpcSendCanBuild(_selectedObject.nameString, placePosition, _ghostManager.Dir, replaceExisting, LocalConnection);
-        }
-
-        // Ownership not required since a client can request whether it is possible to build
-        [Client]
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
-        {
-            if (_tileSystem == null)
-            {
-                _tileSystem = Subsystems.Get<TileSystem>();
-            }
-
-            TileObjectSo tileObjectSo = (TileObjectSo)_tileSystem.GetAsset(tileObjectSoName);
-
-            if (tileObjectSo == null)
-            {
-                return;
-            }
-
-            bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
-            RpcReceiveCanBuild(conn, canBuild);
-        }
-
-        [Client]
-        [TargetRpc]
-        private void RpcReceiveCanBuild(NetworkConnection conn, bool canBuild)
-        {
-            _ghostManager.ChangeGhostColor(canBuild ? GhostManager.BuildMatMode.Valid : GhostManager.BuildMatMode.Invalid);
-        }
-
-        [ServerOrClient]
         private void ShowUI(bool show)
         {
             if (!show)
             {
-                if (_ghostManager)
-                {
-                    _ghostManager.DestroyGhost();
-                }
                 _tab.Detach();
             }
             _tab.Panel.gameObject.SetActive(show);
             _menuRoot.SetActive(show);
         }
 
-        /// <summary>
-        /// Loads a list of tile objects and places them in the UI box grid.
-        /// </summary>
-        /// <param name="allowedLayers"></param>
-        /// <param name="isItems"></param>
-        [ServerOrClient]
-        private void LoadObjectGrid(TileLayer[] allowedLayers, bool isItems)
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _mouseOverUI = true;
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            _inputSystem.ToggleActions(new []{_controls.Place, _controls.Delete}, false);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _mouseOverUI = false;
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+            _inputSystem.ToggleActions(new []{_controls.Place, _controls.Delete}, true);
+        }
+        public void OnInputFieldSelect()
+        {
+            _inputSystem.ToggleAllActions(false);
+        }
+
+        public void OnInputFieldDeselect()
+        {
+            _inputSystem.ToggleAllActions(true);
+        }
+        public void OnInputFieldChanged()
         {
             ClearGrid();
 
-            _objectDatabase = _tileSystem.Loader.Assets;
-
+            if (_inputField.text.Contains(' '))
+            {
+                // Replace spaces with underscores, since all asset names contain underscores
+                _inputField.text = _inputField.text.Replace(' ', '_');
+                // Prevent executing the same code twice
+                return;
+            }
             foreach (GenericObjectSo asset in _objectDatabase)
             {
-                switch (isItems)
-                {
-                    case true when asset is not ItemObjectSo:
-                    case false when asset is ItemObjectSo:
-                    case false when asset is TileObjectSo so && !allowedLayers.Contains(so.layer):
-                        continue;
-                }
-
-                GameObject slot = Instantiate(_slotPrefab, _contentRoot.transform, true);
-
-                TileMapCreatorTab tab = slot.AddComponent<TileMapCreatorTab>();
-
-                tab.Setup(asset);
+                if (!asset.nameString.Contains(_inputField.text)) continue;
+                Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorTab>().Setup(asset);
             }
         }
-
-        [ServerOrClient]
         private void ClearGrid()
         {
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
@@ -311,56 +155,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
             }
         }
-
-        [ServerOrClient]
-        private void RefreshGhost()
-        {
-            if (_selectedObject == null)
-            {
-                return;
-            }
-
-            if (_isDeleting)
-            {
-                _ghostManager.ChangeGhostColor(GhostManager.BuildMatMode.Deleting);
-            }
-            else
-            {
-                switch (_itemPlacement)
-                {
-                    case true:
-                        _ghostManager.ChangeGhostColor(GhostManager.BuildMatMode.Valid);
-
-                        break;
-                    case false when _controls.Replace.phase == InputActionPhase.Performed:
-                        CheckBuildValidity(_lastSnappedPosition, true);
-
-                        break;
-                    case false:
-                        CheckBuildValidity(_lastSnappedPosition, false);
-
-                        break;
-                }
-            }
-        }
-
-        [ServerOrClient]
-        public void SetSelectedObject(GenericObjectSo genericObjectSo)
-        {
-            _itemPlacement = genericObjectSo switch
-            {
-                TileObjectSo => false,
-                ItemObjectSo => true,
-                _ => _itemPlacement,
-            };
-
-            _selectedObject = genericObjectSo;
-            _ghostManager.DestroyGhost();
-            _ghostManager.CreateGhost(genericObjectSo.prefab, _itemPlacement? GetMousePosition() : TileHelper.GetClosestPosition(GetMousePosition()));
-
-            RefreshGhost();
-        }
-
         [Server]
         public void LoadMap()
         {
@@ -386,8 +180,27 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 Log.Information(this, "Cannot save the map on a client");
             }
         }
-
-
+        /// <summary>
+        /// Loads a list of tile objects and places them in the UI box grid.
+        /// </summary>
+        /// <param name="allowedLayers"></param>
+        /// <param name="isItems"></param>
+        private void LoadObjectGrid(TileLayer[] allowedLayers, bool isItems)
+        {
+            ClearGrid();
+            _objectDatabase = _tileSystem.Loader.Assets;
+            foreach (GenericObjectSo asset in _objectDatabase)
+            {
+                switch (isItems)
+                {
+                    case true when asset is not ItemObjectSo:
+                    case false when asset is ItemObjectSo:
+                    case false when asset is TileObjectSo so && !allowedLayers.Contains(so.layer):
+                        continue;
+                }
+                Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorTab>().Setup(asset);;
+            }
+        }
         /// <summary>
         /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
         /// </summary>
@@ -403,31 +216,31 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     {
                         TileLayer.Plenum
                     }, false);
-
                     break;
+                
                 case 1:
                     LoadObjectGrid(new[]
                     {
                         TileLayer.Turf
                     }, false);
-
                     break;
+                
                 case 2:
                     LoadObjectGrid(new[]
                     {
                         TileLayer.FurnitureBase,
                         TileLayer.FurnitureTop
                     }, false);
-
                     break;
+                
                 case 3:
                     LoadObjectGrid(new[]
                     {
                         TileLayer.WallMountHigh,
                         TileLayer.WallMountLow
                     }, false);
-
                     break;
+                
                 case 4:
                     LoadObjectGrid(new[]
                     {
@@ -438,70 +251,45 @@ namespace SS3D.Systems.Tile.TileMapCreator
                         TileLayer.PipeSurface,
                         TileLayer.PipeMiddle
                     }, false);
-
                     break;
+                
                 case 5:
-                    LoadObjectGrid(new[]
-                    {
-                        TileLayer.Overlays
-                    }, false);
-
+                    LoadObjectGrid(new[] { TileLayer.Overlays }, false);
                     break;
+                
                 case 6:
                     LoadObjectGrid(null, true);
-
                     break;
+                
                 default:
                     ClearGrid();
-
                     break;
             }
         }
-
-        public void OnInputFieldChanged()
+        public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
-            ClearGrid();
-
-            if (_inputField.text.Contains(' '))
+            _itemPlacement = genericObjectSo switch
             {
-                // Replace spaces with underscores, since all asset names contain underscores
-                _inputField.text = _inputField.text.Replace(' ', '_');
-                // Prevent executing the same code twice
-                return;
-            }
-            foreach (GenericObjectSo asset in _objectDatabase)
+                TileObjectSo => false,
+                ItemObjectSo => true,
+                _ => _itemPlacement,
+            };
+            _selectedObject = genericObjectSo;
+            GameObject model = Instantiate(genericObjectSo.prefab, GetMousePosition(), Quaternion.identity);
+            model.SetActive(true);
+            GhostManager buildGhost = model.AddComponent<GhostManager>();
+            Debug.Log(buildGhost.gameObject.activeSelf);
+            buildGhost.SetupMaterials(_validConstruction, _invalidConstruction, _deleteConstruction);
+            _buildGhosts.Add(buildGhost);
+        }
+        private Vector3 GetMousePosition()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (_plane.Raycast(ray, out float distance))
             {
-                if (!asset.nameString.Contains(_inputField.text)) continue;
-                GameObject slot = Instantiate(_slotPrefab, _contentRoot.transform, true);
-                TileMapCreatorTab tab = slot.AddComponent<TileMapCreatorTab>();
-                tab.Setup(asset);
+                return ray.GetPoint(distance);
             }
-        }
-
-        public void OnInputFieldSelect()
-        {
-            _inputSystem.ToggleAllActions(false);
-        }
-
-        public void OnInputFieldDeselect()
-        {
-            _inputSystem.ToggleAllActions(true);
-        }
-
-        [ServerOrClient]
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            _mouseOverUI = true;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
-            _inputSystem.ToggleActions(new []{_controls.Place, _controls.Delete}, false);
-        }
-
-        [ServerOrClient]
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            _mouseOverUI = false;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
-            _inputSystem.ToggleActions(new []{_controls.Place, _controls.Delete}, true);
+            return Vector3.zero;
         }
     }
 }
