@@ -24,22 +24,22 @@ namespace SS3D.Systems.Furniture
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            ChangeColors(_idleColor, animator, stateInfo, layerIndex);
+            ChangeColors(_idleColor, animator);
         }
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             if (stateInfo.IsName(Opening))
             {
-                ChangeColors(_openingColor, animator, stateInfo, layerIndex);
+                ChangeColors(_openingColor, animator);
             }
             if (stateInfo.IsName(Closing))
             {
-                ChangeColors(_closingColor, animator, stateInfo, layerIndex);
+                ChangeColors(_closingColor, animator);
             }
         }
 
-        private void ChangeColors(Color color, Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        private void ChangeColors(Color color, Animator animator)
         {
             var renderers = animator.GetComponent<AirLockOpener>().MeshesToColor;
             var skinnedRenderers = animator.GetComponent<AirLockOpener>().SkinnedMeshesToColor;
