@@ -1,7 +1,11 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data.Enums;
+using SS3D.Data;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
+using System.Collections;
+using UnityEngine;
 
 namespace SS3D.Systems.Health
 {
@@ -17,13 +21,45 @@ namespace SS3D.Systems.Health
 			base.Init(parent);
 		}
 
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-		AddInternalBodyPart(brain);
-    }
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            GameObject brainPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanBrain);
+            GameObject brainGameObject = Instantiate(brainPrefab);
+            brain = brainGameObject.GetComponent<Brain>();
 
-		protected override void AddInitialLayers()
+            Spawn(brainGameObject, Owner);
+            StartCoroutine(AddInternalOrgans());
+        }
+
+        /// <summary>
+        /// Add specific torso internal organs, heart, lungs, and more to come..
+        /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
+        /// </summary>
+        private IEnumerator AddInternalOrgans()
+        {
+            yield return null;
+            AddInternalBodyPart(brain);
+        }
+
+        /// <summary>
+        /// Necessary to prevent issue with body part not getting attached ...
+        /// TODO : Implement a proper pipeline of initialisation.
+        /// </summary>
+        private IEnumerator DelayInit()
+        {
+            yield return null;
+            yield return null;
+
+            if (HealthController == null)
+            {
+                HealthController = GetComponentInParent<HealthController>();
+            }
+
+            AddInternalBodyPart(brain);
+        }
+
+        protected override void AddInitialLayers()
 		{
 			TryAddBodyLayer(new MuscleLayer(this));
 			TryAddBodyLayer(new BoneLayer(this));
