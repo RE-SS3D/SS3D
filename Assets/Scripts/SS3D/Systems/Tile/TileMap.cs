@@ -153,6 +153,22 @@ namespace SS3D.Systems.Tile
             return adjacentObjects;
         }
 
+
+        public List<PlacedTileObject> GetCardinalNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
+        {
+            List<PlacedTileObject> adjacentObjects = new();
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction+= 2)
+            {
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
+                adjacentObjects.AddRange(
+                    GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetAllPlacedObject());
+            }
+
+            return adjacentObjects;
+        }
+
+
         /// <summary>
         /// Returns whether the specified object can be successfully build for a given position and direction.
         /// </summary>
@@ -229,7 +245,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                tileLocation.ClearAllPlacedObject();
+                tileLocation.TryClearPlacedObject(dir);
             }
 
             // Remove any invalid tile combinations

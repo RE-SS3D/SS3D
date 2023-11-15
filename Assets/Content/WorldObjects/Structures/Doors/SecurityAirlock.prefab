@@ -273,6 +273,8 @@ GameObject:
   - component: {fileID: 2079395355536659087}
   - component: {fileID: 7942135432533076774}
   - component: {fileID: -6616120420594439688}
+  - component: {fileID: -3952917033083390060}
+  - component: {fileID: -2593019434011219120}
   m_Layer: 0
   m_Name: SecurityAirlock
   m_TagString: Untagged
@@ -311,19 +313,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: -6616120420594439688}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isGlobal: 0
+  _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 140
+  <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 15463664499869166627
-  _sceneNetworkObjects: []
 --- !u!114 &-6616120420594439688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,6 +353,38 @@ MonoBehaviour:
   _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
+--- !u!114 &-3952917033083390060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d00d6a1b2cb9fb54fbefde21a9eb88a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 7942135432533076774}
+  _networkObjectCache: {fileID: 0}
+  _syncedConnections: 0
+  wallCapPrefab: {fileID: 3591147544166670882, guid: 9682b163cae64f74a93b6e84ce84ae5b, type: 3}
+  doorType: 0
+--- !u!114 &-2593019434011219120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 0000000002000000
 --- !u!1001 &2157331936072973061
 PrefabInstance:
   m_ObjectHideFlags: 0
