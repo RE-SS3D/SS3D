@@ -8,6 +8,7 @@ using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.UI;
 using SS3D.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -31,7 +32,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private TMP_InputField _inputField;
 
         private bool _enabled = false;
-        private bool _isDeleting = false;
         private bool _itemPlacement = false;
         private bool _mouseOverUI = false;
 
@@ -47,12 +47,26 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private InputSystem _inputSystem;
         private PanelTab _tab;
 
+        private Vector3 _dragStartPostion;
+        private bool _isDragging;
+        private bool _isDeleting;
+
         [SerializeField]
         private Material _validConstruction;
         [SerializeField]
         private Material _invalidConstruction;
         [SerializeField]
         private Material _deleteConstruction;
+
+        public void HandleDeleteButton()
+        {
+            _isDeleting = true;
+        }
+
+        public void HandleBuildButton()
+        {
+            _isDeleting = false;
+        }
 
         protected override void OnStart()
         {
@@ -64,7 +78,38 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls = _inputSystem.Inputs.TileCreator;
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
             _controls.ToggleMenu.performed += HandleToggleMenu;
+            _controls.Place.started += HandlePlaceStarted;
+            _controls.Place.performed += HandlePlacePerformed;
+            _controls.Replace.performed += HandleReplace;
+            _controls.Replace.canceled += HandleReplace;
         }
+
+        private void HandlePlaceStarted(InputAction.CallbackContext context)
+        {
+            _isDragging = true;
+            _dragStartPostion = GetMousePosition(true);
+        }
+
+        private void HandlePlacePerformed(InputAction.CallbackContext context)
+        {
+            _isDragging = false;
+
+            for (int i = 0; i < _buildGhosts.Count;)
+            {
+                _buildGhosts[i].gameObject.Dispose(true);
+                _buildGhosts.RemoveAt(i);
+            }
+            Debug.Log("Stopped dragging");
+        }
+
+        private void HandleReplace(InputAction.CallbackContext context)
+        {
+            foreach (GhostManager buildGhost in _buildGhosts)
+            {
+                RefreshGhost(buildGhost);
+            }
+        }
+        
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
             if (_enabled)
@@ -93,11 +138,106 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void Update()
         {
-            if (!_buildGhosts.IsNullOrEmpty())
+            foreach (GhostManager buildGhost in _buildGhosts)
             {
-                _buildGhosts.Last().TargetPosition = GetMousePosition();
-                Debug.Log(_buildGhosts.Last().gameObject.activeSelf);
+                if (!buildGhost.gameObject.activeSelf)
+                {
+                    buildGhost.gameObject.SetActive(true);
+                }
             }
+
+            if (_buildGhosts.IsNullOrEmpty())
+                return;
+
+            Vector3 position = GetMousePosition(!_itemPlacement);
+            GhostManager firstBuildGhost = _buildGhosts.First();
+            firstBuildGhost.TargetPosition = position;
+            if (_isDragging && (position != _lastSnappedPosition))
+            {
+                for (int i = 0; i < _buildGhosts.Count; )
+                {
+                    _buildGhosts[i].gameObject.Dispose(true);
+                    _buildGhosts.RemoveAt(i);
+                }
+                foreach (Vector3 tile in FindTilesOnLine(_dragStartPostion, GetMousePosition(true)))
+                {
+                    GhostManager buildGhost = CreateGhost(GhostManager.BuildMatMode.Valid, _selectedObject.prefab, tile, Quaternion.identity);
+                    buildGhost.TargetPosition = tile;
+                    RefreshGhost(buildGhost);
+                    _buildGhosts.Add(buildGhost);
+                }
+            }
+
+            _lastSnappedPosition = position;
+        }
+
+        private void RefreshGhost(GhostManager buildGhost)
+        {
+            GhostManager.BuildMatMode mode;
+            bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
+            if (_tileSystem.CanBuild((TileObjectSo)_selectedObject, buildGhost.gameObject.transform.position, buildGhost.Dir, isReplacing))
+            {
+                mode = GhostManager.BuildMatMode.Valid;
+            }
+            else
+            {
+                mode = GhostManager.BuildMatMode.Invalid;
+            }
+            buildGhost.ChangeGhostColor(mode);
+            
+        }
+        public List<Vector3> FindTilesOnLine(Vector3 firstPoint, Vector3 secondPoint)
+        {
+            List<Vector3> list = new();
+            int x = (int)firstPoint.x;
+            int y = (int)firstPoint.z;
+            int x2 = (int)secondPoint.x;
+            int y2 = (int)secondPoint.z;
+            int w = x2 - x;
+            int h = y2 - y;
+            int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+            if (w<0) 
+                dx1 = -1; 
+            else if (w>0) 
+                dx1 = 1;
+            if (h<0) 
+                dy1 = -1; 
+            else if (h>0) 
+                dy1 = 1;
+            if (w<0) 
+                dx2 = -1; 
+            else if (w>0) 
+                dx2 = 1;
+            int longest = Math.Abs(w);
+            int shortest = Math.Abs(h);
+            if (!(longest>shortest)) 
+            {
+                longest = Math.Abs(h);
+                shortest = Math.Abs(w);
+                if (h<0) 
+                    dy2 = -1; 
+                else if (h>0) 
+                    dy2 = 1;
+                dx2 = 0;
+            }
+            int numerator = longest >> 1 ;
+            for (int i = 0; i <= longest; i++) 
+            {
+                list.Add(new(x, firstPoint.y, y));
+                numerator += shortest;
+                if (!(numerator < longest)) 
+                {
+                    numerator -= longest;
+                    x += dx1;
+                    y += dy1;
+                } 
+                else
+                {
+                    x += dx2;
+                    y += dy2;
+                }
+            }
+            return list;
         }
         private void ShowUI(bool show)
         {
@@ -275,19 +415,36 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _ => _itemPlacement,
             };
             _selectedObject = genericObjectSo;
-            GameObject model = Instantiate(genericObjectSo.prefab, GetMousePosition(), Quaternion.identity);
-            model.SetActive(true);
-            GhostManager buildGhost = model.AddComponent<GhostManager>();
-            Debug.Log(buildGhost.gameObject.activeSelf);
-            buildGhost.SetupMaterials(_validConstruction, _invalidConstruction, _deleteConstruction);
-            _buildGhosts.Add(buildGhost);
+            
+            /*foreach (GhostManager bg in _buildGhosts)
+            {
+                bg.gameObject.Dispose(true);
+            }
+            _buildGhosts.Clear();*/
+            _buildGhosts.Add(CreateGhost(GhostManager.BuildMatMode.Valid, genericObjectSo.prefab, GetMousePosition(), Quaternion.identity));
         }
-        private Vector3 GetMousePosition()
+
+        private GhostManager CreateGhost(GhostManager.BuildMatMode mode, GameObject prefab, Vector3 position, Quaternion rotation)
+        {
+            GhostManager buildGhost = Instantiate(prefab, position, rotation).AddComponent<GhostManager>();
+            buildGhost.SetupMaterials(_validConstruction, _invalidConstruction, _deleteConstruction);
+            buildGhost.ChangeGhostColor(mode);
+            return buildGhost;
+        }
+        private Vector3 GetMousePosition(bool isTilePosition = false)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (_plane.Raycast(ray, out float distance))
             {
-                return ray.GetPoint(distance);
+                Vector3 point = ray.GetPoint(distance);
+                if (isTilePosition)
+                {
+                    return TileHelper.GetClosestPosition(point);
+                }
+                else
+                {
+                    return point;
+                }
             }
             return Vector3.zero;
         }
