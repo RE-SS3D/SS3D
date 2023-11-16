@@ -34,7 +34,7 @@ public class AmbienceHandler : MonoBehaviour
     public AudioSource noisePlayer;
     
     [Header("Audio Clip Setup")]
-    [Tooltip("How often (in minutes) an ambient noise should attempt to play.")]
+    [Tooltip("How often (in seconds) an ambient noise should attempt to play.")]
     public int ambientNoiseFrequency = 3;
     [Tooltip("How likely (percentage) it is that an ambient noise will play.")]
     [Range(0,100)] public int ambientNoiseChance = 75;
@@ -148,8 +148,7 @@ public class AmbienceHandler : MonoBehaviour
     /// </summary>
     IEnumerator AmbientNoiseTimer()
     {
-        // Wait for a few minutes
-        yield return new WaitForSeconds(ambientNoiseFrequency * 60);
+        yield return new WaitForSeconds(ambientNoiseFrequency);
         // If we generate a number bigger than our chance, then the attempt fails, and we try again in x minutes.
         if (Random.Range(1, 101) < ambientNoiseChance)
         {
