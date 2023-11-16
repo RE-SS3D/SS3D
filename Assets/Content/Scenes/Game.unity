@@ -1439,7 +1439,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021075485018, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -230.00003
+      value: -230
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021449001342, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -4044,6 +4044,10 @@ PrefabInstance:
     - target: {fileID: 7939122254879796210, guid: 2dff3e99d61d74c4282d2983e482289c, type: 3}
       propertyPath: m_Name
       value: AmbienceHandler
+      objectReference: {fileID: 0}
+    - target: {fileID: 7939122254879796210, guid: 2dff3e99d61d74c4282d2983e482289c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7939122254879796211, guid: 2dff3e99d61d74c4282d2983e482289c, type: 3}
       propertyPath: m_RootOrder

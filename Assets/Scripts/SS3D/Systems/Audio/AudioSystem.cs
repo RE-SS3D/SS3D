@@ -35,9 +35,9 @@ namespace SS3D.Systems.Audio
 
 
         [Tooltip("The number of SFX audio sources to start out with.")]
-        public int _minSfxAudioSources = 30;
+        public int _minSfxAudioSources = 10;
         [Tooltip("Any more than this will be considered too many SFX audio sources.")]
-        public int _maxSfxAudioSources = 100;
+        public int _maxSfxAudioSources = 30;
 
 
         [Tooltip("The number of music audio sources to start out with.")]
