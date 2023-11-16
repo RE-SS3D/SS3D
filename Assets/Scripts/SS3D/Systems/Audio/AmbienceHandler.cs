@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using SS3D.Core.Behaviours;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class AmbienceHandler : MonoBehaviour
+public class AmbienceHandler : Actor
 {
     
     [Header("Current Status")]
@@ -59,7 +60,7 @@ public class AmbienceHandler : MonoBehaviour
     {
         if (ambientNoiseFrequency != 0)
         {
-            PlayAmbience();            
+            PlayAmbience();
         }
     }
 
