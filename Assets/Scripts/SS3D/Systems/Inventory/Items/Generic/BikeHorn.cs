@@ -8,6 +8,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Audio;
 using UnityEngine;
+using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace SS3D.Systems.Inventory.Items.Generic
 {
