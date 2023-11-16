@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace SS3D.Systems.Furniture
 {
