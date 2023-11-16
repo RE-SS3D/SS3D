@@ -49,6 +49,14 @@ MonoBehaviour:
     m_Address: Assets/Art/Sound/World/Collisions/can4.mp3
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: fc2485e75c5d3ab4e86e814043c9e9cb
+    m_Address: Assets/Art/Sound/World/Airlocks/AirlockClose.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 34297ba204a9f3944872f100baaa2369
+    m_Address: Assets/Art/Sound/World/Airlocks/AirlockOpen.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

@@ -10,6 +10,8 @@ namespace SS3D.Data.Enums
         Can2 = 5, 
         Can3 = 6, 
         Can4 = 7, 
+        AirlockClose = 8, 
+        AirlockOpen = 9, 
     }
 }
 
