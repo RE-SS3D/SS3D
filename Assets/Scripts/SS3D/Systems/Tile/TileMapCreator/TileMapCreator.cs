@@ -54,12 +54,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private Material _validConstruction;
         [SerializeField]
         private Material _invalidConstruction;
-        [SerializeField]
-        private Material _deleteConstruction;
 
         public void HandleDeleteButton()
         {
             _isDeleting = true;
+            ClearGhosts();
         }
 
         public void HandleBuildButton()
@@ -96,24 +95,46 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandlePlaceStarted(InputAction.CallbackContext context)
         {
-            if (!_itemPlacement)
-            {
-                _isDragging = true;
-            }
+            if (_itemPlacement || _isDeleting)
+                return;
+            
+            _isDragging = true;
             _dragStartPostion = GetMousePosition(true);
         }
 
         private void HandlePlacePerformed(InputAction.CallbackContext context)
         {
             _isDragging = false;
-            
-            foreach (GhostManager buildGhost in _buildGhosts)
+
+            if (!_isDeleting)
             {
-                bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir, isReplacing);
+                foreach (GhostManager buildGhost in _buildGhosts)
+                {
+                    bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
+                    _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir, isReplacing);
+                }
+
+                ClearGhosts();
+                _buildGhosts.Add(CreateGhost(GhostManager.BuildMatMode.Valid, _selectedObject.prefab, GetMousePosition(!_itemPlacement), _direction));
             }
-            ClearGhosts();
-            _buildGhosts.Add(CreateGhost(GhostManager.BuildMatMode.Valid, _selectedObject.prefab, GetMousePosition(!_itemPlacement), _direction));
+            else
+            {
+                FindAndDeleteItem();
+            }
+        }
+        private void FindAndDeleteItem()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hitInfo))
+            {
+                Debug.Log(1);
+                Debug.Log(hitInfo.point);
+                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
+                if (placedItem != null)
+                {
+                    _tileSystem.RpcClearItemObject(placedItem.NameString, GetMousePosition());
+                }
+            }
         }
 
         private void HandleReplace(InputAction.CallbackContext context)
@@ -204,7 +225,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             buildGhost.ChangeGhostColor(mode);
             
         }
-        public List<Vector3> FindTilesOnLine(Vector3 firstPoint, Vector3 secondPoint)
+        private List<Vector3> FindTilesOnLine(Vector3 firstPoint, Vector3 secondPoint)
         {
             List<Vector3> list = new();
             int x = (int)firstPoint.x;
@@ -427,6 +448,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
         public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
+            if (_isDeleting)
+                return;
+            
             _itemPlacement = genericObjectSo switch
             {
                 TileObjectSo => false,

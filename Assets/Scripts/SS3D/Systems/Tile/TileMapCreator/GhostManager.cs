@@ -18,8 +18,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             Valid,
             Invalid,
-            Building,
-            Deleting
         }
 
         public Direction Dir { get; private set; } = Direction.North;
@@ -67,11 +65,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     break;
                 case BuildMatMode.Invalid:
                     ghostMat = _invalidConstruction;
-                    break;
-                case BuildMatMode.Building:
-                    break;
-                case BuildMatMode.Deleting:
-                    ghostMat = _deleteConstruction;
                     break;
             }
 
