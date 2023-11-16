@@ -55,7 +55,7 @@ public class AmbienceHandler : MonoBehaviour
     [Tooltip("The mixer that we need to look at to grab our effects.")]
     public AudioMixer masterMixer;
     
-        private void Start()
+    private void Start()
     {
         if (ambientNoiseFrequency != 0)
         {
@@ -116,7 +116,7 @@ public class AmbienceHandler : MonoBehaviour
     }
     
     /// <summary>
-    /// Plays an ambient sound.
+    /// Plays an ambient sound. Play space noises when there's no air, and station noises when there's air.
     /// </summary>
     private void PlayAmbience()
     {

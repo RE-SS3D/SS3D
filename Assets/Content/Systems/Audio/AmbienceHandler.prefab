@@ -434,16 +434,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7344cc682a336834aa6f468be53bdcb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  air: 0.542
-  windiness: 0.611
-  power: 0.662
+  air: 1
+  windiness: 0
+  power: 0
   nowPlaying: {fileID: 0}
   airPlayer: {fileID: 8766680585628587611}
   lightWindPlayer: {fileID: 2372802159114543583}
   heavyWindPlayer: {fileID: 22906048960509905}
   electricalPlayer: {fileID: 8648884715271949357}
   noisePlayer: {fileID: 249991932805086347}
-  ambientNoiseFrequency: 15
+  ambientNoiseFrequency: 90
   ambientNoiseChance: 75
   environmentNoises:
   - {fileID: 8300000, guid: 3ac82573ec5f0d348ab19e17034652cc, type: 3}
