@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum AudioType
+﻿
+namespace SS3D.Systems.Audio
 {
-    music = 0,
-    sfx = 1,
-    ambient = 2,
+    public enum AudioType
+    {
+        music = 0,
+        sfx = 1,
+        ambient = 2,
+    }
 }
