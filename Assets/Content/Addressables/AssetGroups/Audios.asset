@@ -33,6 +33,22 @@ MonoBehaviour:
     m_Address: Assets/Art/Sound/World/Music/title3.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 1a34c805f84be3b4caac14d7de790607
+    m_Address: Assets/Art/Sound/World/Collisions/can1.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8d93fdf9dcada204a952e29213f0293f
+    m_Address: Assets/Art/Sound/World/Collisions/can2.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b315c4abdef36244fb211c5f643d411a
+    m_Address: Assets/Art/Sound/World/Collisions/can3.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f00c6b5a098e84b4b87d80d23b4f295a
+    m_Address: Assets/Art/Sound/World/Collisions/can4.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
