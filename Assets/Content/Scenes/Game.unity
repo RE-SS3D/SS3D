@@ -297,11 +297,13 @@ MonoBehaviour:
   _componentIndexCache: 4
   _addedNetworkObject: {fileID: 1506918116}
   _networkObjectCache: {fileID: 1506918116}
-  audioSourcePrefab: {fileID: 2009473039716497087, guid: c06c615017500c94686e0eb5eb4402cf, type: 3}
-  minAudioSources: 30
-  maxAudioSources: 100
-  purgeFrequency: 30
-  audioSources: []
+  _sfxAudioSourcePrefab: {fileID: 2009473039716497087, guid: c06c615017500c94686e0eb5eb4402cf, type: 3}
+  _musicAudioSourcePrefab: {fileID: 506012496172542686, guid: 8d3ef04cfa66af24a8803a70f9d93a53, type: 3}
+  _minSfxAudioSources: 30
+  _maxSfxAudioSources: 100
+  _minMusicAudioSources: 3
+  _maxMusicAudioSources: 10
+  purgeFrequency: 2
 --- !u!114 &327065888 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4370972904279086842, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
@@ -1436,7 +1438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021075485018, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -229.99997
+      value: -229.99994
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021449001342, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.x
