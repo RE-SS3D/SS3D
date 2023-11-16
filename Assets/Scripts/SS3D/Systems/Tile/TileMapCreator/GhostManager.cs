@@ -12,19 +12,22 @@ namespace SS3D.Systems.Tile.TileMapCreator
     {
         private Material _validConstruction;
         private Material _invalidConstruction;
+        private Material _deleteConstruction;
         public Vector3 TargetPosition;
 
         public enum BuildMatMode
         {
             Valid,
             Invalid,
+            Delete
         }
 
         public Direction Dir { get; private set; } = Direction.North;
-        public void SetupMaterials(Material validConstruction, Material invalidConstruction)
+        public void SetupMaterials(Material validConstruction, Material invalidConstruction, Material deleteConstruction)
         {
             _validConstruction = validConstruction;
             _invalidConstruction = invalidConstruction;
+            _deleteConstruction = deleteConstruction;
         }
 
         protected override void OnStart()
@@ -63,8 +66,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 case BuildMatMode.Valid:
                     ghostMat = _validConstruction;
                     break;
+                
                 case BuildMatMode.Invalid:
                     ghostMat = _invalidConstruction;
+                    break;
+                
+                case BuildMatMode.Delete:
+                    ghostMat = _deleteConstruction;
                     break;
             }
 

@@ -813,6 +813,15 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Square Drag"",
+                    ""type"": ""Button"",
+                    ""id"": ""d35f32a4-b1e4-441e-9f5a-d03aba25ef2a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -868,6 +877,17 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Delete"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c19df163-7e9b-4f1e-8e61-8b142ffcb3d4"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Square Drag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -965,6 +985,7 @@ namespace SS3D.Systems.Inputs
             m_TileCreator_Replace = m_TileCreator.FindAction("Replace", throwIfNotFound: true);
             m_TileCreator_Rotate = m_TileCreator.FindAction("Rotate", throwIfNotFound: true);
             m_TileCreator_Delete = m_TileCreator.FindAction("Delete", throwIfNotFound: true);
+            m_TileCreator_SquareDrag = m_TileCreator.FindAction("Square Drag", throwIfNotFound: true);
             // Interactions
             m_Interactions = asset.FindActionMap("Interactions", throwIfNotFound: true);
             m_Interactions_RunPrimary = m_Interactions.FindAction("Run Primary", throwIfNotFound: true);
@@ -1350,6 +1371,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_TileCreator_Replace;
         private readonly InputAction m_TileCreator_Rotate;
         private readonly InputAction m_TileCreator_Delete;
+        private readonly InputAction m_TileCreator_SquareDrag;
         public struct TileCreatorActions
         {
             private @Controls m_Wrapper;
@@ -1359,6 +1381,7 @@ namespace SS3D.Systems.Inputs
             public InputAction @Replace => m_Wrapper.m_TileCreator_Replace;
             public InputAction @Rotate => m_Wrapper.m_TileCreator_Rotate;
             public InputAction @Delete => m_Wrapper.m_TileCreator_Delete;
+            public InputAction @SquareDrag => m_Wrapper.m_TileCreator_SquareDrag;
             public InputActionMap Get() { return m_Wrapper.m_TileCreator; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1383,6 +1406,9 @@ namespace SS3D.Systems.Inputs
                     @Delete.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnDelete;
                     @Delete.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnDelete;
                     @Delete.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnDelete;
+                    @SquareDrag.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnSquareDrag;
+                    @SquareDrag.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnSquareDrag;
+                    @SquareDrag.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnSquareDrag;
                 }
                 m_Wrapper.m_TileCreatorActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1402,6 +1428,9 @@ namespace SS3D.Systems.Inputs
                     @Delete.started += instance.OnDelete;
                     @Delete.performed += instance.OnDelete;
                     @Delete.canceled += instance.OnDelete;
+                    @SquareDrag.started += instance.OnSquareDrag;
+                    @SquareDrag.performed += instance.OnSquareDrag;
+                    @SquareDrag.canceled += instance.OnSquareDrag;
                 }
             }
         }
@@ -1493,6 +1522,7 @@ namespace SS3D.Systems.Inputs
             void OnReplace(InputAction.CallbackContext context);
             void OnRotate(InputAction.CallbackContext context);
             void OnDelete(InputAction.CallbackContext context);
+            void OnSquareDrag(InputAction.CallbackContext context);
         }
         public interface IInteractionsActions
         {

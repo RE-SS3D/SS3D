@@ -595,9 +595,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Tile.UI.TileMapCreator, SS3D.Systems
-        m_MethodName: set_IsDeleting
-        m_Mode: 6
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapCreator,
+          SS3D.Systems
+        m_MethodName: HandleBuildButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2405,9 +2406,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Tile.UI.TileMapCreator, SS3D.Systems
-        m_MethodName: set_IsDeleting
-        m_Mode: 6
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapCreator,
+          SS3D.Systems
+        m_MethodName: HandleDeleteButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4316,7 +4318,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2287788854832640797}
   m_HandleRect: {fileID: 3379647602017452814}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

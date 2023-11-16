@@ -789,6 +789,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Square Drag",
+                    "type": "Button",
+                    "id": "d35f32a4-b1e4-441e-9f5a-d03aba25ef2a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -844,6 +853,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Delete",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c19df163-7e9b-4f1e-8e61-8b142ffcb3d4",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Square Drag",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
