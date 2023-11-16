@@ -12,7 +12,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
     {
         private Material _validConstruction;
         private Material _invalidConstruction;
-        private Material _deleteConstruction;
         public Vector3 TargetPosition;
 
         public enum BuildMatMode
@@ -24,11 +23,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         public Direction Dir { get; private set; } = Direction.North;
-        public void SetupMaterials(Material validConstruction, Material invalidConstruction, Material deleteConstruction)
+        public void SetupMaterials(Material validConstruction, Material invalidConstruction)
         {
             _validConstruction = validConstruction;
             _invalidConstruction = invalidConstruction;
-            _deleteConstruction = deleteConstruction;
         }
 
         protected override void OnStart()
@@ -92,6 +90,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void SetNextRotation()
         {
             Dir = TileHelper.GetNextCardinalDir(Dir);
+        }
+
+        public void SetRotation(Direction direction)
+        {
+            Dir = direction;
         }
     }
 }
