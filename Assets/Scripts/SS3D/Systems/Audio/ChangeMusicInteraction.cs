@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Audio
 {
+    /// <summary>
+    /// Interaction to change music on Jukeboxes and boomboxes.
+    /// </summary>
     public class ChangeMusicInteraction : Interaction
     {
         public override IClientInteraction CreateClient(InteractionEvent interactionEvent)

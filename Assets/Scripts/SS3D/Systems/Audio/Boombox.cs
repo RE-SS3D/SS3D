@@ -10,9 +10,12 @@ using SS3D.Core;
 
 namespace SS3D.Systems.Audio
 {
+    /// <summary>
+    /// Script for jukeboxes and boomboxes, allowing switching between different sounds and toggling it on and off.
+    /// </summary>
     public class Boombox : InteractionTargetNetworkBehaviour, IToggleable
     {
-        // musics? wonder if there was another word for it, sons, sonds, sonids uhmmm
+
         [SerializeField]
         private AudiosIds[] soundsIds;
 

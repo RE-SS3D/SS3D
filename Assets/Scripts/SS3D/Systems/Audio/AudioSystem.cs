@@ -13,6 +13,10 @@ using UnityEngine.UIElements;
 
 namespace SS3D.Systems.Audio
 {
+    /// <summary>
+    /// Audio system handle creating and destroying audio sources, whether for SFX or music. It handle placing them at the right place, playing and stopping them.
+    /// In the vast majority of cases you should use this to play sounds. 
+    /// </summary>
     public class AudioSystem : Core.Behaviours.NetworkSystem
     {
         protected override void OnAwake()

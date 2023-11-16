@@ -5,6 +5,9 @@ using UnityEngine.Audio;
 
 namespace SS3D.Systems.Audio
 {
+    /// <summary>
+    /// Script to deal with playing ambient sounds, including power buzz, wind, creepy background sounds and such.
+    /// </summary>
     public class AmbienceHandler : Actor
     {
 
@@ -12,51 +15,66 @@ namespace SS3D.Systems.Audio
 
         //TODO: Change this based on how much air is in the room.
         [Tooltip("How much air is in the room. This effects the volume of the audio sources.")]
-        [Range(0f, 1f)] public float air = 1;
+        [SerializeField, Range(0f, 1f)] private float air = 1;
+
         //TODO: Change this based on air flow in the room.
         [Tooltip("How windy the air is in the area. This effects how the air sounds.")]
-        [Range(0f, 1f)] public float windiness;
+        [SerializeField, Range(0f, 1f)] private float windiness;
+
         //TODO: Change this based on area's power.
         [Tooltip("The amount of power in the area. Lower levels means quieter and deeper electrical humming.")]
-        [Range(0f, 1f)] public float power = 1;
+        [SerializeField, Range(0f, 1f)] private float power = 1;
+
         [Tooltip("What clip is currently being played by the ambient noise generator. You don't need to mess with this, just for debugging purposes.")]
         [SerializeField] private AudioClip nowPlaying;
 
         [Header("Audio Source Setup")]
 
         //We need three wind-related audio sources so we can seamlessly shift between them. Don't worry, they get disabled when they aren't needed.
-        [Tooltip("The audio source that will be playing air noises.")]
-        public AudioSource airPlayer;
-        [Tooltip("The audio source that will be playing light wind noises.")]
-        public AudioSource lightWindPlayer;
-        [Tooltip("The audio source that will be playing heavy wind noises.")]
-        public AudioSource heavyWindPlayer;
-        [Tooltip("The audio source that will be playing electrical noises.")]
-        public AudioSource electricalPlayer;
-        [Tooltip("The audio source that will be playing ambient noises.")]
-        public AudioSource noisePlayer;
+        [SerializeField, Tooltip("The audio source that will be playing air noises.")]
+        private AudioSource airPlayer;
 
-        [Header("Audio Clip Setup")]
+        [SerializeField, Tooltip("The audio source that will be playing light wind noises.")]
+        private AudioSource lightWindPlayer;
+
+        [SerializeField, Tooltip("The audio source that will be playing heavy wind noises.")]
+        private AudioSource heavyWindPlayer;
+
+        [SerializeField, Tooltip("The audio source that will be playing electrical noises.")]
+        private AudioSource electricalPlayer;
+
+        [SerializeField, Tooltip("The audio source that will be playing ambient noises.")]
+        private AudioSource noisePlayer;
+
+        [SerializeField, Header("Audio Clip Setup")]
         [Tooltip("How often (in seconds) an ambient noise should attempt to play.")]
-        public int ambientNoiseFrequency = 3;
-        [Tooltip("How likely (percentage) it is that an ambient noise will play.")]
-        [Range(0, 100)] public int ambientNoiseChance = 75;
+        private int ambientNoiseFrequency = 3;
+
+        [SerializeField, Tooltip("How likely (percentage) it is that an ambient noise will play.")]
+        [Range(0, 100)] private int ambientNoiseChance = 75;
+
         //TODO: Create a way to get the environment to tell us what noises it makes. Would be useful for off-station or room-based ambience.
-        [Tooltip("Sounds that will be made by the environment -- for example, general station noises.")]
-        public AudioClip[] environmentNoises;
-        [Tooltip("Sounds that will play when the amount of air is equal to zero.")]
-        public AudioClip[] spaceNoises;
+        [SerializeField, Tooltip("Sounds that will be made by the environment -- for example, general station noises.")]
+        private AudioClip[] environmentNoises;
+
+        [SerializeField, Tooltip("Sounds that will play when the amount of air is equal to zero.")]
+        private AudioClip[] spaceNoises;
 
         [Header("Animator Stuff")]
-        public Animator sfxAnimator;
+        [SerializeField]
+        private Animator sfxAnimator;
+
         [Tooltip("Value of lowpass cutoff in SFX mixer group. Attenuated by the animator.")]
-        [Range(480f, 22000f)] public float sfxLowPassCutoff = 22000f;
+        [Range(480f, 22000f)] private float sfxLowPassCutoff = 22000f;
+
         [Tooltip("Value of pitch boosting in SFX mixer group. Attenuated by the animator.")]
-        [Range(1f, 2f)] public float sfxPitchBoost = 1;
+        [Range(1f, 2f)] private float sfxPitchBoost = 1;
+
         [Tooltip("Value of pitch shifting in SFX mixer group. Attenuated by the animator.")]
-        [Range(0.8f, 1f)] public float sfxPitchShift = 1;
+        [Range(0.8f, 1f)] private float sfxPitchShift = 1;
+
         [Tooltip("The mixer that we need to look at to grab our effects.")]
-        public AudioMixer masterMixer;
+        private AudioMixer masterMixer;
 
         private void Start()
         {
