@@ -24,11 +24,7 @@ namespace SS3D.Systems.Health
         public override void OnStartServer()
         {
             base.OnStartServer();
-            GameObject brainPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanBrain);
-            GameObject brainGameObject = Instantiate(brainPrefab);
-            brain = brainGameObject.GetComponent<Brain>();
-
-            Spawn(brainGameObject, Owner);
+            SpawnHeadOrgans();
             StartCoroutine(AddInternalOrgans());
         }
 
@@ -39,23 +35,6 @@ namespace SS3D.Systems.Health
         private IEnumerator AddInternalOrgans()
         {
             yield return null;
-            AddInternalBodyPart(brain);
-        }
-
-        /// <summary>
-        /// Necessary to prevent issue with body part not getting attached ...
-        /// TODO : Implement a proper pipeline of initialisation.
-        /// </summary>
-        private IEnumerator DelayInit()
-        {
-            yield return null;
-            yield return null;
-
-            if (HealthController == null)
-            {
-                HealthController = GetComponentInParent<HealthController>();
-            }
-
             AddInternalBodyPart(brain);
         }
 
@@ -101,6 +80,17 @@ namespace SS3D.Systems.Health
         {
             GetComponentInParent<Human>()?.DeactivateComponents();
             return;
+        }
+
+        private void SpawnHeadOrgans()
+        {
+            GameObject brainPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanBrain);
+            GameObject brainGameObject = Instantiate(brainPrefab);
+            brain = brainGameObject.GetComponent<Brain>();
+
+            brain.HealthController = HealthController;
+
+            Spawn(brainGameObject, Owner);
         }
     }
 }

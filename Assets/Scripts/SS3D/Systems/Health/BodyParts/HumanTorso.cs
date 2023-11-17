@@ -15,6 +15,24 @@ public class HumanTorso : BodyPart
     public override void OnStartServer()
     {
         base.OnStartServer();
+        SpawnTorsoOrgans();
+        StartCoroutine(AddInternalOrgans());
+    }
+
+    /// <summary>
+    /// Add specific torso internal organs, heart, lungs, and more to come..
+    /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
+    /// </summary>
+    private IEnumerator AddInternalOrgans()
+    {
+        yield return null;
+        AddInternalBodyPart(heart);
+        AddInternalBodyPart(leftLung);
+        AddInternalBodyPart(rightLung);
+    }
+
+    private void SpawnTorsoOrgans()
+    {
         GameObject heartPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanHeart);
         GameObject leftLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanLungLeft);
         GameObject rightLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanLungRight);
@@ -30,21 +48,6 @@ public class HumanTorso : BodyPart
         Spawn(heartGameObject, Owner);
         Spawn(leftLungGameObject, Owner);
         Spawn(rightLungGameObject, Owner);
-
-
-        StartCoroutine(AddInternalOrgans());
-    }
-
-    /// <summary>
-    /// Add specific torso internal organs, heart, lungs, and more to come..
-    /// Need to do it with a delay to prevent some Unity bug since OnStartServer() is called Before Start();
-    /// </summary>
-    private IEnumerator AddInternalOrgans()
-    {
-        yield return null;
-        AddInternalBodyPart(heart);
-        AddInternalBodyPart(leftLung);
-        AddInternalBodyPart(rightLung);
     }
 
     protected override void AddInitialLayers()
