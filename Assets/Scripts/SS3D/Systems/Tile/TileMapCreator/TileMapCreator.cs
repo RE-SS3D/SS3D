@@ -28,6 +28,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public GameObject _menuRoot;
         public GameObject _contentRoot;
         public GameObject _loadMapContentRoot;
+
+        [SerializeField]
+        private GameObject _saveMapContentRoot;
+
         public GameObject _slotPrefab;
         public TMP_Dropdown _layerPlacementDropdown;
         [SerializeField]
@@ -53,6 +57,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         [SerializeField]
         private GameObject _mapNameSlotPrefab;
+
+        [SerializeField]
+        private TMP_InputField _saveInputField;
+
+
 
         public bool IsDeleting
         {
@@ -398,6 +407,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         [Server]
+        public void DisplayMapSaver()
+        {
+            ClearGrid();
+            _saveMapContentRoot.SetActive(true);
+        }
+
+        [Server]
         private void LoadMap(string mapName)
         {
             if (IsServer)
@@ -411,11 +427,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         [Server]
-        public void SaveMap()
+        public void SaveMap(string mapName)
         {
             if (IsServer)
             {
-                _tileSystem.Save();
+                _tileSystem.Save(mapName);
             }
             else
             {
@@ -513,6 +529,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 tab.Setup(asset);
             }
         }
+
+        public void OnSaveInputFieldEndEdit()
+        {
+            SaveMap(_saveInputField.text);
+           
+        }
+
 
         public void OnInputFieldSelect()
         {

@@ -127,13 +127,13 @@ namespace SS3D.Systems.Tile
         }
 
         [Server]
-        public void Save()
+        public void Save(string mapName)
         {
-			Log.Information(this, $"Saving tilemap {_currentMap.name}");
+			Log.Information(this, $"Saving tilemap {mapName}");
 
             SavedTileMap mapSave = _currentMap.Save();
 												    
-            SaveSystem.SaveObject(SavePath + "/" + _currentMap.name, mapSave);
+            SaveSystem.SaveObject(SavePath + "/" + mapName, mapSave);
         }
 
         [Server]
@@ -160,7 +160,7 @@ namespace SS3D.Systems.Tile
         public void ResetSave()
         {
             _currentMap.Clear();
-            Save();
+            Save("UnnamedMap");
             Log.Warning(this, "Tilemap resetted. Existing savefile has been wiped");
         }
     }
