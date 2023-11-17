@@ -1,6 +1,7 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using SS3D.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -159,6 +160,23 @@ namespace SS3D.Data.Management
             TSaveObject saveObject = JsonUtility.FromJson<TSaveObject>(saveString);
             return saveObject;
 
+        }
+
+        public static List<string> GetAllObjectsNameInFolder(string path)
+        {
+            DirectoryInfo directoryInfo = new(SaveFolder + path);
+
+            List<string> allFileNames = new List<string>();
+
+            // Get all save files
+            FileInfo[] saveFiles = directoryInfo.GetFiles("*." + SaveExtension);
+
+            foreach (FileInfo fileInfo in saveFiles)
+            {
+                allFileNames.Add(fileInfo.Name);
+            }
+
+            return allFileNames;
         }
     }
 }
