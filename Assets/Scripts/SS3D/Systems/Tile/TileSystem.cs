@@ -147,6 +147,16 @@ namespace SS3D.Systems.Tile
         }
 
         [Server]
+        public void Load(string mapName)
+        {
+            Log.Information(this, "Loading most recent tilemap");
+
+            SavedTileMap mapSave = SaveSystem.LoadObject<SavedTileMap>(mapName);
+
+            _currentMap.Load(mapSave);
+        }
+
+        [Server]
         public void ResetSave()
         {
             _currentMap.Clear();

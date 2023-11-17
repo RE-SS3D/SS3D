@@ -1,18 +1,21 @@
-using Coimbra;
+﻿using Coimbra;
 using DynamicPanels;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Management;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.UI;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -24,6 +27,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     {
         public GameObject _menuRoot;
         public GameObject _contentRoot;
+        public GameObject _loadMapContentRoot;
         public GameObject _slotPrefab;
         public TMP_Dropdown _layerPlacementDropdown;
         [SerializeField]
@@ -46,6 +50,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private Controls.TileCreatorActions _controls;
         private InputSystem _inputSystem;
         private PanelTab _tab;
+
+        [SerializeField]
+        private GameObject _mapNameSlotPrefab;
 
         public bool IsDeleting
         {
@@ -376,11 +383,26 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         [Server]
-        public void LoadMap()
+        public void DisplayMapLoader()
+        {
+            ClearGrid();
+            var MapNames = SaveSystem.GetAllObjectsNameInFolder(TileSystem.SavePath);
+
+            foreach (string mapName in MapNames)
+            {
+                string mapNameWithNoExtension = mapName.Substring(0, mapName.IndexOf("."));
+                GameObject slot = Instantiate(_mapNameSlotPrefab, _loadMapContentRoot.transform, true);
+                slot.GetComponentInChildren<TextMeshProUGUI>().text = mapNameWithNoExtension;
+                slot.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(() =>  LoadMap(mapNameWithNoExtension));
+            }
+        }
+
+        [Server]
+        private void LoadMap(string mapName)
         {
             if (IsServer)
             {
-                _tileSystem.Load();
+                _tileSystem.Load(TileSystem.SavePath + "/" + mapName);
             }
             else
             {
