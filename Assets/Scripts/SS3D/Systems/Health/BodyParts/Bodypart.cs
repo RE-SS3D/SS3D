@@ -538,6 +538,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Method to use on body parts such as head and torso to spawn their organs at run time.
     /// Should not be called if not implemented. Implementation varies between body parts.
+    /// Don't implement it and leave the exception throwing.
     /// It is necessary to spawn organs at run time, because organs should be their own independent network object, since they behave like items.
     /// Organs can be taken in and out of their respective organ containers.
     /// </summary>
