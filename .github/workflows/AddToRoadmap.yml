@@ -12,10 +12,14 @@ jobs:
   automate-project-columns:
     runs-on: ubuntu-latest
 
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+   
 
     steps:
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          
       - name: if_issue
         if: github.event.issue
         permissions: read-all|write-all
