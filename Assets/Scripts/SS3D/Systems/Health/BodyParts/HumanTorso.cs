@@ -15,7 +15,7 @@ public class HumanTorso : BodyPart
     public override void OnStartServer()
     {
         base.OnStartServer();
-        SpawnTorsoOrgans();
+        SpawnOrgans();
         StartCoroutine(AddInternalOrgans());
     }
 
@@ -31,7 +31,7 @@ public class HumanTorso : BodyPart
         AddInternalBodyPart(rightLung);
     }
 
-    private void SpawnTorsoOrgans()
+    protected override void SpawnOrgans()
     {
         GameObject heartPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanHeart);
         GameObject leftLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanLungLeft);

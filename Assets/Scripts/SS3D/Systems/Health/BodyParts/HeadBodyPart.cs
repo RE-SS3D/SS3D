@@ -24,7 +24,7 @@ namespace SS3D.Systems.Health
         public override void OnStartServer()
         {
             base.OnStartServer();
-            SpawnHeadOrgans();
+            SpawnOrgans();
             StartCoroutine(AddInternalOrgans());
         }
 
@@ -82,7 +82,7 @@ namespace SS3D.Systems.Health
             return;
         }
 
-        private void SpawnHeadOrgans()
+        protected override void SpawnOrgans()
         {
             GameObject brainPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanBrain);
             GameObject brainGameObject = Instantiate(brainPrefab);
