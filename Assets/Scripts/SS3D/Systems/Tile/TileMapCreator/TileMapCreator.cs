@@ -102,7 +102,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (_isDragging && (position != _lastSnappedPosition) && (_selectedObject != null))
             {
-                // Delete all ghosts and instantiate new on correct positions
+                // Delete all ghosts and instantiate new on correct positions. Currently it causes large fps drops.
                 ClearGhosts();
                 if (_controls.SquareDrag.phase == InputActionPhase.Performed)
                 {
