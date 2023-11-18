@@ -2,14 +2,14 @@ namespace SS3D.Data.Enums
 {
     public enum AssetDatabases
     {
-        Audios = 0, 
-        BodyParts = 1, 
-        CraftingRecipes = 2, 
-        InteractionIcons = 3, 
-        Items = 4, 
-        ParticlesEffects = 5, 
-        Scenes = 6, 
-        Settings = 7, 
+        BodyParts = 0, 
+        CraftingRecipes = 1, 
+        InteractionIcons = 2, 
+        Items = 3, 
+        ParticlesEffects = 4, 
+        Scenes = 5, 
+        Settings = 6, 
+        Sounds = 7, 
         UIElements = 8, 
     }
 }

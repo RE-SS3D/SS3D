@@ -110,7 +110,7 @@ namespace SS3D.Systems.Audio
         [ObserversRpc]
         public void RpcPlayAudioSource(AudioType type, SoundsIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
-            var audioClip = Assets.Get<AudioClip>((int)AssetDatabases.Audios, (int)audioClipId);
+            var audioClip = Assets.Get<AudioClip>((int)AssetDatabases.Sounds, (int)audioClipId);
             var audioSource = FindAvailableAudioSource(type);
             audioSource.gameObject.transform.position = position;
             audioSource.clip = audioClip;
