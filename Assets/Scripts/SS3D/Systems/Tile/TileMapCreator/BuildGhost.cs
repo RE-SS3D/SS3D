@@ -14,15 +14,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private Material _invalidConstruction;
         private Material _deleteConstruction;
         public Vector3 TargetPosition;
-
+        public Direction Dir { get; set; } = Direction.North;
         public enum BuildMatMode
         {
             Valid,
             Invalid,
             Delete
         }
-
-        public Direction Dir { get; set; } = Direction.North;
         public void SetupMaterials(Material validConstruction, Material invalidConstruction, Material deleteConstruction)
         {
             _validConstruction = validConstruction;

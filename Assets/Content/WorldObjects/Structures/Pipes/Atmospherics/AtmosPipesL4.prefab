@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 4607519100304452876}
+  - component: {fileID: 8814894074480141129}
   m_Layer: 0
   m_Name: AtmosPipesL4
   m_TagString: Untagged
@@ -51,7 +52,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 0}
+  - {fileID: 4607519100304452876}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -63,7 +64,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 43
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -130,11 +131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc6615260753fbd48af09343d5d55332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -7727686409064562107}
-  _networkObjectCache: {fileID: 0}
-  _genericType: 1
-  _specificType: 0
+  _networkObjectCache: {fileID: -7727686409064562107}
   _syncedConnections: 0
   simpleAdjacency:
     o: {fileID: 5763238997108834030, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
@@ -143,3 +142,17 @@ MonoBehaviour:
     l: {fileID: 3234200807627564179, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     t: {fileID: 6267177117203792215, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     x: {fileID: -2318244788085852191, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+--- !u!114 &8814894074480141129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000

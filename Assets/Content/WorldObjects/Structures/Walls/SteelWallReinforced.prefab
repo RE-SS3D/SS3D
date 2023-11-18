@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 7033236083530598125}
   - component: {fileID: -2900075557854325373}
   - component: {fileID: 3011383631706744183}
+  - component: {fileID: 6332977986281627431}
   m_Layer: 0
   m_Name: SteelWallReinforced
   m_TagString: Untagged
@@ -267,7 +268,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 138
+  <PrefabId>k__BackingField: 145
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -306,6 +307,20 @@ MonoBehaviour:
     xQuad: {fileID: 4199670461815796357, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     viewObstacles: []
     opaque: 0
+--- !u!114 &6332977986281627431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 00000000
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

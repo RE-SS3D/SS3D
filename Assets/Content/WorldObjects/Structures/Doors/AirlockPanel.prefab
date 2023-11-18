@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7781362268607177237}
   - component: {fileID: 840353475596866441}
   m_Layer: 0
-  m_Name: AirlockMaintenancePanel
+  m_Name: AirlockPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

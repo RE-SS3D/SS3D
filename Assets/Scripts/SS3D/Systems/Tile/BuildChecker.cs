@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using SS3D.Core;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -16,7 +18,8 @@ namespace SS3D.Systems.Tile
         /// <param name="tileObjectSo"></param>
         /// <param name="replaceExisting"></param>
         /// <returns></returns>
-        public static bool CanBuild(ITileLocation[] tileLocations, TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects, bool replaceExisting)
+        public static bool CanBuild(ITileLocation[] tileLocations, TileObjectSo tileObjectSo, Direction dir, Vector3 gridPosition,
+            PlacedTileObject[] adjacentObjects, bool replaceExisting)
         {
             bool canBuild = true;
 
@@ -60,6 +63,7 @@ namespace SS3D.Systems.Tile
                 {
                     canBuild &= tileLocations[(int)TileLayer.FurnitureBase].IsFullyEmpty() &&
                     tileLocations[(int)TileLayer.FurnitureTop].IsFullyEmpty();
+                    canBuild &= NoNeighbouringWallMount(gridPosition);
                     break;
                 }
             }
@@ -109,6 +113,21 @@ namespace SS3D.Systems.Tile
 
 
             return canBuild;
+        }
+
+
+        /// <summary>
+        /// Check if any wall mount is present as a neighbour of the tile found at the grid position.
+        /// </summary>
+        /// <param name="GridPosition">The position of the tile we want to check.</param>
+        private static bool NoNeighbouringWallMount(Vector3 GridPosition)
+        {
+            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            var map = tileSystem.CurrentMap;
+            var neighboursHigh = map.GetNeighbourPlacedObjects(TileLayer.WallMountHigh, GridPosition);
+            var neighboursLow= map.GetNeighbourPlacedObjects(TileLayer.WallMountLow, GridPosition);
+            if (neighboursHigh.Any(x => x != null) || neighboursLow.Any(x => x != null)) return false;
+            else return true;
         }
 
         private static bool CanBuildOnPlenum(SingleTileLocation plenumLocation)
