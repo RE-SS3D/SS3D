@@ -1,4 +1,6 @@
 using Coimbra;
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using DynamicPanels;
 using FishNet.Connection;
 using FishNet.Object;
@@ -66,6 +68,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         protected override void OnStart()
         {
             base.OnStart();
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
             _buildGhosts = new();
             _ghostsToRefresh = new();
@@ -81,16 +84,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls.Rotate.performed += HandleRotate;
         }
         
-        private void Update()
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             ActivateGhosts();
             AdjustGridWidth();
             
             Vector3 position = GetPointedPosition(!_itemPlacement);
+            // Move buildGhost, that sticks to the mouse. Currently it exists only if player is not dragging.
             if (_buildGhosts.Count == 1)
             {
                 _buildGhosts.First().TargetPosition = position;
-
                 if (position != _lastSnappedPosition)
                 {
                     RefreshGhost(_buildGhosts.First());
@@ -99,6 +102,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (_isDragging && (position != _lastSnappedPosition) && (_selectedObject != null))
             {
+                // Delete all ghosts and instantiate new on correct positions
                 ClearGhosts();
                 if (_controls.SquareDrag.phase == InputActionPhase.Performed)
                 {
@@ -128,12 +132,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _direction = TileHelper.GetNextCardinalDir(_direction);
             foreach (BuildGhost buildGhost in _buildGhosts)
             {
-                buildGhost.SetRotation(_direction);
+                buildGhost.Dir = _direction;
             }
         }
 
         private void HandlePlaceStarted(InputAction.CallbackContext context)
         {
+            // Dragging is disabled for items
             if (_itemPlacement)
                 return;
             
@@ -144,12 +149,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private void HandlePlacePerformed(InputAction.CallbackContext context)
         {
             _isDragging = false;
-
+            
             if (_mouseOverUI)
             {
                 _inputSystem.ToggleAction(_controls.Place, false);
             }
-
+            
             if (!_isDeleting)
             {
                 PlaceOnGhosts();
@@ -159,9 +164,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 DeleteOnGhosts();
             }
             ClearGhosts();
-
+            
             if (_selectedObject == null) return;
-                
             _buildGhosts.Add(CreateGhost(_selectedObject.prefab, GetPointedPosition(!_itemPlacement), _direction));
         }
 
@@ -192,7 +196,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             LoadObjectGrid(new[] { TileLayer.Plenum }, false);
         }
-
+        
+        /// <summary>
+        /// Place all objects form buildGhost
+        /// </summary>
         private void PlaceOnGhosts()
         {
             bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
@@ -203,6 +210,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Delete all objects, that are under ghosts
+        /// </summary>
         private void DeleteOnGhosts()
         {
             if (_itemPlacement)
@@ -263,6 +273,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 }
             }
         }
+        /// <summary>
+        /// Bernstein algorithm for drawing lines in a grid.
+        /// </summary>
+        /// <returns>Tiles, that line passes through</returns>
         private Vector3[] FindTilesOnLine(Vector3 firstPoint, Vector3 secondPoint)
         {
             List<Vector3> list = new();
@@ -335,10 +349,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 mode = BuildGhost.BuildMatMode.Valid;
             }
             buildGhost.ChangeGhostColor(mode);
-            buildGhost.SetRotation(direction);
+            buildGhost.Dir = direction;
             return buildGhost;
         }
-
+        
+        /// <summary>
+        /// Delete all ghosts
+        /// </summary>
         private void ClearGhosts()
         {
             for (int i = 0; i < _buildGhosts.Count; )
@@ -349,6 +366,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _ghostsToRefresh.Clear();
         }
 
+        /// <summary>
+        /// Update material of buildGhost based build (or anything else) mode and ghosts position  
+        /// </summary>
         private void RefreshGhost(BuildGhost buildGhost)
         {
             if (_isDeleting)
@@ -368,7 +388,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
                 RpcSendCanBuild(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir, isReplacing, LocalConnection);
             }
-
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -394,7 +413,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [TargetRpc]
         private void RpcReceiveCanBuild(NetworkConnection conn, Vector3 placePosition, bool canBuild)
         {
-            Debug.Log(_ghostsToRefresh.Count);
+            // Find correct buildGhost to update its material
             for (int i = 0; i < _ghostsToRefresh.Count; i++)
             {
                 BuildGhost buildGhost = _ghostsToRefresh[i];
@@ -413,6 +432,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
         
+        /// <summary>
+        /// Activate all buildGhosts. This method is important, because for some reason network objects disable themselves after a few frames.
+        /// </summary>
         private void ActivateGhosts()
         {
             foreach (BuildGhost buildGhost in _buildGhosts)
@@ -484,7 +506,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
         /// <summary>
-        /// Loads a list of tile objects and places them in the UI box grid.
+        /// Load a list of tile objects and place them in the UI box grid.
         /// </summary>
         private void LoadObjectGrid(TileLayer[] allowedLayers, bool isItems)
         {
@@ -580,7 +602,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
         
         /// <summary>
-        /// Change number of columns in asset grid to fit it's width. Elements of the group will take as much width as possible, but won't exceed it.
+        /// Change number of columns in asset grid to fit it's width. Elements of the group will take as much width as possible, but won't exceed width of the menu.
         /// </summary>
         private void AdjustGridWidth()
         {
@@ -629,6 +651,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
         #endregion
 
+        /// <summary>
+        /// Get position on the tile grid, that mouse points to.
+        /// </summary>
+        /// <param name="isTilePosition">If true, position snaps to the center of a tile</param>
+        /// <returns></returns>
         private Vector3 GetPointedPosition(bool isTilePosition = false)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

@@ -3604,7 +3604,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2180168398058430789}
   - component: {fileID: 4686284081446859306}
-  - component: {fileID: 5112122915852808111}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -3657,18 +3656,6 @@ MonoBehaviour:
   m_Spacing: {x: 5, y: 5}
   m_Constraint: 1
   m_ConstraintCount: 2
---- !u!114 &5112122915852808111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6243703131314193102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca78eb30848a4fe40b2c16cdfff48e37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6321497670735554424
 GameObject:
   m_ObjectHideFlags: 0
@@ -4319,7 +4306,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3379647602017452814}
   m_Direction: 2
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.67882216
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

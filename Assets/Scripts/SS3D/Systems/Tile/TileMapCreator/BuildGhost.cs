@@ -6,7 +6,7 @@ using Actor = SS3D.Core.Behaviours.Actor;
 namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
-    /// Class for creating and managing ghost objects used by the TileMapCreator.
+    /// Class for managing ghost objects, that will be used for building or deleting by TileMapCreator.
     /// </summary>
     public class BuildGhost: Actor
     {
@@ -22,7 +22,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Delete
         }
 
-        public Direction Dir { get; private set; } = Direction.North;
+        public Direction Dir { get; set; } = Direction.North;
         public void SetupMaterials(Material validConstruction, Material invalidConstruction, Material deleteConstruction)
         {
             _validConstruction = validConstruction;
@@ -86,16 +86,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
                 mr.materials = materials;
             }
-        }
-
-        public void SetNextRotation()
-        {
-            Dir = TileHelper.GetNextCardinalDir(Dir);
-        }
-
-        public void SetRotation(Direction direction)
-        {
-            Dir = direction;
         }
     }
 }
