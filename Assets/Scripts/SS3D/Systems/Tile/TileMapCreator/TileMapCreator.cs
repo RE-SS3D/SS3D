@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using DynamicPanels;
 using FishNet.Connection;
 using FishNet.Object;
@@ -216,7 +216,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
+                // It's fine to use get component in parent because the player might click on a part of a whole thing,
+                // like the lid of a toolbox, intending to click the toolbox itself. 
+                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponentInParent<PlacedItemObject>();
 
                 if (placedItem != null)
                 {
