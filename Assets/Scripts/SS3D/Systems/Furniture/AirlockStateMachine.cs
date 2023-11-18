@@ -37,12 +37,12 @@ namespace SS3D.Systems.Furniture
             if (stateInfo.IsName(Opening))
             {
                 ChangeColors(_openingColor, animator);
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx,AudiosIds.AirlockOpen, animator.gameObject.GetComponent<NetworkObject>());
+                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, SoundsIds.AirlockOpen, animator.gameObject.GetComponent<NetworkObject>());
             }
             if (stateInfo.IsName(Closing))
             {
                 ChangeColors(_closingColor, animator);
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, AudiosIds.AirlockClose, animator.gameObject.GetComponent<NetworkObject>());
+                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, SoundsIds.AirlockClose, animator.gameObject.GetComponent<NetworkObject>());
             }
         }
 

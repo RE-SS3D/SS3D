@@ -1,6 +1,6 @@
 namespace SS3D.Data.Enums
 {
-    public enum AudiosIds
+    public enum SoundsIds
     {
         BikeHorn = 0, 
         Title1 = 1, 

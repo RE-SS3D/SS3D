@@ -17,7 +17,7 @@ namespace SS3D.Systems.Audio
     {
 
         [SerializeField]
-        private AudiosIds[] soundsIds;
+        private SoundsIds[] soundsIds;
 
         // is it playing music
 

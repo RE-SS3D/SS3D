@@ -64,7 +64,7 @@ namespace SS3D.Systems.Audio
         /// Grabs an unused audio source and plays an audio clip at the desired location.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, AudiosIds audioClipId, Vector3 position)
+        public void PlayAudioSource(AudioType audioType, SoundsIds audioClipId, Vector3 position)
         {
             PlayAudioSource(audioType, audioClipId, position, NetworkObject);
         }
@@ -73,7 +73,7 @@ namespace SS3D.Systems.Audio
         /// Grabs a free audio source and parents it to a specific object before playing it.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, AudiosIds audioClipId, NetworkObject parent)
+        public void PlayAudioSource(AudioType audioType, SoundsIds audioClipId, NetworkObject parent)
         {
             RpcPlayAudioSource(audioType, audioClipId, parent.transform.position, parent);
         }
@@ -83,7 +83,7 @@ namespace SS3D.Systems.Audio
         /// Volume, pitch, and ranges are optional.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, AudiosIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void PlayAudioSource(AudioType audioType, SoundsIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             RpcPlayAudioSource(audioType, audioClipId, position, parent, volume, pitch, minRange, maxRange);   
         }
@@ -108,7 +108,7 @@ namespace SS3D.Systems.Audio
 
 
         [ObserversRpc]
-        public void RpcPlayAudioSource(AudioType type, AudiosIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void RpcPlayAudioSource(AudioType type, SoundsIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             var audioClip = Assets.Get<AudioClip>((int)AssetDatabases.Audios, (int)audioClipId);
             var audioSource = FindAvailableAudioSource(type);

@@ -38,10 +38,10 @@ namespace SS3D.Systems.Audio
         private float hardImpactVelocity = 7.5f;
 
         [SerializeField, Tooltip("List of possible sounds that will play when this object collides lightly.")]
-        private AudiosIds[] lightImpactSounds;
+        private SoundsIds[] lightImpactSounds;
 
         [SerializeField, Tooltip("List of possible sounds that will play when this object collides heavily.")]
-        private AudiosIds[] hardImpactSounds;
+        private SoundsIds[] hardImpactSounds;
 
         //For some reason, this is needed to have an enable/disable feature. Peculiar.
         private void FixedUpdate() {
@@ -75,15 +75,15 @@ namespace SS3D.Systems.Audio
         /// </summary>
         /// <param name="soundPool"></param>
         [Server]
-        private void PlayCollisionSound(AudiosIds[] soundPool)
+        private void PlayCollisionSound(SoundsIds[] soundPool)
         {
             float pitch = Random.Range(basePitch - pitchModulationLow, basePitch + pitchModulationHigh);
             Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, PickSound(soundPool), gameObject.transform.position, null, collisionVolume, pitch);
         }
 
-        private AudiosIds PickSound(AudiosIds[] availableSounds) {
+        private SoundsIds PickSound(SoundsIds[] availableSounds) {
             //Pick a clip from the supplied array and return it
-            AudiosIds currentClip = availableSounds[Random.Range(0, availableSounds.Length)];
+            SoundsIds currentClip = availableSounds[Random.Range(0, availableSounds.Length)];
             return currentClip;
         }
     }

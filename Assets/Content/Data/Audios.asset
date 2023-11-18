@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Audios
   m_EditorClassIdentifier: 
   EnumNamespaceName: SS3D.Data.Enums
-  EnumName: AudiosIds
+  EnumName: SoundsIds
   AssetGroup: {fileID: 11400000, guid: d640c8e212e7a5349999a9ddd6ffb5b5, type: 2}
   Assets:
   - {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
