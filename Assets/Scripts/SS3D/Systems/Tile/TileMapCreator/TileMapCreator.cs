@@ -34,6 +34,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private TMP_Dropdown _layerPlacementDropdown;
         [SerializeField]
         private TMP_InputField _inputField;
+        [SerializeField]
+        private Material _validConstruction;
+        [SerializeField]
+        private Material _invalidConstruction;
+        [SerializeField]
+        private Material _deleteConstruction;
 
         private bool _enabled = false;
         private bool _itemPlacement = false;
@@ -43,7 +49,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private GenericObjectSo _selectedObject;
 
         private TileSystem _tileSystem;
-        private List<GhostManager> _buildGhosts;
+        private List<BuildGhost> _buildGhosts;
         private Plane _plane;
 
         private List<GenericObjectSo> _objectDatabase;
@@ -55,30 +61,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private bool _isDragging;
         private bool _isDeleting;
         private Direction _direction = Direction.North;
-        private List<GhostManager> _ghostsToRefresh;
-
-        [SerializeField]
-        private Material _validConstruction;
-        [SerializeField]
-        private Material _invalidConstruction;
-        [SerializeField]
-        private Material _deleteConstruction;
-
-        public void HandleDeleteButton()
-        {
-            _isDeleting = true;
-        }
-
-        public void HandleBuildButton()
-        {
-            _isDeleting = false;
-        }
+        private List<BuildGhost> _ghostsToRefresh;
 
         protected override void OnStart()
         {
             base.OnStart();
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
-            GridLayoutGroup grid = _contentRoot.GetComponent<GridLayoutGroup>();
             _buildGhosts = new();
             _ghostsToRefresh = new();
             ShowUI(false);
@@ -91,13 +79,54 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
             _controls.Rotate.performed += HandleRotate;
+        }
+        
+        private void Update()
+        {
+            ActivateGhosts();
+            AdjustGridWidth();
             
+            Vector3 position = GetPointedPosition(!_itemPlacement);
+            if (_buildGhosts.Count == 1)
+            {
+                _buildGhosts.First().TargetPosition = position;
+
+                if (position != _lastSnappedPosition)
+                {
+                    RefreshGhost(_buildGhosts.First());
+                }
+            }
+
+            if (_isDragging && (position != _lastSnappedPosition) && (_selectedObject != null))
+            {
+                ClearGhosts();
+                if (_controls.SquareDrag.phase == InputActionPhase.Performed)
+                {
+                    SquareDrag(position);
+                }
+                else
+                {
+                    LineDrag(position);
+                }
+            }
+            _lastSnappedPosition = position;
+        }
+
+        #region Handlers
+        public void HandleDeleteButton()
+        {
+            _isDeleting = true;
+        }
+
+        public void HandleBuildButton()
+        {
+            _isDeleting = false;
         }
 
         private void HandleRotate(InputAction.CallbackContext context)
         {
             _direction = TileHelper.GetNextCardinalDir(_direction);
-            foreach (GhostManager buildGhost in _buildGhosts)
+            foreach (BuildGhost buildGhost in _buildGhosts)
             {
                 buildGhost.SetRotation(_direction);
             }
@@ -136,47 +165,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _buildGhosts.Add(CreateGhost(_selectedObject.prefab, GetPointedPosition(!_itemPlacement), _direction));
         }
 
-        private void DeleteOnGhosts()
-        {
-            if (_itemPlacement)
-            {
-                FindAndDeleteItem();
-            }
-            else
-            {
-                foreach (GhostManager buildGhost in _buildGhosts)
-                {
-                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir);
-                }
-            }
-        }
-
-        private void PlaceOnGhosts()
-        {
-            bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-
-            foreach (GhostManager buildGhost in _buildGhosts)
-            {
-                _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir, isReplacing);
-            }
-        }
-
-        private void FindAndDeleteItem()
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hitInfo))
-            {
-                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
-                if (placedItem != null)
-                {
-                    _tileSystem.RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
-                }
-            }
-        }
-
         private void HandleReplace(InputAction.CallbackContext context)
         {
-            foreach (GhostManager buildGhost in _buildGhosts)
+            foreach (BuildGhost buildGhost in _buildGhosts)
             {
                 RefreshGhost(buildGhost);
             }
@@ -202,62 +193,51 @@ namespace SS3D.Systems.Tile.TileMapCreator
             LoadObjectGrid(new[] { TileLayer.Plenum }, false);
         }
 
-        private void Update()
+        private void PlaceOnGhosts()
         {
-            ActivateGhosts();
-            AdjustGridWidth();
-            
-            Vector3 position = GetPointedPosition(!_itemPlacement);
-            if (_buildGhosts.Count == 1)
-            {
-                _buildGhosts.First().TargetPosition = position;
-                RefreshGhost(_buildGhosts.First());
-            }
+            bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
 
-            if (_isDragging && (position != _lastSnappedPosition) && (_selectedObject != null))
+            foreach (BuildGhost buildGhost in _buildGhosts)
             {
-                ClearGhosts();
-                if (_controls.SquareDrag.phase == InputActionPhase.Performed)
-                {
-                    SquareDrag(position);
-                }
-                else
-                {
-                    LineDrag(position);
-                }
-            }
-            _lastSnappedPosition = position;
-        }
-        /// <summary>
-        /// Change number of columns in asset grid to fit it's width. Elements of the group will take as much width as possible, but won't exceed it.
-        /// </summary>
-        private void AdjustGridWidth()
-        {
-            GridLayoutGroup grid = _contentRoot.GetComponent<GridLayoutGroup>();
-            float cellWidth = grid.cellSize.x;
-            float paddingWidth = grid.spacing.x;
-            float width = _menuRoot.GetComponent<RectTransform>().rect.width;
-            int constraintCount = Convert.ToInt32(Math.Floor(width / (cellWidth + paddingWidth)));
-            if (constraintCount != grid.constraintCount)
-                grid.constraintCount = constraintCount;
-        }
-
-        private void ActivateGhosts()
-        {
-            foreach (GhostManager buildGhost in _buildGhosts)
-            {
-                if (!buildGhost.gameObject.activeSelf)
-                {
-                    buildGhost.gameObject.SetActive(true);
-                }
+                _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir, isReplacing);
             }
         }
 
+        private void DeleteOnGhosts()
+        {
+            if (_itemPlacement)
+            {
+                FindAndDeleteItem();
+            }
+            else
+            {
+                foreach (BuildGhost buildGhost in _buildGhosts)
+                {
+                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir);
+                }
+            }
+        }
+        
+        private void FindAndDeleteItem()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hitInfo))
+            {
+                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
+                if (placedItem != null)
+                {
+                    _tileSystem.RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
+                }
+            }
+        }
+        #endregion
+
+        #region Drag algorithms
         private void LineDrag(Vector3 position)
         {
             foreach (Vector3 tile in FindTilesOnLine(_dragStartPostion, position))
             {
-                GhostManager buildGhost = CreateGhost(_selectedObject.prefab, tile, _direction);
+                BuildGhost buildGhost = CreateGhost(_selectedObject.prefab, tile, _direction);
                 buildGhost.TargetPosition = tile;
                 RefreshGhost(buildGhost);
                 _buildGhosts.Add(buildGhost);
@@ -276,85 +256,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 for (int j = x1; j <= x2; j++)
                 {
                     Vector3 tile = new(j, 0, i);
-                    GhostManager buildGhost = CreateGhost(_selectedObject.prefab, tile, _direction);
+                    BuildGhost buildGhost = CreateGhost(_selectedObject.prefab, tile, _direction);
                     buildGhost.TargetPosition = tile;
                     RefreshGhost(buildGhost);
                     _buildGhosts.Add(buildGhost);
                 }
             }
         }
-
-        private void RefreshGhost(GhostManager buildGhost)
-        {
-            if (_isDeleting)
-            {
-                buildGhost.ChangeGhostColor(GhostManager.BuildMatMode.Delete);
-            }
-            else
-            {
-                GhostManager.BuildMatMode mode;
-                bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                switch (_itemPlacement)
-                {
-                    case true:
-                        mode = GhostManager.BuildMatMode.Valid;
-                        break;
-
-                    case false:
-                        mode = GhostManager.BuildMatMode.Invalid;
-                        break;
-                } 
-                buildGhost.ChangeGhostColor(mode);
-                _ghostsToRefresh.Add(buildGhost);
-                RpcSendCanBuild(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir, isReplacing, LocalConnection);
-            }
-            
-        }
-        [Client]
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
-        {
-            if (_tileSystem == null)
-            {
-                _tileSystem = Subsystems.Get<TileSystem>();
-            }
-
-            TileObjectSo tileObjectSo = (TileObjectSo)_tileSystem.GetAsset(tileObjectSoName);
-
-            if (tileObjectSo == null)
-            {
-                Log.Error(this, "Asset is not found");
-                return;
-            }
-
-            bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
-            RpcReceiveCanBuild(conn, placePosition, canBuild);
-        }
-
-        [Client]
-        [TargetRpc]
-        private void RpcReceiveCanBuild(NetworkConnection conn, Vector3 placePosition, bool canBuild)
-        {
-            for (int i = 0; i < _ghostsToRefresh.Count; i++)
-            {
-                GhostManager buildGhost = _ghostsToRefresh[i];
-                if (buildGhost.TargetPosition == placePosition)
-                {
-                    if (canBuild)
-                    {
-                        buildGhost.ChangeGhostColor(GhostManager.BuildMatMode.Valid);
-                    }
-                    else
-                    {
-                        buildGhost.ChangeGhostColor(GhostManager.BuildMatMode.Invalid);
-                    }
-                    _ghostsToRefresh.RemoveAt(i);
-
-                    return;
-                }
-            }
-        }
-        private List<Vector3> FindTilesOnLine(Vector3 firstPoint, Vector3 secondPoint)
+        private Vector3[] FindTilesOnLine(Vector3 firstPoint, Vector3 secondPoint)
         {
             List<Vector3> list = new();
             int x = (int)firstPoint.x;
@@ -364,27 +273,27 @@ namespace SS3D.Systems.Tile.TileMapCreator
             int w = x2 - x;
             int h = y2 - y;
             int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
-            if (w<0) 
+            if (w < 0) 
                 dx1 = -1; 
-            else if (w>0) 
+            else if (w > 0) 
                 dx1 = 1;
-            if (h<0) 
+            if (h < 0) 
                 dy1 = -1; 
-            else if (h>0) 
+            else if (h > 0) 
                 dy1 = 1;
-            if (w<0) 
+            if (w < 0) 
                 dx2 = -1; 
-            else if (w>0) 
+            else if (w > 0) 
                 dx2 = 1;
             int longest = Math.Abs(w);
             int shortest = Math.Abs(h);
-            if (!(longest>shortest)) 
+            if (!(longest > shortest)) 
             {
                 longest = Math.Abs(h);
                 shortest = Math.Abs(w);
-                if (h<0) 
+                if (h < 0) 
                     dy2 = -1; 
-                else if (h>0) 
+                else if (h > 0) 
                     dy2 = 1;
                 dx2 = 0;
             }
@@ -405,8 +314,119 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     y += dy2;
                 }
             }
-            return list;
+            return list.ToArray();
         }
+        #endregion
+        
+        #region Ghosts 
+        
+        private BuildGhost CreateGhost(GameObject prefab, Vector3 position, Direction direction)
+        {
+            Quaternion rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(direction), 0);
+            BuildGhost buildGhost = Instantiate(prefab, position, rotation).AddComponent<BuildGhost>();
+            buildGhost.SetupMaterials(_validConstruction, _invalidConstruction, _deleteConstruction);
+            BuildGhost.BuildMatMode mode;
+            if (_isDeleting)
+            {
+                mode = BuildGhost.BuildMatMode.Delete;
+            }
+            else
+            {
+                mode = BuildGhost.BuildMatMode.Valid;
+            }
+            buildGhost.ChangeGhostColor(mode);
+            buildGhost.SetRotation(direction);
+            return buildGhost;
+        }
+
+        private void ClearGhosts()
+        {
+            for (int i = 0; i < _buildGhosts.Count; )
+            {
+                _buildGhosts[i].gameObject.Dispose(true);
+                _buildGhosts.RemoveAt(i);
+            }
+            _ghostsToRefresh.Clear();
+        }
+
+        private void RefreshGhost(BuildGhost buildGhost)
+        {
+            if (_isDeleting)
+            {
+                buildGhost.ChangeGhostColor(BuildGhost.BuildMatMode.Delete);
+            }
+            else if (_itemPlacement)
+            {
+                    buildGhost.ChangeGhostColor(BuildGhost.BuildMatMode.Valid);
+            }
+            else
+            {
+                if (!_ghostsToRefresh.Contains(buildGhost))
+                {
+                    _ghostsToRefresh.Add(buildGhost);
+                }
+                bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
+                RpcSendCanBuild(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Dir, isReplacing, LocalConnection);
+            }
+
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
+        {
+            if (_tileSystem == null)
+            {
+                _tileSystem = Subsystems.Get<TileSystem>();
+            }
+
+            TileObjectSo tileObjectSo = (TileObjectSo)_tileSystem.GetAsset(tileObjectSoName);
+
+            if (tileObjectSo == null)
+            {
+                Log.Error(this, "Asset is not found");
+                return;
+            }
+
+            bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            RpcReceiveCanBuild(conn, placePosition, canBuild);
+        }
+
+        [TargetRpc]
+        private void RpcReceiveCanBuild(NetworkConnection conn, Vector3 placePosition, bool canBuild)
+        {
+            Debug.Log(_ghostsToRefresh.Count);
+            for (int i = 0; i < _ghostsToRefresh.Count; i++)
+            {
+                BuildGhost buildGhost = _ghostsToRefresh[i];
+                if (buildGhost.TargetPosition != placePosition) continue;
+                
+                if (canBuild)
+                {
+                    buildGhost.ChangeGhostColor(BuildGhost.BuildMatMode.Valid);
+                }
+                else
+                {
+                    buildGhost.ChangeGhostColor(BuildGhost.BuildMatMode.Invalid);
+                }
+                _ghostsToRefresh.RemoveAt(i);
+                return;
+            }
+        }
+        
+        private void ActivateGhosts()
+        {
+            foreach (BuildGhost buildGhost in _buildGhosts)
+            {
+                if (!buildGhost.gameObject.activeSelf)
+                {
+                    buildGhost.gameObject.SetActive(true);
+                }
+            }
+        }
+        
+        #endregion
+
+        #region UI
         private void ShowUI(bool show)
         {
             if (!show)
@@ -463,43 +483,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorTab>().Setup(asset);
             }
         }
-        private void ClearGrid()
-        {
-            for (int i = 0; i < _contentRoot.transform.childCount; i++)
-            {
-                _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
-            }
-        }
-        [Server]
-        public void LoadMap()
-        {
-            if (IsServer)
-            {
-                _tileSystem.Load();
-            }
-            else
-            {
-                Log.Information(this, "Cannot load the map on a client");
-            }
-        }
-
-        [Server]
-        public void SaveMap()
-        {
-            if (IsServer)
-            {
-                _tileSystem.Save();
-            }
-            else
-            {
-                Log.Information(this, "Cannot save the map on a client");
-            }
-        }
         /// <summary>
         /// Loads a list of tile objects and places them in the UI box grid.
         /// </summary>
-        /// <param name="allowedLayers"></param>
-        /// <param name="isItems"></param>
         private void LoadObjectGrid(TileLayer[] allowedLayers, bool isItems)
         {
             ClearGrid();
@@ -519,7 +505,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
         /// </summary>
-        [ServerOrClient]
         public void OnDropDownChange()
         {
             int index = _layerPlacementDropdown.value;
@@ -593,34 +578,57 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ClearGhosts();
             _buildGhosts.Add(CreateGhost(genericObjectSo.prefab, GetPointedPosition(!_itemPlacement), _direction));
         }
-
-        private GhostManager CreateGhost(GameObject prefab, Vector3 position, Direction direction)
+        
+        /// <summary>
+        /// Change number of columns in asset grid to fit it's width. Elements of the group will take as much width as possible, but won't exceed it.
+        /// </summary>
+        private void AdjustGridWidth()
         {
-            Quaternion rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(direction), 0);
-            GhostManager buildGhost = Instantiate(prefab, position, rotation).AddComponent<GhostManager>();
-            buildGhost.SetupMaterials(_validConstruction, _invalidConstruction, _deleteConstruction);
-            GhostManager.BuildMatMode mode;
-            if (_isDeleting)
+            GridLayoutGroup grid = _contentRoot.GetComponent<GridLayoutGroup>();
+            float cellWidth = grid.cellSize.x;
+            float paddingWidth = grid.spacing.x;
+            float width = _menuRoot.GetComponent<RectTransform>().rect.width;
+            int constraintCount = Convert.ToInt32(Math.Floor(width / (cellWidth + paddingWidth)));
+            if (constraintCount != grid.constraintCount)
+                grid.constraintCount = constraintCount;
+        }
+        #endregion
+        
+        #region Map
+        private void ClearGrid()
+        {
+            for (int i = 0; i < _contentRoot.transform.childCount; i++)
             {
-                mode = GhostManager.BuildMatMode.Delete;
+                _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
+            }
+        }
+        [Server]
+        public void LoadMap()
+        {
+            if (IsServer)
+            {
+                _tileSystem.Load();
             }
             else
             {
-                mode = GhostManager.BuildMatMode.Valid;
+                Log.Information(this, "Cannot load the map on a client");
             }
-            buildGhost.ChangeGhostColor(mode);
-            buildGhost.SetRotation(direction);
-            return buildGhost;
         }
 
-        private void ClearGhosts()
+        [Server]
+        public void SaveMap()
         {
-            for (int i = 0; i < _buildGhosts.Count; )
+            if (IsServer)
             {
-                _buildGhosts[i].gameObject.Dispose(true);
-                _buildGhosts.RemoveAt(i);
+                _tileSystem.Save();
+            }
+            else
+            {
+                Log.Information(this, "Cannot save the map on a client");
             }
         }
+        #endregion
+
         private Vector3 GetPointedPosition(bool isTilePosition = false)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

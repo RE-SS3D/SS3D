@@ -8,7 +8,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// <summary>
     /// Class for creating and managing ghost objects used by the TileMapCreator.
     /// </summary>
-    public class GhostManager: Actor
+    public class BuildGhost: Actor
     {
         private Material _validConstruction;
         private Material _invalidConstruction;
