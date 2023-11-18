@@ -443,7 +443,7 @@ MonoBehaviour:
   _heavyWindPlayer: {fileID: 22906048960509905}
   _electricalPlayer: {fileID: 8648884715271949357}
   _noisePlayer: {fileID: 249991932805086347}
-  _ambientNoiseFrequency: 3
+  _ambientNoiseFrequency: 60
   _ambientNoiseChance: 75
   _environmentNoises:
   - {fileID: 8300000, guid: 3ac82573ec5f0d348ab19e17034652cc, type: 3}
