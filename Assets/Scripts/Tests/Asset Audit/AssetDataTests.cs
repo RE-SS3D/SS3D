@@ -46,6 +46,8 @@ namespace AssetAudit
             List<AssetDatabase> projectAssetDatabases = AssetDatabase.FindAllAssetDatabases();
             List<AssetDatabase> loadedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
 
+            Debug.Log("test test");
+
             bool hasMissingDatabases = false;
             List<AssetDatabase> missingDatabases = new();
 
