@@ -1477,6 +1477,7 @@ GameObject:
   - component: {fileID: 2747704420924042145}
   - component: {fileID: 6924109542537538210}
   - component: {fileID: 9154675693299657064}
+  - component: {fileID: 978946649210659857}
   m_Layer: 5
   m_Name: ConstructionMenu
   m_TagString: Untagged
@@ -1563,9 +1564,7 @@ MonoBehaviour:
   _slotPrefab: {fileID: 4285405521571209506, guid: 484315627df23dd428819ee4c9e05603, type: 3}
   _layerPlacementDropdown: {fileID: 2409669378435090507}
   _inputField: {fileID: 5558970035109273631}
-  _validConstruction: {fileID: 2100000, guid: 6d2a18aa72cbaf94694dce9f8451160b, type: 2}
-  _invalidConstruction: {fileID: 2100000, guid: e9b99cfb2e59ffa40a062c2f4b88b729, type: 2}
-  _deleteConstruction: {fileID: 2100000, guid: ed5a1263eb564c94abc6407ac0919ea7, type: 2}
+  _ghostManager: {fileID: 978946649210659857}
 --- !u!114 &9154675693299657064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1583,6 +1582,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 6924109542537538210}
+  - {fileID: 978946649210659857}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -1599,6 +1599,21 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17865247151196156452
+--- !u!114 &978946649210659857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965414683581951142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d16ab4eb1127ca4eac3cb229241649e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 9154675693299657064}
+  _networkObjectCache: {fileID: 9154675693299657064}
 --- !u!1 &2420290731705129391
 GameObject:
   m_ObjectHideFlags: 0
@@ -4202,7 +4217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4235739587677223029
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4930,7 +4945,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -0.000030517578, y: -0.00018310547}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
