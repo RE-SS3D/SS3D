@@ -9,6 +9,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile.UI;
+using SS3D.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private TileSystem _tileSystem;
         private List<BuildGhost> _buildGhosts;
-        private Plane _plane;
 
         private List<GenericObjectSo> _objectDatabase;
         private Controls.TileCreatorActions _controls;
@@ -89,7 +89,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ActivateGhosts();
             AdjustGridWidth();
             
-            Vector3 position = GetPointedPosition(!_itemPlacement);
+            Vector3 position = TileHelper.GetPointedPosition(!_itemPlacement);
             // Move buildGhost, that sticks to the mouse. Currently it exists only if player is not dragging.
             if (_buildGhosts.Count == 1)
             {
@@ -143,7 +143,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             
             _isDragging = true;
-            _dragStartPostion = GetPointedPosition(true);
+            _dragStartPostion = TileHelper.GetPointedPosition(true);
         }
 
         private void HandlePlacePerformed(InputAction.CallbackContext context)
@@ -166,7 +166,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ClearGhosts();
             
             if (_selectedObject == null) return;
-            _buildGhosts.Add(CreateGhost(_selectedObject.prefab, GetPointedPosition(!_itemPlacement), _direction));
+            _buildGhosts.Add(CreateGhost(_selectedObject.prefab, TileHelper.GetPointedPosition(!_itemPlacement), _direction));
         }
 
         private void HandleReplace(InputAction.CallbackContext context)
@@ -192,8 +192,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _enabled = !_enabled;
             ShowUI(_enabled);
             _tileSystem = Subsystems.Get<TileSystem>();
-            _plane = new(Vector3.up, 0);
-
             LoadObjectGrid(new[] { TileLayer.Plenum }, false);
         }
         
@@ -245,7 +243,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         #region Drag algorithms
         private void LineDrag(Vector3 position)
         {
-            foreach (Vector3 tile in FindTilesOnLine(_dragStartPostion, position))
+            Vector2 firstPoint = new(_dragStartPostion.x, _dragStartPostion.z);
+            Vector2 secondPoint = new(position.x, position.z);
+            Vector3[] tiles = MathUtility.FindTilesOnLine(firstPoint, secondPoint)
+                .Select(x => new Vector3(x.x, position.y, x.y)).ToArray();
+            
+            foreach (Vector3 tile in tiles)
             {
                 BuildGhost buildGhost = CreateGhost(_selectedObject.prefab, tile, _direction);
                 buildGhost.TargetPosition = tile;
@@ -273,63 +276,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 }
             }
         }
-        /// <summary>
-        /// Bernstein algorithm for drawing lines in a grid.
-        /// </summary>
-        /// <returns>Tiles, that line passes through</returns>
-        private Vector3[] FindTilesOnLine(Vector3 firstPoint, Vector3 secondPoint)
-        {
-            List<Vector3> list = new();
-            int x = (int)firstPoint.x;
-            int y = (int)firstPoint.z;
-            int x2 = (int)secondPoint.x;
-            int y2 = (int)secondPoint.z;
-            int w = x2 - x;
-            int h = y2 - y;
-            int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
-            if (w < 0) 
-                dx1 = -1; 
-            else if (w > 0) 
-                dx1 = 1;
-            if (h < 0) 
-                dy1 = -1; 
-            else if (h > 0) 
-                dy1 = 1;
-            if (w < 0) 
-                dx2 = -1; 
-            else if (w > 0) 
-                dx2 = 1;
-            int longest = Math.Abs(w);
-            int shortest = Math.Abs(h);
-            if (!(longest > shortest)) 
-            {
-                longest = Math.Abs(h);
-                shortest = Math.Abs(w);
-                if (h < 0) 
-                    dy2 = -1; 
-                else if (h > 0) 
-                    dy2 = 1;
-                dx2 = 0;
-            }
-            int numerator = longest >> 1 ;
-            for (int i = 0; i <= longest; i++) 
-            {
-                list.Add(new(x, firstPoint.y, y));
-                numerator += shortest;
-                if (!(numerator < longest)) 
-                {
-                    numerator -= longest;
-                    x += dx1;
-                    y += dy1;
-                } 
-                else
-                {
-                    x += dx2;
-                    y += dy2;
-                }
-            }
-            return list.ToArray();
-        }
+        
         #endregion
         
         #region Ghosts 
@@ -598,7 +545,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             };
             _selectedObject = genericObjectSo;
             ClearGhosts();
-            _buildGhosts.Add(CreateGhost(genericObjectSo.prefab, GetPointedPosition(!_itemPlacement), _direction));
+            _buildGhosts.Add(CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_itemPlacement), _direction));
         }
         
         /// <summary>
@@ -651,27 +598,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
         #endregion
 
-        /// <summary>
-        /// Get position on the tile grid, that mouse points to.
-        /// </summary>
-        /// <param name="isTilePosition">If true, position snaps to the center of a tile</param>
-        /// <returns></returns>
-        private Vector3 GetPointedPosition(bool isTilePosition = false)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (_plane.Raycast(ray, out float distance))
-            {
-                Vector3 point = ray.GetPoint(distance);
-                if (isTilePosition)
-                {
-                    return TileHelper.GetClosestPosition(point);
-                }
-                else
-                {
-                    return point;
-                }
-            }
-            return Vector3.zero;
-        }
+        
     }
 }
