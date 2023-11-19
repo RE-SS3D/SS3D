@@ -58,7 +58,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private Vector3 _dragStartPostion;
         private bool _isDragging;
         private bool _isDeleting;
-        private Direction _direction = Direction.North;
 
         [SerializeField]
         private BuildGhostManager _ghostManager;
@@ -159,7 +158,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _ghostManager.DestroyGhosts();
             
             if (_selectedObject == null) return;
-            _ghostManager.CreateGhost(_selectedObject.prefab, TileHelper.GetPointedPosition(!_itemPlacement), _direction);
+            _ghostManager.CreateGhost(_selectedObject.prefab, TileHelper.GetPointedPosition(!_itemPlacement));
         }
 
         private void HandleReplace(InputAction.CallbackContext context)
@@ -197,7 +196,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (BuildGhost buildGhost in _ghostManager._ghosts)
             {
-                _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.position, _ghostManager.Dir, isReplacing);
+                _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.position, buildGhost.direction, isReplacing);
             }
         }
 
@@ -214,7 +213,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (BuildGhost buildGhost in _ghostManager._ghosts)
                 {
-                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, buildGhost.position, _ghostManager.Dir);
+                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, buildGhost.position, buildGhost.direction);
                 }
             }
         }
@@ -235,7 +234,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             else
             {
                 bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                RpcSendCanBuild(_selectedObject.nameString, buildGhost.position, _ghostManager.Dir, isReplacing, LocalConnection);
+                RpcSendCanBuild(_selectedObject.nameString, buildGhost.position, buildGhost.direction, isReplacing, LocalConnection);
             }
         }
 
@@ -303,7 +302,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             
             foreach (Vector3 tile in tiles)
             {
-                var ghost = _ghostManager.CreateGhost(_selectedObject.prefab, tile, _direction);
+                var ghost = _ghostManager.CreateGhost(_selectedObject.prefab, tile);
                 RefreshGhost(ghost);
             }
         }
@@ -320,7 +319,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 for (int j = x1; j <= x2; j++)
                 {
                     Vector3 tile = new(j, 0, i);
-                    BuildGhost buildGhost = _ghostManager.CreateGhost(_selectedObject.prefab, tile, _direction);
+                    BuildGhost buildGhost = _ghostManager.CreateGhost(_selectedObject.prefab, tile);
                     RefreshGhost(buildGhost);
                 }
             }
@@ -500,7 +499,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _selectedObject = genericObjectSo;
 
             _ghostManager.DestroyGhosts();
-            _ghostManager.CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_itemPlacement), _direction);
+            _ghostManager.CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_itemPlacement));
         }
         
         /// <summary>

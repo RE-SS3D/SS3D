@@ -30,8 +30,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public List<BuildGhost> _ghosts = new();
 
-
-        public Direction Dir { get; set; } = Direction.North;
         public enum BuildMatMode
         {
             Valid,
@@ -52,30 +50,35 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             foreach (var ghost in _ghosts)
             {
-                ghost.UpdateRotationAndPosition();
+                ghost.SetNextRotation();
             }
         }
 
-        public BuildGhost CreateGhost(GameObject prefab, Vector3 position, Direction direction)
+        public BuildGhost CreateGhost(GameObject prefab, Vector3 position)
         {
 
-            if (prefab.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+            Direction ghostDirection;
+
+            if(_ghosts.Count > 0)
             {
-                if (customRotationComponent.GetAllowedRotations().Contains(direction))
-                {
-                    Dir = direction;
-                }
-                else
-                {
-                    Dir = customRotationComponent.DefaultDirection;
-                }
+                ghostDirection = _ghosts.First().direction;
             }
             else
             {
-                Dir = direction;
+                if (prefab.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+                {
+                    ghostDirection = customRotationComponent.DefaultDirection;
+                }
+                else
+                {
+                    ghostDirection = Direction.North;
+                }
             }
 
-            Quaternion rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(Dir), 0);
+
+            
+
+            Quaternion rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(ghostDirection), 0);
             var _ghostObject = Instantiate(prefab, position, rotation);
 
             if (_ghostObject.TryGetComponent<Rigidbody>(out var ghostRigidbody))
@@ -89,7 +92,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 col.enabled = false;
             }
 
-            var ghostStruct = new BuildGhost(_ghostObject, position, direction);
+            var ghostStruct = new BuildGhost(_ghostObject, position, ghostDirection);
 
             _ghosts.Add(ghostStruct);
             return ghostStruct;
