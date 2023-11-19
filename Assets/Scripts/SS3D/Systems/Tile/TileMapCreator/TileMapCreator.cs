@@ -63,6 +63,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private bool _isDragging;
         private bool _isDeleting;
         private Direction _direction = Direction.North;
+        private ICustomGhostRotation _ghostRotations;
         private List<BuildGhost> _ghostsToRefresh;
 
         protected override void OnStart()
@@ -129,7 +130,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandleRotate(InputAction.CallbackContext context)
         {
-            _direction = TileHelper.GetNextCardinalDir(_direction);
+            if (_ghostRotations != null)
+            {
+                _direction = _ghostRotations.GetNextDirection(_direction);
+            }
+            else
+            {
+                _direction = TileHelper.GetNextCardinalDir(_direction);
+            }
             foreach (BuildGhost buildGhost in _buildGhosts)
             {
                 buildGhost.Dir = _direction;
@@ -544,6 +552,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _ => _itemPlacement,
             };
             _selectedObject = genericObjectSo;
+
+            if (genericObjectSo.prefab.TryGetComponent(out _ghostRotations))
+            {
+                if (!_ghostRotations.GetAllowedRotations().Contains(_direction))
+                {
+                    _direction = _ghostRotations.DefaultDirection;
+                }
+            }
+            else
+            {
+                _ghostRotations = null;
+            }
             ClearGhosts();
             _buildGhosts.Add(CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_itemPlacement), _direction));
         }
