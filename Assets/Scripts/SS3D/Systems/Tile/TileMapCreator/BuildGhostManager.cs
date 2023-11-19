@@ -26,6 +26,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public Material _validConstruction;
         public Material _invalidConstruction;
         public Material _deleteConstruction;
+
+        private Direction _lastRegisteredDirection;
         
 
         public List<BuildGhost> _ghosts = new();
@@ -52,6 +54,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 ghost.SetNextRotation();
             }
+
+            _lastRegisteredDirection = _ghosts.First().direction;
         }
 
         public BuildGhost CreateGhost(GameObject prefab, Vector3 position)
@@ -59,24 +63,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             Direction ghostDirection;
 
-            if(_ghosts.Count > 0)
+            if (prefab.TryGetComponent(out ICustomGhostRotation customRotationComponent))
             {
-                ghostDirection = _ghosts.First().direction;
-            }
-            else
-            {
-                if (prefab.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+                if (customRotationComponent.GetAllowedRotations().Contains(_lastRegisteredDirection))
                 {
-                    ghostDirection = customRotationComponent.DefaultDirection;
+                    ghostDirection = _lastRegisteredDirection;
                 }
                 else
                 {
-                    ghostDirection = Direction.North;
+                    ghostDirection = customRotationComponent.DefaultDirection;
                 }
             }
-
-
-            
+            else
+            {
+                ghostDirection = _lastRegisteredDirection;
+            }
 
             Quaternion rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(ghostDirection), 0);
             var _ghostObject = Instantiate(prefab, position, rotation);
@@ -127,8 +128,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             public void ChangeGhostColor(BuildMatMode mode)
             {
                 Material ghostMat = null;
-
-                
 
                 switch (mode)
                 {
