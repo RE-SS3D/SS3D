@@ -1,13 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Logging;
-using SS3D.Systems.Inputs;
-using SS3D.Systems.Tile.UI;
-using System.Linq;
-using TMPro;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile.TileMapCreator
