@@ -5,13 +5,15 @@ using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data;
+using SS3D.Data.Enums;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static SS3D.Systems.Tile.TileMapCreator.BuildGhost;
+using static SS3D.Systems.Tile.TileMapCreator.BuildGhostManager;
 using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -19,14 +21,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// <summary>
     /// Class for managing ghost objects, that will be used for building or deleting by TileMapCreator.
     /// </summary>
-    public class BuildGhost : NetworkActor
+    public class BuildGhostManager : NetworkActor
     {
-        public static Material _validConstruction;
-        public static Material _invalidConstruction;
-        public static Material _deleteConstruction;
+        public Material _validConstruction;
+        public Material _invalidConstruction;
+        public Material _deleteConstruction;
         
 
-        public List<BuildGhostStruct> _ghosts = new();
+        public List<BuildGhost> _ghosts = new();
 
 
         public Direction Dir { get; set; } = Direction.North;
@@ -36,29 +38,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Invalid,
             Delete
         }
-        public void SetupMaterials(Material validConstruction, Material invalidConstruction, Material deleteConstruction)
+
+
+        public void Update()
         {
-            _validConstruction = validConstruction;
-            _invalidConstruction = invalidConstruction;
-            _deleteConstruction = deleteConstruction;
+            foreach (var buildGhost in _ghosts)
+            {
+                buildGhost.UpdateRotationAndPosition();
+            }
         }
 
         public void SetNextRotation()
         {
             foreach (var ghost in _ghosts)
             {
-                if (ghost.ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent))
-                {
-                    Dir = customRotationComponent.GetNextDirection(Dir);
-                }
-                else
-                {
-                    Dir = TileHelper.GetNextCardinalDir(Dir);
-                }
+                ghost.UpdateRotationAndPosition();
             }
         }
 
-        public BuildGhostStruct CreateGhost(GameObject prefab, Vector3 position, Direction direction)
+        public BuildGhost CreateGhost(GameObject prefab, Vector3 position, Direction direction)
         {
 
             if (prefab.TryGetComponent(out ICustomGhostRotation customRotationComponent))
@@ -91,7 +89,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 col.enabled = false;
             }
 
-            var ghostStruct = new BuildGhostStruct(_ghostObject, position);
+            var ghostStruct = new BuildGhost(_ghostObject, position, direction);
 
             _ghosts.Add(ghostStruct);
             return ghostStruct;
@@ -101,20 +99,22 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             for (int i = _ghosts.Count - 1; i >= 0; i--)
             {
-                _ghosts[i].ghostObject.Dispose(true);
+                _ghosts[i].ghost.Dispose(true);
             }
             _ghosts.Clear();
         }
 
-        public class BuildGhostStruct
+        public class BuildGhost
         {
-            public GameObject ghostObject;
-            public Vector3 TargetPosition;
+            public GameObject ghost;
+            public Vector3 position;
+            public Direction direction;
 
-            public BuildGhostStruct(GameObject ghostObject, Vector3 targetPosition)
+            public BuildGhost(GameObject ghostObject, Vector3 targetPosition, Direction dir)
             {
-                this.ghostObject = ghostObject;
-                this.TargetPosition = targetPosition;
+                ghost = ghostObject;
+                position = targetPosition;
+                direction = dir;
             }
 
             /// <summary>
@@ -125,22 +125,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 Material ghostMat = null;
 
+                
+
                 switch (mode)
                 {
                     case BuildMatMode.Valid:
-                        ghostMat = _validConstruction;
+                        ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.ValidConstruction);
                         break;
 
                     case BuildMatMode.Invalid:
-                        ghostMat = _invalidConstruction;
+                        ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.InvalidConstruction);
                         break;
 
                     case BuildMatMode.Delete:
-                        ghostMat = _deleteConstruction;
+                        ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.DeleteConstruction);
                         break;
                 }
 
-                foreach (MeshRenderer mr in ghostObject.GetComponentsInChildren<MeshRenderer>())
+
+                foreach (MeshRenderer mr in ghost.GetComponentsInChildren<MeshRenderer>())
                 {
                     Material[] materials = mr.materials;
                     for (int i = 0; i < materials.Length; i++)
@@ -149,6 +152,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     }
 
                     mr.materials = materials;
+                }
+            }
+
+            public void UpdateRotationAndPosition()
+            {
+                // Small offset is added so that meshes don't overlap with already placed objects.
+                ghost.transform.position = Vector3.Lerp(ghost.transform.position, position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
+                ghost.transform.rotation = Quaternion.Lerp(ghost.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(direction), 0), Time.deltaTime * 15f);
+            }
+
+            public void SetNextRotation()
+            {
+                if (ghost.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+                {
+                    direction = customRotationComponent.GetNextDirection(direction);
+                }
+                else
+                {
+                    direction = TileHelper.GetNextCardinalDir(direction);
                 }
             }
         }

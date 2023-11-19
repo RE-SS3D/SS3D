@@ -18,7 +18,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static SS3D.Systems.Tile.TileMapCreator.BuildGhost;
+using static SS3D.Systems.Tile.TileMapCreator.BuildGhostManager;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -61,7 +61,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private Direction _direction = Direction.North;
 
         [SerializeField]
-        private BuildGhost _ghostManager;
+        private BuildGhostManager _ghostManager;
 
         protected override void OnStart()
         {
@@ -89,7 +89,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             // Move buildGhost, that sticks to the mouse. Currently it exists only if player is not dragging.
             if (_ghostManager._ghosts.Count == 1)
             {
-                _ghostManager._ghosts.First().TargetPosition = position;
+                _ghostManager._ghosts.First().position = position;
                 if (position != _lastSnappedPosition)
                 {
                     RefreshGhost(_ghostManager._ghosts.First());
@@ -164,7 +164,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandleReplace(InputAction.CallbackContext context)
         {
-            foreach (BuildGhostStruct buildGhost in _ghostManager._ghosts)
+            foreach (BuildGhost buildGhost in _ghostManager._ghosts)
             {
                 RefreshGhost(buildGhost);
             }
@@ -195,9 +195,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
 
-            foreach (BuildGhostStruct buildGhost in _ghostManager._ghosts)
+            foreach (BuildGhost buildGhost in _ghostManager._ghosts)
             {
-                _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.TargetPosition, _ghostManager.Dir, isReplacing);
+                _tileSystem.RpcPlaceObject(_selectedObject.nameString, buildGhost.position, _ghostManager.Dir, isReplacing);
             }
         }
 
@@ -212,9 +212,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
             else
             {
-                foreach (BuildGhostStruct buildGhost in _ghostManager._ghosts)
+                foreach (BuildGhost buildGhost in _ghostManager._ghosts)
                 {
-                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, buildGhost.TargetPosition, _ghostManager.Dir);
+                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, buildGhost.position, _ghostManager.Dir);
                 }
             }
         }
@@ -222,7 +222,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Update material of buildGhost based build (or anything else) mode and ghosts position  
         /// </summary>
-        public void RefreshGhost(BuildGhostStruct buildGhost)
+        public void RefreshGhost(BuildGhost buildGhost)
         {
             if (_isDeleting)
             {
@@ -235,7 +235,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             else
             {
                 bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                RpcSendCanBuild(_selectedObject.nameString, buildGhost.TargetPosition, _ghostManager.Dir, isReplacing, LocalConnection);
+                RpcSendCanBuild(_selectedObject.nameString, buildGhost.position, _ghostManager.Dir, isReplacing, LocalConnection);
             }
         }
 
@@ -264,16 +264,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
             // Find correct buildGhost to update its material
             for (int i = 0; i < _ghostManager._ghosts.Count; i++)
             {
-                BuildGhostStruct buildGhost = _ghostManager._ghosts[i];
-                if (buildGhost.TargetPosition != placePosition) continue;
+                BuildGhost buildGhost = _ghostManager._ghosts[i];
+                if (buildGhost.position != placePosition) continue;
 
                 if (canBuild)
                 {
-                    buildGhost.ChangeGhostColor(BuildGhost.BuildMatMode.Valid);
+                    buildGhost.ChangeGhostColor(BuildMatMode.Valid);
                 }
                 else
                 {
-                    buildGhost.ChangeGhostColor(BuildGhost.BuildMatMode.Invalid);
+                    buildGhost.ChangeGhostColor(BuildMatMode.Invalid);
                 }
                 return;
             }
@@ -320,7 +320,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 for (int j = x1; j <= x2; j++)
                 {
                     Vector3 tile = new(j, 0, i);
-                    BuildGhostStruct buildGhost = _ghostManager.CreateGhost(_selectedObject.prefab, tile, _direction);
+                    BuildGhost buildGhost = _ghostManager.CreateGhost(_selectedObject.prefab, tile, _direction);
                     RefreshGhost(buildGhost);
                 }
             }
@@ -338,11 +338,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void ActivateGhosts()
         {
-            foreach (BuildGhostStruct buildGhost in _ghostManager._ghosts)
+            foreach (BuildGhost buildGhost in _ghostManager._ghosts)
             {
-                if (!buildGhost.ghostObject.activeSelf)
+                if (!buildGhost.ghost.activeSelf)
                 {
-                    buildGhost.ghostObject.SetActive(true);
+                    buildGhost.ghost.SetActive(true);
                 }
             }
         }
