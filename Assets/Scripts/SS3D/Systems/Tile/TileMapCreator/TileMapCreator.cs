@@ -82,7 +82,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            //ActivateGhosts();
+            ActivateGhosts();
             AdjustGridWidth();
             
             Vector3 position = TileHelper.GetPointedPosition(!_itemPlacement);
@@ -333,19 +333,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
     
         
- /*       /// <summary>
+        /// <summary>
         /// Activate all buildGhosts. This method is important, because for some reason network objects disable themselves after a few frames.
         /// </summary>
         private void ActivateGhosts()
         {
-            foreach (BuildGhost buildGhost in _buildGhosts)
+            foreach (BuildGhostStruct buildGhost in _ghostManager._ghosts)
             {
-                if (!buildGhost.gameObject.activeSelf)
+                if (!buildGhost.ghostObject.activeSelf)
                 {
-                    buildGhost.gameObject.SetActive(true);
+                    buildGhost.ghostObject.SetActive(true);
                 }
             }
-        }*/
+        }
         
         #endregion
 
