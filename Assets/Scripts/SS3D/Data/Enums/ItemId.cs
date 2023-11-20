@@ -62,6 +62,7 @@ namespace SS3D.Data.Enums
         HumanLungRightItem = 57, 
         HumanTorsoItem = 58, 
         HumanHeartItem = 59, 
+        Toolbelt = 60, 
     }
 }
 

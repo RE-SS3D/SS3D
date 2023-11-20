@@ -257,6 +257,11 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/BodyParts/HumanHeartItem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 8fabaf8ecfcd66a43a5b3fe2cefea719
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Waist
+      - Toolbelt.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
