@@ -13,44 +13,35 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 
 		public override CommandType Type => CommandType.Server;
+        private struct CalculatedValues : ICalculatedValues
+        {
+            public readonly AttachedContainer Container;
+            public CalculatedValues(AttachedContainer container)
+            {
+                Container = container;
+            }
+        }
+
 		public override string Perform(string[] args, NetworkConnection conn)
 		{
-			CheckArgsResponse checkArgsResponse = CheckArgs(args);
-			if (checkArgsResponse.IsValid == false)
-				return checkArgsResponse.InvalidArgs;
-
-			string containerName = args[0];
-			GameObject containerGo = GameObject.Find(containerName);
-			AttachedContainer container = containerGo.GetComponentInChildren<AttachedContainer>();
-			container.Dump();
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            
+			calculatedValues.Container.Dump();
 			return "Container content dumped";
 		}
 		protected override CheckArgsResponse CheckArgs(string[] args)
 		{
-			CheckArgsResponse response = new CheckArgsResponse();
-			if (args.Length != 1)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "Invalid number of arguments";
-				return response;
-			}
-			string containerName = args[0];
-			GameObject containerGo = GameObject.Find(containerName);
-			if (containerGo == null)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "This container doesn't exist";
-				return response;
-			}
-			AttachedContainer[] container =  containerGo.GetComponentsInChildren<AttachedContainer>();
-			if (container.Length == 0)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "no container on this game object";
-				return response;
-			}
+			CheckArgsResponse response = new();
+			if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
+			
+			GameObject containerGo = GameObject.Find(args[0]);
+			if (containerGo == null) return response.MakeInvalid("This container doesn't exist");
+            
+            AttachedContainer container =  containerGo.GetComponentInChildren<AttachedContainer>();
+			if (container == null) return response.MakeInvalid("No container on this game object");
+			
 			response.IsValid = true;
-			return response;
+			return response.MakeValid(new CalculatedValues(container));
 		}
 	}
 }

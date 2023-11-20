@@ -11,35 +11,30 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Repeat your string";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Server;
-
+        private struct CalculatedValues : ICalculatedValues
+        {
+            public readonly UInt16 Number;
+            public CalculatedValues(UInt16 number)
+            {
+                Number = number;
+            }
+        }
+        
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
             
-            UInt16 number = UInt16.Parse(args[0]);
-            return String.Concat(Enumerable.Repeat(string.Join(" ", args.Skip(1)), number));
+            return String.Concat(Enumerable.Repeat(string.Join(" ", args.Skip(1)), calculatedValues.Number));
         }
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 2)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
+            CheckArgsResponse response = new();
+            if (args.Length != 2) return response.MakeInvalid("Invalid number of arguments");
+            
             UInt16.TryParse(args[0], out UInt16 number);
-            if (number == 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number";
-                return response;
-            }
-
-            response.IsValid = true;
-            return response;
+            if (number == 0) return response.MakeInvalid("Invalid number");
+            
+            return response.MakeValid(new CalculatedValues(number));
         }
     }
 }
