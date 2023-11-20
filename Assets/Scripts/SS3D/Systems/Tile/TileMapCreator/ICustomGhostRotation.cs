@@ -23,5 +23,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public Direction GetNextDirection(Direction dir);
 
+        public Direction[] GetAllowedRotations();
     }
 }
