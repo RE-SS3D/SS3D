@@ -10,7 +10,21 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         {
             public bool IsValid;
             public string InvalidArgs;
+            public ICalculatedValues CalculatedValues;
+            public CheckArgsResponse MakeInvalid(string invalidArgs)
+            {
+                InvalidArgs = invalidArgs;
+                IsValid = false;
+                return this;
+            }
+            public CheckArgsResponse MakeValid(ICalculatedValues calculatedValues)
+            {
+                CalculatedValues = calculatedValues;
+                IsValid = true;
+                return this;
+            }
         }
+        protected interface ICalculatedValues { }
 
         /// <summary>
         /// Is the command going to be executed server or client side ?
@@ -39,5 +53,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         /// </summary>
         protected abstract CheckArgsResponse CheckArgs(string[] args);
         protected const string WrongArgsText = "Wrong args. Type \"(command) help\"";
+
+        protected bool ReceiveCheckResponse<T>(string[] args, out CheckArgsResponse response, out T calculatedValues)
+        {
+            response = CheckArgs(args);
+            calculatedValues = (T)response.CalculatedValues;
+            return response.IsValid;
+        }
     }
 }
