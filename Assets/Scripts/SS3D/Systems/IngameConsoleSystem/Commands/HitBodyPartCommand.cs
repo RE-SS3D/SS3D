@@ -17,44 +17,27 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
+        private struct CalculatedValues : ICalculatedValues
+        {
+            public BodyPart BodyPart;
+            public BodyLayerType BodyLayerType;
+            public DamageType DamageType;
+            public int DamageAmount;
+        }
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
-
-            string gameObjectName = args[0];
-            string bodyLayerName = args[1];
-            string damageTypeName = args[2];
-            string damageAmountString = args[3];
-
-            int damageAmount = 0;
-            BodyLayerType bodyLayerType;
-            DamageType damageType;
-
-            GameObject go = GameObject.Find(gameObjectName);
-            IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
-            BodyPart bodyPart = bodyParts.First();
-
-            Enum.TryParse(damageTypeName, true, out damageType);
-            damageAmount = int.Parse(damageAmountString);
-
-            if (bodyLayerName != "all")
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            
+            if (args[1] != "all")
             {
-                Enum.TryParse(bodyLayerName, true, out bodyLayerType);
-                BodyLayer bodyLayer = bodyPart.FirstBodyLayerOfType(bodyLayerType);
-
-                if (!bodyPart.TryInflictDamage(bodyLayerType, new DamageTypeQuantity(damageType, damageAmount)))
-                {
-                    checkArgsResponse.IsValid = false;
-                    return checkArgsResponse.InvalidArgs = "can't inflict damage on bodypart";
-                }
+                if (!calculatedValues.BodyPart.TryInflictDamage(calculatedValues.BodyLayerType, new(calculatedValues.DamageType, calculatedValues.DamageAmount)))
+                    return response.MakeInvalid("can't inflict damage on bodypart").InvalidArgs;
             }
-            else if(bodyLayerName == "all")
+            else
             {
-                bodyPart.InflictDamageToAllLayer(new DamageTypeQuantity(damageType, damageAmount));
+                calculatedValues.BodyPart.InflictDamageToAllLayer(new(calculatedValues.DamageType, calculatedValues.DamageAmount));
             }
 
             return "BodyPart hurt";
@@ -63,16 +46,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         [Server]
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
+            CheckArgsResponse response = new();
 
-            CheckArgsResponse response = new CheckArgsResponse();
-
-            if (args.Length != 4)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
-
+            if (args.Length != 4) return response.MakeInvalid("Invalid number of arguments");
+            
             string gameObjectName = args[0];
             string bodyLayerName = args[1];
             string damageTypeName = args[2];
@@ -81,67 +58,27 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             BodyLayerType bodyLayerType;
             DamageType damageType;
 
-            try
-            {
-                damageAmount = int.Parse(damageAmountString);
-            }
-            catch (Exception)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Something went wrong with the damage amount conversion to integer, provide a valid number";
-                return response;
-            }
+            if (!int.TryParse(damageAmountString, out damageAmount)) return response.MakeInvalid("Invalid damage amount");
 
-
-            if (!Enum.TryParse(bodyLayerName, true, out bodyLayerType) && bodyLayerName != "all")
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Provide a valid body layer type name";
-                return response;
-            }
-
-            if (!Enum.TryParse(damageTypeName, true, out damageType))
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Provide a valid damage type name";
-                return response;
-            }
-
+            if (!Enum.TryParse(bodyLayerName, true, out bodyLayerType) && bodyLayerName != "all") 
+                return response.MakeInvalid("Provide a valid body layer type name");
+            
+            if (!Enum.TryParse(damageTypeName, true, out damageType)) return response.MakeInvalid("Invalid damage type");
+            
             GameObject go = GameObject.Find(gameObjectName);
-            if(go == null)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "No bodypart with this name";
-                return response;
-            }
+            if(go == null) return response.MakeInvalid("No bodypart with this name");
 
-            IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
+            BodyPart[] bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName).ToArray();
+            if (!bodyParts.Any()) return response.MakeInvalid("No bodypart with this name");
 
-            if (bodyParts.Count() == 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "No bodypart with this name";
-                return response;
-            }
-
-            if (bodyParts.Count() != 1)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Multiple body parts with the same name, ambiguous command";
-                return response;
-            }
-
+            if (bodyParts.Length != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
+            
             BodyPart bodyPart = bodyParts.First();
-
-            if (!bodyPart.ContainsLayer(bodyLayerType))
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "body layer not present on the bodypart";
-                return response;
-            }
+            if (!bodyPart.ContainsLayer(bodyLayerType)) return response.MakeInvalid("body layer not present on the bodypart");
 
             response.IsValid = true;
-            return response;
+            return response.MakeValid(new CalculatedValues{BodyPart = bodyPart, BodyLayerType = bodyLayerType, 
+                DamageType = damageType, DamageAmount = damageAmount});
         }
     }
 }

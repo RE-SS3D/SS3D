@@ -17,11 +17,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         
         private struct CalculatedValues : ICalculatedValues
         {
-            public readonly IEnumerable<BodyPart> BodyParts;
-            public CalculatedValues(IEnumerable<BodyPart> bodyParts) 
-            {
-                BodyParts = bodyParts;
-            }
+            public IEnumerable<BodyPart> BodyParts;
         }
         
         [Server]
@@ -49,7 +45,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
             if (bodyParts.Length != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
 
-            return response.MakeValid(new CalculatedValues(bodyParts));
+            return response.MakeValid(new CalculatedValues{BodyParts = bodyParts});
         }
     }
 }

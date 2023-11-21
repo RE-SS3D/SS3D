@@ -15,47 +15,34 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
+        private struct CalculatedValues : ICalculatedValues
+        {
+            public Entity Entity;
+        }
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
-            string ckey = args[0];
-            Player playerToKill= Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-            Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerToKill);
-            entityToKill.Kill();
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            
+            calculatedValues.Entity.Kill();
             return "Player killed";
         }
 
         [Server]
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 1)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
-            string ckey = args[0];
-            Player PlayerToKill = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-            if (PlayerToKill == null)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "This player doesn't exist";
-                return response;
-            }
-            Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(PlayerToKill);
-            if (entityToKill == null)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "This entity doesn't exist";
-                return response;
-            }
-            response.IsValid = true;
-            return response;
+            CheckArgsResponse response = new();
+            
+            if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
+            
+            Player playerToKill = Subsystems.Get<PlayerSystem>().GetPlayer(args[0]);
+            if (playerToKill == null) return response.MakeInvalid("This player doesn't exist");
+            
+            Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerToKill);
+            if (entityToKill == null) return response.MakeInvalid("This entity doesn't exist");
+            
+            return response.MakeValid(new CalculatedValues{Entity = entityToKill});
         }
     }
 }

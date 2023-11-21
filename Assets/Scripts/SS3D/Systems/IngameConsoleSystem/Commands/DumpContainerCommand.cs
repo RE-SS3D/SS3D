@@ -15,11 +15,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		public override CommandType Type => CommandType.Server;
         private struct CalculatedValues : ICalculatedValues
         {
-            public readonly AttachedContainer Container;
-            public CalculatedValues(AttachedContainer container)
-            {
-                Container = container;
-            }
+            public AttachedContainer Container;
         }
 
 		public override string Perform(string[] args, NetworkConnection conn)
@@ -41,7 +37,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			if (container == null) return response.MakeInvalid("No container on this game object");
 			
 			response.IsValid = true;
-			return response.MakeValid(new CalculatedValues(container));
+			return response.MakeValid(new CalculatedValues{Container = container});
 		}
 	}
 }

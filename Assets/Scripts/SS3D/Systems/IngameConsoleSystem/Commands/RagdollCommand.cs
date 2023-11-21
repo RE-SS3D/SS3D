@@ -15,23 +15,22 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		public override string ShortDescription => "Toggle player's ragdoll. Time is a float type and should be written as 0.5";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 		public override CommandType Type => CommandType.Server;
+
+        private struct CalculatedValues : ICalculatedValues
+        {
+            public Entity Entity;
+            public float Time;
+        }
 		
 		[Server]
 		public override string Perform(string[] args, NetworkConnection conn = null)
 		{
-			CheckArgsResponse checkArgsResponse = CheckArgs(args);
-			if (checkArgsResponse.IsValid == false)
-				return checkArgsResponse.InvalidArgs;
-			string ckey = args[0];
-			Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-			Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-			Ragdoll ragdoll = entity.GetComponent<Ragdoll>();
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+			Ragdoll ragdoll = calculatedValues.Entity.GetComponent<Ragdoll>();
 
 			if (args.Length > 1)
 			{
-				// Force c# into using dot as separator
-				float time = float.Parse(args[1], CultureInfo.InvariantCulture);
-				ragdoll.Knockdown(time);
+				ragdoll.Knockdown(calculatedValues.Time);
 			}
 			else
 			{
@@ -51,54 +50,28 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		protected override CheckArgsResponse CheckArgs(string[] args)
 		{
 			CheckArgsResponse response = new();
-			if (args.Length < 1 || args.Length > 2)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "Invalid number of arguments";
-				return response;
-			}
+			if (args.Length < 1 || args.Length > 2) return response.MakeInvalid("Invalid number of arguments");
+			
 			string ckey = args[0];
 			Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-			if (player == null)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "This player doesn't exist";
-				return response;
-			}
+			if (player == null) return response.MakeInvalid("This player doesn't exist");
+			
 			Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-			if (entity == null)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "This entity doesn't exist";
-				return response;
-			}
-			response.IsValid = true;
-			// Use dot as separator
+			if (entity == null) return response.MakeInvalid("This entity doesn't exist");
+
+            float time = 0;
 			if (args.Length > 1)
 			{
+                // Use dot as separator
 				NumberFormatInfo nfi = new();
 				nfi.NumberDecimalSeparator = ".";
-
-				if (float.TryParse(args[1], NumberStyles.Any, nfi, out float time))
+                if (float.TryParse(args[1], NumberStyles.Any, nfi, out time))
 				{
-					if (time <= 0)
-					{
-						response.IsValid = false;
-						response.InvalidArgs = "Invalid time";
-
-						return response;
-					}
-				}
-				else
-				{
-					response.IsValid = false;
-					response.InvalidArgs = "Invalid time";
-
-					return response;
-				}
-			}
-
-			return response;
+					if (time <= 0) return response.MakeInvalid("Invalid time");
+                }
+				else return response.MakeInvalid("Invalid time");
+            }
+			return response.MakeValid(new CalculatedValues{Entity = entity, Time = time});
 		}
 	}
 }

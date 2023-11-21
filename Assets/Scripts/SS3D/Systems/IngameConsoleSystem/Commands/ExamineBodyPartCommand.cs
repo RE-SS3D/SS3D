@@ -16,23 +16,18 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
+        private struct CalculatedValues : ICalculatedValues
+        {
+            public IEnumerable<BodyPart> BodyParts;
+        }
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
-
-            string gameObjectName = args[0];
-
-            GameObject go = GameObject.Find(gameObjectName);
-            IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
-            BodyPart bodyPart = bodyParts.First();
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
 
             string answer = "";
-
-            foreach(BodyLayer layer in bodyPart.BodyLayers)
+            foreach(BodyLayer layer in calculatedValues.BodyParts.First().BodyLayers)
             {
                 answer += layer.ToString() + ": ";
                 foreach (BodyDamageInfo damage in layer.Damages.DamagesInfo.Values)
@@ -47,44 +42,21 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         [Server]
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
+            CheckArgsResponse response = new();
 
-            CheckArgsResponse response = new CheckArgsResponse();
-
-            if (args.Length != 1)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
+            if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
 
             string gameObjectName = args[0];
-
             GameObject go = GameObject.Find(gameObjectName);
-            if (go == null)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "No bodypart with this name";
-                return response;
-            }
+            if (go == null) return response.MakeInvalid("No bodypart with this name");
+            
+            BodyPart[] bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName).ToArray();
 
-            IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
-
-            if (bodyParts.Count() == 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "No bodypart with this name";
-                return response;
-            }
-
-            if (bodyParts.Count() != 1)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Multiple body parts with the same name, ambiguous command";
-                return response;
-            }
-
-            response.IsValid = true;
-            return response;
+            if (!bodyParts.Any()) return response.MakeInvalid("No bodypart with this name");
+            
+            if (bodyParts.Length != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
+            
+            return response.MakeValid(new CalculatedValues{BodyParts = bodyParts});
         }
     }
 }

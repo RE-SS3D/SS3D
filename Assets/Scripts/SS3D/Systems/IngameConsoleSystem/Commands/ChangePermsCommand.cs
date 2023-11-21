@@ -15,13 +15,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         
         private struct CalculatedValues : ICalculatedValues
         {
-            public readonly string Ckey;
-            public readonly ServerRoleTypes Role;
-            public CalculatedValues(string ckey, ServerRoleTypes role)
-            {
-                Ckey = ckey;
-                Role = role;
-            }
+            public string Ckey;
+            public ServerRoleTypes Role;
         }
 
         public override string Perform(string[] args, NetworkConnection conn = null)
@@ -40,7 +35,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             ServerRoleTypes role = FindRole(args[1]);
             if (role == ServerRoleTypes.None) return response.MakeInvalid("Role doesn't exist");
             
-            return response.MakeValid(new CalculatedValues(args[0], role));
+            return response.MakeValid(new CalculatedValues{Ckey = args[0], Role = role});
         }
 
         private ServerRoleTypes FindRole(string name)

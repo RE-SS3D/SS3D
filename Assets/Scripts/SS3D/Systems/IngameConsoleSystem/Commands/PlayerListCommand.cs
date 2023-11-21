@@ -13,15 +13,13 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "Show all players online";
         public override string ShortDescription => "Show all players online";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
-
         public override CommandType Type => CommandType.Client;
 
+        private struct CalculatedValues : ICalculatedValues { }
 
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
 
             string ret = "";
             List<Player> players = Subsystems.Get<PlayerSystem>().OnlinePlayers.ToList();
@@ -34,16 +32,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
+            CheckArgsResponse response = new ();
+            if (args.Length != 0) return response.MakeInvalid("Invalid number of arguments");
 
-            response.IsValid = true;
-            return response;
+            return response.MakeValid(new CalculatedValues());
         }
     }
 }

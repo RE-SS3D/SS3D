@@ -13,11 +13,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override CommandType Type => CommandType.Server;
         private struct CalculatedValues : ICalculatedValues
         {
-            public readonly UInt16 Number;
-            public CalculatedValues(UInt16 number)
-            {
-                Number = number;
-            }
+            public UInt16 Number;
         }
         
         public override string Perform(string[] args, NetworkConnection conn = null)
@@ -34,7 +30,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             UInt16.TryParse(args[0], out UInt16 number);
             if (number == 0) return response.MakeInvalid("Invalid number");
             
-            return response.MakeValid(new CalculatedValues(number));
+            return response.MakeValid(new CalculatedValues{Number = number});
         }
     }
 }

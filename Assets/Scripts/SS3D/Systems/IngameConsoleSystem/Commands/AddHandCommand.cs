@@ -26,17 +26,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override CommandType Type => CommandType.Server;
         private struct CalculatedValues : ICalculatedValues
         {
-            public readonly Player Player;
-            public readonly Entity Entity;
-            public readonly Vector3 Position;
-            public readonly Vector3 Rotation;
-            public CalculatedValues(Player player, Entity entity, Vector3 position, Vector3 rotation)
-            {
-                Player = player;
-                Entity = entity;
-                Position = position;
-                Rotation = rotation;
-            }
+            public Player Player;
+            public Entity Entity;
+            public Vector3 Position;
+            public Vector3 Rotation;
         }
         public override string Perform(string[] args, NetworkConnection conn)
         {
@@ -84,7 +77,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 rotation = new(-50, -270, 90);
             }
             
-            return response.MakeValid(new CalculatedValues(player, entity, position, rotation));
+            return response.MakeValid(new CalculatedValues{Player = player, Entity = entity, Position = position, Rotation = rotation});
         }
     }
 }

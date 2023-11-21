@@ -10,12 +10,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Close app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Offline;
+        
+        private struct CalculatedValues : ICalculatedValues { }
 
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
 
             #if UNITY_EDITOR
                         UnityEditor.EditorApplication.isPlaying = false;
@@ -26,15 +26,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         }
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
-            response.IsValid = true;
-            return response;
+            CheckArgsResponse response = new ();
+            if (args.Length != 0) return response.MakeInvalid("Invalid number of arguments");
+
+            return response.MakeValid(new CalculatedValues());
         }
     }
 }
