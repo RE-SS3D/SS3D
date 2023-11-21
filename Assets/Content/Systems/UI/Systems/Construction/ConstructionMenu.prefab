@@ -595,9 +595,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Tile.UI.TileMapCreator, SS3D.Systems
-        m_MethodName: set_IsDeleting
-        m_Mode: 6
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapCreator,
+          SS3D.Systems
+        m_MethodName: HandleBuildButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -649,7 +650,7 @@ GameObject:
   - component: {fileID: 4696986489270269785}
   - component: {fileID: 5558970035109273631}
   m_Layer: 5
-  m_Name: InputField (TMP)
+  m_Name: Search bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1475,7 +1476,6 @@ GameObject:
   - component: {fileID: 6060677056020711314}
   - component: {fileID: 2747704420924042145}
   - component: {fileID: 6924109542537538210}
-  - component: {fileID: 2765977658088937921}
   - component: {fileID: 9154675693299657064}
   m_Layer: 5
   m_Name: ConstructionMenu
@@ -1563,21 +1563,9 @@ MonoBehaviour:
   _slotPrefab: {fileID: 4285405521571209506, guid: 484315627df23dd428819ee4c9e05603, type: 3}
   _layerPlacementDropdown: {fileID: 2409669378435090507}
   _inputField: {fileID: 5558970035109273631}
---- !u!114 &2765977658088937921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965414683581951142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d16ab4eb1127ca4eac3cb229241649e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  validConstruction: {fileID: 2100000, guid: 6d2a18aa72cbaf94694dce9f8451160b, type: 2}
-  invalidConstruction: {fileID: 2100000, guid: e9b99cfb2e59ffa40a062c2f4b88b729, type: 2}
-  deleteConstruction: {fileID: 2100000, guid: ed5a1263eb564c94abc6407ac0919ea7, type: 2}
+  _validConstruction: {fileID: 2100000, guid: 6d2a18aa72cbaf94694dce9f8451160b, type: 2}
+  _invalidConstruction: {fileID: 2100000, guid: e9b99cfb2e59ffa40a062c2f4b88b729, type: 2}
+  _deleteConstruction: {fileID: 2100000, guid: ed5a1263eb564c94abc6407ac0919ea7, type: 2}
 --- !u!114 &9154675693299657064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2418,9 +2406,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Tile.UI.TileMapCreator, SS3D.Systems
-        m_MethodName: set_IsDeleting
-        m_Mode: 6
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapCreator,
+          SS3D.Systems
+        m_MethodName: HandleDeleteButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3518,7 +3507,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 0
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 10
+  m_ScrollSensitivity: 20
   m_Viewport: {fileID: 8771489353155509193}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 3785844209189093823}
@@ -3615,7 +3604,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2180168398058430789}
   - component: {fileID: 4686284081446859306}
-  - component: {fileID: 5112122915852808111}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -3668,18 +3656,6 @@ MonoBehaviour:
   m_Spacing: {x: 5, y: 5}
   m_Constraint: 1
   m_ConstraintCount: 2
---- !u!114 &5112122915852808111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6243703131314193102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca78eb30848a4fe40b2c16cdfff48e37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6321497670735554424
 GameObject:
   m_ObjectHideFlags: 0
@@ -4226,7 +4202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4235739587677223029
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4329,7 +4305,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2287788854832640797}
   m_HandleRect: {fileID: 3379647602017452814}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4954,7 +4930,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -0.000030517578, y: -0.00018310547}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
