@@ -239,7 +239,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
+                // It's fine to use get component in parent because the player might click on a part of a whole thing,
+                // like the lid of a toolbox, intending to click the toolbox itself. 
+                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponentInParent<PlacedItemObject>();
+
                 if (placedItem != null)
                 {
                     _tileSystem.RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
