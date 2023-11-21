@@ -442,7 +442,7 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <param name="newItem"> the item to store.</param>
 		private void AddStoredItem(StoredItem newItem)
 		{
-            if ((bool) GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, newItem.Item))) return;
+            if ((bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, newItem.Item))) return;
 
             _storedItems.Add(newItem);
 		}

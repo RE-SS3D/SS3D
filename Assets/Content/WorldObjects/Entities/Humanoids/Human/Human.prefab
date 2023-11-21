@@ -234,6 +234,7 @@ GameObject:
   - component: {fileID: 8674961287379602231}
   - component: {fileID: 7584683726852713205}
   - component: {fileID: 6464823695533890811}
+  - component: {fileID: 2974687133020822564}
   m_Layer: 12
   m_Name: JumpsuitContainer
   m_TagString: Untagged
@@ -305,6 +306,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2974687133020822564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187737247729814717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62678b96a73403941a3ac098c303f4f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _beltContainer: {fileID: 9047513397440941168}
 --- !u!1 &378853208810803035
 GameObject:
   m_ObjectHideFlags: 0
@@ -9765,6 +9779,7 @@ GameObject:
   - component: {fileID: 1197393981893597262}
   - component: {fileID: 9047513397440941168}
   - component: {fileID: 43029435639503373}
+  - component: {fileID: 5038169210586745514}
   m_Layer: 12
   m_Name: BeltContainer
   m_TagString: Untagged
@@ -9836,6 +9851,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5038169210586745514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6657284224946127033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4b09424a6df2bd45af65aebfd36c03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _jumpsuitContainer: {fileID: 7584683726852713205}
 --- !u!1 &6697434752520298150
 GameObject:
   m_ObjectHideFlags: 0
