@@ -72,8 +72,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             base.OnStart();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
-            _buildGhosts = new();
-            _ghostsToRefresh = new();
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
@@ -291,16 +289,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void ActivateGhosts()
         {
-            foreach (BuildGhost buildGhost in _buildGhosts)
+            foreach (BuildGhost buildGhost in _ghostManager._ghosts)
             {
-                if (!buildGhost.gameObject.activeSelf)
+                if (!buildGhost.ghost.activeSelf)
                 {
-                    buildGhost.gameObject.SetActive(true);
+                    buildGhost.ghost.SetActive(true);
                 }
             }
         }
         
-        #endregion
+
 
         private void FindAndDeleteItem()
         {
@@ -314,7 +312,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 }
             }
         }
-        #endregion
+
 
         #region Drag algorithms
         private void LineDrag(Vector3 position)
@@ -352,23 +350,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         #endregion
         
         #region Ghosts 
-       
-
-    
-        
-        /// <summary>
-        /// Activate all buildGhosts. This method is important, because for some reason network objects disable themselves after a few frames.
-        /// </summary>
-        private void ActivateGhosts()
-        {
-            foreach (BuildGhost buildGhost in _ghostManager._ghosts)
-            {
-                if (!buildGhost.ghost.activeSelf)
-                {
-                    buildGhost.ghost.SetActive(true);
-                }
-            }
-        }
+     
         
         #endregion
 
