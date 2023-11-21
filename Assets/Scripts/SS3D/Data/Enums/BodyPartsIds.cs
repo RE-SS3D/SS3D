@@ -18,10 +18,10 @@ namespace SS3D.Data.Enums
         HumanLungLeft = 13, 
         HumanStomach = 14, 
         HumanLiver = 15, 
-        HumanHeart = 16, 
-        HumanIntestineLarge = 17, 
-        HumanEye = 18, 
-        HumanBrain = 19, 
+        HumanIntestineLarge = 16, 
+        HumanEye = 17, 
+        HumanBrain = 18, 
+        HumanHeart = 19, 
     }
 }
 
