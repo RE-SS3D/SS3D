@@ -43,9 +43,22 @@ namespace SS3D.Systems.Health
         {
             yield return null;
             yield return null;
+
+            if (HealthController == null)
+            {
+                HealthController = GetComponentInParent<HealthController>();
+            }
+
             _connectedToHeart = GetAllBodyPartAttachedToHeart();
+
             OnPulse += HandleHeartPulse;
-            HealthController.OnBodyPartRemoved += HandleBodyPartRemoved;
+
+            //TODO : temporary fix for heart when it's not attached to a health controller. Should eventually prevent working
+            // when heart is detached from head.
+            if (HealthController != null)
+            {
+                HealthController.OnBodyPartRemoved += HandleBodyPartRemoved;
+            } 
         }
 
         /// <summary>
@@ -53,7 +66,11 @@ namespace SS3D.Systems.Health
         /// </summary>
         [Server]
         public void HandleHeartPulse(object sender, EventArgs args)
-        {          
+        {
+            //TODO : temporary fix for heart when it's not attached to a health controller. Should eventually prevent working
+            // when heart is detached from head.
+            if (HealthController == null) return;
+
             SendOxygen();
             Bleed();
         }
