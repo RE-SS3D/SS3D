@@ -34,7 +34,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private Controls.TileCreatorActions _controls;
 
 
-        private bool _itemPlacement = false;
+        private bool _isPlacingItem = false;
 
         private Vector3 _lastSnappedPosition;
 
@@ -52,13 +52,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         [SerializeField]
         private TileMapCreator _menu;
-
-        public enum BuildMatMode
-        {
-            Valid,
-            Invalid,
-            Delete
-        }
 
         protected override void OnStart()
         {
@@ -83,7 +76,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             ActivateGhosts();
 
-            Vector3 position = TileHelper.GetPointedPosition(!_itemPlacement);
+            Vector3 position = TileHelper.GetPointedPosition(!_isPlacingItem);
             // Move buildGhost, that sticks to the mouse. Currently it exists only if player is not dragging.
             if (_ghosts.Count == 1)
             {
@@ -170,75 +163,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _ghosts.Clear();
         }
 
-        public class BuildGhost
-        {
-            public GameObject ghost;
-            public Vector3 position;
-            public Direction direction;
-
-            public BuildGhost(GameObject ghostObject, Vector3 targetPosition, Direction dir)
-            {
-                ghost = ghostObject;
-                position = targetPosition;
-                direction = dir;
-            }
-
-            /// <summary>
-            /// Chooses which material to set on the ghost based on which mode we are building.
-            /// </summary>
-            /// <param name="mode"></param>
-            public void ChangeGhostColor(BuildMatMode mode)
-            {
-                Material ghostMat = null;
-
-                switch (mode)
-                {
-                    case BuildMatMode.Valid:
-                        ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.ValidConstruction);
-                        break;
-
-                    case BuildMatMode.Invalid:
-                        ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.InvalidConstruction);
-                        break;
-
-                    case BuildMatMode.Delete:
-                        ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.DeleteConstruction);
-                        break;
-                }
-
-
-                foreach (MeshRenderer mr in ghost.GetComponentsInChildren<MeshRenderer>())
-                {
-                    Material[] materials = mr.materials;
-                    for (int i = 0; i < materials.Length; i++)
-                    {
-                        materials[i] = ghostMat;
-                    }
-
-                    mr.materials = materials;
-                }
-            }
-
-            public void UpdateRotationAndPosition()
-            {
-                // Small offset is added so that meshes don't overlap with already placed objects.
-                ghost.transform.position = Vector3.Lerp(ghost.transform.position, position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
-                ghost.transform.rotation = Quaternion.Lerp(ghost.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(direction), 0), Time.deltaTime * 15f);
-            }
-
-            public void SetNextRotation()
-            {
-                if (ghost.TryGetComponent(out ICustomGhostRotation customRotationComponent))
-                {
-                    direction = customRotationComponent.GetNextDirection(direction);
-                }
-                else
-                {
-                    direction = TileHelper.GetNextCardinalDir(direction);
-                }
-            }
-        }
-
         private void HandleDeleteButton()
         {
             _isDeleting = true;
@@ -257,7 +181,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private void HandlePlaceStarted(InputAction.CallbackContext context)
         {
             // Dragging is disabled for items
-            if (_itemPlacement)
+            if (_isPlacingItem)
                 return;
 
             _isDragging = true;
@@ -285,21 +209,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
             DestroyGhosts();
 
             if (_selectedObject == null) return;
-            CreateGhost(_selectedObject.prefab, TileHelper.GetPointedPosition(!_itemPlacement));
+            CreateGhost(_selectedObject.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
         public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
-            _itemPlacement = genericObjectSo switch
+            _isPlacingItem = genericObjectSo switch
             {
                 TileObjectSo => false,
                 ItemObjectSo => true,
-                _ => _itemPlacement,
+                _ => _isPlacingItem,
             };
             _selectedObject = genericObjectSo;
 
             DestroyGhosts();
-            CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_itemPlacement));
+            CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
         private void HandleReplace(InputAction.CallbackContext context)
@@ -328,7 +252,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void DeleteOnGhosts()
         {
-            if (_itemPlacement)
+            if (_isPlacingItem)
             {
                 FindAndDeleteItem();
             }
@@ -344,13 +268,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Update material of buildGhost based build (or anything else) mode and ghosts position  
         /// </summary>
-        public void RefreshGhost(BuildGhost buildGhost)
+        private void RefreshGhost(BuildGhost buildGhost)
         {
             if (_isDeleting)
             {
                 buildGhost.ChangeGhostColor(BuildMatMode.Delete);
             }
-            else if (_itemPlacement)
+            else if (_isPlacingItem)
             {
                 buildGhost.ChangeGhostColor(BuildMatMode.Valid);
             }
@@ -390,7 +314,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
+        private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
 
             var tileSystem = Subsystems.Get<TileSystem>();
