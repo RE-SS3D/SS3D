@@ -280,7 +280,7 @@ namespace SS3D.Substances
                 _substances[index] = entry;
             }
             RecalculateAndSyncVolume();
-            Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
+            //Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
         }
 
         /// <summary>
