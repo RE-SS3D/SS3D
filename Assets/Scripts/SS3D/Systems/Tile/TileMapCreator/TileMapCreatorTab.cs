@@ -1,3 +1,4 @@
+﻿using SS3D.Systems.Tile.TileMapCreator;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ namespace SS3D.Systems.Tile.UI
     {
         private GenericObjectSo _genericObjectSo;
         private TileMapCreator.TileMapCreator _menu;
-
+        private BuildGhostManager _ghostManager;
         /// <summary>
         /// Load an UI icon and string for the item/tile.
         /// </summary>
@@ -23,11 +24,12 @@ namespace SS3D.Systems.Tile.UI
             transform.localScale = Vector3.one;
             GetComponentInChildren<TMP_Text>().text = genericObjectSo.nameString;
             _menu = GetComponentInParent<TileMapCreator.TileMapCreator>();
+            _ghostManager = GetComponentInParent<BuildGhostManager>(); 
         }
 
         public void OnClick()
         {
-            _menu.SetSelectedObject(_genericObjectSo);
+            _ghostManager.SetSelectedObject(_genericObjectSo);
         }
     }
 }
