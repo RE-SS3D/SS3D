@@ -38,6 +38,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private TMP_Dropdown _layerPlacementDropdown;
         [SerializeField]
         private TMP_InputField _inputField;
+        [SerializeField]
+        private Material _validConstruction;
+        [SerializeField]
+        private Material _invalidConstruction;
+        [SerializeField]
+        private Material _deleteConstruction;
 
 
         private bool _enabled = false;
@@ -48,7 +54,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private GenericObjectSo _selectedObject;
 
         private TileSystem _tileSystem;
-
 
         private List<GenericObjectSo> _objectDatabase;
         private Controls.TileCreatorActions _controls;
@@ -67,6 +72,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             base.OnStart();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
+            _buildGhosts = new();
+            _ghostsToRefresh = new();
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
@@ -217,6 +224,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 }
             }
         }
+        #endregion
 
         /// <summary>
         /// Update material of buildGhost based build (or anything else) mode and ghosts position  
@@ -277,6 +285,22 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             }
         }
+        
+        /// <summary>
+        /// Activate all buildGhosts. This method is important, because for some reason network objects disable themselves after a few frames.
+        /// </summary>
+        private void ActivateGhosts()
+        {
+            foreach (BuildGhost buildGhost in _buildGhosts)
+            {
+                if (!buildGhost.gameObject.activeSelf)
+                {
+                    buildGhost.gameObject.SetActive(true);
+                }
+            }
+        }
+        
+        #endregion
 
         private void FindAndDeleteItem()
         {
