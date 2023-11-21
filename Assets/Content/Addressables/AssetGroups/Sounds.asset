@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Sounds
+  m_EditorClassIdentifier: 
+  m_GroupName: Sounds
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 5a93ce093ec9bfc4aab900a7ff98e41a
+  m_SerializeEntries:
+  - m_GUID: 8c8823796bbcb23438fcf68260070383
+    m_Address: Assets/Art/Sound/Items/Cosmetic/BikeHorn.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ec8b849764a7e9147b2a565f81a1ca42
+    m_Address: Assets/Art/Sound/World/Music/title1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3f51862f0b88a5243a8cceb97147489d
+    m_Address: Assets/Art/Sound/World/Music/title2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fd331e360db5fbb448e66367e41d1893
+    m_Address: Assets/Art/Sound/World/Music/title3.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1a34c805f84be3b4caac14d7de790607
+    m_Address: Assets/Art/Sound/World/Collisions/can1.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8d93fdf9dcada204a952e29213f0293f
+    m_Address: Assets/Art/Sound/World/Collisions/can2.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b315c4abdef36244fb211c5f643d411a
+    m_Address: Assets/Art/Sound/World/Collisions/can3.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f00c6b5a098e84b4b87d80d23b4f295a
+    m_Address: Assets/Art/Sound/World/Collisions/can4.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fc2485e75c5d3ab4e86e814043c9e9cb
+    m_Address: Assets/Art/Sound/World/Airlocks/AirlockClose.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 34297ba204a9f3944872f100baaa2369
+    m_Address: Assets/Art/Sound/World/Airlocks/AirlockOpen.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: cab4f919fc41c16489d8e8f89a7228d7, type: 2}
+    - {fileID: 11400000, guid: a281650a50a2e1f40971396e2bd067da, type: 2}

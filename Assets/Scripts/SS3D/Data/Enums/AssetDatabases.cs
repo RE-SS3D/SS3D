@@ -9,7 +9,8 @@ namespace SS3D.Data.Enums
         ParticlesEffects = 4, 
         Scenes = 5, 
         Settings = 6, 
-        UIElements = 7, 
+        Sounds = 7, 
+        UIElements = 8, 
     }
 }
 
