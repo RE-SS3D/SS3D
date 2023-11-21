@@ -174,10 +174,6 @@ namespace SS3D.Systems.Inventory.Containers
 		public event ContainerContentsHandler OnContentsChanged;
 
 		private readonly object _modificationLock = new();
-		/// <summary>
-		/// The last time the contents of this container were changed
-		/// </summary>
-		public float LastModification { get; private set; }
 
 		public ContainerType ContainerType => _type;
 
@@ -438,7 +434,6 @@ namespace SS3D.Systems.Inventory.Containers
 			}
 
 			AddStoredItem(newItem);
-			LastModification = Time.time;
 		}
 
 		/// <summary>
@@ -447,7 +442,9 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <param name="newItem"> the item to store.</param>
 		private void AddStoredItem(StoredItem newItem)
 		{
-			_storedItems.Add(newItem);
+            if ((bool) GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, newItem.Item))) return;
+
+            _storedItems.Add(newItem);
 		}
 
 		/// <summary>
@@ -466,7 +463,15 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <param name="index">the index in the list at which the storedItem should be removed.</param>
 		private void RemoveStoredItem(int index)
 		{
-			_storedItems.RemoveAt(index);
+            StoredItem storedItem = _storedItems[index];
+
+            if((bool) GetComponents<IStorageCondition>()?.Any(x => !x.CanRemove(this, storedItem.Item))) return;
+
+            storedItem.Item.SetContainer(null);
+            lock (_modificationLock)
+            {
+                _storedItems.RemoveAt(index);
+            }
 		}
 
 
@@ -492,7 +497,7 @@ namespace SS3D.Systems.Inventory.Containers
 					continue;
 				}
 
-				RemoveItemAt(i);
+				RemoveStoredItem(i);
 				return;
 			}
 		}
@@ -518,7 +523,6 @@ namespace SS3D.Systems.Inventory.Containers
 				}
 
 				ReplaceStoredItem(item, i);
-				LastModification = Time.time;
 
 				return true;
 			}
@@ -562,18 +566,6 @@ namespace SS3D.Systems.Inventory.Containers
 			return new Vector2Int(-1, -1);
 		}
 
-		private void RemoveItemAt(int index)
-		{
-			StoredItem storedItem = _storedItems[index];
-			lock (_modificationLock)
-			{
-				RemoveStoredItem(index);
-			}
-
-			LastModification = Time.time;
-			storedItem.Item.SetContainer(null);
-		}
-
 		/// <summary>
 		/// Empties the container, removing all items
 		/// </summary>
@@ -581,17 +573,11 @@ namespace SS3D.Systems.Inventory.Containers
 		{
             Log.Information(this, "dumping the content of container on" + gameObject);
 			Item[] oldItems = _storedItems.Select(x => x.Item).ToArray();
-			for (int i = 0; i < oldItems.Length; i++)
-			{
-				oldItems[i].SetContainer(null);
-			}
 
             for(int i= _storedItems.Count-1; i>=0; i--)
             {
                 RemoveStoredItem(i);
             }
-
-			LastModification = Time.time;
 		}
 
 		/// <summary>
@@ -605,8 +591,6 @@ namespace SS3D.Systems.Inventory.Containers
 				_storedItems[i].Item.Delete();
 			}
 			_storedItems.Clear();
-
-			LastModification = Time.time;
 		}
 
 		/// <summary>
