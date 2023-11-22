@@ -24,6 +24,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return this;
             }
         }
+        /// <summary>
+        /// Struct to transfer calculated values between CheckArgs and Perform methods
+        /// </summary>
         protected interface ICalculatedValues { }
 
         /// <summary>
@@ -54,7 +57,11 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         protected abstract CheckArgsResponse CheckArgs(string[] args);
         protected const string WrongArgsText = "Wrong args. Type \"(command) help\"";
 
-        protected bool ReceiveCheckResponse<T>(string[] args, out CheckArgsResponse response, out T calculatedValues)
+        /// <summary>
+        /// Store CheckArgs response and get if response is valid.
+        /// </summary>
+        /// <returns>If respons is valid</returns>
+        protected bool ReceiveCheckResponse<T>(string[] args, out CheckArgsResponse response, out T calculatedValues) where T: ICalculatedValues
         {
             response = CheckArgs(args);
             calculatedValues = (T)response.CalculatedValues;
