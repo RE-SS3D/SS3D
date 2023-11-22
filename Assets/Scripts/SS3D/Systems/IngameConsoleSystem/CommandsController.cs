@@ -23,7 +23,6 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// Length of space between columns in help command
         /// </summary>
         private const int TabLength = 20;
-
         [SerializeField] private ConsolePanelView _console;
 
         protected override void OnStart()
@@ -65,7 +64,8 @@ namespace SS3D.Systems.IngameConsoleSystem
 		        if (splitCommand[1] == "help")
 		        {
 			        CommandAnswer(LongHelpCommand(commandObject));
-		        }
+                    return;
+                }
 	        }
 
 	        string[] args = GetCommandArgs(command);
