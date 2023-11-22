@@ -1,8 +1,10 @@
-﻿using SS3D.Data;
+﻿using Coimbra;
+using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Systems.Tile;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -17,15 +19,41 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
     public class BuildGhost
     {
-        public GameObject ghost;
-        public Vector3 position;
-        public Direction direction;
+        private GameObject _ghost;
+        private Vector3 _position;
+        private Direction _direction;
+
+        public Direction Direction => _direction;
+
+        public bool ActiveSelf => _ghost.activeSelf;
+
+        public bool SetActive { set => _ghost.SetActive(value); }
+
+        public Vector3 Position { get => _position; set => _position = value; }
+
 
         public BuildGhost(GameObject ghostObject, Vector3 targetPosition, Direction dir)
         {
-            ghost = ghostObject;
-            position = targetPosition;
-            direction = dir;
+            _ghost = ghostObject;
+            _position = targetPosition;
+            _direction = dir;
+
+            if (ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent) 
+                && !customRotationComponent.GetAllowedRotations().Contains(dir))
+            {
+                _direction = customRotationComponent.DefaultDirection;
+            }
+
+            if (ghostObject.TryGetComponent<Rigidbody>(out var ghostRigidbody))
+            {
+                ghostRigidbody.useGravity = false;
+                ghostRigidbody.isKinematic = true;
+            }
+            var colliders = ghostObject.GetComponentsInChildren<Collider>();
+            foreach (Collider col in colliders)
+            {
+                col.enabled = false;
+            }
         }
 
         /// <summary>
@@ -52,7 +80,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
 
 
-            foreach (MeshRenderer mr in ghost.GetComponentsInChildren<MeshRenderer>())
+            foreach (MeshRenderer mr in _ghost.GetComponentsInChildren<MeshRenderer>())
             {
                 Material[] materials = mr.materials;
                 for (int i = 0; i < materials.Length; i++)
@@ -67,20 +95,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void UpdateRotationAndPosition()
         {
             // Small offset is added so that meshes don't overlap with already placed objects.
-            ghost.transform.position = Vector3.Lerp(ghost.transform.position, position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
-            ghost.transform.rotation = Quaternion.Lerp(ghost.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(direction), 0), Time.deltaTime * 15f);
+            _ghost.transform.position = Vector3.Lerp(_ghost.transform.position, _position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
+            _ghost.transform.rotation = Quaternion.Lerp(_ghost.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_direction), 0), Time.deltaTime * 15f);
         }
 
         public void SetNextRotation()
         {
-            if (ghost.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+            if (_ghost.TryGetComponent(out ICustomGhostRotation customRotationComponent))
             {
-                direction = customRotationComponent.GetNextDirection(direction);
+                _direction = customRotationComponent.GetNextDirection(_direction);
             }
             else
             {
-                direction = TileHelper.GetNextCardinalDir(direction);
+                _direction = TileHelper.GetNextCardinalDir(_direction);
             }
+        }
+
+        public void Destroy()
+        {
+            _ghost.Dispose(true);
         }
     }
 }
