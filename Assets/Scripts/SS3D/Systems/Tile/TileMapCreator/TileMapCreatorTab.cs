@@ -7,6 +7,7 @@ namespace SS3D.Systems.Tile.UI
 {
     /// <summary>
     /// Tab that holds information for each item/tile in the TileMapCreator UI.
+    /// TODO : rename to tile map creator slot.
     /// </summary>
     public class TileMapCreatorTab : MonoBehaviour
     {

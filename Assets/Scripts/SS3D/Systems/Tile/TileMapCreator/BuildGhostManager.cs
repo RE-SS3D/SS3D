@@ -40,7 +40,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private Vector3 _dragStartPostion;
         private bool _isDragging;
-        private bool _isDeleting;
+        
 
         public bool IsDragging => _isDragging;
 
@@ -163,16 +163,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _ghosts.Clear();
         }
 
-        private void HandleDeleteButton()
-        {
-            _isDeleting = true;
-        }
-
-        private void HandleBuildButton()
-        {
-            _isDeleting = false;
-        }
-
         private void HandleRotate(InputAction.CallbackContext context)
         {
             SetNextRotation();
@@ -197,7 +187,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _inputSystem.ToggleAction(_controls.Place, false);
             }
 
-            if (!_isDeleting)
+            if (!_menu.IsDeleting)
             {
                 PlaceOnGhosts();
             }
@@ -270,7 +260,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void RefreshGhost(BuildGhost buildGhost)
         {
-            if (_isDeleting)
+            if (_menu.IsDeleting)
             {
                 buildGhost.ChangeGhostColor(BuildMatMode.Delete);
             }

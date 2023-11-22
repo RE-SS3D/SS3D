@@ -25,6 +25,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
     /// In-game editor for placing and deleting items/objects in a tilemap.
+    /// TODO rename to tilemap menu.
     /// </summary>
     public class TileMapCreator : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
     {
@@ -44,7 +45,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private bool _enabled = false;
 
+        private bool _isDeleting;
 
+        public bool IsDeleting => _isDeleting;
 
 
         private TileSystem _tileSystem;
@@ -112,6 +115,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _menuRoot.SetActive(show);
         }
 
+        private void HandleDeleteButton()
+        {
+            _isDeleting = true;
+        }
+
+        private void HandleBuildButton()
+        {
+            _isDeleting = false;
+        }
+
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
@@ -131,16 +144,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _inputSystem.ToggleAction(_controls.Place, true);
             }
         }
-        public void OnInputFieldSelect()
+        private void OnInputFieldSelect()
         {
             _inputSystem.ToggleAllActions(false);
         }
 
-        public void OnInputFieldDeselect()
+        private void OnInputFieldDeselect()
         {
             _inputSystem.ToggleAllActions(true);
         }
-        public void OnInputFieldChanged()
+
+        private void OnInputFieldChanged()
         {
             ClearGrid();
 
@@ -179,7 +193,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
         /// </summary>
-        public void OnDropDownChange()
+        private void OnDropDownChange()
         {
             int index = _layerPlacementDropdown.value;
 
