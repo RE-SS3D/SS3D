@@ -67,11 +67,25 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private TileMapMenu _menu;
 
+        public void SetSelectedObject(GenericObjectSo genericObjectSo)
+        {
+            _isPlacingItem = genericObjectSo switch
+            {
+                TileObjectSo => false,
+                ItemObjectSo => true,
+                _ => _isPlacingItem,
+            };
+            _selectedObject = genericObjectSo;
+
+            DestroyGhosts();
+            CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
             _inputSystem = Subsystems.Get<InputSystem>();
-            _controls = _inputSystem.Inputs.TileCreator;
             _controls = _inputSystem.Inputs.TileCreator;
             _controls.Place.started += HandlePlaceStarted;
             _controls.Place.performed += HandlePlacePerformed;
@@ -81,7 +95,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
 
-        public void Update()
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             foreach (var buildGhost in _ghosts)
             {
@@ -154,11 +168,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _ghosts.Clear();
         }
 
+        /// <summary>
+        /// Called upon control triggered to rotate build ghosts.
+        /// </summary>
         private void HandleRotate(InputAction.CallbackContext context)
         {
             SetNextRotation();
         }
 
+        /// <summary>
+        /// This is called when the player start dragging build ghosts.
+        /// </summary>
         private void HandlePlaceStarted(InputAction.CallbackContext context)
         {
             // Dragging is disabled for items
@@ -169,6 +189,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _dragStartPostion = TileHelper.GetPointedPosition(true);
         }
 
+        /// <summary>
+        /// Method called when the tile objects are placed or deleted.
+        /// </summary>
         private void HandlePlacePerformed(InputAction.CallbackContext context)
         {
             _isDragging = false;
@@ -193,20 +216,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             CreateGhost(_selectedObject.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
-        public void SetSelectedObject(GenericObjectSo genericObjectSo)
-        {
-            _isPlacingItem = genericObjectSo switch
-            {
-                TileObjectSo => false,
-                ItemObjectSo => true,
-                _ => _isPlacingItem,
-            };
-            _selectedObject = genericObjectSo;
-
-            DestroyGhosts();
-            CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
-        }
-
+        /// <summary>
+        /// Called when the control is triggered to replace already present tile objects with new ones.
+        /// </summary>
+        /// <param name="context"></param>
         private void HandleReplace(InputAction.CallbackContext context)
         {
             foreach (BuildGhost buildGhost in _ghosts)
@@ -216,7 +229,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Place all objects form buildGhost
+        /// Place all objects on the tilemap that are at the same locations as existing build ghosts.
         /// </summary>
         private void PlaceOnGhosts()
         {
@@ -229,7 +242,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Delete all objects, that are under ghosts
+        /// Delete all objects, that are at the same locations as existing build ghosts.
         /// </summary>
         private void DeleteOnGhosts()
         {
@@ -337,6 +350,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Create a square of objects holograms.
+        /// </summary>
+        /// <param name="position"> Fist position of the square</param>
         private void SquareDrag(Vector3 position)
         {
             int x1 = (int)Math.Min(_dragStartPostion.x, position.x);
@@ -356,6 +373,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         }
 
+        /// <summary>
+        /// Method called when trying to delete an item from the tilemap (as opposed to a tile object).
+        /// Items need a special method because they are not tied to specific coordinates like tile objects.
+        /// </summary>
         private void FindAndDeleteItem()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

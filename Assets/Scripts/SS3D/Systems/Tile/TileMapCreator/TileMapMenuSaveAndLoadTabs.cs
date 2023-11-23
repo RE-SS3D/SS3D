@@ -13,6 +13,9 @@ using UnityEngine;
 /// </summary>
 public class TileMapMenuSaveAndLoadTabs : NetworkActor
 {
+    /// <summary>
+    /// Set up the UI for loading saved maps. TODO : actually implement the logic here. Coming soon.
+    /// </summary>
     public void SetUpLoad()
     {
         if (IsServer)
@@ -25,6 +28,9 @@ public class TileMapMenuSaveAndLoadTabs : NetworkActor
         }
     }
 
+    /// <summary>
+    /// Set up the UI for saving maps. TODO : actually implement the logic here. Coming soon.
+    /// </summary>
     public void SetUpSave()
     {
         if (IsServer)
