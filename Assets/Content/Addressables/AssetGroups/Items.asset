@@ -193,8 +193,89 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+<<<<<<< Updated upstream
   - m_GUID: 8fabaf8ecfcd66a43a5b3fe2cefea719
     m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Toolbelt.prefab
+=======
+  - m_GUID: 06b6be83779804245b7f6411fe07b851
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 432a4ad70e41e5c4f8f913f76fe0e66c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e02f11b9239b52748a5ed5afd1c5cbd3
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanEarLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 30794a01d5f4c174a9d20b2c632f2dca
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanEarRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 94aaf82bb6ab002418e01d9cc7c6eaaa
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e60ba1e09be8316448e419ecbdfb64a6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 35dfc7c3f708a5b48a206b4a44e7ab49
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7f5954f009d06b2439ca637b43920440
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: cc54bc74b2f4c2349b1f84b501b0a091
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHead.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ecaf79b0a74bdb443a350e88daa94a66
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4a9d34a6cf84ef045a740513d8ae30b1
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanTorso.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 242a937784a622f4f8a6e6d097e0737c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a8b265034e3f79344a6067b406e1bff6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a019475d05ec8824494b0fa88e2282d8
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2bc6f6a968d5ba04c919ba56d0ccdab4
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanStomach.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d75ff9a3ac207a84487ec1ee73a676fc
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLiver.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ea5b9b571f8df3948b52b7023aa66c99
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1e304f9a331c2ba419514ef8afb8a13c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineLarge.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 071581df025e1ba49a8a75eb39611ff6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanEye.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7579883b8dd8801448a176adace4860b
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanBrain.prefab
+>>>>>>> Stashed changes
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

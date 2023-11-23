@@ -46,7 +46,30 @@ namespace SS3D.Data.Enums
         JumpsuitSecurity = 41, 
         HeadsetLeft = 42, 
         HeadsetRight = 43, 
+<<<<<<< Updated upstream
         Toolbelt = 44, 
+=======
+        HumanArmLeft = 44, 
+        HumanArmRight = 45, 
+        HumanEarLeft = 46, 
+        HumanEarRight = 47, 
+        HumanFootLeft = 48, 
+        HumanFootRight = 49, 
+        HumanHandLeft = 50, 
+        HumanHandRight = 51, 
+        HumanHead = 52, 
+        HumanLegLeft = 53, 
+        HumanTorso = 54, 
+        HumanLegRight = 55, 
+        HumanLungRight = 56, 
+        HumanLungLeft = 57, 
+        HumanStomach = 58, 
+        HumanLiver = 59, 
+        HumanHeart = 60, 
+        HumanIntestineLarge = 61, 
+        HumanEye = 62, 
+        HumanBrain = 63, 
+>>>>>>> Stashed changes
     }
 }
 
