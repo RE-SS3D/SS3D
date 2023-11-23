@@ -24,6 +24,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
     /// Class for managing ghost objects, that will be used for building or deleting by TileMapCreator.
+    /// It handles creating construction holograms, replacing, adding or deleting tile objects and items upon placement,
+    /// and placing the holograms in cool shapes like lines and squares.
     /// </summary>
     public class BuildGhostManager : NetworkActor
     {
