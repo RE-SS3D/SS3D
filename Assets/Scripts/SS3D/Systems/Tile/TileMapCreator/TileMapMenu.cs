@@ -24,41 +24,100 @@ using InputSystem = SS3D.Systems.Inputs.InputSystem;
 namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
-    /// In-game editor for placing and deleting items/objects in a tilemap.
-    /// TODO rename to tilemap menu.
+    /// Script handling the UI for the tilemap menu, as well as some logic related to clicking on buttons,
+    /// input fields and what not.
+    /// the tilemap menu is an in-game editor for placing and deleting items/objects in a tilemap.
     /// </summary>
-    public class TileMapCreator : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
+    public class TileMapMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField]
         private GameObject _menuRoot;
+
+        /// <summary>
+        /// Game object parent of the area in the tile map menu where the tile object slots will display.
+        /// </summary>
         [SerializeField]
         private GameObject _contentRoot;
+
+        /// <summary>
+        ///  The model for a single slot, to display tile objects in the menu.
+        /// </summary>
         [SerializeField]
         private GameObject _slotPrefab;
+
+        /// <summary>
+        /// Dropdown to select the layer to display in the menu.
+        /// </summary>
         [SerializeField]
         private TMP_Dropdown _layerPlacementDropdown;
+
+        /// <summary>
+        /// Input field to search for specific tile objects or items in the menu.
+        /// </summary>
         [SerializeField]
         private TMP_InputField _inputField;
 
+
         private bool _mouseOverUI = false;
+
+        /// <summary>
+        /// Is the mouse over the menu UI ?
+        /// </summary>
         public bool MouseOverUI => _mouseOverUI;
 
+        /// <summary>
+        /// Is the tilemap menu enabled ?
+        /// </summary>
         private bool _enabled = false;
+
 
         private bool _isDeleting;
 
+        /// <summary>
+        /// Are we deleting objects from the tilemap ?
+        /// </summary>
         public bool IsDeleting => _isDeleting;
 
 
         private TileSystem _tileSystem;
 
+        /// <summary>
+        /// List of tile objects and items to load in the tilemap menu, that will show in the slots.
+        /// </summary>
         private List<GenericObjectSo> _objectDatabase;
+
         private Controls.TileCreatorActions _controls;
         private InputSystem _inputSystem;
         private PanelTab _tab;
 
         [SerializeField]
         private BuildGhostManager _ghostManager;
+
+        /// <summary>
+        /// Called when pointer enter the UI of the menu.
+        /// </summary>
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _mouseOverUI = true;
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            if (!_ghostManager.IsDragging)
+            {
+                _inputSystem.ToggleAction(_controls.Place, false);
+            }
+        }
+
+        /// <summary>
+        /// Called when pointer exit the UI of the menu.
+        /// </summary>
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _mouseOverUI = false;
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+            if (!_ghostManager.IsDragging)
+            {
+                _inputSystem.ToggleAction(_controls.Place, true);
+            }
+        }
 
         protected override void OnStart()
         {
@@ -77,9 +136,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             AdjustGridWidth();
         }
 
-        #region Handlers
-       
-        
+        /// <summary>
+        /// Method called when the control to open the tilemap menu is performed.
+        /// </summary>
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
             if (_enabled)
@@ -97,13 +156,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _tileSystem = Subsystems.Get<TileSystem>();
             LoadObjectGrid(new[] { TileLayer.Plenum }, false);
         }
-        
        
-        #endregion
-
-
-
-        #region UI
         private void ShowUI(bool show)
         {
             if (!show)
@@ -115,45 +168,41 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _menuRoot.SetActive(show);
         }
 
+        /// <summary>
+        /// Called when clicking on the delete button of the menu.
+        /// </summary>
         private void HandleDeleteButton()
         {
             _isDeleting = true;
         }
 
+        /// <summary>
+        /// Called when clicking on the build button of the menu.
+        /// </summary>
         private void HandleBuildButton()
         {
             _isDeleting = false;
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            _mouseOverUI = true;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
-            if (!_ghostManager.IsDragging)
-            {
-                _inputSystem.ToggleAction(_controls.Place, false);
-            }
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            _mouseOverUI = false;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
-            if (!_ghostManager.IsDragging)
-            {
-                _inputSystem.ToggleAction(_controls.Place, true);
-            }
-        }
+        /// <summary>
+        /// Called when the input field to search for tile objects is selected.
+        /// </summary>
         private void OnInputFieldSelect()
         {
             _inputSystem.ToggleAllActions(false);
         }
 
+        /// <summary>
+        /// Called when the input field to search for tile objects is selected.
+        /// </summary>
         private void OnInputFieldDeselect()
         {
             _inputSystem.ToggleAllActions(true);
         }
 
+        /// <summary>
+        /// Called when the text in the input field to search for tile objects is changed.
+        /// </summary>
         private void OnInputFieldChanged()
         {
             ClearGrid();
@@ -168,9 +217,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             foreach (GenericObjectSo asset in _objectDatabase)
             {
                 if (!asset.nameString.Contains(_inputField.text)) continue;
-                Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorTab>().Setup(asset);
+                Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorSlot>().Setup(asset);
             }
         }
+
         /// <summary>
         /// Load a list of tile objects and place them in the UI box grid.
         /// </summary>
@@ -187,9 +237,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     case false when asset is TileObjectSo so && !allowedLayers.Contains(so.layer):
                         continue;
                 }
-                Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorTab>().Setup(asset);
+                Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorSlot>().Setup(asset);
             }
         }
+
         /// <summary>
         /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
         /// </summary>
@@ -254,9 +305,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     break;
             }
         }
-        
+
         /// <summary>
-        /// Change number of columns in asset grid to fit it's width. Elements of the group will take as much width as possible, but won't exceed width of the menu.
+        /// Change number of columns in asset grid to fit it's width.
+        /// Elements of the group will take as much width as possible, but won't exceed width of the menu.
         /// </summary>
         private void AdjustGridWidth()
         {
@@ -268,9 +320,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (constraintCount != grid.constraintCount)
                 grid.constraintCount = constraintCount;
         }
-        #endregion
-        
-        #region Map
+
+        /// <summary>
+        /// Clear all tile slots in the content area of the tilemap menu.
+        /// </summary>
         private void ClearGrid()
         {
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
@@ -278,8 +331,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
             }
         }
+
+
+        /// <summary>
+        /// Method called when the load button is clicked.
+        /// </summary>
         [Server]
-        public void LoadMap()
+        private void HandleLoadMap()
         {
             if (IsServer)
             {
@@ -291,8 +349,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+
+        /// <summary>
+        /// Method called when the save button is clicked.
+        /// </summary>
         [Server]
-        public void SaveMap()
+        private void HandleSaveMap()
         {
             if (IsServer)
             {
@@ -303,8 +365,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 Log.Information(this, "Cannot save the map on a client");
             }
         }
-        #endregion
-
         
     }
 }

@@ -27,7 +27,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public class BuildGhostManager : NetworkActor
     {
-
+        /// <summary>
+        /// The last direction registered by a build ghost.
+        /// </summary>
         private Direction _lastRegisteredDirection;
 
         private InputSystem _inputSystem;
@@ -36,22 +38,34 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private bool _isPlacingItem = false;
 
+        /// <summary>
+        /// Snapped position are positions in the center of tiles, to display tile objects ghosts properly.
+        /// </summary>
         private Vector3 _lastSnappedPosition;
 
+        /// <summary>
+        /// The snapped position of the mouse, in the middle of a tile, when the player starts dragging with the mouse.
+        /// </summary>
         private Vector3 _dragStartPostion;
-        private bool _isDragging;
-        
 
+
+        private bool _isDragging;
+
+        /// <summary>
+        /// Is the player currently dragging ?
+        /// </summary>
         public bool IsDragging => _isDragging;
 
 
         private GenericObjectSo _selectedObject;
 
-
+        /// <summary>
+        /// List of build ghosts currently displaying in game.
+        /// </summary>
         public List<BuildGhost> _ghosts = new();
 
         [SerializeField]
-        private TileMapCreator _menu;
+        private TileMapMenu _menu;
 
         protected override void OnStart()
         {
@@ -103,16 +117,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _lastSnappedPosition = position;
         }
 
+        /// <summary>
+        /// Rotate all existing ghosts in the next allowed rotation.
+        /// </summary>
         public void SetNextRotation()
         {
             foreach (var ghost in _ghosts)
             {
                 ghost.SetNextRotation();
             }
-
             _lastRegisteredDirection = _ghosts.First().Direction;
         }
 
+        /// <summary>
+        /// Instantiate in the correct position and rotation a single build ghost.
+        /// </summary>
         public BuildGhost CreateGhost(GameObject prefab, Vector3 position)
         {
             var _ghostObject = Instantiate(prefab);
@@ -123,6 +142,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             return buildGhost;
         }
 
+        /// <summary>
+        /// Destroy all existing ghosts.
+        /// </summary>
         public void DestroyGhosts()
         {
             for (int i = _ghosts.Count - 1; i >= 0; i--)
@@ -258,6 +280,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Starting from a given position, create tile ghosts along a line defined by dragging. 
+        /// </summary>
         private void LineDrag(Vector3 position)
         {
             Vector2 firstPoint = new(_dragStartPostion.x, _dragStartPostion.z);
@@ -271,6 +296,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 RefreshGhost(ghost);
             }
         }
+
 
         [ServerRpc(RequireOwnership = false)]
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
