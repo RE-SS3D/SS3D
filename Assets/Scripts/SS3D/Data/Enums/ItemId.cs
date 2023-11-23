@@ -1,4 +1,4 @@
-namespace SS3D.Data.Enums
+﻿namespace SS3D.Data.Enums
 {
     public enum ItemId
     {
@@ -46,9 +46,6 @@ namespace SS3D.Data.Enums
         JumpsuitSecurity = 41, 
         HeadsetLeft = 42, 
         HeadsetRight = 43, 
-<<<<<<< Updated upstream
-        Toolbelt = 44, 
-=======
         HumanArmLeft = 44, 
         HumanArmRight = 45, 
         HumanEarLeft = 46, 
@@ -69,7 +66,6 @@ namespace SS3D.Data.Enums
         HumanIntestineLarge = 61, 
         HumanEye = 62, 
         HumanBrain = 63, 
->>>>>>> Stashed changes
     }
 }
 
