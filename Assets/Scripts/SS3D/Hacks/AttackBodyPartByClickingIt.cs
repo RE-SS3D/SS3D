@@ -21,8 +21,10 @@ namespace SS3D.Hacks
 		[SerializeField] private GameObject attackParticleEffect;
 		[SerializeField] private DamageType attackType;
 		[SerializeField][Range(1, 10)] private float damageAmount;
+        [SerializeField] private bool _inflictToSingleLayer;
+        [SerializeField] private BodyLayerType _bodyLayerType;
 
-		public override void OnStartClient()
+        public override void OnStartClient()
 		{
 			base.OnStartClient();
 			if (!IsOwner) enabled = false;
@@ -64,8 +66,15 @@ namespace SS3D.Hacks
 		{
 
 			RpcInstantiateAttackParticleEffect(attackPosition);
-			bodypart.InflictDamageToAllLayer(new DamageTypeQuantity(attackType, damageAmount));
-		}
+            if (!_inflictToSingleLayer)
+            {
+                bodypart.InflictDamageToAllLayer(new DamageTypeQuantity(attackType, damageAmount));
+            }
+            else
+            {
+                bodypart.TryInflictDamage(_bodyLayerType, new DamageTypeQuantity(attackType, damageAmount));
+            }
+        }
 
 		[ObserversRpc]
 		private void RpcInstantiateAttackParticleEffect(Vector3 position)
