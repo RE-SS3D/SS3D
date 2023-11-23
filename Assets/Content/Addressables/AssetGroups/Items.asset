@@ -194,8 +194,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8fabaf8ecfcd66a43a5b3fe2cefea719
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Waist
-      - Toolbelt.prefab
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Toolbelt.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
