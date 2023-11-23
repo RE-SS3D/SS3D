@@ -193,10 +193,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothes/HeadsetRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-<<<<<<< Updated upstream
-  - m_GUID: 8fabaf8ecfcd66a43a5b3fe2cefea719
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Toolbelt.prefab
-=======
   - m_GUID: 06b6be83779804245b7f6411fe07b851
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
     m_ReadOnly: 0
@@ -275,7 +271,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 7579883b8dd8801448a176adace4860b
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanBrain.prefab
->>>>>>> Stashed changes
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8fabaf8ecfcd66a43a5b3fe2cefea719
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Toolbelt.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

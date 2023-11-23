@@ -1,4 +1,4 @@
-﻿namespace SS3D.Data.Enums
+namespace SS3D.Data.Enums
 {
     public enum ItemId
     {
@@ -66,6 +66,7 @@
         HumanIntestineLarge = 61, 
         HumanEye = 62, 
         HumanBrain = 63, 
+        Toolbelt = 64, 
     }
 }
 
