@@ -625,7 +625,9 @@ namespace SS3D.Systems.Inventory.Containers
 		}
 
         /// <summary>
-        /// Checks if this item can be stored and fits inside the container
+        /// Checks if this item can be stored and fits inside the container. It will also check for 
+        /// custom storage conditions if they exists, which are scripts put on the same game object as this container and
+        /// implementing IStorageCondition.
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
