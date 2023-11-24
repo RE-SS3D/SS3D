@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4b09424a6df2bd45af65aebfd36c03c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumpsuitContainer: {fileID: 0}
+  _jumpsuitContainer: {fileID: 9105894354408653558}
 --- !u!1 &4135833788289055985
 GameObject:
   m_ObjectHideFlags: 0
