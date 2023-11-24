@@ -1,24 +1,11 @@
-﻿using Coimbra;
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
-using DynamicPanels;
-using FishNet.Connection;
+﻿using DynamicPanels;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Logging;
 using SS3D.Systems.Inputs;
-using SS3D.Systems.Tile.UI;
-using SS3D.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using static SS3D.Systems.Tile.TileMapCreator.BuildGhostManager;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -61,7 +48,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private PanelTab _tab;
 
         [SerializeField]
-        private BuildGhostManager _ghostManager;
+        private ConstructionHologramManager _hologramManager;
 
         [SerializeField]
         private TileMapMenuBuildingTabs _tileMapMenuBuildingTabs ;
@@ -77,7 +64,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _mouseOverUI = true;
             _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
-            if (!_ghostManager.IsDragging)
+            if (!_hologramManager.IsDragging)
             {
                 _inputSystem.ToggleAction(_controls.Place, false);
             }
@@ -90,7 +77,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _mouseOverUI = false;
             _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
-            if (!_ghostManager.IsDragging)
+            if (!_hologramManager.IsDragging)
             {
                 _inputSystem.ToggleAction(_controls.Place, true);
             }
@@ -137,7 +124,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (!show)
             {
                 _tab.Detach();
-                _ghostManager.DestroyGhosts();
+                _hologramManager.DestroyHolograms();
             }
             _tab.Panel.gameObject.SetActive(show);
             _menuRoot.SetActive(show);

@@ -13,7 +13,7 @@ namespace SS3D.Systems.Tile.UI
     {
         private GenericObjectSo _genericObjectSo;
 
-        private BuildGhostManager _ghostManager;
+        private ConstructionHologramManager _hologramManager;
         /// <summary>
         /// Load an UI icon and string for the item/tile.
         /// </summary>
@@ -25,12 +25,12 @@ namespace SS3D.Systems.Tile.UI
             transform.localScale = Vector3.one;
             GetComponentInChildren<TMP_Text>().text = genericObjectSo.nameString;
 
-            _ghostManager = GetComponentInParent<BuildGhostManager>(); 
+            _hologramManager = GetComponentInParent<ConstructionHologramManager>(); 
         }
 
         public void OnClick()
         {
-            _ghostManager.SetSelectedObject(_genericObjectSo);
+            _hologramManager.SetSelectedObject(_genericObjectSo);
         }
     }
 }

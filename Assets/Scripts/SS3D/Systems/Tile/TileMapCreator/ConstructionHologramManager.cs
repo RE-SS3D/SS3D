@@ -16,18 +16,17 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static SS3D.Systems.Tile.TileMapCreator.BuildGhostManager;
 using Actor = SS3D.Core.Behaviours.Actor;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
-    /// Class for managing ghost objects, that will be used for building or deleting by TileMapCreator.
+    /// Class for managing tile objects, that will be used for building or deleting by the tile map menu.
     /// It handles creating construction holograms, replacing, adding or deleting tile objects and items upon placement,
     /// and placing the holograms in cool shapes like lines and squares.
     /// </summary>
-    public class BuildGhostManager : NetworkActor
+    public class ConstructionHologramManager : NetworkActor
     {
         /// <summary>
         /// The last direction registered by a build ghost.
@@ -64,7 +63,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// List of build ghosts currently displaying in game.
         /// </summary>
-        public List<BuildGhost> _ghosts = new();
+        public List<ConstructionHologram> _holograms = new();
 
         [SerializeField]
         private TileMapMenu _menu;
@@ -79,8 +78,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             };
             _selectedObject = genericObjectSo;
 
-            DestroyGhosts();
-            CreateGhost(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
+            DestroyHolograms();
+            CreateHologram(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
         protected override void OnStart()
@@ -99,28 +98,28 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            foreach (var buildGhost in _ghosts)
+            foreach (var hologram in _holograms)
             {
-                buildGhost.UpdateRotationAndPosition();
+                hologram.UpdateRotationAndPosition();
             }
 
             ActivateGhosts();
 
             Vector3 position = TileHelper.GetPointedPosition(!_isPlacingItem);
-            // Move buildGhost, that sticks to the mouse. Currently it exists only if player is not dragging.
-            if (_ghosts.Count == 1)
+            // Move hologram, that sticks to the mouse. Currently it exists only if player is not dragging.
+            if (_holograms.Count == 1)
             {
-                _ghosts.First().Position = position;
+                _holograms.First().Position = position;
                 if (position != _lastSnappedPosition)
                 {
-                    RefreshGhost(_ghosts.First());
+                    RefreshHologram(_holograms.First());
                 }
             }
 
             if (_isDragging && (position != _lastSnappedPosition) && (_selectedObject != null))
             {
                 // Delete all ghosts and instantiate new on correct positions. Currently it causes large fps drops.
-                DestroyGhosts();
+                DestroyHolograms();
                 if (_controls.SquareDrag.phase == InputActionPhase.Performed)
                 {
                     SquareDrag(position);
@@ -138,40 +137,40 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void SetNextRotation()
         {
-            foreach (var ghost in _ghosts)
+            foreach (var hologram in _holograms)
             {
-                ghost.SetNextRotation();
+                hologram.SetNextRotation();
             }
-            _lastRegisteredDirection = _ghosts.First().Direction;
+            _lastRegisteredDirection = _holograms.First().Direction;
         }
 
         /// <summary>
-        /// Instantiate in the correct position and rotation a single build ghost.
+        /// Instantiate in the correct position and rotation a single hologram.
         /// </summary>
-        public BuildGhost CreateGhost(GameObject prefab, Vector3 position)
+        public ConstructionHologram CreateHologram(GameObject prefab, Vector3 position)
         {
-            var _ghostObject = Instantiate(prefab);
-            var buildGhost = new BuildGhost(_ghostObject, position, _lastRegisteredDirection);
-            _ghostObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(buildGhost.Direction), 0);
-            _ghostObject.transform.position = buildGhost.Position;
-            _ghosts.Add(buildGhost);
-            return buildGhost;
+            var tileObject = Instantiate(prefab);
+            var hologram = new ConstructionHologram(tileObject, position, _lastRegisteredDirection);
+            tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
+            tileObject.transform.position = hologram.Position;
+            _holograms.Add(hologram);
+            return hologram;
         }
 
         /// <summary>
-        /// Destroy all existing ghosts.
+        /// Destroy all existing holograms.
         /// </summary>
-        public void DestroyGhosts()
+        public void DestroyHolograms()
         {
-            for (int i = _ghosts.Count - 1; i >= 0; i--)
+            for (int i = _holograms.Count - 1; i >= 0; i--)
             {
-                _ghosts[i].Destroy();
+                _holograms[i].Destroy();
             }
-            _ghosts.Clear();
+            _holograms.Clear();
         }
 
         /// <summary>
-        /// Called upon control triggered to rotate build ghosts.
+        /// Called upon control triggered to rotate holograms.
         /// </summary>
         private void HandleRotate(InputAction.CallbackContext context)
         {
@@ -179,7 +178,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// This is called when the player start dragging build ghosts.
+        /// This is called when the player start dragging hologramss.
         /// </summary>
         private void HandlePlaceStarted(InputAction.CallbackContext context)
         {
@@ -205,17 +204,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (!_menu.IsDeleting)
             {
-                PlaceOnGhosts();
+                PlaceOnHolograms();
             }
             else
             {
-                DeleteOnGhosts();
+                DeleteOnHolograms();
             }
 
-            DestroyGhosts();
+            DestroyHolograms();
 
             if (_selectedObject == null) return;
-            CreateGhost(_selectedObject.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
+            CreateHologram(_selectedObject.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
         /// <summary>
@@ -224,29 +223,29 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="context"></param>
         private void HandleReplace(InputAction.CallbackContext context)
         {
-            foreach (BuildGhost buildGhost in _ghosts)
+            foreach (ConstructionHologram buildGhost in _holograms)
             {
-                RefreshGhost(buildGhost);
+                RefreshHologram(buildGhost);
             }
         }
 
         /// <summary>
-        /// Place all objects on the tilemap that are at the same locations as existing build ghosts.
+        /// Place all objects on the tilemap that are at the same locations as existing holograms.
         /// </summary>
-        private void PlaceOnGhosts()
+        private void PlaceOnHolograms()
         {
             bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
 
-            foreach (BuildGhost buildGhost in _ghosts)
+            foreach (ConstructionHologram buildGhost in _holograms)
             {
                 Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.nameString, buildGhost.Position, buildGhost.Direction, isReplacing);
             }
         }
 
         /// <summary>
-        /// Delete all objects, that are at the same locations as existing build ghosts.
+        /// Delete all objects, that are at the same locations as existing holograms.
         /// </summary>
-        private void DeleteOnGhosts()
+        private void DeleteOnHolograms()
         {
             if (_isPlacingItem)
             {
@@ -254,30 +253,30 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
             else
             {
-                foreach (BuildGhost buildGhost in _ghosts)
+                foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.nameString, buildGhost.Position, buildGhost.Direction);
+                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.nameString, hologram.Position, hologram.Direction);
                 }
             }
         }
 
         /// <summary>
-        /// Update material of buildGhost based build (or anything else) mode and ghosts position  
+        /// Update material of holograms based build (or anything else) mode and holograms position  
         /// </summary>
-        private void RefreshGhost(BuildGhost buildGhost)
+        private void RefreshHologram(ConstructionHologram hologram)
         {
             if (_menu.IsDeleting)
             {
-                buildGhost.ChangeGhostColor(BuildMatMode.Delete);
+                hologram.ChangeHologramColor(BuildMatMode.Delete);
             }
             else if (_isPlacingItem)
             {
-                buildGhost.ChangeGhostColor(BuildMatMode.Valid);
+                hologram.ChangeHologramColor(BuildMatMode.Valid);
             }
             else
             {
                 bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                RpcSendCanBuild(_selectedObject.nameString, buildGhost.Position, buildGhost.Direction, isReplacing, LocalConnection);
+                RpcSendCanBuild(_selectedObject.nameString, hologram.Position, hologram.Direction, isReplacing, LocalConnection);
             }
         }
 
@@ -286,7 +285,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void ActivateGhosts()
         {
-            foreach (BuildGhost buildGhost in _ghosts)
+            foreach (ConstructionHologram buildGhost in _holograms)
             {
                 if (!buildGhost.ActiveSelf)
                 {
@@ -296,7 +295,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Starting from a given position, create tile ghosts along a line defined by dragging. 
+        /// Starting from a given position, create holograms along a line defined by dragging. 
         /// </summary>
         private void LineDrag(Vector3 position)
         {
@@ -307,8 +306,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (Vector3 tile in tiles)
             {
-                var ghost = CreateGhost(_selectedObject.prefab, tile);
-                RefreshGhost(ghost);
+                var ghost = CreateHologram(_selectedObject.prefab, tile);
+                RefreshHologram(ghost);
             }
         }
 
@@ -334,19 +333,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [TargetRpc]
         private void RpcReceiveCanBuild(NetworkConnection conn, Vector3 placePosition, bool canBuild)
         {
-            // Find correct buildGhost to update its material
-            for (int i = 0; i < _ghosts.Count; i++)
+            // Find correct hologram to update its material
+            for (int i = 0; i < _holograms.Count; i++)
             {
-                BuildGhost buildGhost = _ghosts[i];
-                if (buildGhost.Position != placePosition) continue;
+                ConstructionHologram hologram = _holograms[i];
+                if (hologram.Position != placePosition) continue;
 
                 if (canBuild)
                 {
-                    buildGhost.ChangeGhostColor(BuildMatMode.Valid);
+                    hologram.ChangeHologramColor(BuildMatMode.Valid);
                 }
                 else
                 {
-                    buildGhost.ChangeGhostColor(BuildMatMode.Invalid);
+                    hologram.ChangeHologramColor(BuildMatMode.Invalid);
                 }
                 return;
             }
@@ -368,8 +367,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 for (int j = x1; j <= x2; j++)
                 {
                     Vector3 tile = new(j, 0, i);
-                    BuildGhost buildGhost = CreateGhost(_selectedObject.prefab, tile);
-                    RefreshGhost(buildGhost);
+                    ConstructionHologram hologram = CreateHologram(_selectedObject.prefab, tile);
+                    RefreshHologram(hologram);
                 }
             }
 
