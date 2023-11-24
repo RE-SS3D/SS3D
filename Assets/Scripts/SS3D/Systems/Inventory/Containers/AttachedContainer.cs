@@ -20,7 +20,6 @@ using FishNet.Object;
 using SS3D.Logging;
 using System.Drawing;
 using UnityEditor;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 
 namespace SS3D.Systems.Inventory.Containers
 {
