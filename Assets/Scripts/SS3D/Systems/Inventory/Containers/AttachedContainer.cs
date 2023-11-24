@@ -20,6 +20,7 @@ using FishNet.Object;
 using SS3D.Logging;
 using System.Drawing;
 using UnityEditor;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -442,8 +443,6 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <param name="newItem"> the item to store.</param>
 		private void AddStoredItem(StoredItem newItem)
 		{
-            if ((bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, newItem.Item))) return;
-
             _storedItems.Add(newItem);
 		}
 
@@ -472,16 +471,6 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 _storedItems.RemoveAt(index);
             }
-		}
-
-
-		/// <summary>
-		/// Adds a stored item without checking any validity
-		/// <param name="storedItem">The item to store</param>
-		/// </summary>
-		public void AddItemUnchecked(StoredItem storedItem)
-		{
-			AddItemUnchecked(storedItem.Item, storedItem.Position);
 		}
 
 		/// <summary>
@@ -635,14 +624,15 @@ namespace SS3D.Systems.Inventory.Containers
 			return Items.Count() < Size.x * Size.y;
 		}
 
-		/// <summary>
-		/// Checks if this item can be stored and fits inside the container
-		/// </summary>
-		/// <param name="item"></param>
-		/// <returns></returns>
-		public bool CanContainItem(Item item)
+        /// <summary>
+        /// Checks if this item can be stored and fits inside the container
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool CanContainItem(Item item)
 		{
-			return CanStoreItem(item) && CanHoldItem(item);
+            if ((bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item))) return false;
+            return CanStoreItem(item) && CanHoldItem(item);
 		}
 		
 		/// <summary>
