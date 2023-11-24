@@ -10,17 +10,17 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Close app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Offline;
-        
-        private struct CalculatedValues : ICalculatedValues { }
+
+        private record CalculatedValues : ICalculatedValues;
 
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
             #if UNITY_EDITOR
-                        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
             #else
-                    Application.Quit();
+                Application.Quit();
             #endif
             return "Done";
         }

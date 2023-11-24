@@ -15,17 +15,14 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
-        private struct CalculatedValues : ICalculatedValues
-        {
-            public Entity Entity;
-        }
+        private record CalculatedValues(Entity Entity) : ICalculatedValues;
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
             
-            calculatedValues.Entity.Kill();
+            values.Entity.Kill();
             return "Player killed";
         }
 
@@ -42,7 +39,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerToKill);
             if (entityToKill == null) return response.MakeInvalid("This entity doesn't exist");
             
-            return response.MakeValid(new CalculatedValues{Entity = entityToKill});
+            return response.MakeValid(new CalculatedValues(entityToKill));
         }
     }
 }

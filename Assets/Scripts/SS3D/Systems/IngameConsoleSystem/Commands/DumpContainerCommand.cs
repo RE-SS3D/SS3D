@@ -11,18 +11,15 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			"Usage : dumpcontainer [container's game object name]";
 		public override string ShortDescription => "Dump the content of a container.";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+        public override CommandType Type => CommandType.Server;
+        
+        private record CalculatedValues(AttachedContainer Container) : ICalculatedValues;
 
-		public override CommandType Type => CommandType.Server;
-        private struct CalculatedValues : ICalculatedValues
-        {
-            public AttachedContainer Container;
-        }
-
-		public override string Perform(string[] args, NetworkConnection conn)
+        public override string Perform(string[] args, NetworkConnection conn)
 		{
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
             
-			calculatedValues.Container.Dump();
+			values.Container.Dump();
 			return "Container content dumped";
 		}
 		protected override CheckArgsResponse CheckArgs(string[] args)
@@ -37,7 +34,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			if (container == null) return response.MakeInvalid("No container on this game object");
 			
 			response.IsValid = true;
-			return response.MakeValid(new CalculatedValues{Container = container});
+			return response.MakeValid(new CalculatedValues(container));
 		}
 	}
 }

@@ -16,21 +16,17 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 		public override CommandType Type => CommandType.Server;
 
-        private struct CalculatedValues : ICalculatedValues
-        {
-            public Entity Entity;
-            public float Time;
-        }
-		
-		[Server]
+        private record CalculatedValues(Entity Entity, float Time) : ICalculatedValues;
+
+        [Server]
 		public override string Perform(string[] args, NetworkConnection conn = null)
 		{
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
-			Ragdoll ragdoll = calculatedValues.Entity.GetComponent<Ragdoll>();
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
+			Ragdoll ragdoll = values.Entity.GetComponent<Ragdoll>();
 
 			if (args.Length > 1)
 			{
-				ragdoll.Knockdown(calculatedValues.Time);
+				ragdoll.Knockdown(values.Time);
 			}
 			else
 			{
@@ -71,7 +67,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 }
 				else return response.MakeInvalid("Invalid time");
             }
-			return response.MakeValid(new CalculatedValues{Entity = entity, Time = time});
+			return response.MakeValid(new CalculatedValues(entity, time));
 		}
 	}
 }

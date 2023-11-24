@@ -13,17 +13,13 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
         
-        private struct CalculatedValues : ICalculatedValues
-        {
-            public string Ckey;
-            public ServerRoleTypes Role;
-        }
+        private record CalculatedValues(string Ckey, ServerRoleTypes Role) : ICalculatedValues;
 
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
-            Subsystems.Get<PermissionSystem>().ChangeUserPermission(calculatedValues.Ckey, calculatedValues.Role);
+            Subsystems.Get<PermissionSystem>().ChangeUserPermission(values.Ckey, values.Role);
             return "Permission changed to " + args[1];
         }
         
@@ -35,7 +31,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             ServerRoleTypes role = FindRole(args[1]);
             if (role == ServerRoleTypes.None) return response.MakeInvalid("Role doesn't exist");
             
-            return response.MakeValid(new CalculatedValues{Ckey = args[0], Role = role});
+            return response.MakeValid(new CalculatedValues(args[0], role));
         }
 
         private ServerRoleTypes FindRole(string name)

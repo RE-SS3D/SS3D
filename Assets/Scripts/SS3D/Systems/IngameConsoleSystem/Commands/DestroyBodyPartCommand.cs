@@ -14,18 +14,15 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Hit me daddy";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
-        
-        private struct CalculatedValues : ICalculatedValues
-        {
-            public IEnumerable<BodyPart> BodyParts;
-        }
-        
+
+        private record CalculatedValues(IEnumerable<BodyPart> BodyParts) : ICalculatedValues;
+
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
-            calculatedValues.BodyParts.First().InflictDamageToAllLayer(new (Health.DamageType.Heat, 10000000000));
+            values.BodyParts.First().InflictDamageToAllLayer(new (Health.DamageType.Heat, 10000000000));
             return "BodyPart hurt";
         }
 
@@ -45,7 +42,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
             if (bodyParts.Length != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
 
-            return response.MakeValid(new CalculatedValues{BodyParts = bodyParts});
+            return response.MakeValid(new CalculatedValues(bodyParts));
         }
     }
 }

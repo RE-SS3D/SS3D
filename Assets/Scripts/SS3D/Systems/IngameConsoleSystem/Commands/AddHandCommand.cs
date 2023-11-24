@@ -22,26 +22,21 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string LongDescription => "add (ckey) [(position) (rotation)]\n Position and rotation are float arrays and written as x y z";
         public override string ShortDescription => "add hand to user";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-
         public override CommandType Type => CommandType.Server;
-        private struct CalculatedValues : ICalculatedValues
-        {
-            public Player Player;
-            public Entity Entity;
-            public Vector3 Position;
-            public Vector3 Rotation;
-        }
+        
+        private record CalculatedValues(Player Player, Entity Entity, Vector3 Position, Vector3 Rotation) : ICalculatedValues;
+        
         public override string Perform(string[] args, NetworkConnection conn)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
             
             GameObject leftHandPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanHandLeft);
-            GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, calculatedValues.Entity.transform);
-            leftHandObject.transform.localPosition = calculatedValues.Position;
-            leftHandObject.transform.localEulerAngles = calculatedValues.Rotation;
-            InstanceFinder.ServerManager.Spawn(leftHandObject, calculatedValues.Player.Owner);
-            calculatedValues.Entity.GetComponent<HumanInventory>().TryAddContainer(leftHandObject.GetComponent<AttachedContainer>());
-            calculatedValues.Entity.GetComponent<Hands>().AddHand(leftHandObject.GetComponent<Hand>());
+            GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, values.Entity.transform);
+            leftHandObject.transform.localPosition = values.Position;
+            leftHandObject.transform.localEulerAngles = values.Rotation;
+            InstanceFinder.ServerManager.Spawn(leftHandObject, values.Player.Owner);
+            values.Entity.GetComponent<HumanInventory>().TryAddContainer(leftHandObject.GetComponent<AttachedContainer>());
+            values.Entity.GetComponent<Hands>().AddHand(leftHandObject.GetComponent<Hand>());
 
             return "hand added";
         }
@@ -77,7 +72,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 rotation = new(-50, -270, 90);
             }
             
-            return response.MakeValid(new CalculatedValues{Player = player, Entity = entity, Position = position, Rotation = rotation});
+            return response.MakeValid(new CalculatedValues(player, entity, position, rotation));
         }
     }
 }

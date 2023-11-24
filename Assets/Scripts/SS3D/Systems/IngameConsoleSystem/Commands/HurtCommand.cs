@@ -17,26 +17,20 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         public override string ShortDescription => "Hurt me daddy";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
-        
-        private struct CalculatedValues : ICalculatedValues
-        {
-            public BodyPart BodyPart;
-            public BodyLayerType BodyLayerType;
-            public DamageType DamageType;
-            public int DamageAmount;
-        }
-        
+
+        private record CalculatedValues(BodyPart BodyPart, BodyLayerType BodyLayerType, DamageType DamageType, int DamageAmount) : ICalculatedValues;
+
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues calculatedValues)) return response.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
             string bodyLayerName = args[2];
 
 			if (bodyLayerName == "all")
 			{
-				calculatedValues.BodyPart.InflictDamageToAllLayer(new (calculatedValues.DamageType, calculatedValues.DamageAmount));
+				values.BodyPart.InflictDamageToAllLayer(new (values.DamageType, values.DamageAmount));
 			}
-			else if (!calculatedValues.BodyPart.TryInflictDamage(calculatedValues.BodyLayerType, new(calculatedValues.DamageType, calculatedValues.DamageAmount)))
+			else if (!values.BodyPart.TryInflictDamage(values.BodyLayerType, new(values.DamageType, values.DamageAmount)))
             {
                 return response.MakeInvalid("can't inflict damage on bodypart").InvalidArgs;
             }
@@ -82,8 +76,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             BodyPart bodyPart = bodyParts.First();
             if (bodyLayerName != "all" && !bodyPart.ContainsLayer(bodyLayerType)) return response.MakeInvalid("body layer not present on the bodypart");
             
-            return response.MakeValid(new CalculatedValues{BodyPart = bodyPart, BodyLayerType = bodyLayerType, 
-                DamageType = damageType, DamageAmount = damageAmount});
+            return response.MakeValid(new CalculatedValues(bodyPart, bodyLayerType, damageType, damageAmount));
         }
     }
 }
