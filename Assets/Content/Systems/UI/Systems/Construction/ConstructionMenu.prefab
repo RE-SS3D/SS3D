@@ -1558,7 +1558,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 9154675693299657064}
   _networkObjectCache: {fileID: 9154675693299657064}
   _menuRoot: {fileID: 7547524062666404018}
-  _ghostManager: {fileID: 978946649210659857}
+  _hologramManager: {fileID: 978946649210659857}
   _tileMapMenuBuildingTabs: {fileID: 6241789247798514904}
   _tileMapMenuSaveAndLoadTabs: {fileID: 6822326329344460679}
 --- !u!114 &9154675693299657064
@@ -4349,7 +4349,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2287788854832640797}
   m_HandleRect: {fileID: 3379647602017452814}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
