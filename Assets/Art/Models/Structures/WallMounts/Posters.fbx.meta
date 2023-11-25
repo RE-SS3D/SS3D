@@ -13,12 +13,12 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Poster.H
-    second: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+    second: {fileID: 2100000, guid: 4d6936474ad8f2c4eadb3ebaeabfaf7d, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Poster.V
-    second: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+    second: {fileID: 2100000, guid: de6ebe2a01be2c347b1f53c043549770, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
