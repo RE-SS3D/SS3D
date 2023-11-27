@@ -1302,6 +1302,8 @@ GameObject:
   - component: {fileID: -925834532171443999}
   - component: {fileID: 1234979698125959994}
   - component: {fileID: 6718533481539137195}
+  - component: {fileID: -643301462163788769}
+  - component: {fileID: 1642401844314505636}
   m_Layer: 11
   m_Name: EngineeringBorg
   m_TagString: Untagged
