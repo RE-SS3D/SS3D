@@ -381,6 +381,7 @@ namespace SS3D.Systems.Inventory.Containers
 		private bool AddStoredItem(StoredItem newItem)
 		{
             if (!CanContainItem(newItem.Item)) return false;
+            if (newItem.Item.Container != null && newItem.Item.Container != this) return false;
 
             if (FindItem(newItem.Item, out int itemIndex))
             {
@@ -395,11 +396,6 @@ namespace SS3D.Systems.Inventory.Containers
                 ReplaceStoredItem(newItem, itemIndex);
                 return true;
             }
-            else if(newItem.Item.Container != null) 
-            {
-                return false;
-            }
-
 
             _storedItems.Add(newItem);
             newItem.Item.SetContainer(this);
@@ -556,8 +552,6 @@ namespace SS3D.Systems.Inventory.Containers
         /// custom storage conditions if they exists, which are scripts put on the same game object as this container and
         /// implementing IStorageCondition.
         /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
         public bool CanContainItem(Item item)
 		{
             return CanStoreItem(item)
