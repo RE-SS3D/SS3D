@@ -20,6 +20,9 @@ using FishNet.Object;
 using SS3D.Logging;
 using System.Drawing;
 using UnityEditor;
+using UnityEngine.UIElements;
+using UnityEditorInternal.Profiling.Memory.Experimental;
+using System.ComponentModel;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -345,16 +348,6 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns>If the item was added</returns>
 		public bool AddItem(Item item)
 		{
-			if (ContainsItem(item))
-			{
-				return true;
-			}
-
-			if (!CanContainItem(item))
-			{
-				return false;
-			}
-
 			// TODO: Use a more efficient algorithm
 			for (int y = 0; y <= Size.y; y++)
 			{
@@ -367,7 +360,6 @@ namespace SS3D.Systems.Inventory.Containers
 					}
 				}
 			}
-
 			return false;
 		}
 
@@ -379,70 +371,39 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns>If the item was added</returns>
 		public bool AddItemPosition(Item item, Vector2Int position)
 		{
-			int itemIndex = FindItem(item);
-			if (itemIndex != -1)
-			{
-				StoredItem existingItem = _storedItems[itemIndex];
-				// Try to move existing item
-				if (existingItem.Position == position)
-				{
-					return true;
-				}
-
-				StoredItem storedItem = new(item, position);
-				ReplaceStoredItem(storedItem, itemIndex);
-				return true;
-
-				// Item at same position, nothing to do
-			}
-
-			if (!CanContainItem(item))
-			{
-				return false;
-			}
-
-			bool wasAdded = false;
-			lock (_modificationLock)
-			{
-				AddItemUnchecked(item, position);
-				wasAdded = true;
-			}
-
-			if (!wasAdded)
-			{
-				return false;
-			}
-
-			item.SetContainer(this);
-
-			return true;
-		}
-
-		/// <summary>
-		/// Adds an item to the container without any checks (but ensuring there are no duplicates)
-		/// </summary>
-		/// <param name="item">The item to add</param>
-		/// <param name="position">Where the item should go, make sure this position is valid and free!</param>
-		private void AddItemUnchecked(Item item, Vector2Int position)
-		{
-			StoredItem newItem = new(item, position);
-
-			// Move it if it is already in the container
-			if (MoveItemUnchecked(newItem))
-			{
-				return;
-			}
-
-			AddStoredItem(newItem);
+            return AddStoredItem(new StoredItem(item, position));
 		}
 
 		/// <summary>
 		/// Correctly add a storeItem to the container. All adding should use this method, never do it directly.
 		/// </summary>
 		/// <param name="newItem"> the item to store.</param>
-		private void AddStoredItem(StoredItem newItem)
+		private bool AddStoredItem(StoredItem newItem)
 		{
+            if (!CanContainItem(newItem.Item)) return false;
+
+            if (FindItem(newItem.Item, out int itemIndex))
+            {
+                StoredItem existingItem = _storedItems[itemIndex];
+
+                // do nothing if the item is at the exact same location.
+                if (existingItem.Position == newItem.Position)
+                {
+                    return true;
+                }
+
+                ReplaceStoredItem(newItem, itemIndex);
+                return true;
+            }
+            else if(newItem.Item.Container != null) 
+            {
+                return false;
+            }
+
+
             _storedItems.Add(newItem);
+            newItem.Item.SetContainer(this);
+            return true;
 		}
 
 		/// <summary>
@@ -470,7 +431,8 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 _storedItems.RemoveAt(index);
             }
-		}
+           
+        }
 
 		/// <summary>
 		/// Removes an item from the container
@@ -478,44 +440,10 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <param name="item">The item to remove</param>
 		public void RemoveItem(Item item)
 		{
-			for (int i = 0; i < _storedItems.Count; i++)
-			{
-				if (_storedItems[i].Item != item)
-				{
-					continue;
-				}
-
-				RemoveStoredItem(i);
-				return;
-			}
-		}
-
-		/// <summary>
-		/// Moves an item without performing validation
-		/// </summary>
-		/// <param name="item">The item to move</param>
-		/// <returns>If the item was moved</returns>
-		private bool MoveItemUnchecked(StoredItem item)
-		{
-			for (int i = 0; i < _storedItems.Count; i++)
-			{
-				StoredItem x = _storedItems[i];
-				if (x.Item != item.Item)
-				{
-					continue;
-				}
-
-				if (x.Position == item.Position)
-				{
-					return true;
-				}
-
-				ReplaceStoredItem(item, i);
-
-				return true;
-			}
-
-			return false;
+            if(FindItem(item, out int index))
+            {
+                RemoveStoredItem(index);
+            }
 		}
 
 		/// <summary>
@@ -632,30 +560,39 @@ namespace SS3D.Systems.Inventory.Containers
         /// <returns></returns>
         public bool CanContainItem(Item item)
 		{
-            if ((bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item))) return false;
-            return CanStoreItem(item) && CanHoldItem(item);
-		}
-		
-		/// <summary>
-		/// Finds the index of an item
-		/// </summary>
-		/// <param name="item">The item to look for</param>
-		/// <returns>The index of the item or -1 if not found</returns>
-		public int FindItem(Item item)
+            return CanStoreItem(item)
+                    && CanHoldItem(item)
+                    && !item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(this) // Can't put an item in its own container
+                    && !(bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item));
+        }
+
+        public bool CanContainItemAtPosition(Item item, Vector2Int position)
+        {
+            return CanContainItem(item) && IsAreaFree(position) && AreSlotCoordinatesInGrid(position);
+        }
+
+        /// <summary>
+        /// Finds the index of an item
+        /// </summary>
+        /// <param name="item">The item to look for</param>
+        /// <returns>The index of the item or -1 if not found</returns>
+        public bool FindItem(Item item, out int index)
 		{
+            index = -1;
 			for (int i = 0; i < _storedItems.Count; i++)
 			{
 				StoredItem storedItem = _storedItems[i];
 				if (storedItem.Item == item)
 				{
-					return i;
+                    index = i;
+					return true;
 				}
 			}
 
-			return -1;
+			return false;
 		}
 
-		public bool IsAreaFree(Vector2Int slotPosition)
+		private bool IsAreaFree(Vector2Int slotPosition)
 		{
 			foreach (StoredItem storedItem in _storedItems)
 			{
@@ -673,7 +610,7 @@ namespace SS3D.Systems.Inventory.Containers
 			OnContentsChanged?.Invoke(this, oldItem, newItem, changeType);
 		}
 
-		public bool AreSlotCoordinatesInGrid(Vector2Int slotCoordinates)
+		private bool AreSlotCoordinatesInGrid(Vector2Int slotCoordinates)
 		{
 			return slotCoordinates.x < Size.x && slotCoordinates.y < Size.y && slotCoordinates.x >= 0 && slotCoordinates.y >= 0;
 		}

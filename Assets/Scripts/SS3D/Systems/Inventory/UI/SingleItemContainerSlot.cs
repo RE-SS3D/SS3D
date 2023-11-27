@@ -56,18 +56,8 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
-            if (!_container.Empty)
-            {
-                return;
-            }
 
             if (!_container.CanContainItem(display.Item))
-            {
-                return;
-            }
-
-            // Can't put an item in its own container
-            if (display.Item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(Container))
             {
                 return;
             }

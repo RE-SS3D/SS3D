@@ -327,10 +327,6 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            if (!container.CanContainItem(item))
-            {
-                return;
-            }
 			if(itemContainer != container)
 				itemContainer.RemoveItem(item);
 
