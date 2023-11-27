@@ -1,28 +1,14 @@
-﻿using FishNet;
-using FishNet.Connection;
-using SS3D.Core.Behaviours;
-using SS3D.Data;
-using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
-using SS3D.Systems.Entities;
+﻿using SS3D.Core.Behaviours;
 using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using SS3D.Systems.Inventory.Items;
-using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Logging;
-using System.Drawing;
 using UnityEditor;
-using UnityEngine.UIElements;
-using UnityEditorInternal.Profiling.Memory.Experimental;
-using System.ComponentModel;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -363,6 +349,16 @@ namespace SS3D.Systems.Inventory.Containers
 			return false;
 		}
 
+        /// <summary>
+        /// transfer an item from this container to another container at a given position.
+        /// </summary>
+        public bool TransferItemToOther(Item item, Vector2Int position, AttachedContainer other)
+        {
+            if (!FindItem(item, out int index)) return false;
+            if(!RemoveStoredItem(index)) return false;
+            return other.AddStoredItem(new StoredItem(item, position));
+        }
+
 		/// <summary>
 		/// Tries to add an item at the specified position
 		/// </summary>
@@ -416,18 +412,24 @@ namespace SS3D.Systems.Inventory.Containers
 		/// Correctly remove a storeItem in the container at the given index. All removing should use this method, never do it directly.
 		/// </summary>
 		/// <param name="index">the index in the list at which the storedItem should be removed.</param>
-		private void RemoveStoredItem(int index)
+		private bool RemoveStoredItem(int index)
 		{
             StoredItem storedItem = _storedItems[index];
 
-            if((bool) GetComponents<IStorageCondition>()?.Any(x => !x.CanRemove(this, storedItem.Item))) return;
+            if(!CanRemoveItem(storedItem.Item)) return false;
 
             storedItem.Item.SetContainer(null);
             lock (_modificationLock)
             {
                 _storedItems.RemoveAt(index);
             }
+            return true;
            
+        }
+
+        public bool CanRemoveItem(Item item)
+        {
+            return !(bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanRemove(this, item));
         }
 
 		/// <summary>
