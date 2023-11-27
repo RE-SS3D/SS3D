@@ -7,7 +7,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
     /// Adjacency type used for objects that do require complex connections.
     /// </summary>
     [Serializable]
-    public struct AdvancedConnector
+    public struct AdvancedConnector : IMeshAndDirectionResolver
     {
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
@@ -97,9 +97,9 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case AdjacencyShape.XSingle:
                     mesh = xSingle;
                     Direction connectingDiagonal = adjacencyMap.GetSingleConnection(false);
-                    rotation = connectingDiagonal == Direction.SouthWest ? 0f :
-                        connectingDiagonal == Direction.SouthWest ? 90f :
-                        connectingDiagonal == Direction.SouthEast ? 180f : -90f;
+                    rotation = connectingDiagonal == Direction.NorthEast ? 180f :
+                        connectingDiagonal == Direction.SouthEast ? 270f :
+                        connectingDiagonal == Direction.SouthWest ? 0f : 90f;
                     break;
                 case AdjacencyShape.XOpposite:
                     mesh = xOpposite;
@@ -112,9 +112,9 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case AdjacencyShape.XTriple:
                     mesh = xTriple;
                     Direction nonConnectingDiagonal = adjacencyMap.GetSingleNonConnection(false);
-                    rotation = nonConnectingDiagonal == Direction.SouthWest ? -90f :
-                        nonConnectingDiagonal == Direction.SouthWest ? 0f :
-                        nonConnectingDiagonal == Direction.SouthEast ? 90f : 180f;
+                    rotation = nonConnectingDiagonal == Direction.NorthEast ? 90f :
+                        nonConnectingDiagonal == Direction.SouthEast ? 180f :
+                        nonConnectingDiagonal == Direction.SouthWest ? -90f : 0f;
                     break;
                 case AdjacencyShape.XQuad:
                     mesh = xQuad;

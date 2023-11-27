@@ -6,53 +6,73 @@ using Coimbra;
 using SS3D.Systems.Health;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
+using System.Collections.Generic;
+using System;
+using System.Diagnostics.Tracing;
+using System.Collections.ObjectModel;
+using System.Linq;
 
-public class HealthController : NetworkBehaviour
+namespace SS3D.Systems.Health
 {
-    public GameObject Ghost;
-    private GameObject _spawnedGhost;
-
-    [Server]
-    private void BecomeGhost(GameObject player, GameObject ghost)
+    /// <summary>
+    /// Has a reference towards everything related to health on a human player.
+    /// </summary>
+    public class HealthController : NetworkBehaviour
     {
-        Entity originEntity = player.GetComponent<Entity>();
-        Entity ghostEntity = ghost.GetComponent<Entity>();
 
-        Mind originMind = originEntity.Mind;
+        [SerializeField]
+        private CirculatoryController _circulatoryController;
 
-        ghostEntity.SetMind(originMind);
-        RpcDestroyObjects(originEntity);
-        RpcUpdateGhostPosition(originEntity, ghostEntity);
-    }
+        [SerializeField]
+        private FeetController _feetController;
 
-    [ObserversRpc]
-    private void RpcDestroyObjects(Entity originEntity)
-    {
-        GameObject originEntityGameObject = originEntity.gameObject;
-        // TODO: Optimize these GetComponents, this is a temporary solution.
-        originEntityGameObject.GetComponent<Hands>().Dispose(true);
-        originEntityGameObject.GetComponent<HumanInventory>().Dispose(true);
-        originEntityGameObject.GetComponent<InteractionController>().Dispose(true);
-        originEntityGameObject.GetComponent<StaminaController>().Dispose(true);
-        originEntityGameObject.GetComponent<HumanoidController>().Dispose(true);
-        
-    }
+        public CirculatoryController Circulatory => _circulatoryController;
 
-    [ObserversRpc]
-    private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
-    {
-        ghostEntity.Transform.SetPositionAndRotation(originEntity.Transform.position, originEntity.Transform.rotation);
-        originEntity.Transform.Rotate(new Vector3(90, 0, 0));
-    }
+        public FeetController FeetController => _feetController;
 
+        private List<BodyPart> _bodyPartsOnEntity = new List<BodyPart>();
 
+        public ReadOnlyCollection<BodyPart> BodyPartsOnEntity => _bodyPartsOnEntity.AsReadOnly();
 
-    [Server]
-    public void Kill()
-    {
-        _spawnedGhost = Instantiate(Ghost);
-        ServerManager.Spawn(_spawnedGhost);
-        BecomeGhost(gameObject, _spawnedGhost);
+        public event EventHandler<BodyPart> OnBodyPartRemoved;
+
+        public event EventHandler OnBodyPartAdded;
+
+        public float BodyPartsVolume 
+        {
+            get
+            {
+                BodyPart[] AllBodyparts = GetComponentsInChildren<BodyPart>();
+                return (float)AllBodyparts.Sum(x => x.Volume);
+            }
+            
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            _bodyPartsOnEntity.AddRange(GetComponentsInChildren<BodyPart>());
+            foreach (BodyPart part in _bodyPartsOnEntity)
+            {
+                part.OnBodyPartDestroyed += HandleBodyPartDestroyedOrDetached;
+                part.OnBodyPartDetached += HandleBodyPartDestroyedOrDetached;
+            }
+        }
+
+        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
+        {
+            OnBodyPartRemoved?.Invoke(this, (BodyPart)sender);
+        }
+
+        /// <summary>
+        /// This will eventually actually attach a bodypart to the body, for now,
+        /// only used to warn other stuff that a body part was added.
+        /// </summary>
+        /// <param name="bodyPart"></param>
+        public void AddBodyPart(BodyPart bodyPart)
+        {
+            OnBodyPartAdded?.Invoke(this, EventArgs.Empty);
+        }
     }
 }
 

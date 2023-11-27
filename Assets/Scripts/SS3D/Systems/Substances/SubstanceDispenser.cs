@@ -63,21 +63,21 @@ namespace SS3D.Content.Furniture.Generic
                 }
 
                 // Determine how many moles to dispense
-                float moles;
+                float milliMoles;
                 if (useMillilitres)
                 {
-                    moles = amount / substance.MillilitersPerMole;
+                    milliMoles = amount / substance.MillilitersPerMilliMoles;
                 }
                 else
                 {
-                    moles = amount;
+                    milliMoles = amount;
                 }
 
                 // Add the specific dispence interaction to the list.
                 interactions[i] = new DispenseSubstanceInteraction
                 {
                     RangeCheck = true,
-                    Substance = new SubstanceEntry(substance, moles),
+                    Substance = new SubstanceEntry(substance, milliMoles),
                     Name = String.IsNullOrWhiteSpace(InteractionName) ? "Fill with " + substances[i] : InteractionName + " " + substances[i]
                 };
 

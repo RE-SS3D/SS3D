@@ -1,8 +1,8 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Permissions;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using System;
 using System.Collections.Generic;

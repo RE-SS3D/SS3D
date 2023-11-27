@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +21,9 @@ namespace SS3D.Systems.Tile
         Floor,
         Counter,
         Cable,
-        Wire
+        Wire,
+        Door,
+        Disposal,
     }
 
     /// <summary>

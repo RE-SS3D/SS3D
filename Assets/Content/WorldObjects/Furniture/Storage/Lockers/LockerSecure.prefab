@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7385895525476329529}
   - component: {fileID: 1462698143497783154}
   - component: {fileID: 7791039897351842816}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 1608737639432567022}
   - component: {fileID: 5880920173345234768}
   - component: {fileID: 3559843836793401105}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,9 +181,7 @@ GameObject:
   - component: {fileID: 3298710121668139635}
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7727612398117917681}
-  - component: {fileID: -7446731280164012348}
-  - component: {fileID: 4254108774214416958}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +313,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 33
+  <PrefabId>k__BackingField: 35
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0

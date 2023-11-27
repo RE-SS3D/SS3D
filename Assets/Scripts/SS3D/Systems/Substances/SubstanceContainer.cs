@@ -10,6 +10,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Core;
 using System.Collections.ObjectModel;
 using SS3D.Logging;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace SS3D.Substances
 {
@@ -75,9 +76,9 @@ namespace SS3D.Substances
         public bool CanTransfer => !_locked;
 
         /// <summary>
-        /// The total number of moles
+        /// The total number of millimoles
         /// </summary>
-        public float TotalMoles => Substances.Sum(x => x.Moles);
+        public float TotalMilliMoles => Substances.Sum(x => x.MilliMoles);
 
         [SyncVar]
         private bool _initialised = false;
@@ -86,7 +87,7 @@ namespace SS3D.Substances
         {
             foreach(var substance in InitialSubstances)
             {
-                AddSubstance(substance.Substance, substance.Moles);
+                AddSubstance(substance.Substance, substance.MilliMoles);
             }
             if (IsServer) _initialised = true;
         }
@@ -103,16 +104,23 @@ namespace SS3D.Substances
             _initialised = true;
         }
 
+        [Server]
+        public void ChangeVolume(float newVolume)
+        {
+            // TODO : might need to spill the excess of volume already present
+            _volume = newVolume;
+        }
+
         /// <summary>
         /// Multiplier to convert moles in this container to volume
         /// </summary>
-        public float MolesToVolume()
+        public float MilliMolesToVolume()
         {
             float val = 0;
-            float total = TotalMoles;
+            float total = TotalMilliMoles;
             foreach (var entry in Substances)
             {
-                val += entry.Substance.MillilitersPerMole * (entry.Moles / total);
+                val += entry.Substance.MillilitersPerMilliMoles * (entry.MilliMoles / total);
             }
             return val;
         }
@@ -123,7 +131,7 @@ namespace SS3D.Substances
         /// <param name="substance">The substance to remove</param>
         /// <param name="moles">The amount of substance</param>
         [Server]
-        public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
+        public void RemoveSubstance(Substance substance, float millimoles = float.MaxValue)
         {
             if (!CanTransfer)
                 return;
@@ -135,14 +143,14 @@ namespace SS3D.Substances
             }
 
             SubstanceEntry entry = Substances[index];
-            float newAmount = entry.Moles - moles;
+            float newAmount = entry.MilliMoles - millimoles;
             if (newAmount <= 0.000001)
             {
                 _substances.RemoveAt(index);
             }
             else
             {
-                entry.Moles = newAmount;
+                entry.MilliMoles = newAmount;
                 _substances[index] = entry;
             }
             RecalculateAndSyncVolume();
@@ -150,7 +158,7 @@ namespace SS3D.Substances
 
         private void RecalculateAndSyncVolume()
         {
-            _currentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
+            _currentVolume = Substances.Sum(x => x.MilliMoles * x.Substance.MillilitersPerMilliMoles);
         }
 
         /// <summary>
@@ -160,7 +168,7 @@ namespace SS3D.Substances
         /// <param name="milliliters">How many milliliters to transfer</param>
         public void TransferVolume(SubstanceContainer other, float milliliters)
         {
-            TransferMoles(other, milliliters / MolesToVolume());
+            TransferMoles(other, milliliters / MilliMolesToVolume());
         }
 
         /// <summary>
@@ -191,26 +199,26 @@ namespace SS3D.Substances
         /// </summary>
         /// <param name="other">The other container</param>
         /// <param name="moles">The moles to transfer</param>
-        public void TransferMoles(SubstanceContainer other, float moles)
+        public void TransferMoles(SubstanceContainer other, float milliMoles)
         {
             // Only transfer what's left.
-            var totalMoles = Substances.Sum(x => x.Moles);
-            if (moles > totalMoles)
+            float totalMilliMoles = Substances.Sum(x => x.MilliMoles);
+            if (milliMoles > totalMilliMoles)
             {
-                moles = totalMoles;
+                milliMoles = totalMilliMoles;
             }
 
             // TODO : Only transfer what can be transferred ?
 
-            float relativeMoles = moles / totalMoles;
+            float relativeMoles = milliMoles / totalMilliMoles;
 
-            for (var i = 0; i < Substances.Count; i++)
+            for (int i = 0; i < Substances.Count; i++)
             {
                 SubstanceEntry entry = Substances[i];
-                float entryMoles = entry.Moles * relativeMoles;
-                entry.Moles -= entryMoles;
+                float entryMoles = entry.MilliMoles * relativeMoles;
+                entry.MilliMoles -= entryMoles;
                 other.AddSubstance(entry.Substance, entryMoles);
-                if (entry.Moles <= 0.0000001)
+                if (entry.MilliMoles <= 0.0000001)
                 {
                     _substances.RemoveAt(i);
                     i--;
@@ -247,32 +255,32 @@ namespace SS3D.Substances
         /// <param name="substance">The substance to add</param>
         /// <param name="moles">How many moles should be added</param>
         [Server]
-        public void AddSubstance(Substance substance, float moles)
+        public void AddSubstance(Substance substance, float millimoles)
         {
 
             if (!CanTransfer)
                 return;
 
-            var remainingCapacity = RemainingVolume;
-            var additionalVolume = moles * substance.MillilitersPerMole;
+            float remainingCapacity = RemainingVolume;
+            float additionalVolume = millimoles * substance.MillilitersPerMilliMoles;
             if (additionalVolume > remainingCapacity)
             {
-                moles = remainingCapacity / substance.MillilitersPerMole;
+                millimoles = remainingCapacity / substance.MillilitersPerMilliMoles;
             }
 
             int index = _substances.FindIndex(x => x.Substance == substance);
             if (index == -1)
             {
-                _substances.Add(new SubstanceEntry(substance, moles));
+                _substances.Add(new SubstanceEntry(substance, millimoles));
             }
             else
             {
                 SubstanceEntry entry = Substances[index];
-                entry.Moles += moles;
+                entry.MilliMoles += millimoles;
                 _substances[index] = entry;
             }
             RecalculateAndSyncVolume();
-            Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
+            //Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
         }
 
         /// <summary>
@@ -281,24 +289,24 @@ namespace SS3D.Substances
         /// removing 15 moles will remove 5 moles of alcohol, and 10 of water.
         /// </summary>
         /// <param name="moles">The amount of moles</param>
-        public void RemoveMoles(float moles)
+        public void RemoveMoles(float milliMoles)
         {
-            var totalMoles = _substances.Sum(x => x.Moles);
-            if (moles > totalMoles)
+            float totalMoles = _substances.Sum(x => x.MilliMoles);
+            if (milliMoles > totalMoles)
             {
-                moles = totalMoles;
+                milliMoles = totalMoles;
             }
 
-            if (moles <= 0)
+            if (milliMoles <= 0)
             {
                 return;
             }
 
-            for (var i = 0; i < Substances.Count; i++)
+            for (int i = 0; i < Substances.Count; i++)
             {
                 SubstanceEntry entry = Substances[i];
-                entry.Moles -= entry.Moles / totalMoles * moles;
-                if (entry.Moles <= 0.0001)
+                entry.MilliMoles -= entry.MilliMoles / totalMoles * milliMoles;
+                if (entry.MilliMoles <= 0.0001)
                 {
                     _substances.RemoveAt(i);
                     i--;
@@ -337,7 +345,7 @@ namespace SS3D.Substances
         [Server]
         public bool ContainsSubstance(Substance substance, float moles = 0.0001f)
         {
-            return Substances.FirstOrDefault(x => x.Substance == substance).Moles >= moles;
+            return Substances.FirstOrDefault(x => x.Substance == substance).MilliMoles >= moles;
         }
 
 
@@ -364,14 +372,14 @@ namespace SS3D.Substances
                 // Gather the mole amount of every substance
                 float[] moles = new float[recipe.Ingredients.Length];
                 bool ingredientsPresent = true;
-                for (var i = 0; i < recipe.Ingredients.Length; i++)
+                for (int i = 0; i < recipe.Ingredients.Length; i++)
                 {
                     ingredientsPresent = false;
-                    foreach (var entry in container.Substances)
+                    foreach (SubstanceEntry entry in container.Substances)
                     {
                         if (entry.Substance.Type == recipe.Ingredients[i].Type)
                         {
-                            moles[i] = entry.Moles;
+                            moles[i] = entry.MilliMoles;
                             ingredientsPresent = true;
                             break;
                         }
@@ -392,7 +400,7 @@ namespace SS3D.Substances
                 // Calculate the maximum amount of ingredients
                 float totalIngredients = recipe.Ingredients.Sum(x => x.RelativeAmount);
                 float maxConversion = float.MaxValue;
-                for (var i = 0; i < moles.Length; i++)
+                for (int i = 0; i < moles.Length; i++)
                 {
                     float relativeAmount = recipe.Ingredients[i].RelativeAmount;
                     float part = relativeAmount / totalIngredients;
@@ -406,11 +414,11 @@ namespace SS3D.Substances
                 // Calculate relative volume of ingredients
                 Substance[] ingredientSubstances = new Substance[moles.Length];
                 float ingredientsToVolume = 0;
-                for (var i = 0; i < moles.Length; i++)
+                for (int i = 0; i < moles.Length; i++)
                 {
                     var component = recipe.Ingredients[i];
                     var substance = ingredientSubstances[i] = registry.FromType(component.Type);
-                    ingredientsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
+                    ingredientsToVolume += substance.MillilitersPerMilliMoles * component.RelativeAmount;
                 }
                 ingredientsToVolume /= totalIngredients;
 
@@ -418,11 +426,11 @@ namespace SS3D.Substances
                 float totalResults = recipe.Results.Sum(x => x.RelativeAmount);
                 Substance[] resultSubstances = new Substance[recipe.Results.Length];
                 float resultsToVolume = 0;
-                for (var i = 0; i < recipe.Results.Length; i++)
+                for (int i = 0; i < recipe.Results.Length; i++)
                 {
                     var component = recipe.Results[i];
                     var substance = resultSubstances[i] = registry.FromType(component.Type);
-                    resultsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
+                    resultsToVolume += substance.MillilitersPerMilliMoles * component.RelativeAmount;
                 }
                 resultsToVolume /= totalResults;
 
@@ -435,7 +443,7 @@ namespace SS3D.Substances
                 }
 
                 // Remove ingredients
-                for (var i = 0; i < moles.Length; i++)
+                for (int i = 0; i < moles.Length; i++)
                 {
                     container.RemoveSubstance(ingredientSubstances[i], maxConversion * (recipe.Ingredients[i].RelativeAmount / totalIngredients));
                 }
@@ -448,6 +456,17 @@ namespace SS3D.Substances
             }
 
             container.SetDirty();
+        }
+
+        public float GetSubstanceQuantity(Substance substance)
+        {
+           return Substances.FirstOrDefault(x => x.Substance == substance).MilliMoles;
+        }
+
+        public float GetSubstanceVolume(Substance substance)
+        {
+            var entry = Substances.FirstOrDefault(x => x.Substance == substance);
+            return entry.Substance == null ? 0f : entry.Substance.MillilitersPerMilliMoles * entry.MilliMoles;
         }
     }
 }

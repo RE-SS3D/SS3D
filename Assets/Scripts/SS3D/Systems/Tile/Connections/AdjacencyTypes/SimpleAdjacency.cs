@@ -7,7 +7,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
     /// Adjacency type used for objects that do not require complex connections.
     /// </summary>
     [Serializable]
-    public struct SimpleConnector
+    public struct SimpleConnector : IMeshAndDirectionResolver
     {
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
@@ -36,19 +36,19 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     break;
                 case AdjacencyShape.U:
                     mesh = u;
-                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleConnection());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
                     break;
                 case AdjacencyShape.I:
                     mesh = i;
-                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.HasConnection(Direction.South) ? Direction.South : Direction.West);
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.South) ? Direction.South : Direction.West);
                     break;
                 case AdjacencyShape.L:
                     mesh = l;
-                    rotation = TileHelper.AngleBetween(Direction.SouthWest, adjacencyMap.GetDirectionBetweenTwoConnections());
+                    rotation = TileHelper.AngleBetween(Direction.NorthEast, adjacencyMap.GetDirectionBetweenTwoConnections());
                     break;
                 case AdjacencyShape.T:
                     mesh = t;
-                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.X:
                     mesh = x;

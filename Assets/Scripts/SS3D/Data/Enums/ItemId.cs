@@ -1,4 +1,4 @@
-﻿namespace SS3D.Data.Enums
+namespace SS3D.Data.Enums
 {
     public enum ItemId
     {
@@ -46,6 +46,20 @@
         JumpsuitSecurity = 41, 
         HeadsetLeft = 42, 
         HeadsetRight = 43, 
+        HumanBrain = 44, 
+        HumanFootRight = 45, 
+        HumanFootLeft = 46, 
+        HumanTorso = 47, 
+        HumanHandLeft = 48, 
+        HumanHandRight = 49, 
+        HumanLegLeft = 50, 
+        HumanLegRight = 51, 
+        HumanArmLeft = 52, 
+        HumanArmRight = 53, 
+        HumanHead = 54, 
+        HumanLungLeft = 55, 
+        HumanLungRight = 56, 
+        HumanHeart = 57, 
     }
 }
 

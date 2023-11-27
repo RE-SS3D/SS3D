@@ -1,5 +1,5 @@
 ﻿using FishNet.Connection;
-using SS3D.Systems.Permissions;
+using SS3D.Permissions;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands

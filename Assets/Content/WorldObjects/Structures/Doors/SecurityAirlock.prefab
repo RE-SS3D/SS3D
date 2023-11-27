@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6060823761219191581}
   - component: {fileID: 4360389419724788192}
   m_Layer: 0
-  m_Name: Left Airlock
+  m_Name: LeftDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8437855270114176083}
+  - {fileID: 8459233521711643246}
   m_Father: {fileID: 2079395355536659087}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
-  - {fileID: 2100000, guid: b35e5d5edbcc63442bf15e5482e4cfe4, type: 2}
+  - {fileID: 2100000, guid: 6430227ac2f6b734f89160acf9727ee9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,70 +99,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5465079, y: 1.9270786, z: 0.8}
   m_Center: {x: 0.22674605, y: 0.9635393, z: 0.00000017136335}
---- !u!1 &2197720509337837362
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8437855270114176083}
-  m_Layer: 0
-  m_Name: Left Maintenance Panel Slot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8437855270114176083
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2197720509337837362}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0.270524, y: 0.96369, z: -0.139483}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 8459233521711643246}
-  m_Father: {fileID: 1892914750451503833}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!1 &2338292899846041280
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1441826708311489264}
-  m_Layer: 0
-  m_Name: Right Maintenance Panel Slot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1441826708311489264
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2338292899846041280}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.270524, y: 0.96369, z: 0.139483}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 8506334560056334608}
-  m_Father: {fileID: 7776442601084094348}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3446163593857738128
 GameObject:
   m_ObjectHideFlags: 0
@@ -176,7 +112,7 @@ GameObject:
   - component: {fileID: 7941901518868879156}
   - component: {fileID: 180582036283952539}
   m_Layer: 0
-  m_Name: Right Airlock
+  m_Name: RightDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -194,7 +130,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1441826708311489264}
+  - {fileID: 8506334560056334608}
   m_Father: {fileID: 2079395355536659087}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -227,7 +163,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
-  - {fileID: 2100000, guid: b35e5d5edbcc63442bf15e5482e4cfe4, type: 2}
+  - {fileID: 2100000, guid: 6430227ac2f6b734f89160acf9727ee9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -273,6 +209,11 @@ GameObject:
   - component: {fileID: 2079395355536659087}
   - component: {fileID: 7942135432533076774}
   - component: {fileID: -6616120420594439688}
+  - component: {fileID: -3952917033083390060}
+  - component: {fileID: -2593019434011219120}
+  - component: {fileID: 2073047018609668257}
+  - component: {fileID: 556509194791000406}
+  - component: {fileID: 4984530734571460406}
   m_Layer: 0
   m_Name: SecurityAirlock
   m_TagString: Untagged
@@ -311,19 +252,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: -6616120420594439688}
+  - {fileID: -3952917033083390060}
+  - {fileID: 2073047018609668257}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isGlobal: 0
+  _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 140
+  <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 15463664499869166627
-  _sceneNetworkObjects: []
 --- !u!114 &-6616120420594439688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,16 +294,106 @@ MonoBehaviour:
   _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
+--- !u!114 &-3952917033083390060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d00d6a1b2cb9fb54fbefde21a9eb88a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 7942135432533076774}
+  _networkObjectCache: {fileID: 7942135432533076774}
+  _syncedConnections: 0
+  wallCapPrefab: {fileID: 3591147544166670882, guid: 9682b163cae64f74a93b6e84ce84ae5b, type: 3}
+  doorType: 0
+--- !u!114 &-2593019434011219120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  AllowedDirections: 0000000002000000
+--- !u!114 &2073047018609668257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c01168513e70b429b0893f60362744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 7942135432533076774}
+  _networkObjectCache: {fileID: 7942135432533076774}
+  _animator: {fileID: 556509194791000406}
+  doorTriggerLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _meshesToColor:
+  - {fileID: 6060823761219191581}
+  - {fileID: 7941901518868879156}
+  _skinnedMeshesToColor:
+  - {fileID: 1526798170224380914}
+  - {fileID: 1610574527409645708}
+--- !u!95 &556509194791000406
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 43b3d57cceffaa5498e91901477ba8c9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!65 &4984530734571460406
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.1297834, y: 2.445518, z: 1.3266959}
+  m_Center: {x: 0.0022376776, y: 0.7227595, z: -0.038039923}
 --- !u!1001 &2157331936072973061
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 1441826708311489264}
+    m_TransformParent: {fileID: 7776442601084094348}
     m_Modifications:
     - target: {fileID: 362297111316997015, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_Name
-      value: Airlock Maintenance Panel
+      value: RightPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_RootOrder
@@ -362,15 +401,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.270524
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.96369
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.139483
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -378,15 +417,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -402,6 +441,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+--- !u!137 &1610574527409645708 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 840353475596866441, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+  m_PrefabInstance: {fileID: 2157331936072973061}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8506334560056334608 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
@@ -412,11 +456,11 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 8437855270114176083}
+    m_TransformParent: {fileID: 1892914750451503833}
     m_Modifications:
     - target: {fileID: 362297111316997015, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_Name
-      value: Airlock Maintenance Panel
+      value: LeftPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_RootOrder
@@ -424,31 +468,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.270524
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.96369
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.139483
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -464,6 +508,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+--- !u!137 &1526798170224380914 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 840353475596866441, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
+  m_PrefabInstance: {fileID: 2205021985594382459}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8459233521711643246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7781362268607177237, guid: 480205804f0315f43be80da9b651b6c9, type: 3}
