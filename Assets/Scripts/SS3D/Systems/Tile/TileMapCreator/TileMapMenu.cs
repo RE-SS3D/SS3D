@@ -145,24 +145,5 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _isDeleting = false;
         }
-
-        /// <summary>
-        /// Method called when the load button is clicked.
-        /// </summary>
-        [Server]
-        public void HandleLoadButton()
-        {
-            _tileMapMenuSaveAndLoadTabs.SetUpLoad();
-        }
-
-
-        /// <summary>
-        /// Method called when the save button is clicked.
-        /// </summary>
-        [Server]
-        public void HandleSaveButton()
-        {
-            _tileMapMenuSaveAndLoadTabs.SetUpSave();
-        }
     }
 }
