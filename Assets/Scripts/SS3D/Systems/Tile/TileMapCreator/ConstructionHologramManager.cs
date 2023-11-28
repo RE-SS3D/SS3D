@@ -154,6 +154,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
             tileObject.transform.position = hologram.Position;
             _holograms.Add(hologram);
+            RefreshHologram(hologram);
             return hologram;
         }
 
