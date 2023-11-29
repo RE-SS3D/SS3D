@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ToolBelt
   m_EditorClassIdentifier: 
   nameString: ToolBelt
-  prefab: {fileID: 1080889307602868191, guid: 8fabaf8ecfcd66a43a5b3fe2cefea719, type: 3}
+  prefab: {fileID: 1080889307602868191, guid: 40d904629802fc942860ce878e78efef, type: 3}
   icon: {fileID: 0}
