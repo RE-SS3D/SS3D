@@ -273,8 +273,8 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanBrain.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 8fabaf8ecfcd66a43a5b3fe2cefea719
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Toolbelt.prefab
+  - m_GUID: 40d904629802fc942860ce878e78efef
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/Toolbelt.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
