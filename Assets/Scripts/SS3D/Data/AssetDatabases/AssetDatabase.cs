@@ -26,17 +26,16 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// The path that the enum will be generated to.
         /// </summary>
-        public const string EnumPath = @"\Scripts\SS3D\Data\Generated";
+        public const string DatabaseAssetPath = @"\Scripts\SS3D\Data\Generated";
 
         /// <summary>
         ///  The namespace that will be included on the generated Enum.
         /// </summary>
-        public const string EnumNamespaceName = "SS3D.Data.Generated";
+        public const string DatabaseAssetNamespaceName = "SS3D.Data.Generated";
 
         /// <summary>
         ///  The name that the generated enum will have;
         /// </summary>
-        [FormerlySerializedAs("EnumName")]
         public string DatabaseName;
 
 #if UNITY_EDITOR
@@ -145,7 +144,7 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            DatabaseAssetCreator.CreateAtPath(EnumPath, typeof(DatabaseAsset), DatabaseName, Assets.Values, EnumNamespaceName);
+            DatabaseAssetCreator.CreateAtPath(DatabaseAssetPath, typeof(DatabaseAsset), DatabaseName, Assets.Values, DatabaseAssetNamespaceName);
         }
 #endif
     }

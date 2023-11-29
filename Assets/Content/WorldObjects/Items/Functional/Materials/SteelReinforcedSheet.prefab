@@ -343,7 +343,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4037338737721612837}
   _networkObjectCache: {fileID: 4037338737721612837}
-  _asset: {fileID: 11400000, guid: 1504e8496fb46cb418e6c45090ef9a87, type: 2}
+  _asset: {fileID: 11400000, guid: 05cd3679ee853174fb8651304e81f0cd, type: 2}
   _name: Steel reinforced sheet
   _weight: 1
   _startingTraits: []

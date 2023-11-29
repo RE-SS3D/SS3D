@@ -243,7 +243,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1491149956516498634}
   _networkObjectCache: {fileID: 1491149956516498634}
-  _asset: {fileID: 11400000, guid: 93db84e4a22cd5c4ba1635e5591d4dad, type: 2}
+  _asset: {fileID: 11400000, guid: cd3268046db629240800ee48b64a9810, type: 2}
   _name: Poster
   _weight: 1
   _startingTraits: []

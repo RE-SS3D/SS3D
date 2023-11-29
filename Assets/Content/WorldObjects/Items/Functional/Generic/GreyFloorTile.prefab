@@ -212,7 +212,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8767567404870203102}
   _networkObjectCache: {fileID: 8767567404870203102}
-  _asset: {fileID: 11400000, guid: 68a5a1b2615760444ae03d706ee505f2, type: 2}
+  _asset: {fileID: 11400000, guid: b759f5ec1b4de73429ca98ebdfe43886, type: 2}
   _name: Grey floor tile
   _weight: 1
   _startingTraits: []

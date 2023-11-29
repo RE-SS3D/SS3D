@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: -6509701768596653782, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: _asset
       value: 
-      objectReference: {fileID: 11400000, guid: b6457d4f679c9014c8af88872826df10, type: 2}
+      objectReference: {fileID: 11400000, guid: d5ed3684908f1d846815d39a4ae98418, type: 2}
     - target: {fileID: -1409642175327164469, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: InitialSubstances.Array.size
       value: 0

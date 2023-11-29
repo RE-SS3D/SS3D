@@ -243,7 +243,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6810177589324280848}
   _networkObjectCache: {fileID: 6810177589324280848}
-  _asset: {fileID: 11400000, guid: fed94fb222246a4419af975c7a2c4540, type: 2}
+  _asset: {fileID: 11400000, guid: 5ebf0777f77019c469729ac80e12720b, type: 2}
   _name: DonkPocket
   _weight: 1
   _startingTraits: []

@@ -39,7 +39,7 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            const string dataPath = AssetDatabase.EnumPath;
+            const string dataPath = AssetDatabase.DatabaseAssetPath;
 
             DatabaseAssetCreator.CreateAtPath(dataPath, typeof(DatabaseAsset), "AssetDatabases", IncludedAssetDatabases);
         }

@@ -161,7 +161,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7970185317444620997}
   _networkObjectCache: {fileID: 7970185317444620997}
-  _asset: {fileID: 11400000, guid: 413d01e857d1db8468215e17771a95ea, type: 2}
+  _asset: {fileID: 11400000, guid: cb8a18ff6b582ec45a3aa1f689a18564, type: 2}
   _name: Flashlight blue
   _weight: 1
   _startingTraits: []

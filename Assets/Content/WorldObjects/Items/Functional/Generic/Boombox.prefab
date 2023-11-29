@@ -320,7 +320,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6348062478285535548}
   _networkObjectCache: {fileID: 6348062478285535548}
-  _asset: {fileID: 11400000, guid: e1b3f700e7546e0489fd6e5f71abf8d3, type: 2}
+  _asset: {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
   _name: Boombox
   _weight: 1
   _startingTraits: []
