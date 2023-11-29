@@ -67,6 +67,7 @@ namespace SS3D.Data.Enums
         HumanEye = 62, 
         HumanBrain = 63, 
         Toolbelt = 64, 
+        Backpack = 65, 
     }
 }
 
