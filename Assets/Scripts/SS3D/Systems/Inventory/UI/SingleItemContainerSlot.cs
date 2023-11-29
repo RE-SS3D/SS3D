@@ -56,12 +56,17 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
+            Item item = display.Item;
 
             if (!_container.CanContainItem(display.Item))
             {
                 return;
             }
-
+            if (item.Container != null && !item.Container.CanRemoveItem(item))
+            {
+                return;
+            }
+            // listen to container change and update display eventually.
             display.ShouldDrop = true;
 			display.MakeVisible(false);
             Inventory.ClientTransferItem(display.Item, Vector2Int.zero, Container);

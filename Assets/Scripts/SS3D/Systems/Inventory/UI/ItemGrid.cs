@@ -213,6 +213,10 @@ namespace SS3D.Systems.Inventory.UI
 			{
 				return;
 			}
+            if(item.Container != null && !item.Container.CanRemoveItem(item))
+            {
+                return;
+            }
 
 			// We make it not visible the time it is transfered to another slot, to avoid seeing the sprite flickering.
 			display.MakeVisible(false);
