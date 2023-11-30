@@ -5,6 +5,13 @@ using UnityEngine;
 using QuikGraph;
 using Coimbra.Services.PlayerLoopEvents;
 using Coimbra.Services.Events;
+using QuikGraph.Algorithms;
+using SS3D.Systems.Tile;
+using SS3D.Utils;
+using log4net.Util;
+using SS3D.Core;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace System.Electricity
 {
@@ -18,51 +25,107 @@ namespace System.Electricity
     public class ElectricitySystem : NetworkSystem
     {
 
+        private struct VerticeCoordinates
+        {
+            short x;
+            short y;
+            byte layer;
+            byte direction;
+
+            public VerticeCoordinates(short xcoordinate, short yccordinate, byte zcoordinate, byte directionCoordinate)
+            {
+                x = xcoordinate;
+                y = yccordinate;
+                layer = zcoordinate;
+                direction = directionCoordinate;
+            }
+        }
+
         private bool _graphIsDirty;
 
         private List<Circuit> _circuits;
+
+
+
+        private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
 
 
         // Start is called before the first frame update
         protected override void OnStart()
         {
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            _electricityGraph = new UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>>();
 
-            graph.AddVertex(0);
-            graph.AddVertex(1);
-            graph.AddVertex(2);
-            graph.AddVertex(3);
+            _electricityGraph.AddVertex(new VerticeCoordinates(0,0,0,0));
+            _electricityGraph.AddVertex(new VerticeCoordinates(0, 6, 0, 0));
+            _electricityGraph.AddVertex(new VerticeCoordinates(0, 2, 0, 0));
+            _electricityGraph.AddVertex(new VerticeCoordinates(0, 3, 0, 0));
+            _electricityGraph.AddVertex(new VerticeCoordinates(0, 4, 0, 0));
 
-            graph.AddEdge(new Edge<int>(0,1));
-            graph.AddEdge(new Edge<int>(0, 2));
-            graph.AddEdge(new Edge<int>(1, 2));
-            graph.AddEdge(new Edge<int>(1, 3));
-            graph.AddEdge(new Edge<int>(2, 3));
+            _electricityGraph.AddEdge(new Edge<VerticeCoordinates>(new VerticeCoordinates(0, 0, 0, 0), new VerticeCoordinates(0, 6, 0, 0)));
+            _electricityGraph.AddEdge(new Edge<VerticeCoordinates>(new VerticeCoordinates(0, 0, 0, 0), new VerticeCoordinates(0, 2, 0, 0)));
 
-            foreach (int vertex in graph.Vertices)
-            {
-                foreach (Edge<int> edge in graph.OutEdges(vertex))
-                {
-                    Debug.Log(edge);
-                }
-            }
+            Dictionary<VerticeCoordinates, int> components = new();
+            _electricityGraph.ConnectedComponents(components);
+
+            var graphs = components.GroupBy(pair => pair.Value)
+                .ToDictionary(
+                group => group.Key,
+                group => group.Select(item => item.Key).ToList()
+                );
+
         }
 
         // Update is called once per frame
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
+            if (!_graphIsDirty) return;
 
+            Dictionary<VerticeCoordinates, int> components = new();
+
+            _electricityGraph.ConnectedComponents(components);
+            _circuits.Clear();
+
+            var graphs = components.GroupBy(pair => pair.Value)
+                .ToDictionary(
+                group => group.Key,
+                group => group.Select(item => item.Key).ToList()
+                );
         }
 
         public void AddElectricalElement(IElectricDevice device)
         {
-            
+            _electricityGraph.AddVertex
+            (
+                new VerticeCoordinates
+                (
+                    (short) device.TileObject.WorldOrigin.x,
+                    (short) device.TileObject.WorldOrigin.y,
+                    (byte) device.TileObject.Layer,
+                    (byte) device.TileObject.Direction
+                )
+            );
+
+            _graphIsDirty = true;
+
+            // TODO add edges with all neighbours
+
         }
 
         public void RemoveElectricalElement(IElectricDevice device)
         {
+            _electricityGraph.RemoveVertex
+            (
+                new VerticeCoordinates
+                (
+                    (short)device.TileObject.WorldOrigin.x,
+                    (short)device.TileObject.WorldOrigin.y,
+                    (byte)device.TileObject.Layer,
+                    (byte)device.TileObject.Direction
+                )
+            );
 
+            _graphIsDirty = true;
         }
     }
 }
