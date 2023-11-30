@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using QuikGraph;
+using Coimbra.Services.PlayerLoopEvents;
+using Coimbra.Services.Events;
 
 namespace System.Electricity
 {
@@ -15,9 +17,16 @@ namespace System.Electricity
     /// </summary>
     public class ElectricitySystem : NetworkSystem
     {
+
+        private bool _graphIsDirty;
+
+        private List<Circuit> _circuits;
+
+
         // Start is called before the first frame update
-        void Start()
+        protected override void OnStart()
         {
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
             var graph = new AdjacencyGraph<int, Edge<int>>();
 
             graph.AddVertex(0);
@@ -41,7 +50,17 @@ namespace System.Electricity
         }
 
         // Update is called once per frame
-        void Update()
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        {
+
+        }
+
+        public void AddElectricalElement(IElectricDevice device)
+        {
+            
+        }
+
+        public void RemoveElectricalElement(IElectricDevice device)
         {
 
         }
