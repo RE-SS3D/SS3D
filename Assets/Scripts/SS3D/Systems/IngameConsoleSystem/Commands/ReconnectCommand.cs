@@ -7,7 +7,6 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class ReconnectCommand: Command
     {
-        public override string LongDescription => "Restart app";
         public override string ShortDescription => "Restart app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Offline;

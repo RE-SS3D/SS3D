@@ -11,8 +11,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
 	public class RagdollCommand : Command
 	{
-		public override string LongDescription => "ragdoll (user ckey) [time]";
-		public override string ShortDescription => "Toggle player's ragdoll. Time is a float type and should be written as 0.5";
+		public override string ShortDescription => "Toggle player's ragdoll";
+        public override string Usage => "(ckey) [time]. Time is a float type and should be written as 0.5";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
 		public override CommandType Type => CommandType.Server;
 

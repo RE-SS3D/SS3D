@@ -10,8 +10,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class KillCommand : Command
     {
-        public override string LongDescription => "kill (user ckey)";
         public override string ShortDescription => "Kill player";
+        public override string Usage => "(ckey)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 

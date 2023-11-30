@@ -34,9 +34,21 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         /// </summary>
         public abstract CommandType Type { get; }
 
+        /// <summary>
+        /// Desription, that will be shown after "help" command
+        /// </summary>
         public abstract string ShortDescription { get; }
 
-        public abstract string LongDescription { get; }
+        /// <summary>
+        /// Detailed description of the command. Will be shown after "help (command name)" command
+        /// </summary>
+        public virtual string LongDescription => ShortDescription;
+
+        /// <summary>
+        /// how to use the command.
+        /// Syntax for writing usage: arguments in () - necessary; [] - optional; {} - list of arguments with undefined size
+        /// </summary>
+        public virtual string Usage => "";
 
         /// <summary>
         /// The requested role to be able to perform this command.

@@ -7,8 +7,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class EchoCommand : Command
     {
-        public override string LongDescription => "echo (number) (your string)";
         public override string ShortDescription => "Repeat your string";
+        public override string Usage => "(number) (your string)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Server;
         

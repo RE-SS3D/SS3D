@@ -6,7 +6,6 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class QuitCommand : Command
     {
-        public override string LongDescription => "Close app";
         public override string ShortDescription => "Close app";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Offline;

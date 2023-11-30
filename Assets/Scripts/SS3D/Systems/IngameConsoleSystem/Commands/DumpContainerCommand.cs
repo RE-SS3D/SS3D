@@ -7,9 +7,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
 	public class DumpContainerCommand : Command
 	{
-		public override string LongDescription => "Dump the content of a container. Dump the content of all containers on the game object. \n" +
-			"Usage : dumpcontainer [container's game object name]";
-		public override string ShortDescription => "Dump the content of a container.";
+		public override string LongDescription => "Dump the content of all containers on the game object";
+		public override string ShortDescription => "Dump the content of a container";
+        public override string Usage => "(container's game object name)";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
         

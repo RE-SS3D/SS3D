@@ -10,9 +10,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class ExamineBodyPartCommand : Command
     {
-        public override string LongDescription => "Examine a detached body part, returning how damaged it is \n " +
-            "Usage : examinebodypart [game object name]";
+        public override string LongDescription => "Examine a detached body part, returning how damaged it is";
         public override string ShortDescription => "Examine a detached body part";
+        public override string Usage => "(game object name)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 

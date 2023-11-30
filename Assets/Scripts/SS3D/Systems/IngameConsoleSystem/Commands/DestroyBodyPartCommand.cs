@@ -9,9 +9,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class DestroyBodyPartCommand : Command
     {
-        public override string LongDescription => "Destroy a given body part, unattached from a player. \n " +
-            "Usage : destroybodypart [game object name]";
+        public override string LongDescription => "Destroy a given body part, unattached from a player";
         public override string ShortDescription => "Hit me daddy";
+        public override string Usage => "(game object name)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 

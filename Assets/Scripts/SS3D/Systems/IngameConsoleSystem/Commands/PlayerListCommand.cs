@@ -10,7 +10,6 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class PlayerListCommand : Command
     {
-        public override string LongDescription => "Show all players online";
         public override string ShortDescription => "Show all players online";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override CommandType Type => CommandType.Client;

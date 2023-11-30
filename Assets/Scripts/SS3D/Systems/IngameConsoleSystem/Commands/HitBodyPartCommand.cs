@@ -3,7 +3,6 @@ using FishNet.Object;
 using SS3D.Permissions;
 using SS3D.Systems.Health;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,9 +10,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class HitBodyPartCommand : Command
     {
-        public override string LongDescription => "Hurt a given body part and body layer unattached to a player by a given amount of damages from a given type. \n" +
-            "Usage : hitbodypart [game object name] [body layer name] [damage type name] [amount of damage]";
+        public override string LongDescription => "Hurt a given body part and body layer unattached to a player";
         public override string ShortDescription => "Hit me daddy";
+        public override string Usage => "(game object name) (BodyLayerType) (DamageType) (amount of damage)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 

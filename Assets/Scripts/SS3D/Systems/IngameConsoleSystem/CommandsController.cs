@@ -31,11 +31,8 @@ namespace SS3D.Systems.IngameConsoleSystem
                 iType.IsClass && iType.IsSubclassOf(typeof(Command)) && !iType.IsAbstract);
             foreach (Type command in commands)
             {
-                string name = command.Name.ToLower();
-                // Remove "Command" suffix
-                name = name.Substring(0, name.Length - 7);
                 Command instance = (Command)Activator.CreateInstance(command);
-                _allCommands.Add(name, instance);
+                _allCommands.Add(GetCommandName(command), instance);
             }
         }
 
@@ -77,14 +74,25 @@ namespace SS3D.Systems.IngameConsoleSystem
 	        CmdProcessOnlineCommand(GetCommandName(command), args);
         }
 
-        [ServerOrClient]
+        /// <summary>
+        /// Get command name out of string with args
+        /// </summary>
         private string GetCommandName(string command)
         {
             string[] splitCommand = command.Split(' ');
-            return splitCommand[0];
+            return splitCommand[0].ToLower();
         }
 
-        [ServerOrClient]
+        /// <summary>
+        /// Get command name out of command type
+        /// </summary>
+        private string GetCommandName(Type command)
+        {
+            string name = command.Name.ToLower();
+            // Remove "Command" suffix
+            return name.Substring(0, name.Length - 7);
+        }
+        
         private string[] GetCommandArgs(string command)
         {
 	        return command.Split().Skip(1).ToArray();
@@ -92,7 +100,6 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// <summary>
         /// Perform command without sending a request to server.
         /// </summary>
-        [ServerOrClient]
         private void OfflineProcessCommand(Command command, string[] args)
         {
 	        CommandAnswer(command.Perform(args));
@@ -136,7 +143,6 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// Find command by name
         /// </summary>
         /// <returns>Is given command found</returns>
-        [ServerOrClient]
         private bool FindCommand(string commandName, out Command command)
         {
             if (!_allCommands.ContainsKey(commandName))
@@ -160,7 +166,6 @@ namespace SS3D.Systems.IngameConsoleSystem
 		/// <summary>
 		/// Send or print command's answer
 		/// </summary>
-		[ServerOrClient]
         private void CommandAnswer(string answer, NetworkConnection conn = null)
         {
 	        if ((IsServer) && (conn != null))
@@ -191,10 +196,11 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             return ret;
         }
-        /// <returns>Long help for given command</returns>
+        
+        /// <returns>Long help and usage for given command</returns>
         private string LongHelpCommand(Command command)
         {
-            return command.LongDescription;
+            return command.LongDescription + "\nUsage: " + GetCommandName(command.GetType()) + ' ' + command.Usage;
         }
     }
 }

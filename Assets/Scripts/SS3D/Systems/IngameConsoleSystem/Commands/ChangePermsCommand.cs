@@ -8,8 +8,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class ChangePermsCommand : Command
     {
-        public override string LongDescription => "changeperms (user ckey) (required role)";
         public override string ShortDescription => "Change user permission";
+        public override string Usage => "(user ckey) (required role)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
         
