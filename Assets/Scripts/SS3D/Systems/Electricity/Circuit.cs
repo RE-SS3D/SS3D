@@ -16,8 +16,6 @@ namespace System.Electricity
         // when removing one element of the circuit, start a tree search for all connected elements to that element,
         // accordingly updating circuits ?
 
-        public 
-
         /// <summary>
         /// Merge two small circuits into a big one.
         /// </summary>
@@ -35,7 +33,7 @@ namespace System.Electricity
         /// <param name="circuits"></param>
         private static void Split(Circuit circuit, out List<Circuit> circuits)
         {
-
+            circuits = new List<Circuit>();
         }
 
 
