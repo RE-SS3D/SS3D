@@ -178,7 +178,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleInputFieldChanged()
         {
-            _assetGrid.FindAssets(_inputField.text.Replace(' ', '_'));
+            _assetGrid.FindAssets(_inputField.text);
         }
     }
 }

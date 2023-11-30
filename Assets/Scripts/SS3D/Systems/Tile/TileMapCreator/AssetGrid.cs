@@ -66,6 +66,7 @@ public class AssetGrid : Actor
     /// </summary>
     public void FindAssets(string text)
     {
+        text = text.Replace(' ', '_');
         ClearGrid();
         foreach (GenericObjectSo asset in _objectDatabase)
         {
