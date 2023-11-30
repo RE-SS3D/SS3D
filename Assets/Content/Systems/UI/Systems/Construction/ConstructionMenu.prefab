@@ -784,9 +784,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapCreator,
-          SS3D.Systems
-        m_MethodName: OnInputFieldSelect
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapMenu, SS3D.Systems
+        m_MethodName: HandleInputFieldSelect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -800,9 +799,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapCreator,
-          SS3D.Systems
-        m_MethodName: OnInputFieldDeselect
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapMenu, SS3D.Systems
+        m_MethodName: HandleInputFieldDeselect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -822,9 +820,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapCreator,
-          SS3D.Systems
-        m_MethodName: OnInputFieldChanged
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.TileMapCreator.TileMapMenu, SS3D.Systems
+        m_MethodName: HandleInputFieldChanged
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1207,10 +1204,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Construction.UI.ConstructionMenu,
-          SS3D.Systems
-        m_MethodName: SaveMap
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: TileMapMenuSaveAndLoadTabs, SS3D.Systems
+        m_MethodName: HandleSaveButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1477,6 +1473,8 @@ GameObject:
   - component: {fileID: 2747704420924042145}
   - component: {fileID: 6924109542537538210}
   - component: {fileID: 9154675693299657064}
+  - component: {fileID: 978946649210659857}
+  - component: {fileID: 6241789247798514904}
   m_Layer: 5
   m_Name: ConstructionMenu
   m_TagString: Untagged
@@ -1558,14 +1556,10 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 9154675693299657064}
   _networkObjectCache: {fileID: 9154675693299657064}
-  _menuRoot: {fileID: 7547524062666404018}
-  _contentRoot: {fileID: 6243703131314193102}
-  _slotPrefab: {fileID: 4285405521571209506, guid: 484315627df23dd428819ee4c9e05603, type: 3}
-  _layerPlacementDropdown: {fileID: 2409669378435090507}
   _inputField: {fileID: 5558970035109273631}
-  _validConstruction: {fileID: 2100000, guid: 6d2a18aa72cbaf94694dce9f8451160b, type: 2}
-  _invalidConstruction: {fileID: 2100000, guid: e9b99cfb2e59ffa40a062c2f4b88b729, type: 2}
-  _deleteConstruction: {fileID: 2100000, guid: ed5a1263eb564c94abc6407ac0919ea7, type: 2}
+  _menuRoot: {fileID: 7547524062666404018}
+  _hologramManager: {fileID: 978946649210659857}
+  _tileMapMenuBuildingTabs: {fileID: 6241789247798514904}
 --- !u!114 &9154675693299657064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1583,12 +1577,13 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 6924109542537538210}
+  - {fileID: 978946649210659857}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Position: {x: 272.53857, y: 67.66217, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    LocalScale: {x: 1.3615595, y: 1.3615595, z: 1.3615595}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -1599,6 +1594,39 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17865247151196156452
+--- !u!114 &978946649210659857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965414683581951142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d16ab4eb1127ca4eac3cb229241649e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 9154675693299657064}
+  _networkObjectCache: {fileID: 9154675693299657064}
+  _menu: {fileID: 6924109542537538210}
+--- !u!114 &6241789247798514904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965414683581951142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5f993f47e925246af5c62ba3290524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slotPrefab: {fileID: 4285405521571209506, guid: 484315627df23dd428819ee4c9e05603, type: 3}
+  _layerPlacementDropdown: {fileID: 2409669378435090507}
+  _inputField: {fileID: 5558970035109273631}
+  _menu: {fileID: 6924109542537538210}
+  _contentRoot: {fileID: 6243703131314193102}
 --- !u!1 &2420290731705129391
 GameObject:
   m_ObjectHideFlags: 0
@@ -3803,9 +3831,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Construction.UI.ConstructionMenu,
-          SS3D.Systems
+      - m_Target: {fileID: 6241789247798514904}
+        m_TargetAssemblyTypeName: TileMapMenuBuildingView, SS3D.Systems
         m_MethodName: OnDropDownChange
         m_Mode: 1
         m_Arguments:
@@ -4202,7 +4229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4235739587677223029
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4305,7 +4332,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2287788854832640797}
   m_HandleRect: {fileID: 3379647602017452814}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4930,7 +4957,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -0.000030517578, y: -0.00018310547}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5334,10 +5361,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Construction.UI.ConstructionMenu,
-          SS3D.Systems
-        m_MethodName: LoadMap
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: TileMapMenuSaveAndLoadTabs, SS3D.Systems
+        m_MethodName: HandleLoadButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
