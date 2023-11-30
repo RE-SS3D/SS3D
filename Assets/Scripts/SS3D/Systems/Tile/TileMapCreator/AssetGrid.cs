@@ -2,13 +2,10 @@
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
-using SS3D.Core.Behaviours;
-using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.TileMapCreator;
 using SS3D.Systems.Tile.UI;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -19,26 +16,19 @@ using Actor = SS3D.Core.Behaviours.Actor;
 /// <summary>
 /// Handle the UI and displaying everything related to the tilemap menu building part.
 /// </summary>
-public class TileMapMenuBuildingTabs : Actor
+public class AssetGrid : Actor
 {
     /// <summary>
     ///  The model for a single slot, to display tile objects in the menu.
     /// </summary>
     [SerializeField]
     private GameObject _slotPrefab;
-
-
+    
     /// <summary>
     /// Dropdown to select the layer to display in the menu.
     /// </summary>
     [SerializeField]
     private TMP_Dropdown _layerPlacementDropdown;
-
-    /// <summary>
-    /// Input field to search for specific tile objects or items in the menu.
-    /// </summary>
-    [SerializeField]
-    private TMP_InputField _inputField;
 
     /// <summary>
     /// List of tile objects and items to load in the tilemap menu, that will show in the slots.
@@ -56,18 +46,13 @@ public class TileMapMenuBuildingTabs : Actor
     /// </summary>
     [SerializeField]
     private GameObject _contentRoot;
-
+    
     private TileSystem _tileSystem;
-
-    private InputSystem _inputSystem;
-
 
     public void Setup()
     {
         AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        _inputSystem = Subsystems.Get<InputSystem>();
         _tileSystem= Subsystems.Get<TileSystem>();
-
         LoadObjectGrid(new[] { TileLayer.Plenum }, false);
     }
 
@@ -77,39 +62,15 @@ public class TileMapMenuBuildingTabs : Actor
     }
 
     /// <summary>
-    /// Called when the input field to search for tile objects is selected.
+    /// Show assets, that contain given string in their name.
     /// </summary>
-    private void OnInputFieldSelect()
-    {
-        _inputSystem.ToggleAllActions(false);
-    }
-
-    /// <summary>
-    /// Called when the input field to search for tile objects is selected.
-    /// </summary>
-    private void OnInputFieldDeselect()
-    {
-        _inputSystem.ToggleAllActions(true);
-    }
-
-    /// <summary>
-    /// Called when the text in the input field to search for tile objects is changed.
-    /// </summary>
-    private void OnInputFieldChanged()
+    public void FindAssets(string text)
     {
         ClearGrid();
-
-        if (_inputField.text.Contains(' '))
-        {
-            // Replace spaces with underscores, since all asset names contain underscores
-            _inputField.text = _inputField.text.Replace(' ', '_');
-            // Prevent executing the same code twice
-            return;
-        }
         foreach (GenericObjectSo asset in _objectDatabase)
         {
-            if (!asset.nameString.Contains(_inputField.text)) continue;
-            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorSlot>().Setup(asset);
+            if (!asset.nameString.Contains(text)) continue;
+            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<AssetSlot>().Setup(asset);
         }
     }
 
@@ -129,7 +90,7 @@ public class TileMapMenuBuildingTabs : Actor
                 case false when asset is TileObjectSo so && !allowedLayers.Contains(so.layer):
                     continue;
             }
-            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<TileMapCreatorSlot>().Setup(asset);
+            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<AssetSlot>().Setup(asset);
         }
     }
 
@@ -139,62 +100,66 @@ public class TileMapMenuBuildingTabs : Actor
     private void OnDropDownChange()
     {
         int index = _layerPlacementDropdown.value;
-
+        bool isItems = false;
+        TileLayer[] layers = null;
         switch (index)
         {
             case 0:
-                LoadObjectGrid(new[]
-                {
-                        TileLayer.Plenum
-                    }, false);
+                layers = new[] { TileLayer.Plenum };
                 break;
 
             case 1:
-                LoadObjectGrid(new[]
-                {
-                        TileLayer.Turf
-                    }, false);
+                layers = new[] { TileLayer.Turf };
                 break;
 
             case 2:
-                LoadObjectGrid(new[]
+                layers = new[]
                 {
-                        TileLayer.FurnitureBase,
-                        TileLayer.FurnitureTop
-                    }, false);
+                    TileLayer.FurnitureBase,
+                    TileLayer.FurnitureTop
+                };
                 break;
 
             case 3:
-                LoadObjectGrid(new[]
+                layers = new[]
                 {
-                        TileLayer.WallMountHigh,
-                        TileLayer.WallMountLow
-                    }, false);
+                    TileLayer.WallMountLow,
+                    TileLayer.WallMountHigh
+                };
                 break;
 
             case 4:
-                LoadObjectGrid(new[]
+                layers = new[]
                 {
-                        TileLayer.Wire,
-                        TileLayer.Disposal,
-                        TileLayer.PipeLeft,
-                        TileLayer.PipeRight,
-                        TileLayer.PipeSurface,
-                        TileLayer.PipeMiddle
-                    }, false);
+                    TileLayer.Wire,
+                    TileLayer.Disposal,
+                    TileLayer.PipeLeft,
+                    TileLayer.PipeRight,
+                    TileLayer.PipeSurface,
+                    TileLayer.PipeMiddle
+                };
                 break;
 
             case 5:
-                LoadObjectGrid(new[] { TileLayer.Overlays }, false);
+                layers = new[]
+                {
+                    TileLayer.Overlays
+                };
                 break;
 
             case 6:
                 LoadObjectGrid(null, true);
+                isItems = true;
                 break;
 
             default:
                 ClearGrid();
                 break;
+        }
+
+        if ((layers != null) || isItems)
+        {
+            LoadObjectGrid(layers, isItems);
         }
     }
 

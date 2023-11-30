@@ -1,22 +1,17 @@
-﻿using Coimbra;
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Data;
-using SS3D.Data.Enums;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Actor = SS3D.Core.Behaviours.Actor;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -32,39 +27,28 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// The last direction registered by a build ghost.
         /// </summary>
         private Direction _lastRegisteredDirection;
-
         private InputSystem _inputSystem;
         private Controls.TileCreatorActions _controls;
-
-
         private bool _isPlacingItem = false;
-
         /// <summary>
         /// Snapped position are positions in the center of tiles, to display tile objects ghosts properly.
         /// </summary>
         private Vector3 _lastSnappedPosition;
-
         /// <summary>
         /// The snapped position of the mouse, in the middle of a tile, when the player starts dragging with the mouse.
         /// </summary>
         private Vector3 _dragStartPostion;
-
-
-        private bool _isDragging;
-
         /// <summary>
         /// Is the player currently dragging ?
         /// </summary>
         public bool IsDragging => _isDragging;
-
-
+        private bool _isDragging;
         private GenericObjectSo _selectedObject;
-
         /// <summary>
         /// List of build ghosts currently displaying in game.
         /// </summary>
-        public List<ConstructionHologram> _holograms = new();
-
+        private List<ConstructionHologram> _holograms = new();
+        
         [SerializeField]
         private TileMapMenu _menu;
 
@@ -95,10 +79,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls.Rotate.performed += HandleRotate;
         }
 
-
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            foreach (var hologram in _holograms)
+            foreach (ConstructionHologram hologram in _holograms)
             {
                 hologram.UpdateRotationAndPosition();
             }
@@ -137,9 +120,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void SetNextRotation()
         {
-            foreach (var hologram in _holograms)
+            foreach (ConstructionHologram hologram in _holograms)
             {
                 hologram.SetNextRotation();
+                RefreshHologram(hologram);
             }
             _lastRegisteredDirection = _holograms.First().Direction;
         }
@@ -149,8 +133,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public ConstructionHologram CreateHologram(GameObject prefab, Vector3 position)
         {
-            var tileObject = Instantiate(prefab);
-            var hologram = new ConstructionHologram(tileObject, position, _lastRegisteredDirection);
+            GameObject tileObject = Instantiate(prefab);
+            ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
             tileObject.transform.position = hologram.Position;
             _holograms.Add(hologram);
@@ -268,11 +252,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (_menu.IsDeleting)
             {
-                hologram.ChangeHologramColor(BuildMatMode.Delete);
+                hologram.ChangeHologramColor(ConstructionMode.Delete);
             }
             else if (_isPlacingItem)
             {
-                hologram.ChangeHologramColor(BuildMatMode.Valid);
+                hologram.ChangeHologramColor(ConstructionMode.Valid);
             }
             else
             {
@@ -307,17 +291,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (Vector3 tile in tiles)
             {
-                var ghost = CreateHologram(_selectedObject.prefab, tile);
-                RefreshHologram(ghost);
+                RefreshHologram(CreateHologram(_selectedObject.prefab, tile));
             }
         }
-
-
+        
         [ServerRpc(RequireOwnership = false)]
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
 
-            var tileSystem = Subsystems.Get<TileSystem>();
+            TileSystem tileSystem = Subsystems.Get<TileSystem>();
 
             TileObjectSo tileObjectSo = (TileObjectSo)tileSystem.GetAsset(tileObjectSoName);
 
@@ -342,11 +324,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
                 if (canBuild)
                 {
-                    hologram.ChangeHologramColor(BuildMatMode.Valid);
+                    hologram.ChangeHologramColor(ConstructionMode.Valid);
                 }
                 else
                 {
-                    hologram.ChangeHologramColor(BuildMatMode.Invalid);
+                    hologram.ChangeHologramColor(ConstructionMode.Invalid);
                 }
                 return;
             }
@@ -372,7 +354,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     RefreshHologram(hologram);
                 }
             }
-
         }
 
         /// <summary>
@@ -391,8 +372,5 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 }
             }
         }
-
-
-
     }
 }

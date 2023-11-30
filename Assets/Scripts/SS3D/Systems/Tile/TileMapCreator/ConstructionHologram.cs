@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
-
     /// <summary>
     /// Represent a hologram tile object used for construction, through the tilemap menu.
     /// </summary>
@@ -15,16 +14,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private GameObject _hologram;
         private Vector3 _position;
         private Direction _direction;
-
         public Direction Direction => _direction;
-
         public bool ActiveSelf => _hologram.activeSelf;
-
         public bool SetActive { set => _hologram.SetActive(value); }
-
         public Vector3 Position { get => _position; set => _position = value; }
-
-
+        
         /// <summary>
         /// Build a new hologram
         /// </summary>
@@ -44,7 +38,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _direction = customRotationComponent.DefaultDirection;
             }
 
-            if (ghostObject.TryGetComponent<Rigidbody>(out var ghostRigidbody))
+            if (ghostObject.TryGetComponent(out Rigidbody ghostRigidbody))
             {
                 ghostRigidbody.useGravity = false;
                 ghostRigidbody.isKinematic = true;
@@ -60,21 +54,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// Chooses which material to set on the ghost based on which mode we are building.
         /// </summary>
         /// <param name="mode"></param>
-        public void ChangeHologramColor(BuildMatMode mode)
+        public void ChangeHologramColor(ConstructionMode mode)
         {
             Material ghostMat = null;
 
             switch (mode)
             {
-                case BuildMatMode.Valid:
+                case ConstructionMode.Valid:
                     ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.ValidConstruction);
                     break;
 
-                case BuildMatMode.Invalid:
+                case ConstructionMode.Invalid:
                     ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.InvalidConstruction);
                     break;
 
-                case BuildMatMode.Delete:
+                case ConstructionMode.Delete:
                     ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.DeleteConstruction);
                     break;
             }

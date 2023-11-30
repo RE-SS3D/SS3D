@@ -9,7 +9,7 @@ namespace SS3D.Systems.Tile.UI
     /// Slot that holds information for each item/tile in the TileMapCreator UI.
     /// They get created when the tilemap menu spawns.
     /// </summary>
-    public class TileMapCreatorSlot : MonoBehaviour
+    public class AssetSlot : MonoBehaviour
     {
         private GenericObjectSo _genericObjectSo;
 

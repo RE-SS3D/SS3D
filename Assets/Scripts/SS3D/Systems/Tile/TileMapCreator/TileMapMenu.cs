@@ -3,9 +3,11 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
@@ -17,46 +19,37 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public class TileMapMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
     {
-        [SerializeField]
-        private GameObject _menuRoot;
-
-        public GameObject MenuRoot => _menuRoot;
-
-        private bool _mouseOverUI = false;
-
         /// <summary>
-        /// Is the mouse over the menu UI ?
+        /// Is the mouse over the menu UI
         /// </summary>
         public bool MouseOverUI => _mouseOverUI;
-
+        private bool _mouseOverUI = false;
         /// <summary>
-        /// Is the tilemap menu enabled ?
+        /// Is the tilemap menu enabled
         /// </summary>
         private bool _enabled = false;
-
-
-        private bool _isDeleting;
-
         /// <summary>
-        /// Are we deleting objects from the tilemap ?
+        /// Are we deleting objects from the tilemap
         /// </summary>
         public bool IsDeleting => _isDeleting;
-
-
+        private bool _isDeleting;
         private Controls.TileCreatorActions _controls;
         private InputSystem _inputSystem;
         private PanelTab _tab;
-
+        private TileMapSaveAndLoad _tileMapSaveAndLoad;
+        
+        /// <summary>
+        /// Input field to search for specific tile objects or items in the menu.
+        /// </summary>
+        [SerializeField]
+        private TMP_InputField _inputField;
+        [SerializeField]
+        private GameObject _menuRoot;
         [SerializeField]
         private ConstructionHologramManager _hologramManager;
-
         [SerializeField]
-        private TileMapMenuBuildingTabs _tileMapMenuBuildingTabs ;
-
-
-        [SerializeField]
-        private TileMapMenuSaveAndLoadTabs _tileMapMenuSaveAndLoadTabs;
-
+        private AssetGrid _assetGrid;
+        
         /// <summary>
         /// Called when pointer enter the UI of the menu.
         /// </summary>
@@ -92,8 +85,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls = _inputSystem.Inputs.TileCreator;
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
             _controls.ToggleMenu.performed += HandleToggleMenu;
+            _tileMapSaveAndLoad = new();
         }
-       
 
         /// <summary>
         /// Method called when the control to open the tilemap menu is performed.
@@ -113,21 +106,22 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _enabled = !_enabled;
             ShowUI(_enabled);
             
-            _tileMapMenuBuildingTabs.Setup();
+            _assetGrid.Setup();
         }
        
         /// <summary>
-        /// TODO : document, what does this do ?
+        /// Hide or show the tilemap menu.
         /// </summary>
-        private void ShowUI(bool show)
+        private void ShowUI(bool isShow)
         {
-            if (!show)
+            if (!isShow)
             {
+                // Detach the tab from a movable panel. It's necessary to prevent disabling all tabs in the panel.
                 _tab.Detach();
                 _hologramManager.DestroyHolograms();
             }
-            _tab.Panel.gameObject.SetActive(show);
-            _menuRoot.SetActive(show);
+            _tab.Panel.gameObject.SetActive(isShow);
+            _menuRoot.SetActive(isShow);
         }
 
         /// <summary>
@@ -144,6 +138,47 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private void HandleBuildButton()
         {
             _isDeleting = false;
+        }
+        
+        /// <summary>
+        /// Method called when the load button is clicked.
+        /// </summary>
+        [Server]
+        public void HandleLoadButton()
+        {
+            _tileMapSaveAndLoad.SetUpLoad();
+        }
+        
+        /// <summary>
+        /// Method called when the save button is clicked.
+        /// </summary>
+        [Server]
+        public void HandleSaveButton()
+        {
+            _tileMapSaveAndLoad.SetUpSave();
+        }
+        /// <summary>
+        /// Called when the input field to search for tile objects is selected.
+        /// </summary>
+        public void HandleInputFieldSelect()
+        {
+            _inputSystem.ToggleAllActions(false);
+        }
+
+        /// <summary>
+        /// Called when the input field to search for tile objects is selected.
+        /// </summary>
+        public void HandleInputFieldDeselect()
+        {
+            _inputSystem.ToggleAllActions(true);
+        }
+
+        /// <summary>
+        /// Called when the text in the input field to search for tile objects is changed.
+        /// </summary>
+        public void HandleInputFieldChanged()
+        {
+            _assetGrid.FindAssets(_inputField.text.Replace(' ', '_'));
         }
     }
 }
