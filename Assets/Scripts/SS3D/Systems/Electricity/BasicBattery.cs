@@ -1,4 +1,5 @@
 ﻿using FishNet.Object;
+using SS3D.Core;
 using SS3D.Systems.Tile;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ namespace System.Electricity
 {
     public class BasicBattery : NetworkBehaviour, IPowerStorage
     {
+
         private float _maxCapacity = 10;
 
         private float _storedPower = 0;
@@ -19,5 +21,17 @@ namespace System.Electricity
         public float RemainingCapacity => _maxCapacity - _storedPower;
 
         public PlacedTileObject TileObject => GetComponent<PlacedTileObject>();
+
+        void Start()
+        {
+            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
+            electricitySystem.AddElectricalElement(this);
+        }
+
+        void Destroy()
+        {
+            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
+            electricitySystem.RemoveElectricalElement(this);
+        }
     }
 }

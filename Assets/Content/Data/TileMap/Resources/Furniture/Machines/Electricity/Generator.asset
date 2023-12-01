@@ -15,7 +15,7 @@ MonoBehaviour:
   nameString: Generator
   prefab: {fileID: 2694669217216940570, guid: 6d342d49dd845b64d8cde39b9deeed00, type: 3}
   icon: {fileID: 0}
-  layer: 0
+  layer: 7
   genericType: 0
   specificType: 0
   width: 1

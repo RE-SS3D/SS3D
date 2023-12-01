@@ -15,7 +15,7 @@ MonoBehaviour:
   nameString: Battery
   prefab: {fileID: 6110479796121659285, guid: bbcce9aef3824684593669064ad20eb7, type: 3}
   icon: {fileID: 0}
-  layer: 0
+  layer: 7
   genericType: 0
   specificType: 0
   width: 1

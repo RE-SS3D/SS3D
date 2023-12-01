@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using PlasticGui.WorkspaceWindow.PendingChanges;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,13 +20,19 @@ namespace System.Electricity
         {
             _consumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
             poweredIntensity = _light.intensity;
+
+            TurnLightOff();
         }
 
         private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)
         {
-            if (newStatus == PowerStatus.Powered) TurnLightOn();
-            else TurnLightOff();
+            UpdateLights(newStatus);
+        }
 
+        private void UpdateLights(PowerStatus powerStatus)
+        {
+            if (powerStatus == PowerStatus.Powered) TurnLightOn();
+            else TurnLightOff();
         }
 
         private void TurnLightOn()
