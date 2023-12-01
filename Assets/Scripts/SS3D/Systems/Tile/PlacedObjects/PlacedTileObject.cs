@@ -86,6 +86,8 @@ namespace SS3D.Systems.Tile
 
         public bool HasAdjacencyConnector => _connector != null;
 
+        public IAdjacencyConnector Connector => _connector;
+
         /// <summary>
         /// Set up a new PlacedTileObject.
         /// </summary>

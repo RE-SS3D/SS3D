@@ -45,8 +45,6 @@ namespace System.Electricity
 
         private List<Circuit> _circuits;
 
-        private List<IPowerConsumer> _consumers;
-
 
 
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
@@ -54,9 +52,7 @@ namespace System.Electricity
 
         // Start is called before the first frame update
         protected override void OnStart()
-        {
-            _consumers = new();
-            
+        {       
             _electricityGraph = new UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>>();
 
             _electricityGraph.AddVertex(new VerticeCoordinates(0,0,0,0));
@@ -86,18 +82,17 @@ namespace System.Electricity
         {
             if (_graphIsDirty) UpdateAllCircuitsTopology();
 
-            foreach(Circuit circuit in _circuits)
+            foreach (Circuit circuit in _circuits)
             {
-
+                circuit.UpdateCircuitPower();
             }
         }
 
         public void AddElectricalElement(IElectricDevice device)
         {
-            if (device is IPowerConsumer)
-            {
-                _consumers.Add((IPowerConsumer) device);
-            }
+            VerticeCoordinates deviceCoordinates = new VerticeCoordinates((short)device.TileObject.WorldOrigin.x, (short)device.TileObject.WorldOrigin.y,
+                    (byte)device.TileObject.Layer, (byte)device.TileObject.Direction);
+
             _electricityGraph.AddVertex
             (
                 new VerticeCoordinates
@@ -109,9 +104,18 @@ namespace System.Electricity
                 )
             );
 
-            _graphIsDirty = true;
+            List<PlacedTileObject> neighbours = device.TileObject.Connector.GetNeighbours();
 
-            // TODO add edges with all neighbours
+            foreach(PlacedTileObject neighbour in neighbours)
+            {
+                VerticeCoordinates neighbourCoordinates = new VerticeCoordinates ((short)neighbour.WorldOrigin.x, (short)neighbour.WorldOrigin.y,
+                    (byte)neighbour.Layer, (byte)neighbour.Direction);
+                
+                _electricityGraph.AddVertex(neighbourCoordinates);
+                _electricityGraph.AddEdge(new Edge<VerticeCoordinates>(deviceCoordinates, neighbourCoordinates));
+            }
+
+            _graphIsDirty = true;
 
         }
 
@@ -162,11 +166,6 @@ namespace System.Electricity
                     else if (device is IPowerProducer) _circuits.Last().AddProducer((IPowerProducer)device);
                     else if (device is IPowerStorage) _circuits.Last().AddStorage((IPowerStorage)device);
                 }
-            }
-
-            foreach(Circuit circuit in _circuits)
-            {
-                circuit.UpdateCircuitPower();
             }
         }
     }
