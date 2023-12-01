@@ -55,23 +55,7 @@ namespace System.Electricity
         {       
             _electricityGraph = new UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>>();
 
-            _electricityGraph.AddVertex(new VerticeCoordinates(0,0,0,0));
-            _electricityGraph.AddVertex(new VerticeCoordinates(0, 6, 0, 0));
-            _electricityGraph.AddVertex(new VerticeCoordinates(0, 2, 0, 0));
-            _electricityGraph.AddVertex(new VerticeCoordinates(0, 3, 0, 0));
-            _electricityGraph.AddVertex(new VerticeCoordinates(0, 4, 0, 0));
-
-            _electricityGraph.AddEdge(new Edge<VerticeCoordinates>(new VerticeCoordinates(0, 0, 0, 0), new VerticeCoordinates(0, 6, 0, 0)));
-            _electricityGraph.AddEdge(new Edge<VerticeCoordinates>(new VerticeCoordinates(0, 0, 0, 0), new VerticeCoordinates(0, 2, 0, 0)));
-
-            Dictionary<VerticeCoordinates, int> components = new();
-            _electricityGraph.ConnectedComponents(components);
-
-            var graphs = components.GroupBy(pair => pair.Value)
-                .ToDictionary(
-                group => group.Key,
-                group => group.Select(item => item.Key).ToList()
-                );
+            _circuits = new List<Circuit>();
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
 
@@ -156,7 +140,7 @@ namespace System.Electricity
                 foreach (VerticeCoordinates coord in component)
                 {
                     TileSystem tileSystem = Subsystems.Get<TileSystem>();
-                    ITileLocation location = tileSystem.CurrentMap.GetTileLocation((TileLayer)coord.layer, new Vector3(coord.x, coord.y));
+                    ITileLocation location = tileSystem.CurrentMap.GetTileLocation((TileLayer)coord.layer, new Vector3(coord.x, 0f, coord.y));
 
                     if (!location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction)coord.direction)) continue;
 
