@@ -27,10 +27,10 @@ namespace System.Electricity
 
         private struct VerticeCoordinates
         {
-            short x;
-            short y;
-            byte layer;
-            byte direction;
+            public short x;
+            public short y;
+            public byte layer;
+            public byte direction;
 
             public VerticeCoordinates(short xcoordinate, short yccordinate, byte zcoordinate, byte directionCoordinate)
             {
@@ -91,6 +91,22 @@ namespace System.Electricity
                 group => group.Key,
                 group => group.Select(item => item.Key).ToList()
                 );
+
+            
+
+            foreach ( List<VerticeCoordinates> component in graphs.Values )
+            {
+                _circuits.Add(new Circuit());
+                foreach(VerticeCoordinates coord in component)
+                {
+                    TileSystem tileSystem = Subsystems.Get<TileSystem>();
+                    ITileLocation location =  tileSystem.CurrentMap.GetTileLocation((TileLayer) coord.layer, new Vector3(coord.x, coord.y));
+
+                    if(! location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction) coord.direction)) continue;
+
+                    if (placedObject.GetComponent<IPowerConsumer>() != null) _circuits.Last().AddConsumer(placedObject.GetComponent<IPowerConsumer>());
+                }
+            }
         }
 
         public void AddElectricalElement(IElectricDevice device)

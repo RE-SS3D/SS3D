@@ -110,14 +110,14 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        private ITileLocation GetTileLocation(TileLayer layer, Vector3 worldPosition)
+        public ITileLocation GetTileLocation(TileLayer layer, Vector3 worldPosition)
         {
             TileChunk chunk = GetOrCreateChunk(worldPosition); // TODO: creates unnessary empty chunk when checking whether building can be done
             return chunk.GetTileObject(layer, worldPosition);
         }
 
 
-        private ITileLocation[] GetTileLocations(Vector3 worldPosition)
+        public ITileLocation[] GetTileLocations(Vector3 worldPosition)
         {
             ITileLocation[] tileObjects = new ITileLocation[TileHelper.GetTileLayers().Length];
 

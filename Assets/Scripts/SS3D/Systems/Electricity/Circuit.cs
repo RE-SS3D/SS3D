@@ -12,6 +12,16 @@ namespace System.Electricity
 
 
 
+        public void AddConsumer(IPowerConsumer consumer)
+        {
+
+        }
+
+        public void AddProducer(IPowerProducer producer)
+        {
+
+        }
+
 
         // when removing one element of the circuit, start a tree search for all connected elements to that element,
         // accordingly updating circuits ?
