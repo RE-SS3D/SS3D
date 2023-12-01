@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace System.Electricity
 {
-    public interface IPowerProducer
+    public interface IPowerProducer : IElectricDevice
     {
-
+        public float PowerProduction { get; }
     }
 }

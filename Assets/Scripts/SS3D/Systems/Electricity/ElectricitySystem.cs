@@ -45,6 +45,8 @@ namespace System.Electricity
 
         private List<Circuit> _circuits;
 
+        private List<IPowerConsumer> _consumers;
+
 
 
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
@@ -53,7 +55,8 @@ namespace System.Electricity
         // Start is called before the first frame update
         protected override void OnStart()
         {
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            _consumers = new();
+            
             _electricityGraph = new UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>>();
 
             _electricityGraph.AddVertex(new VerticeCoordinates(0,0,0,0));
@@ -74,43 +77,27 @@ namespace System.Electricity
                 group => group.Select(item => item.Key).ToList()
                 );
 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+
         }
 
         // Update is called once per frame
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (!_graphIsDirty) return;
+            if (_graphIsDirty) UpdateAllCircuitsTopology();
 
-            Dictionary<VerticeCoordinates, int> components = new();
-
-            _electricityGraph.ConnectedComponents(components);
-            _circuits.Clear();
-
-            var graphs = components.GroupBy(pair => pair.Value)
-                .ToDictionary(
-                group => group.Key,
-                group => group.Select(item => item.Key).ToList()
-                );
-
-            
-
-            foreach ( List<VerticeCoordinates> component in graphs.Values )
+            foreach(Circuit circuit in _circuits)
             {
-                _circuits.Add(new Circuit());
-                foreach(VerticeCoordinates coord in component)
-                {
-                    TileSystem tileSystem = Subsystems.Get<TileSystem>();
-                    ITileLocation location =  tileSystem.CurrentMap.GetTileLocation((TileLayer) coord.layer, new Vector3(coord.x, coord.y));
 
-                    if(! location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction) coord.direction)) continue;
-
-                    if (placedObject.GetComponent<IPowerConsumer>() != null) _circuits.Last().AddConsumer(placedObject.GetComponent<IPowerConsumer>());
-                }
             }
         }
 
         public void AddElectricalElement(IElectricDevice device)
         {
+            if (device is IPowerConsumer)
+            {
+                _consumers.Add((IPowerConsumer) device);
+            }
             _electricityGraph.AddVertex
             (
                 new VerticeCoordinates
@@ -142,6 +129,45 @@ namespace System.Electricity
             );
 
             _graphIsDirty = true;
+        }
+
+        private void UpdateAllCircuitsTopology()
+        {
+            Dictionary<VerticeCoordinates, int> components = new();
+
+            _electricityGraph.ConnectedComponents(components);
+            _circuits.Clear();
+
+            var graphs = components.GroupBy(pair => pair.Value)
+                .ToDictionary(
+                group => group.Key,
+                group => group.Select(item => item.Key).ToList()
+                );
+
+
+
+            foreach (List<VerticeCoordinates> component in graphs.Values)
+            {
+                _circuits.Add(new Circuit());
+                foreach (VerticeCoordinates coord in component)
+                {
+                    TileSystem tileSystem = Subsystems.Get<TileSystem>();
+                    ITileLocation location = tileSystem.CurrentMap.GetTileLocation((TileLayer)coord.layer, new Vector3(coord.x, coord.y));
+
+                    if (!location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction)coord.direction)) continue;
+
+                    if (!placedObject.TryGetComponent<IElectricDevice>(out var device)) continue;
+
+                    if (device is IPowerConsumer) _circuits.Last().AddConsumer((IPowerConsumer)device);
+                    else if (device is IPowerProducer) _circuits.Last().AddProducer((IPowerProducer)device);
+                    else if (device is IPowerStorage) _circuits.Last().AddStorage((IPowerStorage)device);
+                }
+            }
+
+            foreach(Circuit circuit in _circuits)
+            {
+                circuit.UpdateCircuitPower();
+            }
         }
     }
 }

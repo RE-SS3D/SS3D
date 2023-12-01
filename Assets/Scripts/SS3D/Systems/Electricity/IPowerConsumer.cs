@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace System.Electricity
 {
-    public interface IPowerConsumer
+    public interface IPowerConsumer : IElectricDevice
     {
+        public float PowerNeeded { get; }
 
+        public PowerStatus PowerStatus { get; set; }
     }
 }
