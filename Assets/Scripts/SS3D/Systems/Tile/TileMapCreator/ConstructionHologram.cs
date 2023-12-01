@@ -1,6 +1,7 @@
 ﻿using Coimbra;
 using SS3D.Data;
 using SS3D.Data.Enums;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -28,6 +29,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// all tile objects. If it's not, it will choose another available direction.</param>
         public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir)
         {
+
+            List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
+                .Where(x => x is not ICustomGhostRotation).ToList();
+
+            components.ForEach(x => x.enabled = false);
+
             _hologram = ghostObject;
             _position = targetPosition;
             _direction = dir;
