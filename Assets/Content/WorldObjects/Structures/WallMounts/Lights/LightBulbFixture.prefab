@@ -187,6 +187,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5737010110918057389}
   - component: {fileID: -7828078595381397262}
+  - component: {fileID: 5299084947188572917}
+  - component: {fileID: 8301714305325130111}
   m_Layer: 0
   m_Name: LightBulbFixture
   m_TagString: Untagged
@@ -225,18 +227,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
+  _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 10
+  <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 14169919452126136878
-  _sceneNetworkObjects: []
+--- !u!114 &5299084947188572917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b693691ec1592874896bee261d991d69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _consumer: {fileID: 8301714305325130111}
+  _light: {fileID: 2502875599337934467}
+--- !u!114 &8301714305325130111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dc697195ff36649947ce641b391e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -7828078595381397262}
+  _networkObjectCache: {fileID: 0}
+  _powerConsumption: 5
+  _powerStatus: 0
 --- !u!1 &6499595157872319857
 GameObject:
   m_ObjectHideFlags: 0
