@@ -15,8 +15,7 @@ namespace SS3D.Systems.Tile
     public static class TileHelper
     {
         private static TileLayer[] TileLayers;
-
-
+        
         /// <summary>
         /// Get a direction 90 degree clockwise from the one passed in parameter.
         /// </summary>
@@ -131,6 +130,29 @@ namespace SS3D.Systems.Tile
         public static Vector3 GetClosestPosition(Vector3 worldPosition)
         {
             return new Vector3(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
+        }
+        
+        /// <summary>
+        /// Get position on the tile grid, that mouse points to.
+        /// </summary>
+        /// <param name="isTilePosition">If true, position snaps to the center of a tile</param>
+        /// <returns></returns>
+        public static Vector3 GetPointedPosition(bool isTilePosition = false)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (new Plane(Vector3.up, 0).Raycast(ray, out float distance))
+            {
+                Vector3 point = ray.GetPoint(distance);
+                if (isTilePosition)
+                {
+                    return GetClosestPosition(point);
+                }
+                else
+                {
+                    return point;
+                }
+            }
+            return Vector3.zero;
         }
 
         /// <summary>

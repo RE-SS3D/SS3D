@@ -760,7 +760,7 @@
                     "id": "fb428f7f-c99e-4c81-b825-65cea417ee0d",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press(behavior=1)",
                     "initialStateCheck": false
                 },
                 {
@@ -776,6 +776,24 @@
                     "name": "Rotate",
                     "type": "Button",
                     "id": "3d66fa43-e646-40a5-9c1c-a7cd6fbf765b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Delete",
+                    "type": "Button",
+                    "id": "f4257e8f-54a4-4181-839c-930d11200e42",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Square Drag",
+                    "type": "Button",
+                    "id": "d35f32a4-b1e4-441e-9f5a-d03aba25ef2a",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -824,6 +842,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7febaa41-8117-4a99-b7cc-af81c91346dd",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Delete",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c19df163-7e9b-4f1e-8e61-8b142ffcb3d4",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Square Drag",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -46,22 +46,6 @@ namespace SS3D.Data.Enums
         JumpsuitSecurity = 41, 
         HeadsetLeft = 42, 
         HeadsetRight = 43, 
-        HumanArmLeftItem = 44, 
-        HumanArmRightItem = 45, 
-        HumanBrainItem = 46, 
-        HumanEarLeftItem = 47, 
-        HumanEarRightItem = 48, 
-        HumanFootLeftItem = 49, 
-        HumanFootRightItem = 50, 
-        HumanHandLeftItem = 51, 
-        HumanHandRightItem = 52, 
-        HumanHeadItem = 53, 
-        HumanLegLeftItem = 54, 
-        HumanLegRightItem = 55, 
-        HumanLungLeftItem = 56, 
-        HumanLungRightItem = 57, 
-        HumanTorsoItem = 58, 
-        HumanHeartItem = 59, 
     }
 }
 

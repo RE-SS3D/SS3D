@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 3359749042687414630}
   - component: {fileID: 8599181190718458254}
   - component: {fileID: 823427448596160924}
+  - component: {fileID: 917854816966154042}
   m_Layer: 5
   m_Name: ConstructionSlot
   m_TagString: Untagged
@@ -258,9 +259,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11500000, guid: 9e6901a06a5f4ed43aec2a99de467c7b, type: 3}
-        m_TargetAssemblyTypeName: UnityEngine.Object, UnityEngine
-        m_MethodName: 
+      - m_Target: {fileID: 917854816966154042}
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.UI.TileMapCreatorTab, SS3D.Systems
+        m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -270,6 +271,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &917854816966154042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4285405521571209506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e6901a06a5f4ed43aec2a99de467c7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4659478439552177546
 GameObject:
   m_ObjectHideFlags: 0

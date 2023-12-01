@@ -230,12 +230,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [Server]
     private BodyPart SpawnDetachedBodyPart()
     {
-        /*
-         * When detaching a bodypart, a prefab is spawned, very similar but having a few different scripts like the Item script, or removing a few others.
-         * Fishnet in version 3.10.7 does not allow adding networkbehaviours, however it allows disabling and enabling.
-         * When detaching a body part, don't forget to check if some scripts were enabled/disabled, and update the relevant values of the spawned body part with 
-         * those of the just detached body part.
-         */
         GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
         InstanceFinder.ServerManager.Spawn(go, null);
         BodyPart bodyPart = go.GetComponent<BodyPart>();
@@ -416,8 +410,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     [Server]
     public bool TryInflictDamage(BodyLayerType type, DamageTypeQuantity damageTypeQuantity)
     {
-        // Should not inflict damages if already destroyed or severed.
-        if(IsDestroyed || IsSevered) return false;
+        // Should not inflict damages if already destroyed.
+        if(IsDestroyed) return false;
 
         BodyLayer layer = FirstBodyLayerOfType(type);
         if (!BodyLayers.Contains(layer)) return false;
@@ -540,6 +534,19 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 		_internalBodyParts.RemoveItem(part.gameObject.GetComponent<Item>());
 		part._externalBodyPart = null;
 	}
+
+    /// <summary>
+    /// Method to use on body parts such as head and torso to spawn their organs at run time.
+    /// Should not be called if not implemented. Implementation varies between body parts.
+    /// Don't implement it and leave the exception throwing.
+    /// It is necessary to spawn organs at run time, because organs should be their own independent network object, since they behave like items.
+    /// Organs can be taken in and out of their respective organ containers.
+    /// </summary>
+    [Server]
+    protected virtual void SpawnOrgans()
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Hide a freshly cut body part on the player.
