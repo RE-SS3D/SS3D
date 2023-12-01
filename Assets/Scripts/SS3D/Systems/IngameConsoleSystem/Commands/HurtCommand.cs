@@ -14,7 +14,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     public class HurtCommand : Command
     {
         public override string LongDescription => "Hurt body layer in a body part of a player";
-        public override string Usage => "(game object name) (BodyLayerType) (DamageType) (amount of damage)";
+        public override string Usage => "(ckey) (body part name) (body layer name) (damage type) (damage amount)\n"
+            + "example: hurt editorUser HumanHead all toxic 10";
         public override string ShortDescription => "Hurt me daddy";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
