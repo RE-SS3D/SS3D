@@ -6,11 +6,12 @@ namespace SS3D.Data.Enums
         CraftingRecipes = 1, 
         InteractionIcons = 2, 
         Items = 3, 
-        ParticlesEffects = 4, 
-        Scenes = 5, 
-        Settings = 6, 
-        Sounds = 7, 
-        UIElements = 8, 
+        Materials = 4, 
+        ParticlesEffects = 5, 
+        Scenes = 6, 
+        Settings = 7, 
+        Sounds = 8, 
+        UIElements = 9, 
     }
 }
 
