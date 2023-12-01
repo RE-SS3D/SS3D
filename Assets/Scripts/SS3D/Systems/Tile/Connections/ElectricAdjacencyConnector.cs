@@ -27,6 +27,7 @@ public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConne
 
     public List<PlacedTileObject> GetNeighbours()
     {
+        Setup();
         List<PlacedTileObject> neighbours = GetElectricDevicesOnSameTile();
         neighbours.AddRange(GetNeighbourElectricDevicesOnSameLayer());
         neighbours.RemoveAll(x => x == null);
@@ -68,11 +69,11 @@ public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConne
 
     private List<PlacedTileObject> GetNeighbourElectricDevicesOnSameLayer()
     {
-        List<PlacedTileObject> neighbours = new();
         TileSystem tileSystem = Subsystems.Get<TileSystem>();
         var map = tileSystem.CurrentMap;
-        neighbours.AddRange(map.GetNeighbourPlacedObjects(_placedObject.Layer,
-            _placedObject.gameObject.transform.position).Where(x => x.gameObject.TryGetComponent(out IElectricDevice device)));
-        return neighbours;
+        var electricNeighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer,
+            _placedObject.gameObject.transform.position).Where(x => x!= null && x.gameObject.TryGetComponent(out IElectricDevice device));
+
+        return electricNeighbours == null ? new List<PlacedTileObject>() : electricNeighbours.ToList();
     }
 }
