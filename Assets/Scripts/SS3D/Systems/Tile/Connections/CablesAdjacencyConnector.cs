@@ -35,6 +35,15 @@ namespace SS3D.Systems.Tile.Connections
         [SyncVar(OnChange = nameof(SyncAdjacencies))]
         private byte _syncedConnections;
 
+        protected override void Setup()
+        {
+            if (!_initialized)
+            {
+                base.Setup();
+                _adjacencyMap = new AdjacencyMap();
+                _filter = GetComponent<MeshFilter>();
+            }
+        }
         public override void UpdateAllConnections()
         {
             Setup();
@@ -63,12 +72,13 @@ namespace SS3D.Systems.Tile.Connections
 
             bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
 
-            if (isUpdated)
+            if (isUpdated && updateNeighbour)
             {
                 neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, false);
                 _syncedConnections = _adjacencyMap.SerializeToByte();
-                UpdateMeshAndDirection();
             }
+
+            if(isUpdated) { UpdateMeshAndDirection(); }
 
             return isUpdated;
         }

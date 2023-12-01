@@ -15,9 +15,9 @@ public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConne
     /// </summary>
     protected PlacedTileObject _placedObject;
 
-    private bool _initialized;
+    protected bool _initialized;
 
-    protected void Setup()
+    protected virtual void Setup()
     {
         if (!_initialized)
         {
@@ -63,6 +63,8 @@ public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConne
                 }
             }
         }
+
+        devicesOnSameTile.Remove(_placedObject);
 
         return devicesOnSameTile;
     }
