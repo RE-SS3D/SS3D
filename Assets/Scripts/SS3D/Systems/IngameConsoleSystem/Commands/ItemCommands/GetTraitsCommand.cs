@@ -9,27 +9,20 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     /// </summary>
     public class GetTraitCommand : Command
     {
-        public override string LongDescription => "Get all traits from item in hand";
-        public override string ShortDescription => "item.traits";
+        public override string ShortDescription => "Get all traits from item in hand";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
-
-
+        
+        private record CalculatedValues : ICalculatedValues;
+        
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
             Item item = ItemCommandUtilities.GetItemInHand(conn);
-            if (item == null)
-            {
-                return "No item in hand";
-            }
-            if (item.Traits.Count == 0)
-            {
-                return "Item in hand has no traits";
-            }
+            if (item == null) return response.MakeInvalid("No item in hand").InvalidArgs;
+            
+            if (item.Traits.Count == 0) return response.MakeInvalid("Item in hand has no traits").InvalidArgs;
 
             string debugString = "Item " + item.Name + " has traits: ";
             for (int i = 0; i < item.Traits.Count; i++)
@@ -49,16 +42,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
+            CheckArgsResponse response = new();
+            if (args.Length != 0) return response.MakeInvalid("Invalid number of arguments");
 
-            response.IsValid = true;
-            return response;
+            return response.MakeValid(new CalculatedValues());
         }
     }
 }

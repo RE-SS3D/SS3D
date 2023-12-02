@@ -1,13 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Logging;
-using SS3D.Systems.Inputs;
-using SS3D.Systems.Tile.UI;
-using System.Linq;
-using TMPro;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -23,36 +16,38 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public Direction DefaultDirection => _defaultDirection;
 
+        [FormerlySerializedAs("AllowedDirections")]
         [SerializeField]
-        private List<Direction> AllowedDirections;
+        private List<Direction> _allowedDirections;
 
         public void Awake()
         {
             // Insure us there'at least one allowed direction in the list.
-            if (!AllowedDirections.Contains(_defaultDirection))
+            if (!_allowedDirections.Contains(_defaultDirection))
             {
-                AllowedDirections.Add(_defaultDirection);
+                _allowedDirections.Add(_defaultDirection);
             }
         }
 
-
         public Direction GetNextDirection(Direction dir)
         {
-            int index = AllowedDirections.IndexOf(dir);
+            int index = _allowedDirections.IndexOf(dir);
             if(index == -1) 
             {
                 Debug.LogError("Direction not part of any allowed directions for this tile objects," +
                     "returning the first allowed direction.");
-                return AllowedDirections[0];
+                return _allowedDirections[0];
             }
-            if(index == AllowedDirections.Count - 1)
+            if(index == _allowedDirections.Count - 1)
             {
-                return AllowedDirections[0];
+                return _allowedDirections[0];
             }
             else
             {
-                return AllowedDirections[index + 1];
+                return _allowedDirections[index + 1];
             }
         }
+        
+        public Direction[] GetAllowedRotations() => _allowedDirections.ToArray();
     }
 }

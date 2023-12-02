@@ -1,15 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using SS3D.Logging;
-using SS3D.Systems.Inputs;
-using SS3D.Systems.Tile.UI;
-using System.Linq;
-using TMPro;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-
-namespace SS3D.Systems.Tile.TileMapCreator
+﻿namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
     /// This interface is to be implemented for game objects which need to have special rotations, outside of
@@ -23,5 +12,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public Direction GetNextDirection(Direction dir);
 
+        public Direction[] GetAllowedRotations();
     }
 }

@@ -9,37 +9,30 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
     /// </summary>
     public class DescribeItemCommand : Command
     {
-        public override string LongDescription => "Describes the item in hand";
-        public override string ShortDescription => "item.describe";
+        public override string ShortDescription => "Describe the item in hand";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
-
+        
+        private record CalculatedValues : ICalculatedValues;
+        
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
             Item item = ItemCommandUtilities.GetItemInHand(conn);
             if (item == null)
             {
-                return "No item in hand";
+                return response.MakeInvalid("No item in hand").InvalidArgs;
             }
             return item.Describe();
         }
 
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
-
-            response.IsValid = true;
-            return response;
+            CheckArgsResponse response = new();
+            if (args.Length != 0) return response.MakeInvalid("Invalid number of arguments");
+            
+            return response.MakeValid(new CalculatedValues());
         }
     }
 }
