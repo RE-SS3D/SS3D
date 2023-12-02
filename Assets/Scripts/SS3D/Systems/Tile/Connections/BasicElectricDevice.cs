@@ -16,8 +16,9 @@ public class BasicElectricDevice : NetworkActor, IElectricDevice
         electricitySystem.AddElectricalElement(this);
     }
 
-    void OnDestroy()
+    protected override void OnDestroyed()
     {
+        base.OnDestroyed();
         ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
         electricitySystem.RemoveElectricalElement(this);
     }
