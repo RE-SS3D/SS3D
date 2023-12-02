@@ -22,6 +22,7 @@ public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConne
         if (!_initialized)
         {
             _placedObject = GetComponent<PlacedTileObject>();
+            _initialized = true;
         }
     }
 
@@ -36,7 +37,7 @@ public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConne
 
     public bool IsConnected(PlacedTileObject neighbourObject)
     {
-        return neighbourObject.Connector is ElectricAdjacencyConnector;
+        return neighbourObject?.Connector is ElectricAdjacencyConnector;
     }
 
     public abstract void UpdateAllConnections();

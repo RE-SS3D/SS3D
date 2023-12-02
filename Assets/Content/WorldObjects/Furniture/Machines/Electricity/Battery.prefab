@@ -115,6 +115,8 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 5279640586465686727}
   _networkObjectCache: {fileID: 0}
+  _maxCapacity: 1500
+  _storedPower: 0
 --- !u!114 &5279640586465686727
 MonoBehaviour:
   m_ObjectHideFlags: 0

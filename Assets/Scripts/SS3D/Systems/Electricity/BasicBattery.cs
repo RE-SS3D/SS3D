@@ -1,4 +1,5 @@
 ﻿using FishNet.Object;
+using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Systems.Tile;
 using System.Collections;
@@ -10,11 +11,12 @@ namespace System.Electricity
 {
     public class BasicBattery : NetworkBehaviour, IPowerStorage
     {
+        [SerializeField]
+        private float _maxCapacity = 1000;
 
-        private float _maxCapacity = 10;
-
+        [SerializeField, ReadOnly]
         private float _storedPower = 0;
-        public float StoredPower { get => _storedPower; set => _storedPower = value >= 0 ? MathF.Max(MaxCapacity, value) : MathF.Max(0f, value); }
+        public float StoredPower { get => _storedPower; set => _storedPower = value >= 0 ? MathF.Min(MaxCapacity, value) : MathF.Max(0f, value); }
 
         public float MaxCapacity => _maxCapacity;
 

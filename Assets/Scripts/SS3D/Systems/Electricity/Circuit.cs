@@ -41,7 +41,8 @@ namespace System.Electricity
 
         public void UpdateCircuitPower()
         {
-            float leftOverPower = ConsumePower();
+            float leftOverPower = ConsumePower(out bool notEnoughPower, out int firstUnpoweredConsumerIndex);
+            UpdateElectricElementStatus(notEnoughPower, firstUnpoweredConsumerIndex);
             leftOverPower = ChargeStorages(leftOverPower);
         }
 
@@ -49,8 +50,11 @@ namespace System.Electricity
         /// TODO : reorder randomly consumers, so that when there's not enough power, random electric objects get powered and unpowered.
         /// </summary>
         /// <returns> excess energy produced by producers</returns>
-        private float ConsumePower()
+        private float ConsumePower(out bool notEnoughPower, out int firstUnPoweredConsumerByStoragesIndex)
         {
+            notEnoughPower = false;
+            firstUnPoweredConsumerByStoragesIndex = 0;
+
             float producedPower = _producers.Sum(x => x.PowerProduction);
             IPowerConsumer firstUnPoweredConsumer = null;
 
@@ -73,8 +77,6 @@ namespace System.Electricity
             // We care only about the consumer that could not be alimented by producers.
             int firstUnPoweredConsumerByProducersIndex = _consumers.FindIndex(x => x == firstUnPoweredConsumer);
 
-            int firstUnPoweredConsumerByStoragesIndex = 0;
-            bool notEnoughPower = false;
 
             // Consume power from batteries
             for (int i = firstUnPoweredConsumerByProducersIndex; i < _consumers.Count; i++)
@@ -177,7 +179,5 @@ namespace System.Electricity
             }
 
         }
-
-
     }
 }
