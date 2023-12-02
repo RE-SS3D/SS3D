@@ -123,12 +123,6 @@ namespace SS3D.Systems.Inventory.Items
             ItemId = id;
         }
 
-        protected override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            Debug.Log("destroy item logic");
-        }
-
         public override void OnStartServer()
         {
             base.OnStartServer();
