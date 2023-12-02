@@ -1,3 +1,4 @@
+﻿using SS3D.Systems.Tile.TileMapCreator;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,13 +6,14 @@ using UnityEngine.UI;
 namespace SS3D.Systems.Tile.UI
 {
     /// <summary>
-    /// Tab that holds information for each item/tile in the TileMapCreator UI.
+    /// Slot that holds information for each item/tile in the TileMapCreator UI.
+    /// They get created when the tilemap menu spawns.
     /// </summary>
-    public class TileMapCreatorTab : MonoBehaviour
+    public class AssetSlot : MonoBehaviour
     {
         private GenericObjectSo _genericObjectSo;
-        private TileMapCreator.TileMapCreator _menu;
 
+        private ConstructionHologramManager _hologramManager;
         /// <summary>
         /// Load an UI icon and string for the item/tile.
         /// </summary>
@@ -22,12 +24,13 @@ namespace SS3D.Systems.Tile.UI
             GetComponent<Image>().sprite = genericObjectSo.icon;
             transform.localScale = Vector3.one;
             GetComponentInChildren<TMP_Text>().text = genericObjectSo.nameString;
-            _menu = GetComponentInParent<TileMapCreator.TileMapCreator>();
+
+            _hologramManager = GetComponentInParent<ConstructionHologramManager>(); 
         }
 
         public void OnClick()
         {
-            _menu.SetSelectedObject(_genericObjectSo);
+            _hologramManager.SetSelectedObject(_genericObjectSo);
         }
     }
 }

@@ -8,6 +8,7 @@ using SS3D.Data.Enums;
 using SS3D.Systems.Inventory.Containers;
 using FishNet.Connection;
 using SS3D.Permissions;
+using System;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -18,73 +19,60 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     /// </summary>
     public class AddHandCommand : Command
     {
-        public override string LongDescription => "add (ckey) [(position) (rotation)]\n Position and rotation are float arrays and written as x y z";
-        public override string ShortDescription => "add hand to user";
+        public override string ShortDescription => "Add hand to user";
+        public override string Usage => "(ckey) [(position) (rotation)] \nPosition and rotation are float arrays and written as x y z";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-
         public override CommandType Type => CommandType.Server;
+        
+        private record CalculatedValues(Player Player, Entity Entity, Vector3 Position, Vector3 Rotation) : ICalculatedValues;
+        
         public override string Perform(string[] args, NetworkConnection conn)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
-
-            string ckey = args[0];
-
-            // default transform for hand.
-            Vector3 position = new Vector3(0.5f, 0.7f, 0);
-            Vector3 rotation = new Vector3(-50, -270, 90);
-
-            if (args.Length > 1)
-            {
-                position = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
-                rotation = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
-            }
-
-            Player Player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-            Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(Player);
-
-            GameObject leftHandPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanHandLeft);
-            GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, entity.transform);
-            leftHandObject.transform.localPosition = position;
-            leftHandObject.transform.localEulerAngles = rotation;
-
-            Hand leftHand = leftHandObject.GetComponent<Hand>();
-            InstanceFinder.ServerManager.Spawn(leftHandObject, Player.Owner);
-
-            Hands hands = entity.GetComponent<Hands>();
-            HumanInventory inventory = entity.GetComponent<HumanInventory>();
-            inventory.TryAddContainer(leftHandObject.GetComponent<AttachedContainer>());
-            hands.AddHand(leftHand);
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
+            
+            GameObject leftHandPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanHandLeft);
+            GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, values.Entity.transform);
+            leftHandObject.transform.localPosition = values.Position;
+            leftHandObject.transform.localEulerAngles = values.Rotation;
+            InstanceFinder.ServerManager.Spawn(leftHandObject, values.Player.Owner);
+            values.Entity.GetComponent<HumanInventory>().TryAddContainer(leftHandObject.GetComponent<AttachedContainer>());
+            values.Entity.GetComponent<Hands>().AddHand(leftHandObject.GetComponent<Hand>());
 
             return "hand added";
         }
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 1 && args.Length != 7)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
+            CheckArgsResponse response = new();
+            if (args.Length != 1 && args.Length != 7) return response.MakeInvalid("Invalid number of arguments");
+            
             string ckey = args[0];
             Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-            if (player == null)
+            if (player == null) return response.MakeInvalid("This player doesn't exist");
+
+            Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+            if (entity == null) return response.MakeInvalid("This entity doesn't exist");
+            
+            Vector3 position;
+            Vector3 rotation;
+            if (args.Length > 1)
             {
-                response.IsValid = false;
-                response.InvalidArgs = "This player doesn't exist";
-                return response;
+                try
+                {
+                    position = new(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                    rotation = new(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
+                }
+                catch (FormatException)
+                {
+                    return response.MakeInvalid("Incorrect position/rotation format");
+                }
             }
-            Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-            if (entityToKill == null)
+            else
             {
-                response.IsValid = false;
-                response.InvalidArgs = "This entity doesn't exist";
-                return response;
+                position = new(0.5f, 0.7f, 0);
+                rotation = new(-50, -270, 90);
             }
-            response.IsValid = true;
-            return response;
+            
+            return response.MakeValid(new CalculatedValues(player, entity, position, rotation));
         }
     }
 }
