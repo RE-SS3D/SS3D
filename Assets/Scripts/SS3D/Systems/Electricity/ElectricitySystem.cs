@@ -64,7 +64,11 @@ namespace System.Electricity
         // Update is called once per frame
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (_graphIsDirty) UpdateAllCircuitsTopology();
+            if (_graphIsDirty)
+            {
+                _graphIsDirty= false;
+                UpdateAllCircuitsTopology();
+            }
 
             foreach (Circuit circuit in _circuits)
             {
