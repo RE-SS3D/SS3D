@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &564532584493543826
+--- !u!1 &739222591386748088
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,84 +8,53 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1113522479252378066}
+  - component: {fileID: 739222591386748103}
+  - component: {fileID: 739222591386748102}
+  - component: {fileID: 739222591386748089}
+  - component: {fileID: 3769749030059213346}
+  - component: {fileID: 4252068960493444194}
+  - component: {fileID: 6699414010407460003}
+  - component: {fileID: 983871327887632920}
+  - component: {fileID: 7046697311282802607}
+  - component: {fileID: 1800983282104358070}
   m_Layer: 10
-  m_Name: Attachment Point
+  m_Name: GlovesInsulatedLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1113522479252378066
+--- !u!4 &739222591386748103
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 564532584493543826}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1356, z: 0.226}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4265292753834228148}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2601952054522247362
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4265292753834228148}
-  - component: {fileID: 4961538390409228241}
-  - component: {fileID: 4767056444458723069}
-  - component: {fileID: 950155378762729286}
-  - component: {fileID: -3359041045153695440}
-  - component: {fileID: -1921154974467191097}
-  - component: {fileID: -1938953542191470901}
-  - component: {fileID: 4049302817993054162}
-  - component: {fileID: 1629795439574854430}
-  m_Layer: 10
-  m_Name: TruckerCap
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4265292753834228148
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1113522479252378066}
+  - {fileID: 5901583744529463706}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &4961538390409228241
+--- !u!33 &739222591386748102
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
-  m_Mesh: {fileID: -7106450658240330850, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
---- !u!23 &4767056444458723069
+  m_GameObject: {fileID: 739222591386748088}
+  m_Mesh: {fileID: -8786829411053318343, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!23 &739222591386748089
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -121,13 +90,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!54 &950155378762729286
+--- !u!54 &3769749030059213346
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
@@ -137,21 +106,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-3359041045153695440
+--- !u!114 &4252068960493444194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
-  _addedNetworkObject: {fileID: -1921154974467191097}
-  _networkObjectCache: {fileID: -1921154974467191097}
+  _addedNetworkObject: {fileID: 6699414010407460003}
+  _networkObjectCache: {fileID: 6699414010407460003}
+  _componentConfiguration: 0
   _synchronizeParent: 0
   _packing:
     Position: 1
@@ -161,8 +131,10 @@ MonoBehaviour:
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
+  _scaleThreshold: 1
   _clientAuthoritative: 1
   _sendToOwner: 1
+  _enableNetworkLod: 1
   _interval: 1
   _synchronizePosition: 1
   _positionSnapping:
@@ -179,13 +151,13 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!114 &-1921154974467191097
+--- !u!114 &6699414010407460003
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
@@ -193,68 +165,104 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: -3359041045153695440}
-  - {fileID: -1938953542191470901}
+  - {fileID: 4252068960493444194}
+  - {fileID: 983871327887632920}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isGlobal: 0
+  _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 89
+  <PrefabId>k__BackingField: 58
+  <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16950870010856453270
-  _sceneNetworkObjects: []
---- !u!114 &-1938953542191470901
+  <AssetPathHash>k__BackingField: 5322128777366170400
+--- !u!114 &983871327887632920
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 1
-  _addedNetworkObject: {fileID: -1921154974467191097}
-  _networkObjectCache: {fileID: -1921154974467191097}
-  _name: Trucker Cap
+  _addedNetworkObject: {fileID: 6699414010407460003}
+  _networkObjectCache: {fileID: 6699414010407460003}
+  _name: Gloves insulated left
   _weight: 1
-  _size: {x: 1, y: 1}
   _startingTraits:
-  - {fileID: 11400000, guid: 4fd47d47c95ea9d4bbfa168e63538ba1, type: 2}
-  _rigidbody: {fileID: 950155378762729286}
-  Prefab: {fileID: 2601952054522247362}
-  AttachmentPoint: {fileID: 1113522479252378066}
-  AttachmentPointAlt: {fileID: 1113522479252378066}
---- !u!64 &4049302817993054162
+  - {fileID: 11400000, guid: 901be8d20f1f0f24181cc992dfd362ae, type: 2}
+  _rigidbody: {fileID: 3769749030059213346}
+  AttachmentPoint: {fileID: 5901583744529463706}
+  AttachmentPointAlt: {fileID: 5901583744529463706}
+  _container: {fileID: 0}
+--- !u!64 &7046697311282802607
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -7106450658240330850, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
---- !u!114 &1629795439574854430
+  m_Mesh: {fileID: -8786829411053318343, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+--- !u!114 &1800983282104358070
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601952054522247362}
+  m_GameObject: {fileID: 739222591386748088}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 4
+  clothType: 7
+--- !u!1 &1373473205953248106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5901583744529463706}
+  m_Layer: 10
+  m_Name: Attachment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5901583744529463706
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373473205953248106}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0.15, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 739222591386748103}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}

@@ -176,7 +176,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8609ee7f492f8e44bb25beb1eee6697, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerViewer: {fileID: 0}
   ContainerUiPrefab: {fileID: 176838957447208628, guid: c706a5a7a16b7bc4788469385ac24801, type: 3}
 --- !u!114 &4416089188971054470
 MonoBehaviour:
@@ -197,7 +196,7 @@ MonoBehaviour:
   HandRightPrefab: {fileID: 6293962685997774382, guid: aca25d317b84e5c43afafc9832b4df8d, type: 3}
   BagPrefab: {fileID: 3969695133087941026, guid: 98867721229cea84eb087210f54475e0, type: 3}
   Divisor: {fileID: 6527856439637363361, guid: 823c4c1392e36034fab7fd8e1a1ed147, type: 3}
-  HorizontalSlotOrder: 08000000040000000200000001000000
+  HorizontalSlotOrder: 0800000000800000040000000200000001000000
   ClothingLayout: {fileID: 4392532013381623832}
   ShoeLeftPrefab: {fileID: 8668479097449726212, guid: 6d2fdfb2988c7304587777d34f496d5b, type: 3}
   ShoeRightPrefab: {fileID: 8736263994919197959, guid: 2054b7b0321d0924981d1c07015b086d, type: 3}
@@ -208,10 +207,11 @@ MonoBehaviour:
   HeadPrefab: {fileID: 8584173595202467535, guid: 113d454c18a13854b87605d0ee9c73a6, type: 3}
   JumpsuitPrefab: {fileID: 5988165263683014854, guid: 4bb39a802a283d341a20c566474368ae, type: 3}
   ExoSuitPrefab: {fileID: 6837100192917222649, guid: 7213f8ade5a231544997e1def361efaa, type: 3}
-  DummyPrefab: {fileID: 3933365585080000025, guid: 4d43e2768b3c98f47bcb46c541146e0a, type: 3}
   EarLeftPrefab: {fileID: 1102191780216136002, guid: 7fba0b2cc13002b4da9b264a030ce7d8, type: 3}
   EarRightPrefab: {fileID: 6702060473300478753, guid: 2b52bcb3e287ce1468a7f69caa576557, type: 3}
-  ClothingSlotPosition: 002000000001000000400000400000008000000000000000001000000002000000080000000000001000000020000000
+  BeltPrefab: {fileID: 6161546706607067415, guid: 7c614d478e3f2c84288321617f283dfb, type: 3}
+  DummyPrefab: {fileID: 3933365585080000025, guid: 4d43e2768b3c98f47bcb46c541146e0a, type: 3}
+  ClothingSlotPosition: 002000000001000000400000400000008000000000000000001000000002000000080000100000002000000020000000
 --- !u!1 &9219927822186948004
 GameObject:
   m_ObjectHideFlags: 0
