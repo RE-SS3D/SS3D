@@ -74,7 +74,7 @@ public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConne
     {
         TileSystem tileSystem = Subsystems.Get<TileSystem>();
         var map = tileSystem.CurrentMap;
-        var electricNeighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer,
+        var electricNeighbours = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer,
             _placedObject.gameObject.transform.position).Where(x => x!= null && x.gameObject.TryGetComponent(out IElectricDevice device));
 
         return electricNeighbours == null ? new List<PlacedTileObject>() : electricNeighbours.ToList();
