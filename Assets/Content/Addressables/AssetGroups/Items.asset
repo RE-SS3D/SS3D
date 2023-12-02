@@ -257,10 +257,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLiver.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: ea5b9b571f8df3948b52b7023aa66c99
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 1e304f9a331c2ba419514ef8afb8a13c
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineLarge.prefab
     m_ReadOnly: 0
@@ -279,6 +275,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: ddaa28fac1956b2428aff1dac1d89707
     m_Address: Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fccdc78a6cf916047ba52f2877f755e5
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

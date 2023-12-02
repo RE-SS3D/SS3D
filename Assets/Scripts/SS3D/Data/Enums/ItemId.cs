@@ -62,12 +62,12 @@ namespace SS3D.Data.Enums
         HumanLungLeft = 57, 
         HumanStomach = 58, 
         HumanLiver = 59, 
-        HumanHeart = 60, 
-        HumanIntestineLarge = 61, 
-        HumanEye = 62, 
-        HumanBrain = 63, 
-        Toolbelt = 64, 
-        Backpack = 65, 
+        HumanIntestineLarge = 60, 
+        HumanEye = 61, 
+        HumanBrain = 62, 
+        Toolbelt = 63, 
+        Backpack = 64, 
+        HumanHeart = 65, 
     }
 }
 
