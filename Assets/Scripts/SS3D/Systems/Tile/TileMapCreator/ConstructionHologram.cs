@@ -1,9 +1,11 @@
-﻿using Coimbra;
-using SS3D.Data;
+﻿using SS3D.Data;
 using SS3D.Data.Enums;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using SS3D.Core.Behaviours;
+using Coimbra;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -30,10 +32,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir)
         {
 
-            List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
-                .Where(x => x is not ICustomGhostRotation).ToList();
-
-            components.ForEach(x => x.enabled = false);
+            DisableBehaviours(ghostObject);
 
             _hologram = ghostObject;
             _position = targetPosition;
@@ -121,6 +120,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Destroy()
         {
             _hologram.Dispose(true);
+        }
+
+        private void DisableBehaviours(GameObject ghostObject)
+        {
+            List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
+                .Where(x => x is not ICustomGhostRotation).ToList();
+
+            foreach (var component in components)
+            {
+                component.enabled = false;
+                if (component is Actor) ((Actor)component).SetCallDestroy(false);
+                if (component is NetworkActor) ((NetworkActor)component).SetCallDestroy(false);
+            }
         }
     }
 }
