@@ -1,7 +1,9 @@
-﻿using DynamicPanels;
+﻿using Coimbra;
+using DynamicPanels;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Management;
 using SS3D.Systems.Inputs;
 using TMPro;
 using UnityEngine;
@@ -49,7 +51,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private ConstructionHologramManager _hologramManager;
         [SerializeField]
         private AssetGrid _assetGrid;
-        
+
+        [SerializeField]
+        private GameObject _contentRoot;
+
         /// <summary>
         /// Called when pointer enter the UI of the menu.
         /// </summary>
@@ -139,24 +144,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _isDeleting = false;
         }
-        
-        /// <summary>
-        /// Method called when the load button is clicked.
-        /// </summary>
-        [Server]
-        public void HandleLoadButton()
-        {
-            _tileMapSaveAndLoad.SetUpLoad();
-        }
-        
-        /// <summary>
-        /// Method called when the save button is clicked.
-        /// </summary>
-        [Server]
-        public void HandleSaveButton()
-        {
-            _tileMapSaveAndLoad.SetUpSave();
-        }
+       
         /// <summary>
         /// Called when the input field to search for tile objects is selected.
         /// </summary>
@@ -179,6 +167,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void HandleInputFieldChanged()
         {
             _assetGrid.FindAssets(_inputField.text);
+        }
+
+        [ServerOrClient]
+        public void ClearGrid()
+        {
+            for (int i = 0; i < _contentRoot.transform.childCount; i++)
+            {
+                _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
+            }
         }
     }
 }

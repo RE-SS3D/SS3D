@@ -23,7 +23,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// <summary>
     /// In-game editor for placing and deleting items/objects in a tilemap.
     /// </summary>
-    public class TileMapCreator : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
+  /*  public class TileMapCreator : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
     {
         public GameObject _menuRoot;
         public GameObject _contentRoot;
@@ -560,5 +560,5 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _mouseOverUI = false;
             Subsystems.Get<InputSystem>().ToggleBinding("<Mouse>/scroll/y", true);
         }
-    }
+    }*/
 }
