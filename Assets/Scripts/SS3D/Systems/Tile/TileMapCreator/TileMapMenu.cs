@@ -71,6 +71,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private TMP_InputField _saveInputField;
 
         /// <summary>
+        /// Dropdown to select the layer to display in the menu.
+        /// </summary>
+        [SerializeField]
+        private TMP_Dropdown _layerPlacementDropdown;
+
+        /// <summary>
         /// Called when pointer enter the UI of the menu.
         /// </summary>
         public void OnPointerEnter(PointerEventData eventData)
@@ -151,6 +157,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ClearGrid();
             _assetGrid.Setup();
             _tileObjectSearchBar.gameObject.SetActive(true);
+            _layerPlacementDropdown.gameObject.SetActive(true);
             _isDeleting = true;
         }
 
@@ -162,6 +169,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ClearGrid();
             _assetGrid.Setup();
             _tileObjectSearchBar.gameObject.SetActive(true);
+            _layerPlacementDropdown.gameObject.SetActive(true);
             _isDeleting = false;
         }
 
@@ -219,6 +227,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void ClearGrid()
         {
             _tileObjectSearchBar.gameObject.SetActive(false);
+            _layerPlacementDropdown.gameObject.SetActive(false);
             _saveInputField.gameObject.SetActive(false);
 
             for (int i = 0; i < _contentRoot.transform.childCount; i++)

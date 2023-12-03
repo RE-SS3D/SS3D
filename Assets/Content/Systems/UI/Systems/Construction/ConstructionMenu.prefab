@@ -404,8 +404,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50.25, y: -10}
-  m_SizeDelta: {x: 31.5, y: 20}
+  m_AnchoredPosition: {x: 63.375, y: -10}
+  m_SizeDelta: {x: 40.25, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5248733920350595967
 CanvasRenderer:
@@ -806,7 +806,7 @@ GameObject:
   - component: {fileID: 4696986489270269785}
   - component: {fileID: 5558970035109273631}
   m_Layer: 5
-  m_Name: Search bar
+  m_Name: TileObjectSearchBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1937,6 +1937,7 @@ MonoBehaviour:
   _loadMapContentRoot: {fileID: 8725877649914006875}
   _tileMapSaveAndLoad: {fileID: 7492125278075323184}
   _saveInputField: {fileID: 4370958366951061601}
+  _layerPlacementDropdown: {fileID: 2409669378435090507}
 --- !u!114 &9154675693299657064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1959,7 +1960,7 @@ MonoBehaviour:
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: 232.53857, y: -5.3378296, z: 0}
+    Position: {x: 300.03857, y: 15.16217, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     LocalScale: {x: 1.3615595, y: 1.3615595, z: 1.3615595}
   _isNetworked: 1
@@ -2313,8 +2314,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 119.25, y: -10}
-  m_SizeDelta: {x: 31.5, y: 20}
+  m_AnchoredPosition: {x: 149.875, y: -10}
+  m_SizeDelta: {x: 40.25, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2938758473538648237
 CanvasRenderer:
@@ -3750,8 +3751,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 84.75, y: -10}
-  m_SizeDelta: {x: 31.5, y: 20}
+  m_AnchoredPosition: {x: 106.625, y: -10}
+  m_SizeDelta: {x: 40.25, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6856100214803217345
 CanvasRenderer:
@@ -4230,7 +4231,7 @@ GameObject:
   - component: {fileID: 9076125538275386091}
   - component: {fileID: 2409669378435090507}
   m_Layer: 5
-  m_Name: Dropdown
+  m_Name: TileLayerDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5411,8 +5412,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 15.75, y: -10}
-  m_SizeDelta: {x: 31.5, y: 20}
+  m_AnchoredPosition: {x: 20.125, y: -10}
+  m_SizeDelta: {x: 40.25, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1871544256393001663
 CanvasRenderer:
@@ -6112,7 +6113,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5879848113150554076
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6129,10 +6130,10 @@ RectTransform:
   m_Father: {fileID: 8771489353155509193}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 81.5, y: -143.94833}
+  m_SizeDelta: {x: 163, y: 55.579334}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6869056194678273321
 CanvasRenderer:
