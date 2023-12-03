@@ -38,22 +38,37 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private Controls.TileCreatorActions _controls;
         private InputSystem _inputSystem;
         private PanelTab _tab;
-        private TileMapSaveAndLoad _tileMapSaveAndLoad;
+        
         
         /// <summary>
         /// Input field to search for specific tile objects or items in the menu.
         /// </summary>
         [SerializeField]
-        private TMP_InputField _inputField;
+        private TMP_InputField _tileObjectSearchBar;
+
         [SerializeField]
         private GameObject _menuRoot;
+
         [SerializeField]
         private ConstructionHologramManager _hologramManager;
+
         [SerializeField]
         private AssetGrid _assetGrid;
 
         [SerializeField]
         private GameObject _contentRoot;
+
+        [SerializeField]
+        private GameObject _saveMapContentRoot;
+
+        [SerializeField]
+        private GameObject _loadMapContentRoot;
+
+        [SerializeField]
+        private TileMapSaveAndLoad _tileMapSaveAndLoad;
+
+        [SerializeField]
+        private TMP_InputField _saveInputField;
 
         /// <summary>
         /// Called when pointer enter the UI of the menu.
@@ -90,7 +105,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls = _inputSystem.Inputs.TileCreator;
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
             _controls.ToggleMenu.performed += HandleToggleMenu;
-            _tileMapSaveAndLoad = new();
         }
 
         /// <summary>
@@ -134,6 +148,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void HandleDeleteButton()
         {
+            ClearGrid();
+            _assetGrid.Setup();
+            _tileObjectSearchBar.gameObject.SetActive(true);
             _isDeleting = true;
         }
 
@@ -142,9 +159,38 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void HandleBuildButton()
         {
+            ClearGrid();
+            _assetGrid.Setup();
+            _tileObjectSearchBar.gameObject.SetActive(true);
             _isDeleting = false;
         }
-       
+
+        /// <summary>
+        /// Method called when the load button is clicked.
+        /// </summary>
+        [Server]
+        public void HandleLoadButton()
+        {
+            ClearGrid();
+            _tileMapSaveAndLoad.DisplayMapLoader();
+        }
+
+        /// <summary>
+        /// Method called when the save button is clicked.
+        /// </summary>
+        [Server]
+        public void HandleSaveButton()
+        {
+            ClearGrid();
+            _saveInputField.gameObject.SetActive(true);
+            _tileMapSaveAndLoad.DisplayMapSaver();
+        }
+
+        public void OnSaveInputFieldEndEdit()
+        {
+            _tileMapSaveAndLoad.SaveMap(_saveInputField.text);
+        }
+
         /// <summary>
         /// Called when the input field to search for tile objects is selected.
         /// </summary>
@@ -166,15 +212,23 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleInputFieldChanged()
         {
-            _assetGrid.FindAssets(_inputField.text);
+            _assetGrid.FindAssets(_tileObjectSearchBar.text);
         }
 
         [ServerOrClient]
         public void ClearGrid()
         {
+            _tileObjectSearchBar.gameObject.SetActive(false);
+            _saveInputField.gameObject.SetActive(false);
+
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
             {
                 _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
+            }
+
+            for (int i = 0; i < _loadMapContentRoot.transform.childCount; i++)
+            {
+                _loadMapContentRoot.transform.GetChild(i).gameObject.Dispose(true);
             }
         }
     }

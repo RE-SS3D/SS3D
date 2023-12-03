@@ -23,47 +23,19 @@ public class TileMapSaveAndLoad : NetworkActor
     [SerializeField]
     private GameObject _loadMapContentRoot;
 
-    [SerializeField]
-    private TMP_InputField _saveInputField;
-
 
     [SerializeField]
     private TileMapMenu _menu;
 
-    /// <summary>
-    /// Method called when the load button is clicked.
-    /// </summary>
-    [Server]
-    public void HandleLoadButton()
-    {
-        DisplayMapLoader();
-    }
-
-    /// <summary>
-    /// Method called when the save button is clicked.
-    /// </summary>
-    [Server]
-    public void HandleSaveButton()
-    {
-        DisplayMapSaver();
-    }
-
-    public void OnSaveInputFieldEndEdit()
-    {
-        SaveMap(_saveInputField.text);
-    }
-
     [Server]
     public void DisplayMapSaver()
     {
-        _menu.ClearGrid();
         _saveMapContentRoot.SetActive(true);
     }
 
     [Server]
     public void DisplayMapLoader()
     {
-        _menu.ClearGrid();
         var MapNames = SaveSystem.GetAllObjectsNameInFolder(TileSystem.SavePath);
 
         foreach (string mapName in MapNames)
