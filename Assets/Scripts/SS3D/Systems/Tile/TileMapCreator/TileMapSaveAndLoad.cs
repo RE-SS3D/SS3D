@@ -66,7 +66,7 @@ public class TileMapSaveAndLoad : NetworkActor
     {
         if (IsServer)
         {
-            Subsystems.Get<TileSystem>().Save(mapName);
+            Subsystems.Get<TileSystem>().Save(mapName, true);
         }
         else
         {
