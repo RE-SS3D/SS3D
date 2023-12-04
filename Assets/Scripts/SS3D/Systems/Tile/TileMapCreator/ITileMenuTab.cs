@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ITileMenuTab
+namespace SS3D.Systems.Tile.TileMapCreator
 {
-    public void Clear();
+    public interface ITileMenuTab
+    {
+        public void Clear();
 
-    public void Display();
+        public void Display();
 
-    public void Refresh();
+        public void Refresh();
+    }
+
 }

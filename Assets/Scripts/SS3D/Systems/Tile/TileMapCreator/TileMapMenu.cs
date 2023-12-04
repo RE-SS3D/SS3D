@@ -39,12 +39,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private InputSystem _inputSystem;
         private PanelTab _tab;
         
-        
-        /// <summary>
-        /// Input field to search for specific tile objects or items in the menu.
-        /// </summary>
-        [SerializeField]
-        private TMP_InputField _tileObjectSearchBar;
 
         [SerializeField]
         private GameObject _menuRoot;
@@ -53,29 +47,27 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private ConstructionHologramManager _hologramManager;
 
         [SerializeField]
-        private AssetGrid _assetGrid;
+        private TileMapSaveTab _tileMapSaveTab;
 
         [SerializeField]
-        private GameObject _contentRoot;
+        private TileMapLoadTab _tileMapLoadTab;
 
         [SerializeField]
-        private GameObject _saveMapContentRoot;
+        private TileMapLoadTab _tileMapBuildTab;
 
         [SerializeField]
-        private GameObject _loadMapContentRoot;
+        private TileMapLoadTab _tileMapDeleteTab;
 
+        private enum TileMapMenuTab
+        {
+            Save,
+            Load,
+            Build,
+            Delete,
+        }
 
-        [SerializeField]
-        private TileMapSaveAndLoad _tileMapSaveAndLoad;
+        private TileMapMenuTab _currentTab;
 
-
-
-
-        /// <summary>
-        /// Dropdown to select the layer to display in the menu.
-        /// </summary>
-        [SerializeField]
-        private TMP_Dropdown _layerPlacementDropdown;
 
         /// <summary>
         /// Called when pointer enter the UI of the menu.
@@ -131,8 +123,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
             _enabled = !_enabled;
             ShowUI(_enabled);
-            
-            _assetGrid.Setup();
+
+            _tileMapBuildTab.Display();
         }
        
         /// <summary>
@@ -155,10 +147,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void HandleDeleteButton()
         {
-            ClearGrid();
-            _assetGrid.Setup();
-            _tileObjectSearchBar.gameObject.SetActive(true);
-            _layerPlacementDropdown.gameObject.SetActive(true);
+            ClearCurrentTab();
+            _currentTab = TileMapMenuTab.Delete;
             _isDeleting = true;
         }
 
@@ -167,10 +157,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void HandleBuildButton()
         {
-            ClearGrid();
-            _assetGrid.Setup();
-            _tileObjectSearchBar.gameObject.SetActive(true);
-            _layerPlacementDropdown.gameObject.SetActive(true);
+            ClearCurrentTab();
+            _currentTab = TileMapMenuTab.Build;
             _isDeleting = false;
         }
 
@@ -179,8 +167,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleLoadButton()
         {
-            ClearGrid();
-            _tileMapSaveAndLoad.DisplayMapLoader();
+            ClearCurrentTab();
+            _currentTab = TileMapMenuTab.Load;
+            _tileMapLoadTab.Display();
         }
 
         /// <summary>
@@ -188,8 +177,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleSaveTabButton()
         {
-            ClearGrid();
-            _tileMapSaveAndLoad.DisplayMapSaver();
+            ClearCurrentTab();
+            _currentTab = TileMapMenuTab.Save;
+            _tileMapSaveTab.Display();
         }
 
         /// <summary>
@@ -208,29 +198,23 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _inputSystem.ToggleAllActions(true);
         }
 
-        /// <summary>
-        /// Called when the text in the input field to search for tile objects is changed.
-        /// </summary>
-        public void HandleInputFieldChanged()
-        {
-            _assetGrid.FindAssets(_tileObjectSearchBar.text);
-        }
-
         [ServerOrClient]
-        public void ClearGrid()
+        public void ClearCurrentTab()
         {
-            _tileObjectSearchBar.gameObject.SetActive(false);
-            _layerPlacementDropdown.gameObject.SetActive(false);
-            _saveMapContentRoot.gameObject.SetActive(false);
-
-            for (int i = 0; i < _contentRoot.transform.childCount; i++)
+            switch (_currentTab)
             {
-                _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
-            }
-
-            for (int i = 0; i < _loadMapContentRoot.transform.childCount; i++)
-            {
-                _loadMapContentRoot.transform.GetChild(i).gameObject.Dispose(true);
+                case TileMapMenuTab.Delete:
+                    _tileMapDeleteTab.Clear();
+                    break;
+                case TileMapMenuTab.Build:
+                    _tileMapBuildTab.Clear();
+                    break;
+                case TileMapMenuTab.Load:
+                    _tileMapLoadTab.Clear();
+                    break;
+                case TileMapMenuTab.Save:
+                    _tileMapSaveTab.Clear();
+                    break;
             }
         }
     }
