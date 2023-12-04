@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Codice.Utils;
+using JetBrains.Annotations;
 using SS3D.Logging;
 using System;
 using System.Collections.Generic;
@@ -135,6 +136,11 @@ namespace SS3D.Data.Management
             string json = JsonUtility.ToJson(saveObject);
             
             return Save(fileName, json, overwrite);
+        }
+
+        public static void DeleteFile(string fileName)
+        {
+            File.Delete(SaveFolder + fileName + "." + SaveExtension);
         }
 
         public static TSaveObject LoadObject<TSaveObject>(string fileName)

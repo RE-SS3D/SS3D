@@ -44,7 +44,22 @@ public class TileMapSaveAndLoad : NetworkActor
             string mapNameWithNoExtension = mapName.Substring(0, mapName.IndexOf("."));
             GameObject slot = Instantiate(_mapNameSlotPrefab, _loadMapContentRoot.transform, true);
             slot.GetComponentInChildren<TextMeshProUGUI>().text = mapNameWithNoExtension;
-            slot.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(() => LoadMap(mapNameWithNoExtension));
+            MapNameSlot mapNameSlot = slot.GetComponent<MapNameSlot>();
+            mapNameSlot.MapNameButton.onClick.AddListener(() => LoadMap(mapNameWithNoExtension));
+            mapNameSlot.DeleteButton.onClick.AddListener(() => DeleteMap(mapNameWithNoExtension));
+        }
+    }
+
+    [Server]
+    private void DeleteMap(string mapName)
+    {
+        if (IsServer)
+        {
+            SaveSystem.DeleteFile(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
+        }
+        else
+        {
+            Log.Information(this, "Cannot load the map on a client");
         }
     }
 
