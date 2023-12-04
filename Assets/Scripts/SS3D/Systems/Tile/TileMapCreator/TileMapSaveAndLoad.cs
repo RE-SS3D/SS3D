@@ -5,6 +5,7 @@ using SS3D.Data.Management;
 using SS3D.Logging;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.TileMapCreator;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -36,7 +37,7 @@ public class TileMapSaveAndLoad : NetworkActor
     [Server]
     public void DisplayMapLoader()
     {
-        var MapNames = SaveSystem.GetAllObjectsNameInFolder(TileSystem.SavePath);
+        var MapNames = SaveSystem.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
 
         foreach (string mapName in MapNames)
         {
@@ -52,7 +53,7 @@ public class TileMapSaveAndLoad : NetworkActor
     {
         if (IsServer)
         {
-            Subsystems.Get<TileSystem>().Load(TileSystem.SavePath + "/" + mapName);
+            Subsystems.Get<TileSystem>().Load(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
         }
         else
         {
@@ -71,5 +72,12 @@ public class TileMapSaveAndLoad : NetworkActor
         {
             Log.Information(this, "Cannot save the map on a client");
         }
+    }
+
+    public bool AlreadyContainsName(string name)
+    {
+        string savePath = Subsystems.Get<TileSystem>().SavePath;
+        List<string> saves = SaveSystem.GetAllObjectsNameInFolder(savePath);
+        return saves.Contains(name+".json");
     }
 }

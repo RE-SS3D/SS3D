@@ -17,14 +17,17 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class TileSystem : NetworkSystem
     {
-	    public const string SavePath = "/Tilemaps";
+	    public const string savePath = "/Tilemaps";
 
-	    public const string UnnamedMapName = "UnnamedMap";
+	    public const string unnamedMapName = "UnnamedMap";
 
         public TileResourceLoader Loader { get; private set; }
  
         private TileMap _currentMap;
         public TileMap CurrentMap => _currentMap;
+
+        public string SavePath => savePath;
+
 
         [ServerOrClient]
         protected override void OnStart()
@@ -52,7 +55,7 @@ namespace SS3D.Systems.Tile
 		        return;
 	        }
 
-	        CreateMap(UnnamedMapName);
+	        CreateMap(unnamedMapName);
 
 	        await WaitForResourcesLoad();
 

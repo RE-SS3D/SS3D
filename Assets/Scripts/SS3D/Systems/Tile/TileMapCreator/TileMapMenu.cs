@@ -65,10 +65,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private GameObject _loadMapContentRoot;
 
         [SerializeField]
+        private GameObject _confirmOverWriteButton;
+
+        [SerializeField]
         private TileMapSaveAndLoad _tileMapSaveAndLoad;
 
         [SerializeField]
         private TMP_InputField _saveInputField;
+
+        [SerializeField]
+        private GameObject _saveMapButton;
+
 
         /// <summary>
         /// Dropdown to select the layer to display in the menu.
@@ -184,17 +191,37 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Method called when the save button is clicked.
+        /// Method called when the save tab is clicked.
         /// </summary>
         [Server]
-        public void HandleSaveButton()
+        public void HandleSaveTabButton()
         {
             ClearGrid();
-            _saveInputField.gameObject.SetActive(true);
+            _saveMapContentRoot.gameObject.SetActive(true);
+            _confirmOverWriteButton.gameObject.SetActive(false);
             _tileMapSaveAndLoad.DisplayMapSaver();
         }
 
-        public void OnSaveInputFieldEndEdit()
+        /// <summary>
+        /// Method called when the save button is clicked.
+        /// </summary>
+        public void HandleSaveMapButton()
+        {
+            if(_tileMapSaveAndLoad.AlreadyContainsName(_saveInputField.text))
+            {
+                _confirmOverWriteButton.gameObject.SetActive(true);
+            }
+            else
+            {
+                _tileMapSaveAndLoad.SaveMap(_saveInputField.text);
+            }   
+        }
+
+        /// <summary>
+        /// Method called when the save button is clicked.
+        /// </summary>
+        [Server]
+        public void HandleConfirmOverWriteButton()
         {
             _tileMapSaveAndLoad.SaveMap(_saveInputField.text);
         }
@@ -228,7 +255,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _tileObjectSearchBar.gameObject.SetActive(false);
             _layerPlacementDropdown.gameObject.SetActive(false);
-            _saveInputField.gameObject.SetActive(false);
+            _saveMapContentRoot.gameObject.SetActive(false);
 
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
             {
