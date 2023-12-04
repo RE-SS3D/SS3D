@@ -64,17 +64,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private GameObject _loadMapContentRoot;
 
-        [SerializeField]
-        private GameObject _confirmOverWriteButton;
 
         [SerializeField]
         private TileMapSaveAndLoad _tileMapSaveAndLoad;
 
-        [SerializeField]
-        private TMP_InputField _saveInputField;
 
-        [SerializeField]
-        private GameObject _saveMapButton;
 
 
         /// <summary>
@@ -183,7 +177,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Method called when the load button is clicked.
         /// </summary>
-        [Server]
         public void HandleLoadButton()
         {
             ClearGrid();
@@ -193,37 +186,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Method called when the save tab is clicked.
         /// </summary>
-        [Server]
         public void HandleSaveTabButton()
         {
             ClearGrid();
-            _saveMapContentRoot.gameObject.SetActive(true);
-            _confirmOverWriteButton.gameObject.SetActive(false);
             _tileMapSaveAndLoad.DisplayMapSaver();
-        }
-
-        /// <summary>
-        /// Method called when the save button is clicked.
-        /// </summary>
-        public void HandleSaveMapButton()
-        {
-            if(_tileMapSaveAndLoad.AlreadyContainsName(_saveInputField.text))
-            {
-                _confirmOverWriteButton.gameObject.SetActive(true);
-            }
-            else
-            {
-                _tileMapSaveAndLoad.SaveMap(_saveInputField.text);
-            }   
-        }
-
-        /// <summary>
-        /// Method called when the save button is clicked.
-        /// </summary>
-        [Server]
-        public void HandleConfirmOverWriteButton()
-        {
-            _tileMapSaveAndLoad.SaveMap(_saveInputField.text);
         }
 
         /// <summary>

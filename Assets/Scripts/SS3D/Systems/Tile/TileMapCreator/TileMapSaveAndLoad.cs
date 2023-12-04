@@ -24,17 +24,46 @@ public class TileMapSaveAndLoad : NetworkActor
     [SerializeField]
     private GameObject _loadMapContentRoot;
 
+    [SerializeField]
+    private GameObject _confirmOverWriteButton;
+
+    [SerializeField]
+    private TMP_InputField _saveInputField;
+
 
     [SerializeField]
     private TileMapMenu _menu;
 
-    [Server]
     public void DisplayMapSaver()
     {
+        _saveMapContentRoot.gameObject.SetActive(true);
+        _confirmOverWriteButton.gameObject.SetActive(false);
         _saveMapContentRoot.SetActive(true);
     }
 
-    [Server]
+    /// <summary>
+    /// Method called when the save button is clicked.
+    /// </summary>
+    public void HandleConfirmOverWriteButton()
+    {
+        SaveMap(_saveInputField.text);
+    }
+
+    /// <summary>
+    /// Method called when the save button is clicked.
+    /// </summary>
+    public void HandleSaveMapButton()
+    {
+        if (AlreadyContainsName(_saveInputField.text))
+        {
+            _confirmOverWriteButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            SaveMap(_saveInputField.text);
+        }
+    }
+
     public void DisplayMapLoader()
     {
         var MapNames = SaveSystem.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
@@ -50,7 +79,6 @@ public class TileMapSaveAndLoad : NetworkActor
         }
     }
 
-    [Server]
     private void DeleteMap(string mapName)
     {
         if (IsServer)
@@ -63,7 +91,6 @@ public class TileMapSaveAndLoad : NetworkActor
         }
     }
 
-    [Server]
     private void LoadMap(string mapName)
     {
         if (IsServer)
@@ -76,7 +103,6 @@ public class TileMapSaveAndLoad : NetworkActor
         }
     }
 
-    [Server]
     public void SaveMap(string mapName)
     {
         if (IsServer)
