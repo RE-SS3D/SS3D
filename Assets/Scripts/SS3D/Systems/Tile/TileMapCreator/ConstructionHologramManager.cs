@@ -116,9 +116,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 {
                     for (int i = 0; i < difference; i++)
                     {
-                        ConstructionHologram hologram = _holograms[0];
+                        _holograms.First().Destroy();
                         _holograms.RemoveAt(0);
-                        hologram.Destroy();
                     }
                 }
                 else
