@@ -8,11 +8,19 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
+    /// <summary>
+    /// Script to handle displaying the UI for the build tab of the tilemap menu.
+    /// Handle searching for tile objects, switching between deleting and building, selecting which
+    /// object to build.
+    /// </summary>
     public class TileMapBuildTab : NetworkActor, ITileMenuTab
     {
         [SerializeField]
         private TileMapMenu _menu;
 
+        /// <summary>
+        /// Game object for the root of content of the build tab.
+        /// </summary>
         [SerializeField]
         private GameObject _contentRoot;
 
@@ -21,7 +29,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         [SerializeField]
         private ControlsOffInputField _tileObjectSearchBar;
-
 
         /// <summary>
         /// Dropdown to select the layer to display in the menu.
@@ -32,12 +39,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private AssetGrid _assetGrid;
 
+        /// <summary>
+        /// Button to switch between building and deleting mode.
+        /// </summary>
         [SerializeField]
         private Button _buildOrDelete;
 
+        /// <summary>
+        /// true if the construction mode is deleting the tile objects.
+        /// </summary>
         private bool _isDeleting;
         public bool IsDeleting => _isDeleting;
 
+        /// <summary>
+        /// Clear the build tab.
+        /// </summary>
         public void Clear()
         {
             _tileObjectSearchBar.gameObject.SetActive(false);
@@ -51,6 +67,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Display all elements of the building tab.
+        /// </summary>
         public void Display()
         {
             _assetGrid.Setup();
@@ -59,6 +78,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _buildOrDelete.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Refresh the build tab.
+        /// </summary>
         public void Refresh()
         {
             Clear();
@@ -73,6 +95,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _assetGrid.FindAssets(_tileObjectSearchBar.text);
         }
 
+        /// <summary>
+        /// Called when the build or delete button is pressed.
+        /// </summary>
         public void HandleBuildOrDeleteButton()
         {
             _isDeleting = !_isDeleting;

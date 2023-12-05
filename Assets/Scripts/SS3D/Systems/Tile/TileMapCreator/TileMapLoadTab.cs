@@ -10,17 +10,27 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
+    /// <summary>
+    /// Script to handle displaying the UI for the loading tab of the tilemap menu.
+    /// Also handle the logic of loading maps, removing maps and renaming them.
+    /// </summary>
     public class TileMapLoadTab : NetworkActor, ITileMenuTab
     {
         [SerializeField]
         private TileMapMenu _menu;
 
+        /// <summary>
+        /// A prefab containing an input field for the name of a map, 
+        /// </summary>
         [SerializeField]
         private GameObject _mapNameSlotPrefab;
 
         [SerializeField]
         private GameObject _loadMapContentRoot;
 
+        /// <summary>
+        /// Clear the load tab.
+        /// </summary>
         public void Clear()
         {
             for (int i = 0; i < _loadMapContentRoot.transform.childCount; i++)
@@ -29,6 +39,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Display the Load tab, including showing the names of all existing maps.
+        /// </summary>
         public void Display()
         {
             var MapNames = SaveSystem.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
@@ -51,12 +64,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Refresh the load tab.
+        /// </summary>
         public void Refresh()
         {
             Clear();
             Display();
         }
 
+        /// <summary>
+        /// Delete the map with name mapName.
+        /// </summary>
+        /// <param name="mapName"></param>
         private void DeleteMap(string mapName)
         {
             if (IsServer)
@@ -69,6 +89,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Load the map with name mapName
+        /// </summary>
+        /// <param name="mapName"></param>
         private void LoadMap(string mapName)
         {
             if (IsServer)

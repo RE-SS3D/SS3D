@@ -9,6 +9,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
+    /// <summary>
+    /// Script to handle displaying the UI for the saving tab of the tilemap menu.
+    /// Also handle the logic of saving maps.
+    /// </summary>
     public class TileMapSaveTab : NetworkActor, ITileMenuTab
     {
         [SerializeField]
@@ -23,12 +27,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private GameObject _saveMapContentRoot;
 
+        /// <summary>
+        /// Clear the save tab.
+        /// </summary>
         public void Clear()
         {
             _confirmOverWriteButton.gameObject.SetActive(false);
             _saveMapContentRoot.SetActive(false);
         }
 
+        /// <summary>
+        /// Display the save tab.
+        /// </summary>
         public void Display()
         {
             _saveMapContentRoot.gameObject.SetActive(true);
@@ -36,6 +46,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _saveMapContentRoot.SetActive(true);
         }
 
+        /// <summary>
+        /// Refresh the save tab.
+        /// </summary>
         public void Refresh()
         {
             Clear();
@@ -43,7 +56,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Method called when the save button is clicked.
+        /// Method called when the confirm overwrite button is clicked.
         /// </summary>
         public void HandleConfirmOverWriteButton()
         {
@@ -65,7 +78,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
-        public void SaveMap(string mapName)
+        /// <summary>
+        /// Save a map, with name mapName
+        /// </summary>
+        /// <param name="mapName"></param>
+        private void SaveMap(string mapName)
         {
             if (IsServer)
             {
