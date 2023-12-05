@@ -138,6 +138,11 @@ namespace SS3D.Data.Management
             return Save(fileName, json, overwrite);
         }
 
+        public static void RenameFile(string oldFileName, string newFileName)
+        {
+            File.Move(SaveFolder + oldFileName + "." + SaveExtension, SaveFolder + newFileName + "." + SaveExtension);
+        }
+
         public static void DeleteFile(string fileName)
         {
             File.Delete(SaveFolder + fileName + "." + SaveExtension);

@@ -37,11 +37,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 string mapNameWithNoExtension = mapName.Substring(0, mapName.IndexOf("."));
                 GameObject slot = Instantiate(_mapNameSlotPrefab, _loadMapContentRoot.transform, true);
-                slot.GetComponentInChildren<TextMeshProUGUI>().text = mapNameWithNoExtension;
+                
+
                 MapNameSlot mapNameSlot = slot.GetComponent<MapNameSlot>();
-                mapNameSlot.MapNameButton.onClick.AddListener(() => LoadMap(mapNameWithNoExtension));
+                mapNameSlot.MapNameField.readOnly = true;
+                mapNameSlot.MapNameField.text = mapNameWithNoExtension;
+
+                mapNameSlot.MapNameField.onSelect.AddListener((string x) => LoadMap(mapNameWithNoExtension));
                 mapNameSlot.DeleteButton.onClick.AddListener(() => DeleteMap(mapNameWithNoExtension));
                 mapNameSlot.DeleteButton.onClick.AddListener(() => Refresh());
+                mapNameSlot.RenameButton.onClick.AddListener(() => Rename(mapNameSlot.MapNameField));
                 slot.gameObject.SetActive(true);
             }
         }
@@ -74,6 +79,32 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 Log.Information(this, "Cannot load the map on a client");
             }
+        }
+
+        public bool AlreadyContainsName(string name)
+        {
+            string savePath = Subsystems.Get<TileSystem>().SavePath;
+            List<string> saves = SaveSystem.GetAllObjectsNameInFolder(savePath);
+            return saves.Contains(name + ".json");
+        }
+
+        private void Rename(ControlsOffInputField mapNameField)
+        {
+            mapNameField.readOnly = false;
+            mapNameField.onEndEdit.AddListener((x) => RenameSave(mapNameField, mapNameField.text));
+        }
+
+        private void RenameSave(ControlsOffInputField mapNameField, string oldName)
+        {
+            mapNameField.readOnly = true;
+            if (AlreadyContainsName(mapNameField.text))
+            {
+                mapNameField.text = oldName;
+                return;
+            }
+
+            string savePath = Subsystems.Get<TileSystem>().SavePath;
+            SaveSystem.RenameFile(savePath + oldName, savePath + mapNameField.text);
         }
     }
 }

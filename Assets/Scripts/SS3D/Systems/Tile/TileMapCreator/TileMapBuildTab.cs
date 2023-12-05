@@ -61,7 +61,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void Refresh()
         {
-            throw new System.NotImplementedException();
+            Clear();
+            Display();
         }
 
         /// <summary>

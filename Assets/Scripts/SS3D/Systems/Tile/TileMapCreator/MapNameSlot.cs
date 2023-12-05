@@ -1,17 +1,23 @@
-﻿using System.Collections;
+﻿using SS3D.Systems.Tile.TileMapCreator;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MapNameSlot : MonoBehaviour
 {
     [SerializeField]
-    private UnityEngine.UI.Button _mapNameButton;
-
+    private ControlsOffInputField _mapNameField;
 
     [SerializeField]
     private UnityEngine.UI.Button _deleteButton;
 
-    public UnityEngine.UI.Button MapNameButton => _mapNameButton;
+    [SerializeField]
+    private UnityEngine.UI.Button _renameButton;
+
+    public ControlsOffInputField MapNameField => _mapNameField;
 
     public UnityEngine.UI.Button DeleteButton => _deleteButton;
+
+    public UnityEngine.UI.Button RenameButton => _renameButton;
+
 }
