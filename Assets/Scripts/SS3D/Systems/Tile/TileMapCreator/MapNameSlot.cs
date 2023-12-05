@@ -20,4 +20,9 @@ public class MapNameSlot : MonoBehaviour
 
     public UnityEngine.UI.Button RenameButton => _renameButton;
 
+    public void HandleDeselect()
+    {
+        Debug.Log("deselect shit");
+    }
+
 }

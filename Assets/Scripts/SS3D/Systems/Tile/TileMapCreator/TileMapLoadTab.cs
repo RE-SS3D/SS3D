@@ -43,7 +43,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 mapNameSlot.MapNameField.readOnly = true;
                 mapNameSlot.MapNameField.text = mapNameWithNoExtension;
 
-                mapNameSlot.MapNameField.onSelect.AddListener((string x) => LoadMap(mapNameWithNoExtension));
+                mapNameSlot.MapNameField.onSelect.AddListener(delegate { LoadMap(mapNameWithNoExtension); });
                 mapNameSlot.DeleteButton.onClick.AddListener(() => DeleteMap(mapNameWithNoExtension));
                 mapNameSlot.DeleteButton.onClick.AddListener(() => Refresh());
                 mapNameSlot.RenameButton.onClick.AddListener(() => Rename(mapNameSlot.MapNameField));
@@ -93,21 +93,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
             string oldName = mapNameField.text;
             mapNameField.readOnly = false;
             mapNameField.onSelect.RemoveAllListeners();
-            mapNameField.ActivateInputField();
-            mapNameField.onDeselect.AddListener((x) => RenameSave(mapNameField, oldName));
-            mapNameField.onEndEdit.AddListener((x) => RenameSave(mapNameField, oldName));
+            mapNameField.onEndEdit.AddListener(delegate { RenameSave(mapNameField, oldName);});
+            mapNameField.onDeselect.AddListener(delegate { RenameSave(mapNameField, oldName); });
         }
 
         private void RenameSave(ControlsOffInputField mapNameField, string oldName)
         {
             mapNameField.onSelect.RemoveAllListeners();
-            
-
             mapNameField.readOnly = true;
+
             if (AlreadyContainsName(mapNameField.text))
             {
                 mapNameField.text = oldName;
-                return;
             }
             else
             {
@@ -115,8 +112,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 SaveSystem.RenameFile(savePath + "/" + oldName, savePath + "/" + mapNameField.text);
             }
 
-            mapNameField.onSelect.AddListener((string x) => LoadMap(mapNameField.text));
+            Refresh();
 
+            mapNameField.onSelect.AddListener(delegate { LoadMap(mapNameField.text); });
            
         }
     }
