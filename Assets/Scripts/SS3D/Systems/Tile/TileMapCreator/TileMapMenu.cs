@@ -33,13 +33,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Are we deleting objects from the tilemap
         /// </summary>
-        public bool IsDeleting => _isDeleting;
-        private bool _isDeleting;
+        public bool IsDeleting => _tileMapBuildTab.IsDeleting;
+
         private Controls.TileCreatorActions _controls;
+
         private InputSystem _inputSystem;
+
         private PanelTab _tab;
         
-
         [SerializeField]
         private GameObject _menuRoot;
 
@@ -53,17 +54,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private TileMapLoadTab _tileMapLoadTab;
 
         [SerializeField]
-        private TileMapLoadTab _tileMapBuildTab;
-
-        [SerializeField]
-        private TileMapLoadTab _tileMapDeleteTab;
+        private TileMapBuildTab _tileMapBuildTab;
 
         private enum TileMapMenuTab
         {
             Save,
             Load,
             Build,
-            Delete,
         }
 
         private TileMapMenuTab _currentTab;
@@ -143,23 +140,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Called when clicking on the delete button of the menu.
-        /// </summary>
-        private void HandleDeleteButton()
-        {
-            ClearCurrentTab();
-            _currentTab = TileMapMenuTab.Delete;
-            _isDeleting = true;
-        }
-
-        /// <summary>
         /// Called when clicking on the build button of the menu.
         /// </summary>
-        private void HandleBuildButton()
+        public void HandleBuildButton()
         {
             ClearCurrentTab();
             _currentTab = TileMapMenuTab.Build;
-            _isDeleting = false;
+            _tileMapBuildTab.Display();
         }
 
         /// <summary>
@@ -203,9 +190,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             switch (_currentTab)
             {
-                case TileMapMenuTab.Delete:
-                    _tileMapDeleteTab.Clear();
-                    break;
                 case TileMapMenuTab.Build:
                     _tileMapBuildTab.Clear();
                     break;

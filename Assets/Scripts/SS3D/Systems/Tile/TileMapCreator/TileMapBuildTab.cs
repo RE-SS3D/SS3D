@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -31,10 +32,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private AssetGrid _assetGrid;
 
+        [SerializeField]
+        private Button _buildOrDelete;
+
+        private bool _isDeleting;
+        public bool IsDeleting => _isDeleting;
+
         public void Clear()
         {
             _tileObjectSearchBar.gameObject.SetActive(false);
             _layerPlacementDropdown.gameObject.SetActive(false);
+            _buildOrDelete.gameObject.SetActive(false);
 
 
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
@@ -48,6 +56,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _assetGrid.Setup();
             _tileObjectSearchBar.gameObject.SetActive(true);
             _layerPlacementDropdown.gameObject.SetActive(true);
+            _buildOrDelete.gameObject.SetActive(true);
         }
 
         public void Refresh()
@@ -61,6 +70,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void HandleInputFieldChanged()
         {
             _assetGrid.FindAssets(_tileObjectSearchBar.text);
+        }
+
+        public void HandleBuildOrDeleteButton()
+        {
+            _isDeleting = !_isDeleting;
         }
     }
 }

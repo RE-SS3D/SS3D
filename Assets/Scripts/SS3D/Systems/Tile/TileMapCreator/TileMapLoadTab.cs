@@ -2,6 +2,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Management;
+using SS3D.Logging;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -17,12 +18,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private GameObject _mapNameSlotPrefab;
 
-
         [SerializeField]
         private GameObject _loadMapContentRoot;
-
-        [SerializeField]
-        private AssetGrid _assetGrid;
 
         public void Clear()
         {
@@ -44,6 +41,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 MapNameSlot mapNameSlot = slot.GetComponent<MapNameSlot>();
                 mapNameSlot.MapNameButton.onClick.AddListener(() => LoadMap(mapNameWithNoExtension));
                 mapNameSlot.DeleteButton.onClick.AddListener(() => DeleteMap(mapNameWithNoExtension));
+                slot.gameObject.SetActive(true);
             }
         }
 

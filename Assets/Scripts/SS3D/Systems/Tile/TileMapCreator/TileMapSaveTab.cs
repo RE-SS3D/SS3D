@@ -1,6 +1,7 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Management;
+using SS3D.Logging;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -37,7 +38,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void Refresh()
         {
-            throw new System.NotImplementedException();
+            Clear();
+            Display();
         }
 
         /// <summary>
