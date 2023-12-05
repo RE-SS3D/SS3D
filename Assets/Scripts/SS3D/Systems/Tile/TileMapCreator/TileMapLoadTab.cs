@@ -41,13 +41,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 MapNameSlot mapNameSlot = slot.GetComponent<MapNameSlot>();
                 mapNameSlot.MapNameButton.onClick.AddListener(() => LoadMap(mapNameWithNoExtension));
                 mapNameSlot.DeleteButton.onClick.AddListener(() => DeleteMap(mapNameWithNoExtension));
+                mapNameSlot.DeleteButton.onClick.AddListener(() => Refresh());
                 slot.gameObject.SetActive(true);
             }
         }
 
         public void Refresh()
         {
-            throw new System.NotImplementedException();
+            Clear();
+            Display();
         }
 
         private void DeleteMap(string mapName)
