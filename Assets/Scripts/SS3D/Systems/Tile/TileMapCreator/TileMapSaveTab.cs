@@ -55,7 +55,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleSaveMapButton()
         {
-            if (AlreadyContainsName(_saveInputField.text))
+            if (Subsystems.Get<TileSystem>().MapNameAlreadyExist(_saveInputField.text))
             {
                 _confirmOverWriteButton.gameObject.SetActive(true);
             }
@@ -63,13 +63,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 SaveMap(_saveInputField.text);
             }
-        }
-
-        public bool AlreadyContainsName(string name)
-        {
-            string savePath = Subsystems.Get<TileSystem>().SavePath;
-            List<string> saves = SaveSystem.GetAllObjectsNameInFolder(savePath);
-            return saves.Contains(name + ".json");
         }
 
         public void SaveMap(string mapName)

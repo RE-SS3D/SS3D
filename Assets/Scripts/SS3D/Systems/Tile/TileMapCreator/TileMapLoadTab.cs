@@ -81,13 +81,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
-        public bool AlreadyContainsName(string name)
-        {
-            string savePath = Subsystems.Get<TileSystem>().SavePath;
-            List<string> saves = SaveSystem.GetAllObjectsNameInFolder(savePath);
-            return saves.Contains(name + ".json");
-        }
-
+        /// <summary>
+        /// Allow the name field to be edited, and set up listener so that at the end of edit, the name changes.
+        /// </summary>
+        /// <param name="mapNameField"> The input field containing the map to rename.</param>
         private void Rename(ControlsOffInputField mapNameField)
         {
             string oldName = mapNameField.text;
@@ -97,12 +94,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
             mapNameField.onDeselect.AddListener(delegate { RenameSave(mapNameField, oldName); });
         }
 
+
+        /// <summary>
+        /// Does the renaming at the end of edit, when clicking away from the input field.
+        /// </summary>
+        /// <param name="mapNameField">The input field containing the map to rename.</param>
+        /// <param name="oldName"> The old name of the map</param>
         private void RenameSave(ControlsOffInputField mapNameField, string oldName)
         {
             mapNameField.onSelect.RemoveAllListeners();
             mapNameField.readOnly = true;
 
-            if (AlreadyContainsName(mapNameField.text))
+            if (Subsystems.Get<TileSystem>().MapNameAlreadyExist(mapNameField.text))
             {
                 mapNameField.text = oldName;
             }

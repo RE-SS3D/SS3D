@@ -166,5 +166,10 @@ namespace SS3D.Systems.Tile
             Save("UnnamedMap", true);
             Log.Warning(this, "Tilemap resetted. Existing savefile has been wiped");
         }
+
+        public bool MapNameAlreadyExist(string name)
+        {
+            return SaveSystem.FolderAlreadyContainsName(savePath, name);
+        }
     }
 }

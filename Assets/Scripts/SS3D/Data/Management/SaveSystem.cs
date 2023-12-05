@@ -189,5 +189,10 @@ namespace SS3D.Data.Management
 
             return allFileNames;
         }
+
+        public static bool FolderAlreadyContainsName(string folderPath, string name)
+        {
+            return GetAllObjectsNameInFolder(folderPath).Contains(name + "." + SaveExtension);
+        }
     }
 }
