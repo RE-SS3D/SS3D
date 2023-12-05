@@ -121,6 +121,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _enabled = !_enabled;
             ShowUI(_enabled);
 
+            _currentTab = TileMapMenuTab.Build;
             _tileMapBuildTab.Display();
         }
        
