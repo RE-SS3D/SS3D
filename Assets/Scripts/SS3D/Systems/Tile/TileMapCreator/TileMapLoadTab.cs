@@ -90,21 +90,34 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void Rename(ControlsOffInputField mapNameField)
         {
+            string oldName = mapNameField.text;
             mapNameField.readOnly = false;
-            mapNameField.onEndEdit.AddListener((x) => RenameSave(mapNameField, mapNameField.text));
+            mapNameField.onSelect.RemoveAllListeners();
+            mapNameField.ActivateInputField();
+            mapNameField.onDeselect.AddListener((x) => RenameSave(mapNameField, oldName));
+            mapNameField.onEndEdit.AddListener((x) => RenameSave(mapNameField, oldName));
         }
 
         private void RenameSave(ControlsOffInputField mapNameField, string oldName)
         {
+            mapNameField.onSelect.RemoveAllListeners();
+            
+
             mapNameField.readOnly = true;
             if (AlreadyContainsName(mapNameField.text))
             {
                 mapNameField.text = oldName;
                 return;
             }
+            else
+            {
+                string savePath = Subsystems.Get<TileSystem>().SavePath;
+                SaveSystem.RenameFile(savePath + "/" + oldName, savePath + "/" + mapNameField.text);
+            }
 
-            string savePath = Subsystems.Get<TileSystem>().SavePath;
-            SaveSystem.RenameFile(savePath + oldName, savePath + mapNameField.text);
+            mapNameField.onSelect.AddListener((string x) => LoadMap(mapNameField.text));
+
+           
         }
     }
 }
