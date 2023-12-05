@@ -7,6 +7,9 @@ using UnityEngine.EventSystems;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
+    /// <summary>
+    /// TMP input field, with the added functionnality of toggling controls on and off when the field is selected or deselected.
+    /// </summary>
     public class ControlsOffInputField : TMP_InputField
     {
         public override void OnSelect(BaseEventData eventData)
@@ -18,12 +21,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public override void OnDeselect(BaseEventData eventData)
         {
             base.OnDeselect(eventData);
-            Subsystems.Get<InputSystem>().ToggleAllActions(true);
-        }
-
-        public override void OnSubmit(BaseEventData eventData)
-        {
-            base.OnSubmit(eventData);
             Subsystems.Get<InputSystem>().ToggleAllActions(true);
         }
     }

@@ -138,6 +138,11 @@ namespace SS3D.Data.Management
             return Save(fileName, json, overwrite);
         }
 
+        /// <summary>
+        /// Rename a file.
+        /// </summary>
+        /// <param name="oldFileName"> The old file full path, not including extension.</param>
+        /// <param name="newFileName"> The new file full path, not including extension.</param>
         public static void RenameFile(string oldFileName, string newFileName)
         {
             File.Move(SaveFolder + oldFileName + "." + SaveExtension, SaveFolder + newFileName + "." + SaveExtension);
@@ -173,6 +178,11 @@ namespace SS3D.Data.Management
 
         }
 
+        /// <summary>
+        /// Get the name of all files in a given folder.
+        /// </summary>
+        /// <param name="path"> Full path to the folder.</param>
+        /// <returns></returns>
         public static List<string> GetAllObjectsNameInFolder(string path)
         {
             DirectoryInfo directoryInfo = new(SaveFolder + path);
@@ -190,6 +200,12 @@ namespace SS3D.Data.Management
             return allFileNames;
         }
 
+        /// <summary>
+        /// Checks if a file is already present in a given folder.
+        /// </summary>
+        /// <param name="folderPath"> Full path to the folder.</param>
+        /// <param name="name"> Name of the file (without the extension).</param>
+        /// <returns></returns>
         public static bool FolderAlreadyContainsName(string folderPath, string name)
         {
             return GetAllObjectsNameInFolder(folderPath).Contains(name + "." + SaveExtension);

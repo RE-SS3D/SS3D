@@ -26,10 +26,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public bool MouseOverUI => _mouseOverUI;
         private bool _mouseOverUI = false;
+
         /// <summary>
         /// Is the tilemap menu enabled
         /// </summary>
         private bool _enabled = false;
+
         /// <summary>
         /// Are we deleting objects from the tilemap
         /// </summary>
@@ -44,18 +46,33 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private GameObject _menuRoot;
 
+        /// <summary>
+        /// manager of holograms tile objects.
+        /// </summary>
         [SerializeField]
         private ConstructionHologramManager _hologramManager;
 
+        /// <summary>
+        /// Tab for handling saving maps.
+        /// </summary>
         [SerializeField]
         private TileMapSaveTab _tileMapSaveTab;
 
+        /// <summary>
+        /// Tab for handling loading maps.
+        /// </summary>
         [SerializeField]
         private TileMapLoadTab _tileMapLoadTab;
 
+        /// <summary>
+        /// Tab for handling building the tilemap.
+        /// </summary>
         [SerializeField]
         private TileMapBuildTab _tileMapBuildTab;
 
+        /// <summary>
+        /// Enum to switch between tabs.
+        /// </summary>
         private enum TileMapMenuTab
         {
             Save,
@@ -63,6 +80,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             Build,
         }
 
+        /// <summary>
+        /// Current selected tab in the menu.
+        /// </summary>
         private TileMapMenuTab _currentTab;
 
 
@@ -187,6 +207,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _inputSystem.ToggleAllActions(true);
         }
 
+        /// <summary>
+        /// Clear the content of the current selected tab.
+        /// </summary>
         [ServerOrClient]
         private void ClearCurrentTab()
         {
@@ -204,6 +227,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
         }
 
+        /// <summary>
+        /// Clear the content of all tabs.
+        /// </summary>
         private void ClearAllTab()
         {
             _tileMapBuildTab.Clear();
