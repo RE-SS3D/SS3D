@@ -20,7 +20,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// Input field to search for specific tile objects or items in the menu.
         /// </summary>
         [SerializeField]
-        private TMP_InputField _tileObjectSearchBar;
+        private ControlsOffInputField _tileObjectSearchBar;
 
 
         /// <summary>

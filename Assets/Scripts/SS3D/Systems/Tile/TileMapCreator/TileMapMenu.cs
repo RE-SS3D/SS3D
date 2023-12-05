@@ -122,6 +122,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ShowUI(_enabled);
 
             _currentTab = TileMapMenuTab.Build;
+            ClearAllTab();
             _tileMapBuildTab.Display();
         }
        
@@ -187,7 +188,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         [ServerOrClient]
-        public void ClearCurrentTab()
+        private void ClearCurrentTab()
         {
             switch (_currentTab)
             {
@@ -201,6 +202,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     _tileMapSaveTab.Clear();
                     break;
             }
+        }
+
+        private void ClearAllTab()
+        {
+            _tileMapBuildTab.Clear();
+            _tileMapLoadTab.Clear();
+            _tileMapSaveTab.Clear();
         }
     }
 }

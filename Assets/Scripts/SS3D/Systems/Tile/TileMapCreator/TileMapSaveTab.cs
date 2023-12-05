@@ -18,7 +18,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private GameObject _confirmOverWriteButton;
 
         [SerializeField]
-        private TMP_InputField _saveInputField;
+        private ControlsOffInputField _saveInputField;
 
         [SerializeField]
         private GameObject _saveMapContentRoot;
