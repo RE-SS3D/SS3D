@@ -197,9 +197,7 @@ namespace System.Electricity
 
                     if (!placedObject.TryGetComponent<IElectricDevice>(out var device)) continue;
 
-                    if (device is IPowerConsumer) _circuits.Last().AddConsumer((IPowerConsumer)device);
-                    if (device is IPowerProducer) _circuits.Last().AddProducer((IPowerProducer)device);
-                    if (device is IPowerStorage) _circuits.Last().AddStorage((IPowerStorage)device);
+                    _circuits.Last().AddElectricDevice(device);
                 }
             }
         }

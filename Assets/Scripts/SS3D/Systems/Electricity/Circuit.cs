@@ -27,22 +27,22 @@ namespace System.Electricity
             _storages = new();
         }
 
+        /// <summary>
+        /// Add an electric device to the circuit. An electric device can be a consumer and a producer, or
+        /// a consumer and storage at the same time, or consumer, producer and storage. In this case, the electric device
+        /// can end up in multiple lists simultaneously.
+        /// </summary>
+        public void AddElectricDevice(IElectricDevice device)
+        {
+            if(device is IPowerConsumer consumer) _consumers.Add(consumer);
+            if (device is IPowerProducer producer) _producers.Add(producer);
+            if (device is IPowerStorage storage) _storages.Add(storage);
+        }
+
         
-        public void AddConsumer(IPowerConsumer consumer)
-        {
-            _consumers.Add(consumer);
-        }
-
-        public void AddProducer(IPowerProducer producer)
-        {
-            _producers.Add(producer);
-        }
-
-        public void AddStorage(IPowerStorage storage)
-        {
-            _storages.Add(storage);
-        }
-
+        /// <summary>
+        /// Do an update on the whole circuit power. Produce power, consume power that needs to be consumed, and charge stuff that can be charged.
+        /// </summary>
         public void UpdateCircuitPower()
         {
             float leftOverPower = ConsumePower(out bool notEnoughPower, out int firstUnpoweredConsumerIndex);
@@ -50,6 +50,12 @@ namespace System.Electricity
             leftOverPower = ChargeStorages(leftOverPower);
         }
 
+        /// <summary>
+        /// Consume power from the producing devices.
+        /// </summary>
+        /// <param name="availablePower"> The available power, produced by producing devices</param>
+        /// <param name="firstUnPoweredConsumer"> The first unpowered consumer, can be null if all consumers are powered.</param>
+        /// <returns> The leftover power from the producing devices.</returns>
         private float ConsumePowerFromPowerProducingDevices(float availablePower, out IPowerConsumer firstUnPoweredConsumer)
         {
             firstUnPoweredConsumer = null;
@@ -69,6 +75,13 @@ namespace System.Electricity
             return availablePower;
         }
 
+        /// <summary>
+        /// Consume power from batteries if the producer don't produce enough power for all consumers.
+        /// </summary>
+        /// <param name="firstUnPoweredConsumer"> The first unpowered consumer in the list of consumers.</param>
+        /// <param name="notEnoughPower"> Should be set to true if the storages don't have enough power for all unpowered consumers.</param>
+        /// <param name="firstUnPoweredConsumerByStoragesIndex"> Should be set to be the index of the first consumer in the consumer list
+        /// that could not be powered by power storages because there's not enough power. We don't care about it if there's enough power.</param>
         private void ConsumePowerFromBatteries(IPowerConsumer firstUnPoweredConsumer,
             out bool notEnoughPower, out int firstUnPoweredConsumerByStoragesIndex)
         {
@@ -125,7 +138,7 @@ namespace System.Electricity
         }
 
         /// <summary>
-        /// 
+        /// Make the consumers consume all their need of available power, from producers and storage, if they can.
         /// </summary>
         /// <returns> excess energy produced by producers</returns>
         private float ConsumePower(out bool notEnoughPower, out int firstUnPoweredConsumerIndex)
@@ -153,7 +166,7 @@ namespace System.Electricity
         /// Distribute available power equally to power storages.
         /// </summary>
         /// <param name="availablePower"> Power available after consuming.</param>
-        /// return : left over power if storages are full.
+        /// <returns> Left over power if storages are full.</returns>
         private float ChargeStorages(float availablePower)
         {
             if (availablePower <= 0f) return 0f;
@@ -180,6 +193,12 @@ namespace System.Electricity
             return availablePower;
 
         }
+
+        /// <summary>
+        /// Update the status of all consumers, if they're still powered or not.
+        /// </summary>
+        /// <param name="notEnoughPower"> true if all consumers could not be powered. </param>
+        /// <param name="firstUnpoweredIndex"> The first consumer that could not be powered. We don't care about this if notEnoughPower is false.</param>
 
         private void UpdateElectricElementStatus(bool notEnoughPower, int firstUnpoweredIndex)
         {
