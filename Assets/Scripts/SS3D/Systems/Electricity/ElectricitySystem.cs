@@ -25,6 +25,10 @@ namespace System.Electricity
     public class ElectricitySystem : NetworkSystem
     {
 
+        public event Action OnSystemSetUp;
+
+        public bool IsSetUp { get; private set; }
+
         private struct VerticeCoordinates
         {
             public short x;
@@ -59,6 +63,9 @@ namespace System.Electricity
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
 
+            IsSetUp = true;
+
+            OnSystemSetUp?.Invoke();
         }
 
         // Update is called once per frame
@@ -109,6 +116,8 @@ namespace System.Electricity
 
         public void RemoveElectricalElement(IElectricDevice device)
         {
+            if (device == null || device.TileObject == null) return;
+
             _electricityGraph.RemoveVertex
             (
                 new VerticeCoordinates

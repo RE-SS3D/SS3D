@@ -127,12 +127,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
                 .Where(x => x is not ICustomGhostRotation).ToList();
 
-            foreach (var component in components)
-            {
-                component.enabled = false;
-                if (component is Actor) ((Actor)component).SetCallDestroy(false);
-                if (component is NetworkActor) ((NetworkActor)component).SetCallDestroy(false);
-            }
+            components.ForEach(x => x.enabled = false);
         }
     }
 }

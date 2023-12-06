@@ -26,7 +26,10 @@ namespace System.Electricity
         void Start()
         {
             ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.AddElectricalElement(this);
+            if (electricitySystem.IsSetUp)
+                electricitySystem.AddElectricalElement(this);
+            else
+                electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
         }
 
         void OnDestroy()
@@ -38,6 +41,12 @@ namespace System.Electricity
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
         {
             OnPowerStatusUpdated.Invoke(this, newValue);
+        }
+
+        private void OnElectricitySystemSetup()
+        {
+            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
+            electricitySystem.AddElectricalElement(this);
         }
 
 
