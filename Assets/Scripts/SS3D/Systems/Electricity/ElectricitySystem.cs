@@ -56,7 +56,7 @@ namespace System.Electricity
         }
 
         /// <summary>
-        /// The graph is considered dirty if there was any changes in the way electric devices are put on the map.
+        /// The graph is considered dirty if there was any changes during the previous frame in the way electric devices are put on the map.
         /// </summary>
         private bool _graphIsDirty;
 

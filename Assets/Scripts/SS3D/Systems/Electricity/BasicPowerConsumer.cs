@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace System.Electricity
 {
-    public class BasicPowerConsumer : NetworkBehaviour, IPowerConsumer
+    public class BasicPowerConsumer : BasicElectricDevice, IPowerConsumer
     {
         [SerializeField]
         private float _powerConsumption = 1f;
@@ -19,24 +19,7 @@ namespace System.Electricity
 
         public event EventHandler<PowerStatus> OnPowerStatusUpdated;
 
-        public PlacedTileObject TileObject => GetComponent<PlacedTileObject>();
-
         public PowerStatus PowerStatus { get => _powerStatus; set => _powerStatus = value; }
-
-        void Start()
-        {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            if (electricitySystem.IsSetUp)
-                electricitySystem.AddElectricalElement(this);
-            else
-                electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
-        }
-
-        void OnDestroy()
-        {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.RemoveElectricalElement(this);
-        }
 
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
         {
@@ -48,7 +31,5 @@ namespace System.Electricity
             ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
             electricitySystem.AddElectricalElement(this);
         }
-
-
     }
 }

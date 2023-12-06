@@ -10,10 +10,13 @@ public class BasicElectricDevice : NetworkActor, IElectricDevice
 {
     public PlacedTileObject TileObject => gameObject.GetComponent<PlacedTileObject>();
 
-    void Start()
+    protected override void OnStart()
     {
         ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-        electricitySystem.AddElectricalElement(this);
+        if (electricitySystem.IsSetUp)
+            electricitySystem.AddElectricalElement(this);
+        else
+            electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
     }
 
     protected override void OnDestroyed()
@@ -21,5 +24,11 @@ public class BasicElectricDevice : NetworkActor, IElectricDevice
         base.OnDestroyed();
         ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
         electricitySystem.RemoveElectricalElement(this);
+    }
+
+    private void OnElectricitySystemSetup()
+    {
+        ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
+        electricitySystem.AddElectricalElement(this);
     }
 }

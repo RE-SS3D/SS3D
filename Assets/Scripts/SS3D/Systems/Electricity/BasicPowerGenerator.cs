@@ -6,24 +6,10 @@ using UnityEngine;
 
 namespace System.Electricity
 {
-    public class BasicPowerGenerator : MonoBehaviour, IPowerProducer
+    public class BasicPowerGenerator : BasicElectricDevice, IPowerProducer
     {
         [SerializeField]
         private float _powerProduction = 10f;
         public float PowerProduction => _powerProduction;
-
-        public PlacedTileObject TileObject => GetComponent<PlacedTileObject>();
-
-        void Start()
-        {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.AddElectricalElement(this);
-        }
-
-        void Destroy()
-        {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.RemoveElectricalElement(this);
-        }
     }
 }

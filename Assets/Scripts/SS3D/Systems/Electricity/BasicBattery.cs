@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace System.Electricity
 {
-    public class BasicBattery : NetworkBehaviour, IPowerStorage
+    public class BasicBattery : BasicElectricDevice, IPowerStorage
     {
         [SerializeField]
         private float _maxCapacity = 1000;
@@ -21,19 +21,5 @@ namespace System.Electricity
         public float MaxCapacity => _maxCapacity;
 
         public float RemainingCapacity => _maxCapacity - _storedPower;
-
-        public PlacedTileObject TileObject => GetComponent<PlacedTileObject>();
-
-        void Start()
-        {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.AddElectricalElement(this);
-        }
-
-        void Destroy()
-        {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.RemoveElectricalElement(this);
-        }
     }
 }
