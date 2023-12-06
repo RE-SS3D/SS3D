@@ -36,11 +36,6 @@ namespace SS3D.Core.Behaviours
         private bool _initialized;
 
         /// <summary>
-        /// If this actor should call the destroy callback when done.
-        /// </summary>
-        private bool _shouldCallDestroy = true;
-
-        /// <summary>
         /// The event bus listeners added to this object, cleared on OnDestroy
         /// </summary>
         private readonly List<EventHandle> _eventHandles = new();
@@ -172,12 +167,6 @@ namespace SS3D.Core.Behaviours
             _eventHandles.Add(handle);
         }
 
-        
-        public void SetCallDestroy(bool callDestroy)
-        {
-            _shouldCallDestroy= callDestroy;
-        }
-
         protected void OnEnable()
         {
             OnEnabled();
@@ -203,9 +192,6 @@ namespace SS3D.Core.Behaviours
         protected void OnDestroy()
         {
             RemoveEventListeners();
-
-            if (!_shouldCallDestroy) return;
-
             OnDestroyed();
         }
 
