@@ -53,7 +53,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 string mapNameWithNoExtension = mapName.Substring(0, mapName.IndexOf("."));
                 GameObject slot = Instantiate(_mapNameSlotPrefab, _loadMapContentRoot.transform, true);
-                
+
+                // I've no idea why but something modify the slots scale so it's necessary to adjust it here.
+                slot.transform.localScale= Vector3.one;
 
                 MapNameSlot mapNameSlot = slot.GetComponent<MapNameSlot>();
                 mapNameSlot.MapNameField.readOnly = true;
