@@ -28,6 +28,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private GameObject _loadMapContentRoot;
 
+        private const int FontSelectedSize = 18;
+        private const int FontUnSelectedSize = 15;
+
         /// <summary>
         /// Clear the load tab.
         /// </summary>
@@ -114,8 +117,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             string oldName = mapNameField.text;
             mapNameField.readOnly = false;
             mapNameField.onSelect.RemoveAllListeners();
+            mapNameField.ActivateInputField();
             mapNameField.onEndEdit.AddListener(delegate { RenameSave(mapNameField, oldName);});
             mapNameField.onDeselect.AddListener(delegate { RenameSave(mapNameField, oldName); });
+            mapNameField.textComponent.fontSize = FontSelectedSize;
         }
 
 
@@ -126,6 +131,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="oldName"> The old name of the map</param>
         private void RenameSave(ControlsOffInputField mapNameField, string oldName)
         {
+            mapNameField.textComponent.fontSize = FontUnSelectedSize;
+
             mapNameField.onSelect.RemoveAllListeners();
             mapNameField.readOnly = true;
 
