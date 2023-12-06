@@ -12,6 +12,7 @@ namespace SS3D.Data.Enums
         Can4 = 7, 
         AirlockClose = 8, 
         AirlockOpen = 9, 
+        FuelPowerGenerator = 10, 
     }
 }
 
