@@ -19,10 +19,16 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private TileMapMenu _menu;
 
         /// <summary>
-        /// Game object for the root of content of the build tab.
+        /// Game object for the root of slots of the build tab.
         /// </summary>
         [SerializeField]
-        private GameObject _contentRoot;
+        private GameObject _slotsRoot;
+
+        /// <summary>
+        /// Game object for the root of the content of the build tab.
+        /// </summary>
+        [SerializeField]
+        private GameObject _buildRoot;
 
         /// <summary>
         /// Input field to search for specific tile objects or items in the menu.
@@ -56,14 +62,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Clear()
         {
+            _buildRoot.gameObject.SetActive(false);
             _tileObjectSearchBar.gameObject.SetActive(false);
             _layerPlacementDropdown.gameObject.SetActive(false);
             _buildOrDelete.gameObject.SetActive(false);
 
 
-            for (int i = 0; i < _contentRoot.transform.childCount; i++)
+            for (int i = 0; i < _slotsRoot.transform.childCount; i++)
             {
-                _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
+                _slotsRoot.transform.GetChild(i).gameObject.Dispose(true);
             }
         }
 
@@ -73,6 +80,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Display()
         {
             _assetGrid.Setup();
+            _buildRoot.gameObject.SetActive(true);
             _tileObjectSearchBar.gameObject.SetActive(true);
             _layerPlacementDropdown.gameObject.SetActive(true);
             _buildOrDelete.gameObject.SetActive(true);
@@ -101,6 +109,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void HandleBuildOrDeleteButton()
         {
             _isDeleting = !_isDeleting;
+            var tmpComponent = (TextMeshProUGUI)_buildOrDelete.targetGraphic;
+            if (IsDeleting)
+            {
+                tmpComponent.text = " Delete";
+                tmpComponent.color = Color.red;
+            }
+            else
+            {
+                tmpComponent.text = " Build";
+                tmpComponent.color = Color.blue;
+            }
         }
     }
 }

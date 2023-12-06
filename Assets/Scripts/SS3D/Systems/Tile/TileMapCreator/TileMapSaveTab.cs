@@ -27,6 +27,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private GameObject _saveMapContentRoot;
 
+        [SerializeField]
+        private TextMeshProUGUI _saveText;
+
+        [SerializeField]
+        private float _fadeDuration;
+
         /// <summary>
         /// Clear the save tab.
         /// </summary>
@@ -34,6 +40,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _confirmOverWriteButton.gameObject.SetActive(false);
             _saveMapContentRoot.SetActive(false);
+            _saveText.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -61,6 +68,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void HandleConfirmOverWriteButton()
         {
             SaveMap(_saveInputField.text);
+            _confirmOverWriteButton.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -87,11 +95,47 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (IsServer)
             {
                 Subsystems.Get<TileSystem>().Save(mapName, true);
+                DisplaySaveText(mapName);
             }
             else
             {
                 Log.Information(this, "Cannot save the map on a client");
             }
         }
+
+        /// <summary>
+        /// Display some text to inform player the map is saved.
+        /// </summary>
+        /// <param name="mapName"> name of the map.</param>
+        private void DisplaySaveText(string mapName)
+        {
+            _saveText.text = "map " + mapName + " saved !";
+            _saveText.gameObject.SetActive(true);
+            StartCoroutine(FadeText());
+        }
+
+        private IEnumerator FadeText()
+        {
+            Color originalColor = _saveText.color;
+
+            float currentTime = 0f;
+
+            while (currentTime < _fadeDuration)
+            {
+                currentTime += Time.deltaTime;
+
+                // Calculate the alpha value based on the current time and duration
+                float alpha = Mathf.Lerp(1f, 0f, currentTime / _fadeDuration);
+
+                // Set the text's alpha to the calculated value
+                _saveText.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+
+                yield return null;
+            }
+
+            _saveText.gameObject.SetActive(false);
+        }
+
+
     }
 }
