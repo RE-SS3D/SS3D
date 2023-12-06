@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: SolarTrackingBeacon
+  m_Name: PowerCellCharger
   m_EditorClassIdentifier: 
-  nameString: SolarTrackingBeacon
-  prefab: {fileID: 1918783493706165866, guid: 50405f05821f58c49a8badc89506b019, type: 3}
+  nameString: PowerCellCharger
+  prefab: {fileID: 4555001501243244134, guid: 0dcd10db779426846a18fc33f1b6bbd4, type: 3}
   icon: {fileID: 0}
   layer: 7
   genericType: 0
