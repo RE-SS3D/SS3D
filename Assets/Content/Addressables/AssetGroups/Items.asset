@@ -281,6 +281,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 41a1c8c211dc32c4d8ffca5f0892f9dc
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Wirecutters.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2ca5f2886cf2f19428b50bf284689b86
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Multitool.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

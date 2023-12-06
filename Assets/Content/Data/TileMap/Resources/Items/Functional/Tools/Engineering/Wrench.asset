@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Wrench
   m_EditorClassIdentifier: 
-  nameString: Wirecutters
-  prefab: {fileID: 2402587210622244651, guid: 41a1c8c211dc32c4d8ffca5f0892f9dc, type: 3}
+  nameString: Wrench
+  prefab: {fileID: 3792017003477948967, guid: 772da386eb7b01745913050fee544c32, type: 3}
   icon: {fileID: 0}
