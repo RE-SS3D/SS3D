@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 {
     /// <summary>
-    /// Adjacency type used for objects that are not centred on a tile. Examples that use this are pipes (not the middle layer)
+    /// Adjacency type used for objects that are not centred on a tile. Examples that use this are pipelayers 1 & 3.
     /// </summary>
     [Serializable]
     public struct OffsetConnector : IMeshAndDirectionResolver
@@ -15,9 +15,9 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
             UNorth,
             USouth,
             I,
-            LNe,
-            LNw,
-            LSe,
+            LNE,
+            LNW,
+            LSE,
             LSW,
             TNEW,
             TNSW,
@@ -28,27 +28,27 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the north edge is connected, can be rotated to the east")]
+        [Tooltip("A mesh where the North edge is connected, can be rotated to the East")]
         public Mesh uNorth;
-        [Tooltip("A mesh where the south edge is connected, can be rotated to the west")]
+        [Tooltip("A mesh where the South edge is connected, can be rotated to the West")]
         public Mesh uSouth;
-        [Tooltip("A mesh where north & south edges are connected")]
+        [Tooltip("A mesh where North & South edges are connected")]
         public Mesh i;
-        [Tooltip("A mesh where the north & east edges are connected")]
+        [Tooltip("A mesh where the North & East edges are connected")]
         public Mesh lNE;
-        [Tooltip("A mesh where the north & west edges are connected")]
+        [Tooltip("A mesh where the North & West edges are connected")]
         public Mesh lNW;
-        [Tooltip("A mesh where the south & east edges are connected")]
+        [Tooltip("A mesh where the South & East edges are connected")]
         public Mesh lSE;
-        [Tooltip("A mesh where the south & west edges are connected")]
+        [Tooltip("A mesh where the South & West edges are connected")]
         public Mesh lSW;
-        [Tooltip("A mesh where the South, west, & east edges are connected")]
+        [Tooltip("A mesh where the South, West, & East edges are connected")]
         public Mesh tSWE;
-        [Tooltip("A mesh where the north, east, & west edges are connected")]
+        [Tooltip("A mesh where the North, East, & West edges are connected")]
         public Mesh tNEW;
-        [Tooltip("A mesh where the north, south, & west edges are connected")]
+        [Tooltip("A mesh where the North, South, & West edges are connected")]
         public Mesh tNSW;
-        [Tooltip("A mesh where the north, south, & east edges are connected")]
+        [Tooltip("A mesh where the North, South, & East edges are connected")]
         public Mesh tNSE;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
@@ -74,12 +74,12 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     _orientation = OffsetOrientation.O;
                     break;
                 case AdjacencyShape.UNorth:
-                    mesh = uNorth;
+                    mesh = uSouth;
                     _orientation = OffsetOrientation.UNorth;
                     rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
                     break;
                 case AdjacencyShape.USouth:
-                    mesh = uSouth;
+                    mesh = uNorth;
                     _orientation = OffsetOrientation.USouth;
                     rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleConnection());
                     break;
@@ -89,42 +89,42 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.North) ? Direction.North : Direction.East);
                     break;
                 case AdjacencyShape.LNorthWest:
-                    mesh = lNW;
-                    _orientation = OffsetOrientation.LNw;
+                    mesh = lSE;
+                    _orientation = OffsetOrientation.LNW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.LNorthEast:
-                    mesh = lNE;
-                    _orientation = OffsetOrientation.LSe;
+                    mesh = lSW;
+                    _orientation = OffsetOrientation.LSE;
                     rotation = 90;
                     break;
                 case AdjacencyShape.LSouthEast:
-                    mesh = lSE;
+                    mesh = lNW;
                     _orientation = OffsetOrientation.LSW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.LSouthWest:
-                    mesh = lSW;
-                    _orientation = OffsetOrientation.LNw;
+                    mesh = lNE;
+                    _orientation = OffsetOrientation.LNW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.TNorthSouthEast:
-                    mesh = tNSE;
+                    mesh = tNSW;
                     _orientation = OffsetOrientation.TSWE;
                     rotation = 90;                      
                     break;
                 case AdjacencyShape.TSouthWestEast:
-                    mesh = tSWE;
+                    mesh = tNEW;
                     _orientation = OffsetOrientation.TNSW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.TNorthSouthWest:
-                    mesh = tNSW;
+                    mesh = tNSE;
                     _orientation = OffsetOrientation.TNEW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.TNorthEastWest:
-                    mesh = tNEW;
+                    mesh = tSWE;
                     _orientation = OffsetOrientation.TNSE;
                     rotation = 90;
                     break;
