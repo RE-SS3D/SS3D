@@ -244,7 +244,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1602098408367427586}
   _networkObjectCache: {fileID: 1602098408367427586}
-  _name: MultiTool
+  _name: Multitool
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 3368721005309584205}
