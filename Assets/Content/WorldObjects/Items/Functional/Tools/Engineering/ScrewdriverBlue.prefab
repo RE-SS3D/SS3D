@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 1602098408367427586}
   - component: {fileID: 6800495836141411361}
   m_Layer: 10
-  m_Name: Screwdriver
+  m_Name: ScrewdriverBlue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
