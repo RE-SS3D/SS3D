@@ -15,11 +15,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             Player player = playerSystem.GetPlayer(conn);
             Entity playerEntity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-            if (playerEntity == null)
-            {
-                return null;
-            }
-
+            if (playerEntity == null) return null;
+            
             Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;
             return hands.SelectedHand.ItemInHand;
         }

@@ -84,7 +84,7 @@ namespace SS3D.Systems.Health
 
         protected override void SpawnOrgans()
         {
-            GameObject brainPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanBrain);
+            GameObject brainPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanBrain);
             GameObject brainGameObject = Instantiate(brainPrefab);
             brain = brainGameObject.GetComponent<Brain>();
 

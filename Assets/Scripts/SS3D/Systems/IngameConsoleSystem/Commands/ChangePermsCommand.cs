@@ -8,51 +8,30 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class ChangePermsCommand : Command
     {
-        public override string LongDescription => "changeperms (user ckey) (required role)";
         public override string ShortDescription => "Change user permission";
+        public override string Usage => "(user ckey) (required role)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
-
         public override CommandType Type => CommandType.Server;
+        
+        private record CalculatedValues(string Ckey, ServerRoleTypes Role) : ICalculatedValues;
 
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
-            string ckey = args[0];
-            string role = args[1];
-            ServerRoleTypes foundRole = FindRole(role);
-            Subsystems.Get<PermissionSystem>().ChangeUserPermission(ckey, foundRole);
-            return "Done";
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
+
+            Subsystems.Get<PermissionSystem>().ChangeUserPermission(values.Ckey, values.Role);
+            return "Permission changed to " + args[1];
         }
+        
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 2)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
+            CheckArgsResponse response = new();
+            if (args.Length != 2) return response.MakeInvalid("Invalid number of arguments");
 
-            string ckey = args[0];
-            bool isFound = Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out _);
-            if (!isFound)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Ckey doesn't have any permissions";
-                return response;
-            }
-
-            string role = args[1];
-            if (FindRole(role) == ServerRoleTypes.None)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Role doesn't exist";
-                return response;
-            }
-            response.IsValid = true;
-            return response;
+            ServerRoleTypes role = FindRole(args[1]);
+            if (role == ServerRoleTypes.None) return response.MakeInvalid("Role doesn't exist");
+            
+            return response.MakeValid(new CalculatedValues(args[0], role));
         }
 
         private ServerRoleTypes FindRole(string name)
