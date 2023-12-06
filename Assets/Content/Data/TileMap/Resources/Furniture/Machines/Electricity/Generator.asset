@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Generator
   m_EditorClassIdentifier: 
   nameString: Generator
-  prefab: {fileID: 2694669217216940570, guid: 6d342d49dd845b64d8cde39b9deeed00, type: 3}
+  prefab: {fileID: 1970440671996469747, guid: 9c456c77e7b9ff943ba4d4235e306722, type: 3}
   icon: {fileID: 0}
   layer: 7
   genericType: 0
