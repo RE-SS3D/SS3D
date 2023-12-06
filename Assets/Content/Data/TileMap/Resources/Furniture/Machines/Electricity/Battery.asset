@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Battery
   m_EditorClassIdentifier: 
   nameString: Battery
-  prefab: {fileID: 6110479796121659285, guid: bbcce9aef3824684593669064ad20eb7, type: 3}
+  prefab: {fileID: 2338840995117295053, guid: 51e54151af9906f488b56b41f2af7fd3, type: 3}
   icon: {fileID: 0}
   layer: 7
   genericType: 0
