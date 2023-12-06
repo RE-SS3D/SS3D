@@ -24,11 +24,21 @@ namespace System.Electricity
     /// </summary>
     public class ElectricitySystem : NetworkSystem
     {
-
+        /// <summary>
+        /// Register on this if the system is not set up yet.
+        /// </summary>
         public event Action OnSystemSetUp;
 
+        /// <summary>
+        /// If the system is properly set up, do stuff with it.
+        /// </summary>
         public bool IsSetUp { get; private set; }
 
+        /// <summary>
+        /// Little struct to have a unique set of number for any electric device on the map. 
+        /// The coordinates are the position on the map (x and y), the layer and the direction of the electric device.
+        /// None two tile objects should have the same set of coordinates.
+        /// </summary>
         private struct VerticeCoordinates
         {
             public short x;
@@ -45,16 +55,25 @@ namespace System.Electricity
             }
         }
 
+        /// <summary>
+        /// The graph is considered dirty if there was any changes in the way electric devices are put on the map.
+        /// </summary>
         private bool _graphIsDirty;
 
+
+        /// <summary>
+        /// List of all circuits on the map.
+        /// </summary>
         private List<Circuit> _circuits;
 
 
-
+        /// <summary>
+        /// Graph representing all electric devices and connections on the map. each electric device is a vertice in this graph,
+        /// and each electric connection is an edge.
+        /// </summary>
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
 
 
-        // Start is called before the first frame update
         protected override void OnStart()
         {       
             _electricityGraph = new UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>>();
@@ -68,7 +87,6 @@ namespace System.Electricity
             OnSystemSetUp?.Invoke();
         }
 
-        // Update is called once per frame
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             if (_graphIsDirty)
@@ -83,6 +101,10 @@ namespace System.Electricity
             }
         }
 
+        /// <summary>
+        /// Add an electric device to the electic graph, setting up vertices and new connections if necessary.
+        /// </summary>
+        /// <param name="device"> The device to add.</param>
         public void AddElectricalElement(IElectricDevice device)
         {
             VerticeCoordinates deviceCoordinates = new VerticeCoordinates((short)device.TileObject.WorldOrigin.x, (short)device.TileObject.WorldOrigin.y,
@@ -114,6 +136,10 @@ namespace System.Electricity
 
         }
 
+        /// <summary>
+        /// Remove an electric device from the map.
+        /// </summary>
+        /// <param name="device"> The device to remove.</param>
         public void RemoveElectricalElement(IElectricDevice device)
         {
             if (device == null || device.TileObject == null) return;
@@ -132,21 +158,33 @@ namespace System.Electricity
             _graphIsDirty = true;
         }
 
+        /// <summary>
+        /// Recompute all circuits, should be called when there's some changes on the map regarding 
+        /// how electric devices are placed.
+        /// TODO : When removing electrical elements, identify which circuits are affected and only update those.
+        /// TODO : When adding electrical elements, use some kind of metric to determine which circuits might be affected by the adding, and only update those.
+        ///        Maybe simply check which component gets connected to the new device, and update all circuits with those components.
+        /// </summary>
         private void UpdateAllCircuitsTopology()
         {
             Dictionary<VerticeCoordinates, int> components = new();
 
+            // Compute all connected components in the graph. One component is basically one circuit.
+            // In graph theory, a component is a set of all vertices linked by at least one path.
             _electricityGraph.ConnectedComponents(components);
+
+            
             _circuits.Clear();
 
-            var graphs = components.GroupBy(pair => pair.Value)
+            // group all vertice coordinates by the component index they belong to.
+            Dictionary<int, List<VerticeCoordinates>> graphs = components.GroupBy(pair => pair.Value)
                 .ToDictionary(
                 group => group.Key,
                 group => group.Select(item => item.Key).ToList()
                 );
 
 
-
+            // Set up the circuits, with their respective storages, producers, and consumers of power.
             foreach (List<VerticeCoordinates> component in graphs.Values)
             {
                 _circuits.Add(new Circuit());
@@ -160,8 +198,8 @@ namespace System.Electricity
                     if (!placedObject.TryGetComponent<IElectricDevice>(out var device)) continue;
 
                     if (device is IPowerConsumer) _circuits.Last().AddConsumer((IPowerConsumer)device);
-                    else if (device is IPowerProducer) _circuits.Last().AddProducer((IPowerProducer)device);
-                    else if (device is IPowerStorage) _circuits.Last().AddStorage((IPowerStorage)device);
+                    if (device is IPowerProducer) _circuits.Last().AddProducer((IPowerProducer)device);
+                    if (device is IPowerStorage) _circuits.Last().AddStorage((IPowerStorage)device);
                 }
             }
         }
