@@ -289,6 +289,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Multitool.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: c69ed93dc225ea049bbf1a02662c48c0
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCellAdmin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: de67200a4c96d444f800399a033ddfef
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCell.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
