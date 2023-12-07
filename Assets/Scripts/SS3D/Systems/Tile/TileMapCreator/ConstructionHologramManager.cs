@@ -123,7 +123,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 {
                     for (int i = 0; i < -difference; i++)
                     {
-                        RefreshHologram(CreateHologram(_selectedObject.prefab, new()));
+                        CreateHologram(_selectedObject.prefab, new());
                     }
                 }
 

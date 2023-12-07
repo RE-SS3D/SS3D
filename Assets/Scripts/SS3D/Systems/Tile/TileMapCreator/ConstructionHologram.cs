@@ -27,9 +27,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="targetPosition"> the initial position of the hologram in space.</param>
         /// <param name="dir"> the expected original direction. Note that not all directions are compatible with
         /// all tile objects. If it's not, it will choose another available direction.</param>
-        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir)
+        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
         {
-
             List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
                 .Where(x => x is not ICustomGhostRotation).ToList();
 
@@ -55,6 +54,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 col.enabled = false;
             }
+            ChangeHologramColor(mode);
         }
 
         /// <summary>
@@ -79,8 +79,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.DeleteConstruction);
                     break;
             }
-
-
+            
             foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())
             {
                 Material[] materials = mr.materials;
