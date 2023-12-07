@@ -17,5 +17,6 @@
         EarLeft,
         EarRight,
         Backpack,
+        Belt,
     }
 }
