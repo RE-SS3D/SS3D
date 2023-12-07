@@ -30,7 +30,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         {
             if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
             
-            GameObject leftHandPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanHandLeft);
+            GameObject leftHandPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanHandLeft);
             GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, values.Entity.transform);
             leftHandObject.transform.localPosition = values.Position;
             leftHandObject.transform.localEulerAngles = values.Rotation;

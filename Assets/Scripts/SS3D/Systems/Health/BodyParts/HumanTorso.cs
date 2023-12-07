@@ -33,9 +33,9 @@ public class HumanTorso : BodyPart
 
     protected override void SpawnOrgans()
     {
-        GameObject heartPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanHeart);
-        GameObject leftLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanLungLeft);
-        GameObject rightLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.BodyParts, (int)BodyPartsIds.HumanLungRight);
+        GameObject heartPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanHeart);
+        GameObject leftLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanLungLeft);
+        GameObject rightLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanLungRight);
 
         GameObject heartGameObject = Instantiate(heartPrefab);
         GameObject leftLungGameObject = Instantiate(leftLungPrefab);
