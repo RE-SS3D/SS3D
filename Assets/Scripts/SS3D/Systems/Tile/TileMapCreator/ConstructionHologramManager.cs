@@ -48,7 +48,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// List of build ghosts currently displaying in game.
         /// </summary>
         private List<ConstructionHologram> _holograms = new();
-        
         [SerializeField]
         private TileMapMenu _menu;
 
@@ -116,7 +115,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 {
                     for (int i = 0; i < difference; i++)
                     {
-                        _holograms.First().Destroy();
+                        _holograms[0].Destroy();
                         _holograms.RemoveAt(0);
                     }
                 }
@@ -124,12 +123,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 {
                     for (int i = 0; i < -difference; i++)
                     {
-                        _holograms.Add(CreateHologram(_selectedObject.prefab, new()));
+                        RefreshHologram(CreateHologram(_selectedObject.prefab, new()));
                     }
                 }
 
                 for (int i = 0; i < tiles.Length; i++)
                 {
+                    _holograms[i].Hologram.transform.position = tiles[i];
                     _holograms[i].Position = tiles[i];
                     RefreshHologram(_holograms[i]);
                 }
@@ -330,7 +330,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 for (int j = x1; j <= x2; j++)
                 {
-                    tiles.Add(new (i, position.y, j));
+                    tiles.Add(new (j, position.y, i));
                 }
             }
 

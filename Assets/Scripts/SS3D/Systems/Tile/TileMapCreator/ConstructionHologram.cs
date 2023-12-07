@@ -12,12 +12,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public class ConstructionHologram
     {
-        private GameObject _hologram;
+        public GameObject Hologram;
         private Vector3 _position;
         private Direction _direction;
         public Direction Direction => _direction;
-        public bool ActiveSelf => _hologram.activeSelf;
-        public bool SetActive { set => _hologram.SetActive(value); }
+        public bool ActiveSelf => Hologram.activeSelf;
+        public bool SetActive { set => Hologram.SetActive(value); }
         public Vector3 Position { get => _position; set => _position = value; }
         
         /// <summary>
@@ -35,7 +35,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             components.ForEach(x => x.enabled = false);
 
-            _hologram = ghostObject;
+            Hologram = ghostObject;
             _position = targetPosition;
             _direction = dir;
 
@@ -81,7 +81,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
 
 
-            foreach (MeshRenderer mr in _hologram.GetComponentsInChildren<MeshRenderer>())
+            foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())
             {
                 Material[] materials = mr.materials;
                 for (int i = 0; i < materials.Length; i++)
@@ -99,8 +99,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void UpdateRotationAndPosition()
         {
             // Small offset is added so that meshes don't overlap with already placed objects.
-            _hologram.transform.position = Vector3.Lerp(_hologram.transform.position, _position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
-            _hologram.transform.rotation = Quaternion.Lerp(_hologram.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_direction), 0), Time.deltaTime * 15f);
+            Hologram.transform.position = Vector3.Lerp(Hologram.transform.position, _position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
+            Hologram.transform.rotation = Quaternion.Lerp(Hologram.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_direction), 0), Time.deltaTime * 15f);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void SetNextRotation()
         {
-            if (_hologram.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+            if (Hologram.TryGetComponent(out ICustomGhostRotation customRotationComponent))
             {
                 _direction = customRotationComponent.GetNextDirection(_direction);
             }
@@ -120,7 +120,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void Destroy()
         {
-            _hologram.Dispose(true);
+            Hologram.Dispose(true);
+            Hologram = null;
         }
     }
 }
