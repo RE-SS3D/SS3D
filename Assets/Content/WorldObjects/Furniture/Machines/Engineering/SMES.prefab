@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8033135651520204425}
   - component: {fileID: -5414623717715724467}
+  - component: {fileID: -5310336627659257466}
+  - component: {fileID: 4642179228716895328}
   m_Layer: 0
   m_Name: SMES
   m_TagString: Untagged
@@ -48,13 +50,15 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: -5310336627659257466}
+  - {fileID: 4642179228716895328}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -65,6 +69,39 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16232551768262221016
+--- !u!114 &-5310336627659257466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1cd0d7880cd9c4f98489ed5f9413ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+  _maxCapacity: 1000
+  _storedPower: 0
+  SmesSkinnedMesh: {fileID: 755838239801065349}
+--- !u!114 &4642179228716895328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
 --- !u!1 &4379219507269237858
 GameObject:
   m_ObjectHideFlags: 0

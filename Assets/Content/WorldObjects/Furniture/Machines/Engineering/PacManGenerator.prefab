@@ -10,6 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8033135651520204425}
   - component: {fileID: -5414623717715724467}
+  - component: {fileID: 6155362540496901199}
+  - component: {fileID: -8333369329392991934}
+  - component: {fileID: -6063640334274414652}
+  - component: {fileID: 1068612666733566269}
   m_Layer: 0
   m_Name: PacManGenerator
   m_TagString: Untagged
@@ -49,13 +53,16 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 6155362540496901199}
+  - {fileID: -8333369329392991934}
+  - {fileID: -6063640334274414652}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -66,6 +73,65 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16542793782496562664
+--- !u!114 &6155362540496901199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 328b489d4f8c1f04983e195ee8635c19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+  _powerProduction: 10
+--- !u!114 &-8333369329392991934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31d360eea9f7cb147a1b530b7842ff73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+--- !u!114 &-6063640334274414652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+--- !u!65 &1068612666733566269
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.88823944, y: 0.8753034, z: 0.7996018}
+  m_Center: {x: -0.0057807267, y: 0.43864733, z: 0.01926905}
 --- !u!1 &4271595947011161493
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,7 +225,6 @@ GameObject:
   m_Component:
   - component: {fileID: 608453462504062702}
   - component: {fileID: 1698900335226549537}
-  - component: {fileID: 5323246766978482323}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -239,16 +304,3 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.007445082, y: 0.4215365, z: -0.0044316053}
     m_Extent: {x: 0.41407037, y: 0.42270422, z: 0.41059247}
   m_DirtyAABB: 0
---- !u!65 &5323246766978482323
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4379219507269237858}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.83231133, y: 0.8492101, z: 0.78938055}
-  m_Center: {x: -0.009774417, y: 0.42334524, z: 0.013316378}
