@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: HumanHandLeft
   m_EditorClassIdentifier: 
   Id: HumanHandLeft
-  Database: Bodyparts
+  Database: Items
