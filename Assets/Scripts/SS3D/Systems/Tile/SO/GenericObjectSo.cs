@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,8 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class GenericObjectSo : ScriptableObject
     {
-        [Tooltip("A name for the object. Make sure it is unique.")]
-        public string nameString;
+        [NotNull]
+        public string NameString => prefab.name;
 
         public GameObject prefab;
         public Sprite icon;

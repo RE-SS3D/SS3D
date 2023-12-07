@@ -223,7 +223,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (ConstructionHologram buildGhost in _holograms)
             {
-                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.nameString, buildGhost.Position, buildGhost.Direction, isReplacing);
+                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.Position, buildGhost.Direction, isReplacing);
             }
         }
 
@@ -240,7 +240,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.nameString, hologram.Position, hologram.Direction);
+                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.Position, hologram.Direction);
                 }
             }
         }
@@ -261,7 +261,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             else
             {
                 bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                RpcSendCanBuild(_selectedObject.nameString, hologram.Position, hologram.Direction, isReplacing, LocalConnection);
+                RpcSendCanBuild(_selectedObject.NameString, hologram.Position, hologram.Direction, isReplacing, LocalConnection);
             }
         }
 
