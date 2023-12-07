@@ -70,7 +70,7 @@ namespace SS3D.Systems.Tile
         [CanBeNull]
         public GenericObjectSo GetAsset(string assetName)
         {
-            GenericObjectSo genericObjectSo = Assets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
+            GenericObjectSo genericObjectSo = Assets.FirstOrDefault(tileObject => tileObject.NameString == assetName);
             
             if (genericObjectSo == null)
             {

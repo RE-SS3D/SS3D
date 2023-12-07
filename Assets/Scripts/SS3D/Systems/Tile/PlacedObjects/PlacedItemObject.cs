@@ -52,7 +52,7 @@ namespace SS3D.Systems.Tile
         private Vector3 _worldPosition;
         private Quaternion _rotation;
 
-        public string NameString => _itemSo.nameString;
+        public string NameString => _itemSo.NameString;
 
         /// <summary>
         /// Set up a new item object.
@@ -83,7 +83,7 @@ namespace SS3D.Systems.Tile
         {
             return new SavedPlacedItemObject
             {
-                itemName = _itemSo.nameString,
+                itemName = _itemSo.NameString,
                 worldPosition = _worldPosition,
                 rotation = _rotation,
             };
