@@ -303,7 +303,7 @@ namespace SS3D.Systems.Tile
 
         public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
         {
-            List<PlacedItemObject> placedItems = _items.FindAll(item => item.NameString == itemObjectSo.nameString);
+            List<PlacedItemObject> placedItems = _items.FindAll(item => item.NameString == itemObjectSo.NameString);
             PlacedItemObject toRemove = null;
 
             foreach (PlacedItemObject item in placedItems)
