@@ -42,6 +42,8 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
+            SavedAssetReferences.Clear();
+
             settings.CreateDatabaseCode();
 
             HasModifiedAssetsWhenGenerating = false;
@@ -91,7 +93,15 @@ namespace SS3D.Data.AssetDatabases
                 {
                     WorldObjectAssetReference worldObjectAssetReference = CreateWorldObjectAssetReference(gameObject.name, assetDatabase.DatabaseName);
 
-                    SavedAssetReferences.Add($"{WorldObjectAssetPath}{worldObjectAssetReference.Id}.asset", worldObjectAssetReference);
+                    string key = $"{WorldObjectAssetPath}{worldObjectAssetReference.Id}.asset";
+
+                    if (SavedAssetReferences.ContainsKey(key))
+                    {
+                        Debug.LogError($"[{nameof(AssetDatabasesCodeGenerator)}] - {key} is already on the dictionary");
+                        continue;
+                    }
+
+                    SavedAssetReferences.Add(key, worldObjectAssetReference);
 
                     UpdateWorldObjectAssetReference(worldObjectAssetReference, gameObject, ref createdAssets);
                 }

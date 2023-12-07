@@ -25,7 +25,7 @@ namespace SS3D.Systems.Audio
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is Boombox boom)
-                return boom.interactionIcon;
+                return boom.InteractionIcon;
             return null;
         }
 
@@ -37,7 +37,7 @@ namespace SS3D.Systems.Audio
                 {
                     return false;
                 }
-                return boom.radioOn;
+                return boom.RadioOn;
             }
 
             return false;

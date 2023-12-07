@@ -49,22 +49,28 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset JumpsuitSecurity = new DatabaseAsset("JumpsuitSecurity", "Items");
         public static DatabaseAsset HeadsetLeft = new DatabaseAsset("HeadsetLeft", "Items");
         public static DatabaseAsset HeadsetRight = new DatabaseAsset("HeadsetRight", "Items");
-        public static DatabaseAsset HumanArmLeftItem = new DatabaseAsset("HumanArmLeftItem", "Items");
-        public static DatabaseAsset HumanArmRightItem = new DatabaseAsset("HumanArmRightItem", "Items");
-        public static DatabaseAsset HumanBrainItem = new DatabaseAsset("HumanBrainItem", "Items");
-        public static DatabaseAsset HumanEarLeftItem = new DatabaseAsset("HumanEarLeftItem", "Items");
-        public static DatabaseAsset HumanEarRightItem = new DatabaseAsset("HumanEarRightItem", "Items");
-        public static DatabaseAsset HumanFootLeftItem = new DatabaseAsset("HumanFootLeftItem", "Items");
-        public static DatabaseAsset HumanFootRightItem = new DatabaseAsset("HumanFootRightItem", "Items");
-        public static DatabaseAsset HumanHandLeftItem = new DatabaseAsset("HumanHandLeftItem", "Items");
-        public static DatabaseAsset HumanHandRightItem = new DatabaseAsset("HumanHandRightItem", "Items");
-        public static DatabaseAsset HumanHeadItem = new DatabaseAsset("HumanHeadItem", "Items");
-        public static DatabaseAsset HumanLegLeftItem = new DatabaseAsset("HumanLegLeftItem", "Items");
-        public static DatabaseAsset HumanLegRightItem = new DatabaseAsset("HumanLegRightItem", "Items");
-        public static DatabaseAsset HumanLungLeftItem = new DatabaseAsset("HumanLungLeftItem", "Items");
-        public static DatabaseAsset HumanLungRightItem = new DatabaseAsset("HumanLungRightItem", "Items");
-        public static DatabaseAsset HumanTorsoItem = new DatabaseAsset("HumanTorsoItem", "Items");
-        public static DatabaseAsset HumanHeartItem = new DatabaseAsset("HumanHeartItem", "Items");
+        public static DatabaseAsset HumanArmLeft = new DatabaseAsset("HumanArmLeft", "Items");
+        public static DatabaseAsset HumanArmRight = new DatabaseAsset("HumanArmRight", "Items");
+        public static DatabaseAsset HumanEarLeft = new DatabaseAsset("HumanEarLeft", "Items");
+        public static DatabaseAsset HumanEarRight = new DatabaseAsset("HumanEarRight", "Items");
+        public static DatabaseAsset HumanFootLeft = new DatabaseAsset("HumanFootLeft", "Items");
+        public static DatabaseAsset HumanFootRight = new DatabaseAsset("HumanFootRight", "Items");
+        public static DatabaseAsset HumanHandLeft = new DatabaseAsset("HumanHandLeft", "Items");
+        public static DatabaseAsset HumanHandRight = new DatabaseAsset("HumanHandRight", "Items");
+        public static DatabaseAsset HumanHead = new DatabaseAsset("HumanHead", "Items");
+        public static DatabaseAsset HumanLegLeft = new DatabaseAsset("HumanLegLeft", "Items");
+        public static DatabaseAsset HumanTorso = new DatabaseAsset("HumanTorso", "Items");
+        public static DatabaseAsset HumanLegRight = new DatabaseAsset("HumanLegRight", "Items");
+        public static DatabaseAsset HumanLungRight = new DatabaseAsset("HumanLungRight", "Items");
+        public static DatabaseAsset HumanLungLeft = new DatabaseAsset("HumanLungLeft", "Items");
+        public static DatabaseAsset HumanStomach = new DatabaseAsset("HumanStomach", "Items");
+        public static DatabaseAsset HumanLiver = new DatabaseAsset("HumanLiver", "Items");
+        public static DatabaseAsset HumanIntestineLarge = new DatabaseAsset("HumanIntestineLarge", "Items");
+        public static DatabaseAsset HumanEye = new DatabaseAsset("HumanEye", "Items");
+        public static DatabaseAsset HumanBrain = new DatabaseAsset("HumanBrain", "Items");
+        public static DatabaseAsset Toolbelt = new DatabaseAsset("Toolbelt", "Items");
+        public static DatabaseAsset Backpack = new DatabaseAsset("Backpack", "Items");
+        public static DatabaseAsset HumanHeart = new DatabaseAsset("HumanHeart", "Items");
     }
 }
 

@@ -82,5 +82,15 @@ namespace SS3D.Data.AssetDatabases
         {
             return asset.Get<LogSettings>();
         }
+
+        public static implicit operator Material(DatabaseAsset asset)
+        {
+            return asset.Get<Material>();
+        }
+
+        public static implicit operator AudioClip(DatabaseAsset asset)
+        {
+            return asset.Get<AudioClip>();
+        }
     }
 }

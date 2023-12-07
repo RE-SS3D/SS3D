@@ -1,12 +1,10 @@
 ﻿using FishNet.Object.Synchronizing;
-using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Data.Enums;
 using SS3D.Core;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio
 {
@@ -15,34 +13,36 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public class Boombox : InteractionTargetNetworkBehaviour, IToggleable
     {
-
+        [FormerlySerializedAs("_audioClips")]
         [SerializeField]
-        private SoundsIds[] soundsIds;
+        private List<AudioClip> _songs;
 
         // is it playing music
-
+        [FormerlySerializedAs("radioOn")]
         [SyncVar]
-        public bool radioOn;
+        public bool RadioOn;
 
+        [FormerlySerializedAs("currentMusic")]
         [SyncVar]
-        public int currentMusic;
+        public int CurrentMusic;
 
         // I hate my life
-        public Sprite interactionIcon;
-        public Sprite interactionIconOn;
-
+        [FormerlySerializedAs("interactionIcon")]
+        public Sprite InteractionIcon;
+        [FormerlySerializedAs("interactionIconOn")]
+        public Sprite InteractionIconOn;
 
         public void Toggle()
         {
-            radioOn = !radioOn;
-            if (!radioOn)
+            RadioOn = !RadioOn;
+            if (!RadioOn)
             {
 
                 Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
             }
             else
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.music, soundsIds[currentMusic], GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
+                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
             }
         }
 
@@ -50,13 +50,13 @@ namespace SS3D.Systems.Audio
         {
             Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
             Subsystems.Get<AudioSystem>().SetTimeAudioSource(NetworkObject, 0f);
-            currentMusic = (currentMusic + 1) % (soundsIds.Length);
-            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.music, soundsIds[currentMusic], GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
+            CurrentMusic = (CurrentMusic + 1) % (_songs.Count);
+            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
         }
 
         public bool GetState()
         {
-            return radioOn;
+            return RadioOn;
         }
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -67,8 +67,8 @@ namespace SS3D.Systems.Audio
             };
             ToggleInteraction toggleInteraction = new ToggleInteraction
             {
-                IconOn = interactionIconOn,
-                IconOff = interactionIconOn,
+                IconOn = InteractionIconOn,
+                IconOff = InteractionIconOn,
             };
 
             interactions.Insert(GetState() ? interactions.Count : interactions.Count - 1, toggleInteraction);

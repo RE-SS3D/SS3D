@@ -202,6 +202,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6699414010407460003}
   _networkObjectCache: {fileID: 6699414010407460003}
+  _asset: {fileID: 11400000, guid: 739991c49857a3d40b2060d96908de45, type: 2}
   _name: Gloves insulated left
   _weight: 1
   _startingTraits:

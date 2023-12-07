@@ -4,12 +4,10 @@ using System.Linq;
 using Coimbra;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Core.Behaviours;
 using SS3D.Data;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.UIElements;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio
 {
@@ -19,6 +17,35 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public class AudioSystem : Core.Behaviours.NetworkSystem
     {
+        [FormerlySerializedAs("_sfxAudioSourcePrefab")]
+        [Tooltip("The SFX audio source to be spawned.")]
+        public GameObject SfxAudioSourcePrefab;
+
+        [FormerlySerializedAs("_musicAudioSourcePrefab")]
+        [Tooltip("The music audio source to be spawned.")]
+        public GameObject MusicAudioSourcePrefab;
+
+        [FormerlySerializedAs("_minSfxAudioSources")]
+        [Tooltip("The number of SFX audio sources to start out with.")]
+        public int MinSfxAudioSources = 10;
+        [FormerlySerializedAs("_maxSfxAudioSources")]
+        [Tooltip("Any more than this will be considered too many SFX audio sources.")]
+        public int MaxSfxAudioSources = 30;
+
+        [FormerlySerializedAs("_minMusicAudioSources")]
+        [Tooltip("The number of music audio sources to start out with.")]
+        public int MinMusicAudioSources = 3;
+        [FormerlySerializedAs("_maxMusicAudioSources")]
+        [Tooltip("Any more than this will be considered too many SFX audio sources.")]
+        public int MaxMusicAudioSources = 10;
+
+        [FormerlySerializedAs("purgeFrequency")]
+        [Tooltip("How often (in minutes) do we purge unused audio sources?")]
+        [SerializeField]
+        private int _purgeFrequency = 2;
+
+        private List<AudioSourcesList> _audioSourcesLists;
+        
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -31,29 +58,6 @@ namespace SS3D.Systems.Audio
             Subsystems.Unregister(this);
         }
 
-        [Tooltip("The SFX audio source to be spawned.")]
-        public GameObject _sfxAudioSourcePrefab;
-
-        [Tooltip("The music audio source to be spawned.")]
-        public GameObject _musicAudioSourcePrefab;
-
-
-        [Tooltip("The number of SFX audio sources to start out with.")]
-        public int _minSfxAudioSources = 10;
-        [Tooltip("Any more than this will be considered too many SFX audio sources.")]
-        public int _maxSfxAudioSources = 30;
-
-
-        [Tooltip("The number of music audio sources to start out with.")]
-        public int _minMusicAudioSources = 3;
-        [Tooltip("Any more than this will be considered too many SFX audio sources.")]
-        public int _maxMusicAudioSources = 10;
-
-        [Tooltip("How often (in minutes) do we purge unused audio sources?")]
-        [SerializeField] private int purgeFrequency = 2;
-
-        private List<AudioSourcesList> audioSourcesLists;
-
         private void Start()
         {
             CreateAudioSourceIndex();
@@ -61,21 +65,12 @@ namespace SS3D.Systems.Audio
         }
 
         /// <summary>
-        /// Grabs an unused audio source and plays an audio clip at the desired location.
-        /// </summary>
-        [Server]
-        public void PlayAudioSource(AudioType audioType, SoundsIds audioClipId, Vector3 position)
-        {
-            PlayAudioSource(audioType, audioClipId, position, NetworkObject);
-        }
-
-        /// <summary>
         /// Grabs a free audio source and parents it to a specific object before playing it.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, SoundsIds audioClipId, NetworkObject parent)
+        public void PlayAudioSource(AudioType audioType, AudioClip audioClipId, NetworkObject parent)
         {
-            RpcPlayAudioSource(audioType, audioClipId, parent.transform.position, parent);
+            RpcPlayAudioSource(audioType, audioClipId.name, parent.transform.position, parent);
         }
 
         /// <summary>
@@ -83,9 +78,9 @@ namespace SS3D.Systems.Audio
         /// Volume, pitch, and ranges are optional.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, SoundsIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void PlayAudioSource(AudioType audioType, AudioClip audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
-            RpcPlayAudioSource(audioType, audioClipId, position, parent, volume, pitch, minRange, maxRange);   
+            RpcPlayAudioSource(audioType, audioClipId.name, position, parent, volume, pitch, minRange, maxRange);
         }
 
         [Server]
@@ -106,18 +101,18 @@ namespace SS3D.Systems.Audio
             parent.GetComponentInChildren<AudioSource>().time = time;
         }
 
-
         [ObserversRpc]
-        public void RpcPlayAudioSource(AudioType type, SoundsIds audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void RpcPlayAudioSource(AudioType type, string audioClip, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
-            var audioClip = Assets.Get<AudioClip>((int)AssetDatabases.Sounds, (int)audioClipId);
-            var audioSource = FindAvailableAudioSource(type);
+            AudioSource audioSource = FindAvailableAudioSource(type);
+
             audioSource.gameObject.transform.position = position;
-            audioSource.clip = audioClip;
+            audioSource.clip = Assets.Get<AudioClip>(AssetDatabases.Sounds, audioClip);
             audioSource.volume = volume;
             audioSource.pitch = pitch;
             audioSource.minDistance = minRange;
             audioSource.maxDistance = maxRange;
+
             //If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
             //This is useful for things that are obviously creating the sound, like a mouse's squeak
             //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
@@ -138,21 +133,22 @@ namespace SS3D.Systems.Audio
         {
             AudioSource validSource = null;
 
-            AudioSourcesList audioSources = audioSourcesLists.Find(x => x.audioType == audioType);
+            AudioSourcesList audioSources = _audioSourcesLists.Find(x => x.AudioType == audioType);
 
             //If there are no audio sources in our list, fix that.
-            if (audioSources.list.Count == 0)
+            if (audioSources.List.Count == 0)
             {
                 audioSources.CreateNewAudioSource();
             }
 
             //Check the list for an audio source that isn't being used.
-            foreach (AudioSource source in audioSources.list)
+            foreach (AudioSource source in audioSources.List)
             {
                 if (!source.isPlaying)
                 {
                     //If we found one, exit the foreach loop.
                     validSource = source;
+
                     break;
                 }
             }
@@ -161,8 +157,9 @@ namespace SS3D.Systems.Audio
             if (validSource == null)
             {
                 audioSources.CreateNewAudioSource();
+
                 //And let's use it.
-                validSource = audioSources.list[audioSources.list.Count - 1];
+                validSource = audioSources.List[audioSources.List.Count - 1];
             }
 
             return validSource;
@@ -173,45 +170,42 @@ namespace SS3D.Systems.Audio
         /// </summary>
         private void CreateAudioSourceIndex()
         {
-            audioSourcesLists = new List<AudioSourcesList>
+            _audioSourcesLists = new List<AudioSourcesList>
             {
-                new AudioSourcesList(_maxSfxAudioSources, _minSfxAudioSources, AudioType.sfx, _sfxAudioSourcePrefab, GameObject),
-                new AudioSourcesList(_maxMusicAudioSources, _minMusicAudioSources, AudioType.music, _musicAudioSourcePrefab, GameObject)
+                new AudioSourcesList(MaxSfxAudioSources, MinSfxAudioSources, AudioType.Sfx, SfxAudioSourcePrefab, GameObject), new AudioSourcesList(MaxMusicAudioSources, MinMusicAudioSources, AudioType.Music, MusicAudioSourcePrefab, GameObject)
             };
         }
 
         /// <summary>
         /// Waits a specific amount of time before purging unused audio sources.
         /// </summary>
-        IEnumerator PurgeCountdown()
+        private IEnumerator PurgeCountdown()
         {
             // We want our wait period in minutes, so multiply by 60.
-            yield return new WaitForSeconds(purgeFrequency * 60);
+            yield return new WaitForSeconds(_purgeFrequency * 60);
 
-            audioSourcesLists.Where(x => x.list.Count > x.maxAudioSources)
-                .ToList()
-                .ForEach(sourcelist => sourcelist.PurgeUnusedAudioSources());
+            _audioSourcesLists.Where(x => x.List.Count > x.MaxAudioSources).ToList().ForEach(sourcelist => sourcelist.PurgeUnusedAudioSources());
 
             StartCoroutine(PurgeCountdown());
         }
 
         private struct AudioSourcesList
         {
-            public int maxAudioSources;
-            public int minAudioSources;
-            public AudioType audioType;
-            public List<AudioSource> list;
-            public GameObject prefab;
-            public GameObject audioSystem;
+            public int MaxAudioSources;
+            public int MinAudioSources;
+            public AudioType AudioType;
+            public List<AudioSource> List;
+            public GameObject Prefab;
+            public GameObject AudioSystem;
 
             public AudioSourcesList(int maxSources, int minSources, AudioType type, GameObject audioSourcePrefab, GameObject audioSystemGameObject)
             {
-                audioType = type;
-                list = new List<AudioSource>();
-                minAudioSources = minSources;
-                maxAudioSources = maxSources;
-                prefab = audioSourcePrefab;
-                audioSystem= audioSystemGameObject;
+                AudioType = type;
+                List = new List<AudioSource>();
+                MinAudioSources = minSources;
+                MaxAudioSources = maxSources;
+                Prefab = audioSourcePrefab;
+                AudioSystem = audioSystemGameObject;
 
                 for (int i = 0; i < minSources; i++)
                 {
@@ -219,15 +213,14 @@ namespace SS3D.Systems.Audio
                 }
             }
 
-
             /// <summary>
             /// Creates a new audio source and adds it to the list.
             /// </summary>
             public void CreateNewAudioSource()
             {
-                AudioSource newAudioSource = Instantiate(prefab, audioSystem.transform.position, Quaternion.identity).GetComponent<AudioSource>();
-                list.Add(newAudioSource);
-                newAudioSource.transform.parent = audioSystem.transform;
+                AudioSource newAudioSource = Instantiate(Prefab, AudioSystem.transform.position, Quaternion.identity).GetComponent<AudioSource>();
+                List.Add(newAudioSource);
+                newAudioSource.transform.parent = AudioSystem.transform;
             }
 
             /// <summary>
@@ -235,18 +228,17 @@ namespace SS3D.Systems.Audio
             /// </summary>
             public void PurgeUnusedAudioSources()
             {
-                foreach (var source in list)
+                foreach (AudioSource source in List)
                 {
                     //Check that the audio source is idle, and we have more than our minimum number.
-                    if (!source.isPlaying && list.Count > minAudioSources)
+                    if (!source.isPlaying && List.Count > MinAudioSources)
                     {
-                        list.Remove(source);
+                        List.Remove(source);
                         source.gameObject.Dispose(true);
                     }
                 }
             }
         }
-
     }
 }
 
