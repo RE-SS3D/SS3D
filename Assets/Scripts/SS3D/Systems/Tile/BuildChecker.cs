@@ -105,7 +105,7 @@ namespace SS3D.Systems.Tile
             // No low wall mounts on windows
             if (!wallLocation.IsEmpty(dir))
             {
-                canBuild &= !(wallLocation.PlacedObject.NameString.Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
+                canBuild &= !(wallLocation.PlacedObject.NameString.Contains("Window") && wallAttachment.layer == TileLayer.WallMountLow);
             }
 
             // Mounts cannot collide with neighbouring wall
@@ -137,7 +137,7 @@ namespace SS3D.Systems.Tile
             if (!plenumLocation.IsEmpty())
             {
                 // Can only build on a Plenum and not Catwalks or Lattices
-                canBuild &= plenumLocation.PlacedObject.NameString.Contains("plenum") || plenumLocation.PlacedObject.name.Contains("catwalk");
+                canBuild &= plenumLocation.PlacedObject.NameString.Contains("Plenum") || plenumLocation.PlacedObject.name.Contains("Catwalk");
             }
             else
             {
