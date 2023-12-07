@@ -91,7 +91,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             // Move hologram, that sticks to the mouse. Currently it exists only if player is not dragging.
             if (_holograms.Count == 1)
             {
-                _holograms.First().Position = position;
+                _holograms.First().TargetPosition = position;
                 if (position != _lastSnappedPosition)
                 {
                     RefreshHologram(_holograms.First());
@@ -130,7 +130,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 for (int i = 0; i < tiles.Length; i++)
                 {
                     _holograms[i].Hologram.transform.position = tiles[i];
-                    _holograms[i].Position = tiles[i];
+                    _holograms[i].TargetPosition = tiles[i];
                     RefreshHologram(_holograms[i]);
                 }
             }
@@ -158,7 +158,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             GameObject tileObject = Instantiate(prefab);
             ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
-            tileObject.transform.position = hologram.Position;
+            tileObject.transform.position = hologram.TargetPosition;
             _holograms.Add(hologram);
             RefreshHologram(hologram);
             return hologram;
@@ -245,7 +245,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (ConstructionHologram buildGhost in _holograms)
             {
-                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.nameString, buildGhost.Position, buildGhost.Direction, isReplacing);
+                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.nameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
             }
         }
 
@@ -262,7 +262,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.nameString, hologram.Position, hologram.Direction);
+                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.nameString, hologram.TargetPosition, hologram.Direction);
                 }
             }
         }
@@ -283,7 +283,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             else
             {
                 bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                RpcSendCanBuild(_selectedObject.nameString, hologram.Position, hologram.Direction, isReplacing, LocalConnection);
+                RpcSendCanBuild(_selectedObject.nameString, hologram.TargetPosition, hologram.Direction, isReplacing, LocalConnection);
             }
         }
 
@@ -362,7 +362,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             for (int i = 0; i < _holograms.Count; i++)
             {
                 ConstructionHologram hologram = _holograms[i];
-                if (hologram.Position != placePosition) continue;
+                if (hologram.TargetPosition != placePosition) continue;
 
                 if (canBuild)
                 {

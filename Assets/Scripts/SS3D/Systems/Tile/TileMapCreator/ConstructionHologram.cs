@@ -13,21 +13,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
     public class ConstructionHologram
     {
         public GameObject Hologram;
-        private Vector3 _position;
+        private Vector3 _targetPosition;
         private Direction _direction;
         public Direction Direction => _direction;
         public bool ActiveSelf => Hologram.activeSelf;
         public bool SetActive { set => Hologram.SetActive(value); }
-        public Vector3 Position { get => _position; set => _position = value; }
+        public Vector3 TargetPosition { get => _targetPosition; set => _targetPosition = value; }
         
         /// <summary>
         /// Build a new hologram
         /// </summary>
         /// <param name="ghostObject"> the game object we want to make a hologram from.</param>
-        /// <param name="targetPosition"> the initial position of the hologram in space.</param>
+        /// <param name="targetTargetPosition"> the initial position of the hologram in space.</param>
         /// <param name="dir"> the expected original direction. Note that not all directions are compatible with
         /// all tile objects. If it's not, it will choose another available direction.</param>
-        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
+        public ConstructionHologram(GameObject ghostObject, Vector3 targetTargetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
         {
             List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
                 .Where(x => x is not ICustomGhostRotation).ToList();
@@ -35,7 +35,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             components.ForEach(x => x.enabled = false);
 
             Hologram = ghostObject;
-            _position = targetPosition;
+            _targetPosition = targetTargetPosition;
             _direction = dir;
 
             if (ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent) 
@@ -98,7 +98,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void UpdateRotationAndPosition()
         {
             // Small offset is added so that meshes don't overlap with already placed objects.
-            Hologram.transform.position = Vector3.Lerp(Hologram.transform.position, _position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
+            Hologram.transform.position = Vector3.Lerp(Hologram.transform.position, _targetPosition + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
             Hologram.transform.rotation = Quaternion.Lerp(Hologram.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_direction), 0), Time.deltaTime * 15f);
         }
 
