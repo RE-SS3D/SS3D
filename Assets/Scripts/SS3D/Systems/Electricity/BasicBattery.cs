@@ -28,11 +28,13 @@ namespace System.Electricity
 
         public float MaxPowerRate => _maxPowerRate;
 
+        public float MaxRemovablePower => _maxPowerRate > _storedPower ? _storedPower : _maxPowerRate;
+
         public float AddPower(float amount)
         {
-            if(amount <= 0) return 0;
+            if (amount <= 0) return 0;
 
-            if(_storedPower + amount > _maxCapacity)
+            if (_storedPower + amount > _maxCapacity)
             {
                 _storedPower = _maxCapacity;
                 return _maxCapacity - _storedPower;
@@ -42,13 +44,6 @@ namespace System.Electricity
                 _storedPower += amount;
                 return amount;
             }
-        }
-
-        public float RemoveMaxAllowedPower()
-        {
-            float removedPower = _maxPowerRate > _storedPower ? _storedPower : _maxPowerRate;
-            _storedPower -= removedPower;
-            return removedPower;
         }
 
         public float RemovePower(float amount)

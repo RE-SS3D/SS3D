@@ -13,6 +13,8 @@ public interface IPowerStorage : IElectricDevice
 
     public float MaxPowerRate { get; }
 
+    public float MaxRemovablePower { get; }
+
     /// <summary>
     ///  Remove a given amount of power from battery, respecting Max power rate and present amount.
     /// </summary>
@@ -24,10 +26,4 @@ public interface IPowerStorage : IElectricDevice
     /// </summary>
     /// <returns> Return the power amount added. </returns>
     public float AddPower(float amount);
-
-    /// <summary>
-    /// Remove power from battery, respecting Max power rate and present amount.
-    /// </summary>
-    /// <returns> Return the power amount removed</returns>
-    public float RemoveMaxAllowedPower();
 }
