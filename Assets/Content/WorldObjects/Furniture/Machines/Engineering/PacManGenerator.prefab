@@ -89,6 +89,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -5414623717715724467}
   _networkObjectCache: {fileID: -5414623717715724467}
   _powerProduction: 10
+  _skinnedMeshRenderer: {fileID: 1698900335226549537}
+  _amplitude: 1
+  _frequency: 35
 --- !u!114 &-8333369329392991934
 MonoBehaviour:
   m_ObjectHideFlags: 0

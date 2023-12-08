@@ -1,4 +1,6 @@
-﻿using SS3D.Core;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
+using SS3D.Core;
 using SS3D.Data.Enums;
 using SS3D.Systems.Audio;
 using System.Collections;
@@ -12,19 +14,55 @@ namespace System.Electricity
     {
         [SerializeField]
         private float _powerProduction = 10f;
+
+        [SerializeField]
+        private SkinnedMeshRenderer _skinnedMeshRenderer;
+
+        private const string OnBlendShapeName = "On";
+
+        private const string OutputBlendShapeName = "Output";
+
+        private const string LowFuel = "LowFuel";
         public float PowerProduction => _powerProduction;
 
-        protected override void OnStart()
+        private Quaternion _initialRotation; // Rotation of the generator at rest.
+
+        private Vector3 _directionOfShake; // In which direction the generator shake.
+
+        [SerializeField]
+        private float _amplitude = 1; // How much is the amplitude of the vibration.
+
+        [SerializeField]
+        private float _frequency = 35; // Vibrating speed.
+
+        private float _elapsedTime = 0f; // Elapsed time for the vibrating stuff.
+
+        private bool _enabled = false; // If the generator is working.
+
+
+        public override void OnStartClient()
         {
-            base.OnStart();
+            base.OnStartClient();
             GetComponent<FuelPowerGeneratorInteractionTarget>().OnGeneratorToggle += HandleGeneratorToggle;
+            AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
+            _initialRotation = Rotation;
+            _directionOfShake = Transform.right;       
+        }
+
+        private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
+        {
+            if (_enabled) Vibrate();
         }
 
         private void HandleGeneratorToggle(bool enabled)
         {
+            _enabled = enabled;
+            if(enabled) _initialRotation = Rotation;
+
             HandleSound(enabled);
             HandleLights(enabled);
             HandlePowerGenerated(enabled);
+            HandleResetVibration();   
         }
 
         private void HandleSound(bool enabled)
@@ -41,19 +79,42 @@ namespace System.Electricity
 
         private void HandleLights(bool enabled)
         {
-            
+            int OnblendShapeIndex = _skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(OnBlendShapeName);
+            int OutputBlendShapeIndex = _skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(OutputBlendShapeName);
+
+            if (OnblendShapeIndex != -1)
+            {
+                _skinnedMeshRenderer.SetBlendShapeWeight(OnblendShapeIndex, enabled ? 100 : 0);
+            }
+            else
+            {
+                Debug.LogError("Blend shape " + OnBlendShapeName + " not found.");
+            }
+
+            if (OutputBlendShapeIndex != -1)
+            {
+                _skinnedMeshRenderer.SetBlendShapeWeight(OutputBlendShapeIndex, enabled ? 100 : 0);
+            }
+            else
+            {
+                Debug.LogError("Blend shape " + OnBlendShapeName + " not found.");
+            }
         }
 
         private void HandlePowerGenerated(bool enabled)
         {
-            if (!enabled)
-            {
-                _powerProduction = 0f;
-            }
-            else
-            {
-                _powerProduction = 10f;
-            }
+            _powerProduction = enabled ? 10f : 0f; 
+        }
+
+        private void HandleResetVibration()
+        {
+            Rotation = _initialRotation;
+        }
+
+        private void Vibrate()
+        {
+            _elapsedTime += Time.fixedDeltaTime;
+            transform.rotation = _initialRotation * Quaternion.Euler(_directionOfShake * (-_amplitude + Mathf.PingPong(_frequency * _elapsedTime, 2f * _amplitude)));
         }
     }
 }
