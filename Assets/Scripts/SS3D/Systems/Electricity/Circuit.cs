@@ -76,7 +76,7 @@ namespace System.Electricity
         }
 
         /// <summary>
-        /// Consume power from batteries if the producer don't produce enough power for all consumers.
+        /// Consume power from batteries if the producers don't produce enough power for all consumers.
         /// </summary>
         /// <param name="firstUnPoweredConsumer"> The first unpowered consumer in the list of consumers.</param>
         /// <param name="notEnoughPower"> Should be set to true if the storages don't have enough power for all unpowered consumers.</param>
@@ -116,7 +116,7 @@ namespace System.Electricity
                         notEnoughPower = true;
                         break;
                     }
-                    if (storagesWithLeftPower[0].StoredPower > powerNeeded)
+                    if (storagesWithLeftPower[0].StoredPower > powerNeeded )
                     {
                         powerFromStorages = powerNeeded;
                         storagesWithLeftPower[0].StoredPower -= powerNeeded;
@@ -205,9 +205,13 @@ namespace System.Electricity
 
             for(int i =0; i < _consumers.Count; i++)
             {
-                if(notEnoughPower && i == firstUnpoweredIndex)
+                if(notEnoughPower && i >= firstUnpoweredIndex)
                 {
                     _consumers[i].PowerStatus = PowerStatus.Inactive;
+                }
+                else if(notEnoughPower && i < firstUnpoweredIndex)
+                {
+                    _consumers[i].PowerStatus = PowerStatus.Powered;
                 }
                 else
                 {
