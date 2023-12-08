@@ -54,6 +54,8 @@ namespace SS3D.Systems.Tile.Connections
 
             foreach (var neighbourObject in neighbourObjects)
             {
+                if (!NeighbourIsCable(neighbourObject)) continue;
+
                 _placedObject.NeighbourAtDirectionOf(neighbourObject, out Direction dir);
                 changed |= UpdateSingleConnection(dir, neighbourObject, true);
             }
@@ -67,6 +69,8 @@ namespace SS3D.Systems.Tile.Connections
         public override bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             Setup();
+
+            if (!NeighbourIsCable(neighbourObject)) return false;
 
             bool isConnected = IsConnected(neighbourObject);
 
@@ -119,6 +123,15 @@ namespace SS3D.Systems.Tile.Connections
                 _adjacencyMap.DeserializeFromByte(newValue);
                 UpdateMeshAndDirection();
             }
+        }
+
+        /// <summary>
+        /// Cables can have as neighbour electrical device but they should not physically connect to them, as they pass below them.
+        /// They only visually connect to other cables. Which is why it's useful to check if a neighbour is a cable or another electric device.
+        /// </summary>>
+        private bool NeighbourIsCable(PlacedTileObject neighbour)
+        {
+            return neighbour != null && neighbour.Connector is CablesAdjacencyConnector;
         }
 
     }
