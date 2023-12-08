@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 8414326144691496247}
   - component: {fileID: 495010723332035723}
   - component: {fileID: 946744180037249438}
-  - component: {fileID: 7450018185539194511}
+  - component: {fileID: 1110571202190571383}
   m_Layer: 0
-  m_Name: PlasticChairBottom
+  m_Name: OfficeChairBottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3648840853805917807}
-  m_Mesh: {fileID: -3238642808552340740, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
+  m_Mesh: {fileID: 2408432354090147681, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
 --- !u!23 &946744180037249438
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7450018185539194511
-MeshCollider:
+--- !u!65 &1110571202190571383
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -94,10 +94,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3238642808552340740, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 0.47157142, y: 0.33261716, z: 0.4715702}
+  m_Center: {x: -0.0000005066395, y: 0.1662085, z: 0.02982717}
 --- !u!1 &5161561551087789900
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,9 +106,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8213111319263450463}
-  - component: {fileID: 5640352947892099654}
+  - component: {fileID: 354436423397270740}
   m_Layer: 0
-  m_Name: PlasticChair
+  m_Name: OfficeChair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,7 +131,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5640352947892099654
+--- !u!114 &354436423397270740
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -163,7 +162,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 15079461551721853225
+  <AssetPathHash>k__BackingField: 3341143730545174348
 --- !u!1 &5218468364695561986
 GameObject:
   m_ObjectHideFlags: 0
@@ -173,11 +172,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 254666270778612133}
-  - component: {fileID: 588915473966038515}
-  - component: {fileID: 6124278511142040898}
-  - component: {fileID: 7593211548945511181}
+  - component: {fileID: 4549835337802878503}
+  - component: {fileID: 2513426591894337786}
+  - component: {fileID: 4592357425551153251}
   m_Layer: 0
-  m_Name: PlasticChair
+  m_Name: OfficeChair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -198,15 +197,15 @@ Transform:
   m_Father: {fileID: 8213111319263450463}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &588915473966038515
+--- !u!33 &4549835337802878503
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5218468364695561986}
-  m_Mesh: {fileID: -6224953987796416769, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
---- !u!23 &6124278511142040898
+  m_Mesh: {fileID: 1109115656077450930, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
+--- !u!23 &2513426591894337786
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -248,7 +247,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7593211548945511181
+--- !u!64 &4592357425551153251
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -261,4 +260,4 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -6224953987796416769, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
+  m_Mesh: {fileID: 1109115656077450930, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
