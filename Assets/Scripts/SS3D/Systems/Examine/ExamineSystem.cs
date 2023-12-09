@@ -25,9 +25,9 @@ namespace SS3D.Systems.Examine
 
 
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
             _selectionSystem = Subsystems.Get<SelectionSystem>();
         }
 
