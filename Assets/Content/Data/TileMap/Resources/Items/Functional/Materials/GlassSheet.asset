@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: GlassSheet
   m_EditorClassIdentifier: 
-  nameString: PowerCell
-  prefab: {fileID: 2402587210622244651, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+  prefab: {fileID: 7125681683583715523, guid: e2a06f02e6a7e0348bdc535344bfe1f3, type: 3}
   icon: {fileID: 0}

@@ -305,6 +305,18 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheet.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 2767aeb6e6fd53b43a1cb305789834d4
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodLog.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4aee3fb97a6a2d442804c8c0b8347a92
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodPlank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 48fa93e2da7acb3499e400becf2afc26
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelRod.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
