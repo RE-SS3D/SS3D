@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.Items
     [RequireComponent(typeof(NetworkTransform))]
     [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSource, IInteractionTarget, IExaminable
+    public class Item : InteractionSource, IInteractionTarget
     {
         #region Item
         [Header("Item settings")]
@@ -74,8 +74,6 @@ namespace SS3D.Systems.Inventory.Items
         public AttachedContainer Container => _container;
 
         private bool _initialised = false;
-
-        [SerializeField] private ExamineData _examineData;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
@@ -347,11 +345,6 @@ namespace SS3D.Systems.Inventory.Items
         public void RemoveTraits(Trait trait)
         {
              _traits.Remove(trait);
-        }
-
-        public ExamineData GetData()
-        {
-            return _examineData;
         }
 
         #endregion
