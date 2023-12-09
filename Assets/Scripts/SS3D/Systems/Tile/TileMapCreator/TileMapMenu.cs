@@ -119,6 +119,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 // Detach the tab from a movable panel. It's necessary to prevent disabling all tabs in the panel.
                 _tab.Detach();
                 _hologramManager.DestroyHolograms();
+                _inputField.text = string.Empty;
             }
             _tab.Panel.gameObject.SetActive(isShow);
             _menuRoot.SetActive(isShow);
