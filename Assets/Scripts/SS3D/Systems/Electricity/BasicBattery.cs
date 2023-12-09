@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// A basic implementation of the IpowerStorage interface.
+    /// </summary>
     public class BasicBattery : BasicElectricDevice, IPowerStorage
     {
         [SerializeField]
@@ -23,18 +26,26 @@ namespace System.Electricity
 
         protected bool _isOn = true;
 
+        /// <inheritdoc> </inheritdoc>
         public float StoredPower { get => _storedPower; set => _storedPower = value >= 0 ? MathF.Min(MaxCapacity, value) : MathF.Max(0f, value); }
 
+        /// <inheritdoc> </inheritdoc>
         public float MaxCapacity => _maxCapacity;
 
+        /// <inheritdoc> </inheritdoc>
         public float RemainingCapacity => _maxCapacity - _storedPower;
 
+        /// <inheritdoc> </inheritdoc>
         public float MaxPowerRate => _maxPowerRate;
 
+        /// <inheritdoc> </inheritdoc>
         public float MaxRemovablePower => _maxPowerRate > _storedPower ? _storedPower : _maxPowerRate;
 
+        /// <inheritdoc> </inheritdoc>
         public bool IsOn => _isOn;
 
+
+        /// <inheritdoc> </inheritdoc>
         public float AddPower(float amount)
         {
             if (amount <= 0 || !_isOn) return 0;
@@ -51,6 +62,7 @@ namespace System.Electricity
             }
         }
 
+        /// <inheritdoc> </inheritdoc>
         public float RemovePower(float amount)
         {
             if (amount <= 0 || !_isOn) return 0;

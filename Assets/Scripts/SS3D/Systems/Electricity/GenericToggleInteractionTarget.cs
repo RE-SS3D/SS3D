@@ -10,6 +10,9 @@ using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// Small script to make a game object toggleable. All it does is send an OnToggle event when its state changes.
+    /// </summary>
     public class GenericToggleInteractionTarget : InteractionTargetNetworkBehaviour, IToggleable
     {
 

@@ -8,10 +8,15 @@ using UnityEngine;
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// Script for SMES battery, mostly to handle displaying visual indicators on the SMES models.
+    /// </summary>
     public class SmesBattery : BasicBattery
     {
         [SerializeField]
         private SkinnedMeshRenderer SmesSkinnedMesh;
+
+        // Bunch of blend shape indexes.
 
         private const int ChargeblendIndex = 0;
 
@@ -27,6 +32,9 @@ namespace System.Electricity
 
         private int _lightOutputTarget = 0;
 
+        /// <summary>
+        /// How much frame before updating the output lights.
+        /// </summary>
         [SerializeField]
         private int _updateLightPeriod = 25;
 
@@ -49,13 +57,18 @@ namespace System.Electricity
             _previousPowerStored = StoredPower;
         }
 
-
+        /// <summary>
+        /// Adjust the battery level, the liquid thingy going up and down, depending on the amount of stored power.
+        /// </summary>
         private void AdjustBatteryLevel()
         {
             float chargeLevelNormalized = StoredPower / MaxCapacity;
             SmesSkinnedMesh.SetBlendShapeWeight(ChargeblendIndex, chargeLevelNormalized*100);
         }
 
+        /// <summary>
+        /// Just turn on the battery input light, if power was added. Turn it off if no power added, or power removed.
+        /// </summary>
         private void AdjustBatteryInput()
         {
             float powerAdded = Mathf.Max(StoredPower - _previousPowerStored, 0f);
@@ -70,6 +83,10 @@ namespace System.Electricity
             }
         }
 
+        /// <summary>
+        /// Set the vertical line of output lights so that, at each update, the bar go up and down toward the light it should reached.
+        /// Do nothing if the target light is reached.
+        /// </summary>
         private void AdjustBatteryOutput()
         {
             ComputeLightOutputTarget();
@@ -102,11 +119,19 @@ namespace System.Electricity
             _lightOutputTarget = (int)relativeRate; 
         }
 
+        /// <summary>
+        /// Return the state of the SMES battery.
+        /// </summary>
+        /// <returns> The state of the battery. </returns>
         public bool GetState()
         {
             return IsOn;
         }
 
+        /// <summary>
+        /// Called when the SMES battery is toggled on or off.
+        /// </summary>
+        /// <param name="toggle"> True if the battery is on.</param>
         public void HandleBatteryToggle(bool toggle)
         {
             _isOn = toggle;

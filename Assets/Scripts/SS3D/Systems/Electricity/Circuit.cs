@@ -9,6 +9,10 @@ using System;
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// Class to store all connected consumers, producers and storages of electric power.
+    /// It handles distributing power to all of those.
+    /// </summary>
     public class Circuit
     {
         private List<IPowerConsumer> _consumers;
@@ -16,9 +20,6 @@ namespace System.Electricity
         private List<IPowerStorage> _storages;
 
         private static Random RandomGenerator = new Random();
-
-
-        public List<IPowerConsumer> Consumers { get { return _consumers; } }
 
         public Circuit() 
         {
@@ -179,15 +180,17 @@ namespace System.Electricity
         {
             if (availablePower <= 0f) return 0f;
 
-            // distribute an equal amount to all which are not full and are on.
+            // compute an equal amount to all which are not full and are on.
             float equalAmount = availablePower / _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).Count();
-            var notFullyFillableStorages = _storages.Where(x => x.RemainingCapacity > equalAmount).ToList();
-            var fullyFillableStorages = _storages.Where(x => x.RemainingCapacity <= equalAmount).ToList();
 
+            // Give power to all those that can take the full equal amount.
+            var notFullyFillableStorages = _storages.Where(x => x.RemainingCapacity > equalAmount).ToList();
             notFullyFillableStorages.ForEach(x => x.AddPower(equalAmount));
             availablePower -= equalAmount * notFullyFillableStorages.Count;
 
-            // fill the ones that can be filled
+            // Fill the storages that can be filled
+            var fullyFillableStorages = _storages.Where(x => x.RemainingCapacity <= equalAmount).ToList();
+
             foreach(IPowerStorage storage in fullyFillableStorages)
             {
                 if (availablePower >= storage.RemainingCapacity)
@@ -199,7 +202,6 @@ namespace System.Electricity
             }
 
             return availablePower;
-
         }
 
         /// <summary>
