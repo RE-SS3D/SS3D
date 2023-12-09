@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 4052990814619214022}
   - component: {fileID: 8540712827701727508}
   m_Layer: 10
-  m_Name: DoodadTestItem
+  m_Name: Doodad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -227,7 +227,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 12770899590681768459
+  <AssetPathHash>k__BackingField: 2223794814212477393
 --- !u!114 &8540712827701727508
 MonoBehaviour:
   m_ObjectHideFlags: 0
