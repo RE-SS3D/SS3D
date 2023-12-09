@@ -317,6 +317,18 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelRod.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 06d944205e6b6dd489af078fa85fb878
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Welder.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e3fb39f0a84acf541b6ee828550a1708
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/PlasmaTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5479411218b869144b7d09d6db6dc58e
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
