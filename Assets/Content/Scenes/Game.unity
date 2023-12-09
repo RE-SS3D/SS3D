@@ -1439,7 +1439,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021075485018, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -230
+      value: -230.00015
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021449001342, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1710,9 +1710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3038db747c2f84449947b0c478b6d20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoverName: {fileID: 3810371244444567008}
-  _tableReference:
-    m_TableCollectionName: ExamineTable
+  HoverName: {fileID: 0}
 --- !u!1 &1127411102
 GameObject:
   m_ObjectHideFlags: 0
@@ -1822,7 +1820,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1161459442}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2611726e323c9f84382945b50356a475, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f06bc7a96bf97f40b66b573b9eddb9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1196595938
@@ -3336,17 +3334,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
---- !u!114 &3810371244444567008 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8999006631830363571, guid: df2268f4f5f6669459174c6d7e2043ce, type: 3}
-  m_PrefabInstance: {fileID: 3810371244444567007}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4302234172826802611
 PrefabInstance:
   m_ObjectHideFlags: 0
