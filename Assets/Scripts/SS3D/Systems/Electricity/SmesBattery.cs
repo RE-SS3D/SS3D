@@ -1,5 +1,6 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using SS3D.Core;
 using SS3D.Interactions;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,10 +34,10 @@ namespace System.Electricity
         private int _lightOutputTarget = 0;
 
         /// <summary>
-        /// How much frame before updating the output lights.
+        /// How much tick before updating the output lights.
         /// </summary>
         [SerializeField]
-        private int _updateLightPeriod = 25;
+        private int _updateLightPeriod = 3;
 
         private int _updateCount = 0;
 
@@ -46,15 +47,18 @@ namespace System.Electricity
         {
             base.OnStartClient();
             GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleBatteryToggle;
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            HandleBatteryToggle(_isOn);
+
+            Subsystems.Get<ElectricitySystem>().OnTick += HandleTick;
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        private void HandleTick()
         {
             AdjustBatteryLevel();
             AdjustBatteryOutput();
             AdjustBatteryInput();
             _previousPowerStored = StoredPower;
+            _updateCount++;
         }
 
         /// <summary>

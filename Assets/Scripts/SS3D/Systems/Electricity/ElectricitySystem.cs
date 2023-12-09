@@ -29,6 +29,8 @@ namespace System.Electricity
         /// </summary>
         public event Action OnSystemSetUp;
 
+        public event Action OnTick;
+
         /// <summary>
         /// If the system is properly set up, do stuff with it.
         /// </summary>
@@ -73,6 +75,10 @@ namespace System.Electricity
         /// </summary>
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
 
+        private float _tickRate = 0.2f;
+
+        private float _timeElapsed = 0f;
+
 
         protected override void OnStart()
         {       
@@ -85,13 +91,26 @@ namespace System.Electricity
             IsSetUp = true;
 
             OnSystemSetUp?.Invoke();
+
+            OnTick += HandleCircuitsUpdate;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
+            _timeElapsed += Time.deltaTime;
+
+            if(_timeElapsed> _tickRate)
+            {
+                OnTick?.Invoke();
+                _timeElapsed -= _tickRate;
+            }
+        }
+
+        private void HandleCircuitsUpdate()
+        {
             if (_graphIsDirty)
             {
-                _graphIsDirty= false;
+                _graphIsDirty = false;
                 UpdateAllCircuitsTopology();
             }
 
