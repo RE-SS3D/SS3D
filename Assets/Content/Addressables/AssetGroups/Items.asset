@@ -297,6 +297,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCell.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: a1a7407e08bb2914c97f431063bf83e2
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheetReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e2a06f02e6a7e0348bdc535344bfe1f3
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
