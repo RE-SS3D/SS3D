@@ -39,6 +39,8 @@ namespace System.Electricity
         {
             AdjustBatteryLevel();
             AdjustBatteryOutput();
+            AdjustBatteryInput();
+            _previousPowerStored = StoredPower;
         }
 
 
@@ -58,18 +60,27 @@ namespace System.Electricity
             }
         }
 
+        private void AdjustBatteryInput()
+        {
+            float powerAdded = Mathf.Max(StoredPower - _previousPowerStored, 0f);
+
+            if(powerAdded > 0f)
+            {
+                SmesSkinnedMesh.SetBlendShapeWeight(11, 100f);
+            }
+            else
+            {
+                SmesSkinnedMesh.SetBlendShapeWeight(0, 100f);
+            }
+        }
+
         private void AdjustBatteryOutput()
         {
             ComputeLightOutputTarget();
-            _previousPowerStored = StoredPower;
-            _updateCount++;
 
             if (_updateCount != _updateLightPeriod) return;
 
             _updateCount = 0;
-
-            Debug.Log("target = " + _lightOutputTarget);
-            Debug.Log("current = " + _currentLightOutput);
 
             if (_currentLightOutput < _lightOutputTarget)
             {
@@ -80,13 +91,11 @@ namespace System.Electricity
             {
                 SmesSkinnedMesh.SetBlendShapeWeight(_currentLightOutput, 0);
                 _currentLightOutput -= 1;
-            }
-
-            
+            }      
         }
 
         /// <summary>
-        /// Index of the light that should be turned on.
+        /// Index of the light that should be turned on. Can be 0 and in that case no light should be on.
         /// </summary>
         private void ComputeLightOutputTarget()
         {
