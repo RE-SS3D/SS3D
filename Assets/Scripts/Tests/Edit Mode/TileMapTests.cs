@@ -48,7 +48,6 @@ namespace EditorTests
             TileLayer layer, TileObjectGenericType genericType)
         {
             TileObjectSo testSo = (TileObjectSo)ScriptableObject.CreateInstance(typeof(TileObjectSo));
-            testSo.nameString = "wall_test";
             testSo.width = 1;
             testSo.height = 1;
             testSo.layer = TileLayer.Turf;

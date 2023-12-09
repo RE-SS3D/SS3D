@@ -48,7 +48,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// List of build ghosts currently displaying in game.
         /// </summary>
         private List<ConstructionHologram> _holograms = new();
-        
         [SerializeField]
         private TileMapMenu _menu;
 
@@ -81,9 +80,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            foreach (ConstructionHologram hologram in _holograms)
+            if (_holograms.Count == 1)
             {
-                hologram.UpdateRotationAndPosition();
+                _holograms[0].UpdateRotationAndPosition();
             }
 
             ActivateGhosts();
@@ -92,7 +91,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             // Move hologram, that sticks to the mouse. Currently it exists only if player is not dragging.
             if (_holograms.Count == 1)
             {
-                _holograms.First().Position = position;
+                _holograms.First().TargetPosition = position;
                 if (position != _lastSnappedPosition)
                 {
                     RefreshHologram(_holograms.First());
@@ -101,15 +100,38 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (_isDragging && (position != _lastSnappedPosition) && (_selectedObject != null))
             {
-                // Delete all ghosts and instantiate new on correct positions. Currently it causes large fps drops.
-                DestroyHolograms();
+                Vector3[] tiles;
                 if (_controls.SquareDrag.phase == InputActionPhase.Performed)
                 {
-                    SquareDrag(position);
+                    tiles = SquareDrag(position);
                 }
                 else
                 {
-                    LineDrag(position);
+                    tiles = LineDrag(position);
+                }
+
+                int difference = _holograms.Count - tiles.Length;
+                if (_holograms.Count > tiles.Length)
+                {
+                    for (int i = 0; i < difference; i++)
+                    {
+                        _holograms[0].Destroy();
+                        _holograms.RemoveAt(0);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < -difference; i++)
+                    {
+                        CreateHologram(_selectedObject.prefab, new());
+                    }
+                }
+
+                for (int i = 0; i < tiles.Length; i++)
+                {
+                    _holograms[i].Hologram.transform.position = tiles[i];
+                    _holograms[i].TargetPosition = tiles[i];
+                    RefreshHologram(_holograms[i]);
                 }
             }
             _lastSnappedPosition = position;
@@ -136,7 +158,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             GameObject tileObject = Instantiate(prefab);
             ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
-            tileObject.transform.position = hologram.Position;
+            tileObject.transform.position = hologram.TargetPosition;
             _holograms.Add(hologram);
             RefreshHologram(hologram);
             return hologram;
@@ -223,7 +245,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (ConstructionHologram buildGhost in _holograms)
             {
-                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.nameString, buildGhost.Position, buildGhost.Direction, isReplacing);
+                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
             }
         }
 
@@ -240,7 +262,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.nameString, hologram.Position, hologram.Direction);
+                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
                 }
             }
         }
@@ -261,7 +283,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             else
             {
                 bool isReplacing = _controls.Replace.phase == InputActionPhase.Performed;
-                RpcSendCanBuild(_selectedObject.nameString, hologram.Position, hologram.Direction, isReplacing, LocalConnection);
+                RpcSendCanBuild(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction, isReplacing, LocalConnection);
             }
         }
 
@@ -282,17 +304,37 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Starting from a given position, create holograms along a line defined by dragging. 
         /// </summary>
-        private void LineDrag(Vector3 position)
+        private Vector3[] LineDrag(Vector3 position)
         {
             Vector2 firstPoint = new(_dragStartPostion.x, _dragStartPostion.z);
             Vector2 secondPoint = new(position.x, position.z);
             Vector3[] tiles = MathUtility.FindTilesOnLine(firstPoint, secondPoint)
                 .Select(x => new Vector3(x.x, position.y, x.y)).ToArray();
 
-            foreach (Vector3 tile in tiles)
+            return tiles;
+        }
+        /// <summary>
+        /// Create a square of objects holograms.
+        /// </summary>
+        /// <param name="position"> Fist position of the square</param>
+        private Vector3[] SquareDrag(Vector3 position)
+        {
+            int x1 = (int)Math.Min(_dragStartPostion.x, position.x);
+            int x2 = (int)Math.Max(_dragStartPostion.x, position.x);
+            int y1 = (int)Math.Min(_dragStartPostion.z, position.z);
+            int y2 = (int)Math.Max(_dragStartPostion.z, position.z);
+
+            List<Vector3> tiles = new();
+            
+            for (int i = y1; i <= y2; i++)
             {
-                RefreshHologram(CreateHologram(_selectedObject.prefab, tile));
+                for (int j = x1; j <= x2; j++)
+                {
+                    tiles.Add(new (j, position.y, i));
+                }
             }
+
+            return tiles.ToArray();
         }
         
         [ServerRpc(RequireOwnership = false)]
@@ -320,7 +362,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             for (int i = 0; i < _holograms.Count; i++)
             {
                 ConstructionHologram hologram = _holograms[i];
-                if (hologram.Position != placePosition) continue;
+                if (hologram.TargetPosition != placePosition) continue;
 
                 if (canBuild)
                 {
@@ -331,28 +373,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     hologram.ChangeHologramColor(ConstructionMode.Invalid);
                 }
                 return;
-            }
-        }
-
-        /// <summary>
-        /// Create a square of objects holograms.
-        /// </summary>
-        /// <param name="position"> Fist position of the square</param>
-        private void SquareDrag(Vector3 position)
-        {
-            int x1 = (int)Math.Min(_dragStartPostion.x, position.x);
-            int x2 = (int)Math.Max(_dragStartPostion.x, position.x);
-            int y1 = (int)Math.Min(_dragStartPostion.z, position.z);
-            int y2 = (int)Math.Max(_dragStartPostion.z, position.z);
-
-            for (int i = y1; i <= y2; i++)
-            {
-                for (int j = x1; j <= x2; j++)
-                {
-                    Vector3 tile = new(j, 0, i);
-                    ConstructionHologram hologram = CreateHologram(_selectedObject.prefab, tile);
-                    RefreshHologram(hologram);
-                }
             }
         }
 

@@ -27,7 +27,7 @@ namespace SS3D.Data.Enums
         SteelReinforcedSheet = 22, 
         SteelSheet = 23, 
         Crowbar = 24, 
-        Screwdriver = 25, 
+        ScrewdriverBlue = 25, 
         Wrench = 26, 
         FlashlightBlue = 27, 
         KitchenKnife = 28, 
@@ -68,6 +68,10 @@ namespace SS3D.Data.Enums
         Toolbelt = 63, 
         Backpack = 64, 
         HumanHeart = 65, 
+        Wirecutters = 66, 
+        Multitool = 67, 
+        PowerCellAdmin = 68, 
+        PowerCell = 69, 
     }
 }
 
