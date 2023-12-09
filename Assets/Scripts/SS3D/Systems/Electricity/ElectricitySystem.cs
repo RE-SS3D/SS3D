@@ -20,7 +20,7 @@ namespace System.Electricity
     /// When removing electrical elements or adding new ones, it should not immediately update, instead, it should mark the graph dirty and
     /// trigger an update. Imagine an explosion destroying 247 circuit elements in a single frame. It if update upon any change, it would
     /// have to update the whole graph 247 times. Instead, each time an element is removed, it should tell it to the electricity system, and
-    /// each frame, if an element or more has changed, the graph can update.
+    /// each tick, if an element or more has changed, the graph can update.
     /// </summary>
     public class ElectricitySystem : NetworkSystem
     {
@@ -29,6 +29,10 @@ namespace System.Electricity
         /// </summary>
         public event Action OnSystemSetUp;
 
+        /// <summary>
+        /// Called each time the electricity system update. All things that need to sync with the electricity updates should suscribe
+        /// to this event instead of performing their logics in Unity's update loops.
+        /// </summary>
         public event Action OnTick;
 
         /// <summary>
@@ -75,6 +79,10 @@ namespace System.Electricity
         /// </summary>
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
 
+        /// <summary>
+        /// Interval between two ticks in seconds.
+        /// </summary>
+        [SerializeField]
         private float _tickRate = 0.2f;
 
         private float _timeElapsed = 0f;
