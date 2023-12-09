@@ -90,6 +90,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
                 mr.materials = materials;
             }
+
+            foreach (SkinnedMeshRenderer smr in _hologram.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                Material[] materials = smr.materials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    materials[i] = ghostMat;
+                }
+
+                smr.materials = materials;
+            }
         }
 
         /// <summary>
