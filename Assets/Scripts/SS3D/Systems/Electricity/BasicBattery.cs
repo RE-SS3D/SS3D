@@ -20,6 +20,9 @@ namespace System.Electricity
 
         [SerializeField, ReadOnly]
         private float _maxPowerRate = 5f;
+
+        protected bool _isOn = true;
+
         public float StoredPower { get => _storedPower; set => _storedPower = value >= 0 ? MathF.Min(MaxCapacity, value) : MathF.Max(0f, value); }
 
         public float MaxCapacity => _maxCapacity;
@@ -30,9 +33,11 @@ namespace System.Electricity
 
         public float MaxRemovablePower => _maxPowerRate > _storedPower ? _storedPower : _maxPowerRate;
 
+        public bool IsOn => _isOn;
+
         public float AddPower(float amount)
         {
-            if (amount <= 0) return 0;
+            if (amount <= 0 || !_isOn) return 0;
 
             if (_storedPower + amount > _maxCapacity)
             {
@@ -48,7 +53,9 @@ namespace System.Electricity
 
         public float RemovePower(float amount)
         {
-            if (amount <= 0) return 0;
+            if (amount <= 0 || !_isOn) return 0;
+
+            if (!_isOn) return amount;
 
             if (_storedPower - amount < 0)
             {

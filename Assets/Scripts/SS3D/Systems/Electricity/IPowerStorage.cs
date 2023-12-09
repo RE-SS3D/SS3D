@@ -15,6 +15,8 @@ public interface IPowerStorage : IElectricDevice
 
     public float MaxRemovablePower { get; }
 
+    public bool IsOn { get; }
+
     /// <summary>
     ///  Remove a given amount of power from battery, respecting Max power rate and present amount.
     /// </summary>

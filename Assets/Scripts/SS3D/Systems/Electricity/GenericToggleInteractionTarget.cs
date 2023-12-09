@@ -10,12 +10,12 @@ using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace System.Electricity
 {
-    public class FuelPowerGeneratorInteractionTarget : InteractionTargetNetworkBehaviour, IToggleable
+    public class GenericToggleInteractionTarget : InteractionTargetNetworkBehaviour, IToggleable
     {
 
-        private bool _generatorOn;
+        private bool _on;
 
-        public Action<bool> OnGeneratorToggle;
+        public Action<bool> OnToggle;
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
@@ -29,16 +29,14 @@ namespace System.Electricity
 
         public bool GetState()
         {
-            return _generatorOn;
+            return _on;
         }
 
         public void Toggle()
         {
-            _generatorOn = !_generatorOn;
+            _on = !_on;
 
-            OnGeneratorToggle?.Invoke(_generatorOn);
-
-           
+            OnToggle?.Invoke(_on);
         }
     }
 }

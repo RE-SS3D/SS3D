@@ -179,8 +179,8 @@ namespace System.Electricity
         {
             if (availablePower <= 0f) return 0f;
 
-            // distribute an equal amount to all which are not full.
-            float equalAmount = availablePower / _storages.Where(x => x.RemainingCapacity > 0).Count();
+            // distribute an equal amount to all which are not full and are on.
+            float equalAmount = availablePower / _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).Count();
             var notFullyFillableStorages = _storages.Where(x => x.RemainingCapacity > equalAmount).ToList();
             var fullyFillableStorages = _storages.Where(x => x.RemainingCapacity <= equalAmount).ToList();
 

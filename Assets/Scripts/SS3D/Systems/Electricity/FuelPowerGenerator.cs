@@ -39,14 +39,18 @@ namespace System.Electricity
 
         private bool _enabled = false; // If the generator is working.
 
+        private float _onPowerProduction = 10f;
+
 
         public override void OnStartClient()
         {
             base.OnStartClient();
-            GetComponent<FuelPowerGeneratorInteractionTarget>().OnGeneratorToggle += HandleGeneratorToggle;
+            GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleGeneratorToggle;
             AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
             _initialRotation = Rotation;
-            _directionOfShake = Transform.right;       
+            _directionOfShake = Transform.right;
+            _onPowerProduction = _powerProduction;
+            HandlePowerGenerated(false);
         }
 
         private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
@@ -103,7 +107,7 @@ namespace System.Electricity
 
         private void HandlePowerGenerated(bool enabled)
         {
-            _powerProduction = enabled ? 10f : 0f; 
+            _powerProduction = enabled ? _onPowerProduction : 0f; 
         }
 
         private void HandleResetVibration()

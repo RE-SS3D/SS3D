@@ -1,5 +1,6 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using SS3D.Interactions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Electricity;
@@ -12,9 +13,13 @@ namespace System.Electricity
         [SerializeField]
         private SkinnedMeshRenderer SmesSkinnedMesh;
 
-        private const string ChargeblendShapeName = "Charge";
+        private const int ChargeblendIndex = 0;
 
-        private const string OutputblendShapeName = "OutputMeter";
+        private const int OnBlendIndex = 12;
+
+        private const int OffBlendIndex = 13;
+
+
 
         private float _previousPowerStored = 0f;
 
@@ -32,6 +37,7 @@ namespace System.Electricity
         public override void OnStartClient()
         {
             base.OnStartClient();
+            GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleBatteryToggle;
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
@@ -46,18 +52,8 @@ namespace System.Electricity
 
         private void AdjustBatteryLevel()
         {
-            int blendShapeIndex = SmesSkinnedMesh.sharedMesh.GetBlendShapeIndex(ChargeblendShapeName);
-
             float chargeLevelNormalized = StoredPower / MaxCapacity;
-
-            if (blendShapeIndex != -1)
-            {
-                SmesSkinnedMesh.SetBlendShapeWeight(blendShapeIndex, chargeLevelNormalized*100);
-            }
-            else
-            {
-                Debug.LogError("Blend shape " + ChargeblendShapeName + " not found.");
-            }
+            SmesSkinnedMesh.SetBlendShapeWeight(ChargeblendIndex, chargeLevelNormalized*100);
         }
 
         private void AdjustBatteryInput()
@@ -70,7 +66,7 @@ namespace System.Electricity
             }
             else
             {
-                SmesSkinnedMesh.SetBlendShapeWeight(0, 100f);
+                SmesSkinnedMesh.SetBlendShapeWeight(11, 0f);
             }
         }
 
@@ -96,15 +92,35 @@ namespace System.Electricity
 
         /// <summary>
         /// Index of the light that should be turned on. Can be 0 and in that case no light should be on.
+        /// Assumes the index of blendshapes for the output lights are from 1 to 11.
         /// </summary>
         private void ComputeLightOutputTarget()
         {
             float powerRemoved = Mathf.Max(_previousPowerStored - StoredPower, 0f);
             float relativeRate = Mathf.Floor((powerRemoved / MaxPowerRate) * 10);
 
-            _lightOutputTarget = (int)relativeRate; // plus one because the blend shapes for light output start at index one.
+            _lightOutputTarget = (int)relativeRate; 
         }
 
+        public bool GetState()
+        {
+            return IsOn;
+        }
 
+        public void HandleBatteryToggle(bool toggle)
+        {
+            _isOn = toggle;
+
+            if(_isOn)
+            {
+                SmesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 100);
+                SmesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 0);
+            }
+            else
+            {
+                SmesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 0);
+                SmesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 100);
+            }
+        }
     }
 }
