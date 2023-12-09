@@ -66,6 +66,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _tileObjectSearchBar.gameObject.SetActive(false);
             _layerPlacementDropdown.gameObject.SetActive(false);
             _buildOrDelete.gameObject.SetActive(false);
+            _tileObjectSearchBar.text = string.Empty;
 
 
             for (int i = 0; i < _slotsRoot.transform.childCount; i++)
@@ -80,6 +81,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Display()
         {
             _assetGrid.Setup();
+            _tileObjectSearchBar.text = string.Empty;
             _buildRoot.gameObject.SetActive(true);
             _tileObjectSearchBar.gameObject.SetActive(true);
             _layerPlacementDropdown.gameObject.SetActive(true);
@@ -113,12 +115,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (IsDeleting)
             {
                 tmpComponent.text = " Delete";
-                tmpComponent.color = Color.red;
+                tmpComponent.color = new Color(0xA9, 0x00, 0xFF, 0xFF);
             }
             else
             {
                 tmpComponent.text = " Build";
-                tmpComponent.color = Color.blue;
+                tmpComponent.color = new Color(0x31, 0x32, 0xDD, 0xFF);
             }
         }
     }
