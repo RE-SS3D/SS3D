@@ -27,7 +27,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="targetTargetPosition"> the initial position of the hologram in space.</param>
         /// <param name="dir"> the expected original direction. Note that not all directions are compatible with
         /// all tile objects. If it's not, it will choose another available direction.</param>
-        public ConstructionHologram(GameObject ghostObject, Vector3 targetTargetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
+        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
         {
             List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
                 .Where(x => x is not ICustomGhostRotation).ToList();
@@ -35,7 +35,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             components.ForEach(x => x.enabled = false);
 
             Hologram = ghostObject;
-            _targetPosition = targetTargetPosition;
+            _targetPosition = targetPosition;
             _direction = dir;
 
             if (ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent) 
@@ -91,7 +91,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 mr.materials = materials;
             }
 
-            foreach (SkinnedMeshRenderer smr in _hologram.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (SkinnedMeshRenderer smr in Hologram.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 Material[] materials = smr.materials;
                 for (int i = 0; i < materials.Length; i++)
