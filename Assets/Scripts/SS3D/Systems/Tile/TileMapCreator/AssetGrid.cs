@@ -66,11 +66,10 @@ public class AssetGrid : Actor
     /// </summary>
     public void FindAssets(string text)
     {
-        text = text.Replace(' ', '_');
         ClearGrid();
         foreach (GenericObjectSo asset in _objectDatabase)
         {
-            if (!asset.nameString.Contains(text)) continue;
+            if (!asset.name.Contains(text, StringComparison.OrdinalIgnoreCase)) continue;
             Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<AssetSlot>().Setup(asset);
         }
     }
