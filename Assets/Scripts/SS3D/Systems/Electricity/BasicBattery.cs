@@ -18,10 +18,10 @@ namespace System.Electricity
         [SerializeField]
         private float _maxCapacity = 1000;
 
-        [SerializeField, ReadOnly]
+        [SerializeField]
         private float _storedPower = 0;
 
-        [SerializeField, ReadOnly]
+        [SerializeField]
         private float _maxPowerRate = 5f;
 
         protected bool _isOn = true;

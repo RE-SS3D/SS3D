@@ -8,7 +8,6 @@ using Coimbra.Services.Events;
 using QuikGraph.Algorithms;
 using SS3D.Systems.Tile;
 using SS3D.Utils;
-using log4net.Util;
 using SS3D.Core;
 using System.Linq;
 using System.Text.RegularExpressions;
