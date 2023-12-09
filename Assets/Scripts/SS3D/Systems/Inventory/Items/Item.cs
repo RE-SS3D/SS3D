@@ -10,8 +10,10 @@ using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Examine;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
+using SS3D.Systems.Selection;
 using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -28,6 +30,7 @@ namespace SS3D.Systems.Inventory.Items
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
+    [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
     public class Item : InteractionSource, IInteractionTarget
     {
@@ -343,7 +346,6 @@ namespace SS3D.Systems.Inventory.Items
         {
              _traits.Remove(trait);
         }
-
 
         #endregion
 
