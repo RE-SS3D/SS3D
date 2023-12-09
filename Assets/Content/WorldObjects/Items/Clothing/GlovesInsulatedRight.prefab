@@ -48,7 +48,6 @@ GameObject:
   - component: {fileID: 6984312597055688722}
   - component: {fileID: 7041145045412855027}
   - component: {fileID: 8726931767718845717}
-  - component: {fileID: 6438890719566927209}
   m_Layer: 10
   m_Name: GlovesInsulatedRight
   m_TagString: Untagged
@@ -267,15 +266,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 8
---- !u!114 &6438890719566927209
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4581819739591165899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

@@ -20,7 +20,6 @@ GameObject:
   - component: {fileID: 4646584122129743545}
   - component: {fileID: 6202040713060371562}
   - component: {fileID: 8222013437082652963}
-  - component: {fileID: 6596258548448097473}
   m_Layer: 10
   m_Name: JumpsuitSecurity
   m_TagString: Untagged
@@ -303,18 +302,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 6295007783518057475, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
---- !u!114 &6596258548448097473
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 726792282085660869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1173133123537711899
 GameObject:
   m_ObjectHideFlags: 0
