@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5716091763563409464
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1602098408367427586, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: <AssetPathHash>k__BackingField
+      value: 3271144838352598659
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660963557818230072, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402587210622244651, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_Name
+      value: PowerCellAdmin
+      objectReference: {fileID: 0}
+    - target: {fileID: 7662851888128253710, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -8877316736845470087, guid: 5b9b9483a120ee94092d4591630d9cfe, type: 3}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: de67200a4c96d444f800399a033ddfef, type: 3}

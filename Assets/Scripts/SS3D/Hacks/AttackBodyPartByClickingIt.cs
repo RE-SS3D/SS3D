@@ -3,6 +3,7 @@ using FishNet.Object;
 using System.Linq;
 using UnityEngine;
 using SS3D.Systems.Health;
+using System.Collections;
 
 namespace SS3D.Hacks
 {
@@ -76,10 +77,17 @@ namespace SS3D.Hacks
             }
         }
 
-		[ObserversRpc]
-		private void RpcInstantiateAttackParticleEffect(Vector3 position)
-		{
-			Instantiate(attackParticleEffect, position, Quaternion.identity);
-		}
+        [ObserversRpc]
+        private void RpcInstantiateAttackParticleEffect(Vector3 position)
+        {
+            GameObject attackParticle = Instantiate(attackParticleEffect, position, Quaternion.identity);
+            StartCoroutine(DestroyAfterDelay(attackParticle));
+        }
+
+        private IEnumerator DestroyAfterDelay(GameObject gameObject)
+        {
+            yield return new WaitForSeconds(1.0f);
+            DestroyImmediate(gameObject);
+        }
 	}
 }

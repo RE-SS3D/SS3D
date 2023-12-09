@@ -2,10 +2,10 @@ namespace SS3D.Data.Enums
 {
     public enum AssetDatabases
     {
-        BodyParts = 0, 
-        CraftingRecipes = 1, 
-        InteractionIcons = 2, 
-        Items = 3, 
+        CraftingRecipes = 0, 
+        InteractionIcons = 1, 
+        Items = 2, 
+        Materials = 3, 
         ParticlesEffects = 4, 
         Scenes = 5, 
         Settings = 6, 
