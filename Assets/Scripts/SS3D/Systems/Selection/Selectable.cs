@@ -26,7 +26,7 @@ namespace SS3D.Systems.Selection {
         protected override void OnStart()
         {
             base.OnStart();
-            _selectionColor = Subsystems.Get<SelectionSystemController>().RegisterSelectable(this);
+            _selectionColor = Subsystems.Get<SelectionSystem>().RegisterSelectable(this);
             SetColorRecursively(this.gameObject, _selectionColor, this);
             
         }

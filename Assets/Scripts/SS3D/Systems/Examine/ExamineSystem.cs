@@ -21,14 +21,14 @@ namespace SS3D.Systems.Examine
 
         public delegate void ExaminableChangedHandler(IExaminable examinable);
 
-        private SelectionSystemController _selectionSystem;
+        private SelectionSystem _selectionSystem;
 
 
 
         protected override void OnStart()
         {
             base.OnStart();
-            _selectionSystem = Subsystems.Get<SelectionSystemController>();
+            _selectionSystem = Subsystems.Get<SelectionSystem>();
         }
 
         protected override void OnEnabled()

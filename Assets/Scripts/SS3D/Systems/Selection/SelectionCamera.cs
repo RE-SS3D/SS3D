@@ -41,7 +41,7 @@ namespace SS3D.Systems.Selection
         /// <summary>
         /// Overarching System that performs all Selection-related processing.
         /// </summary>
-        private SelectionSystemController _system;
+        private SelectionSystem _system;
 
         /// <summary>
         /// Debug Mode allows the user to see the RenderTexture on screen, to facilitate debugging.
@@ -55,7 +55,7 @@ namespace SS3D.Systems.Selection
 
         protected override void OnStart()
         {
-            _system = Subsystems.Get<SelectionSystemController>();
+            _system = Subsystems.Get<SelectionSystem>();
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
             _camera.SetReplacementShader(_shader, "");
