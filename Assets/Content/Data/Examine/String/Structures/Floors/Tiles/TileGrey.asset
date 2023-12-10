@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: TileGrey
   m_EditorClassIdentifier: 
-  NameKey: Grey Floor Tile
+  NameKey: Floor Tile
   DescriptionKey: Common grey floor tile.

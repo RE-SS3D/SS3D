@@ -178,6 +178,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2455574072564790997}
   - component: {fileID: -3164981917704815112}
+  - component: {fileID: 5177852033190381353}
+  - component: {fileID: 4397091746902556873}
   m_Layer: 0
   m_Name: SlotMachine
   m_TagString: Untagged
@@ -233,6 +235,31 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 2425035627416381310
+--- !u!114 &5177852033190381353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2979169873714900079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4397091746902556873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2979169873714900079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 5a638f25496a4c742ac6fbf49cb462b1, type: 2}
 --- !u!1 &3298832433792976448
 GameObject:
   m_ObjectHideFlags: 0

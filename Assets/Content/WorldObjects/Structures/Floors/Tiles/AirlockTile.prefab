@@ -263,6 +263,8 @@ GameObject:
   - component: {fileID: 7808292210134878818}
   - component: {fileID: 3815592008771065855}
   - component: {fileID: -6887884230110343619}
+  - component: {fileID: -4582053232594063701}
+  - component: {fileID: -6016574257445858844}
   m_Layer: 0
   m_Name: AirlockTile
   m_TagString: Untagged
@@ -346,6 +348,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDirection: 0
   _allowedDirections: 00000000
+--- !u!114 &-4582053232594063701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6016574257445858844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: fa7a95c97c43eb14f842266b51fd1b51, type: 2}
 --- !u!1 &7227881070782284271
 GameObject:
   m_ObjectHideFlags: 0

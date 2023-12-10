@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 8767567404870203102}
   - component: {fileID: 2885876316184551953}
   - component: {fileID: -4941992892754288966}
+  - component: {fileID: 1034747657592807112}
+  - component: {fileID: -11363172995805795}
   m_Layer: 10
   m_Name: OxygenTank
   m_TagString: Untagged
@@ -242,6 +244,31 @@ MonoBehaviour:
   _volume: 100
   _locked: 0
   _initialised: 0
+--- !u!114 &1034747657592807112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-11363172995805795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: e29dc4ded52a0934185272d57d64c54c, type: 2}
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

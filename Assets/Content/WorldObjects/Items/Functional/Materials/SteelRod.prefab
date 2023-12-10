@@ -110,6 +110,8 @@ GameObject:
   - component: {fileID: 2568864249795578972}
   - component: {fileID: 1773710978803455870}
   - component: {fileID: 5296084984690686628}
+  - component: {fileID: 1034747657592807112}
+  - component: {fileID: 7829680980916556598}
   m_Layer: 10
   m_Name: SteelRod
   m_TagString: Untagged
@@ -251,6 +253,31 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8309000899177645629}
   AttachmentPointAlt: {fileID: 8309000899177645629}
   _container: {fileID: 0}
+--- !u!114 &1034747657592807112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7829680980916556598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 08377b3b9aaa05f4b8db9793f6d8c574, type: 2}
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0
