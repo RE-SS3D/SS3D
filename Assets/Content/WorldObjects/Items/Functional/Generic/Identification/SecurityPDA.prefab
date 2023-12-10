@@ -113,6 +113,8 @@ GameObject:
   - component: {fileID: -3412952555245330052}
   - component: {fileID: 8953388663960336043}
   - component: {fileID: 8691169782362177299}
+  - component: {fileID: 3379094397588441500}
+  - component: {fileID: -6257197335083171068}
   m_Layer: 10
   m_Name: SecurityPDA
   m_TagString: Untagged
@@ -169,7 +171,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 100
+  <PrefabId>k__BackingField: 146
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -335,6 +337,31 @@ MonoBehaviour:
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: -3412952555245330052}
+--- !u!114 &3379094397588441500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6257197335083171068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 0dabe7c9e55169f4684cb75cd887ba8b, type: 2}
 --- !u!1 &5927379166768225886
 GameObject:
   m_ObjectHideFlags: 0

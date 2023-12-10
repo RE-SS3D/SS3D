@@ -182,6 +182,8 @@ GameObject:
   - component: {fileID: 7564222845035831833}
   - component: {fileID: 9057318044260736153}
   - component: {fileID: -5171608925130170487}
+  - component: {fileID: -5218382646515949466}
+  - component: {fileID: -7928552370738798750}
   m_Layer: 0
   m_Name: Plenum
   m_TagString: Untagged
@@ -297,7 +299,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 8
+  <PrefabId>k__BackingField: 10
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -349,4 +351,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 00000000
+  _allowedDirections: 00000000
+--- !u!114 &-5218382646515949466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028539322119499722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-7928552370738798750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028539322119499722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 8158a12d6b88d6f46b377483f4cf22cf, type: 2}
