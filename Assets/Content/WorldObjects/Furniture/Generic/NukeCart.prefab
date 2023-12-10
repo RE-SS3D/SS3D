@@ -129,6 +129,8 @@ GameObject:
   - component: {fileID: 2658310835758749971}
   - component: {fileID: 2658310835758749968}
   - component: {fileID: 1871071288925904272}
+  - component: {fileID: 2225257586504785574}
+  - component: {fileID: -4195143157021410578}
   m_Layer: 0
   m_Name: NukeCart
   m_TagString: Untagged
