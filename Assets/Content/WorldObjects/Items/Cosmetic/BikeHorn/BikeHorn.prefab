@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
   IgnoredParameters: []
@@ -173,6 +173,8 @@ GameObject:
   - component: {fileID: 4044200983548959999}
   - component: {fileID: 6183259094829508424}
   - component: {fileID: -1808419688812875912}
+  - component: {fileID: 8613419490928921116}
+  - component: {fileID: 2689380027240677461}
   m_Layer: 10
   m_Name: BikeHorn
   m_TagString: Untagged
@@ -239,6 +241,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 5398674181771020985}
   - {fileID: 6573417749823381685}
+  - {fileID: -1808419688812875912}
   - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -251,7 +254,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 11
+  <PrefabId>k__BackingField: 13
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -363,12 +366,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 4819234911439508660}
   IgnoredParameters: []
   _animator: {fileID: 6183259094829508424}
   _smoothFloats: 1
   _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
+--- !u!114 &8613419490928921116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2689380027240677461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 71368b829dabc4042bc1ed56eb8afecf, type: 2}
