@@ -57,6 +57,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private bool _isDeleting;
         public bool IsDeleting => _isDeleting;
 
+        // purpulish color when deleting
+        private Color _deleteColor = new Color(0xA9, 0x00, 0xFF, 0xFF);
+
+        // bluish color when building
+        private Color _buildColor = new Color(0x31, 0x32, 0xDD, 0xFF);
+
+
         /// <summary>
         /// Clear the build tab.
         /// </summary>
@@ -115,12 +122,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (IsDeleting)
             {
                 tmpComponent.text = " Delete";
-                tmpComponent.color = new Color(0xA9, 0x00, 0xFF, 0xFF);
+                tmpComponent.color = _deleteColor;
             }
             else
             {
                 tmpComponent.text = " Build";
-                tmpComponent.color = new Color(0x31, 0x32, 0xDD, 0xFF);
+                tmpComponent.color = _buildColor;
             }
         }
     }

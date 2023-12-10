@@ -61,9 +61,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 mapNameSlot.MapNameField.readOnly = true;
                 mapNameSlot.MapNameField.text = mapNameWithNoExtension;
 
-                mapNameSlot.MapNameField.onSelect.AddListener(delegate { LoadMap(mapNameWithNoExtension); });
+                mapNameSlot.MapNameField.onSelect.AddListener((string x) => LoadMap(mapNameWithNoExtension));
                 mapNameSlot.DeleteButton.onClick.AddListener(() => DeleteMap(mapNameWithNoExtension));
-                mapNameSlot.DeleteButton.onClick.AddListener(() => Refresh());
                 mapNameSlot.RenameButton.onClick.AddListener(() => Rename(mapNameSlot.MapNameField));
                 slot.gameObject.SetActive(true);
             }
@@ -92,6 +91,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 Log.Information(this, "Cannot load the map on a client");
             }
+
+            Refresh();
         }
 
         /// <summary>
@@ -120,8 +121,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
             mapNameField.readOnly = false;
             mapNameField.onSelect.RemoveAllListeners();
             mapNameField.ActivateInputField();
-            mapNameField.onEndEdit.AddListener(delegate { RenameSave(mapNameField, oldName);});
-            mapNameField.onDeselect.AddListener(delegate { RenameSave(mapNameField, oldName); });
+            mapNameField.onEndEdit.AddListener((string x) => RenameSave(mapNameField, oldName));
+            mapNameField.onDeselect.AddListener((string x) => RenameSave(mapNameField, oldName));
             mapNameField.textComponent.fontSize = FontSelectedSize;
         }
 
