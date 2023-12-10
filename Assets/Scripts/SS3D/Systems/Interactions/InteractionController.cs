@@ -170,7 +170,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="source">The current selected item or the hands</param>
         /// <param name="showMenu">If a selection menu should be shown</param>
         [Client]
-        private void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)
+        public void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)
         {
             if (!sourceObject.TryGetComponent(out IInteractionSource source))
             {
