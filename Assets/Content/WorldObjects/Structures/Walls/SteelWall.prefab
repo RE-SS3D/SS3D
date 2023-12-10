@@ -150,6 +150,8 @@ GameObject:
   - component: {fileID: -2900075557854325373}
   - component: {fileID: 3395800597640737248}
   - component: {fileID: 9201248993357086619}
+  - component: {fileID: 6072928490511251397}
+  - component: {fileID: -6923105539505770605}
   m_Layer: 0
   m_Name: SteelWall
   m_TagString: Untagged
@@ -268,7 +270,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 115
+  <PrefabId>k__BackingField: 119
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -289,9 +291,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
   _syncedConnections: 0
-  _networkObjectCache: {fileID: 0}
-  _genericType: 3
-  _specificType: 3
   _advancedAdjacency:
     o: {fileID: -6490088118889457342, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     u: {fileID: -6723024526652964136, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
@@ -323,7 +322,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 00000000
+  _allowedDirections: 00000000
+--- !u!114 &6072928490511251397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6923105539505770605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: c8e320c604f095048a0cc4aeccc5eabb, type: 2}
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0
