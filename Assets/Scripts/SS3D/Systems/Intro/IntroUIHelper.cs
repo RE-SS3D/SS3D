@@ -15,26 +15,16 @@ namespace SS3D.Systems.Intro
     {
         [FormerlySerializedAs("_introUiFade")]
         [Header("UI")]
-        [SerializeField]
-        private CanvasGroup _introUiCanvasGroup;
-
-        [FormerlySerializedAs("_connectionUiFade")]
-        [SerializeField]
-        private CanvasGroup _connectionUiCanvasGroup;
+        [SerializeField] private CanvasGroup _introUiCanvasGroup;
+        [FormerlySerializedAs("_connectionUiFade")] [SerializeField] private CanvasGroup _connectionUiCanvasGroup;
 
         [Header("Settings")]
-        [SerializeField]
-        private float _fadeInDuration;
-
-        [SerializeField]
-        private float _fadeOutDuration;
-
-        [SerializeField]
-        private float _splashScreenFreezeDuration;
+        [SerializeField] private float _fadeInDuration;
+        [SerializeField] private float _fadeOutDuration;
+        [SerializeField] private float _splashScreenFreezeDuration;
 
         [Header("Temporary")]
-        [SerializeField]
-        private AudioSource _temporaryAudioSource;
+        [SerializeField] private AudioSource _temporaryAudioSource;
 
         private void Start()
         {

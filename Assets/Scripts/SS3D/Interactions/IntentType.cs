@@ -5,8 +5,8 @@
     /// </summary>
     public enum IntentType
     {
-        None = 0,
-        Help = 1,
-        Harm = 2,
+        None,
+        Help,
+        Harm
     }
 }

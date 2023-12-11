@@ -8,8 +8,7 @@ namespace SS3D.UI
 {
     public class GenericTabControllerView : Actor
     {
-        [SerializeField]
-        private List<GenericTabView> _tabs;
+        [SerializeField] private List<GenericTabView> _tabs;
 
         protected override void OnStart()
         {

@@ -10,22 +10,11 @@ namespace SS3D.Systems.Interactions
 {
     public class RadialInteractionButton : Actor, IPointerEnterHandler
     {
-        public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
-
-        public event Action<GameObject, IInteraction> OnHovered;
-
         public bool Occupied;
 
-        private const float MinimumThreshold = 0.5f;
-
-        [SerializeField]
-        private TMP_Text _interactionNameText;
-
-        [SerializeField]
-        private Image _interactionIcon;
-
-        [SerializeField]
-        private Button _button;
+        [SerializeField] private TMP_Text _interactionNameText;
+        [SerializeField] private Image _interactionIcon;
+        [SerializeField] private Button _button;
 
         private IInteraction _interaction;
 
@@ -35,6 +24,17 @@ namespace SS3D.Systems.Interactions
         }
 
         public Button.ButtonClickedEvent Pressed => _button.onClick;
+        public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
+        public event Action<GameObject, IInteraction> OnHovered;
+
+        private const float MinimumThreshold = 0.5f;
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _button.image.alphaHitTestMinimumThreshold = MinimumThreshold;
+        }
 
         public void SetInteraction(RadialInteractionItem interactionItem)
         {
@@ -54,14 +54,12 @@ namespace SS3D.Systems.Interactions
             Occupied = true;
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        private void HandleButtonPressed()
         {
-            OnHovered?.Invoke(GameObject, _interaction);
+            OnInteractionSelected?.Invoke(_interaction, this);
         }
 
-        #pragma warning disable UNT0021
         public void Reset()
-            #pragma warning restore UNT0021
         {
             GameObject.SetActive(false);
             _interactionIcon.enabled = false;
@@ -74,16 +72,9 @@ namespace SS3D.Systems.Interactions
             Occupied = false;
         }
 
-        protected override void OnStart()
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            base.OnStart();
-
-            _button.image.alphaHitTestMinimumThreshold = MinimumThreshold;
-        }
-
-        private void HandleButtonPressed()
-        {
-            OnInteractionSelected?.Invoke(_interaction, this);
+            OnHovered?.Invoke(GameObject, _interaction);
         }
     }
 }

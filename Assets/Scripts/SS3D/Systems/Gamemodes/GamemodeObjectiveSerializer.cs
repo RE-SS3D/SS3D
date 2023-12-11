@@ -32,7 +32,7 @@ namespace SS3D.Systems.Gamemodes
             string assigneeCkey = reader.ReadString();
 
             GamemodeObjective objective = ScriptableObject.CreateInstance<GamemodeObjective>();
-
+            
             objective.SetId(id);
             objective.SetTitle(title);
             objective.SetStatus(objectiveStatus);

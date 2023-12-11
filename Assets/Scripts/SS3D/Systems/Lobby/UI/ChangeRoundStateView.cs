@@ -20,9 +20,7 @@ namespace SS3D.Systems.Lobby.UI
     /// </summary>
     public class ChangeRoundStateView : Actor
     {
-        [NotNull]
-        [SerializeField]
-        private ToggleLabelButton _startRoundButton;
+        [NotNull] [SerializeField] private ToggleLabelButton _startRoundButton;
 
         protected override void OnAwake()
         {
@@ -66,6 +64,7 @@ namespace SS3D.Systems.Lobby.UI
                 _startRoundButton.Pressed = true;
                 _startRoundButton.Disabled = false;
             }
+
             else if (roundEnding || roundPreparing)
             {
                 _startRoundButton.Disabled = true;

@@ -7,11 +7,8 @@ namespace SS3D.UI.Buttons
 {
     public class ToggleLabelButton : LabelButton
     {
-        [SerializeField]
-        private string _normalText;
-
-        [SerializeField]
-        private string _pressedText;
+        [SerializeField] private string _normalText;
+        [SerializeField] private string _pressedText;
 
         public override void OnPointerDown(PointerEventData eventData)
         {

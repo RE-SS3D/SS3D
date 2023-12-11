@@ -5,8 +5,7 @@ namespace SS3D.Systems.Screens
 {
     public class CameraSystem : Core.Behaviours.System
     {
-        [SerializeField]
-        private Actor _playerCamera;
+        [SerializeField] private Actor _playerCamera;
 
         public Actor PlayerCamera => _playerCamera;
     }

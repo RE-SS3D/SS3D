@@ -30,6 +30,7 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         /// <param name="objective">The objective received.</param>
         /// <param name="useRestrictions">Use the remaining assignments and prevent getting objectives when none are remaining.</param>
+        /// <returns></returns>
         public bool TryGetObjective(out GamemodeObjective objective, bool useRestrictions = false)
         {
             if (useRestrictions)

@@ -9,5 +9,8 @@ namespace SS3D.Systems.Inventory.UI
     /// Dummy slots are invisible slots, only useful to take place in the UI.
     /// This is necessary for working with stuff like grid layouts.
     /// </summary>
-    public class DummySlot : MonoBehaviour { }
+    public class DummySlot : MonoBehaviour
+    {
+
+    }
 }

@@ -10,51 +10,52 @@ namespace SS3D.Systems
     [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
     public class Filter : ScriptableObject
     {
-        public bool MustHaveAll;
-        public List<Trait> AcceptedTraits;
-        public List<Trait> DeniedTraits;
-
-        private int _hash;
-
-        public int Hash => _hash;
-
-        public static int GetHash(string str)
-        {
-            return Animator.StringToHash(str.ToUpper());
-        }
+        public bool mustHaveAll;
+        public List<Trait> acceptedTraits;
+        public List<Trait> deniedTraits;
 
         public bool CanStore(Item item)
         {
             int traitCount = 0;
-            if (AcceptedTraits.Count == 0 && DeniedTraits.Count == 0)
-            {
+            if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
                 return true;
-            }
 
             foreach (Trait trait in item.Traits)
             {
-                if (AcceptedTraits.Contains(trait))
+                if (acceptedTraits.Contains(trait))
                 {
                     traitCount++;
                 }
-                else if (DeniedTraits.Contains(trait))
+                else if (deniedTraits.Contains(trait))
                 {
                     return false;
                 }
             }
 
-            // If mustHaveAll then it will only return true if has all traits, otherwise having any will do
-            if (MustHaveAll)
+            //If mustHaveAll then it will only return true if has all traits, otherwise having any will do
+            if (mustHaveAll)
             {
-                return traitCount == AcceptedTraits.Count;
+                return traitCount == acceptedTraits.Count;
             }
+            else
+            {
+                return traitCount > 0;
+            }
+        }
+        
+        //Hash for identification
+        protected int hash;
+        [HideInInspector] public int Hash => hash;
 
-            return traitCount > 0;
+        [ExecuteInEditMode]
+        private void OnValidate()
+        {
+            hash = GetHash(name);
         }
 
-        protected void OnValidate()
+        public static int GetHash(string str)
         {
-            _hash = GetHash(name);
+            return Animator.StringToHash(str.ToUpper());
         }
     }
 }

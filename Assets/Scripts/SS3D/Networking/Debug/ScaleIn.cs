@@ -8,7 +8,7 @@ namespace SS3D.Networking.Debug
     {
         public Transform ObjectToScale;
 
-        private const float ScaleDuration = .85f;
+        private const float ScaleDuration = .85f; 
 
         protected override void OnStart()
         {

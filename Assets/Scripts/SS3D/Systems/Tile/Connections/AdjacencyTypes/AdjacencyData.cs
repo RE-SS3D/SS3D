@@ -5,17 +5,15 @@
     /// </summary>
     public readonly struct AdjacencyData
     {
-        public readonly TileObjectGenericType GenericType;
-
-        public readonly TileObjectSpecificType SpecificType;
-
-        public readonly bool Exists;
-
         public AdjacencyData(TileObjectGenericType genericType, TileObjectSpecificType specificType, bool exists)
         {
             GenericType = genericType;
             SpecificType = specificType;
             Exists = exists;
         }
+
+        public readonly TileObjectGenericType GenericType;
+        public readonly TileObjectSpecificType SpecificType;
+        public readonly bool Exists;
     }
 }

@@ -17,24 +17,24 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// </summary>
     public class IDCard : Item, IIdentification
     {
-        [SyncObject]
-        private readonly SyncList<IDPermission> _permissions = new SyncList<IDPermission>();
-
-        private string _ownerName;
-        private string _roleName;
+        private string ownerName;
+        private string roleName;
 
         public string OwnerName
         {
-            get => _ownerName;
-            set => _ownerName = value;
+            get => ownerName;
+            set => ownerName = value;
         }
 
         public string RoleName
         {
-            get => _roleName;
-            set => _roleName = value;
+            get => roleName;
+            set => roleName = value;
         }
 
+        [SyncObject]
+        private readonly SyncList<IDPermission> permissions = new SyncList<IDPermission>();
+        
         public bool HasPermission(IDPermission permission)
         {
             if (permission == null)
@@ -42,19 +42,19 @@ namespace SS3D.Systems.Inventory.Items.Generic
                 return true;
             }
 
-            return _permissions.Contains(permission);
+            return permissions.Contains(permission);
         }
 
         public void AddPermission(IDPermission permission)
         {
-            _permissions.Add(permission);
-            _permissions.Dirty(permission);
+            permissions.Add(permission);
+            permissions.Dirty(permission);
         }
 
         public void RemovePermission(IDPermission permission)
         {
-            _permissions.Remove(permission);
-            _permissions.Dirty(permission);
+            permissions.Remove(permission);
+            permissions.Dirty(permission);
         }
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)

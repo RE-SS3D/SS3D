@@ -52,7 +52,6 @@ namespace SS3D.Systems.Inventory.Items.Generic
             {
                 horn.Honk();
             }
-
             return false;
         }
     }

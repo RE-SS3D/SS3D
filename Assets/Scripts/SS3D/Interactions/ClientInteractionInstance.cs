@@ -12,11 +12,8 @@ namespace SS3D.Interactions
         }
 
         public IClientInteraction Interaction { get; }
-
         public InteractionEvent Event { get; }
-
         public InteractionReference Reference { get; }
-
         public bool FirstTick { get; set; } = true;
     }
 }

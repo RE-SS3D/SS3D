@@ -29,20 +29,5 @@ namespace SS3D.Interactions
             Point = point;
             Normal = normal;
         }
-
-        /// <summary>
-        /// The source which caused the interaction
-        /// </summary>
-        public IInteractionSource Source { get; }
-
-        /// <summary>
-        /// The target of the interaction, can be null
-        /// </summary>
-        public IInteractionTarget Target { get; set; }
-
-        /// <summary>
-        /// The point at which the interaction took place
-        /// </summary>
-        public Vector3 Point { get; }
     }
 }

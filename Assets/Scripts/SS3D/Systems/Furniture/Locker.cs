@@ -12,48 +12,42 @@ namespace SS3D.Systems.Furniture
     /// </summary>
     public class Locker : NetworkActor, IInteractionTarget
     {
-        [SyncVar(OnChange = nameof(OnLocked))]
-        public bool Locked;
-
+        [SyncVar(OnChange = nameof(OnLocked))] public bool Locked;
+        [SerializeField, SyncVar] private IDPermission permissionToUnlock;
         public GameObject LockLight;
-
-        [SerializeField]
-        [SyncVar]
-        private IDPermission _permissionToUnlock;
-
-        private MaterialPropertyBlock _propertyBlock;
+        private MaterialPropertyBlock propertyBlock;
         private Renderer _renderer;
 
-        public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
+        private void OnLocked(bool prev, bool next, bool asServer)
         {
-            LockLockerInteraction lockLockerInteraction =
-                new LockLockerInteraction(this, _permissionToUnlock);
-
-            UnlockLockerInteraction unlockLockerInteraction =
-                new UnlockLockerInteraction(this, _permissionToUnlock);
-
-            return new IInteraction[] { lockLockerInteraction, unlockLockerInteraction };
+            if(next)
+            {
+                propertyBlock.SetColor("_Color", Color.red);
+                _renderer.SetPropertyBlock(propertyBlock);
+            }
+            else
+            {
+                propertyBlock.SetColor("_Color", Color.green);
+                _renderer.SetPropertyBlock(propertyBlock);
+            }
         }
 
         protected override void OnStart()
         {
             base.OnStart();
-            _propertyBlock = new MaterialPropertyBlock();
+            propertyBlock = new MaterialPropertyBlock();
             _renderer = LockLight.GetComponent<Renderer>();
         }
 
-        private void OnLocked(bool prev, bool next, bool asServer)
+        public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            if (next)
-            {
-                _propertyBlock.SetColor("_Color", Color.red);
-                _renderer.SetPropertyBlock(_propertyBlock);
-            }
-            else
-            {
-                _propertyBlock.SetColor("_Color", Color.green);
-                _renderer.SetPropertyBlock(_propertyBlock);
-            }
+            LockLockerInteraction lockLockerInteraction = 
+                new LockLockerInteraction(this, permissionToUnlock);
+
+            UnlockLockerInteraction unlockLockerInteraction = 
+                new UnlockLockerInteraction(this, permissionToUnlock);
+
+            return new IInteraction[] { lockLockerInteraction, unlockLockerInteraction };
         }
     }
 }

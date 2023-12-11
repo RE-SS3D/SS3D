@@ -5,8 +5,8 @@
     /// </summary>
     public enum AdjacencyType
     {
-        Simple = 0,
-        Advanced = 1,
-        Offset = 2,
+        Simple,
+        Advanced,
+        Offset,
     }
 }

@@ -56,7 +56,6 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
                 new NukeDetonateEvent(nuke, playerSystem.GetCkey(source.GetComponentInParent<Entity>().Owner)).Invoke(this);
             }
-
             return false;
         }
     }

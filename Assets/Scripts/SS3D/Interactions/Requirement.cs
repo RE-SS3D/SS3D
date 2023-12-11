@@ -8,17 +8,23 @@ namespace SS3D.Interactions
     /// </summary>
     public abstract class Requirement : Interaction
     {
+        public IInteraction Interaction { get; set; }
+
         protected Requirement(IInteraction interaction)
         {
             Interaction = interaction;
         }
 
-        public IInteraction Interaction { get; set; }
-
         /// <summary>
         /// Checks if the requirement is satisfied
         /// </summary>
         public abstract bool SatisfiesRequirement(InteractionEvent interactionEvent);
+
+        /// <summary>
+        /// Applies the requirement once it completes
+        /// </summary>
+        /// <param name="interactionEvent"></param>
+        protected virtual void ApplyRequirement(InteractionEvent interactionEvent) { }
 
         public override IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -42,10 +48,7 @@ namespace SS3D.Interactions
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (Interaction.Start(interactionEvent, reference))
-            {
-                return true;
-            }
+            if (Interaction.Start(interactionEvent, reference)) return true;
 
             ApplyRequirement(interactionEvent);
             return false;
@@ -53,10 +56,7 @@ namespace SS3D.Interactions
 
         public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (Interaction.Update(interactionEvent, reference))
-            {
-                return true;
-            }
+            if (Interaction.Update(interactionEvent, reference)) return true;
 
             ApplyRequirement(interactionEvent);
             return false;
@@ -66,11 +66,5 @@ namespace SS3D.Interactions
         {
             Interaction.Cancel(interactionEvent, reference);
         }
-
-        /// <summary>
-        /// Applies the requirement once it completes
-        /// </summary>
-        /// <param name="interactionEvent"></param>
-        protected virtual void ApplyRequirement(InteractionEvent interactionEvent) { }
     }
 }

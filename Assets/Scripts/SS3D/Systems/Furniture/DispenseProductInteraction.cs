@@ -51,7 +51,6 @@ namespace SS3D.Systems.Furniture
             {
                 vendingMachine.DispenseProduct(ProductIndex);
             }
-
             return false;
         }
     }

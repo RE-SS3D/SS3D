@@ -9,6 +9,11 @@ namespace SS3D.UI.Buttons
     {
         private LabelButton _button;
 
+        private void OnEnable()
+        {
+            _button = (LabelButton)target;
+        }
+
         public override void OnInspectorGUI()
         {
             bool state = _button.Highlighted;
@@ -30,11 +35,6 @@ namespace SS3D.UI.Buttons
             }
 
             base.OnInspectorGUI();
-        }
-
-        protected void OnEnable()
-        {
-            _button = (LabelButton)target;
         }
     }
 }

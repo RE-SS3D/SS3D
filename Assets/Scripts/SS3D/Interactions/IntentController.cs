@@ -22,6 +22,14 @@ namespace SS3D.Interactions
 
         private Button _intentButton;
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _intentButton = GetComponent<Button>();
+            _intentButton.onClick.AddListener(HandleIntentButtonPressed);
+        }
+
         public void HandleIntentButtonPressed()
         {
             SelectIntent();
@@ -36,14 +44,6 @@ namespace SS3D.Interactions
             _selectedIntent = harm ? IntentType.Help : IntentType.Harm;
             _intentImage.sprite = harm ? _spriteHelp : _spriteHarm;
             _intentImage.color = harm ? _colorHelp : _colorHarm;
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            _intentButton = GetComponent<Button>();
-            _intentButton.onClick.AddListener(HandleIntentButtonPressed);
         }
     }
 }

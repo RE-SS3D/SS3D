@@ -10,12 +10,10 @@ namespace SS3D.Systems.Lobby.UI
     [RequiredLayer("UI")]
     public sealed class PlayerUsernameView : MonoBehaviour
     {
-        [SerializeField]
-        [NotNull]
-        private TMP_Text _nameLabel;
+        [SerializeField][NotNull] private TMP_Text _nameLabel;
 
         public string Name => _nameLabel.text;
-
+    
         public void UpdateNameText(string newName)
         {
             _nameLabel.text = newName;

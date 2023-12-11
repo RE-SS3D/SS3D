@@ -17,14 +17,15 @@ namespace SS3D.Interactions
         }
 
         public IInteraction Interaction { get; }
-
         public InteractionEvent Event { get; }
-
         public InteractionReference Reference { get; }
-
         public NetworkConnection Owner { get; }
-
         public bool FirstTick { get; set; } = true;
+
+        protected bool Equals(InteractionInstance other)
+        {
+            return Equals(Reference, other.Reference);
+        }
 
         public override bool Equals(object obj)
         {
@@ -38,17 +39,12 @@ namespace SS3D.Interactions
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((InteractionInstance)obj);
+            return obj.GetType() == GetType() && Equals((InteractionInstance) obj);
         }
 
         public override int GetHashCode()
         {
-            return Reference != null ? Reference.GetHashCode() : 0;
-        }
-
-        protected bool Equals(InteractionInstance other)
-        {
-            return Equals(Reference, other.Reference);
+            return (Reference != null ? Reference.GetHashCode() : 0);
         }
     }
 }

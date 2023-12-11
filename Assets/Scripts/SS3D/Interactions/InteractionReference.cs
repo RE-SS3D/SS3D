@@ -5,15 +5,20 @@
     /// </summary>
     public class InteractionReference
     {
+        /// <summary>
+        /// The id of this instance
+        /// </summary>
+        public int Id { get; }
+
         public InteractionReference(int id)
         {
             Id = id;
         }
 
-        /// <summary>
-        /// The id of this instance
-        /// </summary>
-        public int Id { get; }
+        protected bool Equals(InteractionReference other)
+        {
+            return Id == other.Id;
+        }
 
         public override bool Equals(object obj)
         {
@@ -27,17 +32,13 @@
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((InteractionReference)obj);
+            return obj.GetType() == GetType() && Equals((InteractionReference) obj);
         }
 
         public override int GetHashCode()
         {
             return Id;
         }
-
-        protected bool Equals(InteractionReference other)
-        {
-            return Id == other.Id;
-        }
+        
     }
 }

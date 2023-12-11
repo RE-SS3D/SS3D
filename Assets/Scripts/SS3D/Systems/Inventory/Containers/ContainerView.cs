@@ -18,9 +18,9 @@ namespace SS3D.Systems.Inventory.UI
     public class ContainerView : View
     {
         /// <summary>
-        /// The prefab for a container display
+        /// The script handling logic regarding when to remove and add container UIs.
         /// </summary>
-        public GameObject ContainerUiPrefab;
+        private ContainerViewer containerViewer;
 
         /// <summary>
         /// List of displayed containers on the player screen.
@@ -28,13 +28,13 @@ namespace SS3D.Systems.Inventory.UI
         private readonly List<ContainerDisplay> _containerDisplays = new();
 
         /// <summary>
-        /// The script handling logic regarding when to remove and add container UIs.
+        /// The prefab for a container display
         /// </summary>
-        private ContainerViewer _containerViewer;
+        public GameObject ContainerUiPrefab;
 
         public void Setup(ContainerViewer viewer)
         {
-            _containerViewer = viewer;
+            containerViewer = viewer;
             viewer.OnContainerOpened += InventoryOnContainerOpened;
             viewer.OnContainerClosed += InventoryOnContainerClosed;
         }
@@ -74,7 +74,7 @@ namespace SS3D.Systems.Inventory.UI
             ContainerUi containerUi = ui.GetComponent<ContainerUi>();
             Assert.IsNotNull(containerUi);
             containerUi.AttachedContainer = container;
-            containerUi.Inventory = _containerViewer.Inventory;
+            containerUi.Inventory = containerViewer.inventory;
             _containerDisplays.Add(new ContainerDisplay(ui, container));
         }
     }

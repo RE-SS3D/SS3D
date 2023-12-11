@@ -11,6 +11,6 @@ namespace SS3D.Systems.Rounds.Events
       public RoundTickUpdated(int seconds)
       {
          Seconds = seconds;
-      }
+      } 
    }
 }
