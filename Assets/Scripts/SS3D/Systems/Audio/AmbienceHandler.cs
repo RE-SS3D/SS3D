@@ -1,4 +1,6 @@
-﻿using SS3D.Core.Behaviours;
+﻿using SS3D.Core;
+using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -86,19 +88,29 @@ namespace SS3D.Systems.Audio
         [SerializeField]
         private AudioMixer _masterMixer;
 
-        private void Start()
+        private bool _clientHasSpawned;
+
+        protected override void OnStart()
         {
-            if (_ambientNoiseFrequency != 0)
-            {
-                PlayAmbience();
-            }
+            Subsystems.Get<EntitySystem>().OnClientSpawn += HandleClientSpawn;
+            SetVolumeOfAll(0f);
         }
 
         private void Update()
         {
+            if (!_clientHasSpawned) return;
             AttenuateWindSounds();
             AttenuatePowerSounds();
             MuffleSFX();
+        }
+
+        private void HandleClientSpawn()
+        {
+            _clientHasSpawned = true;
+            if (_ambientNoiseFrequency != 0)
+            {
+                PlayAmbience();
+            }   
         }
 
         /// <summary>
@@ -191,6 +203,14 @@ namespace SS3D.Systems.Audio
                 StartCoroutine(AmbientNoiseTimer());
             }
 
+        }
+
+        private void SetVolumeOfAll(float volume)
+        {
+            _airPlayer.volume = volume;
+            _electricalPlayer.volume = volume;
+            _lightWindPlayer.volume = volume;
+            _heavyWindPlayer.volume = volume;
         }
     }
 }
