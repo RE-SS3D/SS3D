@@ -4,6 +4,7 @@ using SS3D.Application;
 using SS3D.Application.Events;
 using SS3D.Data.Enums;
 using SS3D.Logging;
+using System;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 namespace SS3D.SceneManagement

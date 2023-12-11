@@ -21,7 +21,7 @@ namespace SS3D.Data.Management
         {
             Log.Information(this, "Initializing local save files", Logs.Important);
 
-            LocalSave.Initialize();
+            LocalStorage.Initialize();
         }
     }
 }

@@ -17,7 +17,6 @@ using UnityEngine;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
-using AssetDatabase = UnityEditor.AssetDatabase;
 #endif
 
 namespace SS3D.Systems.Inventory.Items
