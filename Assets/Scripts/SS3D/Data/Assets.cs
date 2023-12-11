@@ -3,6 +3,7 @@ using Coimbra;
 using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
+using System;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data
@@ -68,6 +69,11 @@ namespace SS3D.Data
             if (Databases.Count == 0)
             {
                 LoadAssetDatabases();
+            }
+
+            if (databaseId == String.Empty)
+            {
+                return null;
             }
 
             bool databaseExists = Databases.TryGetValue(databaseId, out AssetDatabase database);

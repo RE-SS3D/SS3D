@@ -38,16 +38,16 @@ namespace SS3D.Systems.Crafting
         private void FillRecipeOrganiser()
         {
             AssetDatabase recipesDataBase = Assets.GetDatabase(AssetDatabases.CraftingRecipes);
-            
-            foreach(Object asset in recipesDataBase.Assets.Values)
+
+            foreach (Object asset in recipesDataBase.Assets.Values)
             {
-                if(asset is not CraftingRecipe)
+                if (asset is not CraftingRecipe recipe)
                 {
                     Debug.LogError("Crafting recipe database contains object which are not recipes");
+
                     continue;
                 }
-                CraftingRecipe recipe = (CraftingRecipe) asset;
-            
+
                 _recipeOrganiser.TryAdd(recipe.Target, new Dictionary<string, CraftingRecipe>());
                 _recipeOrganiser[recipe.Target][recipe.InteractionName] = recipe;
             }
