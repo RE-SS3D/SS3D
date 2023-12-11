@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using SS3D.Attributes;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases

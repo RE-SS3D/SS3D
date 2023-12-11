@@ -10,16 +10,14 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
-using SS3D.Systems.Examine;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Selection;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
-using AssetDatabase = UnityEditor.AssetDatabase;
 #if UNITY_EDITOR
-
+using UnityEditor;
+using AssetDatabase = UnityEditor.AssetDatabase;
 #endif
 
 namespace SS3D.Systems.Inventory.Items
