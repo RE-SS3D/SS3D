@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 4363965162719999430}
   - component: {fileID: 1602098408367427586}
   - component: {fileID: 6800495836141411361}
+  - component: {fileID: 8006545930481202674}
   m_Layer: 10
   m_Name: ScrewdriverBlue
   m_TagString: Untagged
@@ -211,6 +212,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 4363965162719999430}
+  - {fileID: 6800495836141411361}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -222,7 +224,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 39
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -239,9 +241,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1602098408367427586}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1602098408367427586}
+  _asset: {fileID: 11400000, guid: 9e4b9aa465bc48d4faa9b53cd0132f11, type: 2}
   _name: screwdriver
   _weight: 1
   _startingTraits: []
@@ -249,3 +252,15 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 7991373112210367801}
   AttachmentPointAlt: {fileID: 7991373112210367801}
   _container: {fileID: 0}
+--- !u!114 &8006545930481202674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -13,6 +13,7 @@ using SS3D.Logging;
 using SS3D.Systems.Examine;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
+using SS3D.Systems.Selection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;

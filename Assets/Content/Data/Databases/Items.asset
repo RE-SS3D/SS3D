@@ -148,4 +148,16 @@ MonoBehaviour:
       _value: {fileID: 802333698458937824, guid: ddaa28fac1956b2428aff1dac1d89707, type: 3}
     - _key: HumanHeart
       _value: {fileID: 2302397424301738637, guid: fccdc78a6cf916047ba52f2877f755e5, type: 3}
+    - _key: ScrewdriverBlue
+      _value: {fileID: 2402587210622244651, guid: 9c8363ee7f934bd4b8ee5a2e30da1269, type: 3}
+    - _key: Doodad
+      _value: {fileID: 3792017003477948967, guid: f6528d8afa18fa14998a0158260ef26c, type: 3}
+    - _key: Wirecutters
+      _value: {fileID: 2402587210622244651, guid: 41a1c8c211dc32c4d8ffca5f0892f9dc, type: 3}
+    - _key: Multitool
+      _value: {fileID: 2402587210622244651, guid: 2ca5f2886cf2f19428b50bf284689b86, type: 3}
+    - _key: PowerCellAdmin
+      _value: {fileID: 7927487060350510867, guid: c69ed93dc225ea049bbf1a02662c48c0, type: 3}
+    - _key: PowerCell
+      _value: {fileID: 2402587210622244651, guid: de67200a4c96d444f800399a033ddfef, type: 3}
     _new: 

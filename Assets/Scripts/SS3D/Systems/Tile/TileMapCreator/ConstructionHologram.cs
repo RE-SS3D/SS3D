@@ -70,7 +70,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 _ => null
             };
 
-            foreach (MeshRenderer mr in _hologram.GetComponentsInChildren<MeshRenderer>())
+            foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())
             {
                 Material[] materials = mr.materials;
                 for (int i = 0; i < materials.Length; i++)

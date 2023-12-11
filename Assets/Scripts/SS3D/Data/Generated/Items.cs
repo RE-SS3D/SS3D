@@ -30,7 +30,7 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset SteelReinforcedSheet = new DatabaseAsset("SteelReinforcedSheet", "Items");
         public static DatabaseAsset SteelSheet = new DatabaseAsset("SteelSheet", "Items");
         public static DatabaseAsset Crowbar = new DatabaseAsset("Crowbar", "Items");
-        public static DatabaseAsset Screwdriver = new DatabaseAsset("Screwdriver", "Items");
+        public static DatabaseAsset ScrewdriverBlue = new DatabaseAsset("ScrewdriverBlue", "Items");
         public static DatabaseAsset Wrench = new DatabaseAsset("Wrench", "Items");
         public static DatabaseAsset FlashlightBlue = new DatabaseAsset("FlashlightBlue", "Items");
         public static DatabaseAsset KitchenKnife = new DatabaseAsset("KitchenKnife", "Items");
@@ -71,6 +71,11 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset Toolbelt = new DatabaseAsset("Toolbelt", "Items");
         public static DatabaseAsset Backpack = new DatabaseAsset("Backpack", "Items");
         public static DatabaseAsset HumanHeart = new DatabaseAsset("HumanHeart", "Items");
+        public static DatabaseAsset Doodad = new DatabaseAsset("Doodad", "Items");
+        public static DatabaseAsset Wirecutters = new DatabaseAsset("Wirecutters", "Items");
+        public static DatabaseAsset Multitool = new DatabaseAsset("Multitool", "Items");
+        public static DatabaseAsset PowerCellAdmin = new DatabaseAsset("PowerCellAdmin", "Items");
+        public static DatabaseAsset PowerCell = new DatabaseAsset("PowerCell", "Items");
     }
 }
 
