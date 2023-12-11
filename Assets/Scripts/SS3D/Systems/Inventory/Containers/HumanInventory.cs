@@ -17,6 +17,7 @@ using System.Collections;
 using FishNet.Object.Synchronizing;
 using System.ComponentModel;
 using static UnityEngine.GraphicsBuffer;
+using SS3D.Systems.Interactions;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -343,8 +344,14 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 return;
             }
-
             Item item = container.ItemAt(position);
+
+            if(container == Hands.SelectedHand.Container && item != null)
+            {
+                GetComponent<InteractionController>().InteractInHand(item.gameObject, Hands.SelectedHand.gameObject);
+                return;
+            }
+
             // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
             if (Hands.SelectedHand.IsEmpty())
             {
