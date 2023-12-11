@@ -17,14 +17,17 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class TileSystem : NetworkSystem
     {
-	    public const string SavePath = "/Tilemaps";
+	    public const string savePath = "/Tilemaps";
 
-	    public const string UnnamedMapName = "UnnamedMap";
+	    public const string unnamedMapName = "UnnamedMap";
 
         public TileResourceLoader Loader { get; private set; }
  
         private TileMap _currentMap;
         public TileMap CurrentMap => _currentMap;
+
+        public string SavePath => savePath;
+
 
         [ServerOrClient]
         protected override void OnStart()
@@ -52,7 +55,7 @@ namespace SS3D.Systems.Tile
 		        return;
 	        }
 
-	        CreateMap(UnnamedMapName);
+	        CreateMap(unnamedMapName);
 
 	        await WaitForResourcesLoad();
 
@@ -127,13 +130,13 @@ namespace SS3D.Systems.Tile
         }
 
         [Server]
-        public void Save()
+        public void Save(string mapName, bool overwrite)
         {
-			Log.Information(this, $"Saving tilemap {_currentMap.name}");
+			Log.Information(this, $"Saving tilemap {mapName}");
 
             SavedTileMap mapSave = _currentMap.Save();
 												    
-            SaveSystem.SaveObject(SavePath + "/" + _currentMap.name, mapSave);
+            SaveSystem.SaveObject(SavePath + "/" + mapName, mapSave, overwrite);
         }
 
         [Server]
@@ -147,11 +150,26 @@ namespace SS3D.Systems.Tile
         }
 
         [Server]
+        public void Load(string mapName)
+        {
+            Log.Information(this, "Loading most recent tilemap");
+
+            SavedTileMap mapSave = SaveSystem.LoadObject<SavedTileMap>(mapName);
+
+            _currentMap.Load(mapSave);
+        }
+
+        [Server]
         public void ResetSave()
         {
             _currentMap.Clear();
-            Save();
+            Save("UnnamedMap", true);
             Log.Warning(this, "Tilemap resetted. Existing savefile has been wiped");
+        }
+
+        public bool MapNameAlreadyExist(string name)
+        {
+            return SaveSystem.FolderAlreadyContainsName(savePath, name);
         }
     }
 }

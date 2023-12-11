@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 1398198900295277428}
   - component: {fileID: 866363096200871384}
   - component: {fileID: -6759684073552117948}
+  - component: {fileID: -2125953462637199249}
+  - component: {fileID: 4269040840740301026}
   m_Layer: 0
   m_Name: TileGrey
   m_TagString: Untagged
@@ -126,7 +128,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 73
+  <PrefabId>k__BackingField: 72
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -144,4 +146,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 00000000
+  _allowedDirections: 00000000
+--- !u!114 &-2125953462637199249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4269040840740301026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 3b3cae97515b85845a7166190c88009f, type: 2}
