@@ -84,6 +84,8 @@ namespace SS3D.Systems.Tile
 
         public string NameString => _tileObjectSo.NameString;
 
+        public TileObjectSo tileObjectSO => _tileObjectSo;
+
         public bool HasAdjacencyConnector => _connector != null;
 
         /// <summary>
