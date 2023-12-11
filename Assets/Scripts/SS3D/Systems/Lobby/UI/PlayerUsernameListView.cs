@@ -20,34 +20,26 @@ namespace SS3D.Systems.Lobby.UI
     public sealed class PlayerUsernameListView : NetworkActor
     {
         // The UI element this is linked to
-        [SerializeField]
-        [NotNull]
-        private Transform _root;
+        [SerializeField] [NotNull] private Transform _root;
 
         // Username list, local list that is "networked" by the SyncList on LobbyManager
-        [SerializeField]
-        [NotNull]
-        private List<PlayerUsernameView> _playerUsernames;
+        [SerializeField] [NotNull] private List<PlayerUsernameView> _playerUsernames;
 
         // The username panel prefab
-        [SerializeField]
-        [NotNull]
-        private GameObject _uiPrefab;
-
-        [SerializeField]
-        private Color _userReadyColor = PaletteColors.LightBlue;
-
-        public override void OnStartNetwork()
-        {
-            base.OnStartNetwork();
-            SubscribeToEvents();
-        }
+        [SerializeField] [NotNull] private GameObject _uiPrefab;
+        [SerializeField] private Color _userReadyColor = PaletteColors.LightBlue;
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
             AddHandle(ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged));
+        }
+
+        public override void OnStartNetwork()
+        {
+            base.OnStartNetwork();
+            SubscribeToEvents();
         }
 
         private void SubscribeToEvents()
@@ -69,17 +61,11 @@ namespace SS3D.Systems.Lobby.UI
             switch (changeType)
             {
                 case ChangeType.Addition:
-                {
                     AddUsernameUI(ckey);
                     break;
-                }
-
                 case ChangeType.Removal:
-                {
                     RemoveUsernameUI(ckey);
                     break;
-                }
-
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -98,6 +84,8 @@ namespace SS3D.Systems.Lobby.UI
         /// <summary>
         /// Adds the new Username to the player list
         /// </summary>
+        /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
+        /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
         private void AddUsernameUI(string ckey)
         {
             // if this Username already exists we return
@@ -117,6 +105,8 @@ namespace SS3D.Systems.Lobby.UI
         /// <summary>
         /// Removes the player from the list based on the Username
         /// </summary>
+        /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
+        /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
         private void RemoveUsernameUI(string ckey)
         {
             PlayerUsernameView removedUsername = null;

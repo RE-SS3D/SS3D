@@ -1,5 +1,4 @@
-﻿using SS3D.Systems.Traits;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SS3D.Systems
 {
@@ -10,25 +9,22 @@ namespace SS3D.Systems
     public class Trait : ScriptableObject
     {
         // Hash used for identification
-        private int _hash;
-
-        [SerializeField]
-        private TraitCategories _category;
-
+        protected int hash;
         public int Hash
         {
             get
             {
-                if (_hash == 0)
+                if (hash == 0)
                 {
                     GenerateHash();
                 }
 
-                return _hash;
+                return hash;
             }
-            set => _hash = value;
+            set => hash = value;
         }
 
+        [HideInInspector]
         public string Name
         {
             get => name;
@@ -36,52 +32,43 @@ namespace SS3D.Systems
         }
 
         // Categories, used for checking specific types of Traits
+        protected TraitCategories _category;
         public TraitCategories Category
         {
             get => _category;
             set => _category = value;
         }
 
+        //Two different object can have the same hash, it's usually a bad idea to test for equality with hash.
+        protected bool Equals(Trait other)
+        {
+            // Use Hash instead of hash to prevent uninitialized hashes in clients
+            return Hash == other.hash;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Trait)obj);
+        }
+
         public override int GetHashCode()
         {
-            return _hash;
+            return hash;
         }
 
-        // Two different object can have the same hash, it's usually a bad idea to test for equality with hash.
-        public override bool Equals(object other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            if (other.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return Equals((Trait)other);
-        }
-
-        protected void OnValidate()
+        [ExecuteInEditMode]
+        private void OnValidate()
         {
             GenerateHash();
         }
 
         private void GenerateHash()
         {
-            _hash = Animator.StringToHash(name.ToUpper());
-        }
-
-        private bool Equals(Trait other)
-        {
-            // Use Hash instead of hash to prevent uninitialized hashes in clients
-            return Hash == other._hash;
+            hash = Animator.StringToHash(name.ToUpper());
         }
     }
+
 }

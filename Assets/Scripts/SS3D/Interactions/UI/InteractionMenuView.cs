@@ -18,11 +18,8 @@ namespace SS3D.Interactions.UI
     {
         public event Action<IInteraction> OnSelect;
 
-        [SerializeField]
-        private GameObject _buttonPrefab;
-
-        [SerializeField]
-        private GameObject _contentPanel;
+        [SerializeField] private GameObject _buttonPrefab;
+        [SerializeField] private GameObject _contentPanel;
 
         private List<IInteraction> _interactions;
         private InteractionEvent _interactionEvent;
@@ -47,8 +44,13 @@ namespace SS3D.Interactions.UI
             }
         }
 
-        protected void Update()
+        private void Update()
         {
+            if (!Input.GetButtonDown("Primary Click") && !Input.GetButtonDown("Secondary Click"))
+            {
+                return;
+            }
+
             // Check for self as parent of click
             bool hasSelfAsParent = false;
 
@@ -84,6 +86,7 @@ namespace SS3D.Interactions.UI
 
             foreach (IInteraction interaction in _interactions)
             {
+
                 GameObject button = Instantiate(_buttonPrefab, _contentPanel.transform);
 
                 button.GetComponentInChildren<TextMeshProUGUI>().text = interaction.GetName(Event);

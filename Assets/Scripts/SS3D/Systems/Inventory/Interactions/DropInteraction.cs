@@ -39,10 +39,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (interactionEvent.Source.GetRootSource() is Hand hand)
             {
                 // we place the item in the hand in the point we clicked
-                if (hand != null)
-                {
-                    hand.PlaceHeldItemOutOfHand(interactionEvent.Point, hand.ItemInHand.transform.rotation);
-                }
+                hand?.PlaceHeldItemOutOfHand(interactionEvent.Point, hand.ItemInHand.transform.rotation);
             }
 
             return false;

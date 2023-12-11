@@ -1,10 +1,14 @@
-﻿using System.Linq;
+﻿
+using System.Collections.Generic;
+using System.Linq;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using FishNet.Object.Synchronizing;
+using UnityEditor;
 using FishNet.Object;
+
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -19,15 +23,13 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private struct ClothDisplayData
         {
-            public readonly NetworkObject BodyPart;
-
-            public readonly Item ClothToDisplay;
-
             public ClothDisplayData(NetworkObject bodyPart, Item clothToDisplay)
             {
-                BodyPart = bodyPart;
-                ClothToDisplay = clothToDisplay;
+                _bodyPart= bodyPart;
+                _clothToDisplay= clothToDisplay;
             }
+            public NetworkObject _bodyPart;
+            public Item _clothToDisplay;
         }
 
         /// <summary>
@@ -54,69 +56,59 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// When the content of a container change, check if it should display or remove display of some clothes.
-        /// </summary>
-        [Server]
-        public void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
-        {
-            // If it's not a cloth type container.
-            // It'd be probably better to just create "cloth container" inheriting from container to easily test that.
-            if (container.GetComponent<ClothContainer>() == null)
-            {
-                return;
-            }
-
-            switch (type)
-            {
-                case ContainerChangeType.Add:
-                {
-                    AddCloth(newItem);
-                    break;
-                }
-
-                case ContainerChangeType.Remove:
-                {
-                    RemoveCloth(oldItem);
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
         /// Callback when the syncedList _clothedBodyParts changes. Update the displayed clothes on the player.
         /// </summary>
-        private void ClothedBodyPartsOnChange(SyncListOperation op, int index, ClothDisplayData oldData, ClothDisplayData newData, bool asServer)
+        private void ClothedBodyPartsOnChange(SyncListOperation op, int index,
+            ClothDisplayData oldData, ClothDisplayData newData, bool asServer)
         {
-            if (asServer)
-            {
-                return;
-            }
+
+            if(asServer) return;
 
             switch (op)
             {
                 // Show the new cloth on the player
                 case SyncListOperation.Add:
-                {
-                    NetworkObject newBodyPart = newData.BodyPart;
-                    Item newItem = newData.ClothToDisplay;
+                    NetworkObject newBodyPart = newData._bodyPart;
+                    Item newItem = newData._clothToDisplay;
                     if (!newBodyPart.TryGetComponent(out SkinnedMeshRenderer renderer))
                     {
                         Log.Warning(this, $"no skinned mesh renderer on game object {newBodyPart}, can't display cloth");
                         return;
                     }
-
                     newBodyPart.gameObject.SetActive(true);
                     renderer.sharedMesh = newItem.gameObject.GetComponentInChildren<MeshFilter>().sharedMesh;
                     break;
-                }
 
                 // Stop displaying cloth on the player
                 case SyncListOperation.RemoveAt:
-                {
-                    NetworkObject oldBodyPart = oldData.BodyPart;
+                    NetworkObject oldBodyPart = oldData._bodyPart;
                     oldBodyPart.gameObject.SetActive(false);
                     break;
-                }
+
+            }
+        }
+
+		/// <summary>
+		/// When the content of a container change, check if it should display or remove display of some clothes.
+		/// </summary>
+		[Server]
+        public void HandleContainerContentChanged(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
+        {
+            // If it's not a cloth type container.
+            // It'd be probably better to just create "cloth container" inheriting from container to easily test that.
+            if(container.GetComponent<ClothContainer>() == null)
+            {
+                return;
+            }
+
+            switch(type)
+            {
+                case ContainerChangeType.Add:
+					AddCloth(newItem);
+                    break;
+                case ContainerChangeType.Remove:
+					RemoveCloth(oldItem);
+                    break;
             }
         }
 
@@ -134,11 +126,13 @@ namespace SS3D.Systems.Inventory.Containers
 
             ClothType itemClothType = cloth.Type;
             ClothedBodyPart[] clothedBodyParts = GetComponentsInChildren<ClothedBodyPart>(true);
-            ClothedBodyPart bodypart = clothedBodyParts.First(x => x.Type == itemClothType);
+            ClothedBodyPart bodypart = clothedBodyParts.
+                Where(x => x.Type == itemClothType).First();
 
-            if (bodypart.gameObject.TryGetComponent<NetworkObject>(out NetworkObject networkedBodyPart))
+            NetworkObject NetworkedBodyPart = bodypart.gameObject.GetComponent<NetworkObject>();
+            if (NetworkedBodyPart != null)
             {
-                _clothedBodyParts.Add(new ClothDisplayData(networkedBodyPart, item));
+                _clothedBodyParts.Add(new ClothDisplayData(NetworkedBodyPart, item));
             }
         }
 
@@ -156,7 +150,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             ClothType itemClothType = cloth.Type;
             ClothDisplayData clothdata = _clothedBodyParts.Find(
-                x => x.BodyPart.gameObject.GetComponent<ClothedBodyPart>().Type == itemClothType);
+                x => x._bodyPart.gameObject.GetComponent<ClothedBodyPart>().Type == itemClothType);
 
             _clothedBodyParts.Remove(clothdata);
         }

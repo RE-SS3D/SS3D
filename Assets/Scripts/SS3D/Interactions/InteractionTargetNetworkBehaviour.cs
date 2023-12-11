@@ -10,7 +10,6 @@ namespace SS3D.Interactions
     public abstract class InteractionTargetNetworkBehaviour : NetworkActor, IInteractionTarget, IGameObjectProvider
     {
         public new GameObject GameObject => base.GameObject;
-
         public abstract IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent);
     }
 }

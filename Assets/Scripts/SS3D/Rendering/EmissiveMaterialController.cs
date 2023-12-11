@@ -7,40 +7,33 @@ namespace SS3D.Rendering
 {
     public class EmissiveMaterialController : Actor
     {
-        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
-
         [Range(0, 2f)]
-        [SerializeField]
-        private float _emissionIntensity;
+        [SerializeField] private float _emissionIntensity;
+        [SerializeField] private Color _emissionColorValue;
 
-        [SerializeField]
-        private Color _emissionColorValue;
-
-        [SerializeField]
-        private Material _originalMaterial;
-
-        [SerializeField]
-        private Renderer _renderer;
+        [SerializeField] private Material _originalMaterial;
+        [SerializeField] private Renderer _renderer;
 
         private Material _materialInstance;
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            Setup();
-        }
-
-        protected void OnValidate()
-        {
-            UpdateVisuals();
+            Setup(); 
         }
 
         private void Setup()
         {
             _materialInstance = new Material(_originalMaterial);
             _renderer.material = _materialInstance;
+        }
+
+        private void OnValidate()
+        {
+            UpdateVisuals();
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -52,7 +45,7 @@ namespace SS3D.Rendering
         {
             if (_materialInstance == null)
             {
-                Setup();
+                Setup();    
             }
 
             _materialInstance.SetVector(EmissionColor, _emissionColorValue * _emissionIntensity);

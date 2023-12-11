@@ -13,14 +13,14 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class MindSystem : NetworkSystem
     {
-        [SyncObject]
-        private readonly SyncList<Mind> _spawnedMinds = new();
-
         [SerializeField]
         private GameObject _mindPrefab;
 
         [SerializeField]
         private Mind _emptyMind;
+
+        [SyncObject]
+        private readonly SyncList<Mind> _spawnedMinds = new();
 
         public Mind EmptyMind => _emptyMind;
 
@@ -29,14 +29,14 @@ namespace SS3D.Systems.Entities
         /// </summary>
         /// <param name="player"></param>
         /// <param name="mind"></param>
+        /// <returns></returns>
         public bool TryGetMind(Player player, out Mind mind)
         {
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-
             // todo inspect do we really need to GetPlayer when we pass a player already?
             Player actualPlayer = playerSystem.GetPlayer(player.Owner);
 
-            mind = _spawnedMinds.Find(spawnedMind => spawnedMind.Player == actualPlayer);
+            mind = _spawnedMinds.Find(spawnedMind => spawnedMind.player == actualPlayer);
 
             if (mind != null)
             {
@@ -54,7 +54,7 @@ namespace SS3D.Systems.Entities
         /// <returns></returns>
         public bool HasMind(Player player)
         {
-            Mind mind = _spawnedMinds.Find(spawnedMind => spawnedMind.Player == player);
+            Mind mind = _spawnedMinds.Find(spawnedMind => spawnedMind.player == player);
 
             return mind != null;
         }

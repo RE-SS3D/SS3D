@@ -4,18 +4,18 @@ namespace SS3D.Systems.Health
 {
 	public class DamageTypeQuantity : ICloneable
 	{
-		public DamageType DamageType;
-		public float Quantity;
+		public DamageType damageType;
+		public float quantity;
 
 		public DamageTypeQuantity(DamageType damageType, float quantity)
 		{
-			DamageType = damageType;
-			Quantity = quantity;
+			this.damageType = damageType;
+			this.quantity = quantity;
 		}
 
 		public object Clone()
 		{
-			return new DamageTypeQuantity(DamageType, Quantity);
+			return new DamageTypeQuantity(damageType, quantity);
 		}
 	}
 }

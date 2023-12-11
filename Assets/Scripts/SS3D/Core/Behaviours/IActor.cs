@@ -49,7 +49,7 @@ namespace SS3D.Core
 		public Vector3 Forward { get; }
 
 		/// <summary>
-		/// Returns the negative transform.forward of the Actor's GameObject.
+		/// Returns the negative transform.forward of the Actor's GameObject. 
 		/// </summary>
 		public Vector3 Backward { get; }
 
@@ -94,7 +94,7 @@ namespace SS3D.Core
 		public Matrix4x4 WorldToLocalMatrix { get; }
 
 		/// <summary>
-		/// Getter and Setter for the Position of the Actor's transform.
+		/// Getter and Setter for the Position of the Actor's transform. 
 		/// </summary>
 		public Vector3 Position { get; set; }
 
@@ -109,7 +109,7 @@ namespace SS3D.Core
 		public Vector3 RotationEuler { get; set; }
 
 		/// <summary>
-		/// Getter and Setter in Quaternion angles for the Actor's transform rotation.
+		/// Getter and Setter in Quaternion angles for the Actor's transform rotation. 
 		/// </summary>
 		public Quaternion Rotation { get; set; }
 
@@ -151,7 +151,7 @@ namespace SS3D.Core
 		/// <param name="target">Target to look at.</param>
 		public void LookAt(Transform target) { }
 
-		/// <summary>
+		/// <summary>                         
 		/// Rotates the transform so the forward vector points at target's current position using a Vector3 target.
 		/// </summary>
 		/// <param name="target">Target to look at.</param>
@@ -162,5 +162,5 @@ namespace SS3D.Core
 		/// </summary>
 		/// <param name="handle">The event handle.</param>
 		public void AddHandle(EventHandle handle) { }
-    }
+	}
 }

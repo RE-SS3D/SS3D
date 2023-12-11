@@ -13,6 +13,21 @@ namespace SS3D.Systems.Entities.Debug
         public Entity Target;
         private Controls.OtherActions _controls;
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            // _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            // _controls.SwapMinds.performed += HandleMindSwap;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+           // _controls.SwapMinds.performed -= HandleMindSwap;
+        }
+
         [ContextMenu("Request Mind Swap")]
         public void HandleMindSwap(InputAction.CallbackContext callbackContext)
         {

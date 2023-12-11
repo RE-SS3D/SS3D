@@ -12,11 +12,9 @@ namespace SS3D.Interactions
     /// </summary>
     public class LoadingBar : Actor
     {
-        public Slider TargetSlider;
-
         public float StartTime { get; set; }
-
         public float Duration { get; set; }
+        public Slider TargetSlider;
 
         protected override void OnStart()
         {
@@ -36,11 +34,11 @@ namespace SS3D.Interactions
             if (StartTime == 0)
             {
                 StartTime = Time.time;
-            }
+            }   
         }
 
         /// <summary>
-        /// Updates the loading progress
+        /// Updates the loading progress 
         /// </summary>
         private void UpdateLoadingProgressTask()
         {

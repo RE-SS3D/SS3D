@@ -79,6 +79,9 @@ namespace SS3D.Interactions
         /// </summary>
         /// <param name="interactionEvent">The source used in the interaction</param>
         /// <param name="reference"></param>
-        public virtual void Cancel(InteractionEvent interactionEvent, InteractionReference reference) { }
+        public virtual void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            return;
+        }
     }
 }

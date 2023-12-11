@@ -22,86 +22,29 @@ namespace SS3D.Systems.Interactions
     {
         public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
 
-        private const float ScaleDuration = .2f;
-        private const float PetalRotateDuration = .02f;
-
         [Header("UI")]
-        [SerializeField]
-        private CanvasGroup _canvasGroup;
+        [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private RectTransform _indicator;
 
-        [SerializeField]
-        private RectTransform _indicator;
-
-        [SerializeField]
-        private Sprite _missingIcon;
+        [SerializeField] private Sprite _missingIcon;
 
         [Header("Buttons")]
-        [SerializeField]
-        private List<RadialInteractionButton> _interactionButtons;
+        [SerializeField] private List<RadialInteractionButton> _interactionButtons;
 
         private GameObject _selectedObject;
 
         private Sequence _rotateSequence;
-
         private Sequence _scaleSequence;
-
         private Sequence _fadeSequence;
-
         private Sequence _indicatorRotateSequence;
 
-        private Controls.InteractionsActions _controls;
-
-        private InputSystem _inputSystem;
+        private const float ScaleDuration = .2f;
+        private const float PetalRotateDuration = .02f;
 
         private List<IInteraction> Interactions { get; set; }
-
         private InteractionEvent Event { get; set; }
-
-        /// <summary>
-        /// Updates the interactions that are available on the menu
-        /// </summary>
-        /// <param name="interactions">Interaction list</param>
-        /// <param name="interactionEvent">Interaction event</param>
-        /// <param name="mousePosition">Mouse position when the interaction was created</param>
-        public void SetInteractions(List<IInteraction> interactions, InteractionEvent interactionEvent, Vector3 mousePosition)
-        {
-            Interactions = interactions;
-            Event = interactionEvent;
-        }
-
-        /// <summary>
-        /// Opens the interaction menu
-        /// </summary>
-        public void ShowInteractionsMenu()
-        {
-            bool hasInteractions = Event != null && !Interactions.IsNullOrEmpty();
-            if (!hasInteractions) { return; }
-
-            InteractionFolder folder = default;
-
-            foreach (IInteraction interaction in Interactions)
-            {
-                Sprite icon = interaction.GetIcon(Event);
-
-                if (icon == null)
-                {
-                    icon = _missingIcon;
-                }
-
-                string interactionName = interaction.GetName(Event);
-                string objectName = Event.Target.ToString();
-
-                RadialInteractionItem radialInteractionItem = new(icon, interactionName, interaction, objectName);
-                folder.AddInteraction(radialInteractionItem);
-
-                RadialInteractionButton interactionButton = GetAvailableButton();
-
-                interactionButton.SetInteraction(radialInteractionItem);
-                interactionButton.OnInteractionSelected += HandleInteractionButtonPressed;
-            }
-
-            Show();
-        }
+        private Controls.InteractionsActions _controls;
+        private InputSystem _inputSystem;
 
         protected override void OnStart()
         {
@@ -109,13 +52,6 @@ namespace SS3D.Systems.Interactions
 
             Setup();
             Disappear();
-        }
-
-        protected override void OnDestroyed()
-        {
-            base.OnDestroyed();
-
-            _controls.ViewInteractions.canceled -= HandleDisappear;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -136,6 +72,13 @@ namespace SS3D.Systems.Interactions
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.Interactions;
             _controls.ViewInteractions.canceled += HandleDisappear;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.ViewInteractions.canceled -= HandleDisappear;
         }
 
         private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
@@ -164,6 +107,7 @@ namespace SS3D.Systems.Interactions
             _indicatorRotateSequence?.Kill();
             _indicatorRotateSequence = DOTween.Sequence();
 
+            //_indicator.eulerAngles = new Vector3(0, 0, z);
             float z = _selectedObject.transform.eulerAngles.z;
             Vector3 rotation = new(0, 0, z);
 
@@ -176,6 +120,39 @@ namespace SS3D.Systems.Interactions
         }
 
         /// <summary>
+        /// Opens the interaction menu
+        /// </summary>
+        public void ShowInteractionsMenu()
+        {
+            bool hasInteractions = Event != null && !Interactions.IsNullOrEmpty();
+            if (!hasInteractions) { return; }
+
+            InteractionFolder folder = new();
+            foreach (IInteraction interaction in Interactions)
+            {
+                Sprite icon = interaction.GetIcon(Event);
+
+                if (icon == null)
+                {
+                    icon = _missingIcon;
+                }
+
+                string interactionName = interaction.GetName(Event);
+                string objectName = Event.Target.ToString();
+
+                RadialInteractionItem radialInteractionItem = new(icon, interactionName, interaction, objectName);
+                folder.AddInteraction(radialInteractionItem);
+
+                RadialInteractionButton interactionButton = GetAvailableButton();
+
+                interactionButton.SetInteraction(radialInteractionItem);
+                interactionButton.OnInteractionSelected += HandleInteractionButtonPressed;
+            }
+
+            Show();
+        }
+
+        /// <summary>
         /// Tweens the UI on the enabled position
         /// </summary>
         private void Show()
@@ -183,7 +160,7 @@ namespace SS3D.Systems.Interactions
             Vector2 screenPos = Mouse.current.position.ReadValue();
             Position = screenPos;
 
-            _selectedObject = _interactionButtons[0].GameObject;
+            _selectedObject = _interactionButtons.First().GameObject;
 
             UpdateIndicator();
 
@@ -260,8 +237,21 @@ namespace SS3D.Systems.Interactions
         }
 
         /// <summary>
+        /// Updates the interactions that are available on the menu
+        /// </summary>
+        /// <param name="interactions">Interaction list</param>
+        /// <param name="interactionEvent">Interaction event</param>
+        /// <param name="mousePosition">Mouse position when the interaction was created</param>
+        public void SetInteractions(List<IInteraction> interactions, InteractionEvent interactionEvent, Vector3 mousePosition)
+        {
+            Interactions = interactions;
+            Event = interactionEvent;
+        }
+
+        /// <summary>
         /// Gets a button that is not used
         /// </summary>
+        /// <returns></returns>
         private RadialInteractionButton GetAvailableButton()
         {
             return _interactionButtons.First(button => !button.Occupied);

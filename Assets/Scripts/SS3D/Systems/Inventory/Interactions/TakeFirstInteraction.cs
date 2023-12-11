@@ -46,7 +46,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hand hand = (Hand)interactionEvent.Source;
+            Hand hand = (Hand) interactionEvent.Source;
 
             Item pickupItem = _attachedContainer.Items.First();
 

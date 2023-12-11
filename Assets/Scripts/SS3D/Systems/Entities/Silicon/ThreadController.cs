@@ -20,29 +20,18 @@ namespace SS3D.Systems.Entities.Silicon
     public class ThreadController : NetworkActor
     {
         public event Action<float> OnSpeedChanged;
-
         public event Action<bool> OnPowerChanged;
 
         [Header("Components")]
-        [SerializeField]
-        private CharacterController _characterController;
-
-        [FormerlySerializedAs("_playerControllable")]
-        [SerializeField]
-        private Entity _entity;
+        [SerializeField] private CharacterController _characterController;
+        [FormerlySerializedAs("_playerControllable")] [SerializeField] private Entity _entity;
 
         [Header("Movement Settings")]
-        [SerializeField]
-        private float _movementSpeed;
+        [SerializeField] private float _movementSpeed;
+        [SerializeField] private float _lerpMultiplier;
+        [SerializeField] private float _rotationLerpMultiplier;
 
-        [SerializeField]
-        private float _lerpMultiplier;
-
-        [SerializeField]
-        private float _rotationLerpMultiplier;
-
-        [SerializeField]
-        private Transform _movementTarget;
+        [SerializeField] private Transform _movementTarget;
 
         [Header("Debug Info")]
         private Vector3 _absoluteMovement;
@@ -109,10 +98,10 @@ namespace SS3D.Systems.Entities.Silicon
         /// <param name="movementInput"></param>
         private void MoveTarget(Vector2 movementInput, float multiplier = 1)
         {
-            // makes the movement align to the camera view
+            //makes the movement align to the camera view
             Vector3 newTargetMovement =
-                (movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized) +
-                (movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized);
+                movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized +
+                movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
 
             // smoothly changes the target movement
             _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
@@ -137,12 +126,13 @@ namespace SS3D.Systems.Entities.Silicon
         /// </summary>
         private void MovePlayer()
         {
-            _characterController.Move(_targetMovement * (_movementSpeed * Time.deltaTime));
+            _characterController.Move(_targetMovement * ((_movementSpeed) * Time.deltaTime));
         }
 
         /// <summary>
         /// Process the player movement input, smoothing it
         /// </summary>
+        /// <returns></returns>
         private void ProcessPlayerInput()
         {
             float x = 0;
@@ -152,7 +142,6 @@ namespace SS3D.Systems.Entities.Silicon
                 x = _controls.Movement.ReadValue<Vector2>().x;
                 y = _controls.Movement.ReadValue<Vector2>().y;
             }
-
             _input = new Vector2(x, y);
             OnSpeedChanged?.Invoke(_input.magnitude != 0 ? _input.magnitude : 0);
 

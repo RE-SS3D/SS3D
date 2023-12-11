@@ -8,5 +8,8 @@ namespace SS3D.Systems.Tile
     /// ScriptableObject that defines an item that can be placed in the tilemap.
     /// </summary>
     [CreateAssetMenu(fileName = "ItemObjectSo", menuName = "TileMap/ItemObjectSo", order = 0)]
-    public class ItemObjectSo : GenericObjectSo { }
+    public class ItemObjectSo: GenericObjectSo
+    {
+        
+    }
 }

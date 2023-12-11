@@ -78,19 +78,19 @@ namespace SS3D.CommandLine
             if (arg.Contains(CommandLineArgs.Ip))
             {
                 _networkSettings.NetworkType = NetworkType.Client;
-                _networkSettings.ServerAddress = arg.Replace(CommandLineArgs.Ip, string.Empty);
+                _networkSettings.ServerAddress = arg.Replace(CommandLineArgs.Ip, "");
             }
 
             if (arg.Contains(CommandLineArgs.Ckey))
             {
-                string ckey = arg.Replace(CommandLineArgs.Ckey, string.Empty);
+                string ckey = arg.Replace(CommandLineArgs.Ckey, "");
 
                 _networkSettings.Ckey = ckey;
             }
 
             if (arg.Contains(CommandLineArgs.Port))
             {
-                string port = arg.Replace(CommandLineArgs.Port, string.Empty);
+                string port = arg.Replace(CommandLineArgs.Port, "");
 
                 _networkSettings.ServerPort = Convert.ToUInt16(port);
             }
@@ -127,7 +127,7 @@ namespace SS3D.CommandLine
             }
             catch (Exception e)
             {
-                Log.Information(this, e, "Failed to load command line arguments");
+                Log.Information(this,e,$"Failed to load command line arguments");
                 throw;
             }
         }

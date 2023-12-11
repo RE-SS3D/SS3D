@@ -28,13 +28,7 @@ namespace SS3D.Systems.Gamemodes
         {
             GamemodeObjectiveCollection clone = Instantiate(this);
 
-            List<GamemodeObjectiveCollectionEntry> entriesClone = new List<GamemodeObjectiveCollectionEntry>();
-
-            foreach (GamemodeObjectiveCollectionEntry entry in Entries.Select(Instantiate))
-            {
-                entriesClone.Add(entry);
-            }
-
+            List<GamemodeObjectiveCollectionEntry> entriesClone = Entries.Select(Instantiate).ToList();
             clone.Entries = entriesClone;
 
             return clone;
@@ -43,6 +37,7 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// Gets an objective at an index
         /// </summary>
+        /// <returns></returns>
         public bool TryGetAt(int index, out GamemodeObjective objective, bool useAssignmentRestrictions = false)
         {
             bool hasObjective = Entries[index].TryGetObjective(out objective, useAssignmentRestrictions);

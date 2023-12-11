@@ -1,7 +1,4 @@
-﻿using SS3D.Systems.Health.BodyLayers;
-using SS3D.Systems.Health.BodyParts;
-
-namespace SS3D.Systems.Health
+﻿namespace SS3D.Systems.Health
 {
 	/// <summary>
 	/// Feet are necessary to walk, depending on how damaged they are, the player will slow down.

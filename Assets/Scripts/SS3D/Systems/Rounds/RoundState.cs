@@ -13,6 +13,6 @@ namespace SS3D.Systems.Rounds
         WarmingUp = 2,
         Ongoing = 3,
         Ending = 4,
-        Ended = 5,
+        Ended = 5
     }
 }

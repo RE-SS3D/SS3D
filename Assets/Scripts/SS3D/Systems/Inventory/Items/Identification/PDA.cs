@@ -1,34 +1,48 @@
-﻿using SS3D.Interactions;
-using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Inventory.Items.Generic;
-using SS3D.Systems.Roles;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Roles;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
+using FishNet.Object.Synchronizing;
 
-namespace SS3D.Systems.Inventory.Items.Identification
+namespace SS3D.Systems.Inventory.Items.Generic
 {
     /// <summary>
     /// The honking device used by the clown on honking purposes
     /// </summary>
-    public class Pda : Item, IIdentification
+    public class PDA : Item, IIdentification
     {
-        public IDPermission TestPermission;
+        public IDPermission testPermission;
+        private AttachedContainer attachedContainer;
 
-        [HideInInspector]
-        public Item StartingIDCard;
+        [HideInInspector] public Item StartingIDCard;
 
-        private AttachedContainer _attachedContainer;
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            attachedContainer = GetComponent<AttachedContainer>();
+            if (StartingIDCard)
+            {
+                attachedContainer.AddItem(StartingIDCard);
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+        }
 
         public bool HasPermission(IDPermission permission)
         {
-            if (_attachedContainer == null)
+            if (attachedContainer == null)
             {
                 return false;
             }
 
-            IDCard idCard = (IDCard)_attachedContainer.Items.FirstOrDefault();
+            var idCard = attachedContainer.Items.FirstOrDefault() as IDCard;
             if (idCard == null)
             {
                 return false;
@@ -42,17 +56,6 @@ namespace SS3D.Systems.Inventory.Items.Identification
             List<IInteraction> interactions = base.CreateTargetInteractions(interactionEvent).ToList();
 
             return interactions.ToArray();
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            _attachedContainer = GetComponent<AttachedContainer>();
-            if (StartingIDCard)
-            {
-                _attachedContainer.AddItem(StartingIDCard);
-            }
         }
     }
 }

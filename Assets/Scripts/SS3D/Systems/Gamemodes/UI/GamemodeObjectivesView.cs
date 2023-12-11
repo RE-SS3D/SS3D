@@ -9,8 +9,7 @@ namespace SS3D.Systems.Gamemodes.UI
 {
     public class GamemodeObjectivesView : NetworkActor
     {
-        [SerializeField]
-        private GamemodeObjectivePanelView _objectivePanelView;
+        [SerializeField] private GamemodeObjectivePanelView _objectivePanelView;
 
         public override void OnStartClient()
         {

@@ -13,33 +13,12 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// The actual UI bar
         /// </summary>
-        [SerializeField]
-        private Slider _slider;
+        [SerializeField] private Slider _slider;
 
         /// <summary>
         /// Reference to the stamina controller that this view is supporting
         /// </summary>
         private StaminaController _controller;
-
-        public void AssignViewToPlayer(StaminaController staminaController)
-        {
-            // Set the internal variable
-            _controller = staminaController;
-        }
-
-        /// <summary>
-        /// Unassigns the selected controller from the UI.
-        /// </summary>
-        /// <param name="staminaController">The StaminaController that will be unassigned</param>
-        public void UnassignViewFromPlayer(StaminaController staminaController)
-        {
-            // All StaminaControllers in the scene can call this method, and the order is not guaranteed.
-            // Therefore, we need to make sure the controller is actually assigned before clearing the field.
-            if (_controller == staminaController)
-            {
-                _controller = null;
-            }
-        }
 
         protected override void OnStart()
         {
@@ -60,6 +39,26 @@ namespace SS3D.Systems.Health
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             SetStamina(_controller ? _controller.CurrentStamina : 0f);
+        }
+
+        public void AssignViewToPlayer(StaminaController staminaController)
+        {
+            // Set the internal variable
+            _controller = staminaController;
+        }
+
+        /// <summary>
+        /// Unassigns the selected controller from the UI.
+        /// </summary>
+        /// <param name="staminaController">The StaminaController that will be unassigned</param>
+        public void UnassignViewFromPlayer(StaminaController staminaController)
+        {
+            // All StaminaControllers in the scene can call this method, and the order is not guaranteed.
+            // Therefore, we need to make sure the controller is actually assigned before clearing the field.
+            if (_controller == staminaController)
+            {
+                _controller = null;
+            }
         }
     }
 }

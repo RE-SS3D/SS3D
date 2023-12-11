@@ -11,5 +11,6 @@ namespace SS3D.Data
         public static Color LightBlue = new Color(80, 115, 216);
 
         public static Color LightRed = new Color(155, 31, 31);
+
     }
 }

@@ -13,7 +13,6 @@ namespace SS3D.Systems.Inventory.Interactions
     public class OpenInteraction : Interaction
     {
         public event EventHandler<bool> OnOpenStateChanged;
-
         protected static readonly int OpenId = Animator.StringToHash("Open");
 
         private AttachedContainer _attachedContainer;
@@ -23,17 +22,6 @@ namespace SS3D.Systems.Inventory.Interactions
         public OpenInteraction(AttachedContainer attachedContainer)
         {
             _attachedContainer = attachedContainer;
-        }
-
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            Debug.Log("in OpenInteraction, Start");
-            GameObject target = ((IGameObjectProvider)interactionEvent.Target).GameObject;
-            Animator animator = target.GetComponent<Animator>();
-            bool open = animator.GetBool(OpenId);
-            animator.SetBool(OpenId, !open);
-            OnOpenStateChange(!open);
-            return false;
         }
 
         public override string GetName(InteractionEvent interactionEvent)
@@ -47,6 +35,7 @@ namespace SS3D.Systems.Inventory.Interactions
             string name = _attachedContainer.ContainerName;
 
             return animator.GetBool(OpenId) ? "Close " + name : "Open " + name;
+
         }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
@@ -77,7 +66,6 @@ namespace SS3D.Systems.Inventory.Interactions
                     return target.GameObject.GetComponent<Animator>() != null;
                 }
             }
-
             return false;
         }
 
@@ -88,20 +76,32 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             // Only accept the first Openable container on the GameObject.
             // Note: if you want separately functioning doors etc, they must be on different GameObjects.
-            ContainerInteractive[] attachedContainers = target.GameObject.GetComponents<ContainerInteractive>();
+            var attachedContainers = target.GameObject.GetComponents<ContainerInteractive>();
             for (int i = 0; i < attachedContainers.Length; i++)
             {
-                if (_attachedContainer != attachedContainers[i].AttachedContainer && attachedContainers[i].AttachedContainer.IsOpenable)
+
+                if (_attachedContainer != attachedContainers[i].attachedContainer && attachedContainers[i].attachedContainer.IsOpenable)
                 {
                     return false;
                 }
 
-                if (_attachedContainer == attachedContainers[i].AttachedContainer)
+                if (_attachedContainer == attachedContainers[i].attachedContainer)
                 {
                     return true;
                 }
             }
 
+            return false;
+        }
+
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            Debug.Log("in OpenInteraction, Start");
+            GameObject target = ((IGameObjectProvider) interactionEvent.Target).GameObject;
+            Animator animator = target.GetComponent<Animator>();
+            bool open = animator.GetBool(OpenId);
+            animator.SetBool(OpenId, !open);
+            OnOpenStateChange(!open);
             return false;
         }
 

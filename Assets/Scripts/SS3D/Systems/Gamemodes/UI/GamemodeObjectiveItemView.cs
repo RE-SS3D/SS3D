@@ -9,11 +9,8 @@ namespace SS3D.Systems.Gamemodes.UI
 {
     public class GamemodeObjectiveItemView : Actor
     {
-        [SerializeField]
-        private GamemodeObjective _objective;
-
-        [SerializeField]
-        private TMP_Text _text;
+        [SerializeField] private GamemodeObjective _objective;
+        [SerializeField] private TMP_Text _text;
 
         public void UpdateObjective(GamemodeObjective objective)
         {
@@ -35,28 +32,17 @@ namespace SS3D.Systems.Gamemodes.UI
             switch (objective.Status)
             {
                 case ObjectiveStatus.Success:
-                {
                     _text.color = Color.green;
                     break;
-                }
-
                 case ObjectiveStatus.Failed:
-                {
                     _text.color = Color.red;
                     break;
-                }
-
                 case ObjectiveStatus.Cancelled:
-                {
                     _text.color = Color.gray;
                     break;
-                }
-
                 case ObjectiveStatus.InProgress:
-                {
                     _text.color = Color.yellow;
                     break;
-                }
             }
         }
     }

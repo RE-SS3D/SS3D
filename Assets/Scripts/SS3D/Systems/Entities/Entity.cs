@@ -30,35 +30,18 @@ namespace SS3D.Systems.Entities
             set => _mind = value;
         }
 
-        public string Ckey => _mind.Player.Ckey;
-
-        /// <summary>
-        /// Updates the mind of this entity.
-        /// </summary>
-        /// <param name="mind">The new mind.</param>
-        [Server]
-        public void SetMind(Mind mind)
-        {
-            _mind = mind;
-
-            if (mind == null)
-            {
-                return;
-            }
-
-            GiveOwnership(mind.Owner);
-        }
-
-        public virtual void Kill()
-        {
-            throw new NotImplementedException();
-        }
+        public string Ckey => _mind.player.Ckey;
 
         protected override void OnStart()
         {
             base.OnStart();
 
             OnSpawn();
+        }
+
+        private void OnSpawn()
+        {
+            OnMindChanged?.Invoke(Mind);
         }
 
         protected override void OnDestroyed()
@@ -72,19 +55,11 @@ namespace SS3D.Systems.Entities
             }
         }
 
-        private void OnSpawn()
-        {
-            OnMindChanged?.Invoke(Mind);
-        }
-
         private void InvokeLocalPlayerObjectChanged()
         {
-            if (Mind == null || Mind.player == null)
-            {
-                return;
-            }
+            if (Mind == null || Mind.player == null) return;
 
-            if (!Mind.Player.IsLocalConnection)
+            if (!Mind.player.IsLocalConnection)
             {
                 return;
             }
@@ -99,7 +74,7 @@ namespace SS3D.Systems.Entities
         /// <param name="oldMind">Value before sync</param>
         /// <param name="newMind">Value after sync</param>
         /// <param name="asServer">Is the sync is being called as the server (host and server only)</param>
-        private void SyncMind(Mind oldMind, Mind newMind, bool asServer)
+        public void SyncMind(Mind oldMind, Mind newMind, bool asServer)
         {
             if (!asServer && IsHost)
             {

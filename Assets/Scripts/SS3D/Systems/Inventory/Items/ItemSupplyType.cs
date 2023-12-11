@@ -4,6 +4,6 @@ namespace SS3D.Systems.Inventory.Items
     {
         Fuel = 0,
         Bullets = 1,
-        Paint = 2,
+        Paint = 2
     }
 }

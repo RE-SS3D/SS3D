@@ -14,8 +14,7 @@ namespace SS3D.Permissions
     {
         private string _ckey;
 
-        [SerializeField]
-        private List<GameObject> _objectsToDisable;
+        [SerializeField] private List<GameObject> _objectsToDisable;
 
         protected override void OnAwake()
         {

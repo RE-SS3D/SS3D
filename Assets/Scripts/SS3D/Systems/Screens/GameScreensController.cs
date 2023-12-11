@@ -15,21 +15,9 @@ namespace SS3D.Systems.Screens
 {
     public sealed class GameScreensController : NetworkActor
     {
-        /// <summary>
-        /// Internal enum to describe player spawn state.
-        /// </summary>
-        private enum PlayerSpawnedState
-        {
-            IsNotSpawned = 0,
-            AwaitingConfirmationOfSpawn = 1,
-            ConfirmedSpawned = 2,
-        }
-
-        [SerializeField]
-        private bool _blockSwitchToNone;
+        [SerializeField] private bool _blockSwitchToNone;
 
         private PlayerSpawnedState _spawnedState;
-
         private Controls.OtherActions _controls;
 
         protected override void OnAwake()
@@ -90,10 +78,8 @@ namespace SS3D.Systems.Screens
                 case Rounds.RoundState.Ending:
                     break;
                 default:
-                {
                     LockToMenuScreen();
                     break;
-                }
             }
         }
 
@@ -107,23 +93,18 @@ namespace SS3D.Systems.Screens
             }
         }
 
+
         private void UpdateScreen()
         {
             switch (_spawnedState)
             {
                 case PlayerSpawnedState.IsNotSpawned:
                 case PlayerSpawnedState.AwaitingConfirmationOfSpawn:
-                {
                     GameScreens.SwitchTo(ScreenType.Lobby);
                     break;
-                }
-
                 case PlayerSpawnedState.ConfirmedSpawned:
-                {
                     GameScreens.SwitchTo(ScreenType.None);
                     break;
-                }
-
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -165,6 +146,16 @@ namespace SS3D.Systems.Screens
             }
 
             UpdateScreen();
+        }
+
+        /// <summary>
+        /// Internal enum to describe player spawn state.
+        /// </summary>
+        private enum PlayerSpawnedState
+        {
+            IsNotSpawned,
+            AwaitingConfirmationOfSpawn,
+            ConfirmedSpawned
         }
     }
 }

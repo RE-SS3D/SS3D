@@ -1,13 +1,19 @@
 using FishNet.Serializing;
+using SS3D.Data;
+using SS3D.Data.AssetDatabases;
+using SS3D.Logging;
+using SS3D.Systems.Inventory.Items;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Systems.Traits
+namespace SS3D.Systems
 {
     public static class TraitSerializer
     {
         public static void WriteTrait(this Writer writer, Trait value)
         {
-            writer.WriteInt32((int)value.Category);
+            writer.WriteInt32((int) value.Category);
             writer.WriteString(value.Name);
         }
 
@@ -16,14 +22,14 @@ namespace SS3D.Systems.Traits
         /// </summary>
         public static Trait ReadTrait(this Reader reader)
         {
-            TraitCategories category = (TraitCategories)reader.ReadInt32();
-            string name = reader.ReadString();
-
+            var category = (TraitCategories) reader.ReadInt32();
+            var name = reader.ReadString();
             // Should that really create a new instance or get from an asset database a trait scriptable object.
-            Trait trait = ScriptableObject.CreateInstance<Trait>();
+            var trait = ScriptableObject.CreateInstance<Trait>();
             trait.Name = name;
             trait.Category = category;
             return trait;
         }
     }
+
 }

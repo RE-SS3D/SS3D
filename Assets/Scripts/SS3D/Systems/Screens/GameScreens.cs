@@ -16,7 +16,6 @@ namespace SS3D.Systems.Screens
         private static readonly Dictionary<ScreenType, GameScreen> Screens = new();
 
         public static ScreenType ActiveScreen { get; set; }
-
         public static ScreenType LastScreen { get; set; }
 
         /// <summary>
@@ -47,14 +46,13 @@ namespace SS3D.Systems.Screens
         /// Tries to get a screen of ScreenType.
         /// </summary>
         [ServerOrClient]
-        public static bool TryGet<T>(ScreenType screenType, [CanBeNull] out T screen)
-            where T : GameScreen
+        public static bool TryGet<T>(ScreenType screenType, [CanBeNull] out T screen) where T : GameScreen
         {
             if (Screens.TryGetValue(screenType, out GameScreen match))
             {
                 screen = match as T;
                 return true;
-            }
+            }                                                                   
 
             string message = $"No screen of type {screenType} found.";
 
@@ -73,7 +71,7 @@ namespace SS3D.Systems.Screens
 
             Log.Information(typeof(GameScreens), $"Switching game screen to {screenToSwitchTo}");
 
-            foreach (KeyValuePair<ScreenType, GameScreen> screenEntry in Screens)
+            foreach (KeyValuePair<ScreenType,GameScreen> screenEntry in Screens)
             {
                 GameScreen screen = screenEntry.Value;
 

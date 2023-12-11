@@ -12,40 +12,51 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class Hand : InteractionSource, IInteractionRangeLimit, IInteractionOriginProvider
     {
-        public delegate void HandEventHandler(Hand hand);
-
-        public event HandEventHandler OnHandDisabled;
-
         /// <summary>
         /// Container linked to this hand, necessary to hold stuff.
         /// </summary>
         public AttachedContainer Container;
 
         /// <summary>
-        /// the hands script controlling this hand.
-        /// </summary>
-        public Hands HandsController;
-
-        /// <summary>
         /// Horizontal and vertical max distance to interact with stuff.
         /// </summary>
-        [SerializeField]
-        private RangeLimit _range = new(1.5f, 2);
+        [SerializeField] private RangeLimit _range = new(1.5f, 2);
 
-        /// <summary>
-        /// Point from where distances for interaction is computed.
-        /// </summary>
-        [SerializeField]
-        private Transform _interactionOrigin;
+        // pickup icon that this hand uses when there's a pickup interaction
+        // TODO: When AssetData is on, we should update this to not use this
+        [SerializeField] private Sprite _pickupIcon;
 
         /// <summary>
         /// The item held in this hand, if it exists
         /// </summary>
         public Item ItemInHand => Container.Items.FirstOrDefault();
 
+        /// <summary>
+        /// Point from where distances for interaction is computed.
+        /// </summary>
+        [SerializeField] private Transform _interactionOrigin;
+
+        /// <summary>
+        /// the hands script controlling this hand.
+        /// </summary>
+        public Hands HandsController;
+
         public Vector3 InteractionOrigin => _interactionOrigin.position;
 
-        public bool IsEmpty()
+        public delegate void HandEventHandler(Hand hand);
+        public event HandEventHandler OnHandDisabled;
+
+        protected override void OnDisabled()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            OnHandDisabled?.Invoke(this);
+        }
+
+		public bool IsEmpty()
 		{
 			return Container.Empty;
 		}
@@ -54,6 +65,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Get the interaction source from stuff in hand if there's any.
         /// Also sets the source of the IInteraction source to be this hand.
         /// </summary>
+        /// <returns></returns>
         public IInteractionSource GetActiveTool()
         {
             Item itemInHand = ItemInHand;
@@ -62,11 +74,11 @@ namespace SS3D.Systems.Inventory.Containers
                 return null;
             }
 
-            if (itemInHand.TryGetComponent<IInteractionSource>(out IInteractionSource interactionSource))
+            IInteractionSource interactionSource = itemInHand.GetComponent<IInteractionSource>();
+            if (interactionSource != null)
             {
                 interactionSource.Source = this;
             }
-
             return interactionSource;
         }
 
@@ -104,6 +116,7 @@ namespace SS3D.Systems.Inventory.Containers
             ItemInHand?.GiveOwnership(null);
 		}
 
+
         /// <summary>
         /// Place item on the floor, or on any other surface, place it out of its container.
         /// </summary>
@@ -114,7 +127,6 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 return;
             }
-
             ItemInHand.GiveOwnership(null);
             Item item = ItemInHand;
             item.Container.RemoveItem(item);
@@ -128,16 +140,6 @@ namespace SS3D.Systems.Inventory.Containers
         public bool CanInteract(GameObject otherObject)
         {
             return GetInteractionRange().IsInRange(InteractionOrigin, otherObject.transform.position);
-        }
-
-        protected override void OnDisabled()
-        {
-            if (!IsServer)
-            {
-                return;
-            }
-
-            OnHandDisabled?.Invoke(this);
         }
     }
 }

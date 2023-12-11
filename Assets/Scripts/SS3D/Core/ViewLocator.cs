@@ -28,6 +28,7 @@ namespace SS3D.Core
             {
                 Views.Add(type, new List<object> { view });
             }
+
             else
             {
                 viewList.Add(view);
@@ -52,8 +53,8 @@ namespace SS3D.Core
         /// Gets a list of view of type T.
         /// </summary>
         /// <typeparam name="T">The Type of object you want to get.</typeparam>
-        public static List<T> Get<T>()
-            where T : MonoBehaviour
+        /// <returns></returns>
+        public static List<T> Get<T>() where T : MonoBehaviour
         {
             if (Views.TryGetValue(typeof(T), out List<object> match))
             {
@@ -61,7 +62,6 @@ namespace SS3D.Core
             }
 
             string message = $"No views of type {typeof(T).Name} found.";
-
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Log.Error(typeof(Subsystems), "No views of type {typeName} found", Logs.Important, typeof(T).Name);
 

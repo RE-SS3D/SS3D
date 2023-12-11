@@ -2,14 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 #if UNITY_2018_2_OR_NEWER
 using UnityEngine.Rendering;
 #endif
 using Object = UnityEngine.Object;
 
-[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "This class is not from SS3D, it got into the project at some time")]
 public static class RuntimePreviewGenerator
 {
 	private class CameraSetup
@@ -262,7 +260,7 @@ public static class RuntimePreviewGenerator
 		Transform previewObject;
 		if( shouldCloneModel )
 		{
-			previewObject = Object.Instantiate( model, null, false );
+			previewObject = (Transform) Object.Instantiate( model, null, false );
 			previewObject.gameObject.hideFlags = HideFlags.HideAndDontSave;
 		}
 		else

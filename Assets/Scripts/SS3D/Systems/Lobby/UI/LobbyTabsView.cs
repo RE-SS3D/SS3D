@@ -9,16 +9,14 @@ namespace SS3D.Systems.Lobby.UI
     /// </summary>
     public sealed class LobbyTabsView : MonoBehaviour
     {
-        [SerializeField]
-        [NotNull]
-        private GenericTabView[] _categoryUi;
-
+        [SerializeField][NotNull] private GenericTabView[] _categoryUi;
+        
         private void Start()
         {
             SetupGenericsTabs();
             OnTabButtonClicked(0);
         }
-
+        
         /// <summary>
         /// Sets up UI logic
         /// </summary>

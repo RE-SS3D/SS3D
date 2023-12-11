@@ -16,11 +16,11 @@ namespace SS3D.Systems.Rounds
         /// Round loop runner
         /// </summary>
         [Server]
-        protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage message)
+        protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage m)
         {
             if (!IsServer) { return; }
 
-            if (message.State)
+            if (m.State)
             {
                 await StopRound();
                 await PrepareRound();

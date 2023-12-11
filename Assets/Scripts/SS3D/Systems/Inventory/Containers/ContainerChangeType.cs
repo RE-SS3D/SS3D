@@ -7,9 +7,9 @@
 	/// </summary>
     public enum ContainerChangeType
     {
-        None = 0,
-        Add = 1,
-        Remove = 2,
-        Move = 3,
+        None,
+        Add,
+        Remove,
+        Move
     }
 }

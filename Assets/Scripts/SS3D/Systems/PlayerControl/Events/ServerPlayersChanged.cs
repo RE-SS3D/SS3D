@@ -8,8 +8,8 @@ namespace SS3D.Systems.PlayerControl.Events
     {
         public readonly List<Player> ServerPlayers;
 
-        public readonly Player Changed;
         public ChangeType ChangeType;
+        public readonly Player Changed;
 
         public ServerPlayersChanged(List<Player> serverPlayers, ChangeType changeType, Player changed)
         {
