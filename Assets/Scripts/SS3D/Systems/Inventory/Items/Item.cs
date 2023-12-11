@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Coimbra;
+using FishNet;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -18,6 +19,7 @@ using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using static UnityEditor.Progress;
 #if UNITY_EDITOR
 
 #endif
@@ -32,7 +34,7 @@ namespace SS3D.Systems.Inventory.Items
     [RequireComponent(typeof(NetworkTransform))]
     [RequireComponent(typeof(Selectable))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSource, IInteractionTarget
+    public class Item : InteractionSource, IInteractionTarget, ICraftable
     {
         #region Item
         [Header("Item settings")]
@@ -322,6 +324,19 @@ namespace SS3D.Systems.Inventory.Items
                 storedItemWithParent.Key.parent = storedItemWithParent.Value;
             }
             return icon;
+        }
+
+        [Server]
+        public void Consume()
+        {
+            NetworkObject.Despawn();
+        }
+
+        [Server]
+        public void Craft(GameObject target, GameObject result)
+        {
+            GameObject product = Instantiate(result, target.transform.position, target.transform.rotation);
+            InstanceFinder.ServerManager.Spawn(product);
         }
 
         /// <summary>

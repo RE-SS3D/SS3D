@@ -14,7 +14,7 @@ namespace SS3D.Systems.Crafting
 {
     public abstract class CraftingInteraction : DelayedInteraction, ICraftingInteraction
     {
-        private List<Item> ItemsToConsume;
+        private List<ICraftable> ItemsToConsume;
 
         private CraftingRecipe recipe;
 
@@ -34,15 +34,15 @@ namespace SS3D.Systems.Crafting
         {
             if (!Subsystems.TryGet(out CraftingSystem craftingSystem)) return false;
 
-            if (interactionEvent.Target is not Item) return false;
+            if (interactionEvent.Target is not ICraftable) return false;
 
             if (!InteractionExtensions.RangeCheck(interactionEvent)) return false;
 
-            Item target = interactionEvent.Target as Item;
+            ICraftable target = interactionEvent.Target as ICraftable;
 
             if (!craftingSystem.TryGetRecipe(this, target, out recipe)) return false;
 
-            List<Item> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(target);
+            List<ICraftable> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(target);
 
             Dictionary<ItemId, int> potentialRecipeElements = craftingSystem.
                 ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
@@ -71,7 +71,7 @@ namespace SS3D.Systems.Crafting
             }
 
             Subsystems.TryGet(out CraftingSystem craftingSystem);
-            Item target = interactionEvent.Target as Item;
+            ICraftable target = interactionEvent.Target as ICraftable;
 
             craftingSystem.Craft(target, ItemsToConsume, recipe.Result);
         }
