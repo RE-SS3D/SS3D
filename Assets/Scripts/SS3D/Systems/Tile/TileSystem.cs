@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Management;
@@ -17,13 +17,17 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class TileSystem : NetworkSystem
     {
-	    public const string SavePath = "/Tilemaps";
+	    public const string savePath = "/Tilemaps";
 
-	    public const string UnnamedMapName = "UnnamedMap";
+	    public const string unnamedMapName = "UnnamedMap";
 
         public TileResourceLoader Loader { get; private set; }
  
         private TileMap _currentMap;
+        public TileMap CurrentMap => _currentMap;
+
+        public string SavePath => savePath;
+
 
         [ServerOrClient]
         protected override void OnStart()
@@ -51,7 +55,7 @@ namespace SS3D.Systems.Tile
 		        return;
 	        }
 
-	        CreateMap(UnnamedMapName);
+	        CreateMap(unnamedMapName);
 
 	        await WaitForResourcesLoad();
 
@@ -83,7 +87,7 @@ namespace SS3D.Systems.Tile
 	        switch (genericObjectSo)
 	        {
 		        case TileObjectSo so:
-			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting);
+			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false);
 		        case ItemObjectSo so:
 			        _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
 			        break;
@@ -101,19 +105,13 @@ namespace SS3D.Systems.Tile
             PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
-        [Server]
-        private void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
-        {
-            _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
-        }
-
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition)
+        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
         {
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
-            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer);
+            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
         }
 
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
@@ -132,13 +130,13 @@ namespace SS3D.Systems.Tile
         }
 
         [Server]
-        public void Save()
+        public void Save(string mapName, bool overwrite)
         {
-			Log.Information(this, $"Saving tilemap {_currentMap.name}");
+			Log.Information(this, $"Saving tilemap {mapName}");
 
             SavedTileMap mapSave = _currentMap.Save();
 												    
-            SaveSystem.SaveObject(SavePath + "/" + _currentMap.name, mapSave);
+            SaveSystem.SaveObject(SavePath + "/" + mapName, mapSave, overwrite);
         }
 
         [Server]
@@ -152,11 +150,26 @@ namespace SS3D.Systems.Tile
         }
 
         [Server]
+        public void Load(string mapName)
+        {
+            Log.Information(this, "Loading most recent tilemap");
+
+            SavedTileMap mapSave = SaveSystem.LoadObject<SavedTileMap>(mapName);
+
+            _currentMap.Load(mapSave);
+        }
+
+        [Server]
         public void ResetSave()
         {
             _currentMap.Clear();
-            Save();
+            Save("UnnamedMap", true);
             Log.Warning(this, "Tilemap resetted. Existing savefile has been wiped");
+        }
+
+        public bool MapNameAlreadyExist(string name)
+        {
+            return SaveSystem.FolderAlreadyContainsName(savePath, name);
         }
     }
 }

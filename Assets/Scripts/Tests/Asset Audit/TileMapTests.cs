@@ -12,13 +12,13 @@ namespace AssetAudit
         [Test, TestCaseSource(nameof(AllTileObjectSo))]
         public void EveryTileObjectSoHasAName(TileObjectSo tileObjectSo)
         {
-            Assert.IsTrue(tileObjectSo.nameString != "", $"TileObjectSo '{tileObjectSo.name}' does not have name set.\n");
+            Assert.IsTrue(tileObjectSo.NameString != "", $"TileObjectSo '{tileObjectSo.name}' does not have name set.\n");
         }
 
         [Test, TestCaseSource(nameof(AllItemObjectSo))]
         public void EveryItemObjectSoHasAName(ItemObjectSo itemObjectSo)
         {
-            Assert.IsTrue(itemObjectSo.nameString != "", $"ItemObjectSo '{itemObjectSo.name}' does not have name set.\n");
+            Assert.IsTrue(itemObjectSo.NameString != "", $"ItemObjectSo '{itemObjectSo.name}' does not have name set.\n");
         }
 
         /// <summary>

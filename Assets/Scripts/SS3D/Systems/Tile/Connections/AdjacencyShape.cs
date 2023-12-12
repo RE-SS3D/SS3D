@@ -36,5 +36,12 @@
         TNorthSouthWest,
         TNorthSouthEast,
         TSouthWestEast,
+        //Vertical
+        Vertical,
+        // Directional
+        LIn,
+        LOut,
+        ULeft,
+        URight,
     }
 }

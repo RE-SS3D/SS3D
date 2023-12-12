@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,6 +27,7 @@ namespace SS3D.Systems.Inventory.Containers
         GloveRight = 1 << 12,
         EarLeft = 1 << 13,
         EarRight = 1 << 14,
+        Belt = 1 << 15,
     }
 }
 

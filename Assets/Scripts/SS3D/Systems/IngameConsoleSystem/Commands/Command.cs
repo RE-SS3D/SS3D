@@ -1,5 +1,5 @@
 ﻿using FishNet.Connection;
-using SS3D.Systems.Permissions;
+using SS3D.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -10,16 +10,45 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         {
             public bool IsValid;
             public string InvalidArgs;
+            public ICalculatedValues CalculatedValues;
+            public CheckArgsResponse MakeInvalid(string invalidArgs)
+            {
+                InvalidArgs = invalidArgs;
+                IsValid = false;
+                return this;
+            }
+            public CheckArgsResponse MakeValid(ICalculatedValues calculatedValues)
+            {
+                CalculatedValues = calculatedValues;
+                IsValid = true;
+                return this;
+            }
         }
+        /// <summary>
+        /// Struct to transfer calculated values between CheckArgs and Perform methods
+        /// </summary>
+        protected interface ICalculatedValues { }
 
         /// <summary>
         /// Is the command going to be executed server or client side ?
         /// </summary>
         public abstract CommandType Type { get; }
 
+        /// <summary>
+        /// Desription, that will be shown after "help" command
+        /// </summary>
         public abstract string ShortDescription { get; }
 
-        public abstract string LongDescription { get; }
+        /// <summary>
+        /// Detailed description of the command. Will be shown after "help (command name)" command
+        /// </summary>
+        public virtual string LongDescription => ShortDescription;
+
+        /// <summary>
+        /// how to use the command.
+        /// Syntax for writing usage: arguments in () - necessary; [] - optional; {} - list of arguments with undefined size
+        /// </summary>
+        public virtual string Usage => "";
 
         /// <summary>
         /// The requested role to be able to perform this command.
@@ -39,5 +68,16 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         /// </summary>
         protected abstract CheckArgsResponse CheckArgs(string[] args);
         protected const string WrongArgsText = "Wrong args. Type \"(command) help\"";
+
+        /// <summary>
+        /// Store CheckArgs response and get if response is valid.
+        /// </summary>
+        /// <returns>If respons is valid</returns>
+        protected bool ReceiveCheckResponse<T>(string[] args, out CheckArgsResponse response, out T calculatedValues) where T: ICalculatedValues
+        {
+            response = CheckArgs(args);
+            calculatedValues = (T)response.CalculatedValues;
+            return response.IsValid;
+        }
     }
 }

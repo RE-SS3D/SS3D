@@ -1,4 +1,4 @@
-﻿namespace SS3D.Data.Enums
+namespace SS3D.Data.Enums
 {
     public enum ItemId
     {
@@ -27,7 +27,7 @@
         SteelReinforcedSheet = 22, 
         SteelSheet = 23, 
         Crowbar = 24, 
-        Screwdriver = 25, 
+        ScrewdriverBlue = 25, 
         Wrench = 26, 
         FlashlightBlue = 27, 
         KitchenKnife = 28, 
@@ -46,6 +46,32 @@
         JumpsuitSecurity = 41, 
         HeadsetLeft = 42, 
         HeadsetRight = 43, 
+        HumanArmLeft = 44, 
+        HumanArmRight = 45, 
+        HumanEarLeft = 46, 
+        HumanEarRight = 47, 
+        HumanFootLeft = 48, 
+        HumanFootRight = 49, 
+        HumanHandLeft = 50, 
+        HumanHandRight = 51, 
+        HumanHead = 52, 
+        HumanLegLeft = 53, 
+        HumanTorso = 54, 
+        HumanLegRight = 55, 
+        HumanLungRight = 56, 
+        HumanLungLeft = 57, 
+        HumanStomach = 58, 
+        HumanLiver = 59, 
+        HumanIntestineLarge = 60, 
+        HumanEye = 61, 
+        HumanBrain = 62, 
+        Toolbelt = 63, 
+        Backpack = 64, 
+        HumanHeart = 65, 
+        Wirecutters = 66, 
+        Multitool = 67, 
+        PowerCellAdmin = 68, 
+        PowerCell = 69, 
     }
 }
 

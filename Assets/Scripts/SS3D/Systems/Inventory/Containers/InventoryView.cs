@@ -32,6 +32,7 @@ namespace SS3D.Systems.Inventory.UI
         [SerializeField] private GameObject HandLeftPrefab;
         [SerializeField] private GameObject HandRightPrefab;
         [SerializeField] private GameObject BagPrefab;
+        [SerializeField] private GameObject BeltPrefab;
         [SerializeField] private GameObject Divisor;
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace SS3D.Systems.Inventory.UI
         [SerializeField] private GameObject EarLeftPrefab;
         [SerializeField] private GameObject EarRightPrefab;
         [SerializeField] private GameObject DummyPrefab;
+
 
         private object lockObject = new object();
 
@@ -180,6 +182,11 @@ namespace SS3D.Systems.Inventory.UI
                 case ContainerType.ShoeRight:
                     slot = AddClothingSlot(ShoeRightPrefab);
                     break;
+
+                case ContainerType.Belt:
+                    slot = AddHorizontalLayoutSlot(BeltPrefab, ContainerType.Belt);
+                    break;
+
 
                 default:
                     Log.Error(this, $"Unknown or missing container type {container.Type} for this container {container}");
@@ -366,7 +373,10 @@ namespace SS3D.Systems.Inventory.UI
                 dummySlot.transform.SetSiblingIndex(clothPosition);
             }
 
-            Slots[indexToRemove].gameObject.Dispose(true);
+            SingleItemContainerSlot slot = Slots[indexToRemove];
+            if (slot == null) return;
+
+            slot?.gameObject.Dispose(true);
             Slots.RemoveAt(indexToRemove);
         }
 

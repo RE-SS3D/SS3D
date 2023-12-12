@@ -56,22 +56,17 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
-            if (!_container.Empty)
-            {
-                return;
-            }
+            Item item = display.Item;
 
             if (!_container.CanContainItem(display.Item))
             {
                 return;
             }
-
-            // Can't put an item in its own container
-            if (display.Item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(Container))
+            if (item.Container != null && !item.Container.CanRemoveItem(item))
             {
                 return;
             }
-
+            // listen to container change and update display eventually.
             display.ShouldDrop = true;
 			display.MakeVisible(false);
             Inventory.ClientTransferItem(display.Item, Vector2Int.zero, Container);
@@ -82,6 +77,8 @@ namespace SS3D.Systems.Inventory.UI
         /// </summary>
         private void UpdateDisplay()
         {
+            if (ItemDisplay == null) return;
+
             var item = _container.Items.FirstOrDefault();
 			ItemDisplay.Item = item;
 			ItemDisplay.MakeVisible(true);

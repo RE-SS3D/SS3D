@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SS3D.Substances;
 using SS3D.Systems.Health;
 using System.Collections;
@@ -30,12 +30,12 @@ public class SubstanceContainerTests
 
         _beer = ScriptableObject.CreateInstance<Substance>();
         _beer.Color = Color.red;
-        _beer.MillilitersPerMole = 50;
+        _beer.MillilitersPerMilliMoles = 0.05f;
         _beer.Type = SubstanceType.Beer;
 
         _water = ScriptableObject.CreateInstance<Substance>();
         _water.Color = Color.yellow;
-        _water.MillilitersPerMole = 35;
+        _water.MillilitersPerMilliMoles = 0.035f;
         _water.Type = SubstanceType.Water;
     }
 
@@ -70,8 +70,8 @@ public class SubstanceContainerTests
         _container.AddSubstance(_beer, 10);
         _container.AddSubstance(_water, 5);
         _container.RemoveMoles(1.5f);
-        float waterMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _water.Type).Moles;
-        float beerMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _beer.Type).Moles;
+        float waterMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _water.Type).MilliMoles;
+        float beerMole = _container.Substances.FirstOrDefault(x => x.Substance.Type == _beer.Type).MilliMoles;
         Assert.AreEqual(9f, beerMole);
         Assert.AreEqual(4.5f, waterMole);
     }

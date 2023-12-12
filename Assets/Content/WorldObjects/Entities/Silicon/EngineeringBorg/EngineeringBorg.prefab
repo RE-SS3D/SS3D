@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3055783962014044920}
   - component: {fileID: 8465684181923302409}
   - component: {fileID: 6877799340271843877}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: CanisterHolderAxis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 2444706294197186616}
   - component: {fileID: 3325647021237745552}
   - component: {fileID: 3979642431125668545}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RightArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4301167961274605312}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ GameObject:
   - component: {fileID: 6304795566047552839}
   - component: {fileID: 1362145549914276723}
   - component: {fileID: 7285463829619291690}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ChestLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 7611268691435572321}
   - component: {fileID: 4341439036329222406}
   - component: {fileID: 3405176148047383085}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -404,7 +404,7 @@ GameObject:
   - component: {fileID: 7857519555258024093}
   - component: {fileID: 7062011099588010521}
   - component: {fileID: 8129295425968178922}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Bolt.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -487,7 +487,7 @@ GameObject:
   - component: {fileID: 1757362957012235043}
   - component: {fileID: 95946900281844392}
   - component: {fileID: 4585632687606729387}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Threads
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -570,7 +570,7 @@ GameObject:
   - component: {fileID: 8578760717170580618}
   - component: {fileID: 9054794873209813535}
   - component: {fileID: 1000678609813418682}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: LeftArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -654,7 +654,7 @@ GameObject:
   - component: {fileID: 7998542976687520734}
   - component: {fileID: 3306776422875237825}
   - component: {fileID: 7993047626918692381}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -737,7 +737,7 @@ GameObject:
   m_Component:
   - component: {fileID: 555621714863886619}
   - component: {fileID: 7153098361639636189}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -832,7 +832,7 @@ GameObject:
   - component: {fileID: 8948675531444066413}
   - component: {fileID: 4701825463511423032}
   - component: {fileID: 2554185978914665337}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RightHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -916,7 +916,7 @@ GameObject:
   - component: {fileID: 4693863263918466935}
   - component: {fileID: 2367268253799319416}
   - component: {fileID: 5902880339496570751}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Bolt.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -999,7 +999,7 @@ GameObject:
   - component: {fileID: 129193963181823977}
   - component: {fileID: 4794602773758636679}
   - component: {fileID: 539666514471875923}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: LeftHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1081,11 +1081,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6852574109517490658}
-  - component: {fileID: 1044732870367612091}
-  - component: {fileID: 3584483178168848537}
   - component: {fileID: 8722018284479419557}
-  m_Layer: 0
-  m_Name: Cube
+  m_Layer: 11
+  m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1106,56 +1104,6 @@ Transform:
   m_Father: {fileID: 6719813189308296762}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &1044732870367612091
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5371605354914418545}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &3584483178168848537
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5371605354914418545}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &8722018284479419557
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1165,10 +1113,10 @@ BoxCollider:
   m_GameObject: {fileID: 5371605354914418545}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2, y: 2, z: 2}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3.8861024, y: 8.780403, z: 9.329491}
+  m_Center: {x: -0.011937022, y: 4.345188, z: -1.3250542}
 --- !u!1 &5978730660518739208
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,7 +1128,7 @@ GameObject:
   - component: {fileID: 2212300832808825088}
   - component: {fileID: 688297858495619719}
   - component: {fileID: 9144450544463162808}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: FuelLines
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1263,7 +1211,7 @@ GameObject:
   - component: {fileID: 8000206429567224176}
   - component: {fileID: 6594363280051312612}
   - component: {fileID: 6040440270914230601}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: CanisterHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1354,7 +1302,9 @@ GameObject:
   - component: {fileID: -925834532171443999}
   - component: {fileID: 1234979698125959994}
   - component: {fileID: 6718533481539137195}
-  m_Layer: 0
+  - component: {fileID: -643301462163788769}
+  - component: {fileID: 1642401844314505636}
+  m_Layer: 11
   m_Name: EngineeringBorg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1409,7 +1359,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 73
+  <PrefabId>k__BackingField: 82
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -1585,6 +1535,31 @@ MonoBehaviour:
   _overrideType: 3
   _updateHostVisibility: 1
   _observerConditions: []
+--- !u!114 &-643301462163788769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6199841308937614464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1642401844314505636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6199841308937614464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 65d346d56139e804f8cb5f98127d16b8, type: 2}
 --- !u!1 &6250850031364791032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1595,7 +1570,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5555643614376619960}
   - component: {fileID: 5221859642709671071}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: TopPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1681,7 +1656,7 @@ GameObject:
   - component: {fileID: 8513168168142475973}
   - component: {fileID: 3545750978987933495}
   - component: {fileID: 8869895192033836641}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Canister
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1764,7 +1739,7 @@ GameObject:
   - component: {fileID: 4357738426570964996}
   - component: {fileID: 1584332682607889718}
   - component: {fileID: 2150190574068627258}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SidePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1847,7 +1822,7 @@ GameObject:
   - component: {fileID: 4303078090010736282}
   - component: {fileID: 1415406805107945771}
   - component: {fileID: 4627554447463984751}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Bolt.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1931,7 +1906,7 @@ GameObject:
   - component: {fileID: 1419172769376602198}
   - component: {fileID: 704481677437233231}
   - component: {fileID: 3665984948889939147}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Headlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2030,7 +2005,7 @@ GameObject:
   - component: {fileID: 4323662944278564849}
   - component: {fileID: 1420545986781840416}
   - component: {fileID: 1154871180154147025}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Battery
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2113,7 +2088,7 @@ GameObject:
   - component: {fileID: 6881506876212109493}
   - component: {fileID: 184731408507308848}
   - component: {fileID: 1986680333473762129}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Bolt.004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2196,7 +2171,7 @@ GameObject:
   - component: {fileID: 1835356863936995312}
   - component: {fileID: 7094972080767497936}
   - component: {fileID: 342117600442096811}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Bol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2279,7 +2254,7 @@ GameObject:
   - component: {fileID: 8684880786431806385}
   - component: {fileID: 5282011727641107016}
   - component: {fileID: 8003409082184922221}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Bolt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2362,7 +2337,7 @@ GameObject:
   - component: {fileID: 7953735813086355161}
   - component: {fileID: 800241249895406712}
   - component: {fileID: 4894858461396271811}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2454,7 +2429,7 @@ GameObject:
   - component: {fileID: 8417503219275011235}
   - component: {fileID: 6065007721638739353}
   - component: {fileID: 3855819929120132717}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SidePanel.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}

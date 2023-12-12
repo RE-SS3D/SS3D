@@ -203,19 +203,20 @@ namespace SS3D.Systems.Inventory.UI
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
             Item item = display.Item;
-            Vector3 dragPosition = display.transform.position;
 
 			Vector3 mousePosition = Input.mousePosition;
             Vector2 position = GetSlotPositionExact(mousePosition);
 
-            // Offset slot by item dimensions
-			// TODO : issue here with slot position
             Vector2Int slot = new(Mathf.RoundToInt(position.x - 1 / 2f), Mathf.RoundToInt(position.y - 1 / 2f));
 
-			if (!AttachedContainer.AreSlotCoordinatesInGrid(slot) || !AttachedContainer.IsAreaFree(slot))
+			if (!AttachedContainer.CanContainItemAtPosition(item, slot))
 			{
 				return;
 			}
+            if(item.Container != null && !item.Container.CanRemoveItem(item))
+            {
+                return;
+            }
 
 			// We make it not visible the time it is transfered to another slot, to avoid seeing the sprite flickering.
 			display.MakeVisible(false);

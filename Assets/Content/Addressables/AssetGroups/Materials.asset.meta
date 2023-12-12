@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Content/Addressables/AssetGroups/Materials.asset.meta
+guid: 2caa591261a883b4183d04829ce705fd
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+========
+guid: ea5b9b571f8df3948b52b7023aa66c99
+PrefabImporter:
+  externalObjects: {}
+>>>>>>>> develop:Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab.meta
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

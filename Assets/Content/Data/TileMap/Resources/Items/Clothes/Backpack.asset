@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Backpack
   m_EditorClassIdentifier: 
   nameString: Backpack
-  prefab: {fileID: 802333698458937824, guid: 3520c433beff78a478401074d2ca95a3, type: 3}
+  prefab: {fileID: 802333698458937824, guid: ddaa28fac1956b2428aff1dac1d89707, type: 3}
   icon: {fileID: 0}

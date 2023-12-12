@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 2658310835758749971}
   - component: {fileID: 7849163769786431713}
   - component: {fileID: 1871071288925904272}
+  - component: {fileID: 834667898589736169}
+  - component: {fileID: 8748962403380742660}
   m_Layer: 0
   m_Name: DisposalBin
   m_TagString: Untagged
@@ -114,40 +116,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
-  _networkBehaviours:
-  - {fileID: 0}
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isGlobal: 0
+  _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 110
+  <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11648922087473007400
-  _sceneNetworkObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 1871071288925904272}
-  - {fileID: 0}
+--- !u!114 &834667898589736169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05bf3c848b84c3b4db8ad292b49badf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8748962403380742660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c8b1a8e25f9a0442a328450c55e1dcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 1871071288925904272}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &3330818021912189620
 GameObject:
   m_ObjectHideFlags: 0

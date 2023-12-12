@@ -1,23 +1,14 @@
-﻿using FishNet;
-using FishNet.Connection;
-using SS3D.Core.Behaviours;
-using SS3D.Data;
-using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
-using SS3D.Systems.Entities;
+﻿using SS3D.Core.Behaviours;
 using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using SS3D.Systems.Inventory.Items;
-using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Logging;
-using System.Drawing;
+using UnityEditor;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -112,7 +103,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         #endregion
 
-        // If you define setters for the properties of this region in the future, be careful and make sure they modify the related container fields as well in Container.cs.
         #region ContainerAndAttachedContainerFieldsAndProperties
 
         public string ContainerName => gameObject.name;
@@ -173,10 +163,6 @@ namespace SS3D.Systems.Inventory.Containers
 		public event ContainerContentsHandler OnContentsChanged;
 
 		private readonly object _modificationLock = new();
-		/// <summary>
-		/// The last time the contents of this container were changed
-		/// </summary>
-		public float LastModification { get; private set; }
 
 		public ContainerType ContainerType => _type;
 
@@ -221,6 +207,7 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
+            if(!IsServer) { return; }
             Purge();
         }
 
@@ -281,8 +268,10 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-			// This seem to be called correctly 2 move and none when moving inside, 2 remove and none when removing, 2 add and none when adding, 2 add 2 remove and none when transferring
-			Log.Information(this, "container change type is" + changeType.ToString());
+            if(changeType == ContainerChangeType.Remove)
+            {
+                //Punpun.Information(this, "from container " + this.gameObject + ", removing item" + oldItem.Item?.name);
+            }
 
 			if (changeType == ContainerChangeType.None) {
 				return;
@@ -345,16 +334,6 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns>If the item was added</returns>
 		public bool AddItem(Item item)
 		{
-			if (ContainsItem(item))
-			{
-				return true;
-			}
-
-			if (!CanContainItem(item))
-			{
-				return false;
-			}
-
 			// TODO: Use a more efficient algorithm
 			for (int y = 0; y <= Size.y; y++)
 			{
@@ -367,9 +346,18 @@ namespace SS3D.Systems.Inventory.Containers
 					}
 				}
 			}
-
 			return false;
 		}
+
+        /// <summary>
+        /// transfer an item from this container to another container at a given position.
+        /// </summary>
+        public bool TransferItemToOther(Item item, Vector2Int position, AttachedContainer other)
+        {
+            if (!FindItem(item, out int index)) return false;
+            if(!RemoveStoredItem(index)) return false;
+            return other.AddStoredItem(new StoredItem(item, position));
+        }
 
 		/// <summary>
 		/// Tries to add an item at the specified position
@@ -379,71 +367,35 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <returns>If the item was added</returns>
 		public bool AddItemPosition(Item item, Vector2Int position)
 		{
-			int itemIndex = FindItem(item);
-			if (itemIndex != -1)
-			{
-				StoredItem existingItem = _storedItems[itemIndex];
-				// Try to move existing item
-				if (existingItem.Position == position)
-				{
-					return true;
-				}
-
-				StoredItem storedItem = new(item, position);
-				ReplaceStoredItem(storedItem, itemIndex);
-				return true;
-
-				// Item at same position, nothing to do
-			}
-
-			if (!CanContainItem(item))
-			{
-				return false;
-			}
-
-			bool wasAdded = false;
-			lock (_modificationLock)
-			{
-				AddItemUnchecked(item, position);
-				wasAdded = true;
-			}
-
-			if (!wasAdded)
-			{
-				return false;
-			}
-
-			item.SetContainer(this);
-
-			return true;
-		}
-
-		/// <summary>
-		/// Adds an item to the container without any checks (but ensuring there are no duplicates)
-		/// </summary>
-		/// <param name="item">The item to add</param>
-		/// <param name="position">Where the item should go, make sure this position is valid and free!</param>
-		private void AddItemUnchecked(Item item, Vector2Int position)
-		{
-			StoredItem newItem = new(item, position);
-
-			// Move it if it is already in the container
-			if (MoveItemUnchecked(newItem))
-			{
-				return;
-			}
-
-			AddStoredItem(newItem);
-			LastModification = Time.time;
+            return AddStoredItem(new StoredItem(item, position));
 		}
 
 		/// <summary>
 		/// Correctly add a storeItem to the container. All adding should use this method, never do it directly.
 		/// </summary>
 		/// <param name="newItem"> the item to store.</param>
-		private void AddStoredItem(StoredItem newItem)
+		private bool AddStoredItem(StoredItem newItem)
 		{
-			_storedItems.Add(newItem);
+            if (!CanContainItem(newItem.Item)) return false;
+            if (newItem.Item.Container != null && newItem.Item.Container != this) return false;
+
+            if (FindItem(newItem.Item, out int itemIndex))
+            {
+                StoredItem existingItem = _storedItems[itemIndex];
+
+                // do nothing if the item is at the exact same location.
+                if (existingItem.Position == newItem.Position)
+                {
+                    return true;
+                }
+
+                ReplaceStoredItem(newItem, itemIndex);
+                return true;
+            }
+
+            _storedItems.Add(newItem);
+            newItem.Item.SetContainer(this);
+            return true;
 		}
 
 		/// <summary>
@@ -460,20 +412,25 @@ namespace SS3D.Systems.Inventory.Containers
 		/// Correctly remove a storeItem in the container at the given index. All removing should use this method, never do it directly.
 		/// </summary>
 		/// <param name="index">the index in the list at which the storedItem should be removed.</param>
-		private void RemoveStoredItem(int index)
+		private bool RemoveStoredItem(int index)
 		{
-			_storedItems.RemoveAt(index);
-		}
+            StoredItem storedItem = _storedItems[index];
 
+            if(!CanRemoveItem(storedItem.Item)) return false;
 
-		/// <summary>
-		/// Adds a stored item without checking any validity
-		/// <param name="storedItem">The item to store</param>
-		/// </summary>
-		public void AddItemUnchecked(StoredItem storedItem)
-		{
-			AddItemUnchecked(storedItem.Item, storedItem.Position);
-		}
+            storedItem.Item.SetContainer(null);
+            lock (_modificationLock)
+            {
+                _storedItems.RemoveAt(index);
+            }
+            return true;
+           
+        }
+
+        public bool CanRemoveItem(Item item)
+        {
+            return !(bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanRemove(this, item));
+        }
 
 		/// <summary>
 		/// Removes an item from the container
@@ -481,45 +438,10 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <param name="item">The item to remove</param>
 		public void RemoveItem(Item item)
 		{
-			for (int i = 0; i < _storedItems.Count; i++)
-			{
-				if (_storedItems[i].Item != item)
-				{
-					continue;
-				}
-
-				RemoveItemAt(i);
-				return;
-			}
-		}
-
-		/// <summary>
-		/// Moves an item without performing validation
-		/// </summary>
-		/// <param name="item">The item to move</param>
-		/// <returns>If the item was moved</returns>
-		private bool MoveItemUnchecked(StoredItem item)
-		{
-			for (int i = 0; i < _storedItems.Count; i++)
-			{
-				StoredItem x = _storedItems[i];
-				if (x.Item != item.Item)
-				{
-					continue;
-				}
-
-				if (x.Position == item.Position)
-				{
-					return true;
-				}
-
-				ReplaceStoredItem(item, i);
-				LastModification = Time.time;
-
-				return true;
-			}
-
-			return false;
+            if(FindItem(item, out int index))
+            {
+                RemoveStoredItem(index);
+            }
 		}
 
 		/// <summary>
@@ -558,31 +480,18 @@ namespace SS3D.Systems.Inventory.Containers
 			return new Vector2Int(-1, -1);
 		}
 
-		private void RemoveItemAt(int index)
-		{
-			StoredItem storedItem = _storedItems[index];
-			lock (_modificationLock)
-			{
-				RemoveStoredItem(index);
-			}
-
-			LastModification = Time.time;
-			storedItem.Item.SetContainer(null);
-		}
-
 		/// <summary>
 		/// Empties the container, removing all items
 		/// </summary>
 		public void Dump()
 		{
+            Log.Information(this, "dumping the content of container on" + gameObject);
 			Item[] oldItems = _storedItems.Select(x => x.Item).ToArray();
-			for (int i = 0; i < oldItems.Length; i++)
-			{
-				oldItems[i].SetContainer(null);
-			}
-			_storedItems.Clear();
 
-			LastModification = Time.time;
+            for(int i= _storedItems.Count-1; i>=0; i--)
+            {
+                RemoveStoredItem(i);
+            }
 		}
 
 		/// <summary>
@@ -592,11 +501,10 @@ namespace SS3D.Systems.Inventory.Containers
 		{
 			for (int i = 0; i < _storedItems.Count; i++)
 			{
+                if (_storedItems[i].Item == null) continue;
 				_storedItems[i].Item.Delete();
 			}
 			_storedItems.Clear();
-
-			LastModification = Time.time;
 		}
 
 		/// <summary>
@@ -641,36 +549,46 @@ namespace SS3D.Systems.Inventory.Containers
 			return Items.Count() < Size.x * Size.y;
 		}
 
-		/// <summary>
-		/// Checks if this item can be stored and fits inside the container
-		/// </summary>
-		/// <param name="item"></param>
-		/// <returns></returns>
-		public bool CanContainItem(Item item)
+        /// <summary>
+        /// Checks if this item can be stored and fits inside the container. It will also check for 
+        /// custom storage conditions if they exists, which are scripts put on the same game object as this container and
+        /// implementing IStorageCondition.
+        /// </summary>
+        public bool CanContainItem(Item item)
 		{
-			return CanStoreItem(item) && CanHoldItem(item);
-		}
-		
-		/// <summary>
-		/// Finds the index of an item
-		/// </summary>
-		/// <param name="item">The item to look for</param>
-		/// <returns>The index of the item or -1 if not found</returns>
-		public int FindItem(Item item)
+            return CanStoreItem(item)
+                    && CanHoldItem(item)
+                    && !item.GetComponentsInChildren<AttachedContainer>().AsEnumerable().Contains(this) // Can't put an item in its own container
+                    && !(bool)GetComponents<IStorageCondition>()?.Any(x => !x.CanStore(this, item));
+        }
+
+        public bool CanContainItemAtPosition(Item item, Vector2Int position)
+        {
+            return CanContainItem(item) && IsAreaFree(position) && AreSlotCoordinatesInGrid(position);
+        }
+
+        /// <summary>
+        /// Finds the index of an item
+        /// </summary>
+        /// <param name="item">The item to look for</param>
+        /// <returns>The index of the item or -1 if not found</returns>
+        public bool FindItem(Item item, out int index)
 		{
+            index = -1;
 			for (int i = 0; i < _storedItems.Count; i++)
 			{
 				StoredItem storedItem = _storedItems[i];
 				if (storedItem.Item == item)
 				{
-					return i;
+                    index = i;
+					return true;
 				}
 			}
 
-			return -1;
+			return false;
 		}
 
-		public bool IsAreaFree(Vector2Int slotPosition)
+		private bool IsAreaFree(Vector2Int slotPosition)
 		{
 			foreach (StoredItem storedItem in _storedItems)
 			{
@@ -688,7 +606,7 @@ namespace SS3D.Systems.Inventory.Containers
 			OnContentsChanged?.Invoke(this, oldItem, newItem, changeType);
 		}
 
-		public bool AreSlotCoordinatesInGrid(Vector2Int slotCoordinates)
+		private bool AreSlotCoordinatesInGrid(Vector2Int slotCoordinates)
 		{
 			return slotCoordinates.x < Size.x && slotCoordinates.y < Size.y && slotCoordinates.x >= 0 && slotCoordinates.y >= 0;
 		}

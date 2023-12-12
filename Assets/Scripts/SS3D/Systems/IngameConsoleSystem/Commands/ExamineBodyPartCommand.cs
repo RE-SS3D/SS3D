@@ -1,7 +1,6 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
-using SS3D.Systems.Permissions;
-using System.Collections;
+using SS3D.Permissions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,34 +10,26 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class ExamineBodyPartCommand : Command
     {
-        public override string LongDescription => "Examine a detached body part, returning how damaged it is \n " +
-            "Usage : examinebodypart [game object name]";
+        public override string LongDescription => "Examine a detached body part, returning how damaged it is";
         public override string ShortDescription => "Examine a detached body part";
+        public override string Usage => "(game object name)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
+        private record CalculatedValues(IEnumerable<BodyPart> BodyParts) : ICalculatedValues;
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            CheckArgsResponse checkArgsResponse = CheckArgs(args);
-            if (checkArgsResponse.IsValid == false)
-                return checkArgsResponse.InvalidArgs;
-
-            string gameObjectName = args[0];
-
-            GameObject go = GameObject.Find(gameObjectName);
-            IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
-            BodyPart bodyPart = bodyParts.First();
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
             string answer = "";
-
-            foreach(BodyLayer layer in bodyPart.BodyLayers)
+            foreach(BodyLayer layer in values.BodyParts.First().BodyLayers)
             {
-                answer += layer.ToString() + ": ";
-                foreach (DamageTypeQuantity damageTypeQuantity in layer.DamageTypeQuantities)
+                answer += layer + ": ";
+                foreach (BodyDamageInfo damage in layer.Damages.DamagesInfo.Values)
                 {
-                    answer += damageTypeQuantity.damageType.ToString() + " " + damageTypeQuantity.quantity.ToString();
+                    answer += damage.InjuryType + " " + damage.Quantity;
                 }
                 answer += "\n";
             }
@@ -48,44 +39,21 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         [Server]
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
+            CheckArgsResponse response = new();
 
-            CheckArgsResponse response = new CheckArgsResponse();
-
-            if (args.Length != 1)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number of arguments";
-                return response;
-            }
+            if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
 
             string gameObjectName = args[0];
-
             GameObject go = GameObject.Find(gameObjectName);
-            if (go == null)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "No bodypart with this name";
-                return response;
-            }
+            if (go == null) return response.MakeInvalid("No bodypart with this name");
+            
+            BodyPart[] bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName).ToArray();
 
-            IEnumerable<BodyPart> bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName);
-
-            if (bodyParts.Count() == 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "No bodypart with this name";
-                return response;
-            }
-
-            if (bodyParts.Count() != 1)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Multiple body parts with the same name, ambiguous command";
-                return response;
-            }
-
-            response.IsValid = true;
-            return response;
+            if (!bodyParts.Any()) return response.MakeInvalid("No bodypart with this name");
+            
+            if (bodyParts.Length != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
+            
+            return response.MakeValid(new CalculatedValues(bodyParts));
         }
     }
 }

@@ -1,64 +1,40 @@
 ﻿using FishNet.Connection;
-using FishNet;
-using SS3D.Core;
-using SS3D.Data.Enums;
-using SS3D.Data;
-using SS3D.Systems.Entities;
+using SS3D.Permissions;
 using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Permissions;
-using SS3D.Systems.PlayerControl;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
 	public class DumpContainerCommand : Command
 	{
-		public override string LongDescription => "Dump the content of a container. Dump the content of all containers on the game object. \n" +
-			"Usage : dumpcontainer [container's game object name]";
-		public override string ShortDescription => "Dump the content of a container.";
+		public override string LongDescription => "Dump the content of all containers on the game object";
+		public override string ShortDescription => "Dump the content of a container";
+        public override string Usage => "(container's game object name)";
 		public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
+        public override CommandType Type => CommandType.Server;
+        
+        private record CalculatedValues(AttachedContainer Container) : ICalculatedValues;
 
-		public override CommandType Type => CommandType.Server;
-		public override string Perform(string[] args, NetworkConnection conn)
+        public override string Perform(string[] args, NetworkConnection conn)
 		{
-			CheckArgsResponse checkArgsResponse = CheckArgs(args);
-			if (checkArgsResponse.IsValid == false)
-				return checkArgsResponse.InvalidArgs;
-
-			string containerName = args[0];
-			GameObject containerGo = GameObject.Find(containerName);
-			AttachedContainer container = containerGo.GetComponentInChildren<AttachedContainer>();
-			container.Dump();
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
+            
+			values.Container.Dump();
 			return "Container content dumped";
 		}
 		protected override CheckArgsResponse CheckArgs(string[] args)
 		{
-			CheckArgsResponse response = new CheckArgsResponse();
-			if (args.Length != 1)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "Invalid number of arguments";
-				return response;
-			}
-			string containerName = args[0];
-			GameObject containerGo = GameObject.Find(containerName);
-			if (containerGo == null)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "This container doesn't exist";
-				return response;
-			}
-			AttachedContainer[] container =  containerGo.GetComponentsInChildren<AttachedContainer>();
-			if (container.Length == 0)
-			{
-				response.IsValid = false;
-				response.InvalidArgs = "no container on this game object";
-				return response;
-			}
+			CheckArgsResponse response = new();
+			if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
+			
+			GameObject containerGo = GameObject.Find(args[0]);
+			if (containerGo == null) return response.MakeInvalid("This container doesn't exist");
+            
+            AttachedContainer container =  containerGo.GetComponentInChildren<AttachedContainer>();
+			if (container == null) return response.MakeInvalid("No container on this game object");
+			
 			response.IsValid = true;
-			return response;
+			return response.MakeValid(new CalculatedValues(container));
 		}
 	}
 }

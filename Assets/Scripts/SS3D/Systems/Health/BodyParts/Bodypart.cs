@@ -1,23 +1,19 @@
-﻿using FishNet.Object;
+﻿using Coimbra;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using FishNet.Connection;
 using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Core;
 using SS3D.Logging;
-using SS3D.Systems.Permissions;
-using Cysharp.Threading.Tasks;
-using UnityEditor;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Health;
 using System.Linq;
 using System.Collections.ObjectModel;
 using FishNet;
-using Coimbra;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
+using System.Collections;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
@@ -53,11 +49,18 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     protected readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
 
+
+	private BodyPart _externalBodyPart;
+
+	public BodyPart ExternalBodyPart => _externalBodyPart;
+
+	public bool IsInsideBodyPart => _externalBodyPart != null;
+
     /// <summary>
     /// A container containing all internal body parts. The head has a brain for an internal body part. Internal body parts should be destroyed
     /// </summary>
     [SerializeField]
-    protected AttachedContainer _internalBodyParts;
+    private AttachedContainer _internalBodyParts;
 
     /// <summary>
     /// Collider registering hits on this bodypart. It should usually be on the armature of the Entity, so it follows animations.
@@ -72,8 +75,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Check if this bodypart has been detached. Should always be true for all bodyparts spawned on detach.
     /// </summary>
-    protected bool _isDetached;
+    private bool _isDetached;
 
+    protected BodyPart _spawnedCopy;
+
+	public HealthController HealthController;
 
     public ReadOnlyCollection<BodyLayer> BodyLayers
     {
@@ -86,10 +92,30 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         get { return _childBodyParts.AsReadOnly(); }
     }
 
-    public IEnumerable<Item> InternalBodyParts
+    public List<BodyPart> InternalBodyParts
     {
-        get { return _internalBodyParts.Items; }
+        get 
+        {
+            List<BodyPart> bodyParts = new List<BodyPart>();
+            foreach (Item item in _internalBodyParts.Items)
+            {
+                if(item != null && item.TryGetComponent(out BodyPart bodyPart))
+                {
+                    bodyParts.Add(bodyPart);
+                }
+            }
+            return bodyParts;
+        }
     }
+
+    public bool HasInternalBodyPart => _internalBodyParts != null && _internalBodyParts.Items.Count() != 0;
+
+    /// <summary>
+    /// The volume in mililiters of a given bodypart
+    /// </summary>
+    [SerializeField] protected double _bodyPartVolume;
+
+    public double Volume => _bodyPartVolume;
 
     /// <summary>
     /// A bodypart is considered destroyed when The total amount of damages it sustained is above a maximum.
@@ -99,12 +125,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// A bodypart is considered severed when the total amount of damages it sustained on the bone layer is above a maximum.
     /// </summary>
-    public bool IsSevered => GetBodyLayer<BoneLayer>().IsDestroyed();
+    public bool IsSevered => TryGetBodyLayer(out BoneLayer bones) ? bones.IsDestroyed() : false;
 
     public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
-    public float MaxDamage => 0.8f*_bodyLayers.Sum(layer => layer.MaxDamage);
+    public float MaxDamage => 0.5f*_bodyLayers.Sum(layer => layer.MaxDamage);
 
-    public float RelativeDamage => 1- TotalDamage/ MaxDamage;
+    public float RelativeDamage => TotalDamage/ MaxDamage;
 
     public event EventHandler OnDamageInflicted;
     public event EventHandler OnBodyPartDestroyed;
@@ -114,7 +140,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// The parent bodypart is the body part attached to this body part, closest from the brain. 
     /// For lower left arm, it's higher left arm. For neck, it's head.
-    /// Be careful, it doesn't necessarily match the game object hierarchy
+    /// Be careful, it doesn't necessarily match the game object hierarchy.
     /// </summary>
     public BodyPart ParentBodyPart
     {
@@ -148,6 +174,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Properly set a new parent body part, should be useful when detaching or attaching again a bodypart.
     /// </summary>
+    [Server]
     public void SetParentBodyPart(BodyPart value)
     {
         if (value == null)
@@ -174,19 +201,25 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// This spawns an item based on this body part. Upon being detached, some specific treatments are needed for some bodyparts.
     /// Implementation should handle instantiating _bodyPartItem, removing the bodypart game object and doing whatever else is necessary.
     /// </summary>
-    protected virtual void DetachBodyPart()
+    [Server]
+    private void DetachBodyPart()
     {
-
         if (_isDetached) return;
         DetachChildBodyParts();
         HideSeveredBodyPart();
-        SpawnDetachedBodyPart();
+        _spawnedCopy = SpawnDetachedBodyPart();
+        AfterSpawningCopiedBodyPart();
         _isDetached = true;
         InvokeOnBodyPartDetached();
         Dispose(false);
     }
 
-    protected void DetachChildBodyParts()
+    protected abstract void AfterSpawningCopiedBodyPart();
+
+    protected abstract void BeforeDestroyingBodyPart();
+
+    [Server]
+    private void DetachChildBodyParts()
     {
         for (int i = _childBodyParts.Count - 1; i >= 0; i--)
         {
@@ -194,14 +227,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         }
     }
 
-    protected BodyPart SpawnDetachedBodyPart()
+    [Server]
+    private BodyPart SpawnDetachedBodyPart()
     {
-        /*
-         * When detaching a bodypart, a prefab is spawned, very similar but having a few different scripts like the Item script, or removing a few others.
-         * Fishnet in version 3.10.7 does not allow adding networkbehaviours, however it allows disabling and enabling.
-         * When detaching a body part, don't forget to check if some scripts were enabled/disabled, and update the relevant values of the spawned body part with 
-         * those of the just detached body part.
-         */
         GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
         InstanceFinder.ServerManager.Spawn(go, null);
         BodyPart bodyPart = go.GetComponent<BodyPart>();
@@ -214,6 +242,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Copy the value of this to another body part. 
     /// Especially useful to keep sustained damages on a spawned body part upon detaching it. 
     /// </summary>
+    [Server]
     protected virtual void CopyValuesToBodyPart(BodyPart bodyPart)
     {
         foreach(BodyLayer layer in bodyPart.BodyLayers)
@@ -230,17 +259,19 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// All child body parts are detached, all internal body parts are destroyed.
     /// </summary>
     [Server]
-    public virtual void DestroyBodyPart()
+    private void DestroyBodyPart()
     {
+        BeforeDestroyingBodyPart();
+
         DetachChildBodyParts();
 
-        // Destroy all internal body parts
+        // Destroy all internal body parts i
         if (_internalBodyParts != null){
 
-            foreach (Item item in _internalBodyParts.Items)
+            foreach (BodyPart part in InternalBodyParts)
             {
-                BodyPart internalBodyPart = item.GetComponentInChildren<BodyPart>();
-                internalBodyPart?.DestroyBodyPart();
+                if(!part.IsDestroyed)
+                    part.DestroyBodyPart();
             }
             _internalBodyParts.Purge();
         }
@@ -255,19 +286,32 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// and deactivate this body part's game object for all observers.
     /// </summary>
     [Server]
-    protected void Dispose(bool purgeContainersContent)
+    private void Dispose(bool purgeContainersContent)
     {
+        if (HasInternalBodyPart)
+        {
+            foreach (BodyPart part in InternalBodyParts)
+            {
+                part.Dispose(true);
+            }
+        }
+
         RemoveChildAndParent();
         DumpOrPurgeContainers(purgeContainersContent);
-        Deactivate();
+        CleanLayers();
+        StartCoroutine(DeactivateOneFrameLater());
     }
 
     /// <summary>
-    /// Simply dump the content of all containers
+    /// Simply dump the content of all containers which are not specifically for containing organs. 
+    /// (we don't want the brain flying when head is detached .. or do we ..? ).
     /// </summary>
+    [Server]
     private void DumpOrPurgeContainers(bool purgeContainersContent)
     {
-        IEnumerable<AttachedContainer> containers = GetComponentsInChildren<AttachedContainer>().Where(x => x.GetComponent<OrganContainer>() == null);
+        IEnumerable<AttachedContainer> containers = GetComponentsInChildren<AttachedContainer>()
+            .Where(x => x.GetComponent<OrganContainer>() == null);
+        
         foreach (AttachedContainer container in containers)
         {
             if (purgeContainersContent)
@@ -284,21 +328,44 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Remove the reference to this in the parent body part, and make the parent body part reference null.
     /// </summary>
-    protected void RemoveChildAndParent()
+    [Server]
+    private void RemoveChildAndParent()
     {
         _parentBodyPart?._childBodyParts.Remove(this);
         _parentBodyPart = null;
     }
 
+    /// <summary>
+    /// Destroy the body layers properly
+    /// </summary>
+    [Server]
+    private void CleanLayers()
+    {
+        _bodyLayers.ForEach(x => x.Cleanlayer());
+    }
 
+    /// <summary>
+    /// Deactivate game object for all observers one frame later. Deactivating too soon causes issues with
+    /// item dumped by container, and other stuff. Should not deactivate before everything is done.
+    /// A cleaner solution would be to register to an event fired by container once it's done dumping or purging.
+    /// </summary>
+    /// <returns></returns>
+    [Server]
+    private IEnumerator DeactivateOneFrameLater()
+    {
+        yield return null;
+        Deactivate();
+    }
 
     /// <summary>
     /// Deactivate this game object, should run for all observers, and for late joining (hence bufferlast = true).
     /// </summary>
     [ObserversRpc(RunLocally = true, BufferLast = true)]
-    protected void Deactivate()
+    private void Deactivate()
     {
+        if (gameObject == null) return;
         gameObject.SetActive(false);
+        gameObject.Dispose(true);
     }
 
     /// <summary>
@@ -306,6 +373,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// TODO : use generic to check type, actually check if only one body layer of each kind.
     /// </summary>
     /// <returns> The body layer was added.</returns>
+    [Server]
     public virtual bool TryAddBodyLayer(BodyLayer layer)
     {
         layer.BodyPart = this;
@@ -319,6 +387,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// TODO : check if it exists first.
     /// </summary>
     /// <param name="layer"></param>
+    [Server]
     public virtual void RemoveBodyLayer(BodyLayer layer)
     {
          _bodyLayers.Remove(layer);
@@ -328,6 +397,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Add a new body part as a child of this one. 
     /// </summary>
     /// <param name="bodyPart"></param>
+    [Server]
     public virtual void AddChildBodyPart(BodyPart bodyPart)
     {
         _childBodyParts.Add(bodyPart);
@@ -337,8 +407,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Inflic damages of a certain kind on a certain body layer type if the layer is present.
     /// </summary>
     /// <returns>True if the damage could be inflicted</returns>
-    public virtual bool TryInflictDamage(BodyLayerType type, DamageTypeQuantity damageTypeQuantity)
+    [Server]
+    public bool TryInflictDamage(BodyLayerType type, DamageTypeQuantity damageTypeQuantity)
     {
+        // Should not inflict damages if already destroyed.
+        if(IsDestroyed) return false;
+
         BodyLayer layer = FirstBodyLayerOfType(type);
         if (!BodyLayers.Contains(layer)) return false;
         layer.InflictDamage(damageTypeQuantity);
@@ -358,6 +432,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// inflict same type damages to all layers present on this body part.
     /// </summary>
+    [Server]
     public void InflictDamageToAllLayer(DamageTypeQuantity damageTypeQuantity)
     {
         foreach (BodyLayer layer in BodyLayers)
@@ -369,6 +444,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// inflict same type damages to all layers present on this body part except one.
     /// </summary>
+    [Server]
     public void InflictDamageToAllLayerButOne<T>(DamageTypeQuantity damageTypeQuantity)
     {
         foreach (BodyLayer layer in BodyLayers)
@@ -381,16 +457,17 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Check if this body part contains a given layer type.
     /// </summary>
+    [Server]
     public bool ContainsLayer(BodyLayerType layerType)
     {
         return BodyLayers.Any(x => x.LayerType == layerType);
     }
 
+    [Server]
     public BodyLayer FirstBodyLayerOfType(BodyLayerType layerType)
     {
         return BodyLayers.Where(x => x.LayerType == layerType).First();
     }
-
 
     /// <summary>
     /// GetBodyLayer of type T on this bodypart.
@@ -398,21 +475,25 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public BodyLayer GetBodyLayer<T>()
+    [Server]
+    public bool TryGetBodyLayer<T>(out T bodyLayer) where T : BodyLayer
     {
         foreach (BodyLayer layer in BodyLayers)
         {
             if (layer is T)
             {
-                return layer;
+                bodyLayer = (T)Convert.ChangeType(layer, typeof(T));
+                return true;
             }
         }
-        return null;
+        bodyLayer = null;
+        return false;
     }
 
     /// <summary>
     /// Describe extensively the bodypart.
     /// </summary>
+    [Server]
     public string Describe()
     {
         string description = "";
@@ -440,34 +521,64 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         return new IInteraction[] {};
     }
 
+    [Server]
+    public void AddInternalBodyPart(BodyPart part)
+	{
+		_internalBodyParts.AddItem(part.gameObject.GetComponent<Item>());
+		part._externalBodyPart = this;
+	}
+
+    [Server]
+    public void RemoveInternalBodyPart(BodyPart part)
+	{
+		_internalBodyParts.RemoveItem(part.gameObject.GetComponent<Item>());
+		part._externalBodyPart = null;
+	}
+
+    /// <summary>
+    /// Method to use on body parts such as head and torso to spawn their organs at run time.
+    /// Should not be called if not implemented. Implementation varies between body parts.
+    /// Don't implement it and leave the exception throwing.
+    /// It is necessary to spawn organs at run time, because organs should be their own independent network object, since they behave like items.
+    /// Organs can be taken in and out of their respective organ containers.
+    /// </summary>
+    [Server]
+    protected virtual void SpawnOrgans()
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Hide a freshly cut body part on the player.
     /// </summary>
+    [Server]
     protected void HideSeveredBodyPart()
     {
         if (_skinnedMeshRenderer == null) return;
         _skinnedMeshRenderer.enabled = false;
     }
 
+    [Server]
     protected void InvokeOnBodyPartDetached()
     {
         OnBodyPartDetached?.Invoke(this, EventArgs.Empty);
     }
 
+    [Server]
     protected void InvokeOnBodyPartDestroyed()
     {
         OnBodyPartDestroyed?.Invoke(this, EventArgs.Empty);
     }
 
+    [Server]
     protected void InvokeOnBodyPartLayerAdded()
     {
         OnBodyPartLayerAdded?.Invoke(this, EventArgs.Empty);
     }
 
+
     /// <summary>
     /// Add the body layers in their initial states on the player. 
     /// </summary>
     protected abstract void AddInitialLayers();
-
-
 }

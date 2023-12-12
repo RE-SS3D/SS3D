@@ -13,7 +13,10 @@ GameObject:
   - component: {fileID: 6696866361892651655}
   - component: {fileID: 37166840573251760}
   - component: {fileID: 6999522401175031449}
-  - component: {fileID: -2329561759450310542}
+  - component: {fileID: 3040907911380660968}
+  - component: {fileID: -8129327122462613158}
+  - component: {fileID: 4968245899799697575}
+  - component: {fileID: -708232349023746562}
   m_Layer: 0
   m_Name: FancyCarpetRed
   m_TagString: Untagged
@@ -113,19 +116,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
-  _networkBehaviours: []
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours:
+  - {fileID: 3040907911380660968}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isGlobal: 0
+  _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 47
+  <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 4511097998240534661
-  _sceneNetworkObjects: []
---- !u!114 &-2329561759450310542
+--- !u!114 &3040907911380660968
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -134,21 +144,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3591147544166670882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53a5cd0d46abb6d4d8686d11153009c2, type: 3}
+  m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 6999522401175031449}
-  _networkObjectCache: {fileID: 0}
-  SelectedAdjacencyType: 1
-  _simpleAdjacency:
-    o: {fileID: 0}
-    u: {fileID: 0}
-    i: {fileID: 0}
-    l: {fileID: 0}
-    t: {fileID: 0}
-    x: {fileID: 0}
-  _advancedAdjacency:
+  _networkObjectCache: {fileID: 6999522401175031449}
+  _syncedConnections: 0
+  advancedAdjacency:
     o: {fileID: 6313828114514605112, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
     u: {fileID: 1428770310312528737, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
     i: {fileID: -1544124563803091405, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
@@ -166,18 +169,42 @@ MonoBehaviour:
     xQuad: {fileID: 9022132694264211953, guid: 672e6a3c2617a374084ca41ab0f3b39d, type: 3}
     viewObstacles: []
     opaque: 0
-  _offsetAdjacency:
-    o: {fileID: 0}
-    uNorth: {fileID: 0}
-    uSouth: {fileID: 0}
-    i: {fileID: 0}
-    lNE: {fileID: 0}
-    lNW: {fileID: 0}
-    lSE: {fileID: 0}
-    lSW: {fileID: 0}
-    tNEW: {fileID: 0}
-    tNSW: {fileID: 0}
-    tNSE: {fileID: 0}
-    tSWE: {fileID: 0}
-    x: {fileID: 0}
-  _syncedConnections: 0
+--- !u!114 &-8129327122462613158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b450066fe390440b608959b8cb5e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultDirection: 0
+  _allowedDirections: 00000000
+--- !u!114 &4968245899799697575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-708232349023746562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 277312b7bd0e28b4eb59fec06b6084dd, type: 2}
