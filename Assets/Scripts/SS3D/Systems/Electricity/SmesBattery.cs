@@ -1,5 +1,6 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Interactions;
 using System.Collections;
@@ -42,7 +43,6 @@ namespace System.Electricity
         private int _updateCount = 0;
 
 
-
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -52,6 +52,7 @@ namespace System.Electricity
             Subsystems.Get<ElectricitySystem>().OnTick += HandleTick;
         }
 
+        [Client]
         private void HandleTick()
         {
             AdjustBatteryLevel();
@@ -64,6 +65,7 @@ namespace System.Electricity
         /// <summary>
         /// Adjust the battery level, the liquid thingy going up and down, depending on the amount of stored power.
         /// </summary>
+        [Client]
         private void AdjustBatteryLevel()
         {
             float chargeLevelNormalized = StoredPower / MaxCapacity;
@@ -73,6 +75,7 @@ namespace System.Electricity
         /// <summary>
         /// Just turn on the battery input light, if power was added. Turn it off if no power added, or power removed.
         /// </summary>
+        [Client]
         private void AdjustBatteryInput()
         {
             float powerAdded = Mathf.Max(StoredPower - _previousPowerStored, 0f);
@@ -91,6 +94,7 @@ namespace System.Electricity
         /// Set the vertical line of output lights so that, at each update, the bar go up and down toward the light it should reached.
         /// Do nothing if the target light is reached.
         /// </summary>
+        [Client]
         private void AdjustBatteryOutput()
         {
             ComputeLightOutputTarget();
@@ -115,6 +119,7 @@ namespace System.Electricity
         /// Index of the light that should be turned on. Can be 0 and in that case no light should be on.
         /// Assumes the index of blendshapes for the output lights are from 1 to 11.
         /// </summary>
+        [Client]
         private void ComputeLightOutputTarget()
         {
             float powerRemoved = Mathf.Max(_previousPowerStored - StoredPower, 0f);
@@ -140,7 +145,14 @@ namespace System.Electricity
         {
             _isOn = toggle;
 
-            if(_isOn)
+            
+        }
+
+        protected override void SyncEnabled(bool oldValue, bool newValue, bool asServer)
+        {
+            if (asServer) return;
+
+            if (newValue)
             {
                 SmesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 100);
                 SmesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 0);
@@ -150,6 +162,7 @@ namespace System.Electricity
                 SmesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 0);
                 SmesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 100);
             }
+
         }
     }
 }

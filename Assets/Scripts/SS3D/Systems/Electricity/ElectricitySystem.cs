@@ -112,7 +112,7 @@ namespace System.Electricity
 
             if(_timeElapsed> _tickRate)
             {
-                OnTick?.Invoke();
+                RpcInvokeOnTick();
                 _timeElapsed -= _tickRate;
             }
         }
@@ -234,6 +234,12 @@ namespace System.Electricity
                     _circuits.Last().AddElectricDevice(device);
                 }
             }
+        }
+
+        [ObserversRpc]
+        private void RpcInvokeOnTick()
+        {
+            OnTick?.Invoke();
         }
     }
 }

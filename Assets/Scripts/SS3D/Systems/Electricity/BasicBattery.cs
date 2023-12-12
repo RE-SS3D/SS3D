@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Systems.Tile;
@@ -15,15 +16,16 @@ namespace System.Electricity
     /// </summary>
     public class BasicBattery : BasicElectricDevice, IPowerStorage
     {
-        [SerializeField]
+        [SerializeField, SyncVar]
         private float _maxCapacity = 1000;
 
-        [SerializeField]
+        [SerializeField, SyncVar]
         private float _storedPower = 0;
 
-        [SerializeField]
+        [SerializeField, SyncVar]
         private float _maxPowerRate = 5f;
 
+        [SyncVar(OnChange = nameof(SyncEnabled))]
         protected bool _isOn = true;
 
         /// <inheritdoc> </inheritdoc>
@@ -80,5 +82,7 @@ namespace System.Electricity
                 return amount;
             }
         }
+
+        protected virtual void SyncEnabled(bool oldValue, bool newValue, bool asServer) { }
     }
 }
