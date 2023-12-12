@@ -11,7 +11,7 @@ namespace SS3D.Systems.Tile
     public class GenericObjectSo : ScriptableObject
     {
         [NotNull]
-        public string NameString => prefab.name;
+        public string NameString => name;
 
         public GameObject prefab;
         public Sprite icon;
