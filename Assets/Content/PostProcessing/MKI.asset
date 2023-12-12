@@ -47,7 +47,7 @@ MonoBehaviour:
     value: 1
   threshold:
     overrideState: 1
-    value: 0.81
+    value: 1
   softKnee:
     overrideState: 1
     value: 0.542
@@ -160,7 +160,7 @@ MonoBehaviour:
     value: 0
   saturation:
     overrideState: 1
-    value: -1.2
+    value: -13.5
   brightness:
     overrideState: 0
     value: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
     value: 0
   contrast:
     overrideState: 1
-    value: -10.5
+    value: -25
   mixerRedOutRedIn:
     overrideState: 0
     value: 100
@@ -205,7 +205,7 @@ MonoBehaviour:
     value: {x: 1, y: 1, z: 1, w: -0.0000000027090348}
   gain:
     overrideState: 1
-    value: {x: 1, y: 1, z: 1, w: 1}
+    value: {x: 1, y: 1, z: 1, w: 0.2086331}
   masterCurve:
     overrideState: 0
     value:
@@ -1444,10 +1444,10 @@ MonoBehaviour:
     value: 1
   mode:
     overrideState: 1
-    value: 1
+    value: 0
   intensity:
     overrideState: 1
-    value: 0.66
+    value: 0.646
   color:
     overrideState: 1
     value: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 1}
@@ -1471,10 +1471,10 @@ MonoBehaviour:
     value: 0
   radius:
     overrideState: 1
-    value: 0.22
+    value: 1
   quality:
     overrideState: 1
-    value: 3
+    value: 2
 --- !u!114 &4375730050868664868
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1496,13 +1496,13 @@ MonoBehaviour:
     value: 0
   color:
     overrideState: 1
-    value: {r: 0.4056604, g: 0.37265265, b: 0.36165008, a: 1}
+    value: {r: 0, g: 0, b: 0, a: 1}
   center:
     overrideState: 1
     value: {x: 0.5, y: 0.5}
   intensity:
     overrideState: 1
-    value: 0.23
+    value: 0.434
   smoothness:
     overrideState: 1
     value: 0.325
@@ -1531,7 +1531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65e486e4de6e5448a8fbb43dc8756a0, type: 3}
   m_Name: Grain
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
@@ -1540,7 +1540,7 @@ MonoBehaviour:
     value: 0
   intensity:
     overrideState: 1
-    value: 0.148
+    value: 0.121
   size:
     overrideState: 1
     value: 0.41
