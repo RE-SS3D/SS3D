@@ -13,52 +13,43 @@ namespace SS3D.Systems.Audio
     {
 
         //Variables!!! Wow!
-        [FormerlySerializedAs("collisionVolume")]
         [Header("Collision Noises Setup")]
         [Range(0f, 1f)]
         [SerializeField]
         [Tooltip("How loud sounds will play when colliding.")]
         private float _collisionVolume = 0.7f;
 
-        [FormerlySerializedAs("basePitch")]
         [SerializeField]
         [Range(0, 2)]
         [Tooltip("The base pitch of the sound effect. Default is 1, lower pitch is 0, higher pitch is 2.")]
         private float _basePitch = 1;
 
-        [FormerlySerializedAs("pitchModulationLow")]
         [SerializeField]
         [Range(0f, 0.5f)]
         [Tooltip("How much lower pitch can the sound play?")]
         private float _pitchModulationLow = 0;
 
-        [FormerlySerializedAs("pitchModulationHigh")]
         [SerializeField]
         [Range(0f, 0.5f)]
         [Tooltip("How much higher pitch can the sound play?")]
         private float _pitchModulationHigh = 0;
 
-        [FormerlySerializedAs("lightImpactVelocity")]
         [SerializeField]
         [Tooltip("How fast this object must hit another in order to make a light impact sound.")]
         private float _lightImpactVelocity = 1;
 
-        [FormerlySerializedAs("useHardImpactSounds")]
         [SerializeField]
         [Tooltip("Does this object make a different sound being struck at a high velocity?")]
         private bool _useHardImpactSounds = false;
 
-        [FormerlySerializedAs("hardImpactVelocity")]
         [SerializeField]
         [Tooltip("How fast this object must hit another in order to make a hard impact sound.")]
         private float _hardImpactVelocity = 7.5f;
 
-        [FormerlySerializedAs("lightImpactSounds")]
         [SerializeField]
         [Tooltip("List of possible sounds that will play when this object collides lightly.")]
         private AudioClip[] _lightImpactSounds;
 
-        [FormerlySerializedAs("hardImpactSounds")]
         [SerializeField]
         [Tooltip("List of possible sounds that will play when this object collides heavily.")]
         private AudioClip[] _hardImpactSounds;

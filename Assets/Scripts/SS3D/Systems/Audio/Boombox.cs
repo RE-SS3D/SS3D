@@ -13,23 +13,18 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public class Boombox : InteractionTargetNetworkBehaviour, IToggleable
     {
-        [FormerlySerializedAs("_audioClips")]
         [SerializeField]
         private List<AudioClip> _songs;
 
         // is it playing music
-        [FormerlySerializedAs("radioOn")]
         [SyncVar]
         public bool RadioOn;
 
-        [FormerlySerializedAs("currentMusic")]
         [SyncVar]
         public int CurrentMusic;
 
-        // I hate my life
-        [FormerlySerializedAs("interactionIcon")]
+        // TODO: Update this file with boombox icons from asset data.
         public Sprite InteractionIcon;
-        [FormerlySerializedAs("interactionIconOn")]
         public Sprite InteractionIconOn;
 
         public void Toggle()

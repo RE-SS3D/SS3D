@@ -5,6 +5,8 @@ namespace SS3D.Data.AssetDatabases
 {
     /// <summary>
     /// Represents an asset data asset, contains the name of the asset and the related database.
+    ///
+    /// NOTE: The implicit operators have to be manually added for now.
     /// </summary>
     public sealed class DatabaseAsset
     {

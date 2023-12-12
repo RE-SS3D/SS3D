@@ -7,11 +7,8 @@ using UnityEngine.Serialization;
 
 public class HumanTorso : BodyPart
 {
-    [FormerlySerializedAs("heart")]
     public Heart Heart;
-    [FormerlySerializedAs("leftLung")]
     public Lungs LeftLung;
-    [FormerlySerializedAs("rightLung")]
     public Lungs RightLung;
 
     public override void OnStartServer()

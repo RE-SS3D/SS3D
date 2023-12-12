@@ -8,6 +8,14 @@ namespace SS3D.CodeGeneration
 {
     public class DatabaseAssetWriter
     {
+        /// <summary>
+        /// Writes a static class of a DatabaseAssets from an AssetDatabase.  
+        /// </summary>
+        /// <param name="filePath">Where to write this file to.</param>
+        /// <param name="classType">The type of the field elements to use, mainly because assembly conflicts.</param>
+        /// <param name="className">The name of the class, currently being the asset database name</param>
+        /// <param name="items">the elements to add to this class</param>
+        /// <param name="namespaceName">the namespace name to use</param>
         public static void Write(string filePath, Type classType, string className, IEnumerable<string> items, string namespaceName = "SS3D.Data.Enums")
         {
             IEnumerable<string> filtered = items.GroupBy(name => name).Select(nameGroup => nameGroup.Key);

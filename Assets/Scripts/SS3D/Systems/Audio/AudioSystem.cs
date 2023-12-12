@@ -17,29 +17,24 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public class AudioSystem : Core.Behaviours.NetworkSystem
     {
-        [FormerlySerializedAs("_sfxAudioSourcePrefab")]
         [Tooltip("The SFX audio source to be spawned.")]
         public GameObject SfxAudioSourcePrefab;
 
-        [FormerlySerializedAs("_musicAudioSourcePrefab")]
         [Tooltip("The music audio source to be spawned.")]
         public GameObject MusicAudioSourcePrefab;
 
-        [FormerlySerializedAs("_minSfxAudioSources")]
         [Tooltip("The number of SFX audio sources to start out with.")]
         public int MinSfxAudioSources = 10;
-        [FormerlySerializedAs("_maxSfxAudioSources")]
+        
         [Tooltip("Any more than this will be considered too many SFX audio sources.")]
         public int MaxSfxAudioSources = 30;
 
-        [FormerlySerializedAs("_minMusicAudioSources")]
         [Tooltip("The number of music audio sources to start out with.")]
         public int MinMusicAudioSources = 3;
-        [FormerlySerializedAs("_maxMusicAudioSources")]
+
         [Tooltip("Any more than this will be considered too many SFX audio sources.")]
         public int MaxMusicAudioSources = 10;
 
-        [FormerlySerializedAs("purgeFrequency")]
         [Tooltip("How often (in minutes) do we purge unused audio sources?")]
         [SerializeField]
         private int _purgeFrequency = 2;
