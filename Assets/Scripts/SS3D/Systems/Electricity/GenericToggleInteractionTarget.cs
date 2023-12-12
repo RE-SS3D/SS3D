@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -15,7 +16,7 @@ namespace System.Electricity
     /// </summary>
     public class GenericToggleInteractionTarget : InteractionTargetNetworkBehaviour, IToggleable
     {
-
+        [SyncVar]
         private bool _on;
 
         public Action<bool> OnToggle;

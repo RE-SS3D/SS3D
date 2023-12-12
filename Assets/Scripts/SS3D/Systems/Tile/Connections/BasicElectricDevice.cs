@@ -10,8 +10,10 @@ public class BasicElectricDevice : NetworkActor, IElectricDevice
 {
     public PlacedTileObject TileObject => gameObject.GetComponent<PlacedTileObject>();
 
-    protected override void OnStart()
+    public override void OnStartServer()
     {
+        base.OnStartServer();
+
         ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
         if (electricitySystem.IsSetUp)
             electricitySystem.AddElectricalElement(this);

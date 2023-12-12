@@ -1,5 +1,7 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Data.Enums;
 using SS3D.Systems.Audio;
@@ -37,6 +39,7 @@ namespace System.Electricity
 
         private float _elapsedTime = 0f; // Elapsed time for the vibrating stuff.
 
+        [SyncVar(OnChange = nameof(SyncGeneratorToggle))]
         private bool _enabled = false; // If the generator is working.
 
         private float _onPowerProduction = 10f;
@@ -58,15 +61,21 @@ namespace System.Electricity
             if (_enabled) Vibrate();
         }
 
+        [Server]
         private void HandleGeneratorToggle(bool enabled)
         {
             _enabled = enabled;
-            if(enabled) _initialRotation = Rotation;
+        }
 
-            HandleSound(enabled);
-            HandleLights(enabled);
-            HandlePowerGenerated(enabled);
-            HandleResetVibration();   
+        private void SyncGeneratorToggle(bool oldValue, bool newValue, bool asServer)
+        {
+            if (asServer) return;
+            if (newValue) _initialRotation = Rotation;
+
+            HandleSound(newValue);
+            HandleLights(newValue);
+            HandlePowerGenerated(newValue);
+            HandleResetVibration();
         }
 
         private void HandleSound(bool enabled)

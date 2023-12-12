@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object.Synchronizing;
+using FishNet.Object;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -35,6 +36,7 @@ namespace SS3D.Systems.Tile.Connections
         [SyncVar(OnChange = nameof(SyncAdjacencies))]
         private byte _syncedConnections;
 
+        [Server]
         protected override void Setup()
         {
             if (!_initialized)
@@ -44,6 +46,8 @@ namespace SS3D.Systems.Tile.Connections
                 _filter = GetComponent<MeshFilter>();
             }
         }
+
+        [Server]
         public override void UpdateAllConnections()
         {
             Setup();
@@ -66,6 +70,7 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
+        [Server]
         public override bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             Setup();
@@ -79,10 +84,13 @@ namespace SS3D.Systems.Tile.Connections
             if (isUpdated && updateNeighbour)
             {
                 neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, false);
-                _syncedConnections = _adjacencyMap.SerializeToByte();
             }
 
-            if(isUpdated) { UpdateMeshAndDirection(); }
+            if(isUpdated) 
+            {
+                _syncedConnections = _adjacencyMap.SerializeToByte();
+                UpdateMeshAndDirection(); 
+            }
 
             return isUpdated;
         }
@@ -91,6 +99,7 @@ namespace SS3D.Systems.Tile.Connections
         /// Update the current mesh of the game object this connector is onto, as well
         /// as it's rotation.
         /// </summary>
+        [ServerOrClient]
         protected virtual void UpdateMeshAndDirection()
         {
 
@@ -114,6 +123,7 @@ namespace SS3D.Systems.Tile.Connections
         /// <summary>
         /// Sync adjacency map on client, and update mesh and direction using this new map.
         /// </summary>
+        [Server]
         private void SyncAdjacencies(byte oldValue, byte newValue, bool asServer)
         {
             if (!asServer)
@@ -129,6 +139,7 @@ namespace SS3D.Systems.Tile.Connections
         /// Cables can have as neighbour electrical device but they should not physically connect to them, as they pass below them.
         /// They only visually connect to other cables. Which is why it's useful to check if a neighbour is a cable or another electric device.
         /// </summary>>
+        [Server]
         private bool NeighbourIsCable(PlacedTileObject neighbour)
         {
             return neighbour != null && neighbour.Connector is CablesAdjacencyConnector;

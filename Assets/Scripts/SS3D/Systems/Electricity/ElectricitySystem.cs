@@ -11,6 +11,7 @@ using SS3D.Utils;
 using SS3D.Core;
 using System.Linq;
 using System.Text.RegularExpressions;
+using FishNet.Object;
 
 namespace System.Electricity
 {
@@ -87,8 +88,10 @@ namespace System.Electricity
         private float _timeElapsed = 0f;
 
 
-        protected override void OnStart()
+        public override void OnStartServer()
         {       
+            base.OnStartServer();
+
             _electricityGraph = new UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>>();
 
             _circuits = new List<Circuit>();
@@ -102,6 +105,7 @@ namespace System.Electricity
             OnTick += HandleCircuitsUpdate;
         }
 
+        [Server]
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             _timeElapsed += Time.deltaTime;
@@ -113,6 +117,7 @@ namespace System.Electricity
             }
         }
 
+        [Server]
         private void HandleCircuitsUpdate()
         {
             if (_graphIsDirty)
@@ -131,6 +136,7 @@ namespace System.Electricity
         /// Add an electric device to the electic graph, setting up vertices and new connections if necessary.
         /// </summary>
         /// <param name="device"> The device to add.</param>
+        [Server]
         public void AddElectricalElement(IElectricDevice device)
         {
             VerticeCoordinates deviceCoordinates = new VerticeCoordinates((short)device.TileObject.WorldOrigin.x, (short)device.TileObject.WorldOrigin.y,
@@ -166,6 +172,7 @@ namespace System.Electricity
         /// Remove an electric device from the map.
         /// </summary>
         /// <param name="device"> The device to remove.</param>
+        [Server]
         public void RemoveElectricalElement(IElectricDevice device)
         {
             if (device == null || device.TileObject == null) return;
@@ -191,6 +198,7 @@ namespace System.Electricity
         /// TODO : When adding electrical elements, use some kind of metric to determine which circuits might be affected by the adding, and only update those.
         ///        Maybe simply check which component gets connected to the new device, and update all circuits with those components.
         /// </summary>
+        [Server]
         private void UpdateAllCircuitsTopology()
         {
             Dictionary<VerticeCoordinates, int> components = new();
