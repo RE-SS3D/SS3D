@@ -58,7 +58,7 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        public bool TryGetRecipe(Interaction craftingInteraction, ICraftable target, out CraftingRecipe recipe)
+        public bool TryGetRecipe(Interaction craftingInteraction, IRecipeIngredient target, out CraftingRecipe recipe)
         {
             if(!_recipeOrganiser.TryGetValue(target.ItemId, out Dictionary<string, CraftingRecipe> dic))
             {
@@ -85,12 +85,12 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(InteractionEvent interaction, List<ICraftable> itemToConsume, List<ItemId> result)
+        public void Craft(InteractionEvent interaction, List<IRecipeIngredient> itemToConsume, List<ItemId> result)
         {
-            ICraftable craftableTarget = interaction.Target.GetComponent<ICraftable>();
+            IRecipeIngredient craftableTarget = interaction.Target.GetComponent<IRecipeIngredient>();
             craftableTarget.Consume();
 
-            foreach (ICraftable item in itemToConsume)
+            foreach (IRecipeIngredient item in itemToConsume)
             {
                 item.Consume();
             }
@@ -105,14 +105,14 @@ namespace SS3D.Systems.Crafting
         /// Build the list of items we want to consume. Don't add more to
         /// the list than necessary.
         /// </summary>
-        public List<ICraftable> BuildListOfItemToConsume(List<ICraftable> closeItemsFromTarget,
+        public List<IRecipeIngredient> BuildListOfItemToConsume(List<IRecipeIngredient> closeItemsFromTarget,
             CraftingRecipe recipe)
         {
-            List<ICraftable>  ItemsToConsume = new List<ICraftable>();
+            List<IRecipeIngredient>  ItemsToConsume = new List<IRecipeIngredient>();
 
             Dictionary<ItemId, int> recipeElements = new Dictionary<ItemId, int>(recipe.Elements);
 
-            foreach (ICraftable item in closeItemsFromTarget)
+            foreach (IRecipeIngredient item in closeItemsFromTarget)
             {
                 if (recipeElements.GetValueOrDefault(item.ItemId) <= 0) continue;
                 ItemsToConsume.Add(item);
@@ -127,18 +127,18 @@ namespace SS3D.Systems.Crafting
         /// TODO : only collider for item ? Should then ensure collider of item is on the
         /// same game object as item script for all items. Would avoid the getInParent.
         /// </summary>
-        public List<ICraftable> GetCloseItemsFromTarget(ICraftable target)
+        public List<IRecipeIngredient> GetCloseItemsFromTarget(IRecipeIngredient target)
         {
             Vector3 center = target.GameObject.transform.position;
 
             float radius = 0.5f;
 
             Collider[] hitColliders = Physics.OverlapSphere(center, radius);
-            List<ICraftable> closeItemsFromTarget = new List<ICraftable>();
+            List<IRecipeIngredient> closeItemsFromTarget = new List<IRecipeIngredient>();
 
             foreach (Collider hitCollider in hitColliders)
             {
-                ICraftable item = hitCollider.GetComponentInParent<ICraftable>();
+                IRecipeIngredient item = hitCollider.GetComponentInParent<IRecipeIngredient>();
                 if (item == null) continue;
                 closeItemsFromTarget.Add(item);
             }
@@ -168,7 +168,7 @@ namespace SS3D.Systems.Crafting
             return true;
         }
 
-        public Dictionary<ItemId, int> ItemListToDictionnaryOfRecipeElements(List<ICraftable> closeItemsFromTarget)
+        public Dictionary<ItemId, int> ItemListToDictionnaryOfRecipeElements(List<IRecipeIngredient> closeItemsFromTarget)
         {
             // Transform the list into a dictionnary of itemsID and counts of items.
             // This is some overhead to allow for fast comparison between recipe and 

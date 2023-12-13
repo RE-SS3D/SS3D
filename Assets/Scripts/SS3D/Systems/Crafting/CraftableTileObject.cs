@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
@@ -15,6 +16,7 @@ public class CraftableTileObject : NetworkActor, ICraftable
 
     private PlacedTileObject _tileObject;
 
+    [Server]
     public void Consume()
     {
         _tileObject = GetComponent<PlacedTileObject>();
@@ -22,11 +24,11 @@ public class CraftableTileObject : NetworkActor, ICraftable
         Subsystems.Get<TileSystem>().CurrentMap.ClearTileObject(worldPosition, _tileObject.Layer, _tileObject.Direction);
     }
 
-    // TODO : issue with this.
+    [Server]
     public void Craft(InteractionEvent interaction)
     {
         _tileObject = GetComponent<PlacedTileObject>();
-        Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(_tileObject.tileObjectSO, interaction.Point, Direction.North, 
+        Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(_tileObject.tileObjectSO, TileHelper.GetClosestPosition(interaction.Point), Direction.North, 
             false, false, false);
     }
 
