@@ -214,6 +214,8 @@ GameObject:
   - component: {fileID: 2073047018609668257}
   - component: {fileID: 556509194791000406}
   - component: {fileID: 4984530734571460406}
+  - component: {fileID: 1409651947410744161}
+  - component: {fileID: 6339092295835760354}
   m_Layer: 0
   m_Name: SecurityAirlock
   m_TagString: Untagged
@@ -325,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 0000000002000000
+  _allowedDirections: 0000000002000000
 --- !u!114 &2073047018609668257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384,6 +386,31 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1297834, y: 2.445518, z: 1.3266959}
   m_Center: {x: 0.0022376776, y: 0.7227595, z: -0.038039923}
+--- !u!114 &1409651947410744161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6339092295835760354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 0f6dc9cc32cb7024ea125ddc55e0aeaa, type: 2}
 --- !u!1001 &2157331936072973061
 PrefabInstance:
   m_ObjectHideFlags: 0

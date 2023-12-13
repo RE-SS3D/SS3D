@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SteelWall
   m_EditorClassIdentifier: 
   NameKey: Steel Wall
-  DescriptionKey: A solid steel wall. Not much to it.
+  DescriptionKey: A solid steel wall.
