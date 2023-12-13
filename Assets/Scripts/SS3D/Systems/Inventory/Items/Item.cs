@@ -9,6 +9,7 @@ using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Examine;
@@ -333,9 +334,10 @@ namespace SS3D.Systems.Inventory.Items
         }
 
         [Server]
-        public void Craft(GameObject target, GameObject result)
+        public void Craft(InteractionEvent interaction)
         {
-            GameObject product = Instantiate(result, target.transform.position, target.transform.rotation);
+            var target = interaction.Target.GetGameObject();
+            GameObject product = Instantiate(gameObject, target.transform.position, target.transform.rotation);
             InstanceFinder.ServerManager.Spawn(product);
         }
 

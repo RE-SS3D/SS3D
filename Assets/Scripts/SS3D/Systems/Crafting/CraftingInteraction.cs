@@ -73,7 +73,7 @@ namespace SS3D.Systems.Crafting
             Subsystems.TryGet(out CraftingSystem craftingSystem);
             ICraftable target = interactionEvent.Target as ICraftable;
 
-            craftingSystem.Craft(target, ItemsToConsume, recipe.Result);
+            craftingSystem.Craft(interactionEvent, ItemsToConsume, recipe.Result);
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)

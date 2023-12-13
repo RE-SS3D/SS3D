@@ -1,4 +1,5 @@
 ﻿using SS3D.Data.Enums;
+using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,5 +11,5 @@ public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
 
     public void Consume();
 
-    public void Craft(GameObject target, GameObject result);
+    public void Craft(InteractionEvent interaction);
 }

@@ -6,6 +6,7 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Logging.LogSettings;
 using SS3D.Substances;
 using SS3D.Systems.Inventory.Items;
@@ -84,18 +85,19 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(ICraftable target, List<ICraftable> itemToConsume, List<ItemId> result)
+        public void Craft(InteractionEvent interaction, List<ICraftable> itemToConsume, List<ItemId> result)
         {
-            target.NetworkObject.Despawn();
+            ICraftable craftableTarget = interaction.Target.GetComponent<ICraftable>();
+            craftableTarget.Consume();
+
             foreach (ICraftable item in itemToConsume)
             {
                 item.Consume();
             }
             foreach(ItemId id in result)
             {
-                GameObject itemResult = Assets.Get<GameObject>(AssetDatabases.Items, (int)id);
-                GameObject product = Instantiate(itemResult, target.GameObject.transform.position, target.GameObject.transform.rotation);
-                InstanceFinder.ServerManager.Spawn(product);
+                ICraftable itemResult =  Assets.Get<GameObject>(AssetDatabases.Items, (int)id).GetComponent<ICraftable>();
+                itemResult.Craft(interaction);
             }  
         }
 
