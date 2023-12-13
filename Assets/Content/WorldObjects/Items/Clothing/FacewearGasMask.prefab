@@ -48,6 +48,8 @@ GameObject:
   - component: {fileID: 553178106381397730}
   - component: {fileID: 924037218051501039}
   - component: {fileID: 643085470722933952}
+  - component: {fileID: 234574913902294794}
+  - component: {fileID: 6165322108927456680}
   m_Layer: 10
   m_Name: FacewearGasMask
   m_TagString: Untagged
@@ -266,3 +268,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 3
+--- !u!114 &234574913902294794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687938131941834081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6165322108927456680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687938131941834081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 1e04a445661c6cd4a8c13cfee7546926, type: 2}

@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: -8233116123772242178}
   - component: {fileID: 1157584062476872481}
   - component: {fileID: 7635664511184546154}
+  - component: {fileID: 3118820370331042218}
+  - component: {fileID: -4176528178480335388}
   m_Layer: 10
   m_Name: Backpack
   m_TagString: Untagged
@@ -235,6 +237,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 11
+--- !u!114 &3118820370331042218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802333698458937824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-4176528178480335388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802333698458937824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 434b2babf7e62e04db033a09ae6845dc, type: 2}
 --- !u!1 &8173373325555765133
 GameObject:
   m_ObjectHideFlags: 0

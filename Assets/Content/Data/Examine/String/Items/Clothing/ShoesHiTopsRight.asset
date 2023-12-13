@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
-  m_Name: GloveInsulatedLeft
+  m_Name: ShoesHiTopsRight
   m_EditorClassIdentifier: 
-  NameKey: Insulated Glove
-  DescriptionKey: A single insulated glove, looks to be for the left hand.
+  NameKey: High Top Sneaker
+  DescriptionKey: Stylin' right foot swag.

@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 5134849012001618456}
   - component: {fileID: 1436245316327634562}
   - component: {fileID: 3817700786597788681}
+  - component: {fileID: 3259877320218556539}
+  - component: {fileID: 4416909426882372857}
   m_Layer: 10
   m_Name: ShoesJackbootsLeft
   m_TagString: Untagged
@@ -235,6 +237,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 0
+--- !u!114 &3259877320218556539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60374868058361228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4416909426882372857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60374868058361228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 829c76c1e9a18dc418893fc2f5ecc7ce, type: 2}
 --- !u!1 &5148255264246166390
 GameObject:
   m_ObjectHideFlags: 0

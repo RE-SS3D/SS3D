@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 2462870481354224635}
   - component: {fileID: 5945712506631318020}
   - component: {fileID: 5589457681411614888}
+  - component: {fileID: 4555143620743825077}
+  - component: {fileID: 470584198518122843}
   m_Layer: 10
   m_Name: ShoesHiTopsLeft
   m_TagString: Untagged
@@ -235,6 +237,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 0
+--- !u!114 &4555143620743825077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6003340987905195654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &470584198518122843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6003340987905195654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: fe14f19ac768ed74eb52fc360a4e1eff, type: 2}
 --- !u!1 &6913626269417526130
 GameObject:
   m_ObjectHideFlags: 0
