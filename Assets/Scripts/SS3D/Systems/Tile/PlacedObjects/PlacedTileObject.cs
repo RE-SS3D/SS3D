@@ -56,8 +56,8 @@ namespace SS3D.Systems.Tile
         /// Returns a new SaveObject for use in saving/loading.
         /// </summary>
         /// <returns></returns>
-        
 
+        [SerializeField]
         private TileObjectSo _tileObjectSo;
         private Vector2Int _origin;
         private Direction _dir;

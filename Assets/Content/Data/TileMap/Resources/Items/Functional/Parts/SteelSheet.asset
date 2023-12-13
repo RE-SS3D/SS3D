@@ -9,13 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
-  m_Name: Wall
+  m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
+  m_Name: SteelSheet
   m_EditorClassIdentifier: 
-  _executionTime: 3
-  _interactionName: Build
-  _target: 0
-  _result: 
-  _recipeElements:
-  - _count: 1
-    _itemId: 23
+  prefab: {fileID: 7125681683583715523, guid: 4cb99cf2fee96f944abbacc51b0b701c, type: 3}
+  icon: {fileID: 0}

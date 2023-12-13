@@ -68,10 +68,12 @@ namespace SS3D.Data.Enums
         Toolbelt = 63, 
         Backpack = 64, 
         HumanHeart = 65, 
-        Wirecutters = 66, 
-        Multitool = 67, 
-        PowerCellAdmin = 68, 
-        PowerCell = 69, 
+        Doodad = 66, 
+        Wirecutters = 67, 
+        Multitool = 68, 
+        PowerCellAdmin = 69, 
+        PowerCell = 70, 
+        SteelWall = 71, 
     }
 }
 

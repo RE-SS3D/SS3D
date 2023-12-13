@@ -22,8 +22,10 @@ public class CraftableTileObject : NetworkActor, ICraftable
         Subsystems.Get<TileSystem>().CurrentMap.ClearTileObject(worldPosition, _tileObject.Layer, _tileObject.Direction);
     }
 
+    // TODO : issue with this.
     public void Craft(InteractionEvent interaction)
     {
+        _tileObject = GetComponent<PlacedTileObject>();
         Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(_tileObject.tileObjectSO, interaction.Point, Direction.North, 
             false, false, false);
     }
