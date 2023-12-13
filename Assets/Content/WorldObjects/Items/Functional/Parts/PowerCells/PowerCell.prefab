@@ -136,6 +136,8 @@ GameObject:
   - component: {fileID: 1602098408367427586}
   - component: {fileID: 6800495836141411361}
   - component: {fileID: 8868060696172007296}
+  - component: {fileID: 8006545930481202674}
+  - component: {fileID: -7005622566197959252}
   m_Layer: 10
   m_Name: PowerCell
   m_TagString: Untagged
@@ -291,6 +293,31 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.20313878, y: 0.14020495, z: 0.13075063}
   m_Center: {x: -0.0004394725, y: 0.0037705526, z: -0.00023116171}
+--- !u!114 &8006545930481202674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-7005622566197959252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 5f62fad4d1f834142a93aa7307a23571, type: 2}
 --- !u!1 &3296752347747623008
 GameObject:
   m_ObjectHideFlags: 0

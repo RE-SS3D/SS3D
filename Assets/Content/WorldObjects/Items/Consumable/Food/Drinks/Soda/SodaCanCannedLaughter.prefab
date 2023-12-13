@@ -59,6 +59,10 @@ PrefabInstance:
       propertyPath: <AssetPathHash>k__BackingField
       value: 9457341756661644240
       objectReference: {fileID: 0}
+    - target: {fileID: 7553079844077142427, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: 670b475527c81d34da12e5478b71c33a, type: 2}
     - target: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Name
       value: SodaCanCannedLaughter

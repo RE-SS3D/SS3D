@@ -67,6 +67,10 @@ PrefabInstance:
       propertyPath: <AssetPathHash>k__BackingField
       value: 13198248649108608528
       objectReference: {fileID: 0}
+    - target: {fileID: 7553079844077142427, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: f5269165b2f196b4db6321f72e715230, type: 2}
     - target: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Name
       value: SodaCanCannedAir

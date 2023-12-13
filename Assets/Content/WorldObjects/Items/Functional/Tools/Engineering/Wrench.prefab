@@ -47,6 +47,8 @@ GameObject:
   - component: {fileID: 2058044439099520297}
   - component: {fileID: 4052990814619214022}
   - component: {fileID: 8540712827701727508}
+  - component: {fileID: 246485557779806861}
+  - component: {fileID: -6527627686897852039}
   m_Layer: 10
   m_Name: Wrench
   m_TagString: Untagged
@@ -249,3 +251,28 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8876393141157652533}
   AttachmentPointAlt: {fileID: 8876393141157652533}
   _container: {fileID: 0}
+--- !u!114 &246485557779806861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792017003477948967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6527627686897852039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792017003477948967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: ecf4a4dd895f72a4ba1b09c4e5781e1b, type: 2}
