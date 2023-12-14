@@ -57,7 +57,7 @@ MonoBehaviour:
     m_Address: Assets/Art/Sound/World/Airlocks/AirlockOpen.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: e609573e574a67d45a59e11fb2216d64
+  - m_GUID: 59b65ecaf8dffbf49876ab2768490b59
     m_Address: Assets/Art/Sound/Furniture/Machines/Engineering/FuelPowerGenerator.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []

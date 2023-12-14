@@ -78,7 +78,8 @@ namespace SS3D.Systems.Audio
         private void PlayCollisionSound(SoundsIds[] soundPool)
         {
             float pitch = Random.Range(basePitch - pitchModulationLow, basePitch + pitchModulationHigh);
-            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, PickSound(soundPool), gameObject.transform.position, null, collisionVolume, pitch);
+            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, PickSound(soundPool), gameObject.transform.position, null,
+                false, collisionVolume, pitch);
         }
 
         private SoundsIds PickSound(SoundsIds[] availableSounds) {

@@ -28,7 +28,8 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public void Honk()
         {
             _animator.SetTrigger(HonkAnimation);
-            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, SoundsIds.BikeHorn, GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
+            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, SoundsIds.BikeHorn, GameObject.transform.position, NetworkObject,
+                false, 0.7f, 1, 1, 5);
         }
 
         public bool IsHonking()
