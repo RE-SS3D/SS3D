@@ -29,6 +29,10 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private List<ItemId> _result;
 
+        [SerializeField]
+        private bool _consumeTarget;
+
+
 
         /// <summary>
         /// The items and their respective numbers necessary for the recipe.
@@ -56,6 +60,8 @@ namespace SS3D.Systems.Crafting
         public List<ItemId> Result => _result;
 
         public int ElementsNumber => _elements.Sum(x => x.Value);
+
+        public bool ConsumeTarget => _consumeTarget;
 
 #if UNITY_EDITOR
         /// <summary>

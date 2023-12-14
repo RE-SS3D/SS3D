@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _executionTime: 3
   _interactionName: Build
-  _target: 0
+  _target: 72
   _result: 47000000
+  _consumeTarget: 1
   _recipeElements:
   - _count: 1
     _itemId: 23

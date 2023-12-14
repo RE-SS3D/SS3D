@@ -8,6 +8,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Logging;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Tile;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,6 +22,9 @@ namespace SS3D.Systems.Crafting
     {
         private Transform _characterTransform;
         private Vector3 _startPosition;
+        private bool _replace;
+
+        public bool Replace => _replace;
 
         public BuildInteraction(float delay, Transform characterTransform)
         {
@@ -31,16 +35,26 @@ namespace SS3D.Systems.Crafting
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is not ICraftable) return false;
+            if (!interactionEvent.Target.GetGameObject().TryGetComponent<PlacedTileObject>(out var target)) return false;
 
             // Should only check for movement once the interaction started.
             if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
 
-            ICraftable target = interactionEvent.Target as ICraftable;
-
-
-
             if (!base.CanInteract(interactionEvent)) return false;
+
+            GameObject recipeResult = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)_recipe.Result[0]);
+
+            if (!recipeResult.TryGetComponent<PlacedTileObject>(out var result)) return false;
+
+            _replace = false;
+
+            if(result.Layer == target.Layer)
+            {
+                _replace = true;
+            }
+
+
+            if (!Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, target.transform.position, Direction.North, _replace)) return false;
 
             return true;
         }

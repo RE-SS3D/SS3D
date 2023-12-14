@@ -25,8 +25,12 @@ MonoBehaviour:
     m_Address: Assets/Content/Data/Recipes/WeirdComplexRecipe.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 3decef2c351e13b4194d1994c485a170
+  - m_GUID: d1b0e08058890c34093ef49f967e68f6
     m_Address: Assets/Content/Data/Recipes/WallRecipe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3decef2c351e13b4194d1994c485a170
+    m_Address: Assets/Content/Data/Recipes/SteelGirderRecipe.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

@@ -305,6 +305,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWall.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 6c2559c2017ada740b245951a23c2e1d
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirder.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3b33b5cf16a677a4e85a110679cde32a
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Plenum.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

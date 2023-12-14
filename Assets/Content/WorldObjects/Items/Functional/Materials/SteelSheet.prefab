@@ -208,6 +208,7 @@ GameObject:
   - component: {fileID: 1773710978803455870}
   - component: {fileID: 5296084984690686628}
   - component: {fileID: 1034747657592807112}
+  - component: {fileID: 326915721417618478}
   m_Layer: 10
   m_Name: SteelSheet
   m_TagString: Untagged
@@ -324,7 +325,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 43
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -361,6 +362,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &326915721417618478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7393894785072713980

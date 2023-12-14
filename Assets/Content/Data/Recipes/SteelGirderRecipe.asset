@@ -10,15 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
-  m_Name: WeirdComplexRecipe
+  m_Name: SteelGirderRecipe
   m_EditorClassIdentifier: 
-  _executionTime: 0
-  _interactionName: Slice
-  _target: 0
-  _result: 2000000021000000
-  _consumeTarget: 1
+  _executionTime: 3
+  _interactionName: Build
+  _target: 73
+  _result: 48000000
   _recipeElements:
-  - _count: 2
-    _itemId: 7
   - _count: 1
-    _itemId: 30
+    _itemId: 23

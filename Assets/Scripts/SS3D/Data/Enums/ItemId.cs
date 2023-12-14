@@ -74,6 +74,8 @@ namespace SS3D.Data.Enums
         PowerCellAdmin = 69, 
         PowerCell = 70, 
         SteelWall = 71, 
+        SteelGirder = 72, 
+        Plenum = 73, 
     }
 }
 

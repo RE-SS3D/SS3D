@@ -16,4 +16,5 @@ MonoBehaviour:
   _interactionName: Slice
   _target: 29
   _result: 0e000000190000000d000000
+  _consumeTarget: 1
   _recipeElements: []

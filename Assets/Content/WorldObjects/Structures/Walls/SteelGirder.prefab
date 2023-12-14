@@ -15,6 +15,9 @@ GameObject:
   - component: {fileID: -2900075557854325373}
   - component: {fileID: 8380654261086022907}
   - component: {fileID: 8063692154441053622}
+  - component: {fileID: 6753708217938451176}
+  - component: {fileID: 4227473175157984911}
+  - component: {fileID: 6528007219760414512}
   m_Layer: 0
   m_Name: SteelGirder
   m_TagString: Untagged
@@ -118,6 +121,8 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 8380654261086022907}
+  - {fileID: 6753708217938451176}
+  - {fileID: 4227473175157984911}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -129,7 +134,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 106
+  <PrefabId>k__BackingField: 110
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -146,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4340642b9b436498fe733f9329ac87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
   _syncedConnections: 0
@@ -181,4 +186,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 00000000
+  _allowedDirections: 00000000
+--- !u!114 &6753708217938451176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -2900075557854325373}
+  _networkObjectCache: {fileID: -2900075557854325373}
+  _tileObjectSo: {fileID: 11400000, guid: 88eff1b17847b94469de924f4bb3e2cf, type: 2}
+--- !u!114 &4227473175157984911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 150845becef31a74f856d94d0a218ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -2900075557854325373}
+  _networkObjectCache: {fileID: -2900075557854325373}
+--- !u!114 &6528007219760414512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -2900075557854325373}
+  _networkObjectCache: {fileID: 0}

@@ -5,9 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
+public interface ICraftable : INetworkObjectProvider, IGameObjectProvider, IAssetRefProvider
 {
-    ItemId ItemId { get; }
-
     public void Craft(InteractionEvent interaction);
 }

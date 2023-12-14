@@ -4,6 +4,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Logging;
+using SS3D.Systems.Crafting;
 using SS3D.Systems.Tile;
 using System;
 using System.Collections;
@@ -14,22 +15,15 @@ public class CraftableTileObject : NetworkActor, ICraftable
 {
     public ItemId ItemId => GetItemId();
 
-    private PlacedTileObject _tileObject;
-
-    [Server]
-    public void Consume()
-    {
-        _tileObject = GetComponent<PlacedTileObject>();
-        Vector3 worldPosition = new Vector3(_tileObject.WorldOrigin.x, 0f, _tileObject.WorldOrigin.y);
-        Subsystems.Get<TileSystem>().CurrentMap.ClearTileObject(worldPosition, _tileObject.Layer, _tileObject.Direction);
-    }
-
     [Server]
     public void Craft(InteractionEvent interaction)
     {
-        _tileObject = GetComponent<PlacedTileObject>();
+        var _tileObject = GetComponent<PlacedTileObject>();
+
+        if (interaction.Source is not BuildInteraction buildInteraction) return;
+
         Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(_tileObject.tileObjectSO, TileHelper.GetClosestPosition(interaction.Point), Direction.North, 
-            false, false, false);
+            false, buildInteraction.Replace , false);
     }
 
     private ItemId GetItemId()

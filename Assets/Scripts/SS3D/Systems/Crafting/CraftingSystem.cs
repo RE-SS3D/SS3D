@@ -58,8 +58,10 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        public bool TryGetRecipe(Interaction craftingInteraction, IRecipeIngredient target, out CraftingRecipe recipe)
+        public bool TryGetRecipe(Interaction craftingInteraction, IAssetRefProvider target, out CraftingRecipe recipe)
         {
+            
+
             if(!_recipeOrganiser.TryGetValue(target.ItemId, out Dictionary<string, CraftingRecipe> dic))
             {
                 recipe = null;
@@ -85,16 +87,17 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(InteractionEvent interaction, List<IRecipeIngredient> itemToConsume, List<ItemId> result)
+        public void Craft(InteractionEvent interaction, List<IRecipeIngredient> itemToConsume, CraftingRecipe recipe)
         {
             IRecipeIngredient craftableTarget = interaction.Target.GetComponent<IRecipeIngredient>();
-            craftableTarget.Consume();
+            
+            if(recipe.ConsumeTarget) craftableTarget.Consume();
 
             foreach (IRecipeIngredient item in itemToConsume)
             {
                 item.Consume();
             }
-            foreach(ItemId id in result)
+            foreach(ItemId id in recipe.Result)
             {
                 ICraftable itemResult =  Assets.Get<GameObject>(AssetDatabases.Items, (int)id).GetComponent<ICraftable>();
                 itemResult.Craft(interaction);
@@ -127,11 +130,11 @@ namespace SS3D.Systems.Crafting
         /// TODO : only collider for item ? Should then ensure collider of item is on the
         /// same game object as item script for all items. Would avoid the getInParent.
         /// </summary>
-        public List<IRecipeIngredient> GetCloseItemsFromTarget(IRecipeIngredient target)
+        public List<IRecipeIngredient> GetCloseItemsFromTarget(IAssetRefProvider target)
         {
             Vector3 center = target.GameObject.transform.position;
 
-            float radius = 0.5f;
+            float radius = 3f;
 
             Collider[] hitColliders = Physics.OverlapSphere(center, radius);
             List<IRecipeIngredient> closeItemsFromTarget = new List<IRecipeIngredient>();

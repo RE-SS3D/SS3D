@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IRecipeIngredient : INetworkObjectProvider, IGameObjectProvider, IAssetRefProvider
+public interface IAssetRefProvider : INetworkObjectProvider, IGameObjectProvider
 {
-    public void Consume();
+    ItemId ItemId { get; }
 }

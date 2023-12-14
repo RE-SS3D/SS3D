@@ -16,7 +16,7 @@ namespace SS3D.Systems.Crafting
     {
         private List<IRecipeIngredient> ItemsToConsume;
 
-        private CraftingRecipe recipe;
+        protected CraftingRecipe _recipe;
 
         /// <summary>
         /// Checks if this interaction can be executed
@@ -34,22 +34,20 @@ namespace SS3D.Systems.Crafting
         {
             if (!Subsystems.TryGet(out CraftingSystem craftingSystem)) return false;
 
-            if (interactionEvent.Target is not ICraftable) return false;
+            if (!interactionEvent.Target.GetGameObject().TryGetComponent<IAssetRefProvider>(out var target)) return false;
 
             if (!InteractionExtensions.RangeCheck(interactionEvent)) return false;
 
-            IRecipeIngredient target = interactionEvent.Target as IRecipeIngredient;
-
-            if (!craftingSystem.TryGetRecipe(this, target, out recipe)) return false;
+            if (!craftingSystem.TryGetRecipe(this, target, out _recipe)) return false;
 
             List<IRecipeIngredient> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(target);
 
             Dictionary<ItemId, int> potentialRecipeElements = craftingSystem.
                 ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
 
-            if (!craftingSystem.CheckEnoughCloseItemsForRecipe(potentialRecipeElements, recipe)) return false;
+            if (!craftingSystem.CheckEnoughCloseItemsForRecipe(potentialRecipeElements, _recipe)) return false;
 
-            ItemsToConsume = craftingSystem.BuildListOfItemToConsume(closeItemsFromTarget, recipe);
+            ItemsToConsume = craftingSystem.BuildListOfItemToConsume(closeItemsFromTarget, _recipe);
 
             return true;
         }
@@ -71,9 +69,8 @@ namespace SS3D.Systems.Crafting
             }
 
             Subsystems.TryGet(out CraftingSystem craftingSystem);
-            ICraftable target = interactionEvent.Target as ICraftable;
 
-            craftingSystem.Craft(interactionEvent, ItemsToConsume, recipe.Result);
+            craftingSystem.Craft(interactionEvent, ItemsToConsume, _recipe);
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)
