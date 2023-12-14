@@ -57,7 +57,7 @@ namespace SS3D.Systems.Inventory.UI
         [SerializeField] private GameObject EarRightPrefab;
         [SerializeField] private GameObject DummyPrefab;
 
-
+        private HorizontalLayoutGroup layoutGroup;
         private object lockObject = new object();
 
         /// <summary>
@@ -87,6 +87,7 @@ namespace SS3D.Systems.Inventory.UI
         {
             FillClothingLayoutWithDummySlots();
             Inventory = inventory;
+            layoutGroup = HorizontalLayout.GetComponent<HorizontalLayoutGroup>();
 
             foreach(var container in inventory.Containers)
             {
@@ -119,6 +120,11 @@ namespace SS3D.Systems.Inventory.UI
         {
             if (Slots.Exists(x => x.Container == container))
                 return;
+
+            if (HorizontalSlotOrder.Contains(container.Type) && layoutGroup.enabled == false)
+            {
+                layoutGroup.enabled = true;
+            }
 
             SingleItemContainerSlot slot;
             switch (container.Type)
@@ -375,6 +381,11 @@ namespace SS3D.Systems.Inventory.UI
 
             SingleItemContainerSlot slot = Slots[indexToRemove];
             if (slot == null) return;
+
+            if (HorizontalSlotOrder.Contains(container.Type) && layoutGroup.enabled)
+            {
+                layoutGroup.enabled = false;
+            }
 
             slot?.gameObject.Dispose(true);
             Slots.RemoveAt(indexToRemove);
