@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _executionTime: 2
   _interactionName: Slice
-  _target: 29
-  _result: 0e000000190000000d000000
-  _recipeElements: []
+  _target: {fileID: 11400000, guid: e53ebba96eeba474e8478131c8d24085, type: 2}
+  _result:
+  - {fileID: 11400000, guid: 9275ab75afcd2ea40b8d00845d500d6a, type: 2}
+  - {fileID: 11400000, guid: f07bdcc8986b95043be85d4f9d0e7c76, type: 2}
+  - {fileID: 11400000, guid: bffc6c08d28041549ae1af640b76ce92, type: 2}
+  _elements:
+    _list: []
+    _new: {fileID: 0}

@@ -1,11 +1,10 @@
 ﻿#if UNITY_EDITOR
-using SS3D.CodeGeneration;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
@@ -22,12 +21,10 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         private void OnEnable()
         {
             _assetDatabaseSettings = (AssetDatabaseSettings)target;
-
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
         }
         
         public override VisualElement CreateInspectorGUI()
-        {
+        { 
             FindAndLoadAllAssetsDatabasesAddressablesGroups();
 
             return SetupUIToolkitCustomInspectorEditor();
@@ -44,12 +41,11 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             EditorApplication.projectChanged += HandleProjectChanged;
 
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
+            // FindAndLoadAllAssetsDatabasesAddressablesGroups();
 
             if (GUILayout.Button("Find and load asset databases", GUILayout.Width(350)))
             {
-                List<AssetDatabase> foundDatabases = AssetDatabase.FindAllAssetDatabases();
-                _assetDatabaseSettings.IncludedAssetDatabases = foundDatabases;
+                HandleLoadDatabasesButtonPressedGUI();
             }
         }
 
@@ -89,14 +85,12 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 assetDatabase.LoadAssetsFromAssetGroup();
             }
 
-            CreateAssetDatabasesEnum();
+            GenerateAssetDatabasesCode();
         }
 
-        private void CreateAssetDatabasesEnum()
+        private void GenerateAssetDatabasesCode()
         {
-            string dataPath = AssetDatabase.EnumPath;
-
-            EnumCreator.CreateAtPath(dataPath, "AssetDatabases", _assetDatabaseSettings.IncludedAssetDatabases);
+            AssetDatabasesCodeGenerator.GenerateAssetDatabasesCode();
         }
 
         private void UpdateListVisuals()
@@ -114,16 +108,25 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             }
         }
 
-        private void HandleProjectChanged()
+        private void HandleLoadDatabasesButtonPressed()
         {
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
+            EditorUtility.SetDirty(_assetDatabaseSettings);
+
+            UpdateListVisuals();
         }
 
-        private void HandleLoadDatabasesButtonPressed()
+        public void HandleProjectChanged()
         {
             LoadDatabases();
 
-            UpdateListVisuals();
+            // FindAndLoadAllAssetsDatabasesAddressablesGroups();
+        }
+
+        private void HandleLoadDatabasesButtonPressedGUI()
+        {
+            LoadDatabases();
+
+            FindAndLoadAllAssetsDatabasesAddressablesGroups();
         }
     }
 }

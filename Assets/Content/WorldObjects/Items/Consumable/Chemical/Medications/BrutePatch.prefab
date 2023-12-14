@@ -180,7 +180,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 168
+  <PrefabId>k__BackingField: 169
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -245,6 +245,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: -2900402353996906960}
   _networkObjectCache: {fileID: -2900402353996906960}
+  _asset: {fileID: 11400000, guid: 8ec2a780fae01344a9431a9cb06d8a7c, type: 2}
   _name: Brute patch
   _weight: 1
   _startingTraits: []

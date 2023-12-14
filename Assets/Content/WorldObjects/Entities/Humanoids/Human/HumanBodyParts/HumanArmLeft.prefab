@@ -294,6 +294,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 4393325184408134140}
   _networkObjectCache: {fileID: 4393325184408134140}
+  _asset: {fileID: 11400000, guid: 65ddb98ffcb07124ca3cf190d4697e17, type: 2}
   _name: human arm left
   _weight: 0
   _startingTraits: []

@@ -1,8 +1,7 @@
-﻿using SS3D.Data.Enums;
-using SS3D.Systems.Inventory.Items;
-using System.Collections;
-using System.Collections.Generic;
+﻿using Coimbra;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Roles
 {
@@ -12,32 +11,10 @@ namespace SS3D.Systems.Roles
     [CreateAssetMenu(fileName = "Loadout", menuName = "Roles/Loadout")]
     public class RoleLoadout : ScriptableObject
     {
-        public bool LeftHand;
-        public bool RightHand;
-        public bool LeftPocket;
-        public bool RightPocket;
-        public bool LeftGlove;
-        public bool RightGlove;
-        public bool LeftShoe;
-        public bool RightShoe;
-        public bool Hat;
-        public bool Glasses;
-        public bool LeftEar;
-        public bool RightEar;
-        public bool Jumpsuit;
+        public GameObject HandLeft;
+        public GameObject HandRight;
 
-        public ItemId LeftHandItem;
-        public ItemId RightHandItem;
-        public ItemId LeftPocketItem;
-        public ItemId RightPocketItem;
-        public ItemId LeftGloveItem;
-        public ItemId RightGloveItem;
-        public ItemId LeftShoeItem;
-        public ItemId RightShoeItem;
-        public ItemId HatItem;
-        public ItemId GlassesItem;
-        public ItemId LeftEarItem;
-        public ItemId RightEarItem;
-        public ItemId JumpsuitItem;
+        [FormerlySerializedAs("ItemsToEquip")]
+        public SerializableDictionary<ContainerType, GameObject> Equipment;
     }
 }

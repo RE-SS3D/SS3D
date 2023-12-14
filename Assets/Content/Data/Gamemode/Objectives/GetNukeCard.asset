@@ -17,4 +17,4 @@ MonoBehaviour:
   _alignmentRequirement: 1
   _minAssignees: 1
   _maxAssignees: 1
-  _targetItemId: nukeCard
+  _targetItem: {fileID: 919132149155446097, guid: 7fc5df50928c6254ab6a553fe9207656, type: 3}

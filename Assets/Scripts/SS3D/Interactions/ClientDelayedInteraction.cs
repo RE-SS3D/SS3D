@@ -1,8 +1,10 @@
 ﻿using Coimbra;
+using Serilog;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using SS3D.Data;
+using SS3D.Data.Generated;
 
 namespace SS3D.Interactions
 {
@@ -11,12 +13,14 @@ namespace SS3D.Interactions
     /// </summary>
     public sealed class ClientDelayedInteraction : IClientInteraction
     {
+        private static readonly Vector3 LoadingBarOffset = new(0, 0.5f, 0);
+
+        private LoadingBar _loadingBarInstance;
+
         /// <summary>
         /// The duration of the loading bar in seconds
         /// </summary>
         public float Delay { get; set; }
-
-        private GameObject _loadingBarInstance;
 
         /// <summary>
         /// Starts the interaction on the client side
@@ -25,15 +29,21 @@ namespace SS3D.Interactions
         /// <returns>True if started successfully</returns>
         public bool ClientStart(InteractionEvent interactionEvent)
         {
+            if (_loadingBarInstance != null)
+            {
+                _loadingBarInstance.GameObject.Dispose(true);
+            }
+
             if (interactionEvent.Source.GetRootSource() is not IGameObjectProvider source)
             {
                 return true;
             }
-
-            GameObject loadingBarPrefab = Assets.Get<GameObject>(Data.Enums.AssetDatabases.UIElements, (int)Data.Enums.UIElementIds.LoadingBar);
+                                                             
+            WorldSpaceUI.LoadingBar.CreateAs(out _loadingBarInstance, source.GameObject.transform);
             
-            _loadingBarInstance = Object.Instantiate(loadingBarPrefab, source.GameObject.transform);
-            _loadingBarInstance.GetComponent<LoadingBar>().Duration = Delay;
+            _loadingBarInstance.LocalPosition = LoadingBarOffset;
+            _loadingBarInstance.Duration = Delay;
+
             return true;
         }
 
@@ -46,7 +56,10 @@ namespace SS3D.Interactions
         /// <inheritdoc />
         public void ClientCancel(InteractionEvent interactionEvent)
         {
-            _loadingBarInstance.Dispose(true);
+            if (_loadingBarInstance != null)
+            {
+                _loadingBarInstance.GameObject.Dispose(true);
+            }
         }
     }
 }
