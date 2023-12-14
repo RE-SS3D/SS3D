@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -8333369329392991934}
   - component: {fileID: -6063640334274414652}
   - component: {fileID: 1068612666733566269}
+  - component: {fileID: 8301502487477822108}
   m_Layer: 0
   m_Name: PacManGenerator
   m_TagString: Untagged
@@ -90,8 +91,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -5414623717715724467}
   _powerProduction: 10
   _skinnedMeshRenderer: {fileID: 1698900335226549537}
-  _amplitude: 1
-  _frequency: 35
+  _enabled: 0
 --- !u!114 &-8333369329392991934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,6 +107,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: -5414623717715724467}
   _networkObjectCache: {fileID: -5414623717715724467}
+  _on: 0
 --- !u!114 &-6063640334274414652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +136,20 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.88823944, y: 0.8753034, z: 0.7996018}
   m_Center: {x: -0.0057807267, y: 0.43864733, z: 0.01926905}
+--- !u!114 &8301502487477822108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7a41c77d19af89459c70cd823369e19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _amplitude: 1
+  _frequency: 35
 --- !u!1 &4271595947011161493
 GameObject:
   m_ObjectHideFlags: 0

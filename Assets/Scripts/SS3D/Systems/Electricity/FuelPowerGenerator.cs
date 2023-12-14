@@ -27,18 +27,6 @@ namespace System.Electricity
         private const string LowFuel = "LowFuel";
         public float PowerProduction => _powerProduction;
 
-        private Quaternion _initialRotation; // Rotation of the generator at rest.
-
-        private Vector3 _directionOfShake; // In which direction the generator shake.
-
-        [SerializeField]
-        private float _amplitude = 1; // How much is the amplitude of the vibration.
-
-        [SerializeField]
-        private float _frequency = 35; // Vibrating speed.
-
-        private float _elapsedTime = 0f; // Elapsed time for the vibrating stuff.
-
         [SyncVar(OnChange = nameof(SyncGeneratorToggle))]
         private bool _enabled = false; // If the generator is working.
 
@@ -49,16 +37,8 @@ namespace System.Electricity
         {
             base.OnStartClient();
             GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleGeneratorToggle;
-            AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
-            _initialRotation = Rotation;
-            _directionOfShake = Transform.right;
             _onPowerProduction = _powerProduction;
             HandlePowerGenerated(false);
-        }
-
-        private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
-        {
-            if (_enabled) Vibrate();
         }
 
         [Server]
@@ -70,12 +50,11 @@ namespace System.Electricity
         private void SyncGeneratorToggle(bool oldValue, bool newValue, bool asServer)
         {
             if (asServer) return;
-            if (newValue) _initialRotation = Rotation;
 
             HandleSound(newValue);
             HandleLights(newValue);
             HandlePowerGenerated(newValue);
-            HandleResetVibration();
+            GetComponent<MachineVibrate>().Enable = newValue;
         }
 
         private void HandleSound(bool enabled)
@@ -118,17 +97,6 @@ namespace System.Electricity
         private void HandlePowerGenerated(bool enabled)
         {
             _powerProduction = enabled ? _onPowerProduction : 0f; 
-        }
-
-        private void HandleResetVibration()
-        {
-            Rotation = _initialRotation;
-        }
-
-        private void Vibrate()
-        {
-            _elapsedTime += Time.fixedDeltaTime;
-            transform.rotation = _initialRotation * Quaternion.Euler(_directionOfShake * (-_amplitude + Mathf.PingPong(_frequency * _elapsedTime, 2f * _amplitude)));
         }
     }
 }
