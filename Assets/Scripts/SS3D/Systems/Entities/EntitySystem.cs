@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
@@ -15,6 +16,7 @@ using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace SS3D.Systems.Entities
 {
@@ -23,6 +25,11 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class EntitySystem : NetworkSystem
     {
+        /// <summary>
+        /// Event that should be evoked only on client, when the client spawns in the station.
+        /// </summary>
+        public Action OnClientSpawn;
+
         /// <summary>
         /// The prefab used for the player object.
         /// </summary>
@@ -195,6 +202,8 @@ namespace SS3D.Systems.Entities
 
             _spawnedPlayers.Add(entity);
 
+            RpcInvokeClientSpawned(entity.Owner);
+
             Log.Information(this, "Spawning mind {createdMind} on {entity}", Logs.ServerOnly, createdMind.name, entity.name);
         }
 
@@ -309,5 +318,13 @@ namespace SS3D.Systems.Entities
 			_spawnedPlayers[index] = newEntity;
             return true;
 		}
+
+        [TargetRpc]
+        private void RpcInvokeClientSpawned(NetworkConnection target)
+        {
+            OnClientSpawn?.Invoke();
+        }
+
+
 	}
 }

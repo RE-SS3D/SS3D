@@ -231,7 +231,7 @@ GameObject:
   - component: {fileID: 6613978413244681577}
   - component: {fileID: 636696804841796911}
   - component: {fileID: 3617335994165229519}
-  - component: {fileID: 3121450657523103103}
+  - component: {fileID: 5077178896765091160}
   m_Layer: 10
   m_Name: HumanHandLeft
   m_TagString: Untagged
@@ -283,7 +283,7 @@ MonoBehaviour:
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: -0.65835714, y: 1.1670547, z: 0.050554566}
+    Position: {x: 0, y: 0, z: 0}
     Rotation: {x: -0.00000008146034, y: -0, z: -0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
@@ -596,7 +596,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 171912613050136349}
   _bodyPart: {fileID: 2043125828508283566}
   isBleeding: 0
---- !u!114 &3121450657523103103
+--- !u!114 &5077178896765091160
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -605,6 +605,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2207730063960764759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76995bdf538c155469a296a7b56f57f5, type: 3}
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
