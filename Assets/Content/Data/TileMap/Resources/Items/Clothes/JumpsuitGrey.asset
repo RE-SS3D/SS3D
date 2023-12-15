@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: JumpsuitGrey
   m_EditorClassIdentifier: 
-  nameString: Jumpsuit grey
-  prefab: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+  prefab: {fileID: 3945981868420553423, guid: 7f49c948ec182a648ab280a22038752a, type: 3}
   icon: {fileID: 0}
