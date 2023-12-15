@@ -1,5 +1,5 @@
 ﻿using Coimbra;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Logging;
 using SS3D.Networking;
 using SS3D.Networking.Settings;

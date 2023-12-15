@@ -2,7 +2,8 @@
 using Coimbra.Services.Events;
 using SS3D.Application;
 using SS3D.Application.Events;
-using SS3D.Data.Enums;
+using SS3D.Data.AssetDatabases;
+using SS3D.Data.Generated;
 using SS3D.Logging;
 using System;
 
@@ -29,13 +30,15 @@ namespace SS3D.SceneManagement
 		private void LoadMainScene()
 		{
 			ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
-			bool isUsingCommandLineArgs = 
-#if UNITY_EDITOR
-				true;
-#else
-                Environment.GetCommandLineArgs().Length > 1;
-#endif
-			Scenes sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
+            
+            bool isUsingCommandLineArgs = false;
+
+            if (!UnityEngine.Application.isEditor)
+            {
+                isUsingCommandLineArgs = Environment.GetCommandLineArgs().Length > 1;
+            }
+
+			DatabaseAsset sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
 
             Log.Information(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
 

@@ -15,6 +15,7 @@ using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Selection;
 using UnityEngine;
 using UnityEngine.Serialization;
+using AssetDatabase = UnityEditor.AssetDatabase;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -83,7 +84,7 @@ namespace SS3D.Systems.Inventory.Items
             get => _asset;
             set
             {
-                if (Application.isPlaying)
+                if (UnityEngine.Application.isPlaying)
                 {
                     Serilog.Log.Warning($"Field {nameof(Asset)} is being modified in runtime. This should not happen in normal conditions.");
                 }
