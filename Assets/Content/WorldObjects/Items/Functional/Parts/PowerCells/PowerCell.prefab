@@ -137,7 +137,6 @@ GameObject:
   - component: {fileID: 6800495836141411361}
   - component: {fileID: 8868060696172007296}
   - component: {fileID: 8006545930481202674}
-  - component: {fileID: -7005622566197959252}
   m_Layer: 10
   m_Name: PowerCell
   m_TagString: Untagged
@@ -253,7 +252,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 30
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -273,6 +272,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1602098408367427586}
   _networkObjectCache: {fileID: 1602098408367427586}
+  _asset: {fileID: 11400000, guid: 4d84c9a7bcbaa564d8958c6875c8c02d, type: 2}
   _name: PowerCell
   _weight: 1
   _startingTraits: []
@@ -305,19 +305,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-7005622566197959252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2402587210622244651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 5f62fad4d1f834142a93aa7307a23571, type: 2}
 --- !u!1 &3296752347747623008
 GameObject:
   m_ObjectHideFlags: 0

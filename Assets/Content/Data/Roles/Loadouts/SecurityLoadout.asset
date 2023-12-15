@@ -12,29 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
   m_Name: SecurityLoadout
   m_EditorClassIdentifier: 
-  LeftHand: 0
-  RightHand: 0
-  LeftPocket: 0
-  RightPocket: 0
-  LeftGlove: 1
-  RightGlove: 1
-  LeftShoe: 1
-  RightShoe: 1
-  Hat: 1
-  Glasses: 0
-  LeftEar: 0
-  RightEar: 1
-  Jumpsuit: 1
-  LeftHandItem: 30
-  RightHandItem: 0
-  LeftPocketItem: 0
-  RightPocketItem: 0
-  LeftGloveItem: 32
-  RightGloveItem: 33
-  LeftShoeItem: 37
-  RightShoeItem: 38
-  HatItem: 29
-  GlassesItem: 0
-  LeftEarItem: 0
-  RightEarItem: 43
-  JumpsuitItem: 41
+  HandLeft: {fileID: 8197868818743549203, guid: 1d2cf546d53e3fe4c9103007427aaec7, type: 3}
+  HandRight: {fileID: 0}
+  Equipment:
+    _list:
+    - _key: 512
+      _value: {fileID: 726792282085660869, guid: 4635651592391df41b6b2413afdb76c3, type: 3}
+    - _key: 16
+      _value: {fileID: 60374868058361228, guid: 4b790b4ffedbe564dab49f896d71eaa6, type: 3}
+    - _key: 32
+      _value: {fileID: 2653363475000095017, guid: d7d68992cbd3cda45bb11a35a1490dc3, type: 3}
+    _new: 0

@@ -47,8 +47,6 @@ GameObject:
   - component: {fileID: 4134594761787071573}
   - component: {fileID: 1491149956516498634}
   - component: {fileID: 1734265040556642174}
-  - component: {fileID: 5570273012634486744}
-  - component: {fileID: -5134799743551724064}
   m_Layer: 10
   m_Name: Poster
   m_TagString: Untagged
@@ -213,6 +211,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 4134594761787071573}
+  - {fileID: 1734265040556642174}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -224,7 +223,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 2
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -241,9 +240,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1491149956516498634}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1491149956516498634}
+  _asset: {fileID: 11400000, guid: cd3268046db629240800ee48b64a9810, type: 2}
   _name: Poster
   _weight: 1
   _startingTraits: []
@@ -251,28 +251,3 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 104152118591794821}
   AttachmentPointAlt: {fileID: 104152118591794821}
   _container: {fileID: 0}
---- !u!114 &5570273012634486744
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-5134799743551724064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 4f952dd745b973b4889e3c6abae5d084, type: 2}

@@ -1,6 +1,4 @@
 #if UNITY_EDITOR
-using SS3D.Data.Enums;
-using System;
 using UnityEditor;
 using UnityEngine;
 using UnityToolbarExtender;
@@ -39,9 +37,7 @@ namespace SS3D.SceneManagement.Editor
 			{
 				if (GUILayout.Button(new GUIContent(scene), options))
 				{
-					Enum.TryParse(scene, out Scenes sceneEnum);
-
-					EditorSceneUtils.StartScene(sceneEnum);
+					EditorSceneUtils.StartScene(scene);
 				}	
 			}
 		}

@@ -216,6 +216,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8663352389375050187}
   _networkObjectCache: {fileID: 8663352389375050187}
+  _asset: {fileID: 11400000, guid: 810f35d5b52f0e6469cf9683460a16ca, type: 2}
   _name: Shoe hi top right
   _weight: 1
   _startingTraits:

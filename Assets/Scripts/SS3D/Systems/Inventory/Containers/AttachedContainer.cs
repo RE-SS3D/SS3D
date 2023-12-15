@@ -192,6 +192,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
             var inventory = GetComponentInParent<HumanInventory>();
+
             if (inventory != null)
             {
                 inventory.TryAddContainer(this);

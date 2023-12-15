@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Assistant
   m_EditorClassIdentifier: 
   _roleName: Assistant
-  _pdaPrefab: 5
-  _idCardPrefab: 6
+  _pdaPrefab: {fileID: 5261116577612792016, guid: 2a63163a4db141744a802f3ff67087db, type: 3}
+  _idCardPrefab: {fileID: 5261116577612792016, guid: ff95abc9c2b779340a1b50f1a128a934, type: 3}
   _permissions:
   - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
   _loadout: {fileID: 11400000, guid: 5db09cbd548ecf34f97473fb3898e95e, type: 2}

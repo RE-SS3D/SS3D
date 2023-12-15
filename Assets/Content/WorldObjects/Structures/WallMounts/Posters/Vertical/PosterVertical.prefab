@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 971714039044509188}
   - component: {fileID: 1261886050967656104}
   - component: {fileID: 6647145737487217222}
+  - component: {fileID: -1956103261117562666}
+  - component: {fileID: 8573479704529101673}
   m_Layer: 16
   m_Name: PosterVertical
   m_TagString: Untagged
@@ -115,6 +117,31 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.59088516, y: 0.88632774, z: 0.00000071525574}
   m_Center: {x: -0.00000037252903, y: 1.4817418, z: 0.22745113}
+--- !u!114 &-1956103261117562666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5927714388255546572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8573479704529101673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5927714388255546572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 860caf99e21ee3a4a860702d1c01af8b, type: 2}
 --- !u!1 &8415466882461271490
 GameObject:
   m_ObjectHideFlags: 0

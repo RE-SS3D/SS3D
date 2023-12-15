@@ -171,7 +171,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 146
+  <PrefabId>k__BackingField: 147
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -252,6 +252,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
+  _asset: {fileID: 11400000, guid: 4f09dc7f882c18542b750da80a29720f, type: 2}
   _name: 
   _weight: 1
   _startingTraits:

@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 1871071288925904272}
   - component: {fileID: 2869317171787391012}
   - component: {fileID: -4327415787478915747}
+  - component: {fileID: 3176501786695625830}
+  - component: {fileID: -8087668905176921522}
   m_Layer: 0
   m_Name: DisposalOutlet
   m_TagString: Untagged
@@ -162,6 +164,31 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 0}
+--- !u!114 &3176501786695625830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8087668905176921522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 56d47dd0e5bd1da449ca79a55746d81b, type: 2}
 --- !u!1 &4356345215162223831
 GameObject:
   m_ObjectHideFlags: 0

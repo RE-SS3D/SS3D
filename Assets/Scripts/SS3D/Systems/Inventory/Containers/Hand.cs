@@ -113,7 +113,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
 			Container.Dump();
-            ItemInHand.GiveOwnership(null);
+            ItemInHand?.GiveOwnership(null);
 		}
 
 

@@ -202,6 +202,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7421556062366613563}
   _networkObjectCache: {fileID: 7421556062366613563}
+  _asset: {fileID: 11400000, guid: 51c73ffc274bdf44da1bef6e91400973, type: 2}
   _name: Shoe jackboot right
   _weight: 1
   _startingTraits:

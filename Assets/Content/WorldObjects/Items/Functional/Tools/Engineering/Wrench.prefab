@@ -48,7 +48,6 @@ GameObject:
   - component: {fileID: 4052990814619214022}
   - component: {fileID: 8540712827701727508}
   - component: {fileID: 246485557779806861}
-  - component: {fileID: -6527627686897852039}
   m_Layer: 10
   m_Name: Wrench
   m_TagString: Untagged
@@ -213,6 +212,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 2058044439099520297}
+  - {fileID: 8540712827701727508}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -224,7 +224,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 141
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -241,9 +241,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4052990814619214022}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 4052990814619214022}
+  _asset: {fileID: 11400000, guid: fd8e3cf550cdc704281d3b94b5c8d631, type: 2}
   _name: Wrench
   _weight: 1
   _startingTraits: []
@@ -263,16 +264,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-6527627686897852039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3792017003477948967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: ecf4a4dd895f72a4ba1b09c4e5781e1b, type: 2}

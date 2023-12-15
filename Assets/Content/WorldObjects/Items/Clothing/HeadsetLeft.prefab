@@ -233,6 +233,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6270372984438359393}
   _networkObjectCache: {fileID: 6270372984438359393}
+  _asset: {fileID: 11400000, guid: 01c2089d9c76db9488cc22e68d76f4b5, type: 2}
   _name: HeadsetLeft
   _weight: 1
   _startingTraits:

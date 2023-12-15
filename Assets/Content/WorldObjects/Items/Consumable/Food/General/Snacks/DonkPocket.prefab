@@ -47,8 +47,6 @@ GameObject:
   - component: {fileID: 6810177589324280848}
   - component: {fileID: 982355326213879995}
   - component: {fileID: 3938643034119177363}
-  - component: {fileID: 2116669238397401909}
-  - component: {fileID: 6393952134617210079}
   m_Layer: 10
   m_Name: DonkPocket
   m_TagString: Untagged
@@ -180,7 +178,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 113
+  <PrefabId>k__BackingField: 151
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -245,6 +243,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6810177589324280848}
   _networkObjectCache: {fileID: 6810177589324280848}
+  _asset: {fileID: 11400000, guid: 5ebf0777f77019c469729ac80e12720b, type: 2}
   _name: DonkPocket
   _weight: 1
   _startingTraits: []
@@ -252,28 +251,3 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8693672357343424519}
   AttachmentPointAlt: {fileID: 8693672357343424519}
   _container: {fileID: 0}
---- !u!114 &2116669238397401909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3969530706517246485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6393952134617210079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3969530706517246485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: a60626fd3de96cf41a29b30b9888d729, type: 2}

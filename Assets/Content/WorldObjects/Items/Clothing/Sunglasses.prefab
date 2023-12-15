@@ -233,6 +233,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 3546473533537016869}
   _networkObjectCache: {fileID: 3546473533537016869}
+  _asset: {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
   _name: sunglasses
   _weight: 1
   _startingTraits:
