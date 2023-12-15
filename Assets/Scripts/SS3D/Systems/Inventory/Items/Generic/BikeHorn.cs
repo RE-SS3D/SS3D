@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FishNet.Object;
 using SS3D.Core;
-using SS3D.Data;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Audio;
@@ -24,21 +22,17 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         private static readonly int HonkAnimation = Animator.StringToHash("Honk");
 
-
         public void Honk()
         {
             _animator.SetTrigger(HonkAnimation);
-            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, SoundsIds.BikeHorn, GameObject.transform.position, NetworkObject,
-                false, 0.7f, 1, 1, 5);
+            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Sfx, Sounds.BikeHorn, GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
         }
 
         public bool IsHonking()
         {
-            if(!TryGetComponent<AudioSource>(out var audioSource)) return false;
-
             // If our audio source exists, and it's rigged up with our honk sound, and it's our child,
             // check if it's playing. Otherwise, it's honkin' time.
-            return audioSource.isPlaying;
+            return TryGetComponent(out AudioSource audioSource) && audioSource.isPlaying;
         }
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)

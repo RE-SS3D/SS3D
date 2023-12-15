@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
+  m_Name: ParticlesEffects
+  m_EditorClassIdentifier: 
+  DatabaseName: ParticlesEffects
+  AssetGroup: {fileID: 11400000, guid: d700978032e12a647b8734863a0bf7c2, type: 2}
+  Assets:
+    _list:
+    - _key: AttackParticles
+      _value: {fileID: 7714517724079113232, guid: 17b0d9163e9cdf14aa557557e7d9d76b, type: 3}
+    - _key: BleedingParticle
+      _value: {fileID: 6016476664605660376, guid: a6a77c26ee7edd94c804f4ddd851c8ba, type: 3}
+    _new: 

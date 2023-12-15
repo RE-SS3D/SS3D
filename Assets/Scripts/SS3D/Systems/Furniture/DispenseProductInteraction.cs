@@ -1,5 +1,4 @@
-﻿using SS3D.Data;
-using SS3D.Data.Enums;
+﻿using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -35,7 +34,7 @@ namespace SS3D.Systems.Furniture
         /// <inheritdoc />
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : InteractionIcons.Take;
         }
 
         /// <inheritdoc />

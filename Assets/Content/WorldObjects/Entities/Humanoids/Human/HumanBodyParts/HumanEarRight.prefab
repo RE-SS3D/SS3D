@@ -334,6 +334,7 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 7851625510101593417}
   _networkObjectCache: {fileID: 7851625510101593417}
+  _asset: {fileID: 11400000, guid: 2660a129337b4564c912e01997e28743, type: 2}
   _name: human ear right
   _weight: 0
   _startingTraits: []

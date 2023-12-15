@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using SS3D.CodeGeneration;
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
@@ -31,8 +32,15 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            _assetDatabase.EnumName = _enumNameTextField.value;
-            _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+            if (_enumNameTextField != null)
+            {
+                _assetDatabase.DatabaseName = _enumNameTextField.value;
+            }
+
+            if (_assetGroupObjectField != null)
+            {
+                _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+            }
         }
 #endif
 
@@ -57,16 +65,22 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetsListView = root.Q<ScrollView>("assets-list");
 
             _assetDatabaseLabel.text = $"{_assetDatabase.name} ASSET DATABASE";
-            _enumNameTextField.value = _assetDatabase.EnumName;
+            _enumNameTextField.value = _assetDatabase.DatabaseName;
             _assetGroupObjectField.value = _assetDatabase.AssetGroup;
+
+            _assetDatabase.LoadAssetsFromAssetGroup();
+
+            EditorUtility.SetDirty(_assetDatabase);
+
+            _assetDatabase.GenerateDatabaseCode();
 
             if (_assetDatabase.Assets != null)
             {
-                foreach (Object asset in _assetDatabase.Assets)
+                foreach (KeyValuePair<string, Object> asset in _assetDatabase.Assets)
                 {
                     ObjectField objectField = new()
                     {
-                        value = asset
+                        value = asset.Value
                     };
 
                     _assetsListView.Add(objectField);
@@ -80,26 +94,25 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void HandleLoadAssetsButtonPressed()
         {
-            _assetDatabase.EnumName = _enumNameTextField.value;
-
-            string dataPath = AssetDatabase.EnumPath;
+            _assetDatabase.DatabaseName = _enumNameTextField.value;
 
             _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             _assetDatabase.LoadAssetsFromAssetGroup();
             _assetsListView.Clear();
 
-            foreach (Object asset in _assetDatabase.Assets)
+            foreach (KeyValuePair<string, Object> asset in _assetDatabase.Assets)
             {
                 ObjectField objectField = new()
                 {
-                    value = asset
+                    value = asset.Value
                 };
 
                 _assetsListView.Add(objectField);
             }   
 
             EditorUtility.SetDirty(_assetDatabase);
-            EnumCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
+
+            _assetDatabase.GenerateDatabaseCode();
         }
     }
 }

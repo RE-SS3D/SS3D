@@ -1,9 +1,10 @@
 using Coimbra;
 using DG.Tweening;
+using SS3D.Core.Events;
 using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using SS3D.Data;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Data.Management;
 using SS3D.Logging;
 using SS3D.SceneManagement;
@@ -29,7 +30,7 @@ namespace SS3D.Core
             CommandLineArgsSystem startArgsSystem = Subsystems.Get<CommandLineArgsSystem>();
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            Scenes sceneToLoad = startArgsSystem.HasCommandLineArgs() ? Scenes.Intro : Scenes.Launcher;
+            string sceneToLoad = startArgsSystem.HasCommandLineArgs() ? Scenes.Intro : Scenes.Launcher;
 
             if (applicationSettings.ForceLauncher && !startArgsSystem.HasCommandLineArgs())
             {
@@ -50,14 +51,15 @@ namespace SS3D.Core
             Log.Information(this, "Initializing application", Logs.Important);
 
             DOTween.Init();
-
-			SaveSystem.Initialize();
+            SaveSystem.Initialize();
 
             InitializeDiscordIntegration();
             InitializeAssetData();
 
             InitializeSettings();
             InitializeNetworkSession();
+
+            new ApplicationInitializedEvent().Invoke(this);
         }
 
         /// <summary>

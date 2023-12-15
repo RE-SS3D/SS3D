@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using SS3D.Data;
-using SS3D.Data.Enums;
 using FishNet.Object;
 using SS3D.Core;
 using FishNet;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio
 {
@@ -16,75 +15,94 @@ namespace SS3D.Systems.Audio
         //Variables!!! Wow!
         [Header("Collision Noises Setup")]
         [Range(0f, 1f)]
-        [SerializeField, Tooltip("How loud sounds will play when colliding.")]
-        private float collisionVolume = 0.7f;
+        [SerializeField]
+        [Tooltip("How loud sounds will play when colliding.")]
+        private float _collisionVolume = 0.7f;
 
-        [SerializeField, Tooltip("The base pitch of the sound effect. Default is 1, lower pitch is 0, higher pitch is 2.")]
-        [Range(0, 2)] private float basePitch = 1;
+        [SerializeField]
+        [Range(0, 2)]
+        [Tooltip("The base pitch of the sound effect. Default is 1, lower pitch is 0, higher pitch is 2.")]
+        private float _basePitch = 1;
 
-        [SerializeField, Tooltip("How much lower pitch can the sound play?")]
-        [Range(0f, 0.5f)] private float pitchModulationLow = 0;
+        [SerializeField]
+        [Range(0f, 0.5f)]
+        [Tooltip("How much lower pitch can the sound play?")]
+        private float _pitchModulationLow = 0;
 
-        [SerializeField, Tooltip("How much higher pitch can the sound play?")]
-        [Range(0f, 0.5f)] private float pitchModulationHigh = 0;
+        [SerializeField]
+        [Range(0f, 0.5f)]
+        [Tooltip("How much higher pitch can the sound play?")]
+        private float _pitchModulationHigh = 0;
 
-        [SerializeField, Tooltip("How fast this object must hit another in order to make a light impact sound.")]
-        private float lightImpactVelocity = 1;
+        [SerializeField]
+        [Tooltip("How fast this object must hit another in order to make a light impact sound.")]
+        private float _lightImpactVelocity = 1;
 
-        [SerializeField, Tooltip("Does this object make a different sound being struck at a high velocity?")]
-        private bool useHardImpactSounds = false;
+        [SerializeField]
+        [Tooltip("Does this object make a different sound being struck at a high velocity?")]
+        private bool _useHardImpactSounds = false;
 
-        [SerializeField, Tooltip("How fast this object must hit another in order to make a hard impact sound.")]
-        private float hardImpactVelocity = 7.5f;
+        [SerializeField]
+        [Tooltip("How fast this object must hit another in order to make a hard impact sound.")]
+        private float _hardImpactVelocity = 7.5f;
 
-        [SerializeField, Tooltip("List of possible sounds that will play when this object collides lightly.")]
-        private SoundsIds[] lightImpactSounds;
+        [SerializeField]
+        [Tooltip("List of possible sounds that will play when this object collides lightly.")]
+        private AudioClip[] _lightImpactSounds;
 
-        [SerializeField, Tooltip("List of possible sounds that will play when this object collides heavily.")]
-        private SoundsIds[] hardImpactSounds;
+        [SerializeField]
+        [Tooltip("List of possible sounds that will play when this object collides heavily.")]
+        private AudioClip[] _hardImpactSounds;
 
         //For some reason, this is needed to have an enable/disable feature. Peculiar.
-        private void FixedUpdate() {
-        }
+        private void FixedUpdate() { }
 
         private void OnValidate()
         {
-            //Throw a warning if the user configured it retardedly.
-            if ((lightImpactVelocity > hardImpactVelocity) || (useHardImpactSounds && hardImpactSounds == null) || (lightImpactSounds == null))
+            // Throw a warning if the user configured it retardedly.
+            if ((!(_lightImpactVelocity > _hardImpactVelocity)) && (!_useHardImpactSounds || _hardImpactSounds != null) && (_lightImpactSounds != null))
             {
-                Debug.LogWarning("<color=red>Woops!</color> " + gameObject.name + " is configured to make collision sounds, but cannot. Make sure the Noisy Collision script is configured correctly.");
-                this.enabled = false;
+                return;
             }
+
+            Debug.LogWarning("<color=red>Woops!</color> " + gameObject.name + " is configured to make collision sounds, but cannot. Make sure the Noisy Collision script is configured correctly.");
+            enabled = false;
         }
 
-        void OnCollisionEnter(Collision other) {
-
-            if (!InstanceFinder.IsServer) return;
+        private void OnCollisionEnter(Collision other)
+        {
+            if (!InstanceFinder.IsServer)
+            {
+                return;
+            }
 
             //Only execute this code if we're supposed to make collision noises.
-            if (useHardImpactSounds && other.relativeVelocity.magnitude > hardImpactVelocity) {
-                PlayCollisionSound(hardImpactSounds);
+            if (_useHardImpactSounds && other.relativeVelocity.magnitude > _hardImpactVelocity)
+            {
+                PlayCollisionSound(_hardImpactSounds);
             }
-            else if (other.relativeVelocity.magnitude > lightImpactVelocity) {
-                PlayCollisionSound(lightImpactSounds);
+            else if (other.relativeVelocity.magnitude > _lightImpactVelocity)
+            {
+                PlayCollisionSound(_lightImpactSounds);
             }
         }
 
         /// <summary>
-        // Play some collision sound from the available sounds with some random pitch change
+        /// Play some collision sound from the available sounds with some random pitch change.
         /// </summary>
         /// <param name="soundPool"></param>
         [Server]
-        private void PlayCollisionSound(SoundsIds[] soundPool)
+        private void PlayCollisionSound(AudioClip[] soundPool)
         {
-            float pitch = Random.Range(basePitch - pitchModulationLow, basePitch + pitchModulationHigh);
-            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.sfx, PickSound(soundPool), gameObject.transform.position, null,
-                false, collisionVolume, pitch);
+            float pitch = Random.Range(_basePitch - _pitchModulationLow, _basePitch + _pitchModulationHigh);
+            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Sfx, PickSound(soundPool), gameObject.transform.position, null, _collisionVolume, pitch);
         }
 
-        private SoundsIds PickSound(SoundsIds[] availableSounds) {
-            //Pick a clip from the supplied array and return it
-            SoundsIds currentClip = availableSounds[Random.Range(0, availableSounds.Length)];
+        private AudioClip PickSound(AudioClip[] availableSounds)
+        {
+            // Pick a clip from the supplied array and return it
+            AudioClip currentClip = availableSounds[Random.Range(0, availableSounds.Length)];
+
             return currentClip;
         }
     }
