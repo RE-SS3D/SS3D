@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 1702746743542006300}
   - component: {fileID: 6841799689541215485}
   - component: {fileID: 4188904223884923263}
+  - component: {fileID: -6743858448264233399}
+  - component: {fileID: -5719492879188372624}
   m_Layer: 0
   m_Name: DisposalPipes
   m_TagString: Untagged
@@ -93,6 +95,7 @@ MonoBehaviour:
     x: {fileID: -7993494061914831054, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
     verticalMesh: {fileID: -6523086812048633060, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
   _verticalConnection: 0
+  _direction: 0
   _syncedConnections: 0
 --- !u!33 &1702746743542006300
 MeshFilter:
@@ -159,3 +162,28 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: -7727686409064562107}
   _networkObjectCache: {fileID: 0}
+--- !u!114 &-6743858448264233399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-5719492879188372624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: e0b540ece8c1ac44ca3e48e9a9549064, type: 2}

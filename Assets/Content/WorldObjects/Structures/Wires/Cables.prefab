@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
   - component: {fileID: -64606549772055205}
-  - component: {fileID: 6371875438405451932}
-  - component: {fileID: -8233083560016466284}
+  - component: {fileID: -8163292182942848012}
+  - component: {fileID: -2606982493560320358}
   m_Layer: 0
   m_Name: Cables
   m_TagString: Untagged
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDirection: 0
   _allowedDirections: 00000000
---- !u!114 &6371875438405451932
+--- !u!114 &-8163292182942848012
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,21 +144,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2802364579275783218}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87c77df6883c7c646b5ebc4c27bff005, type: 3}
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: -7727686409064562107}
-  _networkObjectCache: {fileID: -7727686409064562107}
-  _adjacencyResolver:
-    o: {fileID: -8711453034529356013, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    u: {fileID: -1590738978952025886, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    i: {fileID: -2043613833257120371, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    l: {fileID: -9081922812702010850, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    t: {fileID: -5358326586770029455, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    x: {fileID: -8228826546953468662, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  _syncedConnections: 0
---- !u!114 &-8233083560016466284
+--- !u!114 &-2606982493560320358
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -167,9 +156,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2802364579275783218}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d30cec7c035cc5649812af01ad936d85, type: 3}
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: -7727686409064562107}
-  _networkObjectCache: {fileID: 0}
+  key: {fileID: 11400000, guid: 8e4acb94055727a408482366bdcd9691, type: 2}
