@@ -3,7 +3,7 @@ using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Systems.Audio;
 using System.Collections;
 using System.Collections.Generic;
@@ -65,7 +65,7 @@ namespace System.Electricity
             }
             else
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.music, SoundsIds.FuelPowerGenerator, Position, NetworkObject,
+                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, Sounds.Can1, Position, NetworkObject,
                     true, 0.7f, 1, 1, 10);
             }
         }
