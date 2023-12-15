@@ -108,6 +108,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8213111319263450463}
   - component: {fileID: 5640352947892099654}
+  - component: {fileID: -6683476681970116848}
+  - component: {fileID: -8822707487153381686}
   m_Layer: 0
   m_Name: PlasticChair
   m_TagString: Untagged
@@ -164,6 +166,31 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 10672734122008306192
+--- !u!114 &-6683476681970116848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8822707487153381686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: d40f95063c3240f48a2d02f64f2db64f, type: 2}
 --- !u!1 &5218468364695561986
 GameObject:
   m_ObjectHideFlags: 0
