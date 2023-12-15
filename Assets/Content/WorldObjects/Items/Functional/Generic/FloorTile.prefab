@@ -16,8 +16,9 @@ GameObject:
   - component: {fileID: 2717170585512287581}
   - component: {fileID: 8767567404870203102}
   - component: {fileID: 2885876316184551953}
+  - component: {fileID: 1034747657592807112}
   m_Layer: 10
-  m_Name: GreyFloorTile
+  m_Name: FloorTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +197,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 2709704071178511549
+  <AssetPathHash>k__BackingField: 10418307359914320273
 --- !u!114 &2885876316184551953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,6 +221,18 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8309000899177645629}
   AttachmentPointAlt: {fileID: 8309000899177645629}
   _container: {fileID: 0}
+--- !u!114 &1034747657592807112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0
