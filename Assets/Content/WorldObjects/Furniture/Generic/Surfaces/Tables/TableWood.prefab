@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 9015187684533357890}
   - component: {fileID: 617431495096137990}
   - component: {fileID: -8267408200744649365}
+  - component: {fileID: 841301978942452613}
+  - component: {fileID: -9197675886749755841}
   m_Layer: 0
   m_Name: TableWood
   m_TagString: Untagged
@@ -148,8 +150,6 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 9015187684533357890}
   _networkObjectCache: {fileID: 0}
-  _genericType: 7
-  _specificType: 4
   _syncedConnections: 0
   advancedAdjacency:
     o: {fileID: 3156538240660671990, guid: 32ccf9db762cc7c4f8f4af524e3e7ee7, type: 3}
@@ -182,4 +182,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 00000000
+  _allowedDirections: 00000000
+--- !u!114 &841301978942452613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-9197675886749755841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 68bd5d19fd549914a9126dbeba0fc89e, type: 2}

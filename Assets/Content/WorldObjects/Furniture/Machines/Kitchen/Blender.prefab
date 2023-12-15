@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8033135651520204425}
   - component: {fileID: 8095612838085175437}
+  - component: {fileID: -7163638817039245190}
+  - component: {fileID: 6640300193741558374}
   m_Layer: 0
   m_Name: Blender
   m_TagString: Untagged
@@ -65,6 +67,31 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17043199276485584273
+--- !u!114 &-7163638817039245190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6640300193741558374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 351268bbcc4a9eb4ea6e9819fcf13b7f, type: 2}
 --- !u!1 &2266423437352020777
 GameObject:
   m_ObjectHideFlags: 0

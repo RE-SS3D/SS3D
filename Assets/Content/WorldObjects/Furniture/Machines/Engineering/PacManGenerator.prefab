@@ -10,11 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8033135651520204425}
   - component: {fileID: -5414623717715724467}
-  - component: {fileID: 6155362540496901199}
-  - component: {fileID: -8333369329392991934}
-  - component: {fileID: -6063640334274414652}
-  - component: {fileID: 1068612666733566269}
-  - component: {fileID: 8301502487477822108}
+  - component: {fileID: 1498482382929386799}
+  - component: {fileID: -2628458568064459714}
+  - component: {fileID: 219113547575591534}
+  - component: {fileID: 2550114539843098724}
   m_Layer: 0
   m_Name: PacManGenerator
   m_TagString: Untagged
@@ -55,9 +54,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 6155362540496901199}
-  - {fileID: -8333369329392991934}
-  - {fileID: -6063640334274414652}
+  - {fileID: 219113547575591534}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -74,7 +71,32 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16542793782496562664
---- !u!114 &6155362540496901199
+--- !u!114 &1498482382929386799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2628458568064459714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 59526bd88a8f878449573560e06a54f9, type: 2}
+--- !u!114 &219113547575591534
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,51 +114,7 @@ MonoBehaviour:
   _powerProduction: 10
   _skinnedMeshRenderer: {fileID: 1698900335226549537}
   _enabled: 0
---- !u!114 &-8333369329392991934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d360eea9f7cb147a1b530b7842ff73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: -5414623717715724467}
-  _on: 0
---- !u!114 &-6063640334274414652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: -5414623717715724467}
---- !u!65 &1068612666733566269
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.88823944, y: 0.8753034, z: 0.7996018}
-  m_Center: {x: -0.0057807267, y: 0.43864733, z: 0.01926905}
---- !u!114 &8301502487477822108
+--- !u!114 &2550114539843098724
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

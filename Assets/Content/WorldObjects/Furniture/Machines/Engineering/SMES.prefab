@@ -10,10 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8033135651520204425}
   - component: {fileID: -5414623717715724467}
-  - component: {fileID: -5310336627659257466}
-  - component: {fileID: 4642179228716895328}
-  - component: {fileID: 4520076028333701266}
-  - component: {fileID: 3443539598081298664}
+  - component: {fileID: -4242734897733728731}
+  - component: {fileID: 7561631995620174181}
+  - component: {fileID: 6345351447614513914}
   m_Layer: 0
   m_Name: SMES
   m_TagString: Untagged
@@ -52,10 +51,7 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours:
-  - {fileID: -5310336627659257466}
-  - {fileID: 4642179228716895328}
-  - {fileID: 4520076028333701266}
+  _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -72,7 +68,32 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16232551768262221016
---- !u!114 &-5310336627659257466
+--- !u!114 &-4242734897733728731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7561631995620174181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 4e5b5032bc8027c4485bde316ce4057f, type: 2}
+--- !u!114 &6345351447614513914
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -84,57 +105,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f1cd0d7880cd9c4f98489ed5f9413ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: 0}
   _maxCapacity: 1000
   _storedPower: 0
   _maxPowerRate: 5
+  _isOn: 0
   SmesSkinnedMesh: {fileID: 755838239801065349}
-  _updateLightPeriod: 2
---- !u!114 &4642179228716895328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: -5414623717715724467}
---- !u!114 &4520076028333701266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d360eea9f7cb147a1b530b7842ff73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: -5414623717715724467}
---- !u!65 &3443539598081298664
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.7965375, y: 0.96492004, z: 0.8105693}
-  m_Center: {x: 0.0035079718, y: 0.46656072, z: 0.01052396}
+  _updateLightPeriod: 3
 --- !u!1 &4379219507269237858
 GameObject:
   m_ObjectHideFlags: 0
