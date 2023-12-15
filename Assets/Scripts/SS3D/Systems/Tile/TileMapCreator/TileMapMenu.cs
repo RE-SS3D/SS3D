@@ -1,7 +1,9 @@
-﻿using DynamicPanels;
+﻿using Coimbra;
+using DynamicPanels;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.Management;
 using SS3D.Systems.Inputs;
 using TMPro;
 using UnityEngine;
@@ -24,32 +26,66 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public bool MouseOverUI => _mouseOverUI;
         private bool _mouseOverUI = false;
+
         /// <summary>
         /// Is the tilemap menu enabled
         /// </summary>
         private bool _enabled = false;
+
         /// <summary>
         /// Are we deleting objects from the tilemap
         /// </summary>
-        public bool IsDeleting => _isDeleting;
-        private bool _isDeleting;
+        public bool IsDeleting => _tileMapBuildTab.IsDeleting;
+
         private Controls.TileCreatorActions _controls;
+
         private InputSystem _inputSystem;
+
         private PanelTab _tab;
-        private TileMapSaveAndLoad _tileMapSaveAndLoad;
         
-        /// <summary>
-        /// Input field to search for specific tile objects or items in the menu.
-        /// </summary>
-        [SerializeField]
-        private TMP_InputField _inputField;
         [SerializeField]
         private GameObject _menuRoot;
+
+        /// <summary>
+        /// manager of holograms tile objects.
+        /// </summary>
         [SerializeField]
         private ConstructionHologramManager _hologramManager;
+
+        /// <summary>
+        /// Tab for handling saving maps.
+        /// </summary>
         [SerializeField]
-        private AssetGrid _assetGrid;
-        
+        private TileMapSaveTab _tileMapSaveTab;
+
+        /// <summary>
+        /// Tab for handling loading maps.
+        /// </summary>
+        [SerializeField]
+        private TileMapLoadTab _tileMapLoadTab;
+
+        /// <summary>
+        /// Tab for handling building the tilemap.
+        /// </summary>
+        [SerializeField]
+        private TileMapBuildTab _tileMapBuildTab;
+
+        /// <summary>
+        /// Enum to switch between tabs.
+        /// </summary>
+        private enum TileMapMenuTab
+        {
+            Save,
+            Load,
+            Build,
+        }
+
+        /// <summary>
+        /// Current selected tab in the menu.
+        /// </summary>
+        private TileMapMenuTab _currentTab;
+
+
         /// <summary>
         /// Called when pointer enter the UI of the menu.
         /// </summary>
@@ -85,7 +121,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls = _inputSystem.Inputs.TileCreator;
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
             _controls.ToggleMenu.performed += HandleToggleMenu;
-            _tileMapSaveAndLoad = new();
         }
 
         /// <summary>
@@ -105,8 +140,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
             }
             _enabled = !_enabled;
             ShowUI(_enabled);
-            
-            _assetGrid.Setup();
+
+            _currentTab = TileMapMenuTab.Build;
+            ClearAllTab();
+            _tileMapBuildTab.Display();
         }
        
         /// <summary>
@@ -125,38 +162,35 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Called when clicking on the delete button of the menu.
+        /// Called when clicking on the build button of the menu.
         /// </summary>
-        private void HandleDeleteButton()
+        public void HandleBuildButton()
         {
-            _isDeleting = true;
+            ClearCurrentTab();
+            _currentTab = TileMapMenuTab.Build;
+            _tileMapBuildTab.Display();
         }
 
         /// <summary>
-        /// Called when clicking on the build button of the menu.
-        /// </summary>
-        private void HandleBuildButton()
-        {
-            _isDeleting = false;
-        }
-        
-        /// <summary>
         /// Method called when the load button is clicked.
         /// </summary>
-        [Server]
         public void HandleLoadButton()
         {
-            _tileMapSaveAndLoad.SetUpLoad();
+            ClearCurrentTab();
+            _currentTab = TileMapMenuTab.Load;
+            _tileMapLoadTab.Display();
         }
-        
+
         /// <summary>
-        /// Method called when the save button is clicked.
+        /// Method called when the save tab is clicked.
         /// </summary>
-        [Server]
-        public void HandleSaveButton()
+        public void HandleSaveTabButton()
         {
-            _tileMapSaveAndLoad.SetUpSave();
+            ClearCurrentTab();
+            _currentTab = TileMapMenuTab.Save;
+            _tileMapSaveTab.Display();
         }
+
         /// <summary>
         /// Called when the input field to search for tile objects is selected.
         /// </summary>
@@ -174,11 +208,33 @@ namespace SS3D.Systems.Tile.TileMapCreator
         }
 
         /// <summary>
-        /// Called when the text in the input field to search for tile objects is changed.
+        /// Clear the content of the current selected tab.
         /// </summary>
-        public void HandleInputFieldChanged()
+        [ServerOrClient]
+        private void ClearCurrentTab()
         {
-            _assetGrid.FindAssets(_inputField.text);
+            switch (_currentTab)
+            {
+                case TileMapMenuTab.Build:
+                    _tileMapBuildTab.Clear();
+                    break;
+                case TileMapMenuTab.Load:
+                    _tileMapLoadTab.Clear();
+                    break;
+                case TileMapMenuTab.Save:
+                    _tileMapSaveTab.Clear();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Clear the content of all tabs.
+        /// </summary>
+        private void ClearAllTab()
+        {
+            _tileMapBuildTab.Clear();
+            _tileMapLoadTab.Clear();
+            _tileMapSaveTab.Clear();
         }
     }
 }

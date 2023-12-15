@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
+  m_Name: PlasticChairGrey
+  m_EditorClassIdentifier: 
+  nameString: chair_plastic_grey
+  prefab: {fileID: 1694330674204457255, guid: 3a25eb0bd251b5847af05fb59feff383, type: 3}
+  icon: {fileID: 0}
+  layer: 7
+  genericType: 0
+  specificType: 0
+  width: 1
+  height: 1

@@ -48,6 +48,8 @@ GameObject:
   - component: {fileID: 6984312597055688722}
   - component: {fileID: 7041145045412855027}
   - component: {fileID: 8726931767718845717}
+  - component: {fileID: 2684969213490069762}
+  - component: {fileID: 7426271177468713804}
   m_Layer: 10
   m_Name: GlovesInsulatedRight
   m_TagString: Untagged
@@ -211,7 +213,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 49
+  <PrefabId>k__BackingField: 12
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -231,6 +233,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4692070367735979832}
   _networkObjectCache: {fileID: 4692070367735979832}
+  _asset: {fileID: 11400000, guid: 88cb0aca0b6265d49b25526ca55295e9, type: 2}
   _name: Glove insulated right
   _weight: 1
   _startingTraits:
@@ -266,3 +269,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 8
+--- !u!114 &2684969213490069762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4581819739591165899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7426271177468713804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4581819739591165899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: cf117d68f1bc58c478bdf94436b24bbf, type: 2}

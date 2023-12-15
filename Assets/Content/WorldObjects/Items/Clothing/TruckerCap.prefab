@@ -48,6 +48,8 @@ GameObject:
   - component: {fileID: -1938953542191470901}
   - component: {fileID: 4049302817993054162}
   - component: {fileID: 1629795439574854430}
+  - component: {fileID: 5067584742411346480}
+  - component: {fileID: -8219830496143806192}
   m_Layer: 10
   m_Name: TruckerCap
   m_TagString: Untagged
@@ -211,7 +213,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 89
+  <PrefabId>k__BackingField: 3
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -231,6 +233,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: -1921154974467191097}
   _networkObjectCache: {fileID: -1921154974467191097}
+  _asset: {fileID: 11400000, guid: e53ebba96eeba474e8478131c8d24085, type: 2}
   _name: Trucker Cap
   _weight: 1
   _startingTraits:
@@ -266,3 +269,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 4
+--- !u!114 &5067584742411346480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8219830496143806192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 45802588ca951fc428487d7ad458a959, type: 2}

@@ -1,6 +1,5 @@
 ﻿using Coimbra;
-using SS3D.Data;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,31 +11,30 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public class ConstructionHologram
     {
-        private GameObject _hologram;
-        private Vector3 _position;
+        public GameObject Hologram;
+        private Vector3 _targetPosition;
         private Direction _direction;
         public Direction Direction => _direction;
-        public bool ActiveSelf => _hologram.activeSelf;
-        public bool SetActive { set => _hologram.SetActive(value); }
-        public Vector3 Position { get => _position; set => _position = value; }
+        public bool ActiveSelf => Hologram.activeSelf;
+        public bool SetActive { set => Hologram.SetActive(value); }
+        public Vector3 TargetPosition { get => _targetPosition; set => _targetPosition = value; }
         
         /// <summary>
         /// Build a new hologram
         /// </summary>
         /// <param name="ghostObject"> the game object we want to make a hologram from.</param>
-        /// <param name="targetPosition"> the initial position of the hologram in space.</param>
+        /// <param name="targetTargetPosition"> the initial position of the hologram in space.</param>
         /// <param name="dir"> the expected original direction. Note that not all directions are compatible with
         /// all tile objects. If it's not, it will choose another available direction.</param>
-        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir)
+        public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
         {
-
             List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
                 .Where(x => x is not ICustomGhostRotation).ToList();
 
             components.ForEach(x => x.enabled = false);
 
-            _hologram = ghostObject;
-            _position = targetPosition;
+            Hologram = ghostObject;
+            _targetPosition = targetPosition;
             _direction = dir;
 
             if (ghostObject.TryGetComponent(out ICustomGhostRotation customRotationComponent) 
@@ -55,6 +53,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 col.enabled = false;
             }
+            ChangeHologramColor(mode);
         }
 
         /// <summary>
@@ -63,25 +62,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="mode"></param>
         public void ChangeHologramColor(ConstructionMode mode)
         {
-            Material ghostMat = null;
-
-            switch (mode)
+            Material ghostMat = mode switch
             {
-                case ConstructionMode.Valid:
-                    ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.ValidConstruction);
-                    break;
+                ConstructionMode.Valid => Materials.ValidConstruction,
+                ConstructionMode.Invalid => Materials.InvalidConstruction,
+                ConstructionMode.Delete => Materials.DeleteConstruction,
+                _ => null
+            };
 
-                case ConstructionMode.Invalid:
-                    ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.InvalidConstruction);
-                    break;
-
-                case ConstructionMode.Delete:
-                    ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.DeleteConstruction);
-                    break;
-            }
-
-
-            foreach (MeshRenderer mr in _hologram.GetComponentsInChildren<MeshRenderer>())
+            foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())
             {
                 Material[] materials = mr.materials;
                 for (int i = 0; i < materials.Length; i++)
@@ -91,6 +80,17 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
                 mr.materials = materials;
             }
+
+            foreach (SkinnedMeshRenderer smr in Hologram.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                Material[] materials = smr.materials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    materials[i] = ghostMat;
+                }
+
+                smr.materials = materials;
+            }
         }
 
         /// <summary>
@@ -99,8 +99,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void UpdateRotationAndPosition()
         {
             // Small offset is added so that meshes don't overlap with already placed objects.
-            _hologram.transform.position = Vector3.Lerp(_hologram.transform.position, _position + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
-            _hologram.transform.rotation = Quaternion.Lerp(_hologram.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_direction), 0), Time.deltaTime * 15f);
+            Hologram.transform.position = Vector3.Lerp(Hologram.transform.position, _targetPosition + new Vector3(0, 0.1f, 0), Time.deltaTime * 15f);
+            Hologram.transform.rotation = Quaternion.Lerp(Hologram.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_direction), 0), Time.deltaTime * 15f);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void SetNextRotation()
         {
-            if (_hologram.TryGetComponent(out ICustomGhostRotation customRotationComponent))
+            if (Hologram.TryGetComponent(out ICustomGhostRotation customRotationComponent))
             {
                 _direction = customRotationComponent.GetNextDirection(_direction);
             }
@@ -120,7 +120,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         public void Destroy()
         {
-            _hologram.Dispose(true);
+            Hologram.Dispose(true);
+            Hologram = null;
         }
     }
 }

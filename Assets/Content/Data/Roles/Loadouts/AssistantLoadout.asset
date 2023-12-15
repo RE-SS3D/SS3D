@@ -12,29 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
   m_Name: AssistantLoadout
   m_EditorClassIdentifier: 
-  LeftHand: 0
-  RightHand: 0
-  LeftPocket: 0
-  RightPocket: 0
-  LeftGlove: 1
-  RightGlove: 1
-  LeftShoe: 1
-  RightShoe: 1
-  Hat: 1
-  Glasses: 0
-  LeftEar: 0
-  RightEar: 1
-  Jumpsuit: 1
-  LeftHandItem: 0
-  RightHandItem: 0
-  LeftPocketItem: 0
-  RightPocketItem: 0
-  LeftGloveItem: 32
-  RightGloveItem: 33
-  LeftShoeItem: 37
-  RightShoeItem: 38
-  HatItem: 29
-  GlassesItem: 0
-  LeftEarItem: 0
-  RightEarItem: 43
-  JumpsuitItem: 36
+  HandLeft: {fileID: 5533951594911835035, guid: 264ea51d92067c14ebc6633999afac78, type: 3}
+  HandRight: {fileID: 0}
+  Equipment:
+    _list:
+    - _key: 512
+      _value: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+    - _key: 16
+      _value: {fileID: 6003340987905195654, guid: 5fa15d6fdef93dc4e80d798cefe8be0b, type: 3}
+    - _key: 32
+      _value: {fileID: 930591319891399865, guid: 317ec7dcff3b11d4eae3a47929200b93, type: 3}
+    - _key: 2048
+      _value: {fileID: 739222591386748088, guid: f1aeab0a35c29314a8a3f823de9815c1, type: 3}
+    - _key: 4096
+      _value: {fileID: 4581819739591165899, guid: 8725b7f8f45d28a4ba6063318904cc8a, type: 3}
+    _new: 0

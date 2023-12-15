@@ -82,7 +82,7 @@ namespace SS3D.Systems.Tile
 
         public Direction Direction => _dir;
 
-        public string NameString => _tileObjectSo.nameString;
+        public string NameString => _tileObjectSo.NameString;
 
         public bool HasAdjacencyConnector => _connector != null;
 
@@ -103,6 +103,7 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Destroys itself.
         /// </summary>
+        [Server]
         public void DestroySelf()
         {
             InstanceFinder.ServerManager.Despawn(gameObject);
@@ -124,7 +125,7 @@ namespace SS3D.Systems.Tile
         {
             return new SavedPlacedTileObject
             {
-                tileObjectSOName = _tileObjectSo.nameString,
+                tileObjectSOName = _tileObjectSo.NameString,
                 origin = _origin,
                 dir = _dir,
             };

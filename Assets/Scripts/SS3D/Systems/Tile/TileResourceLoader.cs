@@ -1,5 +1,6 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using SS3D.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +71,7 @@ namespace SS3D.Systems.Tile
         [CanBeNull]
         public GenericObjectSo GetAsset(string assetName)
         {
-            GenericObjectSo genericObjectSo = Assets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
+            GenericObjectSo genericObjectSo = Assets.FirstOrDefault(tileObject =>  tileObject.NameString.Equals(assetName, StringComparison.OrdinalIgnoreCase));
             
             if (genericObjectSo == null)
             {

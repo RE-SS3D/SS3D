@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 2527334834019670621}
   - component: {fileID: 1256076610048116208}
   - component: {fileID: 7201402233169256053}
+  - component: {fileID: 173897779263585381}
+  - component: {fileID: -9111137678263042396}
   m_Layer: 10
   m_Name: JumpsuitGrey
   m_TagString: Untagged
@@ -194,7 +196,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 112
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -214,6 +216,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 2527334834019670621}
   _networkObjectCache: {fileID: 2527334834019670621}
+  _asset: {fileID: 11400000, guid: 620dc53a5608be44a975c990e69ddba5, type: 2}
   _name: Jumpsuit Grey
   _weight: 1
   _startingTraits:
@@ -235,6 +238,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 5
+--- !u!114 &173897779263585381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624365323667193292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-9111137678263042396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624365323667193292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: e0f2e3fe7e3c8354f8dc7a49f831b017, type: 2}
 --- !u!1 &6322432386141009335
 GameObject:
   m_ObjectHideFlags: 0

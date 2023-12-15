@@ -224,7 +224,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 6
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -244,6 +244,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 261983550380735922}
   _networkObjectCache: {fileID: 261983550380735922}
+  _asset: {fileID: 11400000, guid: f5a2860feace1434ea982b06d2445f9f, type: 2}
   _name: Kitchen knife
   _weight: 1
   _startingTraits: []

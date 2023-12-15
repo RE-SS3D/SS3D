@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
+  m_Name: InteractionIcons
+  m_EditorClassIdentifier: 
+  DatabaseName: InteractionIcons
+  AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}
+  Assets:
+    _list:
+    - _key: Power
+      _value: {fileID: 21300000, guid: b22067d36fa963b4bbaf8d6085b0ebc9, type: 2}
+    - _key: Take
+      _value: {fileID: 21300000, guid: 2db953f2ae8f41d4e9842d9144a9e396, type: 2}
+    - _key: Open
+      _value: {fileID: 21300000, guid: 1f97d7fac1be1b448824c85e156d9746, type: 2}
+    - _key: Discard
+      _value: {fileID: 21300000, guid: e4d142ab75244e24c89d0c2aec36dbed, type: 2}
+    - _key: Honk
+      _value: {fileID: 21300000, guid: 88c0c549992b597489791caf4a12f18c, type: 2}
+    - _key: Nuke
+      _value: {fileID: 21300000, guid: 3030468639c4d15459be5f65d30a42df, type: 2}
+    _new: 

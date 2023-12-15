@@ -158,6 +158,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7384563213340008115}
   _networkObjectCache: {fileID: 7384563213340008115}
+  _asset: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
   _name: Belt
   _weight: 1
   _startingTraits: []

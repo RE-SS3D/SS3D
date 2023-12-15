@@ -23,7 +23,7 @@ namespace SS3D.Systems.Tile.UI
             _genericObjectSo = genericObjectSo;
             GetComponent<Image>().sprite = genericObjectSo.icon;
             transform.localScale = Vector3.one;
-            GetComponentInChildren<TMP_Text>().text = genericObjectSo.nameString;
+            GetComponentInChildren<TMP_Text>().text = genericObjectSo.NameString;
 
             _hologramManager = GetComponentInParent<ConstructionHologramManager>(); 
         }

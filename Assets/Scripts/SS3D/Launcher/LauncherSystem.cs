@@ -1,6 +1,6 @@
 ﻿using Coimbra;
 using SS3D.Core.Settings;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.SceneManagement;
 using System;
 using UnityEngine;
@@ -33,7 +33,7 @@ namespace SS3D.Launcher
 			networkSettings.ServerAddress = ip;
 			networkSettings.ServerPort = Convert.ToUInt16(port);
 
-			Scene.LoadAsync(Scenes.Intro);
+			Scene.LoadAsync(Scenes.Intro.Name);
 		}
 	}
 }

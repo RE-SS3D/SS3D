@@ -17,6 +17,7 @@ using System.Collections;
 using FishNet.Object.Synchronizing;
 using System.ComponentModel;
 using static UnityEngine.GraphicsBuffer;
+using SS3D.Systems.Interactions;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -128,7 +129,18 @@ namespace SS3D.Systems.Inventory.Containers
 
             Hands.SetInventory(this);
             SetupView();
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+        }
+
+        public void TriggerInventorySetup()
+        {
+            OnInventorySetUp?.Invoke();
+
+            RpcInventorySetup();
+        }
+
+        [ObserversRpc]
+        private void RpcInventorySetup()
+        {
             OnInventorySetUp?.Invoke();
         }
 
@@ -160,13 +172,16 @@ namespace SS3D.Systems.Inventory.Containers
             inventoryView.Setup(this);
         }
 
-        protected override void OnDisabled()
-        {
-            base.OnDisabled();
-            if (!IsOwner) return;
-            var inventoryView = ViewLocator.Get<InventoryView>().First();
-            inventoryView.DestroyAllSlots();
-        }
+		protected override void OnDisabled()
+		{
+			base.OnDisabled();
+			
+			if (!IsOwner) return;
+			
+			InventoryView inventoryView = ViewLocator.Get<InventoryView>().First();
+			inventoryView.DestroyAllSlots();
+
+		}
 
 		/// <summary>
 		/// Add a given container to this inventory, and register to a few events related to the container.
@@ -343,8 +358,14 @@ namespace SS3D.Systems.Inventory.Containers
             {
                 return;
             }
-
             Item item = container.ItemAt(position);
+
+            if(container == Hands.SelectedHand.Container && item != null)
+            {
+                GetComponent<InteractionController>().InteractInHand(item.gameObject, Hands.SelectedHand.gameObject);
+                return;
+            }
+
             // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
             if (Hands.SelectedHand.IsEmpty())
             {

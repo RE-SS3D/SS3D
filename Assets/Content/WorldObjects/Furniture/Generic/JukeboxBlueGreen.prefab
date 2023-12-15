@@ -28,8 +28,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6118765911134750290}
-  m_LocalRotation: {x: -6.123234e-17, y: 1, z: 6.123234e-17, w: -3.7493994e-33}
-  m_LocalPosition: {x: -1, y: 0.00000011920929, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -115,7 +115,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 9
+  <PrefabId>k__BackingField: 123
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -149,8 +149,11 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4294524822034227355}
   _networkObjectCache: {fileID: 4294524822034227355}
-  soundsIds: 010000000200000003000000
-  radioOn: 0
-  currentMusic: 0
-  interactionIcon: {fileID: 0}
-  interactionIconOn: {fileID: 0}
+  _songs:
+  - {fileID: 8300000, guid: ec8b849764a7e9147b2a565f81a1ca42, type: 3}
+  - {fileID: 8300000, guid: fd331e360db5fbb448e66367e41d1893, type: 3}
+  - {fileID: 8300000, guid: 3f51862f0b88a5243a8cceb97147489d, type: 3}
+  RadioOn: 0
+  CurrentMusic: 0
+  InteractionIcon: {fileID: 0}
+  InteractionIconOn: {fileID: 0}

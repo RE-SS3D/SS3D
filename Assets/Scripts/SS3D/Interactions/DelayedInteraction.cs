@@ -14,10 +14,6 @@ namespace SS3D.Interactions
         /// </summary>
         public float Delay { get; set; }
         /// <summary>
-        /// The loading bar prefab to use on the client
-        /// </summary>
-        public GameObject LoadingBarPrefab { get; set; }
-        /// <summary>
         /// The interval in seconds in which CanInteract is checked
         /// </summary>
         protected float CheckInterval { get; set; }
