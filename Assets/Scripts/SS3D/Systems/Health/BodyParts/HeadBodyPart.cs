@@ -1,11 +1,10 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
-using SS3D.Data.Enums;
-using SS3D.Data;
+using SS3D.Data.Generated;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Inventory.Items;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Health
 {
@@ -14,7 +13,8 @@ namespace SS3D.Systems.Health
 	/// </summary>
 	public class HeadBodyPart : BodyPart
 	{
-		public Brain brain;
+		[FormerlySerializedAs("brain")]
+        public Brain Brain;
 
 		public override void Init(BodyPart parent)
 		{
@@ -35,7 +35,7 @@ namespace SS3D.Systems.Health
         private IEnumerator AddInternalOrgans()
         {
             yield return null;
-            AddInternalBodyPart(brain);
+            AddInternalBodyPart(Brain);
         }
 
         protected override void AddInitialLayers()
@@ -79,17 +79,16 @@ namespace SS3D.Systems.Health
         protected override void BeforeDestroyingBodyPart()
         {
             GetComponentInParent<Human>()?.DeactivateComponents();
-            return;
         }
 
         protected override void SpawnOrgans()
         {
-            GameObject brainPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanBrain);
+            GameObject brainPrefab = Items.HumanBrain;
             GameObject brainGameObject = Instantiate(brainPrefab);
-            brain = brainGameObject.GetComponent<Brain>();
-
-            brain.HealthController = HealthController;
-
+            Brain = brainGameObject.GetComponent<Brain>();
+            
+            Brain.HealthController = HealthController;
+            
             Spawn(brainGameObject, Owner);
         }
     }

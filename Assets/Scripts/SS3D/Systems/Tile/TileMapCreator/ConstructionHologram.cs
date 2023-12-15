@@ -1,6 +1,5 @@
 ﻿using Coimbra;
-using SS3D.Data;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -63,23 +62,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="mode"></param>
         public void ChangeHologramColor(ConstructionMode mode)
         {
-            Material ghostMat = null;
-
-            switch (mode)
+            Material ghostMat = mode switch
             {
-                case ConstructionMode.Valid:
-                    ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.ValidConstruction);
-                    break;
+                ConstructionMode.Valid => Materials.ValidConstruction,
+                ConstructionMode.Invalid => Materials.InvalidConstruction,
+                ConstructionMode.Delete => Materials.DeleteConstruction,
+                _ => null
+            };
 
-                case ConstructionMode.Invalid:
-                    ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.InvalidConstruction);
-                    break;
-
-                case ConstructionMode.Delete:
-                    ghostMat = Assets.Get<Material>((int)AssetDatabases.Materials, (int)MaterialsIds.DeleteConstruction);
-                    break;
-            }
-            
             foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())
             {
                 Material[] materials = mr.materials;

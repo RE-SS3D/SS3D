@@ -216,6 +216,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 2527334834019670621}
   _networkObjectCache: {fileID: 2527334834019670621}
+  _asset: {fileID: 11400000, guid: 620dc53a5608be44a975c990e69ddba5, type: 2}
   _name: Jumpsuit Grey
   _weight: 1
   _startingTraits:

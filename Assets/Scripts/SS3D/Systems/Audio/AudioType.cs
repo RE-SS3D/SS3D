@@ -6,8 +6,8 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public enum AudioType
     {
-        music = 0,
-        sfx = 1,
-        ambient = 2,
+        Music = 0,
+        Sfx = 1,
+        Ambient = 2,
     }
 }

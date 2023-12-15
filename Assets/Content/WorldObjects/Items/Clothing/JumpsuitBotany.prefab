@@ -209,6 +209,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1606100486293266847}
   _networkObjectCache: {fileID: 1606100486293266847}
+  _asset: {fileID: 11400000, guid: 6a9a8af0ce91a634ab42f12ebc7b24a6, type: 2}
   _name: Jumpsuit Botany
   _weight: 0
   _startingTraits:

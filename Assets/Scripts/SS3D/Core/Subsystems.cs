@@ -68,6 +68,7 @@ namespace SS3D.Core
 
             if (!RegisteredSubsystems.TryGetValue(type, out object _))
             {
+                Serilog.Log.Information($"{nameof(Subsystems)} - Registering {system.GetType().Name}");
                 RegisteredSubsystems.Add(type, system);
             }
         }
@@ -78,6 +79,7 @@ namespace SS3D.Core
         /// <param name="system">The system to unregister.</param>
         public static void Unregister([NotNull] object system)
         {
+            Serilog.Log.Information($"{nameof(Subsystems)} - Unregistering {system.GetType().Name}");
             RegisteredSubsystems.Remove(system.GetType());
         }
     }

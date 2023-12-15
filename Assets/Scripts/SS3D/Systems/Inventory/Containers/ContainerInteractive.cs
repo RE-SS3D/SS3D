@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -31,18 +30,18 @@ namespace SS3D.Systems.Inventory.Containers
 
             StoreInteraction storeInteraction = new(attachedContainer)
             {
-                Icon = Assets.Get(InteractionIcons.Take)
+                Icon = InteractionIcons.Take
         };
             TakeFirstInteraction takeFirstInteraction = new(attachedContainer)
             {
-                Icon = Assets.Get(InteractionIcons.Take)
+                Icon = InteractionIcons.Take
             };
             ViewContainerInteraction view = new(attachedContainer)
             {
                 MaxDistance = attachedContainer.MaxDistance, Icon = _viewContainerIcon
             };
 
-            view.Icon = Assets.Get(InteractionIcons.Open);
+            view.Icon = InteractionIcons.Open;
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !attachedContainer.OnlyStoreWhenOpen | !attachedContainer.IsOpenable)
@@ -66,14 +65,13 @@ namespace SS3D.Systems.Inventory.Containers
 
             OpenInteraction openInteraction = new(attachedContainer)
             {
-                Icon = Assets.Get(InteractionIcons.Open)
+                Icon = InteractionIcons.Open
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
             interactions.Add(openInteraction);
 
             return interactions.ToArray();
         }
-
 
         protected override void OpenStateChanged(object sender, bool e)
         {

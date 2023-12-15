@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Coimbra;
+using Serilog;
 using Serilog.Sinks.Unity3D;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
@@ -7,7 +8,6 @@ using FishNet;
 using System;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
-using SS3D.Data;
 using Log = Serilog.Log;
 
 
@@ -25,24 +25,20 @@ namespace SS3D.Core
         private static readonly string LogFolderPath;
         private static bool IsInitialized;
 
-        private static readonly LogSettings Settings;
+        private static LogSettings Settings;
 
         static LogManager()
         {
             DefaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
             LogFolderPath = Application.dataPath + "/../Logs/";
-
-            if (Application.isPlaying)
-            {
-                Settings = Assets.Get<LogSettings>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
-            }
-            
         }
 
         public static void Initialize()
         {
             if (IsInitialized) return;
             IsInitialized = true;
+
+            Settings = ScriptableSettings.GetOrFind<LogSettings>();
 
             var configuration = new LoggerConfiguration();
 
@@ -53,8 +49,6 @@ namespace SS3D.Core
 
             // Configure writing to Unity's console, using our custom text formatter.
             configuration = configuration.WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: DefaultUnityLogTemplate));
-
-
 
             // Create the logger from the configuration.
             Log.Logger = configuration.CreateLogger();

@@ -245,6 +245,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4052990814619214022}
   _networkObjectCache: {fileID: 4052990814619214022}
+  _asset: {fileID: 11400000, guid: fd8e3cf550cdc704281d3b94b5c8d631, type: 2}
   _name: Wrench
   _weight: 1
   _startingTraits: []

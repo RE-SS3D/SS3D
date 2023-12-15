@@ -1,16 +1,15 @@
 ﻿using SS3D.Data;
-using SS3D.Data.Enums;
-using SS3D.Systems;
+using SS3D.Data.Generated;
 using SS3D.Systems.Health;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class HumanTorso : BodyPart
 {
-    public Heart heart;
-    public Lungs leftLung;
-    public Lungs rightLung;
+    public Heart Heart;
+    public Lungs LeftLung;
+    public Lungs RightLung;
 
     public override void OnStartServer()
     {
@@ -26,25 +25,25 @@ public class HumanTorso : BodyPart
     private IEnumerator AddInternalOrgans()
     {
         yield return null;
-        AddInternalBodyPart(heart);
-        AddInternalBodyPart(leftLung);
-        AddInternalBodyPart(rightLung);
+        AddInternalBodyPart(Heart);
+        AddInternalBodyPart(LeftLung);
+        AddInternalBodyPart(RightLung);
     }
 
     protected override void SpawnOrgans()
     {
-        GameObject heartPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanHeart);
-        GameObject leftLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanLungLeft);
-        GameObject rightLungPrefab = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)ItemId.HumanLungRight);
-
+        GameObject heartPrefab = Items.HumanHeart;
+        GameObject leftLungPrefab = Items.HumanLungLeft;
+        GameObject rightLungPrefab = Items.HumanLungRight;;
+        
         GameObject heartGameObject = Instantiate(heartPrefab);
         GameObject leftLungGameObject = Instantiate(leftLungPrefab);
         GameObject rightLungGameObject = Instantiate(rightLungPrefab);
-
-        heart = heartGameObject.GetComponent<Heart>();
-        leftLung = leftLungGameObject.GetComponent<Lungs>();
-        rightLung = rightLungGameObject.gameObject.GetComponent<Lungs>();
-
+        
+        Heart = heartGameObject.GetComponent<Heart>();
+        LeftLung = leftLungGameObject.GetComponent<Lungs>();
+        RightLung = rightLungGameObject.gameObject.GetComponent<Lungs>();
+        
         Spawn(heartGameObject, Owner);
         Spawn(leftLungGameObject, Owner);
         Spawn(rightLungGameObject, Owner);
@@ -56,16 +55,11 @@ public class HumanTorso : BodyPart
         TryAddBodyLayer(new BoneLayer(this));
         TryAddBodyLayer(new CirculatoryLayer(this, 8f));
         TryAddBodyLayer(new NerveLayer(this));
+
         InvokeOnBodyPartLayerAdded();
     }
 
-    protected override void AfterSpawningCopiedBodyPart()
-    {
-        return;
-    }
+    protected override void AfterSpawningCopiedBodyPart() { }
 
-    protected override void BeforeDestroyingBodyPart()
-    {
-        return;
-    }
+    protected override void BeforeDestroyingBodyPart() { }
 }

@@ -2,18 +2,14 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Data;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.Inventory.Items.Generic;
-using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {
     public class Nuke : InteractionSource, IInteractionTarget
     {
-        [SerializeField] private Sprite _sprite;
-
         [ServerRpc(RequireOwnership = false)]
         public void Detonate()
         {
@@ -23,9 +19,7 @@ namespace SS3D.Systems.Furniture
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            _sprite = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, (int)InteractionIcons.Nuke);
-
-            return new IInteraction[] { new NukeDetonateInteraction { Icon = _sprite } };
+            return new IInteraction[] { new NukeDetonateInteraction { Icon = InteractionIcons.Nuke } };
         }
     }
 }

@@ -166,6 +166,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 881130758709618923}
   _networkObjectCache: {fileID: 881130758709618923}
+  _asset: {fileID: 11400000, guid: 1a9f9df755637c3478bf4649e7ab04fd, type: 2}
   _name: medical patch
   _weight: 1
   _startingTraits: []

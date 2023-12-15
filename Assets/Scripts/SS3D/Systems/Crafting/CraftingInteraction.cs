@@ -1,14 +1,11 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
-using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Logging;
-using SS3D.Substances;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace SS3D.Systems.Crafting
 {
@@ -42,7 +39,7 @@ namespace SS3D.Systems.Crafting
 
             List<IRecipeIngredient> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(target);
 
-            Dictionary<ItemId, int> potentialRecipeElements = craftingSystem.
+            Dictionary<Item, int> potentialRecipeElements = craftingSystem.
                 ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
 
             if (!craftingSystem.CheckEnoughCloseItemsForRecipe(potentialRecipeElements, _recipe)) return false;

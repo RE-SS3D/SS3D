@@ -252,6 +252,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
+  _asset: {fileID: 11400000, guid: 4773cbe0a88c809459547e0d0eff8d29, type: 2}
   _name: 
   _weight: 1
   _startingTraits:
