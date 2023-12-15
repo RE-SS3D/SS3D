@@ -5,6 +5,7 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,11 @@ namespace SS3D.Systems.Crafting
     public class CraftingSystem : NetworkSystem
     {
         /// <summary>
-        /// ItemId is the id of the target item of the recipe.
-        /// The string is the name of the interaction.
+        /// First string is the id of the target object of the recipe (as the WorldObjectAssetReference's id).
+        /// The second string is the name of the interaction.
         /// The value is a list of craftingRecipe, sorted by their target and needed interactions.
         /// </summary>
-        private Dictionary<Item, Dictionary<string, CraftingRecipe>> _recipeOrganiser = new();
+        private Dictionary<string, Dictionary<string, CraftingRecipe>> _recipeOrganiser = new();
 
         public override void OnStartNetwork()
         {
@@ -48,14 +49,14 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
 
-                _recipeOrganiser.TryAdd(recipe.Target, new Dictionary<string, CraftingRecipe>());
-                _recipeOrganiser[recipe.Target][recipe.InteractionName] = recipe;
+                _recipeOrganiser.TryAdd(recipe.Target.Id, new Dictionary<string, CraftingRecipe>());
+                _recipeOrganiser[recipe.Target.Id][recipe.InteractionName] = recipe;
             }
         }
 
-        public bool TryGetRecipe(Interaction craftingInteraction, IAssetRefProvider target, out CraftingRecipe recipe)
+        public bool TryGetRecipe(Interaction craftingInteraction, IWorldObjectAsset target, out CraftingRecipe recipe)
         {
-            if (!_recipeOrganiser.TryGetValue(target.Prefab, out Dictionary<string, CraftingRecipe> dic))
+            if (!_recipeOrganiser.TryGetValue(target.Asset.Id, out Dictionary<string, CraftingRecipe> dic))
             {
                 recipe = null;
 
@@ -85,7 +86,7 @@ namespace SS3D.Systems.Crafting
         [Server]
         public void Craft(InteractionEvent interaction, List<IRecipeIngredient> itemToConsume, CraftingRecipe recipe)
         {
-            IRecipeIngredient craftableTarget = interaction.Target.GetComponent<IRecipeIngredient>();
+            IRecipeIngredient craftableTarget = interaction.Target.GetGameObject().GetComponent<IRecipeIngredient>();
             
             if(recipe.ConsumeTarget) craftableTarget.Consume();
 
@@ -93,10 +94,9 @@ namespace SS3D.Systems.Crafting
             {
                 item.Consume();
             }
-            foreach(ItemId id in recipe.Result)
+            foreach(GameObject prefab in recipe.Result)
             {
-                ICraftable itemResult =  Assets.Get<GameObject>(AssetDatabases.Items, (int)id).GetComponent<ICraftable>();
-                itemResult.Craft(interaction);
+                prefab.GetComponent<ICraftable>()?.Craft(interaction);
             }  
         }
 
@@ -104,12 +104,12 @@ namespace SS3D.Systems.Crafting
         /// Build the list of items we want to consume. Don't add more to
         /// the list than necessary.
         /// </summary>
-        public List<IRecipeIngredient> BuildListOfItemToConsume(List<IRecipeIngredient> closeItemsFromTarget,
+        public List<IRecipeIngredient> BuildListOfItemToConsume(List<IWorldObjectAsset> closeItemsFromTarget,
             CraftingRecipe recipe)
         {
-            List<IRecipeIngredient>  ItemsToConsume = new List<IRecipeIngredient>();
+            List<IRecipeIngredient>  itemsToConsume = new List<IRecipeIngredient>();
 
-            Dictionary<Item, int> recipeElements = new Dictionary<Item, int>(recipe.Elements);
+            Dictionary<string, int> recipeElements = new Dictionary<string, int>(recipe.Elements);
 
             foreach (IRecipeIngredient item in closeItemsFromTarget)
             {
@@ -130,9 +130,9 @@ namespace SS3D.Systems.Crafting
         /// TODO : only collider for item ? Should then ensure collider of item is on the
         /// same game object as item script for all items. Would avoid the getInParent.
         /// </summary>
-        public List<IRecipeIngredient> GetCloseItemsFromTarget(IAssetRefProvider target)
+        public List<IRecipeIngredient> GetCloseItemsFromTarget(GameObject target)
         {
-            Vector3 center = target.GameObject.transform.position;
+            Vector3 center = target.transform.position;
 
             float radius = 3f;
 
@@ -171,12 +171,14 @@ namespace SS3D.Systems.Crafting
             return true;
         }
 
-        public Dictionary<ItemId, int> ItemListToDictionnaryOfRecipeElements(List<IRecipeIngredient> closeItemsFromTarget)
+        public Dictionary<string, int> ItemListToDictionnaryOfRecipeElements(List<IRecipeIngredient> closeItemsFromTarget)
         {
             // Transform the list into a dictionnary of itemsID and counts of items.
             // This is some overhead to allow for fast comparison between recipe and 
             // available items.
-            Dictionary<Item, int> potentialRecipeElements = closeItemsFromTarget.GroupBy(item => item).ToDictionary(group => group.Key, group => group.Count());
+            Dictionary<string, int> potentialRecipeElements = closeItemsFromTarget
+                .GroupBy(x => x.GameObject.GetComponent<IWorldObjectAsset>().Asset.Id)
+                .ToDictionary(group => group.Key, group => group.Count());
 
             return potentialRecipeElements;
         }

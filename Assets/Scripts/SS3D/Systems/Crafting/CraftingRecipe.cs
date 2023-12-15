@@ -28,22 +28,22 @@ namespace SS3D.Systems.Crafting
 		[SerializeField]
 		private SerializableDictionary<WorldObjectAssetReference, int> _elements = new();
 
-                [SerializeField]
-                private bool _consumeTarget;
+        [SerializeField]
+        private bool _consumeTarget;
 
 		/// <summary>
-		/// The items and their respective numbers necessary for the recipe.
+		/// The world objects ids and their respective numbers necessary for the recipe.
 		/// </summary>
-		public Dictionary<Item, int> Elements
+		public Dictionary<string, int> Elements
 		{
 			get
 			{
-				Dictionary<Item, int> elements = new Dictionary<Item, int>();
+				Dictionary<string, int> elements = new Dictionary<string, int>();
 
 
 				foreach (KeyValuePair<WorldObjectAssetReference,int> keyValuePair in _elements)
 				{
-					elements.Add(keyValuePair.Key.Prefab.GetComponent<Item>(), keyValuePair.Value);
+					elements.Add(keyValuePair.Key.Id, keyValuePair.Value);
 				}
 
 				return elements;
@@ -63,7 +63,7 @@ namespace SS3D.Systems.Crafting
 		/// <summary>
 		/// The target of the recipe, which is the item on which the player must click to get the crafting interactions.
 		/// </summary>
-		public Item Target => _target.Prefab.GetComponent<Item>();
+		public WorldObjectAssetReference Target => _target;
 
 		/// <summary>
 		/// The result of the crafting.
@@ -71,6 +71,8 @@ namespace SS3D.Systems.Crafting
 		public List<GameObject> Result => _result.Select(reference => reference.Prefab).ToList();
 
 		public int ElementsNumber => _elements.Sum(x => x.Value);
+
+        public bool ConsumeTarget => _consumeTarget;
 	}
 }
 

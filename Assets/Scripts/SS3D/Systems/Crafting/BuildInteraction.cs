@@ -1,20 +1,11 @@
-﻿using Cysharp.Threading.Tasks.Triggers;
-using FishNet.Object;
-using SS3D.Core;
+﻿using SS3D.Core;
 using SS3D.Data;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
-using SS3D.Logging;
-using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace SS3D.Systems.Crafting
 {
@@ -41,6 +32,8 @@ namespace SS3D.Systems.Crafting
             if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
 
             if (!base.CanInteract(interactionEvent)) return false;
+
+            Assets.Get<GameObject>(AssetDatabases.Items, _recipe.Result[0].name).GetComponent<Item>();
 
             GameObject recipeResult = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)_recipe.Result[0]);
 

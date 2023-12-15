@@ -1,10 +1,7 @@
-﻿using SS3D.Data.Enums;
-using SS3D.Interactions.Interfaces;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using SS3D.Interactions.Interfaces;
 
-public interface IRecipeIngredient : INetworkObjectProvider, IGameObjectProvider, IAssetRefProvider
+
+public interface IRecipeIngredient : INetworkObjectProvider, IGameObjectProvider
 {
     public void Consume();
 }
