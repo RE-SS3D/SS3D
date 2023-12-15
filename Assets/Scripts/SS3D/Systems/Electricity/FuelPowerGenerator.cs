@@ -65,7 +65,7 @@ namespace System.Electricity
             }
             else
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, Sounds.Can1, Position, NetworkObject,
+                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject,
                     true, 0.7f, 1, 1, 10);
             }
         }
