@@ -14,6 +14,9 @@ GameObject:
   - component: {fileID: -2628458568064459714}
   - component: {fileID: 219113547575591534}
   - component: {fileID: 2550114539843098724}
+  - component: {fileID: -2157900375506616301}
+  - component: {fileID: 307464032366887658}
+  - component: {fileID: 7239473696267242548}
   m_Layer: 0
   m_Name: PacManGenerator
   m_TagString: Untagged
@@ -55,6 +58,8 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 219113547575591534}
+  - {fileID: -2157900375506616301}
+  - {fileID: 307464032366887658}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -66,7 +71,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 157
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -128,6 +133,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _amplitude: 1
   _frequency: 35
+--- !u!114 &-2157900375506616301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+--- !u!114 &307464032366887658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31d360eea9f7cb147a1b530b7842ff73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+  _on: 0
+--- !u!65 &7239473696267242548
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.9038, y: 0.9088632, z: 0.8278526}
+  m_Center: {x: -0.012657881, y: 0.42530543, z: 0.015189469}
 --- !u!1 &4271595947011161493
 GameObject:
   m_ObjectHideFlags: 0
