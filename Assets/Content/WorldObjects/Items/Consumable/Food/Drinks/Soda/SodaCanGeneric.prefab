@@ -50,6 +50,8 @@ GameObject:
   - component: {fileID: -6509701768596653782}
   - component: {fileID: -1409642175327164469}
   - component: {fileID: 844800983004635204}
+  - component: {fileID: 2460252798676826451}
+  - component: {fileID: 1335663030982295525}
   m_Layer: 10
   m_Name: SodaCanGeneric
   m_TagString: Untagged
@@ -229,7 +231,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 51
+  <PrefabId>k__BackingField: 59
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -320,3 +322,28 @@ MonoBehaviour:
   _hardImpactSounds:
   - {fileID: 8300000, guid: f00c6b5a098e84b4b87d80d23b4f295a, type: 3}
   - {fileID: 8300000, guid: b315c4abdef36244fb211c5f643d411a, type: 3}
+--- !u!114 &2460252798676826451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423412686940963211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1335663030982295525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423412686940963211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 4ae07ac1297905a44ab1d66984e20c86, type: 2}
