@@ -103,6 +103,7 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Destroys itself.
         /// </summary>
+        [Server]
         public void DestroySelf()
         {
             InstanceFinder.ServerManager.Despawn(gameObject);

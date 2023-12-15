@@ -1288,6 +1288,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4176238770325068939}
   _networkObjectCache: {fileID: 4176238770325068939}
+  _asset: {fileID: 11400000, guid: a2e3308047618af46829bdbc0856d60e, type: 2}
   _name: human head
   _weight: 0
   _startingTraits: []

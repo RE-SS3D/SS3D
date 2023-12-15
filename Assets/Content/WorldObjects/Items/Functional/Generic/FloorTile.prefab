@@ -16,10 +16,8 @@ GameObject:
   - component: {fileID: 2717170585512287581}
   - component: {fileID: 8767567404870203102}
   - component: {fileID: 2885876316184551953}
-  - component: {fileID: 1034747657592807112}
-  - component: {fileID: 8649140778291241327}
   m_Layer: 10
-  m_Name: FloorTile
+  m_Name: GreyFloorTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,6 +180,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 2717170585512287581}
+  - {fileID: 2885876316184551953}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -193,11 +192,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 23
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 10418307359914320273
+  <AssetPathHash>k__BackingField: 2709704071178511549
 --- !u!114 &2885876316184551953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,9 +209,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf76e303c1b57ae4ebbf08dab5bbddc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8767567404870203102}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8767567404870203102}
+  _asset: {fileID: 11400000, guid: b759f5ec1b4de73429ca98ebdfe43886, type: 2}
   _name: Grey floor tile
   _weight: 1
   _startingTraits: []
@@ -220,31 +220,6 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8309000899177645629}
   AttachmentPointAlt: {fileID: 8309000899177645629}
   _container: {fileID: 0}
---- !u!114 &1034747657592807112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7125681683583715523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8649140778291241327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7125681683583715523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: da1d81aeb7307a34ca2dc4784b6caf73, type: 2}
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

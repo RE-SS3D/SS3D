@@ -1,16 +1,11 @@
 ﻿using FishNet;
 using FishNet.Object;
-using JetBrains.Annotations;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
-using SS3D.Logging.LogSettings;
-using SS3D.Substances;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Roles;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,7 +20,7 @@ namespace SS3D.Systems.Crafting
         /// The string is the name of the interaction.
         /// The value is a list of craftingRecipe, sorted by their target and needed interactions.
         /// </summary>
-        private Dictionary<ItemId, Dictionary<string, CraftingRecipe>> _recipeOrganiser = new();
+        private Dictionary<Item, Dictionary<string, CraftingRecipe>> _recipeOrganiser = new();
 
         public override void OnStartNetwork()
         {
@@ -43,14 +38,15 @@ namespace SS3D.Systems.Crafting
         private void FillRecipeOrganiser()
         {
             AssetDatabase recipesDataBase = Assets.GetDatabase(AssetDatabases.CraftingRecipes);
-            foreach(Object asset in recipesDataBase.Assets)
+
+            foreach (Object asset in recipesDataBase.Assets.Values)
             {
-                if(asset is not CraftingRecipe)
+                if (asset is not CraftingRecipe recipe)
                 {
                     Debug.LogError("Crafting recipe database contains object which are not recipes");
+
                     continue;
                 }
-                CraftingRecipe recipe = (CraftingRecipe) asset;
 
                 _recipeOrganiser.TryAdd(recipe.Target, new Dictionary<string, CraftingRecipe>());
                 _recipeOrganiser[recipe.Target][recipe.InteractionName] = recipe;
@@ -59,19 +55,22 @@ namespace SS3D.Systems.Crafting
 
         public bool TryGetRecipe(Interaction craftingInteraction, Item target, out CraftingRecipe recipe)
         {
-            if(!_recipeOrganiser.TryGetValue(target.ItemId, out Dictionary<string, CraftingRecipe> dic))
+            if (!_recipeOrganiser.TryGetValue(target.Prefab, out Dictionary<string, CraftingRecipe> dic))
             {
                 recipe = null;
+
                 return false;
             }
 
             if (!dic.TryGetValue(craftingInteraction.GetGenericName(), out CraftingRecipe recipeSearched))
             {
                 recipe = null;
+
                 return false;
             }
 
             recipe = recipeSearched;
+
             return true;
         }
 
@@ -84,40 +83,45 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(Item target, List<Item> itemToConsume, List<ItemId> result)
+        public void Craft(Item target, List<Item> itemToConsume, List<Item> result)
         {
             target.Despawn();
+
             foreach (Item item in itemToConsume)
             {
                 item.Despawn();
             }
-            foreach(ItemId id in result)
+
+            foreach (Item id in result)
             {
-                GameObject itemResult = Assets.Get<GameObject>(AssetDatabases.Items, (int)id);
+                GameObject itemResult = id.Prefab.GameObject;
                 GameObject product = Instantiate(itemResult, target.Position, target.Rotation);
                 InstanceFinder.ServerManager.Spawn(product);
-            }  
+            }
         }
 
         /// <summary>
         /// Build the list of items we want to consume. Don't add more to
         /// the list than necessary.
         /// </summary>
-        public List<Item> BuildListOfItemToConsume(List<Item> closeItemsFromTarget,
-            CraftingRecipe recipe)
+        public List<Item> BuildListOfItemToConsume(List<Item> closeItemsFromTarget, CraftingRecipe recipe)
         {
-            List<Item>  ItemsToConsume = new List<Item>();
+            List<Item> itemsToConsume = new List<Item>();
 
-            Dictionary<ItemId, int> recipeElements = new Dictionary<ItemId, int>(recipe.Elements);
+            Dictionary<Item, int> recipeElements = new Dictionary<Item, int>(recipe.Elements);
 
             foreach (Item item in closeItemsFromTarget)
             {
-                if (recipeElements.GetValueOrDefault(item.ItemId) <= 0) continue;
-                ItemsToConsume.Add(item);
-                recipeElements[item.ItemId] -= 1;
+                if (recipeElements.GetValueOrDefault(item) <= 0)
+                {
+                    continue;
+                }
+
+                itemsToConsume.Add(item);
+                recipeElements[item] -= 1;
             }
 
-            return ItemsToConsume;
+            return itemsToConsume;
         }
 
         /// <summary>
@@ -137,7 +141,10 @@ namespace SS3D.Systems.Crafting
             foreach (Collider hitCollider in hitColliders)
             {
                 Item item = hitCollider.GetComponentInParent<Item>();
-                if (item == null) continue;
+
+                if (item == null)
+                    continue;
+
                 closeItemsFromTarget.Add(item);
             }
 
@@ -150,13 +157,13 @@ namespace SS3D.Systems.Crafting
         /// <param name="potentialRecipeElements"> Items that can potentially be used </param>
         /// <param name="recipe"> The recipe for which we want to check items</param>
         /// <returns></returns>
-        public bool CheckEnoughCloseItemsForRecipe(Dictionary<ItemId, int> potentialRecipeElements,
-            CraftingRecipe recipe)
+        public bool CheckEnoughCloseItemsForRecipe(Dictionary<Item, int> potentialRecipeElements, CraftingRecipe recipe)
         {
             // check if there's enough of each item.
-            foreach (ItemId item in recipe.Elements.Keys.ToList())
+            foreach (Item item in recipe.Elements.Keys.ToList())
             {
                 int potentialRecipeItemCount = potentialRecipeElements.GetValueOrDefault(item);
+
                 if (potentialRecipeItemCount < recipe.Elements[item])
                 {
                     return false;
@@ -166,14 +173,12 @@ namespace SS3D.Systems.Crafting
             return true;
         }
 
-        public Dictionary<ItemId, int> ItemListToDictionnaryOfRecipeElements(List<Item> closeItemsFromTarget)
+        public Dictionary<Item, int> ItemListToDictionnaryOfRecipeElements(List<Item> closeItemsFromTarget)
         {
             // Transform the list into a dictionnary of itemsID and counts of items.
             // This is some overhead to allow for fast comparison between recipe and 
             // available items.
-            Dictionary<ItemId, int> potentialRecipeElements = closeItemsFromTarget
-            .GroupBy(item => item.ItemId)
-            .ToDictionary(group => group.Key, group => group.Count());
+            Dictionary<Item, int> potentialRecipeElements = closeItemsFromTarget.GroupBy(item => item).ToDictionary(group => group.Key, group => group.Count());
 
             return potentialRecipeElements;
         }

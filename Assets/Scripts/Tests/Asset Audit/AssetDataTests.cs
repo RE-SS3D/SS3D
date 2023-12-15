@@ -2,6 +2,7 @@
 using Coimbra;
 using NUnit.Framework;
 using SS3D.Data.AssetDatabases;
+using System.Linq;
 using UnityEngine;
 
 namespace AssetAudit
@@ -80,9 +81,10 @@ namespace AssetAudit
             bool hasNullAssets = false;
             Dictionary<AssetDatabase, List<int>> assetDatabasesNullRefIndexes = new();
 
+
             for (int index = 0; index < assetDatabase.Assets.Count; index++)
             {
-                Object asset = assetDatabase.Assets[index];
+                Object asset = assetDatabase.Assets.Values.ToList()[index];
 
                 if (asset != null)
                 {

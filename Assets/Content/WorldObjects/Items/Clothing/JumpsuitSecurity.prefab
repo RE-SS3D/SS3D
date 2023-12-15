@@ -267,6 +267,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 4067691560622095404}
   _networkObjectCache: {fileID: 4067691560622095404}
+  _asset: {fileID: 11400000, guid: 9abef62d6f4edd443b3fa81a32f9a5ba, type: 2}
   _name: JumpsuitSecurity
   _weight: 1
   _startingTraits:

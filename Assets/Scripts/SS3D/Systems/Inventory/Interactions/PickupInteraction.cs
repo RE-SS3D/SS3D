@@ -1,10 +1,9 @@
-﻿using SS3D.Data;
-using SS3D.Interactions;
+﻿using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.GameModes.Events;
 using UnityEngine;
-using SS3D.Data.Enums;
+using SS3D.Data.Generated;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 
@@ -22,7 +21,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : InteractionIcons.Take;
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

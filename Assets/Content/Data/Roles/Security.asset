@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Security
   m_EditorClassIdentifier: 
   _roleName: Security
-  _pdaPrefab: 3
-  _idCardPrefab: 4
+  _pdaPrefab: {fileID: 5261116577612792016, guid: 79260483ae5d3e04fa272e092b49abac, type: 3}
+  _idCardPrefab: {fileID: 5261116577612792016, guid: d8b0c8d1ddcdeb24d9763054c103c9fe, type: 3}
   _permissions:
   - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
   - {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}

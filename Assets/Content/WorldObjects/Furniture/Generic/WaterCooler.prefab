@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 5365327852086030798}
   - component: {fileID: 5914893391797201027}
   - component: {fileID: 4220345139042552220}
+  - component: {fileID: 1070189401407111485}
+  - component: {fileID: 6803072759524034688}
   m_Layer: 0
   m_Name: WaterCooler
   m_TagString: Untagged
@@ -132,6 +134,31 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7007407632219599715
+--- !u!114 &1070189401407111485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 260173893888736664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6803072759524034688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 260173893888736664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 9c28c54f0f015e34989a4d62705b5407, type: 2}
 --- !u!1 &2227416688248830535
 GameObject:
   m_ObjectHideFlags: 0

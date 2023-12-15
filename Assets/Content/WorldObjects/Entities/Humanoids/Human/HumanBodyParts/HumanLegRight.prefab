@@ -385,6 +385,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1103916381626794010}
   _networkObjectCache: {fileID: 1103916381626794010}
+  _asset: {fileID: 11400000, guid: bdf3672429311474e98ba5cc343fe76c, type: 2}
   _name: human leg right
   _weight: 0
   _startingTraits: []

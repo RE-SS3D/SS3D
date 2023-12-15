@@ -181,6 +181,8 @@ GameObject:
   - component: {fileID: 3298710121668139635}
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7727612398117917681}
+  - component: {fileID: -7446731280164012348}
+  - component: {fileID: 4254108774214416958}
   m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
@@ -355,7 +357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: ee4264e6206f48b40bd5a390dc1ffe2e, type: 2}
+  key: {fileID: 11400000, guid: 2a5aba53a318c5a40a737397dd3d6530, type: 2}
 --- !u!1001 &1462619981128899051
 PrefabInstance:
   m_ObjectHideFlags: 0

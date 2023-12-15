@@ -265,6 +265,7 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 5958074810027370513}
   _networkObjectCache: {fileID: 5958074810027370513}
+  _asset: {fileID: 0}
   _name: 
   _weight: 1
   _startingTraits: []
@@ -306,12 +307,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1ed2939192a85040bcf588bd471b6c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionVolume: 0.7
-  basePitch: 1
-  pitchModulationLow: 0
-  pitchModulationHigh: 0
-  lightImpactVelocity: 0.5
-  useHardImpactSounds: 0
-  hardImpactVelocity: 7.5
-  lightImpactSounds: 04000000050000000600000007000000
-  hardImpactSounds: 
+  _collisionVolume: 0.7
+  _basePitch: 1
+  _pitchModulationLow: 0
+  _pitchModulationHigh: 0
+  _lightImpactVelocity: 0.5
+  _useHardImpactSounds: 0
+  _hardImpactVelocity: 7.5
+  _lightImpactSounds:
+  - {fileID: 8300000, guid: 1a34c805f84be3b4caac14d7de790607, type: 3}
+  - {fileID: 8300000, guid: 8d93fdf9dcada204a952e29213f0293f, type: 3}
+  _hardImpactSounds:
+  - {fileID: 8300000, guid: f00c6b5a098e84b4b87d80d23b4f295a, type: 3}
+  - {fileID: 8300000, guid: b315c4abdef36244fb211c5f643d411a, type: 3}
