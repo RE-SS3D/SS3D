@@ -11,13 +11,13 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
     {
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the South edge is connected")]
+        [Tooltip("A mesh where the North edge is connected")]
         public Mesh u;
-        [Tooltip("A mesh where the South & south edges are connected")]
+        [Tooltip("A mesh where the North & South edges are connected")]
         public Mesh i;
-        [Tooltip("A mesh where the South & West edges are connected")]
+        [Tooltip("A mesh where the North & East edges are connected")]
         public Mesh l;
-        [Tooltip("A mesh where the South, West, and west edges are connected")]
+        [Tooltip("A mesh where the South, East, and West edges are connected")]
         public Mesh t;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;

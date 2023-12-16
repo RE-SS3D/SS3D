@@ -361,6 +361,8 @@ GameObject:
   - component: {fileID: 3298710121668139635}
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7199567936746149742}
+  - component: {fileID: 6954863941470117704}
+  - component: {fileID: -594752012234974818}
   m_Layer: 10
   m_Name: ToolboxBlue
   m_TagString: Untagged
@@ -536,7 +538,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 109
+  <PrefabId>k__BackingField: 119
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -559,6 +561,31 @@ MonoBehaviour:
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 8518940750606334703}
+--- !u!114 &6954863941470117704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-594752012234974818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: f8d4d1baf366ce54c83e654f1d641a09, type: 2}
 --- !u!1 &8066562249021099569
 GameObject:
   m_ObjectHideFlags: 0
