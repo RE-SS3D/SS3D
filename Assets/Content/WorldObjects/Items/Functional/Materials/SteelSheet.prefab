@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8656846444830386963}
   - component: {fileID: 6375041922968068557}
   m_Layer: 10
-  m_Name: SheetIron2
+  m_Name: Sheet2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2998748595629600617}
-  m_Mesh: {fileID: -1508831514557846782, guid: 00e2b7697653fa7498c6575cd9b2b745, type: 3}
+  m_Mesh: {fileID: 2826824588125226089, guid: 00e2b7697653fa7498c6575cd9b2b745, type: 3}
 --- !u!23 &8656846444830386963
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 602273015192404059}
   - component: {fileID: 5932657167524609726}
   m_Layer: 10
-  m_Name: SheetIron
+  m_Name: Sheet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,7 +138,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4292740740182341727}
-  m_Mesh: {fileID: -1508831514557846782, guid: 00e2b7697653fa7498c6575cd9b2b745, type: 3}
+  m_Mesh: {fileID: 2826824588125226089, guid: 00e2b7697653fa7498c6575cd9b2b745, type: 3}
 --- !u!23 &602273015192404059
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -207,6 +207,8 @@ GameObject:
   - component: {fileID: 2568864249795578972}
   - component: {fileID: 1773710978803455870}
   - component: {fileID: 5296084984690686628}
+  - component: {fileID: 1034747657592807112}
+  - component: {fileID: -6912970792608638436}
   m_Layer: 10
   m_Name: SteelSheet
   m_TagString: Untagged
@@ -323,7 +325,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 36
+  <PrefabId>k__BackingField: 43
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -351,6 +353,31 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8309000899177645629}
   AttachmentPointAlt: {fileID: 8309000899177645629}
   _container: {fileID: 0}
+--- !u!114 &1034747657592807112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6912970792608638436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: d815fb2be2a317a458cac4112cceb75b, type: 2}
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +391,7 @@ GameObject:
   - component: {fileID: 375884475848904709}
   - component: {fileID: 4840868407679276664}
   m_Layer: 10
-  m_Name: SheetIron3
+  m_Name: Sheet3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -392,7 +419,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7393894785072713980}
-  m_Mesh: {fileID: -1508831514557846782, guid: 00e2b7697653fa7498c6575cd9b2b745, type: 3}
+  m_Mesh: {fileID: 2826824588125226089, guid: 00e2b7697653fa7498c6575cd9b2b745, type: 3}
 --- !u!23 &375884475848904709
 MeshRenderer:
   m_ObjectHideFlags: 0

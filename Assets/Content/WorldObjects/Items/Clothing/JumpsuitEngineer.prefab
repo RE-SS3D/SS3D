@@ -48,6 +48,8 @@ GameObject:
   - component: {fileID: 5289822754746829837}
   - component: {fileID: 2410778413439115995}
   - component: {fileID: 7871970376332479996}
+  - component: {fileID: 926079960710381547}
+  - component: {fileID: 1357399863125752432}
   m_Layer: 10
   m_Name: JumpsuitEngineer
   m_TagString: Untagged
@@ -267,3 +269,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 5
+--- !u!114 &926079960710381547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393721560307922778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1357399863125752432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393721560307922778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 63e9dc3276fdd8443856d3b836e08882, type: 2}

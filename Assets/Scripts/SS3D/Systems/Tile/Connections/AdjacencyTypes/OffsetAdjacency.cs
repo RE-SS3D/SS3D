@@ -4,7 +4,8 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 {
     /// <summary>
-    /// Adjacency type used for objects that are not centred on a tile. Examples that use this are pipes (not the middle layer)
+    /// Adjacency type used for objects that are not centred on a tile.
+    /// Used by the non-centered pipe layers.
     /// </summary>
     [Serializable]
     public struct OffsetConnector : IMeshAndDirectionResolver
@@ -28,27 +29,27 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the north edge is connected, can be rotated to the east")]
+        [Tooltip("A mesh where the North edge is connected, can be rotated to the East")]
         public Mesh uNorth;
-        [Tooltip("A mesh where the south edge is connected, can be rotated to the west")]
+        [Tooltip("A mesh where the South edge is connected, can be rotated to the West")]
         public Mesh uSouth;
-        [Tooltip("A mesh where north & south edges are connected")]
+        [Tooltip("A mesh where North & South edges are connected")]
         public Mesh i;
-        [Tooltip("A mesh where the north & east edges are connected")]
+        [Tooltip("A mesh where the North & East edges are connected")]
         public Mesh lNE;
-        [Tooltip("A mesh where the north & west edges are connected")]
+        [Tooltip("A mesh where the North & West edges are connected")]
         public Mesh lNW;
-        [Tooltip("A mesh where the south & east edges are connected")]
+        [Tooltip("A mesh where the South & East edges are connected")]
         public Mesh lSE;
-        [Tooltip("A mesh where the south & west edges are connected")]
+        [Tooltip("A mesh where the South & West edges are connected")]
         public Mesh lSW;
-        [Tooltip("A mesh where the South, west, & east edges are connected")]
+        [Tooltip("A mesh where the South, West, & East edges are connected")]
         public Mesh tSWE;
-        [Tooltip("A mesh where the north, east, & west edges are connected")]
+        [Tooltip("A mesh where the North, East, & West edges are connected")]
         public Mesh tNEW;
-        [Tooltip("A mesh where the north, south, & west edges are connected")]
+        [Tooltip("A mesh where the North, South, & West edges are connected")]
         public Mesh tNSW;
-        [Tooltip("A mesh where the north, south, & east edges are connected")]
+        [Tooltip("A mesh where the North, South, & East edges are connected")]
         public Mesh tNSE;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;

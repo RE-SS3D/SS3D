@@ -48,6 +48,8 @@ GameObject:
   - component: {fileID: -2012658674781697945}
   - component: {fileID: -8110830878206171978}
   - component: {fileID: 5903053600117115308}
+  - component: {fileID: 622373174144228207}
+  - component: {fileID: -2658048922168343960}
   m_Layer: 10
   m_Name: Sunglasses
   m_TagString: Untagged
@@ -267,3 +269,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 2
+--- !u!114 &622373174144228207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667451333340596270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2658048922168343960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667451333340596270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 9559a4acf7f5ff44fa75810bf669d11d, type: 2}

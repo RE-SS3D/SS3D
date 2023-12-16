@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 1098697026978869413}
   - component: {fileID: 6348062478285535548}
   - component: {fileID: 3684970640593888479}
+  - component: {fileID: 6232149895420462588}
+  - component: {fileID: -2580189880636271799}
   m_Layer: 10
   m_Name: Boombox
   m_TagString: Untagged
@@ -300,7 +302,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 51
+  <PrefabId>k__BackingField: 62
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -328,6 +330,31 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 2804866248626254785}
   AttachmentPointAlt: {fileID: 2804866248626254785}
   _container: {fileID: 0}
+--- !u!114 &6232149895420462588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197868818743549203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2580189880636271799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197868818743549203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: c29d9bd4b2537794d853d40450283289, type: 2}
 --- !u!1 &8730915866332464111
 GameObject:
   m_ObjectHideFlags: 0

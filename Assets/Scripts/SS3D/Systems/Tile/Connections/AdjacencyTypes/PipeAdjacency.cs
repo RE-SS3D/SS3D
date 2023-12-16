@@ -4,27 +4,30 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 {
     /// <summary>
-    /// Script helping disposal pipes to determine their shape, mesh and rotation.
+    /// Script helping disposal pipes to determine their shape, mesh and rotation. Used by disposal pipes
+    /// and centered atmospheric pipe layers. Based on the Simple Adjacency script.
     /// Disposal pipes are a bit special because they can connect vertically with disposal furniture.
     /// </summary>
     [Serializable]
     public struct DisposalPipeConnector
     {
-        [Tooltip("Just set I shape for pipes")]
+        /// <summary>
+        /// If pipe set doesn't have 'o' mesh, set it to 'u'.
+        /// If pipe set doesn't have 'o' and 'u' mesh, set them both to 'i'.
+        /// </summary>
+        [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-
-        [Tooltip("Just set I shape for pipes")]
+        [Tooltip("A mesh where the North edge is connected")]
         public Mesh u;
-
-        [Tooltip("A mesh where the South & south edges are connected")]
+        [Tooltip("A mesh where the North & South edges are connected")]
         public Mesh i;
-        [Tooltip("A mesh where the South & West edges are connected")]
+        [Tooltip("A mesh where the North & East edges are connected")]
         public Mesh l;
-        [Tooltip("A mesh where the South, West, and west edges are connected")]
+        [Tooltip("A mesh where the South, East, and West edges are connected")]
         public Mesh t;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
-        [Tooltip("A mesh where the South & south edges are connected")]
+        [Tooltip("A mesh variant of 'u'; where the North & Vertical edges are connected")]
         public Mesh verticalMesh;
 
         /// <summary>
