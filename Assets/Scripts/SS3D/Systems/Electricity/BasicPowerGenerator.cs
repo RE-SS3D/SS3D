@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// very basic power generator, producing constant infinite power.
+    /// </summary>
     public class BasicPowerGenerator : BasicElectricDevice, IPowerProducer
     {
         [SerializeField]

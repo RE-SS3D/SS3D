@@ -10,6 +10,10 @@ using FishNet.Object;
 
 namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Cables have their own connector logic because they behave in a particular way. They can "connect" to any electric devices,
+    /// but no connection will be display. Connections with other cables are the only one being displayed.
+    /// </summary>
     public class CablesAdjacencyConnector : ElectricAdjacencyConnector
     {
 
@@ -75,6 +79,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
+            // should not return here if neighbour object is null, otherwise it would prevent update if a neighbour is removed.
             if (neighbourObject != null && !NeighbourIsCable(neighbourObject)) return false;
 
             bool isConnected = IsConnected(neighbourObject);

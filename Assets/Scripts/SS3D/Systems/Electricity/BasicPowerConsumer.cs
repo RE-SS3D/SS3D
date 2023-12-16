@@ -8,6 +8,10 @@ using UnityEngine;
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// Script providing a basic implementation for IPowerConsumer.
+    /// Can be used for things that need a constant amount of power at all time.
+    /// </summary>
     public class BasicPowerConsumer : BasicElectricDevice, IPowerConsumer
     {
         [SerializeField]

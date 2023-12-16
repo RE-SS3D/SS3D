@@ -12,6 +12,9 @@ using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// Script for the pacman generator, handling light and noise when turning it on and off. 
+    /// </summary>
     public class FuelPowerGenerator : BasicElectricDevice, IPowerProducer
     {
         [SerializeField]

@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// IElectricDevice are tile objects that can be connected to an electric circuit in some way.
+/// </summary>
 public interface IElectricDevice
 {
     /// <summary>
-    /// Global coordinates of the device on the tilemap. (0,0) is the same as (0,0) in the Unity editor.
-    /// Coordinates can be negative.
+    /// Tile object linked to this electric device.
     /// </summary>
     public PlacedTileObject TileObject { get; }
 }

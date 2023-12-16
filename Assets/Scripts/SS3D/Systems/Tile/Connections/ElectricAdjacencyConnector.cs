@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Base class for stuff that should connect in an electric circuit. 
+/// </summary>
 public abstract class ElectricAdjacencyConnector : NetworkActor, IAdjacencyConnector
 {
     /// <summary>

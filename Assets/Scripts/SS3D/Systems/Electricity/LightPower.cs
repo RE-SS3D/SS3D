@@ -2,6 +2,9 @@
 
 namespace System.Electricity
 {
+    /// <summary>
+    /// Simple script that handle toggling a light source on and off depending if power is available or not.
+    /// </summary>
     public class LightPower : MonoBehaviour
     {
         [SerializeField]
