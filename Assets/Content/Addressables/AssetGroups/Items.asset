@@ -177,6 +177,10 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesJackbootsRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 991fc7d67bda7d247b13ec8498953bc0
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: f549f4153ef612c4586c46ea280e0e94
     m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetLeft.prefab
     m_ReadOnly: 0
@@ -323,6 +327,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 5479411218b869144b7d09d6db6dc58e
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitGrey.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
