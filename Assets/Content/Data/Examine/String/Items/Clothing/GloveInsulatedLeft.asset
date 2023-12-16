@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: GloveInsulatedLeft
   m_EditorClassIdentifier: 
   NameKey: Insulated Glove
-  DescriptionKey: A single insulated glove, looks to be for the right hand.
+  DescriptionKey: A single insulated glove, looks to be for the left hand.
