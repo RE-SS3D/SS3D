@@ -75,7 +75,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            if (!NeighbourIsCable(neighbourObject)) return false;
+            if (neighbourObject != null && !NeighbourIsCable(neighbourObject)) return false;
 
             bool isConnected = IsConnected(neighbourObject);
 
