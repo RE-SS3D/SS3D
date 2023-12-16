@@ -104,7 +104,7 @@ namespace SS3D.Systems.Crafting
         /// Build the list of items we want to consume. Don't add more to
         /// the list than necessary.
         /// </summary>
-        public List<IRecipeIngredient> BuildListOfItemToConsume(List<IWorldObjectAsset> closeItemsFromTarget,
+        public List<IRecipeIngredient> BuildListOfItemToConsume(List<IRecipeIngredient> closeItemsFromTarget,
             CraftingRecipe recipe)
         {
             List<IRecipeIngredient>  itemsToConsume = new List<IRecipeIngredient>();
@@ -113,13 +113,15 @@ namespace SS3D.Systems.Crafting
 
             foreach (IRecipeIngredient item in closeItemsFromTarget)
             {
-                if (recipeElements.GetValueOrDefault(item) <= 0)
+                if (!item.GameObject.TryGetComponent<IWorldObjectAsset>(out var asset)) continue;
+
+                if (recipeElements.GetValueOrDefault(asset.Asset.Id) <= 0)
                 {
                     continue;
                 }
 
                 itemsToConsume.Add(item);
-                recipeElements[item] -= 1;
+                recipeElements[asset.Asset.Id] -= 1;
             }
 
             return itemsToConsume;
@@ -155,14 +157,14 @@ namespace SS3D.Systems.Crafting
         /// <param name="potentialRecipeElements"> Items that can potentially be used </param>
         /// <param name="recipe"> The recipe for which we want to check items</param>
         /// <returns></returns>
-        public bool CheckEnoughCloseItemsForRecipe(Dictionary<Item, int> potentialRecipeElements, CraftingRecipe recipe)
+        public bool CheckEnoughCloseItemsForRecipe(Dictionary<string, int> potentialRecipeElements, CraftingRecipe recipe)
         {
             // check if there's enough of each item.
-            foreach (Item item in recipe.Elements.Keys.ToList())
+            foreach (string id in recipe.Elements.Keys.ToList())
             {
-                int potentialRecipeItemCount = potentialRecipeElements.GetValueOrDefault(item);
+                int potentialRecipeItemCount = potentialRecipeElements.GetValueOrDefault(id);
 
-                if (potentialRecipeItemCount < recipe.Elements[item])
+                if (potentialRecipeItemCount < recipe.Elements[id])
                 {
                     return false;
                 }

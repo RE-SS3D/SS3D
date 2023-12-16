@@ -131,6 +131,8 @@ GameObject:
   - component: {fileID: 6104096848888808967}
   - component: {fileID: 3483542684610536844}
   - component: {fileID: 3278785340214204199}
+  - component: {fileID: 3379094397588441500}
+  - component: {fileID: 8686321972206820476}
   m_Layer: 10
   m_Name: Mug
   m_TagString: Untagged
@@ -187,7 +189,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 134
+  <PrefabId>k__BackingField: 146
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -404,6 +406,33 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 4454088359095980686}
   _container: {fileID: 0}
+--- !u!114 &3379094397588441500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8686321972206820476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 7958861831329766982}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &6067700979317892856
 GameObject:
   m_ObjectHideFlags: 0

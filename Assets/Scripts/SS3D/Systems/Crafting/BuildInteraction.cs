@@ -33,9 +33,7 @@ namespace SS3D.Systems.Crafting
 
             if (!base.CanInteract(interactionEvent)) return false;
 
-            Assets.Get<GameObject>(AssetDatabases.Items, _recipe.Result[0].name).GetComponent<Item>();
-
-            GameObject recipeResult = Assets.Get<GameObject>((int)AssetDatabases.Items, (int)_recipe.Result[0]);
+            GameObject recipeResult = _recipe.Result[0];
 
             if (!recipeResult.TryGetComponent<PlacedTileObject>(out var result)) return false;
 
@@ -54,7 +52,7 @@ namespace SS3D.Systems.Crafting
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Assets.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : InteractionIcons.Take;
         }
 
         public override string GetGenericName()

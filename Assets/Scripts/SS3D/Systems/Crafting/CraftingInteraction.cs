@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Logging;
@@ -31,15 +32,15 @@ namespace SS3D.Systems.Crafting
         {
             if (!Subsystems.TryGet(out CraftingSystem craftingSystem)) return false;
 
-            if (!interactionEvent.Target.GetGameObject().TryGetComponent<IAssetRefProvider>(out var target)) return false;
+            if (!interactionEvent.Target.GetGameObject().TryGetComponent<IWorldObjectAsset>(out var target)) return false;
 
             if (!InteractionExtensions.RangeCheck(interactionEvent)) return false;
 
             if (!craftingSystem.TryGetRecipe(this, target, out _recipe)) return false;
 
-            List<IRecipeIngredient> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(target);
+            List<IRecipeIngredient> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
 
-            Dictionary<Item, int> potentialRecipeElements = craftingSystem.
+            Dictionary<string, int> potentialRecipeElements = craftingSystem.
                 ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
 
             if (!craftingSystem.CheckEnoughCloseItemsForRecipe(potentialRecipeElements, _recipe)) return false;
