@@ -153,10 +153,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/GlovesInsulatedRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 7f49c948ec182a648ab280a22038752a
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitGrey.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 4635651592391df41b6b2413afdb76c3
     m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitSecurity.prefab
     m_ReadOnly: 0
@@ -179,10 +175,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: d7d68992cbd3cda45bb11a35a1490dc3
     m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesJackbootsRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5a3e95901a567d44d8e026a42e8988be
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineering.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f549f4153ef612c4586c46ea280e0e94
