@@ -1,6 +1,7 @@
 ﻿using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Systems.Inventory.Containers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,6 +38,8 @@ namespace SS3D.Systems.Furniture
             {
                 return false;
             }
+
+            if (interactionEvent.Source is not Hand) return false;
 
             return true;
         }
