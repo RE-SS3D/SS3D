@@ -26,9 +26,8 @@ namespace SS3D.Systems.Crafting
             // Should only check for movement once the interaction started.
             if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
 
-            Item target = interactionEvent.Target as Item;
+            if (interactionEvent.Target is not Item target) return false;
 
-            // Can slice only things out of containers.
             if (target.Container != null) return false;
 
             if (!base.CanInteract(interactionEvent)) return false;

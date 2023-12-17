@@ -3,6 +3,7 @@ using SS3D.Core;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ namespace SS3D.Systems.Crafting
         }
 
         [Server]
-        public void Craft(InteractionEvent interactionEvent)
+        public void Craft(IInteraction craftingInteraction, InteractionEvent interactionEvent)
         {
             if (ItemsToConsume == null)
             {
@@ -68,12 +69,12 @@ namespace SS3D.Systems.Crafting
 
             Subsystems.TryGet(out CraftingSystem craftingSystem);
 
-            craftingSystem.Craft(interactionEvent, ItemsToConsume, _recipe);
+            craftingSystem.Craft(craftingInteraction, interactionEvent, ItemsToConsume, _recipe);
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)
         {
-            Craft(interactionEvent);
+            Craft(this, interactionEvent);
         }
     }
 }

@@ -29,8 +29,6 @@ namespace SS3D.Systems.Crafting
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-           
-
             // Should only check for movement once the interaction started.
             if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
 
@@ -52,7 +50,7 @@ namespace SS3D.Systems.Crafting
 
         public override string GetGenericName()
         {
-            return "Build";
+            return "Bolt";
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)

@@ -6,6 +6,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,9 +85,9 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(InteractionEvent interaction, List<IRecipeIngredient> itemToConsume, CraftingRecipe recipe)
+        public void Craft(IInteraction interaction, InteractionEvent interactionEvent, List<IRecipeIngredient> itemToConsume, CraftingRecipe recipe)
         {
-            IRecipeIngredient craftableTarget = interaction.Target.GetGameObject().GetComponent<IRecipeIngredient>();
+            IRecipeIngredient craftableTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
             
             if(recipe.ConsumeTarget) craftableTarget.Consume();
 
@@ -96,7 +97,7 @@ namespace SS3D.Systems.Crafting
             }
             foreach(GameObject prefab in recipe.Result)
             {
-                prefab.GetComponent<ICraftable>()?.Craft(interaction);
+                prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
             }  
         }
 
