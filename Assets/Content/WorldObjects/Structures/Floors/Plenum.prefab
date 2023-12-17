@@ -184,7 +184,6 @@ GameObject:
   - component: {fileID: -5171608925130170487}
   - component: {fileID: -5218382646515949466}
   - component: {fileID: -7928552370738798750}
-  - component: {fileID: -8459314993624908527}
   m_Layer: 0
   m_Name: Plenum
   m_TagString: Untagged
@@ -378,16 +377,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 8158a12d6b88d6f46b377483f4cf22cf, type: 2}
---- !u!114 &-8459314993624908527
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8028539322119499722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4594391b2e97530468a0f86f508f68cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 73
