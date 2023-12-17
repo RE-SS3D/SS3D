@@ -1,11 +1,14 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object;
+using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Systems.Audio;
 using SS3D.Systems.Tile;
 using System.Linq;
 using UnityEngine;
+using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace SS3D.Systems.Crafting
 {
@@ -57,6 +60,8 @@ namespace SS3D.Systems.Crafting
         {
             base.Start(interactionEvent, reference);
             _startPosition = _characterTransform.position;
+            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Sfx, Sounds.Screwdriver,
+                interactionEvent.Target.GetGameObject().GetComponent<NetworkObject>());
             return true;
         }
 
@@ -68,6 +73,13 @@ namespace SS3D.Systems.Crafting
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
 
+        }
+
+        protected override void StartDelayed(InteractionEvent interactionEvent)
+        {
+            base.StartDelayed(interactionEvent);
+
+            Subsystems.Get<AudioSystem>().StopAudioSource(interactionEvent.Target.GetGameObject().GetComponent<NetworkObject>());
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SS3D.Systems.Crafting
     {
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            BoltInteraction interaction = new BoltInteraction(2f, GetComponent<InteractionSource>().transform);
+            BoltInteraction interaction = new BoltInteraction(1f, GetComponent<InteractionSource>().transform);
 
             foreach (IInteractionTarget target in targets)
             {
