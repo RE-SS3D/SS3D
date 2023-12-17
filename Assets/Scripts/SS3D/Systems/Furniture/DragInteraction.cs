@@ -15,13 +15,6 @@ namespace SS3D.Systems.Furniture
         /// </summary>
         public bool RangeCheck { get; set; } = true;
 
-        public DragInteraction(float delay, Transform characterTransform)
-        {
-            _characterTransform = characterTransform;
-            _startPosition = characterTransform.position;
-            Delay = delay;
-        }
-
 
         public override string GetName(InteractionEvent interactionEvent)
         {
@@ -55,7 +48,7 @@ namespace SS3D.Systems.Furniture
                 return false;
             }
 
-            draggable
+            draggable.SetDrag(!draggable.Dragged, interactionEvent.Source.GameObject.transform);
 
             return false;
         }

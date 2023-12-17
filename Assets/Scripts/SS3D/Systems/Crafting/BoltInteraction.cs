@@ -12,7 +12,7 @@ namespace SS3D.Systems.Crafting
     /// <summary>
     /// Interaction to turn something into a placed tile object
     /// </summary>
-    public class BuildInteraction : CraftingInteraction
+    public class BoltInteraction : CraftingInteraction
     {
         private Transform _characterTransform;
         private Vector3 _startPosition;
@@ -20,7 +20,7 @@ namespace SS3D.Systems.Crafting
 
         public bool Replace => _replace;
 
-        public BuildInteraction(float delay, Transform characterTransform)
+        public BoltInteraction(float delay, Transform characterTransform)
         {
             _characterTransform = characterTransform;
             _startPosition = characterTransform.position;
@@ -29,7 +29,7 @@ namespace SS3D.Systems.Crafting
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent<PlacedTileObject>(out var target);
+           
 
             // Should only check for movement once the interaction started.
             if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
@@ -40,15 +40,7 @@ namespace SS3D.Systems.Crafting
 
             if (!recipeResult.TryGetComponent<PlacedTileObject>(out var result)) return false;
 
-            _replace = false;
-
-            if(targetIsPlacedTileObject && result.Layer == target.Layer)
-            {
-                _replace = true;
-            }
-
-
-            if (!Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, target.transform.position, Direction.North, _replace)) return false;
+            if (!Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, false)) return false;
 
             return true;
         }

@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: SteelGirderRecipe
   m_EditorClassIdentifier: 
   _executionTime: 3
-  _interactionName: Build
-  _target: 73
-  _result: 48000000
-  _recipeElements:
-  - _count: 1
-    _itemId: 23
+  _interactionName: Bolt
+  _target: {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
+  _result:
+  - {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
+  _elements:
+    _list: []
+    _new: {fileID: 0}
+  _consumeTarget: 1

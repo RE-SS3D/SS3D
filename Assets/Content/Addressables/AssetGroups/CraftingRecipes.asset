@@ -33,6 +33,10 @@ MonoBehaviour:
     m_Address: Assets/Content/Data/Recipes/SteelGirderRecipe.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: e822c85b4d3a8d24aa2b69f363f07974
+    m_Address: Assets/Content/Data/Recipes/SteelGirderUnboltedRecipe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

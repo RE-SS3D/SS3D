@@ -203,7 +203,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
-  _asset: {fileID: 0}
+  _asset: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: 88eff1b17847b94469de924f4bb3e2cf, type: 2}
 --- !u!114 &4227473175157984911
 MonoBehaviour:

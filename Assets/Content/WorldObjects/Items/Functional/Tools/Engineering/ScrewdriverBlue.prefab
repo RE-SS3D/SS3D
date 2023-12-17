@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 1602098408367427586}
   - component: {fileID: 6800495836141411361}
   - component: {fileID: 8006545930481202674}
+  - component: {fileID: -1774845599476987484}
   m_Layer: 10
   m_Name: ScrewdriverBlue
   m_TagString: Untagged
@@ -262,5 +263,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-1774845599476987484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3162db2b6a4f31148a9b983f782bdd00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

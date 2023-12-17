@@ -1,6 +1,7 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Logging;
 using SS3D.Systems.Crafting;
@@ -12,6 +13,7 @@ using UnityEngine;
 
 public class CraftableTileObject : NetworkActor, ICraftable
 {
+
     [Server]
     public void Craft(InteractionEvent interaction)
     {

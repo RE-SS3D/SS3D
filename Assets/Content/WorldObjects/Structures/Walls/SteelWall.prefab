@@ -262,6 +262,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 3395800597640737248}
   - {fileID: -7035138225470946694}
+  - {fileID: -7978277362494375466}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -273,7 +274,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 119
+  <PrefabId>k__BackingField: 120
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -378,9 +379,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -2900075557854325373}
+  _asset: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: a0b4e2f901dd14b429586c816b29b97f, type: 2}
 --- !u!1 &7790124558541205835
 GameObject:

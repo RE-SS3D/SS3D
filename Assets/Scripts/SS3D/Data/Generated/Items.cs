@@ -76,6 +76,10 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset Multitool = new DatabaseAsset("Multitool", "Items");
         public static DatabaseAsset PowerCellAdmin = new DatabaseAsset("PowerCellAdmin", "Items");
         public static DatabaseAsset PowerCell = new DatabaseAsset("PowerCell", "Items");
+        public static DatabaseAsset SteelWall = new DatabaseAsset("SteelWall", "Items");
+        public static DatabaseAsset SteelGirder = new DatabaseAsset("SteelGirder", "Items");
+        public static DatabaseAsset Plenum = new DatabaseAsset("Plenum", "Items");
+        public static DatabaseAsset SteelGirderUnbolted = new DatabaseAsset("SteelGirderUnbolted", "Items");
     }
 }
 

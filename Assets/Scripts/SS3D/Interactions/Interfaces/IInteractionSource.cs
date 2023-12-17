@@ -6,7 +6,7 @@ namespace SS3D.Interactions.Interfaces
     /// Represents a source for an interaction.
 	/// A screw driver can be a source of interaction for the opening maintenance panels, building and stabbing interactions.
     /// </summary>
-    public interface IInteractionSource
+    public interface IInteractionSource : IGameObjectProvider
     {
         IInteractionSource Source { get; set; }
 
