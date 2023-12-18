@@ -2,10 +2,7 @@
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Systems.Inventory.Containers;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace SS3D.Systems.Furniture
 {

@@ -38,4 +38,6 @@ MonoBehaviour:
       _value: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
     - _key: screwdriver
       _value: {fileID: 8300000, guid: ea4ccc667e0e73345a853c09899d370b, type: 3}
+    - _key: Screwdriver
+      _value: {fileID: 8300000, guid: ea4ccc667e0e73345a853c09899d370b, type: 3}
     _new: 

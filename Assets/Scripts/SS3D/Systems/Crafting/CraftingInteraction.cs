@@ -7,9 +7,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
-using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Crafting
