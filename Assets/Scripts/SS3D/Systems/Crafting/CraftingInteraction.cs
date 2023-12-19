@@ -14,13 +14,12 @@ namespace SS3D.Systems.Crafting
 {
     public abstract class CraftingInteraction : DelayedInteraction, ICraftingInteraction
     {
-        private List<IRecipeIngredient> ItemsToConsume;
-
-        protected CraftingRecipe _recipe;
 
         private ParticleSystem particles;
 
         private MeshRenderer targetRenderer;
+
+        protected CraftingRecipe _craftingRecipe;
 
         /// <summary>
         /// Checks if this interaction can be executed
@@ -38,20 +37,9 @@ namespace SS3D.Systems.Crafting
         {
             if (!Subsystems.TryGet(out CraftingSystem craftingSystem)) return false;
 
-            if (!interactionEvent.Target.GetGameObject().TryGetComponent<IWorldObjectAsset>(out var target)) return false;
+            if (!craftingSystem.CanCraft(this, interactionEvent, out List<IRecipeIngredient> itemToConsume, out _craftingRecipe)) return false;
 
             if (!InteractionExtensions.RangeCheck(interactionEvent)) return false;
-
-            if (!craftingSystem.TryGetRecipe(this, target, out _recipe)) return false;
-
-            List<IRecipeIngredient> closeItemsFromTarget = craftingSystem.GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
-
-            Dictionary<string, int> potentialRecipeElements = craftingSystem.
-                ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
-
-            if (!craftingSystem.CheckEnoughCloseItemsForRecipe(potentialRecipeElements, _recipe)) return false;
-
-            ItemsToConsume = craftingSystem.BuildListOfItemToConsume(closeItemsFromTarget, _recipe);
 
             return true;
         }
@@ -85,15 +73,9 @@ namespace SS3D.Systems.Crafting
         [Server]
         public void Craft(IInteraction craftingInteraction, InteractionEvent interactionEvent)
         {
-            if (ItemsToConsume == null)
-            {
-                Log.Error(this, "List of items to consume is null, call CanInteract first.");
-                return;
-            }
-
             Subsystems.TryGet(out CraftingSystem craftingSystem);
 
-            craftingSystem.Craft(craftingInteraction, interactionEvent, ItemsToConsume, _recipe);
+            craftingSystem.Craft(craftingInteraction, interactionEvent);
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)

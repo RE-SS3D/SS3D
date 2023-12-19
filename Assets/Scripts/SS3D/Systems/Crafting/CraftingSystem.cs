@@ -6,6 +6,7 @@ using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Substances;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -53,7 +54,7 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        public bool TryGetRecipe(Interaction craftingInteraction, IWorldObjectAsset target, out CraftingRecipe recipe)
+        public bool TryGetRecipe(IInteraction craftingInteraction, IWorldObjectAsset target, out CraftingRecipe recipe)
         {
             if (!_recipeOrganiser.TryGetValue(target.Asset.Id, out Dictionary<string, CraftingRecipe> dic))
             {
@@ -83,8 +84,10 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(IInteraction interaction, InteractionEvent interactionEvent, List<IRecipeIngredient> itemToConsume, CraftingRecipe recipe)
+        public void Craft(IInteraction interaction, InteractionEvent interactionEvent)
         {
+            if (!CanCraft(interaction, interactionEvent, out List<IRecipeIngredient> itemToConsume, out CraftingRecipe recipe)) return;
+
             IRecipeIngredient craftableTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
             
             if(recipe.ConsumeTarget) craftableTarget.Consume();
@@ -99,11 +102,32 @@ namespace SS3D.Systems.Crafting
             }  
         }
 
+        public bool CanCraft(IInteraction interaction, InteractionEvent interactionEvent, out List<IRecipeIngredient> itemToConsume, out CraftingRecipe recipe)
+        {
+            itemToConsume = new List<IRecipeIngredient>();
+
+            recipe = null;
+
+            if (!interactionEvent.Target.GetGameObject().TryGetComponent<IWorldObjectAsset>(out var target)) return false;
+
+            if (!TryGetRecipe(interaction, target, out recipe)) return false;
+
+            List<IRecipeIngredient> closeItemsFromTarget = GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
+
+            Dictionary<string, int> potentialRecipeElements = ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
+
+            if (!CheckEnoughCloseItemsForRecipe(potentialRecipeElements, recipe)) return false;
+
+            itemToConsume = BuildListOfItemToConsume(closeItemsFromTarget, recipe);
+
+            return true;
+        }
+
         /// <summary>
         /// Build the list of items we want to consume. Don't add more to
         /// the list than necessary.
         /// </summary>
-        public List<IRecipeIngredient> BuildListOfItemToConsume(List<IRecipeIngredient> closeItemsFromTarget,
+        private List<IRecipeIngredient> BuildListOfItemToConsume(List<IRecipeIngredient> closeItemsFromTarget,
             CraftingRecipe recipe)
         {
             List<IRecipeIngredient>  itemsToConsume = new List<IRecipeIngredient>();
@@ -131,7 +155,7 @@ namespace SS3D.Systems.Crafting
         /// TODO : only collider for item ? Should then ensure collider of item is on the
         /// same game object as item script for all items. Would avoid the getInParent.
         /// </summary>
-        public List<IRecipeIngredient> GetCloseItemsFromTarget(GameObject target)
+        private List<IRecipeIngredient> GetCloseItemsFromTarget(GameObject target)
         {
             Vector3 center = target.transform.position;
 
@@ -156,7 +180,7 @@ namespace SS3D.Systems.Crafting
         /// <param name="potentialRecipeElements"> Items that can potentially be used </param>
         /// <param name="recipe"> The recipe for which we want to check items</param>
         /// <returns></returns>
-        public bool CheckEnoughCloseItemsForRecipe(Dictionary<string, int> potentialRecipeElements, CraftingRecipe recipe)
+        private bool CheckEnoughCloseItemsForRecipe(Dictionary<string, int> potentialRecipeElements, CraftingRecipe recipe)
         {
             // check if there's enough of each item.
             foreach (string id in recipe.Elements.Keys.ToList())
@@ -172,7 +196,7 @@ namespace SS3D.Systems.Crafting
             return true;
         }
 
-        public Dictionary<string, int> ItemListToDictionnaryOfRecipeElements(List<IRecipeIngredient> closeItemsFromTarget)
+        private Dictionary<string, int> ItemListToDictionnaryOfRecipeElements(List<IRecipeIngredient> closeItemsFromTarget)
         {
             // Transform the list into a dictionnary of itemsID and counts of items.
             // This is some overhead to allow for fast comparison between recipe and 

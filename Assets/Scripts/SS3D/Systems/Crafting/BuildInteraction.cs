@@ -34,7 +34,7 @@ namespace SS3D.Systems.Crafting
 
             if (!base.CanInteract(interactionEvent)) return false;
 
-            GameObject recipeResult = _recipe.Result[0];
+            GameObject recipeResult = _craftingRecipe.Result[0];
 
             if (!recipeResult.TryGetComponent<PlacedTileObject>(out var result)) return false;
 
