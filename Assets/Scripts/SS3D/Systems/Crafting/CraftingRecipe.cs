@@ -50,12 +50,6 @@ namespace SS3D.Systems.Crafting
         private bool _consumeTarget;
 
         /// <summary>
-        /// If transform target is true, instead of spawning a new game object, changes will be applied to the target.
-        /// </summary>
-        [SerializeField]
-        private bool _transformTarget;
-
-        /// <summary>
         /// The world objects ids and their respective numbers necessary for the recipe.
         /// </summary>
         public Dictionary<string, int> Elements

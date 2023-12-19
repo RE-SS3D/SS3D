@@ -1,4 +1,5 @@
-﻿using FishNet.Object;
+﻿using Codice.CM.Common;
+using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
@@ -206,6 +207,43 @@ namespace SS3D.Systems.Crafting
                 .ToDictionary(group => group.Key, group => group.Count());
 
             return potentialRecipeElements;
+        }
+        [Server]
+        public List<Coroutine> MoveAllObjectsToCraftPoint(Vector3 targetPosition, List<GameObject> gameObjectsToMove)
+        {
+            float distance;
+            float speed;
+
+            List<Coroutine> coroutines = new();
+
+            foreach (GameObject go in gameObjectsToMove)
+            {
+                distance = Vector3.Distance(go.transform.position, targetPosition);
+                speed = 5f * distance;
+                coroutines.Add(StartCoroutine(MoveObjectToTarget(go.transform, targetPosition, speed)));
+            }
+
+            return coroutines;
+        }
+
+        public void CancelMoveAllObjectsToCraftPoint(List<Coroutine> coroutines)
+        {
+            foreach (Coroutine coroutine in coroutines)
+            {
+                StopCoroutine(coroutine);
+            }
+        }
+
+        private System.Collections.IEnumerator MoveObjectToTarget(Transform objTransform, Vector3 targetPosition, float speed)
+        {
+            while (Vector3.Distance(objTransform.position, targetPosition) > 0.1f)
+            {
+                float step = speed * Time.deltaTime;
+                objTransform.position = Vector3.MoveTowards(objTransform.position, targetPosition, step);
+                yield return null;
+            }
+
+            objTransform.position = targetPosition;
         }
     }
 }
