@@ -77,8 +77,8 @@ namespace SS3D.Systems.Crafting
 
 
         /// <summary>
-        /// Using a target item, and a list of item to consume, it despawn everything and spawn
-        /// spawn the result item. Be careful, this does not do any recipe check of any sort.
+        /// Using a target item, and a list of item to consume, it despawn everything and 
+        /// spawn the result item. 
         /// </summary>
         /// <param name="target"></param>
         /// <param name="recipe"></param>

@@ -13,28 +13,52 @@ namespace SS3D.Systems.Crafting
 	[CreateAssetMenu(fileName = "Recipe", menuName = "SS3D/Crafting/Recipe")]
 	public class CraftingRecipe : ScriptableObject
 	{
+        /// <summary>
+        /// The time the crafting should take.
+        /// </summary>
 		[SerializeField]
 		private float _executionTime;
 
+        /// <summary>
+        /// The name of the crafting interaction, it's part of recipes as specific interactions are needed for specific crafting, not just recipe ingredients.
+        /// </summary>
 		[SerializeField]
 		private string _interactionName;
 
+        /// <summary>
+        /// The target of the crafting, what needs to be clicked on by the player to start the crafting.
+        /// </summary>
 		[SerializeField]
 		private WorldObjectAssetReference _target;
 
+        /// <summary>
+        /// A list of resulting objects that will spawn at the end of the crafting process.
+        /// </summary>
 		[SerializeField]
 		private List<WorldObjectAssetReference> _result;
 
+        /// <summary>
+        /// Elements of the recipe, that will be consumed in the crafting process.
+        /// </summary>
 		[SerializeField]
 		private SerializableDictionary<WorldObjectAssetReference, int> _elements = new();
 
+        /// <summary>
+        /// If true, the target is consumed (despawned).
+        /// </summary>
         [SerializeField]
         private bool _consumeTarget;
 
-		/// <summary>
-		/// The world objects ids and their respective numbers necessary for the recipe.
-		/// </summary>
-		public Dictionary<string, int> Elements
+        /// <summary>
+        /// If transform target is true, instead of spawning a new game object, changes will be applied to the target.
+        /// </summary>
+        [SerializeField]
+        private bool _transformTarget;
+
+        /// <summary>
+        /// The world objects ids and their respective numbers necessary for the recipe.
+        /// </summary>
+        public Dictionary<string, int> Elements
 		{
 			get
 			{
