@@ -5,6 +5,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,8 @@ namespace SS3D.Systems.Tile.Connections
         /// Abstract method, as from one connector to another, the code to check for connection greatly changes.
         /// </summary>
         public abstract bool IsConnected(PlacedTileObject neighbourObject);
+
+        public EventHandler<MeshDirectionInfo> OnMeshUpdate;
 
 
         public override void OnStartClient()
@@ -187,6 +190,8 @@ namespace SS3D.Systems.Tile.Connections
             localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
 
             transform.localRotation = localRotation;
+
+            OnMeshUpdate?.Invoke(this, info);
         }
 
         /// <summary>

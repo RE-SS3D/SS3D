@@ -16,8 +16,8 @@ GameObject:
   - component: {fileID: 8380654261086022907}
   - component: {fileID: 8063692154441053622}
   - component: {fileID: 6753708217938451176}
-  - component: {fileID: 4227473175157984911}
   - component: {fileID: 6528007219760414512}
+  - component: {fileID: 6634051451888538392}
   m_Layer: 0
   m_Name: SteelGirder
   m_TagString: Untagged
@@ -123,7 +123,6 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 8380654261086022907}
   - {fileID: 6753708217938451176}
-  - {fileID: 4227473175157984911}
   - {fileID: 6528007219760414512}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -206,21 +205,6 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -2900075557854325373}
   _asset: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: 88eff1b17847b94469de924f4bb3e2cf, type: 2}
---- !u!114 &4227473175157984911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3591147544166670882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 150845becef31a74f856d94d0a218ffe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: -2900075557854325373}
 --- !u!114 &6528007219760414512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,9 +217,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
+--- !u!114 &6634051451888538392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3586a2042e5c55d4ead9bca2972c182c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -2900075557854325373}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &8309238590450996122
 GameObject:
   m_ObjectHideFlags: 0

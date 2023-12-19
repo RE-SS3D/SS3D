@@ -172,7 +172,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 }
             }
 
-            return new MeshDirectionInfo { Mesh = mesh, Rotation = rotation };
+            return new MeshDirectionInfo { Mesh = mesh, Rotation = rotation, Shape = shape };
         }
     }
 }
