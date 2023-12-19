@@ -89,18 +89,28 @@ namespace SS3D.Systems.Crafting
         {
             if (!CanCraft(interaction, interactionEvent, out List<IRecipeIngredient> itemToConsume, out CraftingRecipe recipe)) return;
 
-            IRecipeIngredient craftableTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
-            
-            if(recipe.ConsumeTarget) craftableTarget.Consume();
+            IRecipeIngredient recipeTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
+
+            if (recipe.ConsumeTarget) recipeTarget.Consume();
 
             foreach (IRecipeIngredient item in itemToConsume)
             {
                 item.Consume();
             }
-            foreach(GameObject prefab in recipe.Result)
+
+            // Either apply some crafting on the current target, or do it on new game objects.
+            if (recipe.CraftOnTarget)
             {
-                prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
-            }  
+                interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+            }
+            else
+            {
+                foreach (GameObject prefab in recipe.Result)
+                {
+                    prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+                }
+            }
+ 
         }
 
         public bool CanCraft(IInteraction interaction, InteractionEvent interactionEvent, out List<IRecipeIngredient> itemToConsume, out CraftingRecipe recipe)

@@ -50,6 +50,12 @@ namespace SS3D.Systems.Crafting
         private bool _consumeTarget;
 
         /// <summary>
+        /// If true, the target is used instead of the result to apply the crafting. Typically useful for multi step recipes, where no new game object is created upon crafting.
+        /// </summary>
+        [SerializeField]
+        private bool _craftOnTarget;
+
+        /// <summary>
         /// The world objects ids and their respective numbers necessary for the recipe.
         /// </summary>
         public Dictionary<string, int> Elements
@@ -90,7 +96,16 @@ namespace SS3D.Systems.Crafting
 
 		public int ElementsNumber => _elements.Sum(x => x.Value);
 
+        /// <summary>
+        /// If true, the target is consumed (despawned).
+        /// </summary>
         public bool ConsumeTarget => _consumeTarget;
-	}
+
+
+        /// <summary>
+        /// If true, the target is used instead of the result to apply the crafting. Typically useful for multi step recipes, where no new game object is created upon crafting.
+        /// </summary>
+        public bool CraftOnTarget => _craftOnTarget;
+    }
 }
 

@@ -7,11 +7,14 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Crafting;
 using SS3D.Systems.Tile;
 
-public class CraftableTileObject : NetworkActor, ICraftable
+/// <summary>
+/// A simple script for tile objects that can be crafted in a single step.
+/// </summary>
+public class SingleStepCraftableTileObject : SingleStepCraftable
 {
 
     [Server]
-    public void Craft(IInteraction interaction, InteractionEvent interactionEvent)
+    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
     {
         var _tileObject = GetComponent<PlacedTileObject>();
 

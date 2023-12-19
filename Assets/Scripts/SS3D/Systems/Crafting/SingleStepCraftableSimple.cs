@@ -6,9 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleCraftable : NetworkActor, ICraftable
+/// <summary>
+/// Script for things that upon applying the recipe will just spawn at the interaction point.
+/// </summary>
+public class SingleStepCraftableSimple : SingleStepCraftable
 {
-    public void Craft(IInteraction interaction, InteractionEvent interactionEvent)
+    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
     {
         GameObject instance = Instantiate(gameObject);
         instance.transform.position = interactionEvent.Point;
