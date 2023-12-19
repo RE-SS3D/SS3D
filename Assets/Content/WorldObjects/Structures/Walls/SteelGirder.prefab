@@ -124,6 +124,7 @@ MonoBehaviour:
   - {fileID: 8380654261086022907}
   - {fileID: 6753708217938451176}
   - {fileID: 6528007219760414512}
+  - {fileID: 6634051451888538392}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -232,9 +233,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3586a2042e5c55d4ead9bca2972c182c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -2900075557854325373}
+  o: {fileID: -7447969277381116542, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  u: {fileID: 2927582871327710670, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  i: {fileID: -5295625287105711870, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  lNone: {fileID: -2629476798975129885, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  lSingle: {fileID: -6972861976106799773, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  tNone: {fileID: 553534836715904339, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  tSingleRight: {fileID: -3339931578349097167, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  tSingleLeft: {fileID: -3304625889708720791, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  tDouble: {fileID: 474509196184421971, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  xNone: {fileID: 2437192689400603558, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  xSingle: {fileID: -4864631295801778863, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  xSide: {fileID: -8463792897596621683, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  xOpposite: {fileID: 3404332845421846940, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  xTriple: {fileID: 5181784065511792769, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+  xQuad: {fileID: -8022113433853620617, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
 --- !u!1 &8309238590450996122
 GameObject:
   m_ObjectHideFlags: 0
