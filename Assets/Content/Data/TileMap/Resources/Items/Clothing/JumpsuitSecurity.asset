@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
-  m_Name: JumpsuitGrey
+  m_Name: JumpsuitSecurity
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3945981868420553423, guid: 7f49c948ec182a648ab280a22038752a, type: 3}
+  prefab: {fileID: 7873606310497571447, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
   icon: {fileID: 0}
