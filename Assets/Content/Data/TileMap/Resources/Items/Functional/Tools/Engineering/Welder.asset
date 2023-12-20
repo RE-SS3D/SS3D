@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Welder
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2402587210622244651, guid: 06d944205e6b6dd489af078fa85fb878, type: 3}
+  prefab: {fileID: 7393721560307922778, guid: 06d944205e6b6dd489af078fa85fb878, type: 3}
   icon: {fileID: 0}
