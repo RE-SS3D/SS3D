@@ -49,16 +49,29 @@ public class GirderCraftable : MultiStepCraftable
     [SerializeField, Tooltip("A mesh where all edges are connected, all corners")]
     private Mesh xQuad;
 
+    [SerializeField]
     private MeshFilter mesh;
 
+    private bool _updateSheetMesh = false;
+
+
+    public override void Modify(IInteraction interaction, InteractionEvent interactionEvent)
+    {
+        throw new NotImplementedException();
+    }
 
     public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
     {
         switch (_currentStepNumber)
         {
-            case 1: AddSheet();
+            case 0:
+                SpawnGirder(interaction, interactionEvent);
                 break;
-            case 2: SpawnWall(interaction, interactionEvent);
+            case 1:
+                AddSheet();
+                break;
+            default:
+                Debug.LogError("wall only have 2 step to be build ");
                 break;
         }
 
@@ -66,19 +79,20 @@ public class GirderCraftable : MultiStepCraftable
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        _currentStepNumber = 1;
+        _currentStepNumber = 0;
         _stepAmount = 2;
         GetComponent<AdvancedAdjacencyConnector>().OnMeshUpdate += HandleMeshUpdate;
     }
 
     private void AddSheet()
     {
-
+        _updateSheetMesh = true;
+        mesh.gameObject.SetActive(true);
     }
 
-    private void SpawnWall(IInteraction interaction, InteractionEvent interactionEvent)
+    private void SpawnGirder(IInteraction interaction, InteractionEvent interactionEvent)
     {
         var _tileObject = GetComponent<PlacedTileObject>();
 
@@ -98,6 +112,8 @@ public class GirderCraftable : MultiStepCraftable
 
     private void HandleMeshUpdate(object sender, MeshDirectionInfo info)
     {
+        if (!_updateSheetMesh) return;
+
         switch (info.Shape)
         {
             case AdjacencyShape.O:
@@ -156,6 +172,4 @@ public class GirderCraftable : MultiStepCraftable
 
         mesh.transform.localRotation = localRotation;
     }
-
-
 }

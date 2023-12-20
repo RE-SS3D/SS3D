@@ -11,6 +11,7 @@ using SS3D.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static SS3D.Systems.Crafting.CraftingRecipe;
 
 namespace SS3D.Systems.Crafting
 {
@@ -21,7 +22,7 @@ namespace SS3D.Systems.Crafting
 
         private MeshRenderer targetRenderer;
 
-        protected CraftingRecipe _craftingRecipe;
+        protected RecipeStep _craftingRecipe;
 
         protected List<IRecipeIngredient> _itemToConsume;
 

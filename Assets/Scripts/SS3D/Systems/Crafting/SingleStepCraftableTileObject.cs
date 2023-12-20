@@ -6,6 +6,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Crafting;
 using SS3D.Systems.Tile;
+using UnityEngine;
 
 /// <summary>
 /// A simple script for tile objects that can be crafted in a single step.
@@ -14,7 +15,7 @@ public class SingleStepCraftableTileObject : SingleStepCraftable
 {
 
     [Server]
-    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
+    public override void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent)
     {
         var _tileObject = GetComponent<PlacedTileObject>();
 

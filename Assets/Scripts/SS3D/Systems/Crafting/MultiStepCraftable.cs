@@ -9,7 +9,7 @@ using SS3D.Core.Behaviours;
 public abstract class MultiStepCraftable : NetworkActor, ICraftable
 {
 
-    protected int _stepAmount = 0;
+    protected int _stepAmount = 1;
 
     protected int _currentStepNumber = 0;
 
@@ -20,4 +20,7 @@ public abstract class MultiStepCraftable : NetworkActor, ICraftable
     public bool IsLastStep => _stepAmount == _currentStepNumber;
 
     public abstract void Craft(IInteraction interaction, InteractionEvent interactionEvent);
+
+    public abstract void Modify(IInteraction interaction, InteractionEvent interactionEvent);
+
 }

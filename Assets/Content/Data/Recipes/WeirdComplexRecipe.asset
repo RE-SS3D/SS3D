@@ -12,16 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
   m_Name: WeirdComplexRecipe
   m_EditorClassIdentifier: 
-  _executionTime: 0
-  _interactionName: Slice
   _target: {fileID: 11400000, guid: 3747dddbc41cad94bbbfc43bfed384c3, type: 2}
-  _result:
-  - {fileID: 11400000, guid: 739991c49857a3d40b2060d96908de45, type: 2}
-  - {fileID: 11400000, guid: 88cb0aca0b6265d49b25526ca55295e9, type: 2}
-  _elements:
-    _list:
-    - _key: {fileID: 11400000, guid: 162ccd1fc7d534046874df3d9dcf2315, type: 2}
-      _value: 2
-    - _key: {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
-      _value: 1
-    _new: {fileID: 0}
+  steps:
+  - _executionTime: 2
+    _interactionName: Slice
+    _result:
+    - {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
+    _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 739991c49857a3d40b2060d96908de45, type: 2}
+        _value: 1
+      - _key: {fileID: 11400000, guid: 88cb0aca0b6265d49b25526ca55295e9, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _consumeTarget: 1
+    _craftOnTarget: 0
+    _step: 0

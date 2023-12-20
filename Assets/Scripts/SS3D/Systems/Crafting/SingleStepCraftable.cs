@@ -11,10 +11,12 @@ public abstract class SingleStepCraftable : NetworkActor, ICraftable
 {
     public int StepAmount => 1;
 
-    public int CurrentStepNumber => 1;
+    public int CurrentStepNumber => 0;
 
     public bool IsLastStep => true;
 
     public abstract void Craft(IInteraction interaction, InteractionEvent interactionEvent);
+
+    public abstract void Modify(IInteraction interaction, InteractionEvent interactionEvent);
 
 }

@@ -12,14 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
   m_Name: WallRecipe
   m_EditorClassIdentifier: 
-  _executionTime: 3
-  _interactionName: Build
   _target: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
-  _result:
-  - {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
-  _elements:
-    _list:
-    - _key: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
-      _value: 1
-    _new: {fileID: 0}
-  _consumeTarget: 1
+  steps:
+  - _executionTime: 2
+    _interactionName: Build
+    _result: []
+    _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _consumeTarget: 0
+    _craftOnTarget: 1
+  - _executionTime: 2
+    _interactionName: Build
+    _result:
+    - {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
+    _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _consumeTarget: 1
+    _craftOnTarget: 0

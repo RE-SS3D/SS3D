@@ -11,9 +11,8 @@ using UnityEngine;
 /// </summary>
 public class SingleStepCraftableSimple : SingleStepCraftable
 {
-    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
+    public override void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent)
     {
-        GameObject instance = Instantiate(gameObject);
         instance.transform.position = interactionEvent.Point;
         InstanceFinder.ServerManager.Spawn(instance);
         instance.SetActive(true);
