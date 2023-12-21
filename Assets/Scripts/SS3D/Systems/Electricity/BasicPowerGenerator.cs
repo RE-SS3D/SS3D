@@ -1,7 +1,4 @@
-﻿using SS3D.Core;
-using SS3D.Systems.Tile;
-using System.Collections;
-using System.Collections.Generic;
+﻿using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 
 namespace System.Electricity

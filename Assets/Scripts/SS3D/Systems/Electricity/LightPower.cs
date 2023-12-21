@@ -9,17 +9,14 @@ namespace System.Electricity
     {
         [SerializeField]
         private BasicPowerConsumer _consumer;
-
         [SerializeField]
         private Light _light;
-
-        private float poweredIntensity;
-
-
-        void Start()
+        private float _poweredIntensity;
+        
+        private void Start()
         {
             _consumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
-            poweredIntensity = _light.intensity;
+            _poweredIntensity = _light.intensity;
 
             TurnLightOff();
         }
@@ -37,7 +34,7 @@ namespace System.Electricity
 
         private void TurnLightOn()
         {
-            _light.intensity = poweredIntensity;
+            _light.intensity = _poweredIntensity;
         }
 
         private void TurnLightOff()

@@ -1,5 +1,4 @@
 ﻿using SS3D.Core.Behaviours;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using QuikGraph;
@@ -7,10 +6,8 @@ using Coimbra.Services.PlayerLoopEvents;
 using Coimbra.Services.Events;
 using QuikGraph.Algorithms;
 using SS3D.Systems.Tile;
-using SS3D.Utils;
 using SS3D.Core;
 using System.Linq;
-using System.Text.RegularExpressions;
 using FishNet.Object;
 
 namespace System.Electricity
@@ -45,33 +42,17 @@ namespace System.Electricity
         /// The coordinates are the position on the map (x and y), the layer and the direction of the electric device.
         /// None two tile objects should have the same set of coordinates.
         /// </summary>
-        private struct VerticeCoordinates
-        {
-            public short x;
-            public short y;
-            public byte layer;
-            public byte direction;
-
-            public VerticeCoordinates(short xcoordinate, short yccordinate, byte zcoordinate, byte directionCoordinate)
-            {
-                x = xcoordinate;
-                y = yccordinate;
-                layer = zcoordinate;
-                direction = directionCoordinate;
-            }
-        }
+        private record VerticeCoordinates(short X, short Y, byte Layer, byte Direction);
 
         /// <summary>
         /// The graph is considered dirty if there was any changes during the previous frame in the way electric devices are put on the map.
         /// </summary>
         private bool _graphIsDirty;
-
-
+        
         /// <summary>
         /// List of all circuits on the map.
         /// </summary>
         private List<Circuit> _circuits;
-
 
         /// <summary>
         /// Graph representing all electric devices and connections on the map. each electric device is a vertice in this graph,
@@ -84,24 +65,17 @@ namespace System.Electricity
         /// </summary>
         [SerializeField]
         private float _tickRate = 0.2f;
-
         private float _timeElapsed = 0f;
 
 
         public override void OnStartServer()
         {       
             base.OnStartServer();
-
-            _electricityGraph = new UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>>();
-
-            _circuits = new List<Circuit>();
-
+            _electricityGraph = new();
+            _circuits = new();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-
             IsSetUp = true;
-
             OnSystemSetUp?.Invoke();
-
             OnTick += HandleCircuitsUpdate;
         }
 
@@ -139,12 +113,12 @@ namespace System.Electricity
         [Server]
         public void AddElectricalElement(IElectricDevice device)
         {
-            VerticeCoordinates deviceCoordinates = new VerticeCoordinates((short)device.TileObject.WorldOrigin.x, (short)device.TileObject.WorldOrigin.y,
+            VerticeCoordinates deviceCoordinates = new ((short)device.TileObject.WorldOrigin.x, (short)device.TileObject.WorldOrigin.y,
                     (byte)device.TileObject.Layer, (byte)device.TileObject.Direction);
 
             _electricityGraph.AddVertex
             (
-                new VerticeCoordinates
+                new
                 (
                     (short) device.TileObject.WorldOrigin.x,
                     (short) device.TileObject.WorldOrigin.y,
@@ -157,11 +131,11 @@ namespace System.Electricity
 
             foreach(PlacedTileObject neighbour in neighbours)
             {
-                VerticeCoordinates neighbourCoordinates = new VerticeCoordinates ((short)neighbour.WorldOrigin.x, (short)neighbour.WorldOrigin.y,
+                VerticeCoordinates neighbourCoordinates = new ((short)neighbour.WorldOrigin.x, (short)neighbour.WorldOrigin.y,
                     (byte)neighbour.Layer, (byte)neighbour.Direction);
                 
                 _electricityGraph.AddVertex(neighbourCoordinates);
-                _electricityGraph.AddEdge(new Edge<VerticeCoordinates>(deviceCoordinates, neighbourCoordinates));
+                _electricityGraph.AddEdge(new (deviceCoordinates, neighbourCoordinates));
             }
 
             _graphIsDirty = true;
@@ -179,7 +153,7 @@ namespace System.Electricity
 
             _electricityGraph.RemoveVertex
             (
-                new VerticeCoordinates
+                new
                 (
                     (short)device.TileObject.WorldOrigin.x,
                     (short)device.TileObject.WorldOrigin.y,
@@ -206,10 +180,7 @@ namespace System.Electricity
             // Compute all connected components in the graph. One component is basically one circuit.
             // In graph theory, a component is a set of all vertices linked by at least one path.
             _electricityGraph.ConnectedComponents(components);
-
-            
             _circuits.Clear();
-
             // group all vertice coordinates by the component index they belong to.
             Dictionary<int, List<VerticeCoordinates>> graphs = components.GroupBy(pair => pair.Value)
                 .ToDictionary(
@@ -217,19 +188,18 @@ namespace System.Electricity
                 group => group.Select(item => item.Key).ToList()
                 );
 
-
             // Set up the circuits, with their respective storages, producers, and consumers of power.
             foreach (List<VerticeCoordinates> component in graphs.Values)
             {
-                _circuits.Add(new Circuit());
+                _circuits.Add(new());
                 foreach (VerticeCoordinates coord in component)
                 {
                     TileSystem tileSystem = Subsystems.Get<TileSystem>();
-                    ITileLocation location = tileSystem.CurrentMap.GetTileLocation((TileLayer)coord.layer, new Vector3(coord.x, 0f, coord.y));
+                    ITileLocation location = tileSystem.CurrentMap.GetTileLocation((TileLayer)coord.Layer, new(coord.X, 0f, coord.Y));
 
-                    if (!location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction)coord.direction)) continue;
+                    if (!location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction)coord.Direction)) continue;
 
-                    if (!placedObject.TryGetComponent<IElectricDevice>(out var device)) continue;
+                    if (!placedObject.TryGetComponent(out IElectricDevice device)) continue;
 
                     _circuits.Last().AddElectricDevice(device);
                 }

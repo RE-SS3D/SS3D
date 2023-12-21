@@ -1,12 +1,7 @@
 ﻿using FishNet.Object.Synchronizing;
-using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Audio;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using AudioType = SS3D.Systems.Audio.AudioType;
 
 namespace System.Electricity
 {
@@ -17,12 +12,11 @@ namespace System.Electricity
     {
         [SyncVar]
         private bool _on;
-
         public Action<bool> OnToggle;
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = new List<IInteraction>(1)
+            List<IInteraction> interactions = new(1)
             {
                 new ToggleInteraction()
             };

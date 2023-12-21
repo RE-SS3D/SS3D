@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Electricity;
-using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// Interface for things that can receive, store power and send it back.
 /// </summary>
 public interface IPowerStorage : IElectricDevice

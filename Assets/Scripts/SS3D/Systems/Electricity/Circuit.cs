@@ -1,11 +1,6 @@
 ﻿using SS3D.Utils;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
-using UnityEngine;
-using System;
-
 
 namespace System.Electricity
 {
@@ -19,7 +14,7 @@ namespace System.Electricity
         private List<IPowerProducer> _producers;
         private List<IPowerStorage> _storages;
 
-        private static Random RandomGenerator = new Random();
+        private static Random RandomGenerator = new();
 
         public Circuit() 
         {
@@ -184,12 +179,12 @@ namespace System.Electricity
             float equalAmount = availablePower / _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).Count();
 
             // Give power to all those that can take the full equal amount.
-            var notFullyFillableStorages = _storages.Where(x => x.RemainingCapacity > equalAmount).ToList();
+            List<IPowerStorage> notFullyFillableStorages = _storages.Where(x => x.RemainingCapacity > equalAmount).ToList();
             notFullyFillableStorages.ForEach(x => x.AddPower(equalAmount));
             availablePower -= equalAmount * notFullyFillableStorages.Count;
 
             // Fill the storages that can be filled
-            var fullyFillableStorages = _storages.Where(x => x.RemainingCapacity <= equalAmount).ToList();
+            List<IPowerStorage> fullyFillableStorages = _storages.Where(x => x.RemainingCapacity <= equalAmount).ToList();
 
             foreach(IPowerStorage storage in fullyFillableStorages)
             {
@@ -212,7 +207,6 @@ namespace System.Electricity
 
         private void UpdateElectricElementStatus(bool notEnoughPower, int firstUnpoweredIndex)
         {
-
             for(int i =0; i < _consumers.Count; i++)
             {
                 if(notEnoughPower && i >= firstUnpoweredIndex)
@@ -228,9 +222,6 @@ namespace System.Electricity
                     _consumers[i].PowerStatus = PowerStatus.Powered;
                 }
             }
-
         }
-
-        
     }
 }

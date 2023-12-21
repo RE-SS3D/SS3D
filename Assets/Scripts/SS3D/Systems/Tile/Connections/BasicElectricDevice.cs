@@ -1,38 +1,39 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Tile;
 using System.Electricity;
 
-
-/// <summary>
-/// Put this script on anything that need to be part of an electric circuit.
-/// This script add the game object it's on to an electric circuit.
-/// </summary>
-public class BasicElectricDevice : NetworkActor, IElectricDevice
+namespace SS3D.Systems.Tile.Connections
 {
-    public PlacedTileObject TileObject => gameObject.GetComponent<PlacedTileObject>();
-
-    public override void OnStartServer()
+    /// <summary>
+    /// Put this script on anything that need to be part of an electric circuit.
+    /// This script add the game object it's on to an electric circuit.
+    /// </summary>
+    public class BasicElectricDevice : NetworkActor, IElectricDevice
     {
-        base.OnStartServer();
+        public PlacedTileObject TileObject => gameObject.GetComponent<PlacedTileObject>();
 
-        ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-        if (electricitySystem.IsSetUp)
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
+            if (electricitySystem.IsSetUp)
+                electricitySystem.AddElectricalElement(this);
+            else
+                electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
+            electricitySystem.RemoveElectricalElement(this);
+        }
+
+        private void OnElectricitySystemSetup()
+        {
+            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
             electricitySystem.AddElectricalElement(this);
-        else
-            electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
-    }
-
-    protected override void OnDestroyed()
-    {
-        base.OnDestroyed();
-        ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-        electricitySystem.RemoveElectricalElement(this);
-    }
-
-    private void OnElectricitySystemSetup()
-    {
-        ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-        electricitySystem.AddElectricalElement(this);
+        }
     }
 }

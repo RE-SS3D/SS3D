@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace System.Electricity
+﻿namespace System.Electricity
 {
     /// <summary>
     /// Interface for anything producing electric power.

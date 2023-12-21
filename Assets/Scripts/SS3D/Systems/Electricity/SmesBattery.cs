@@ -1,12 +1,7 @@
-﻿using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
-using FishNet.Object;
+﻿using FishNet.Object;
 using SS3D.Core;
-using SS3D.Interactions;
-using System.Collections;
-using System.Collections.Generic;
-using System.Electricity;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace System.Electricity
 {
@@ -15,23 +10,16 @@ namespace System.Electricity
     /// </summary>
     public class SmesBattery : BasicBattery
     {
+        [FormerlySerializedAs("SmesSkinnedMesh")]
         [SerializeField]
-        private SkinnedMeshRenderer SmesSkinnedMesh;
+        private SkinnedMeshRenderer _smesSkinnedMesh;
 
         // Bunch of blend shape indexes.
-
         private const int ChargeblendIndex = 0;
-
         private const int OnBlendIndex = 12;
-
         private const int OffBlendIndex = 13;
-
-
-
         private float _previousPowerStored = 0f;
-
         private int _currentLightOutput = 0;
-
         private int _lightOutputTarget = 0;
 
         /// <summary>
@@ -39,9 +27,7 @@ namespace System.Electricity
         /// </summary>
         [SerializeField]
         private int _updateLightPeriod = 3;
-
         private int _updateCount = 0;
-
 
         public override void OnStartClient()
         {
@@ -69,7 +55,7 @@ namespace System.Electricity
         private void AdjustBatteryLevel()
         {
             float chargeLevelNormalized = StoredPower / MaxCapacity;
-            SmesSkinnedMesh.SetBlendShapeWeight(ChargeblendIndex, chargeLevelNormalized*100);
+            _smesSkinnedMesh.SetBlendShapeWeight(ChargeblendIndex, chargeLevelNormalized*100);
         }
 
         /// <summary>
@@ -82,11 +68,11 @@ namespace System.Electricity
 
             if(powerAdded > 0f)
             {
-                SmesSkinnedMesh.SetBlendShapeWeight(11, 100f);
+                _smesSkinnedMesh.SetBlendShapeWeight(11, 100f);
             }
             else
             {
-                SmesSkinnedMesh.SetBlendShapeWeight(11, 0f);
+                _smesSkinnedMesh.SetBlendShapeWeight(11, 0f);
             }
         }
 
@@ -106,11 +92,11 @@ namespace System.Electricity
             if (_currentLightOutput < _lightOutputTarget)
             {
                 _currentLightOutput += 1;
-                SmesSkinnedMesh.SetBlendShapeWeight(_currentLightOutput, 100);
+                _smesSkinnedMesh.SetBlendShapeWeight(_currentLightOutput, 100);
             }
             else if(_currentLightOutput > _lightOutputTarget)
             {
-                SmesSkinnedMesh.SetBlendShapeWeight(_currentLightOutput, 0);
+                _smesSkinnedMesh.SetBlendShapeWeight(_currentLightOutput, 0);
                 _currentLightOutput -= 1;
             }      
         }
@@ -144,8 +130,6 @@ namespace System.Electricity
         public void HandleBatteryToggle(bool toggle)
         {
             _isOn = toggle;
-
-            
         }
 
         protected override void SyncEnabled(bool oldValue, bool newValue, bool asServer)
@@ -154,13 +138,13 @@ namespace System.Electricity
 
             if (newValue)
             {
-                SmesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 100);
-                SmesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 0);
+                _smesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 100);
+                _smesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 0);
             }
             else
             {
-                SmesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 0);
-                SmesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 100);
+                _smesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 0);
+                _smesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 100);
             }
 
         }

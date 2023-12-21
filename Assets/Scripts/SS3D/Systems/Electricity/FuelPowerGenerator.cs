@@ -1,12 +1,9 @@
-﻿using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
-using FishNet.Object;
+﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Data.Generated;
 using SS3D.Systems.Audio;
-using System.Collections;
-using System.Collections.Generic;
+using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 
@@ -45,9 +42,9 @@ namespace System.Electricity
         }
 
         [Server]
-        private void HandleGeneratorToggle(bool enabled)
+        private void HandleGeneratorToggle(bool isEnabled)
         {
-            _enabled = enabled;
+            _enabled = isEnabled;
         }
 
         private void SyncGeneratorToggle(bool oldValue, bool newValue, bool asServer)
@@ -60,9 +57,9 @@ namespace System.Electricity
             GetComponent<MachineVibrate>().Enable = newValue;
         }
 
-        private void HandleSound(bool enabled)
+        private void HandleSound(bool isEnabled)
         {
-            if (!enabled)
+            if (!isEnabled)
             {
                 Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
             }
@@ -73,23 +70,23 @@ namespace System.Electricity
             }
         }
 
-        private void HandleLights(bool enabled)
+        private void HandleLights(bool isEnabled)
         {
-            int OnblendShapeIndex = _skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(OnBlendShapeName);
-            int OutputBlendShapeIndex = _skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(OutputBlendShapeName);
+            int onblendShapeIndex = _skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(OnBlendShapeName);
+            int outputBlendShapeIndex = _skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(OutputBlendShapeName);
 
-            if (OnblendShapeIndex != -1)
+            if (onblendShapeIndex != -1)
             {
-                _skinnedMeshRenderer.SetBlendShapeWeight(OnblendShapeIndex, enabled ? 100 : 0);
+                _skinnedMeshRenderer.SetBlendShapeWeight(onblendShapeIndex, isEnabled ? 100 : 0);
             }
             else
             {
                 Debug.LogError("Blend shape " + OnBlendShapeName + " not found.");
             }
 
-            if (OutputBlendShapeIndex != -1)
+            if (outputBlendShapeIndex != -1)
             {
-                _skinnedMeshRenderer.SetBlendShapeWeight(OutputBlendShapeIndex, enabled ? 100 : 0);
+                _skinnedMeshRenderer.SetBlendShapeWeight(outputBlendShapeIndex, isEnabled ? 100 : 0);
             }
             else
             {
@@ -97,9 +94,9 @@ namespace System.Electricity
             }
         }
 
-        private void HandlePowerGenerated(bool enabled)
+        private void HandlePowerGenerated(bool isEnabled)
         {
-            _powerProduction = enabled ? _onPowerProduction : 0f; 
+            _powerProduction = isEnabled ? _onPowerProduction : 0f; 
         }
     }
 }

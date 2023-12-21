@@ -1,11 +1,7 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet;
-using FishNet.Managing.Server;
 using SS3D.Core.Behaviours;
-using System.Collections;
-using System.Collections.Generic;
-using System.Electricity;
 using UnityEngine;
 
 /// <summary>
@@ -15,16 +11,11 @@ public class MachineVibrate : Actor
 {
     [SerializeField]
     private float _amplitude = 1; // How much is the amplitude of the vibration.
-
     [SerializeField]
-    private float _frequency = 35; // Vibrating speed.
-
+    private float _frequency = 35;       // Vibrating speed.
     private Quaternion _initialRotation; // Rotation of the generator at rest.
-
-    private Vector3 _directionOfShake; // In which direction the generator shake.
-
+    private Vector3 _directionOfShake;   // In which direction the generator shake.
     private bool _enable = false;
-
     private float _elapsedTime = 0f; // Elapsed time for the vibrating stuff.
 
     public bool Enable
@@ -49,8 +40,7 @@ public class MachineVibrate : Actor
     {
         if (_enable) Vibrate();
     }
-
-
+    
     private void Vibrate()
     {
         _elapsedTime += Time.fixedDeltaTime;
@@ -64,6 +54,5 @@ public class MachineVibrate : Actor
         {
             Rotation = _initialRotation;
         }
-       
     }
 }

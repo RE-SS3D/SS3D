@@ -1,8 +1,5 @@
 ﻿using SS3D.Logging;
-using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
-using SS3D.Systems.Tile.Connections;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object.Synchronizing;
@@ -21,12 +18,12 @@ namespace SS3D.Systems.Tile.Connections
         /// A structure containing data regarding connection of this PlacedTileObject with all 8
         /// adjacent neighbours (cardinal and diagonal connections).
         /// </summary>
-        protected AdjacencyMap _adjacencyMap;
+        protected AdjacencyMap AdjacencyMap;
 
         /// <summary>
         /// The specific mesh this connectable has.
         /// </summary>
-        protected MeshFilter _filter;
+        protected MeshFilter Filter;
 
         /// <summary>
         /// Script that help with resolving the specific mesh a connectable should take.
@@ -43,11 +40,11 @@ namespace SS3D.Systems.Tile.Connections
         [Server]
         protected override void Setup()
         {
-            if (!_initialized)
+            if (!Initialized)
             {
                 base.Setup();
-                _adjacencyMap = new AdjacencyMap();
-                _filter = GetComponent<MeshFilter>();
+                AdjacencyMap = new AdjacencyMap();
+                Filter = GetComponent<MeshFilter>();
             }
         }
 
@@ -56,15 +53,15 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            var neighbourObjects = GetNeighbours();
+            List<PlacedTileObject> neighbourObjects = GetNeighbours();
 
             bool changed = false;
 
-            foreach (var neighbourObject in neighbourObjects)
+            foreach (PlacedTileObject neighbourObject in neighbourObjects)
             {
                 if (!NeighbourIsCable(neighbourObject)) continue;
 
-                _placedObject.NeighbourAtDirectionOf(neighbourObject, out Direction dir);
+                PlacedObject.NeighbourAtDirectionOf(neighbourObject, out Direction dir);
                 changed |= UpdateSingleConnection(dir, neighbourObject, true);
             }
 
@@ -84,16 +81,16 @@ namespace SS3D.Systems.Tile.Connections
 
             bool isConnected = IsConnected(neighbourObject);
 
-            bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
+            bool isUpdated = AdjacencyMap.SetConnection(dir, new(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
 
             if (isUpdated && updateNeighbour)
             {
-                neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, false);
+                neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), PlacedObject, false);
             }
 
             if(isUpdated) 
             {
-                _syncedConnections = _adjacencyMap.SerializeToByte();
+                _syncedConnections = AdjacencyMap.SerializeToByte();
                 UpdateMeshAndDirection(); 
             }
 
@@ -107,16 +104,14 @@ namespace SS3D.Systems.Tile.Connections
         [ServerOrClient]
         protected virtual void UpdateMeshAndDirection()
         {
+            MeshDirectionInfo info = _adjacencyResolver.GetMeshAndDirection(AdjacencyMap);
 
-            MeshDirectionInfo info = new();
-            info = _adjacencyResolver.GetMeshAndDirection(_adjacencyMap);
-
-            if (_filter == null)
+            if (Filter == null)
             {
                 Log.Warning(this, "Missing mesh {meshDirectionInfo}", Logs.Generic, info);
             }
 
-            _filter.mesh = info.Mesh;
+            Filter.mesh = info.Mesh;
 
             Quaternion localRotation = transform.localRotation;
             Vector3 eulerRotation = localRotation.eulerAngles;
@@ -135,7 +130,7 @@ namespace SS3D.Systems.Tile.Connections
             {
                 Setup();
 
-                _adjacencyMap.DeserializeFromByte(newValue);
+                AdjacencyMap.DeserializeFromByte(newValue);
                 UpdateMeshAndDirection();
             }
         }
