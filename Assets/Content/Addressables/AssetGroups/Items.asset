@@ -333,6 +333,10 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitBotany.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 9c5418cbebef419429574992d3e296a3
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
