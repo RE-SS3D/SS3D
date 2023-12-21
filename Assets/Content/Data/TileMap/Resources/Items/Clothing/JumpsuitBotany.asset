@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: JumpsuitBotany
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6716717479641134976, guid: be3fcf1a74268ad49bfedb1edd9f5318, type: 3}
+  prefab: {fileID: 3945981868420553423, guid: be3fcf1a74268ad49bfedb1edd9f5318, type: 3}
   icon: {fileID: 0}
