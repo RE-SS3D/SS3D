@@ -13,12 +13,12 @@ using FishNet.Object;
 namespace System.Electricity
 {
     /// <summary>
-    /// This system should handle a big graph containing all circuits.
-    /// When removing electrical elements or adding new ones, it should not immediately update, instead, it should mark the graph dirty and
-    /// trigger an update. Imagine an explosion destroying 247 circuit elements in a single frame. It if update upon any change, it would
-    /// have to update the whole graph 247 times. Instead, each time an element is removed, it should tell it to the electricity system, and
-    /// each tick, if an element or more has changed, the graph can update.
+    /// Handles a graph, that contains all electicity circuits.
     /// </summary>
+    /// <remarks>
+    /// When removing electrical elements or adding new ones, it doesn't immediately update, instead,
+    /// it marks the graph dirty and rebuilds the graph on the next tick.
+    /// </remarks>
     public class ElectricitySystem : NetworkSystem
     {
         /// <summary>
@@ -33,13 +33,12 @@ namespace System.Electricity
         public event Action OnTick;
 
         /// <summary>
-        /// If the system is properly set up, do stuff with it.
+        /// Is the system set up.
         /// </summary>
         public bool IsSetUp { get; private set; }
 
         /// <summary>
-        /// Little struct to have a unique set of number for any electric device on the map. 
-        /// The coordinates are the position on the map (x and y), the layer and the direction of the electric device.
+        /// Record to have a unique set of number for any electric device on the map. 
         /// None two tile objects should have the same set of coordinates.
         /// </summary>
         private record VerticeCoordinates(short X, short Y, byte Layer, byte Direction);
@@ -55,7 +54,7 @@ namespace System.Electricity
         private List<Circuit> _circuits;
 
         /// <summary>
-        /// Graph representing all electric devices and connections on the map. each electric device is a vertice in this graph,
+        /// Graph representing all electric devices and connections on the map. Each electric device is a vertice in this graph,
         /// and each electric connection is an edge.
         /// </summary>
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
@@ -66,7 +65,6 @@ namespace System.Electricity
         [SerializeField]
         private float _tickRate = 0.2f;
         private float _timeElapsed = 0f;
-
 
         public override void OnStartServer()
         {       
@@ -84,7 +82,7 @@ namespace System.Electricity
         {
             _timeElapsed += Time.deltaTime;
 
-            if(_timeElapsed> _tickRate)
+            if(_timeElapsed > _tickRate)
             {
                 RpcInvokeOnTick();
                 _timeElapsed -= _tickRate;
@@ -94,10 +92,12 @@ namespace System.Electricity
         [Server]
         private void HandleCircuitsUpdate()
         {
+            // Updating the graph on each change is unreliable in case of events, that change a lot of elements at one time, such as explosions.
+            // Therefore, the graph updates each tick if it gets dirty.
             if (_graphIsDirty)
             {
-                _graphIsDirty = false;
                 UpdateAllCircuitsTopology();
+                _graphIsDirty = false;
             }
 
             foreach (Circuit circuit in _circuits)
@@ -165,20 +165,19 @@ namespace System.Electricity
             _graphIsDirty = true;
         }
 
+        // TODO: When removing electrical elements, identify which circuits are affected and only update those.
+        // TODO: When adding electrical elements, use some kind of metric to determine what circuits might be affected by the adding, and only update those.
+        // TODO: Maybe simply check which component gets connected to the new device, and update all circuits with those components.
         /// <summary>
-        /// Recompute all circuits, should be called when there's some changes on the map regarding 
-        /// how electric devices are placed.
-        /// TODO : When removing electrical elements, identify which circuits are affected and only update those.
-        /// TODO : When adding electrical elements, use some kind of metric to determine which circuits might be affected by the adding, and only update those.
-        ///        Maybe simply check which component gets connected to the new device, and update all circuits with those components.
+        /// Recompute all circuits, should be called when there are some changes on the map regarding how electric devices are placed.
         /// </summary>
         [Server]
         private void UpdateAllCircuitsTopology()
         {
             Dictionary<VerticeCoordinates, int> components = new();
 
-            // Compute all connected components in the graph. One component is basically one circuit.
-            // In graph theory, a component is a set of all vertices linked by at least one path.
+            // Compute all components in the graph. One component is basically one circuit.
+            // In graph theory, a component is a connected subgraph that is not part of any larger connected subgraph.
             _electricityGraph.ConnectedComponents(components);
             _circuits.Clear();
             // group all vertice coordinates by the component index they belong to.
