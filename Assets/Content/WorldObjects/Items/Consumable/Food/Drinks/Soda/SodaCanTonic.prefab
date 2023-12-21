@@ -8,6 +8,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -6509701768596653782, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _name
+      value: Tonic Can
+      objectReference: {fileID: 0}
+    - target: {fileID: -6509701768596653782, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: _asset
       value: 
       objectReference: {fileID: 11400000, guid: 532f39f1310fc5d41b37195bc4d0ae11, type: 2}
