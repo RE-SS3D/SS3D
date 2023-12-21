@@ -71,21 +71,21 @@ namespace System.Electricity
             base.OnStartServer();
             _electricityGraph = new();
             _circuits = new();
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
             IsSetUp = true;
             OnSystemSetUp?.Invoke();
             OnTick += HandleCircuitsUpdate;
         }
 
         [Server]
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
         {
             _timeElapsed += Time.deltaTime;
 
             if(_timeElapsed > _tickRate)
             {
                 RpcInvokeOnTick();
-                _timeElapsed -= _tickRate;
+                _timeElapsed = 0;
             }
         }
 
