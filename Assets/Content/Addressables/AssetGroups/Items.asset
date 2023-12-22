@@ -317,7 +317,7 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 4635651592391df41b6b2413afdb76c3
+  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
     m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitGrey.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
