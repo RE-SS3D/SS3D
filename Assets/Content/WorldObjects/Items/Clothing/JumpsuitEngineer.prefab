@@ -57,7 +57,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: m_Name
-      value: JumpsuitEngineering
+      value: JumpsuitEngineer
       objectReference: {fileID: 0}
     - target: {fileID: 971768655071245797, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: m_Mesh
@@ -72,8 +72,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7310264250969126733, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: <PrefabId>k__BackingField
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
-      value: 11262741033953998296
+      value: 13453785768474410456
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
