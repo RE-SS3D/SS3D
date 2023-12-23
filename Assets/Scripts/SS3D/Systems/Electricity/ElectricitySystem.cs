@@ -21,9 +21,6 @@ namespace System.Electricity
     /// </remarks>
     public class ElectricitySystem : NetworkSystem
     {
-        /// <summary>
-        /// Register on this if the system is not set up yet.
-        /// </summary>
         public event Action OnSystemSetUp;
 
         /// <summary>
@@ -31,10 +28,7 @@ namespace System.Electricity
         /// to this event instead of performing their logics in Unity's update loops.
         /// </summary>
         public event Action OnTick;
-
-        /// <summary>
-        /// Is the system set up.
-        /// </summary>
+        
         public bool IsSetUp { get; private set; }
 
         /// <summary>

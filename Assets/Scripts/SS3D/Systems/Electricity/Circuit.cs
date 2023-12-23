@@ -75,8 +75,8 @@ namespace System.Electricity
         /// Consume power from batteries if the producers don't produce enough power for all consumers.
         /// </summary>
         /// <param name="firstUnPoweredConsumer"> The first unpowered consumer in the list of consumers.</param>
-        /// <param name="firstUnpoweredConsumerByStoragesIndex"> Should be set to be the index of the first consumer in the consumer list
-        /// that could not be powered by power storages because there's not enough power. We don't care about it if there's enough power.</param>
+        /// <param name="firstUnpoweredConsumerByStoragesIndex"> Index of the first consumer in the consumer list
+        /// that could not be powered by power storages because there's not enough power. Equals to 0 if there's enough power.</param>
         /// <returns> True if enough power is present to power all left over consumers, false otherwise.</returns>
         private bool ConsumePowerFromBatteries(IPowerConsumer firstUnPoweredConsumer, float leftOverPowerFromProducer,
              out int firstUnpoweredConsumerByStoragesIndex)
@@ -105,9 +105,9 @@ namespace System.Electricity
         }
 
         /// <summary>
-        /// Make the consumers consume all their need of available power, from producers and storage, if they can.
+        /// Make the consumers fulfill all their need of power, from producers and storages.
         /// </summary>
-        /// <returns> excess energy produced by producers</returns>
+        /// <returns> Excess produced energy </returns>
         private float ConsumePower(out bool enoughPower, out int firstUnPoweredConsumerIndex)
         {
             // Reorder randomly consumers so that if there's not enough power, powered consumers will be different with each tick.
