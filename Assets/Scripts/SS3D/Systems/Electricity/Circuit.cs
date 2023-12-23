@@ -13,7 +13,6 @@ namespace System.Electricity
         private List<IPowerConsumer> _consumers;
         private List<IPowerProducer> _producers;
         private List<IPowerStorage> _storages;
-
         private static Random RandomGenerator = new();
 
         public Circuit() 
@@ -60,14 +59,15 @@ namespace System.Electricity
             foreach (IPowerConsumer consumer in _consumers)
             {
                 if (availablePower > consumer.PowerNeeded)
+                {
                     availablePower -= consumer.PowerNeeded;
+                }
                 else
                 {
                     firstUnPoweredConsumer = consumer;
                     break;
                 }
             }
-
             return availablePower;
         }
 
@@ -141,7 +141,7 @@ namespace System.Electricity
             if (availablePower <= 0f) return 0f;
 
             // compute an equal amount to all which are not full and are on.
-            float equalAmount = availablePower / _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).Count();
+            float equalAmount = availablePower / _storages.Count(x => x.RemainingCapacity > 0 && x.IsOn);
 
             // Give power to all those that can take the full equal amount.
             List<IPowerStorage> notFullyFillableStorages = _storages.Where(x => x.RemainingCapacity > equalAmount).ToList();
@@ -177,10 +177,6 @@ namespace System.Electricity
                 if(notEnoughPower && i >= firstUnpoweredIndex)
                 {
                     _consumers[i].PowerStatus = PowerStatus.Inactive;
-                }
-                else if(notEnoughPower && i < firstUnpoweredIndex)
-                {
-                    _consumers[i].PowerStatus = PowerStatus.Powered;
                 }
                 else
                 {

@@ -113,21 +113,14 @@ namespace System.Electricity
         [Server]
         public void AddElectricalElement(IElectricDevice device)
         {
-            VerticeCoordinates deviceCoordinates = new ((short)device.TileObject.WorldOrigin.x, (short)device.TileObject.WorldOrigin.y,
-                    (byte)device.TileObject.Layer, (byte)device.TileObject.Direction);
+            PlacedTileObject tileObject = device.TileObject;
 
-            _electricityGraph.AddVertex
-            (
-                new
-                (
-                    (short) device.TileObject.WorldOrigin.x,
-                    (short) device.TileObject.WorldOrigin.y,
-                    (byte) device.TileObject.Layer,
-                    (byte) device.TileObject.Direction
-                )
-            );
+            VerticeCoordinates deviceCoordinates = new ((short)tileObject.WorldOrigin.x, (short)tileObject.WorldOrigin.y,
+                    (byte)tileObject.Layer, (byte)tileObject.Direction);
 
-            List<PlacedTileObject> neighbours = device.TileObject.Connector.GetNeighbours();
+            _electricityGraph.AddVertex(deviceCoordinates);
+
+            List<PlacedTileObject> neighbours = tileObject.Connector.GetNeighbours();
 
             foreach(PlacedTileObject neighbour in neighbours)
             {
