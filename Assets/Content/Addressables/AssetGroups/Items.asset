@@ -325,10 +325,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitSecurity.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 991fc7d67bda7d247b13ec8498953bc0
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineer.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: be3fcf1a74268ad49bfedb1edd9f5318
     m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitBotany.prefab
     m_ReadOnly: 0
