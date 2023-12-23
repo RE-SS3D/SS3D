@@ -41,9 +41,9 @@ namespace System.Electricity
         /// </summary>
         public void UpdateCircuitPower()
         {
-            float leftOverPower = ConsumePower(out bool notEnoughPower, out int firstUnpoweredConsumerIndex);
-            UpdateElectricElementStatus(notEnoughPower, firstUnpoweredConsumerIndex);
-            leftOverPower = ChargeStorages(leftOverPower);
+            float leftOverPower = ConsumePower(out bool enoughPower, out int firstUnpoweredConsumerIndex);
+            ChargeStorages(leftOverPower);
+            UpdateElectricElementStatus(!enoughPower, firstUnpoweredConsumerIndex);
         }
 
         /// <summary>
@@ -75,13 +75,12 @@ namespace System.Electricity
         /// Consume power from batteries if the producers don't produce enough power for all consumers.
         /// </summary>
         /// <param name="firstUnPoweredConsumer"> The first unpowered consumer in the list of consumers.</param>
-        /// <param name="notEnoughPower"> Should be set to true if the storages don't have enough power for all unpowered consumers.</param>
         /// <param name="firstUnPoweredConsumerByStoragesIndex"> Should be set to be the index of the first consumer in the consumer list
         /// that could not be powered by power storages because there's not enough power. We don't care about it if there's enough power.</param>
-        private void ConsumePowerFromBatteries(IPowerConsumer firstUnPoweredConsumer, float leftOverPowerFromProducer,
-            out bool notEnoughPower, out int firstUnPoweredConsumerByStoragesIndex)
+        /// <returns> True if enough power is present to power all left over consumers, false otherwise.</returns>
+        private bool ConsumePowerFromBatteries(IPowerConsumer firstUnPoweredConsumer, float leftOverPowerFromProducer,
+             out int firstUnPoweredConsumerByStoragesIndex)
         {
-            notEnoughPower = false;
             firstUnPoweredConsumerByStoragesIndex = 0;
 
             // We care only about the consumer that could not be alimented by producers.
@@ -94,61 +93,24 @@ namespace System.Electricity
             {
                 IPowerConsumer consumer = _consumers[i];
                 float powerNeeded = consumer.PowerNeeded;
-                float powerFromStorages = 0;
 
-                // only call once, left over power from power producers to help the batteries
-                if (i == firstUnPoweredConsumerByProducersIndex) powerFromStorages += leftOverPowerFromProducer;
-
-
-                float totalPowerLeftInStorages = _storages.Sum(x => x.StoredPower);
-
-                if (totalPowerLeftInStorages < powerNeeded)
+                if (!AccumulateBatteryPower(powerNeeded, storagesWithAvailablePower, i == firstUnPoweredConsumerByProducersIndex ? leftOverPowerFromProducer : 0))
                 {
                     firstUnPoweredConsumerByStoragesIndex = i;
-                    notEnoughPower = true;
-                    break;
-                }
-
-                // Get power from randomly picked batteries until there's enough power for the current consumer.
-                // Can go through a battery only once each update.
-                while (powerFromStorages < powerNeeded)
-                {
-                    if (storagesWithAvailablePower.IsNullOrEmpty())
-                    {
-                        notEnoughPower = true;
-                        break;
-                    }
-
-                    int randomBatteryIndex = RandomGenerator.Next(0, storagesWithAvailablePower.Count);
-
-                    if(powerNeeded - powerFromStorages < storagesWithAvailablePower[randomBatteryIndex].MaxRemovablePower)
-                    {
-                        powerFromStorages += storagesWithAvailablePower[randomBatteryIndex].RemovePower(powerNeeded - powerFromStorages);
-                    }
-                    else
-                    {
-                        powerFromStorages += storagesWithAvailablePower[randomBatteryIndex].RemovePower(storagesWithAvailablePower[randomBatteryIndex].MaxRemovablePower);
-                    }
-
-                    storagesWithAvailablePower.RemoveAt(randomBatteryIndex);
-                }
-
-                if (notEnoughPower)
-                {
-                    firstUnPoweredConsumerByStoragesIndex = i;
-                    break;
+                    return false;
                 }
             }
+
+            return true;
         }
 
         /// <summary>
         /// Make the consumers consume all their need of available power, from producers and storage, if they can.
         /// </summary>
         /// <returns> excess energy produced by producers</returns>
-        private float ConsumePower(out bool notEnoughPower, out int firstUnPoweredConsumerIndex)
+        private float ConsumePower(out bool enoughPower, out int firstUnPoweredConsumerIndex)
         {
             _consumers = _consumers.OrderBy(x => RandomGenerator.Next()).ToList();
-            notEnoughPower = false;
             firstUnPoweredConsumerIndex = 0;
 
             float producedPower = _producers.Sum(x => x.PowerProduction);
@@ -157,11 +119,13 @@ namespace System.Electricity
 
             // if the power producing device were enough to cover all needs just return.
             // Else continue with using power from batteries. 
-            if (firstUnPoweredConsumer == null) return producedPower;
+            if (firstUnPoweredConsumer == null)
+            {
+                enoughPower = true;
+                return producedPower;
+            }
 
-            ConsumePowerFromBatteries(firstUnPoweredConsumer, producedPower, out notEnoughPower, out firstUnPoweredConsumerIndex);
-
-            UpdateElectricElementStatus(notEnoughPower, firstUnPoweredConsumerIndex);
+            enoughPower = ConsumePowerFromBatteries(firstUnPoweredConsumer, producedPower, out firstUnPoweredConsumerIndex);
 
             return 0f;
         }
@@ -222,6 +186,45 @@ namespace System.Electricity
                     _consumers[i].PowerStatus = PowerStatus.Powered;
                 }
             }
+        }
+
+        /// <summary>
+        /// Given an amount of needed power, go through all the storages with available power and accumulate energy from them, until
+        /// it reaches the necessary amount, or fail to do so. The power is picked up in random order for batteries, to avoid batteries
+        /// draining one by one. This ensures an almost equal distribution of power taken between batteries.
+        /// </summary>
+        /// <param name="powerNeeded"> The amount of power we're trying to reach.</param>
+        /// <param name="storagesWithAvailablePower"> The list of storages with power left.</param>
+        /// <param name="leftOverPowerFromProducers"> Power left from producers, that could not go into any consumers.</param>
+        /// <returns> True if enough power was accumulated, false otherwise.</returns>
+        private bool AccumulateBatteryPower(float powerNeeded, List<IPowerStorage> storagesWithAvailablePower, float leftOverPowerFromProducers)
+        {
+            float powerFromStorages = leftOverPowerFromProducers;
+
+            while (powerFromStorages < powerNeeded)
+            {
+                if (storagesWithAvailablePower.IsNullOrEmpty())
+                {
+                    return false;
+                }
+
+                // Pick a random battery to draw power from.
+                int randomBatteryIndex = RandomGenerator.Next(0, storagesWithAvailablePower.Count);
+
+                if (powerNeeded - powerFromStorages < storagesWithAvailablePower[randomBatteryIndex].MaxRemovablePower)
+                {
+                    powerFromStorages += storagesWithAvailablePower[randomBatteryIndex].RemovePower(powerNeeded - powerFromStorages);
+                }
+                else
+                {
+                    powerFromStorages += storagesWithAvailablePower[randomBatteryIndex].RemovePower(storagesWithAvailablePower[randomBatteryIndex].MaxRemovablePower);
+                }
+
+                // Can't take from a battery more than once each tick.
+                storagesWithAvailablePower.RemoveAt(randomBatteryIndex);
+            }
+
+            return true;
         }
     }
 }
