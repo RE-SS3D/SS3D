@@ -82,10 +82,10 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset OxygenTank = new DatabaseAsset("OxygenTank", "Items");
         public static DatabaseAsset JumpsuitGrey = new DatabaseAsset("JumpsuitGrey", "Items");
         public static DatabaseAsset JumpsuitSecurity = new DatabaseAsset("JumpsuitSecurity", "Items");
-        public static DatabaseAsset JumpsuitEngineer = new DatabaseAsset("JumpsuitEngineer", "Items");
         public static DatabaseAsset JumpsuitBotany = new DatabaseAsset("JumpsuitBotany", "Items");
         public static DatabaseAsset HumanIntestineSmall = new DatabaseAsset("HumanIntestineSmall", "Items");
         public static DatabaseAsset GlassShard = new DatabaseAsset("GlassShard", "Items");
+        public static DatabaseAsset JumpsuitEngineer = new DatabaseAsset("JumpsuitEngineer", "Items");
     }
 }
 
