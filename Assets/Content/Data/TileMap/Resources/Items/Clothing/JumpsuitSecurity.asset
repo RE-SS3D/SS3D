@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
+  m_Name: JumpsuitSecurity
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 726792282085660869, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
+  icon: {fileID: 0}
