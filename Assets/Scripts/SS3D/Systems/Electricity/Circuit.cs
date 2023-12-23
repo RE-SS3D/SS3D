@@ -110,6 +110,7 @@ namespace System.Electricity
         /// <returns> excess energy produced by producers</returns>
         private float ConsumePower(out bool enoughPower, out int firstUnPoweredConsumerIndex)
         {
+            // Reorder randomly consumers so that if there's not enough power, not always the same consumer is unpowered.
             _consumers = _consumers.OrderBy(x => RandomGenerator.Next()).ToList();
             firstUnPoweredConsumerIndex = 0;
 
