@@ -77,7 +77,7 @@ namespace System.Electricity
         }
 
         /// <summary>
-        /// Set the vertical line of output lights so that, at each update, the bar go up and down toward the light it should reached.
+        /// Set the vertical line of output lights so that, at each update, the bar goes up and down toward the light it should reached.
         /// Do nothing if the target light is reached.
         /// </summary>
         [Client]
@@ -127,12 +127,12 @@ namespace System.Electricity
         /// Called when the SMES battery is toggled on or off.
         /// </summary>
         /// <param name="toggle"> True if the battery is on.</param>
-        public void HandleBatteryToggle(bool toggle)
+        private void HandleBatteryToggle(bool toggle)
         {
             _isOn = toggle;
         }
 
-        protected override void SyncEnabled(bool oldValue, bool newValue, bool asServer)
+        protected override void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer)
         {
             if (asServer) return;
 
@@ -146,7 +146,6 @@ namespace System.Electricity
                 _smesSkinnedMesh.SetBlendShapeWeight(OnBlendIndex, 0);
                 _smesSkinnedMesh.SetBlendShapeWeight(OffBlendIndex, 100);
             }
-
         }
     }
 }

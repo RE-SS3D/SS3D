@@ -75,28 +75,28 @@ namespace System.Electricity
         /// Consume power from batteries if the producers don't produce enough power for all consumers.
         /// </summary>
         /// <param name="firstUnPoweredConsumer"> The first unpowered consumer in the list of consumers.</param>
-        /// <param name="firstUnPoweredConsumerByStoragesIndex"> Should be set to be the index of the first consumer in the consumer list
+        /// <param name="firstUnpoweredConsumerByStoragesIndex"> Should be set to be the index of the first consumer in the consumer list
         /// that could not be powered by power storages because there's not enough power. We don't care about it if there's enough power.</param>
         /// <returns> True if enough power is present to power all left over consumers, false otherwise.</returns>
         private bool ConsumePowerFromBatteries(IPowerConsumer firstUnPoweredConsumer, float leftOverPowerFromProducer,
-             out int firstUnPoweredConsumerByStoragesIndex)
+             out int firstUnpoweredConsumerByStoragesIndex)
         {
-            firstUnPoweredConsumerByStoragesIndex = 0;
+            firstUnpoweredConsumerByStoragesIndex = 0;
 
             // We care only about the consumer that could not be alimented by producers.
-            int firstUnPoweredConsumerByProducersIndex = _consumers.FindIndex(x => x == firstUnPoweredConsumer);
+            int firstUnpoweredConsumerByProducersIndex = _consumers.FindIndex(x => x == firstUnPoweredConsumer);
 
-            List<IPowerStorage> storagesWithAvailablePower = _storages.Where(x => x.StoredPower >= 0).ToList();
+            List<IPowerStorage> storagesWithAvailablePower = _storages.Where(x => x.StoredPower > 0).ToList();
 
             // Consume power from batteries, starting from the first unpowered device by producers
-            for (int i = firstUnPoweredConsumerByProducersIndex; i < _consumers.Count; i++)
+            for (int i = firstUnpoweredConsumerByProducersIndex; i < _consumers.Count; i++)
             {
                 IPowerConsumer consumer = _consumers[i];
                 float powerNeeded = consumer.PowerNeeded;
 
-                if (!AccumulateBatteryPower(powerNeeded, storagesWithAvailablePower, i == firstUnPoweredConsumerByProducersIndex ? leftOverPowerFromProducer : 0))
+                if (!AccumulateBatteryPower(powerNeeded, storagesWithAvailablePower, i == firstUnpoweredConsumerByProducersIndex ? leftOverPowerFromProducer : 0))
                 {
-                    firstUnPoweredConsumerByStoragesIndex = i;
+                    firstUnpoweredConsumerByStoragesIndex = i;
                     return false;
                 }
             }
@@ -110,12 +110,10 @@ namespace System.Electricity
         /// <returns> excess energy produced by producers</returns>
         private float ConsumePower(out bool enoughPower, out int firstUnPoweredConsumerIndex)
         {
-            // Reorder randomly consumers so that if there's not enough power, not always the same consumer is unpowered.
+            // Reorder randomly consumers so that if there's not enough power, powered consumers will be different with each tick.
             _consumers = _consumers.OrderBy(x => RandomGenerator.Next()).ToList();
             firstUnPoweredConsumerIndex = 0;
-
             float producedPower = _producers.Sum(x => x.PowerProduction);
-
             producedPower = ConsumePowerFromPowerProducingDevices(producedPower, out IPowerConsumer firstUnPoweredConsumer);
 
             // if the power producing device were enough to cover all needs just return.
@@ -127,8 +125,7 @@ namespace System.Electricity
             }
 
             enoughPower = ConsumePowerFromBatteries(firstUnPoweredConsumer, producedPower, out firstUnPoweredConsumerIndex);
-
-            return 0f;
+            return 0;
         }
 
         /// <summary>

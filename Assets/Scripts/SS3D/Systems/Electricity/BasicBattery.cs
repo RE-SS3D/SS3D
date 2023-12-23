@@ -18,7 +18,7 @@ namespace System.Electricity
         [SerializeField][SyncVar]
         private float _maxPowerRate = 5f;
 
-        [SyncVar(OnChange = nameof(SyncEnabled))]
+        [SyncVar(OnChange = nameof(HandleSyncEnabled))]
         protected bool _isOn = true;
 
         /// <inheritdoc> </inheritdoc>
@@ -76,6 +76,6 @@ namespace System.Electricity
             }
         }
 
-        protected virtual void SyncEnabled(bool oldValue, bool newValue, bool asServer) { }
+        protected virtual void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer) { }
     }
 }
