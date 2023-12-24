@@ -24,11 +24,5 @@ namespace System.Electricity
         {
             OnPowerStatusUpdated.Invoke(this, newValue);
         }
-
-        private void OnElectricitySystemSetup()
-        {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.AddElectricalElement(this);
-        }
     }
 }
