@@ -361,6 +361,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Botany/Hatchet.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: cc71128d4bcc0c548ac11481000ac424
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalWire.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0e69918696f58e04f846e985ec7405fe
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalCable.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
