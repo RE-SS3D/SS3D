@@ -341,6 +341,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineer.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 84cec183559b4954c883b11f20f767c9
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MicroLaser.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ed77d98d3e75b7946b404face1fe8f82
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MatterBin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
