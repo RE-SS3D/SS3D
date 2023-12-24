@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: MachineFrame
   m_EditorClassIdentifier: 
-  prefab: {fileID: 7544344157827661317, guid: 8e407938d18bf5942b3577c57dd99c57, type: 3}
+  prefab: {fileID: 5860930364823099125, guid: bdeac5e9a27546348a584caa74f00ec7, type: 3}
   icon: {fileID: 0}
   layer: 7
   genericType: 0
