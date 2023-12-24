@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7201440638569086905}
   - component: {fileID: 8472056765945847948}
   m_Layer: 0
-  m_Name: MachineFrame
+  m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,12 +109,12 @@ GameObject:
   - component: {fileID: 9209726242493494092}
   - component: {fileID: 3823677016145017297}
   m_Layer: 0
-  m_Name: MachineFrameCircuitBoard
+  m_Name: CircuitBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4445205569200486768
 Transform:
   m_ObjectHideFlags: 0
@@ -192,12 +192,12 @@ GameObject:
   - component: {fileID: 204463258192763847}
   - component: {fileID: 422149824066042930}
   m_Layer: 0
-  m_Name: MachineFrameWires
+  m_Name: Wires
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4036292525180422425
 Transform:
   m_ObjectHideFlags: 0
