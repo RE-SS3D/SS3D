@@ -353,6 +353,10 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Medkits/Medkit.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: e9f99df80a74fd242aa46e53c7ec0376
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Medical/HealthScanner.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
