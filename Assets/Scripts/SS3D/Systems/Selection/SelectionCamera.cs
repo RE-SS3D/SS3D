@@ -115,6 +115,7 @@ namespace SS3D.Systems.Selection
         protected override void OnDestroyed()
         {
             _renderTexture.Release();
+            Subsystems.Get<InputSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
         }
 
         /// <summary>

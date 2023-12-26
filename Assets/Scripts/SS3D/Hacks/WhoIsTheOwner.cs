@@ -21,6 +21,11 @@ namespace SS3D.Hacks
             Subsystems.Get<InputSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
         }
 
+        private void OnDestroy()
+        {
+            Subsystems.Get<InputSystem>().Inputs.Other.SeeContainerContents.performed -= ShowOwner;
+        }
+
         private void ShowOwner(InputAction.CallbackContext callbackContext)
         {
             Debug.Log("Owner of gameobject" + gameObject.name + " is " + Owner);
