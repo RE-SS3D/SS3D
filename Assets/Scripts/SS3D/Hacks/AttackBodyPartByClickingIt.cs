@@ -1,9 +1,11 @@
-﻿
-using FishNet.Object;
+﻿using FishNet.Object;
+using SS3D.Core;
 using System.Linq;
 using UnityEngine;
 using SS3D.Systems.Health;
 using System.Collections;
+using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Hacks
 {
@@ -30,35 +32,27 @@ namespace SS3D.Hacks
 			base.OnStartClient();
 			if (!IsOwner) enabled = false;
 		}
-		private void Update()
+
+        private void Start()
+        {
+            Subsystems.Get<InputSystem>().Inputs.Other.Attack.performed += CheckForAttack;
+        }
+
+        private void CheckForAttack(InputAction.CallbackContext callbackContext)
 		{
-			CheckForAttack();
-		}
-
-		private void CheckForAttack()
-		{
-
-			if (!Input.GetKeyDown(KeyCode.F))
-			{
-				return;
-			}
-
-			LayerMask layerMask = LayerMask.GetMask("BodyParts");
+            LayerMask layerMask = LayerMask.GetMask("BodyParts");
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
 			if (!Physics.Raycast(ray, out hit, 10f, layerMask))
 			{
 				return;
 			}
-
             BodyPart target = GetComponentsInChildren<BodyPart>().Where(x => x.BodyCollider == hit.collider).FirstOrDefault();
-
-			if (!target)
+            if (!target)
 			{
 				return;
 			}
-
-			CmdAttackBodyPart(target, damageAmount, hit.point);
+            CmdAttackBodyPart(target, damageAmount, hit.point);
 		}
 
 

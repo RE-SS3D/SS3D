@@ -1,7 +1,11 @@
 ﻿using FishNet.Object;
+using SS3D.Core;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Hacks
 {
@@ -12,16 +16,14 @@ namespace SS3D.Hacks
 	public class WhoIsTheOwner : NetworkBehaviour
 	{
 
-		// Update is called once per frame
-		void Update()
-		{
+        private void Start()
+        {
+            Subsystems.Get<InputSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
+        }
 
-			if (!Input.GetKeyDown(KeyCode.F))
-			{
-				return;
-			}
-
-			Debug.Log("Owner of gameobject" + gameObject.name + " is " + Owner);
-		}
-	}
+        private void ShowOwner(InputAction.CallbackContext callbackContext)
+        {
+            Debug.Log("Owner of gameobject" + gameObject.name + " is " + Owner);
+        }
+    }
 }
