@@ -130,6 +130,7 @@ namespace System.Electricity
 
         /// <summary>
         /// Distribute available power equally to power storages.
+        /// TODO : should limit the amount of power a storage can receive in a single update to avoid instant charge.
         /// </summary>
         /// <param name="availablePower"> Power available after consuming.</param>
         /// <returns> Left over power if storages are full.</returns>
@@ -139,33 +140,21 @@ namespace System.Electricity
 
             List<IPowerStorage> notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).ToList();
 
-            while (availablePower > 0f && notFullStorages.Count > 0)
+            float equalAmount;
+
+            while (availablePower > 0.1f && notFullStorages.Count > 0)
             {
-                // compute an equal amount to all which are not full and are on.
-                float equalAmount = availablePower / notFullStorages.Count;
+                notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).ToList();
 
-                // Fill the storages that can be filled
-                List<IPowerStorage> fullyFillableStorages = notFullStorages.Where(x => x.RemainingCapacity <= equalAmount).ToList();
+                if (notFullStorages.Count == 0) break;
 
-                foreach (IPowerStorage storage in fullyFillableStorages)
+                equalAmount = availablePower / notFullStorages.Count;
+
+                foreach(IPowerStorage storage in notFullStorages)
                 {
-                    if (availablePower >= storage.RemainingCapacity)
-                    {
-                        availablePower -= storage.AddPower(availablePower);
-                    }
-
-                    notFullStorages.Remove(storage);
-
+                    availablePower -= storage.AddPower(equalAmount);
                     if (availablePower <= 0) break;
                 }
-            }
-
-            // Those are the storage which can't be fully filled, so they are partially filled equally.
-            if(availablePower > 0f && notFullStorages.Count > 0)
-            {
-                float equalAmount = availablePower / notFullStorages.Count;
-                notFullStorages.ForEach(x => x.AddPower(equalAmount));
-                availablePower -= equalAmount * notFullStorages.Count;
             }
 
             return availablePower;
@@ -191,6 +180,8 @@ namespace System.Electricity
                 }
             }
         }
+
+        
 
         /// <summary>
         /// Given an amount of needed power, go through all the storages with available power and accumulate energy from them, until
