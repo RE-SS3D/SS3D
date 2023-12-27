@@ -1,9 +1,9 @@
 ﻿using FishNet.Object.Synchronizing;
-using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using System;
 using System.Collections.Generic;
 
-namespace System.Electricity
+namespace SS3D.Interactions
 {
     /// <summary>
     /// Small script to make a game object toggleable. All it does is send an OnToggle event when its state changes.

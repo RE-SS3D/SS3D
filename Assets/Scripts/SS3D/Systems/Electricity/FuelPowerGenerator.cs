@@ -2,6 +2,7 @@
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Data.Generated;
+using SS3D.Interactions;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;

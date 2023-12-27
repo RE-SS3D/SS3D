@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Interactions;
 using UnityEngine;
 using UnityEngine.Serialization;
 
