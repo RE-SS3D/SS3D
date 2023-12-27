@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 4292740740182341727}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.85, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6104867219766065872}
@@ -95,8 +95,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.56320024, y: 0.052940927, z: 0.8080486}
-  m_Center: {x: 0, y: 0.000000010244548, z: 0}
+  m_Size: {x: 0.047333296, y: 1.1804483, z: 0.047333397}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7125681683583715523
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,7 +219,7 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Rotation: {x: 0, y: 0.007853894, z: 0, w: 0.9999692}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0

@@ -169,13 +169,13 @@ MonoBehaviour:
     - _key: JumpsuitGrey
       _value: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
     - _key: JumpsuitSecurity
-      _value: {fileID: 726792282085660869, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
-    - _key: JumpsuitEngineer
-      _value: {fileID: 7393721560307922778, guid: 991fc7d67bda7d247b13ec8498953bc0, type: 3}
+      _value: {fileID: 6330158209413936013, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
     - _key: JumpsuitBotany
-      _value: {fileID: 3945981868420553423, guid: be3fcf1a74268ad49bfedb1edd9f5318, type: 3}
+      _value: {fileID: 8312388220934557560, guid: be3fcf1a74268ad49bfedb1edd9f5318, type: 3}
     - _key: HumanIntestineSmall
       _value: {fileID: 5774385816057912484, guid: 9c5418cbebef419429574992d3e296a3, type: 3}
     - _key: GlassShard
       _value: {fileID: 7125681683583715523, guid: 5cab1a9f6c7f74948b84d0d625319efe, type: 3}
+    - _key: JumpsuitEngineer
+      _value: {fileID: 4245634344425516727, guid: 7436f4976849b994aaee40df1bca7d89, type: 3}
     _new: 

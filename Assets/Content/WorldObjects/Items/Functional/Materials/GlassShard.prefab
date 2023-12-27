@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8776331283961773675}
   - component: {fileID: 8037161308839321230}
   - component: {fileID: 602273015192404059}
-  - component: {fileID: 5932657167524609726}
+  - component: {fileID: 5370274738024203202}
   m_Layer: 10
   m_Name: Shard
   m_TagString: Untagged
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5932657167524609726
-BoxCollider:
+--- !u!64 &5370274738024203202
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -94,9 +94,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.12335011, y: 0.0094617475, z: 0.25062972}
-  m_Center: {x: 0.003044024, y: -0.0015888877, z: 0.0079912245}
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7810400248023007711, guid: fa299bed408c308469b3592ccb7af6a7, type: 3}
 --- !u!1 &7125681683583715523
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,8 +220,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -246,6 +247,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 1773710978803455870}
+  _asset: {fileID: 0}
   _name: Steel sheet
   _weight: 1
   _startingTraits: []
