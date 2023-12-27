@@ -94,7 +94,7 @@ namespace System.Electricity
                 IPowerConsumer consumer = _consumers[i];
                 float powerNeeded = consumer.PowerNeeded;
 
-                if (!AccumulateBatteryPower(powerNeeded, storagesWithAvailablePower, i == firstUnpoweredConsumerByProducersIndex ? leftOverPowerFromProducer : 0))
+                if (!DrainBatteries(powerNeeded, storagesWithAvailablePower, i == firstUnpoweredConsumerByProducersIndex ? leftOverPowerFromProducer : 0))
                 {
                     firstUnpoweredConsumerByStoragesIndex = i;
                     return false;
@@ -192,7 +192,7 @@ namespace System.Electricity
         /// <param name="storagesWithAvailablePower"> The list of storages with power left.</param>
         /// <param name="leftOverPowerFromProducers"> Power left from producers, that could not go into any consumers.</param>
         /// <returns> True if enough power was accumulated, false otherwise.</returns>
-        private bool AccumulateBatteryPower(float powerNeeded, List<IPowerStorage> storagesWithAvailablePower, float leftOverPowerFromProducers)
+        private bool DrainBatteries(float powerNeeded, List<IPowerStorage> storagesWithAvailablePower, float leftOverPowerFromProducers)
         {
             float powerFromStorages = leftOverPowerFromProducers;
 
