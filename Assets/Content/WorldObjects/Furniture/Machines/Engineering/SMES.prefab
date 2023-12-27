@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 7561631995620174181}
   - component: {fileID: 6345351447614513914}
   - component: {fileID: -7870356800615129184}
-  - component: {fileID: 1363391696056624351}
   - component: {fileID: 4840393447774820463}
+  - component: {fileID: 8399519541836331320}
   m_Layer: 0
   m_Name: SMES
   m_TagString: Untagged
@@ -57,7 +57,6 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 6345351447614513914}
   - {fileID: -7870356800615129184}
-  - {fileID: 1363391696056624351}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -118,7 +117,7 @@ MonoBehaviour:
   _storedPower: 0
   _maxPowerRate: 5
   _isOn: 0
-  SmesSkinnedMesh: {fileID: 755838239801065349}
+  _smesSkinnedMesh: {fileID: 755838239801065349}
   _updateLightPeriod: 3
 --- !u!114 &-7870356800615129184
 MonoBehaviour:
@@ -135,22 +134,6 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: -5414623717715724467}
   _networkObjectCache: {fileID: -5414623717715724467}
---- !u!114 &1363391696056624351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d360eea9f7cb147a1b530b7842ff73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: -5414623717715724467}
-  _on: 0
 --- !u!65 &4840393447774820463
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -164,6 +147,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.8063088, y: 0.96126163, z: 0.85666853}
   m_Center: {x: -0.011621445, y: 0.4648589, z: 0.0058107674}
+--- !u!114 &8399519541836331320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b621d3404247f2e4da4ab459ad43eec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: 0}
+  _on: 0
 --- !u!1 &4379219507269237858
 GameObject:
   m_ObjectHideFlags: 0
