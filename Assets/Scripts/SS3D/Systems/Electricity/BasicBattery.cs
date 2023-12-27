@@ -45,16 +45,9 @@ namespace System.Electricity
         {
             if (amount <= 0 || !_isOn) return 0;
 
-            if (_storedPower + amount > _maxCapacity)
-            {
-                _storedPower = _maxCapacity;
-                return _maxCapacity - _storedPower;
-            }
-            else
-            {
-                _storedPower += amount;
-                return amount;
-            }
+            float addedAmount = Mathf.Min(RemainingCapacity, amount);
+            _storedPower += addedAmount;
+            return addedAmount;
         }
 
         /// <inheritdoc> </inheritdoc>
@@ -62,18 +55,9 @@ namespace System.Electricity
         {
             if (amount <= 0 || !_isOn) return 0;
 
-            if (!_isOn) return amount;
-
-            if (_storedPower - amount < 0)
-            {
-                _storedPower = 0;
-                return _storedPower;
-            }
-            else
-            {
-                _storedPower -= amount;
-                return amount;
-            }
+            float removedAmount = Mathf.Min(_storedPower, amount);
+            _storedPower -= removedAmount;
+            return removedAmount;
         }
 
         protected virtual void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer) { }
