@@ -1,6 +1,7 @@
 ﻿using SS3D.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace System.Electricity
 {
@@ -34,7 +35,6 @@ namespace System.Electricity
             if (device is IPowerStorage storage) _storages.Add(storage);
         }
 
-        
         /// <summary>
         /// Do an update on the whole circuit power. Produce power, consume power that needs to be consumed, and charge stuff that can be charged.
         /// </summary>
@@ -86,7 +86,7 @@ namespace System.Electricity
             // We care only about the consumer that could not be alimented by producers.
             int firstUnpoweredConsumerByProducersIndex = _consumers.FindIndex(x => x == firstUnPoweredConsumer);
 
-            List<IPowerStorage> storagesWithAvailablePower = _storages.Where(x => x.StoredPower > 0).ToList();
+            List<IPowerStorage> storagesWithAvailablePower = _storages.Where(x => (x.StoredPower > 0) && (x.IsOn)).ToList();
 
             // Consume power from batteries, starting from the first unpowered device by producers
             for (int i = firstUnpoweredConsumerByProducersIndex; i < _consumers.Count; i++)
@@ -137,17 +137,20 @@ namespace System.Electricity
         private float ChargeStorages(float availablePower)
         {
             if (availablePower <= 0f) return 0f;
-            List<IPowerStorage> notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).ToList();
-            float equalAmount;
-            while (availablePower > 0.1f && notFullStorages.Count > 0)
+            List<IPowerStorage> notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn)
+                .OrderBy(x => x.RemainingCapacity).ToList();
+
+            float equalAmount = availablePower / notFullStorages.Count;
+            for (int i = 0; i < notFullStorages.Count; i++)
             {
-                notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn).ToList();
-                if (notFullStorages.Count == 0) break;
-                equalAmount = availablePower / notFullStorages.Count;
-                foreach(IPowerStorage storage in notFullStorages)
+                if (equalAmount > notFullStorages[i].RemainingCapacity)
                 {
-                    availablePower -= storage.AddPower(equalAmount);
-                    if (availablePower <= 0) break;
+                    availablePower -= notFullStorages[i].AddPower(notFullStorages[i].RemainingCapacity);
+                    equalAmount = availablePower / (notFullStorages.Count - i - 1);
+                }
+                else
+                {
+                    availablePower -= notFullStorages[i].AddPower(equalAmount);
                 }
             }
             return availablePower;
@@ -162,7 +165,7 @@ namespace System.Electricity
         {
             for(int i =0; i < _consumers.Count; i++)
             {
-                if(notEnoughPower && i >= firstUnpoweredIndex)
+                if (notEnoughPower && i >= firstUnpoweredIndex)
                 {
                     _consumers[i].PowerStatus = PowerStatus.Inactive;
                 }
@@ -184,7 +187,7 @@ namespace System.Electricity
         /// <returns> True if enough power was accumulated, false otherwise.</returns>
         private bool DrainBatteries(float powerNeeded, List<IPowerStorage> storagesWithAvailablePower, float leftOverPowerFromProducers)
         {
-            float powerFromStorages = leftOverPowerFromProducers;
+            /*float powerFromStorages = leftOverPowerFromProducers;
             while (powerFromStorages < powerNeeded)
             {
                 if (storagesWithAvailablePower.IsNullOrEmpty())
@@ -205,8 +208,29 @@ namespace System.Electricity
 
                 // Can't take from a battery more than once each tick.
                 storagesWithAvailablePower.RemoveAt(randomBatteryIndex);
+            }*/
+            if (powerNeeded < leftOverPowerFromProducers)
+            {
+                return true;
             }
-            return true;
+            powerNeeded -= leftOverPowerFromProducers;
+            List<IPowerStorage> storages = storagesWithAvailablePower.OrderBy(x => x.MaxRemovablePower).ToList();
+            
+            float equalAmount = powerNeeded / storages.Count;
+            for (int i = 0; i < storages.Count; i++)
+            {
+                if (equalAmount > storages[i].MaxRemovablePower)
+                {
+                    powerNeeded -= storages[i].RemovePower(storages[i].MaxRemovablePower);
+                    equalAmount = powerNeeded / (storages.Count - i - 1);
+                }
+                else
+                {
+                    powerNeeded -= storages[i].RemovePower(equalAmount);
+                }
+            }
+
+            return powerNeeded <= 0;
         }
     }
 }
