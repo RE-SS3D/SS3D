@@ -39,6 +39,12 @@ namespace System.Electricity
             Subsystems.Get<ElectricitySystem>().OnTick += HandleTick;
         }
 
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            Subsystems.Get<ElectricitySystem>().OnTick -= HandleTick;
+        }
+
         [Client]
         private void HandleTick()
         {
