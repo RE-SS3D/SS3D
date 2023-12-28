@@ -73,7 +73,7 @@ namespace System.Electricity
         {
             float powerAdded = Mathf.Max(StoredPower - _previousPowerStored, 0f);
 
-            if (powerAdded > 0f)
+            if(powerAdded > 0f)
             {
                 _smesSkinnedMesh.SetBlendShapeWeight(11, 100f);
             }
