@@ -108,14 +108,10 @@ namespace System.Electricity
         public void AddElectricalElement(IElectricDevice device)
         {
             PlacedTileObject tileObject = device.TileObject;
-
             VerticeCoordinates deviceCoordinates = new ((short)tileObject.WorldOrigin.x, (short)tileObject.WorldOrigin.y,
                     (byte)tileObject.Layer, (byte)tileObject.Direction);
-
             _electricityGraph.AddVertex(deviceCoordinates);
-
             List<PlacedTileObject> neighbours = tileObject.Connector.GetNeighbours();
-
             foreach(PlacedTileObject neighbour in neighbours)
             {
                 VerticeCoordinates neighbourCoordinates = new ((short)neighbour.WorldOrigin.x, (short)neighbour.WorldOrigin.y,
@@ -124,9 +120,7 @@ namespace System.Electricity
                 _electricityGraph.AddVertex(neighbourCoordinates);
                 _electricityGraph.AddEdge(new (deviceCoordinates, neighbourCoordinates));
             }
-
             _graphIsDirty = true;
-
         }
 
         /// <summary>
@@ -137,7 +131,6 @@ namespace System.Electricity
         public void RemoveElectricalElement(IElectricDevice device)
         {
             if (device == null || device.TileObject == null) return;
-
             _electricityGraph.RemoveVertex
             (
                 new
@@ -148,7 +141,6 @@ namespace System.Electricity
                     (byte)device.TileObject.Direction
                 )
             );
-
             _graphIsDirty = true;
         }
 

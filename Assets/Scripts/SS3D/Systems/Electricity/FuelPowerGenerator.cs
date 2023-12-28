@@ -20,19 +20,14 @@ namespace System.Electricity
 
         [SerializeField]
         private SkinnedMeshRenderer _skinnedMeshRenderer;
-
         private const string OnBlendShapeName = "On";
-
         private const string OutputBlendShapeName = "Output";
-
         private const string LowFuel = "LowFuel";
         public float PowerProduction => _powerProduction;
 
         [SyncVar(OnChange = nameof(SyncGeneratorToggle))]
         private bool _enabled = false; // If the generator is working.
-
         private float _onPowerProduction = 10f;
-
 
         public override void OnStartClient()
         {

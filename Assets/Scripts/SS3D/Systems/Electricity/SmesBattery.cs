@@ -103,25 +103,16 @@ namespace System.Electricity
         }
 
         /// <summary>
-        /// Index of the light that should be turned on. Can be 0 and in that case no light should be on.
+        /// Calculate index of the light that should be turned on. Can be 0 and in that case no light should be on.
         /// Assumes the index of blendshapes for the output lights are from 1 to 11.
         /// </summary>
         [Client]
         private void ComputeLightOutputTarget()
         {
             float powerRemoved = Mathf.Max(_previousPowerStored - StoredPower, 0f);
-            float relativeRate = Mathf.Floor((powerRemoved / MaxPowerRate) * 10);
+            float relativeRate = Mathf.Floor(10 * powerRemoved / MaxPowerRate);
 
             _lightOutputTarget = (int)relativeRate; 
-        }
-
-        /// <summary>
-        /// Return the state of the SMES battery.
-        /// </summary>
-        /// <returns> The state of the battery. </returns>
-        public bool GetState()
-        {
-            return IsOn;
         }
 
         /// <summary>

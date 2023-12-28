@@ -20,17 +20,16 @@ public class MachineVibrate : Actor
 
     public bool Enable
     {
-        get { return _enable; }
+        get => _enable;
         set => SetEnable(value);
     }
 
     protected override void OnStart()
     {
+        base.OnStart();
         // do not need to show the vibrating stuff on server
         if (InstanceFinder.IsServerOnly) return;
 
-        base.OnStart();
-       
         AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
         _initialRotation = Rotation;
         _directionOfShake = Transform.right;
@@ -38,7 +37,10 @@ public class MachineVibrate : Actor
 
     private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
     {
-        if (_enable) Vibrate();
+        if (_enable)
+        {
+            Vibrate();
+        }
     }
     
     private void Vibrate()
