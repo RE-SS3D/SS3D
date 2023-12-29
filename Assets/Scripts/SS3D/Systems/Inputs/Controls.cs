@@ -672,6 +672,42 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""965dcef2-a390-46c2-9282-9bf85c804292"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""See Container Contents"",
+                    ""type"": ""Button"",
+                    ""id"": ""31df5ed3-cf49-49d0-bc99-01aa83f911e2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Show Owner"",
+                    ""type"": ""Button"",
+                    ""id"": ""05bcc145-5585-46a3-a3ef-97f044637083"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Toggle Selection Debug"",
+                    ""type"": ""Button"",
+                    ""id"": ""1fe6940a-87b8-43cc-b18d-e6318fdad13b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -760,6 +796,50 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Ragdoll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8067fbf9-bb84-461e-9e6d-36ba4fdb6a43"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""141d574a-2708-4c2c-989b-c8ef5d8e4c58"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""See Container Contents"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""12af3e1d-66c4-4f86-994d-70258b944a24"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Show Owner"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d1b14569-1522-4899-863f-d0e2b2844e71"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Toggle Selection Debug"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -978,6 +1058,10 @@ namespace SS3D.Systems.Inputs
             m_Other_SpawnCans = m_Other.FindAction("Spawn Cans", throwIfNotFound: true);
             m_Other_ToggleRuntimeEditor = m_Other.FindAction("Toggle Runtime Editor", throwIfNotFound: true);
             m_Other_Ragdoll = m_Other.FindAction("Ragdoll", throwIfNotFound: true);
+            m_Other_Attack = m_Other.FindAction("Attack", throwIfNotFound: true);
+            m_Other_SeeContainerContents = m_Other.FindAction("See Container Contents", throwIfNotFound: true);
+            m_Other_ShowOwner = m_Other.FindAction("Show Owner", throwIfNotFound: true);
+            m_Other_ToggleSelectionDebug = m_Other.FindAction("Toggle Selection Debug", throwIfNotFound: true);
             // Tile Creator
             m_TileCreator = asset.FindActionMap("Tile Creator", throwIfNotFound: true);
             m_TileCreator_ToggleMenu = m_TileCreator.FindAction("Toggle Menu", throwIfNotFound: true);
@@ -1285,6 +1369,10 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Other_SpawnCans;
         private readonly InputAction m_Other_ToggleRuntimeEditor;
         private readonly InputAction m_Other_Ragdoll;
+        private readonly InputAction m_Other_Attack;
+        private readonly InputAction m_Other_SeeContainerContents;
+        private readonly InputAction m_Other_ShowOwner;
+        private readonly InputAction m_Other_ToggleSelectionDebug;
         public struct OtherActions
         {
             private @Controls m_Wrapper;
@@ -1297,6 +1385,10 @@ namespace SS3D.Systems.Inputs
             public InputAction @SpawnCans => m_Wrapper.m_Other_SpawnCans;
             public InputAction @ToggleRuntimeEditor => m_Wrapper.m_Other_ToggleRuntimeEditor;
             public InputAction @Ragdoll => m_Wrapper.m_Other_Ragdoll;
+            public InputAction @Attack => m_Wrapper.m_Other_Attack;
+            public InputAction @SeeContainerContents => m_Wrapper.m_Other_SeeContainerContents;
+            public InputAction @ShowOwner => m_Wrapper.m_Other_ShowOwner;
+            public InputAction @ToggleSelectionDebug => m_Wrapper.m_Other_ToggleSelectionDebug;
             public InputActionMap Get() { return m_Wrapper.m_Other; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1330,6 +1422,18 @@ namespace SS3D.Systems.Inputs
                     @Ragdoll.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnRagdoll;
                     @Ragdoll.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnRagdoll;
                     @Ragdoll.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnRagdoll;
+                    @Attack.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnAttack;
+                    @Attack.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnAttack;
+                    @Attack.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnAttack;
+                    @SeeContainerContents.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSeeContainerContents;
+                    @SeeContainerContents.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSeeContainerContents;
+                    @SeeContainerContents.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSeeContainerContents;
+                    @ShowOwner.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnShowOwner;
+                    @ShowOwner.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnShowOwner;
+                    @ShowOwner.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnShowOwner;
+                    @ToggleSelectionDebug.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleSelectionDebug;
+                    @ToggleSelectionDebug.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleSelectionDebug;
+                    @ToggleSelectionDebug.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleSelectionDebug;
                 }
                 m_Wrapper.m_OtherActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1358,6 +1462,18 @@ namespace SS3D.Systems.Inputs
                     @Ragdoll.started += instance.OnRagdoll;
                     @Ragdoll.performed += instance.OnRagdoll;
                     @Ragdoll.canceled += instance.OnRagdoll;
+                    @Attack.started += instance.OnAttack;
+                    @Attack.performed += instance.OnAttack;
+                    @Attack.canceled += instance.OnAttack;
+                    @SeeContainerContents.started += instance.OnSeeContainerContents;
+                    @SeeContainerContents.performed += instance.OnSeeContainerContents;
+                    @SeeContainerContents.canceled += instance.OnSeeContainerContents;
+                    @ShowOwner.started += instance.OnShowOwner;
+                    @ShowOwner.performed += instance.OnShowOwner;
+                    @ShowOwner.canceled += instance.OnShowOwner;
+                    @ToggleSelectionDebug.started += instance.OnToggleSelectionDebug;
+                    @ToggleSelectionDebug.performed += instance.OnToggleSelectionDebug;
+                    @ToggleSelectionDebug.canceled += instance.OnToggleSelectionDebug;
                 }
             }
         }
@@ -1514,6 +1630,10 @@ namespace SS3D.Systems.Inputs
             void OnSpawnCans(InputAction.CallbackContext context);
             void OnToggleRuntimeEditor(InputAction.CallbackContext context);
             void OnRagdoll(InputAction.CallbackContext context);
+            void OnAttack(InputAction.CallbackContext context);
+            void OnSeeContainerContents(InputAction.CallbackContext context);
+            void OnShowOwner(InputAction.CallbackContext context);
+            void OnToggleSelectionDebug(InputAction.CallbackContext context);
         }
         public interface ITileCreatorActions
         {

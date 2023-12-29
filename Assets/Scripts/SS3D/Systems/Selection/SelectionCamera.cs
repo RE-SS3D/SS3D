@@ -5,6 +5,8 @@ using SS3D.Core.Behaviours;
 using SS3D.Core;
 using UnityEngine.UI;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.InputSystem;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Selection
 {
@@ -62,6 +64,7 @@ namespace SS3D.Systems.Selection
 
             GenerateRenderTexture();
             GenerateReadbackTexture();
+            Subsystems.Get<InputSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
         }
 
         private void GenerateReadbackTexture()
@@ -112,13 +115,14 @@ namespace SS3D.Systems.Selection
         protected override void OnDestroyed()
         {
             _renderTexture.Release();
+            Subsystems.Get<InputSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
         }
 
         /// <summary>
         /// Uses the selection shader to render directly to screen.
         /// To be removed from production code.
         /// </summary>
-        public void ToggleDebugMode()
+        public void ToggleDebugMode(InputAction.CallbackContext callbackContext)
         {
             if (DebugMode)
             {
@@ -129,18 +133,6 @@ namespace SS3D.Systems.Selection
             {
                 _playerCamera.SetReplacementShader(_shader, "");
                 DebugMode = true;
-            }
-        }
-
-        /// <summary>
-        /// Temporary method to demonstrate the implementation of Selection System.
-        /// To be removed from production code.
-        /// </summary>
-        protected void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                ToggleDebugMode();
             }
         }
     }

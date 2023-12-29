@@ -3,6 +3,9 @@ using SS3D.Data.Generated;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using SS3D.Core.Behaviours;
+using Coimbra;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -28,10 +31,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// all tile objects. If it's not, it will choose another available direction.</param>
         public ConstructionHologram(GameObject ghostObject, Vector3 targetPosition, Direction dir, ConstructionMode mode = ConstructionMode.Valid)
         {
-            List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
-                .Where(x => x is not ICustomGhostRotation).ToList();
 
-            components.ForEach(x => x.enabled = false);
+            DisableBehaviours(ghostObject);
 
             Hologram = ghostObject;
             _targetPosition = targetPosition;
@@ -122,6 +123,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             Hologram.Dispose(true);
             Hologram = null;
+        }
+
+        private void DisableBehaviours(GameObject ghostObject)
+        {
+            List<MonoBehaviour> components = ghostObject.GetComponentsInChildren<MonoBehaviour>()
+                .Where(x => x is not ICustomGhostRotation).ToList();
+
+            components.ForEach(x => x.enabled = false);
         }
     }
 }

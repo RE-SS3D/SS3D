@@ -73,9 +73,10 @@ namespace SS3D.Systems.Audio
         /// Volume, pitch, and ranges are optional.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, AudioClip audioClipId, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void PlayAudioSource(AudioType audioType, AudioClip audioClipId, Vector3 position, NetworkObject parent,
+            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
-            RpcPlayAudioSource(audioType, audioClipId.name, position, parent, volume, pitch, minRange, maxRange);
+            RpcPlayAudioSource(audioType, audioClipId.name, position, parent, isLooping, volume, pitch, minRange, maxRange);
         }
 
         [Server]
@@ -97,7 +98,8 @@ namespace SS3D.Systems.Audio
         }
 
         [ObserversRpc]
-        public void RpcPlayAudioSource(AudioType type, string audioClip, Vector3 position, NetworkObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void RpcPlayAudioSource(AudioType type, string audioClip, Vector3 position, NetworkObject parent,
+            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             AudioSource audioSource = FindAvailableAudioSource(type);
 
@@ -112,6 +114,7 @@ namespace SS3D.Systems.Audio
             //This is useful for things that are obviously creating the sound, like a mouse's squeak
             //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
             audioSource.transform.parent = parent == null ? null : parent.transform;
+            audioSource.loop = isLooping;
             audioSource.Play();
         }
 

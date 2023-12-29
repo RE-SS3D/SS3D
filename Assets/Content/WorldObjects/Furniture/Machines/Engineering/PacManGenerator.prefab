@@ -12,6 +12,11 @@ GameObject:
   - component: {fileID: -5414623717715724467}
   - component: {fileID: 1498482382929386799}
   - component: {fileID: -2628458568064459714}
+  - component: {fileID: 219113547575591534}
+  - component: {fileID: 2550114539843098724}
+  - component: {fileID: -2157900375506616301}
+  - component: {fileID: 7239473696267242548}
+  - component: {fileID: 4189468537532167386}
   m_Layer: 0
   m_Name: PacManGenerator
   m_TagString: Untagged
@@ -51,19 +56,21 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 219113547575591534}
+  - {fileID: -2157900375506616301}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 157
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -93,6 +100,82 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 59526bd88a8f878449573560e06a54f9, type: 2}
+--- !u!114 &219113547575591534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 328b489d4f8c1f04983e195ee8635c19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+  _powerProduction: 10
+  _skinnedMeshRenderer: {fileID: 1698900335226549537}
+  _enabled: 0
+--- !u!114 &2550114539843098724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7a41c77d19af89459c70cd823369e19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _amplitude: 1
+  _frequency: 35
+--- !u!114 &-2157900375506616301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+--- !u!65 &7239473696267242548
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.9038, y: 0.9088632, z: 0.8278526}
+  m_Center: {x: -0.012657881, y: 0.42530543, z: 0.015189469}
+--- !u!114 &4189468537532167386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b621d3404247f2e4da4ab459ad43eec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: 0}
+  _on: 0
 --- !u!1 &4271595947011161493
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,7 +269,6 @@ GameObject:
   m_Component:
   - component: {fileID: 608453462504062702}
   - component: {fileID: 1698900335226549537}
-  - component: {fileID: 5323246766978482323}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -266,16 +348,3 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.007445082, y: 0.4215365, z: -0.0044316053}
     m_Extent: {x: 0.41407037, y: 0.42270422, z: 0.41059247}
   m_DirtyAABB: 0
---- !u!65 &5323246766978482323
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4379219507269237858}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.83231133, y: 0.8492101, z: 0.78938055}
-  m_Center: {x: -0.009774417, y: 0.42334524, z: 0.013316378}

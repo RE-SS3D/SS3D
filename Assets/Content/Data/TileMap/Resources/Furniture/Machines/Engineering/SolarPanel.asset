@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SolarPanel
   m_EditorClassIdentifier: 
-  nameString: SolarPanel
-  prefab: {fileID: 6286745912349171764, guid: f0eca2b8867709749bc10f61917c4bdf, type: 3}
+  prefab: {fileID: 941367499997148975, guid: f0eca2b8867709749bc10f61917c4bdf, type: 3}
   icon: {fileID: 0}
   layer: 7
   genericType: 0
