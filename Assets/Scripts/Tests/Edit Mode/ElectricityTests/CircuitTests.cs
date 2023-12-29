@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EditorTests
 {
-    public class ElectricityTests
+    public class CircuitTests
     {
         /// <summary>
         /// Check if batteries charge at equal rate, given they're not full. If they're close to be full, 
@@ -81,7 +81,7 @@ namespace EditorTests
         /// Also check that it removes everything when possible.
         /// </summary>
         [Test]
-        public void RemovingPowerToBatteryReturnsTheCorrectAmountOfPowerRemoved()
+        public void RemovingPowerFromBatteryReturnsTheCorrectAmountOfPowerRemoved()
         {
 
         }
