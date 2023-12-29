@@ -104,8 +104,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5737010110918057389}
   - component: {fileID: -7828078595381397262}
-  - component: {fileID: -4128736270194153783}
-  - component: {fileID: 54129137136314259}
+  - component: {fileID: 7100984474705242033}
+  - component: {fileID: 2988001657466237878}
+  - component: {fileID: -4164530281317530928}
   m_Layer: 0
   m_Name: LightTubeFixture
   m_TagString: Untagged
@@ -145,7 +146,8 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 2988001657466237878}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -157,12 +159,12 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 108
+  <PrefabId>k__BackingField: 106
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 10677383693949395304
---- !u!114 &-4128736270194153783
+--- !u!114 &7100984474705242033
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,10 +173,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4866668043303595546}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Script: {fileID: 11500000, guid: b693691ec1592874896bee261d991d69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &54129137136314259
+  _consumer: {fileID: 2988001657466237878}
+  _light: {fileID: 2502875599337934467}
+--- !u!114 &2988001657466237878
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,10 +187,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 4866668043303595546}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Script: {fileID: 11500000, guid: b5dc697195ff36649947ce641b391e16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 0c4f0a70b798e824c9bedd2c6fe407b3, type: 2}
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -7828078595381397262}
+  _networkObjectCache: {fileID: -7828078595381397262}
+  _powerConsumption: 3
+  _powerStatus: 0
+--- !u!114 &-4164530281317530928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -7828078595381397262}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &6499595157872319857
 GameObject:
   m_ObjectHideFlags: 0

@@ -37,7 +37,8 @@ namespace SS3D.Systems.Audio
             }
             else
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
+                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject,
+                    false, 0.7f, 1, 1, 5);
             }
         }
 
@@ -46,7 +47,8 @@ namespace SS3D.Systems.Audio
             Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
             Subsystems.Get<AudioSystem>().SetTimeAudioSource(NetworkObject, 0f);
             CurrentMusic = (CurrentMusic + 1) % (_songs.Count);
-            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject, 0.7f, 1, 1, 5);
+            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject,
+                false, 0.7f, 1, 1, 5);
         }
 
         public bool GetState()

@@ -12,6 +12,10 @@ GameObject:
   - component: {fileID: -5414623717715724467}
   - component: {fileID: -4242734897733728731}
   - component: {fileID: 7561631995620174181}
+  - component: {fileID: 6345351447614513914}
+  - component: {fileID: -7870356800615129184}
+  - component: {fileID: 4840393447774820463}
+  - component: {fileID: 8399519541836331320}
   m_Layer: 0
   m_Name: SMES
   m_TagString: Untagged
@@ -50,19 +54,21 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 6345351447614513914}
+  - {fileID: -7870356800615129184}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 154
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -92,6 +98,71 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 4e5b5032bc8027c4485bde316ce4057f, type: 2}
+--- !u!114 &6345351447614513914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1cd0d7880cd9c4f98489ed5f9413ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+  _maxCapacity: 1000
+  _storedPower: 0
+  _maxPowerRate: 5
+  _isOn: 0
+  _smesSkinnedMesh: {fileID: 755838239801065349}
+  _updateLightPeriod: 3
+--- !u!114 &-7870356800615129184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: -5414623717715724467}
+--- !u!65 &4840393447774820463
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.8063088, y: 0.96126163, z: 0.85666853}
+  m_Center: {x: -0.011621445, y: 0.4648589, z: 0.0058107674}
+--- !u!114 &8399519541836331320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b621d3404247f2e4da4ab459ad43eec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -5414623717715724467}
+  _networkObjectCache: {fileID: 0}
+  _on: 0
 --- !u!1 &4379219507269237858
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +173,6 @@ GameObject:
   m_Component:
   - component: {fileID: 608453462504062702}
   - component: {fileID: 755838239801065349}
-  - component: {fileID: 5323246766978482323}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -193,16 +263,3 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.000000014901161, y: 0.48807514, z: 0.025044113}
     m_Extent: {x: 0.41364294, y: 0.48807514, z: 0.43868694}
   m_DirtyAABB: 0
---- !u!65 &5323246766978482323
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4379219507269237858}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.83687043, y: 0.9540701, z: 0.8874018}
-  m_Center: {x: -0.012053996, y: 0.47577524, z: -0.003780365}

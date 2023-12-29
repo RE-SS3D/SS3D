@@ -192,7 +192,6 @@ namespace SS3D.Core.Behaviours
         protected void OnDestroy()
         {
             RemoveEventListeners();
-
             OnDestroyed();
         }
 
