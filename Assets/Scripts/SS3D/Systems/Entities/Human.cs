@@ -18,8 +18,7 @@ namespace SS3D.Systems.Entities
 		public GameObject Ghost;
 		private GameObject _spawnedGhost;
 
-
-		/// <summary>
+        /// <summary>
 		/// On death, the player should become a ghost.
 		/// </summary>
 		[Server]
@@ -32,18 +31,17 @@ namespace SS3D.Systems.Entities
             mindSystem.SwapMinds(originEntity, ghostEntity);
 
             RpcUpdateGhostPosition(originEntity, ghostEntity);
-            RpcDestroyObjects(originEntity);
-			
-		}
-
+            ActivateRagdoll();
+            RpcDestroyComponents(originEntity);
+        }
 
         /// <summary>
-        /// This method should probably be called turn in corpse, and instead of destroying components it should deactivate them.
-        /// Should also trigger the ragdoll.
+        /// Destroys all "human" components, such as Hands and HumanoidController. Also activates ragdoll
         /// </summary>
 		[ObserversRpc(RunLocally = true)]
-		private void RpcDestroyObjects(Entity originEntity)
+		private void RpcDestroyComponents(Entity originEntity)
 		{
+            // Instead of destroying components it should deactivate them.
 			GameObject originEntityGameObject = originEntity.gameObject;
 			originEntityGameObject.GetComponent<Hands>()?.Dispose(true);
 			originEntityGameObject.GetComponent<HumanInventory>()?.Dispose(true);
@@ -54,6 +52,15 @@ namespace SS3D.Systems.Entities
             // TODO: Optimize these GetComponents, this is a temporary solution.
         }
 
+        [ObserversRpc(RunLocally = true)]
+        private void ActivateRagdoll()
+        {
+            if (TryGetComponent(out Ragdoll ragdoll))
+            {
+                ragdoll.KnockdownTimeless();
+            }
+        }
+
 		/// <summary>
 		/// Put Ghost at the same place as the deceased player.
 		/// </summary>
@@ -61,9 +68,7 @@ namespace SS3D.Systems.Entities
 		private void RpcUpdateGhostPosition(Entity originEntity, Entity ghostEntity)
 		{
 			ghostEntity.Transform.SetPositionAndRotation(originEntity.Transform.position, originEntity.Transform.rotation);
-            // Little rotation to have the ghost starting on the floor. Can be improved.
-			originEntity.Transform.Rotate(new Vector3(90, 0, 0));
-		}
+        }
 
 		/// <summary>
 		/// Kill a player, instantiating a ghost.
@@ -71,8 +76,8 @@ namespace SS3D.Systems.Entities
 		[Server]
 		public override void Kill()
 		{
-			_spawnedGhost = Instantiate(Ghost);
-			var entitySystem = Subsystems.Get<EntitySystem>();
+            _spawnedGhost = Instantiate(Ghost);
+			EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
 			if(entitySystem.TryTransferEntity(GetComponentInParent<Entity>(), _spawnedGhost.GetComponent<Entity>()))
             {
                 ServerManager.Spawn(_spawnedGhost);
@@ -86,7 +91,7 @@ namespace SS3D.Systems.Entities
 
         public override void DeactivateComponents()
         {
-            RpcDestroyObjects(this);
+            RpcDestroyComponents(this);
         }
     }
 }
