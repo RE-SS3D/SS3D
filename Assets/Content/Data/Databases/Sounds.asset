@@ -40,4 +40,6 @@ MonoBehaviour:
       _value: {fileID: 8300000, guid: ea4ccc667e0e73345a853c09899d370b, type: 3}
     - _key: Screwdriver
       _value: {fileID: 8300000, guid: ea4ccc667e0e73345a853c09899d370b, type: 3}
+    - _key: FuelPowerGenerator
+      _value: {fileID: 8300000, guid: 59b65ecaf8dffbf49876ab2768490b59, type: 3}
     _new: 

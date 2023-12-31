@@ -97,6 +97,8 @@ GameObject:
   - component: {fileID: 9018827270936400976}
   - component: {fileID: 7551927119831908791}
   - component: {fileID: -2473204136432335067}
+  - component: {fileID: 1278048393882565784}
+  - component: {fileID: -9109099915246017288}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -238,3 +240,28 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 15900098340940336767
+--- !u!114 &1278048393882565784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-9109099915246017288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: d153c3c88de82c84bb201442ec2dc5ac, type: 2}

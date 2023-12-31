@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: LightSwitch
   m_EditorClassIdentifier: 
   NameKey: Light Switch
-  DescriptionKey: A switching for turning nearby lights on and off.
+  DescriptionKey: A switch for turning nearby lights on and off.

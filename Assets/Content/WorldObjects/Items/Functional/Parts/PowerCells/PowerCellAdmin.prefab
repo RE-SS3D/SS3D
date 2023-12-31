@@ -7,6 +7,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7005622566197959252, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: 4ba80a8b1184cff428cc3d8870beba53, type: 2}
+    - target: {fileID: -4296955913176570747, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: 4ba80a8b1184cff428cc3d8870beba53, type: 2}
     - target: {fileID: 1602098408367427586, guid: de67200a4c96d444f800399a033ddfef, type: 3}
       propertyPath: <PrefabId>k__BackingField
       value: 36

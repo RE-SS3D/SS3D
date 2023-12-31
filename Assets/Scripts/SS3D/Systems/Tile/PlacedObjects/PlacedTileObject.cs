@@ -104,6 +104,7 @@ namespace SS3D.Systems.Tile
                 _asset = value;
             }
         }
+        public IAdjacencyConnector Connector => _connector;
 
         /// <summary>
         /// Set up a new PlacedTileObject.

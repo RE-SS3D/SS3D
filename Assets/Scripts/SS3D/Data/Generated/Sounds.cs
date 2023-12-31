@@ -16,6 +16,7 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset AirlockClose = new DatabaseAsset("AirlockClose", "Sounds");
         public static DatabaseAsset AirlockOpen = new DatabaseAsset("AirlockOpen", "Sounds");
         public static DatabaseAsset Screwdriver = new DatabaseAsset("Screwdriver", "Sounds");
+        public static DatabaseAsset FuelPowerGenerator = new DatabaseAsset("FuelPowerGenerator", "Sounds");
     }
 }
 

@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 6244957436306937818}
   - component: {fileID: 2130642872359250283}
   - component: {fileID: 1323214974002075212}
+  - component: {fileID: 3359982589328953207}
+  - component: {fileID: 5321505427222609008}
   m_Layer: 0
   m_Name: TableGlass
   m_TagString: Untagged
@@ -180,4 +182,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 00000000
+  _allowedDirections: 00000000
+--- !u!114 &3359982589328953207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5321505427222609008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: e2b446332f84cc34f8c2e805a8709b8b, type: 2}

@@ -8,9 +8,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -6509701768596653782, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _name
+      value: Laughter Can
+      objectReference: {fileID: 0}
+    - target: {fileID: -6509701768596653782, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: _asset
       value: 
       objectReference: {fileID: 11400000, guid: e6c8ce8c1b83a004389647756897a0c0, type: 2}
+    - target: {fileID: 1335663030982295525, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: 670b475527c81d34da12e5478b71c33a, type: 2}
     - target: {fileID: 5596787203858443778, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -67,6 +75,10 @@ PrefabInstance:
       propertyPath: <AssetPathHash>k__BackingField
       value: 9457341756661644240
       objectReference: {fileID: 0}
+    - target: {fileID: 7553079844077142427, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: 670b475527c81d34da12e5478b71c33a, type: 2}
     - target: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Name
       value: SodaCanCannedLaughter

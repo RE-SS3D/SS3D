@@ -142,6 +142,19 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        public List<ITileLocation> GetTileLocations(int x, int y)
+        {
+
+            List<ITileLocation> AllLocationOnTile= new();
+
+            foreach(TileLayer layer in TileHelper.GetTileLayers())
+            {
+                AllLocationOnTile.Add(GetTileLocation(layer, x, y));
+            }
+
+            return AllLocationOnTile;
+        }
+
         public ITileLocation GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
             Vector2Int vector = GetXY(worldPosition);

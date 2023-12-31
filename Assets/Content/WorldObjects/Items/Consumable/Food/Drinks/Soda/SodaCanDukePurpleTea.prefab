@@ -8,9 +8,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -6509701768596653782, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _name
+      value: Duke Purple Tea Can
+      objectReference: {fileID: 0}
+    - target: {fileID: -6509701768596653782, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: _asset
       value: 
       objectReference: {fileID: 11400000, guid: 9275ab75afcd2ea40b8d00845d500d6a, type: 2}
+    - target: {fileID: 1335663030982295525, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: b25764db1d1ff8a45a74cc287e98fcb4, type: 2}
     - target: {fileID: 5596787203858443778, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -67,6 +75,10 @@ PrefabInstance:
       propertyPath: <AssetPathHash>k__BackingField
       value: 368408746806542760
       objectReference: {fileID: 0}
+    - target: {fileID: 7553079844077142427, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 11400000, guid: b25764db1d1ff8a45a74cc287e98fcb4, type: 2}
     - target: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Name
       value: SodaCanDukePurpleTea

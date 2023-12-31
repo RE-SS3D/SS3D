@@ -445,6 +445,54 @@ MonoBehaviour:
   _scenePathHash: 2499635508
   <SceneId>k__BackingField: 10735852762014670918
   <AssetPathHash>k__BackingField: 0
+--- !u!1 &478499394
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 478499395}
+  - component: {fileID: 478499396}
+  m_Layer: 0
+  m_Name: ElectricitySystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &478499395
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478499394}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -700.46924, y: -415.26047, z: 42.020546}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1506918115}
+  m_RootOrder: 17
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &478499396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478499394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cec52cc8cb291414f83ee8b575949b02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 7
+  _addedNetworkObject: {fileID: 1506918116}
+  _networkObjectCache: {fileID: 1506918116}
+  _tickRate: 0.2
 --- !u!1 &516802433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1155,8 +1203,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -1232,9 +1280,9 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 913757968}
   SerializedTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Position: {x: -1.510847, y: -0.9550402, z: -2.0797422}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -1967,6 +2015,7 @@ Transform:
   - {fileID: 1121348073}
   - {fileID: 606666309}
   - {fileID: 274660131}
+  - {fileID: 478499395}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1993,6 +2042,7 @@ MonoBehaviour:
   - {fileID: 1121348074}
   - {fileID: 606666310}
   - {fileID: 274660132}
+  - {fileID: 478499396}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 516802435}

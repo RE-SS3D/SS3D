@@ -56,7 +56,7 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public void LoadAssetsFromAssetGroup()
         {
-            Assets ??= new SerializableDictionary<string, Object>();
+            Assets = new SerializableDictionary<string, Object>();
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)
             {

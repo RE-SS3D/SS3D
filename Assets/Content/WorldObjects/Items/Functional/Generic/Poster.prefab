@@ -47,6 +47,8 @@ GameObject:
   - component: {fileID: 4134594761787071573}
   - component: {fileID: 1491149956516498634}
   - component: {fileID: 1734265040556642174}
+  - component: {fileID: 5570273012634486744}
+  - component: {fileID: -8935802971530602828}
   m_Layer: 10
   m_Name: Poster
   m_TagString: Untagged
@@ -251,3 +253,28 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 104152118591794821}
   AttachmentPointAlt: {fileID: 104152118591794821}
   _container: {fileID: 0}
+--- !u!114 &5570273012634486744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8935802971530602828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: {fileID: 11400000, guid: 4f952dd745b973b4889e3c6abae5d084, type: 2}

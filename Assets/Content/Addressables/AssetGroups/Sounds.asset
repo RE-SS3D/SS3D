@@ -59,6 +59,8 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: ea4ccc667e0e73345a853c09899d370b
     m_Address: Assets/Art/Sound/World/Tools/Screwdriver.ogg
+  - m_GUID: 59b65ecaf8dffbf49876ab2768490b59
+    m_Address: Assets/Art/Sound/Furniture/Machines/Engineering/FuelPowerGenerator.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
