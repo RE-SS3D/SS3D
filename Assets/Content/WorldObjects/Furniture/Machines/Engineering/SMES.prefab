@@ -57,6 +57,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 6345351447614513914}
   - {fileID: -7870356800615129184}
+  - {fileID: 8399519541836331320}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -115,7 +116,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -5414623717715724467}
   _maxCapacity: 1000
   _storedPower: 0
-  _maxPowerRate: 5
+  _maxPowerRate: 10
   _isOn: 0
   _smesSkinnedMesh: {fileID: 755838239801065349}
   _updateLightPeriod: 3
@@ -159,9 +160,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b621d3404247f2e4da4ab459ad43eec7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -5414623717715724467}
   _on: 0
 --- !u!1 &4379219507269237858
 GameObject:
