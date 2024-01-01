@@ -26,6 +26,4 @@ MonoBehaviour:
       _value: {fileID: 11400000, guid: 3decef2c351e13b4194d1994c485a170, type: 2}
     - _key: SteelGirderUnboltedRecipe
       _value: {fileID: 11400000, guid: e822c85b4d3a8d24aa2b69f363f07974, type: 2}
-    - _key: SteelGirderMetalSheetsRecipe
-      _value: {fileID: 11400000, guid: d1ab81e3bfcec2b4c896346148de5bdb, type: 2}
     _new: 

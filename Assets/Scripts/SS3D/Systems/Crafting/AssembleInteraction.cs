@@ -11,29 +11,8 @@ namespace SS3D.Systems.Crafting
     /// </summary>
     public class AssembleInteraction : CraftingInteraction
     {
-        private Transform _characterTransform;
-        private Vector3 _startPosition;
 
-        public AssembleInteraction(float delay, Transform characterTransform)
-        {
-            _characterTransform = characterTransform;
-            _startPosition = characterTransform.position;
-            Delay = delay;
-        }
-
-        public override bool CanInteract(InteractionEvent interactionEvent)
-        {
-            // Should only check for movement once the interaction started.
-            if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
-
-            if (interactionEvent.Target is not Item target) return false;
-
-            if (target.Container != null) return false;
-
-            if (!base.CanInteract(interactionEvent)) return false;
-
-            return true;
-        }
+        public AssembleInteraction(float delay, Transform characterTransform) : base(delay, characterTransform) { }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
@@ -43,23 +22,6 @@ namespace SS3D.Systems.Crafting
         public override string GetGenericName()
         {
             return "Assemble";
-        }
-
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            base.Start(interactionEvent, reference);
-            _startPosition = _characterTransform.position;
-            return true;
-        }
-
-        public override string GetName(InteractionEvent interactionEvent)
-        {
-            return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
-        }
-
-        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-
         }
     }
 }

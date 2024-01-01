@@ -15,34 +15,11 @@ namespace SS3D.Systems.Crafting
     /// </summary>
     public class BoltInteraction : CraftingInteraction
     {
-        private Transform _characterTransform;
-        private Vector3 _startPosition;
         private bool _replace;
 
         public bool Replace => _replace;
 
-        public BoltInteraction(float delay, Transform characterTransform)
-        {
-            _characterTransform = characterTransform;
-            _startPosition = characterTransform.position;
-            Delay = delay;
-        }
-
-        public override bool CanInteract(InteractionEvent interactionEvent)
-        {
-            // Should only check for movement once the interaction started.
-            if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
-
-            if (!base.CanInteract(interactionEvent)) return false;
-
-            GameObject recipeResult = _craftingRecipe.Result[0];
-
-            if (!recipeResult.TryGetComponent<PlacedTileObject>(out var result)) return false;
-
-            if (!Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, false)) return false;
-
-            return true;
-        }
+        public BoltInteraction(float delay, Transform characterTransform) : base(delay, characterTransform) { }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
@@ -57,20 +34,9 @@ namespace SS3D.Systems.Crafting
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             base.Start(interactionEvent, reference);
-            _startPosition = _characterTransform.position;
             Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Sfx, Sounds.Screwdriver,
                 interactionEvent.Target.GetGameObject().GetComponent<NetworkObject>());
             return true;
-        }
-
-        public override string GetName(InteractionEvent interactionEvent)
-        {
-            return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
-        }
-
-        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)

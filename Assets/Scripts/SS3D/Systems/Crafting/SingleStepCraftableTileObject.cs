@@ -17,6 +17,7 @@ public class SingleStepCraftableTileObject : SingleStepCraftable
     [Server]
     public override void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent)
     {
+        Spawn(instance);
         var _tileObject = GetComponent<PlacedTileObject>();
 
         bool replace = false;
@@ -31,4 +32,9 @@ public class SingleStepCraftableTileObject : SingleStepCraftable
         Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(_tileObject.tileObjectSO, 
             TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position), direction, false, replace, false);
     }
+
+    /// <summary>
+    /// In single step crafting, current object should not be modified, instead, a new object should be spawned.
+    /// </summary>
+    public override void Modify(IInteraction interaction, InteractionEvent interactionEvent){ }
 }

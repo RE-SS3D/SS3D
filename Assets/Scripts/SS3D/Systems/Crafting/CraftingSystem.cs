@@ -111,7 +111,7 @@ namespace SS3D.Systems.Crafting
             // Either apply some crafting on the current target, or do it on new game objects.
             if (recipeStep.CraftOnTarget)
             {
-                interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Craft(interactionEvent.Target.GetGameObject(), interaction, interactionEvent);
+                interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Modify(interaction, interactionEvent);
             }
             else
             {

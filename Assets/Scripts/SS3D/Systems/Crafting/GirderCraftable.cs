@@ -57,24 +57,12 @@ public class GirderCraftable : MultiStepCraftable
 
     public override void Modify(IInteraction interaction, InteractionEvent interactionEvent)
     {
-        throw new NotImplementedException();
+        AddSheet();
     }
 
-    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
+    public override void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent)
     {
-        switch (_currentStepNumber)
-        {
-            case 0:
-                SpawnGirder(interaction, interactionEvent);
-                break;
-            case 1:
-                AddSheet();
-                break;
-            default:
-                Debug.LogError("wall only have 2 step to be build ");
-                break;
-        }
-
+        SpawnGirder(interaction, interactionEvent);
         _currentStepNumber++;
     }
 

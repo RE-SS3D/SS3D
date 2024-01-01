@@ -122,6 +122,8 @@ namespace SS3D.Systems.Crafting
             /// If true, the target is used instead of the result to apply the crafting. Typically useful for multi step recipes, where no new game object is created upon crafting.
             /// </summary>
             public bool CraftOnTarget => _craftOnTarget;
+
+            public bool HasResult => _result.Count > 0;
         } 
     }
 }

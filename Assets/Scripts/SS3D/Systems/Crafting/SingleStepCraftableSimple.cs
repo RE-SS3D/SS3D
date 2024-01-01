@@ -17,4 +17,6 @@ public class SingleStepCraftableSimple : SingleStepCraftable
         InstanceFinder.ServerManager.Spawn(instance);
         instance.SetActive(true);
     }
+
+    public override void Modify(IInteraction interaction, InteractionEvent interactionEvent){ }
 }

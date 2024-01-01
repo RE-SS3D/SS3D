@@ -19,7 +19,7 @@ public abstract class MultiStepCraftable : NetworkActor, ICraftable
 
     public bool IsLastStep => _stepAmount == _currentStepNumber;
 
-    public abstract void Craft(IInteraction interaction, InteractionEvent interactionEvent);
+    public abstract void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent);
 
     public abstract void Modify(IInteraction interaction, InteractionEvent interactionEvent);
 
