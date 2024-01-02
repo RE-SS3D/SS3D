@@ -58,12 +58,12 @@ public class GirderCraftable : MultiStepCraftable
     public override void Modify(IInteraction interaction, InteractionEvent interactionEvent)
     {
         AddSheet();
+        _currentStepNumber++;
     }
 
     public override void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent)
     {
         SpawnGirder(interaction, interactionEvent);
-        _currentStepNumber++;
     }
 
     // Start is called before the first frame update
@@ -78,6 +78,7 @@ public class GirderCraftable : MultiStepCraftable
     {
         _updateSheetMesh = true;
         mesh.gameObject.SetActive(true);
+        mesh.mesh = o;
     }
 
     private void SpawnGirder(IInteraction interaction, InteractionEvent interactionEvent)
