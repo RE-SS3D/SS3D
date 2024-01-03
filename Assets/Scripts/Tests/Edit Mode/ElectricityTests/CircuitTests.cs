@@ -4,6 +4,7 @@ using SS3D.Systems.Tile;
 using System.Collections;
 using System.Collections.Generic;
 using System.Electricity;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace EditorTests
@@ -17,7 +18,20 @@ namespace EditorTests
         [Test]
         public void BatteriesChargeAtEqualRatesOrGetFull()
         {
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 0f);
+            BasicBattery batteryTwo = CreateBasicBattery(5f, 50f, 45f);
+            BasicBattery batteryThree = CreateBasicBattery(5f, 50f, 0f);
+            BasicPowerGenerator generator = CreateBasicGenerator(9f);
 
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { batteryOne, batteryTwo, batteryThree, generator };
+            Circuit circuit = CreateCircuit(electricDevices);
+            circuit.UpdateCircuitPower();
+
+            Assert.IsTrue(batteryOne.StoredPower == batteryThree.StoredPower && batteryOne.StoredPower == 3f);
+
+            circuit.UpdateCircuitPower();
+
+            Assert.IsTrue(batteryOne.StoredPower == batteryThree.StoredPower && batteryOne.StoredPower == 6.5f);
         }
 
         /// <summary>
@@ -26,16 +40,32 @@ namespace EditorTests
         [Test]
         public void BatteriesOffDontProvidePower()
         {
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 50f);
+            batteryOne.IsOn = false;
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(1f);
 
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { batteryOne, consumerOne };
+            Circuit circuit = CreateCircuit(electricDevices);
+            circuit.UpdateCircuitPower();
+
+            Assert.IsTrue(batteryOne.StoredPower == 50f);
         }
 
         /// <summary>
         /// Check that a battery with a smaller max power rate than a consumer need cannot make the consumer powered.
         /// </summary>
         [Test]
-        public void BatteryCannotSenddPowerGoAboveItsMaxRate()
+        public void BatteryCannotSendPowerAboveItsMaxRate()
         {
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 50f);
+            batteryOne.IsOn = true;
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(15f);
 
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { batteryOne, consumerOne };
+            Circuit circuit = CreateCircuit(electricDevices);
+            circuit.UpdateCircuitPower();
+
+            Assert.IsTrue(consumerOne.PowerStatus == PowerStatus.Inactive);
         }
 
         /// <summary>
@@ -45,16 +75,33 @@ namespace EditorTests
         [Test]
         public void PowerGeneratedGoesFirstToConsumers()
         {
+            BasicPowerGenerator generator = CreateBasicGenerator(5f);
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(2f);
+            BasicPowerConsumer consumerTwo = CreateBasicConsumer(2f);
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 0f);
 
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { generator, consumerOne, consumerTwo, batteryOne };
+            Circuit circuit = CreateCircuit(electricDevices);
+            circuit.UpdateCircuitPower();
+
+            Assert.IsTrue(batteryOne.StoredPower == 1f);
         }
 
         /// <summary>
-        /// Check that consumers get inactive when there's not enough power generated.
+        /// Check that consumers are inactive when there's not enough power generated.
         /// </summary>
         [Test]
         public void TurnOffConsumersWhenNotEnoughPowerIsGenerated()
         {
+            BasicPowerGenerator generator = CreateBasicGenerator(5f);
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(7f);
+            BasicPowerConsumer consumerTwo = CreateBasicConsumer(2f);
 
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { generator, consumerOne, consumerTwo};
+            Circuit circuit = CreateCircuit(electricDevices);
+            circuit.UpdateCircuitPower();
+
+            Assert.IsTrue(consumerOne.PowerStatus == PowerStatus.Inactive && consumerTwo.PowerStatus == PowerStatus.Powered);
         }
 
         /// <summary>
@@ -63,7 +110,11 @@ namespace EditorTests
         [Test]
         public void BatteryLevelStayBetweenMaxAmountAndZero()
         {
-
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 0f);
+            batteryOne.AddPower(500f);
+            Assert.IsTrue(batteryOne.StoredPower == 50f);
+            batteryOne.RemovePower(500f);
+            Assert.IsTrue(batteryOne.StoredPower == 0f);
         }
 
         /// <summary>
@@ -73,7 +124,13 @@ namespace EditorTests
         [Test]
         public void AddingPowerToBatteryReturnsTheCorrectAmountOfPowerAdded()
         {
-
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 0f);
+            float added = batteryOne.AddPower(47f);
+            Assert.IsTrue(added == 47f);
+            added = batteryOne.AddPower(50f);
+            Assert.IsTrue(added == 3f);
+            added = batteryOne.AddPower(50f);
+            Assert.IsTrue(added == 0f);
         }
 
         /// <summary>
@@ -83,9 +140,37 @@ namespace EditorTests
         [Test]
         public void RemovingPowerFromBatteryReturnsTheCorrectAmountOfPowerRemoved()
         {
-
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 50f);
+            float removed = batteryOne.RemovePower(47f);
+            Assert.IsTrue(removed == 47f);
+            removed = batteryOne.RemovePower(50f);
+            Assert.IsTrue(removed == 3f);
+            removed = batteryOne.RemovePower(50f);
+            Assert.IsTrue(removed == 0f);
         }
 
+
+        /// <summary>
+        /// Check that power from battery is used only once per update, even if more power is available.
+        /// </summary>
+        [Test]
+        public void BatteryPowerIsUsedOnlyOncePerUpdate()
+        {
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 50f);
+            batteryOne.IsOn = true;
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(2f);
+            BasicPowerConsumer consumerTwo = CreateBasicConsumer(2f);
+
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { batteryOne, consumerOne, consumerTwo };
+            Circuit circuit = CreateCircuit(electricDevices);
+
+            // ACT
+            circuit.UpdateCircuitPower();
+
+            // ASSERT
+            Assert.IsTrue(batteryOne.StoredPower == 48f);
+            Assert.IsTrue(consumerOne.PowerStatus == PowerStatus.Powered ^ consumerTwo.PowerStatus == PowerStatus.Powered);
+        }
 
 
 
@@ -113,7 +198,7 @@ namespace EditorTests
             circuit.UpdateCircuitPower();
 
             // ASSERT
-            Assert.IsFalse(batteryOne.StoredPower < 50f);
+            Assert.IsTrue(batteryOne.StoredPower < 50f);
             Assert.IsTrue(batteryTwo.StoredPower < 50f);
         }
 
@@ -142,6 +227,17 @@ namespace EditorTests
             BasicPowerConsumer consumer = batteryGo.GetComponent<BasicPowerConsumer>();
             consumer.Init(powerConsumption);
             return consumer;
+        }
+
+        private static BasicPowerGenerator CreateBasicGenerator(float generatedPower)
+        {
+            GameObject generatorGo = new GameObject();
+            generatorGo.AddComponent<BasicPowerGenerator>();
+            generatorGo.AddComponent<PlacedTileObject>();
+            BasicPowerGenerator generator = generatorGo.GetComponent<BasicPowerGenerator>();
+
+            generator.PowerProduction = generatedPower;
+            return generatorGo.GetComponent<BasicPowerGenerator>();
         }
     }
 }
