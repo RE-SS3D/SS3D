@@ -67,10 +67,6 @@ namespace System.Electricity
             return removedAmount;
         }
 
-        protected virtual void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer) 
-        { 
-        
-        }
-
+        protected virtual void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer) { }
     }
 }

@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 549108894503474672}
-  m_Mesh: {fileID: -6191635592145199087, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
+  m_Mesh: {fileID: -3925296395962772799, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
 --- !u!23 &6060823761219191581
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -141,7 +141,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3446163593857738128}
-  m_Mesh: {fileID: 2966274859586044063, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
+  m_Mesh: {fileID: -5613910691116423299, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
 --- !u!23 &7941901518868879156
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -263,8 +263,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 1, z: 0, w: 0}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0

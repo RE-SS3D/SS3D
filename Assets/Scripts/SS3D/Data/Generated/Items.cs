@@ -26,7 +26,7 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset BurnPatch = new DatabaseAsset("BurnPatch", "Items");
         public static DatabaseAsset DonkPocket = new DatabaseAsset("DonkPocket", "Items");
         public static DatabaseAsset Boombox = new DatabaseAsset("Boombox", "Items");
-        public static DatabaseAsset GreyFloorTile = new DatabaseAsset("GreyFloorTile", "Items");
+        public static DatabaseAsset FloorTile = new DatabaseAsset("FloorTile", "Items");
         public static DatabaseAsset SteelReinforcedSheet = new DatabaseAsset("SteelReinforcedSheet", "Items");
         public static DatabaseAsset SteelSheet = new DatabaseAsset("SteelSheet", "Items");
         public static DatabaseAsset Crowbar = new DatabaseAsset("Crowbar", "Items");
@@ -39,14 +39,10 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset FacewearGasMask = new DatabaseAsset("FacewearGasMask", "Items");
         public static DatabaseAsset GlovesInsulatedLeft = new DatabaseAsset("GlovesInsulatedLeft", "Items");
         public static DatabaseAsset GlovesInsulatedRight = new DatabaseAsset("GlovesInsulatedRight", "Items");
-        public static DatabaseAsset JumpsuitBotany = new DatabaseAsset("JumpsuitBotany", "Items");
-        public static DatabaseAsset JumpsuitEngineer = new DatabaseAsset("JumpsuitEngineer", "Items");
-        public static DatabaseAsset JumpsuitGrey = new DatabaseAsset("JumpsuitGrey", "Items");
         public static DatabaseAsset ShoesHiTopsLeft = new DatabaseAsset("ShoesHiTopsLeft", "Items");
         public static DatabaseAsset ShoesHiTopsRight = new DatabaseAsset("ShoesHiTopsRight", "Items");
         public static DatabaseAsset ShoesJackbootsLeft = new DatabaseAsset("ShoesJackbootsLeft", "Items");
         public static DatabaseAsset ShoesJackbootsRight = new DatabaseAsset("ShoesJackbootsRight", "Items");
-        public static DatabaseAsset JumpsuitSecurity = new DatabaseAsset("JumpsuitSecurity", "Items");
         public static DatabaseAsset HeadsetLeft = new DatabaseAsset("HeadsetLeft", "Items");
         public static DatabaseAsset HeadsetRight = new DatabaseAsset("HeadsetRight", "Items");
         public static DatabaseAsset HumanArmLeft = new DatabaseAsset("HumanArmLeft", "Items");
@@ -76,6 +72,20 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset Multitool = new DatabaseAsset("Multitool", "Items");
         public static DatabaseAsset PowerCellAdmin = new DatabaseAsset("PowerCellAdmin", "Items");
         public static DatabaseAsset PowerCell = new DatabaseAsset("PowerCell", "Items");
+        public static DatabaseAsset GlassReinforcedSheet = new DatabaseAsset("GlassReinforcedSheet", "Items");
+        public static DatabaseAsset GlassSheet = new DatabaseAsset("GlassSheet", "Items");
+        public static DatabaseAsset WoodLog = new DatabaseAsset("WoodLog", "Items");
+        public static DatabaseAsset WoodPlank = new DatabaseAsset("WoodPlank", "Items");
+        public static DatabaseAsset SteelRod = new DatabaseAsset("SteelRod", "Items");
+        public static DatabaseAsset Welder = new DatabaseAsset("Welder", "Items");
+        public static DatabaseAsset PlasmaTank = new DatabaseAsset("PlasmaTank", "Items");
+        public static DatabaseAsset OxygenTank = new DatabaseAsset("OxygenTank", "Items");
+        public static DatabaseAsset JumpsuitGrey = new DatabaseAsset("JumpsuitGrey", "Items");
+        public static DatabaseAsset JumpsuitSecurity = new DatabaseAsset("JumpsuitSecurity", "Items");
+        public static DatabaseAsset JumpsuitBotany = new DatabaseAsset("JumpsuitBotany", "Items");
+        public static DatabaseAsset HumanIntestineSmall = new DatabaseAsset("HumanIntestineSmall", "Items");
+        public static DatabaseAsset GlassShard = new DatabaseAsset("GlassShard", "Items");
+        public static DatabaseAsset JumpsuitEngineer = new DatabaseAsset("JumpsuitEngineer", "Items");
     }
 }
 

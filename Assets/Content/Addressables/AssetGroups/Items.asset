@@ -153,18 +153,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/GlovesInsulatedRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 7f49c948ec182a648ab280a22038752a
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitBotany.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 991fc7d67bda7d247b13ec8498953bc0
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineer.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitGrey.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 5fa15d6fdef93dc4e80d798cefe8be0b
     m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesHiTopsLeft.prefab
     m_ReadOnly: 0
@@ -179,10 +167,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: d7d68992cbd3cda45bb11a35a1490dc3
     m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesJackbootsRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4635651592391df41b6b2413afdb76c3
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitSecurity.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f549f4153ef612c4586c46ea280e0e94
@@ -299,6 +283,90 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: de67200a4c96d444f800399a033ddfef
     m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCell.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a1a7407e08bb2914c97f431063bf83e2
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheetReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e2a06f02e6a7e0348bdc535344bfe1f3
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2767aeb6e6fd53b43a1cb305789834d4
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodLog.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4aee3fb97a6a2d442804c8c0b8347a92
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodPlank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 48fa93e2da7acb3499e400becf2afc26
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelRod.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 06d944205e6b6dd489af078fa85fb878
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Welder.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e3fb39f0a84acf541b6ee828550a1708
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/PlasmaTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5479411218b869144b7d09d6db6dc58e
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitGrey.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 93ad90421a3b2f64e8fdb9e95a42ba90
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitSecurity.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: be3fcf1a74268ad49bfedb1edd9f5318
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitBotany.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9c5418cbebef419429574992d3e296a3
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5cab1a9f6c7f74948b84d0d625319efe
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassShard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7436f4976849b994aaee40df1bca7d89
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 84cec183559b4954c883b11f20f767c9
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MicroLaser.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ed77d98d3e75b7946b404face1fe8f82
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MatterBin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1e64a1c37be1f7c44a5d242d6ec6da10
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Medkits/Medkit.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e9f99df80a74fd242aa46e53c7ec0376
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Medical/HealthScanner.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9e967cb4084bf064c8a0ca5f57a33b0c
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Botany/Hatchet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: cc71128d4bcc0c548ac11481000ac424
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalWire.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0e69918696f58e04f846e985ec7405fe
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalCable.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

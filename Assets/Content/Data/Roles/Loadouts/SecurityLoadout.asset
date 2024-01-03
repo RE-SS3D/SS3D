@@ -17,7 +17,7 @@ MonoBehaviour:
   Equipment:
     _list:
     - _key: 512
-      _value: {fileID: 726792282085660869, guid: 4635651592391df41b6b2413afdb76c3, type: 3}
+      _value: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
     - _key: 16
       _value: {fileID: 60374868058361228, guid: 4b790b4ffedbe564dab49f896d71eaa6, type: 3}
     - _key: 32

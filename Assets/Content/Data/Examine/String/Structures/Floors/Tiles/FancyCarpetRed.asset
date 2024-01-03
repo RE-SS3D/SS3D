@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: FancyCarpetRed
   m_EditorClassIdentifier: 
-  NameKey: Red Fancy Carpet
+  NameKey: Fancy Carpet
   DescriptionKey: Really fancy carpet in a beautiful red.
