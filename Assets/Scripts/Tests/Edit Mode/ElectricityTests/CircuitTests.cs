@@ -152,14 +152,12 @@ namespace EditorTests
             removed = batteryOne.RemovePower(50f);
             Assert.IsTrue(removed == 0f);
         }
-
-
+        
         /// <summary>
-        /// Check that power from battery is used only once per update, so that if two consumers have lower needs than
-        /// the battery max power rate, but their total needs is above it, only one consumer is powered.
+        /// Check if two consumers have lower needs than battery max power rate, but their total needs are above it, only one consumer is powered.
         /// </summary>
         [Test]
-        public void BatteryPowerIsUsedOnlyOncePerUpdate()
+        public void BatteryMaxPowerRateIsUsedProperly()
         {
             BasicBattery batteryOne = CreateBasicBattery(3f, 50f, 50f);
             batteryOne.IsOn = true;
@@ -177,10 +175,6 @@ namespace EditorTests
             Assert.IsTrue(consumerOne.PowerStatus == PowerStatus.Powered ^ consumerTwo.PowerStatus == PowerStatus.Powered);
         }
 
-
-
-
-
         /// <summary>
         /// Check if batteries can send power to consumers even though consumers need more power than batteries can provide.
         /// </summary>
@@ -194,7 +188,6 @@ namespace EditorTests
             batteryTwo.IsOn = true;
             BasicPowerConsumer consumerOne = CreateBasicConsumer(2f);
             BasicPowerConsumer consumerTwo = CreateBasicConsumer(7f);
-
             
             List<IElectricDevice> electricDevices = new List<IElectricDevice>() { batteryOne, batteryTwo, consumerOne, consumerTwo};
             Circuit circuit = CreateCircuit(electricDevices);
