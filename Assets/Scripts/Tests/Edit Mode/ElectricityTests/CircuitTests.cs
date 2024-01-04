@@ -200,6 +200,25 @@ namespace EditorTests
             Assert.IsTrue(batteryTwo.StoredPower < 50f);
         }
 
+        [Test]
+        public void BatteryCanPowerMultipleConsumersPerUpdate()
+        {
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 50f);
+            batteryOne.IsOn = true;
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(2f);
+            BasicPowerConsumer consumerTwo = CreateBasicConsumer(2f);
+
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { batteryOne, consumerOne, consumerTwo };
+            Circuit circuit = CreateCircuit(electricDevices);
+
+            // ACT
+            circuit.UpdateCircuitPower();
+
+            // ASSERT
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(46f).Within(Tolerance));
+            Assert.IsTrue(consumerOne.PowerStatus == PowerStatus.Powered && consumerTwo.PowerStatus == PowerStatus.Powered);
+        }
+
         private static Circuit CreateCircuit(List<IElectricDevice> electricDevices)
         {
             Circuit circuit = new Circuit();
