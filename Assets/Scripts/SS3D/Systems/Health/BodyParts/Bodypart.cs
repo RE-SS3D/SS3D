@@ -48,13 +48,10 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// List of body layers composing a body part.
     /// </summary>
     protected readonly List<BodyLayer> _bodyLayers = new List<BodyLayer>();
-
-
-	private BodyPart _externalBodyPart;
-
-	public BodyPart ExternalBodyPart => _externalBodyPart;
-
-	public bool IsInsideBodyPart => _externalBodyPart != null;
+    
+    private BodyPart _externalBodyPart;
+    public BodyPart ExternalBodyPart => _externalBodyPart;
+    public bool IsInsideBodyPart => _externalBodyPart != null;
 
     /// <summary>
     /// A container containing all internal body parts. The head has a brain for an internal body part. Internal body parts should be destroyed
@@ -69,29 +66,23 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     protected Collider _bodyCollider;
 
     public Collider BodyCollider => _bodyCollider;
-
     public string Name => gameObject.name;
 
     /// <summary>
     /// Check if this bodypart has been detached. Should always be true for all bodyparts spawned on detach.
     /// </summary>
-    private bool _isDetached;
+    protected bool _isDetached;
 
     protected BodyPart _spawnedCopy;
-
-	public HealthController HealthController;
-
+    public HealthController HealthController;
     public ReadOnlyCollection<BodyLayer> BodyLayers
     {
         get { return _bodyLayers.AsReadOnly(); }
     }
-
-
     public ReadOnlyCollection<BodyPart> ChildBodyParts
     {
         get { return _childBodyParts.AsReadOnly(); }
     }
-
     public List<BodyPart> InternalBodyParts
     {
         get 
@@ -107,7 +98,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
             return bodyParts;
         }
     }
-
     public bool HasInternalBodyPart => _internalBodyParts != null && _internalBodyParts.Items.Count() != 0;
 
     /// <summary>
@@ -129,7 +119,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
     public float TotalDamage => _bodyLayers.Sum(layer => layer.TotalDamage);
     public float MaxDamage => 0.5f*_bodyLayers.Sum(layer => layer.MaxDamage);
-
     public float RelativeDamage => TotalDamage/ MaxDamage;
 
     public event EventHandler OnDamageInflicted;
@@ -202,7 +191,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Implementation should handle instantiating _bodyPartItem, removing the bodypart game object and doing whatever else is necessary.
     /// </summary>
     [Server]
-    private void DetachBodyPart()
+    protected void DetachBodyPart()
     {
         if (_isDetached) return;
         DetachChildBodyParts();
@@ -247,9 +236,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         foreach(BodyLayer layer in bodyPart.BodyLayers)
         {
-            BodyLayer layerToWrite = BodyLayers.Where(x => x.LayerType == layer.LayerType).First();
-            if (layerToWrite == null) continue;
-            layer.CopyLayerValues(layerToWrite);
+            IEnumerable<BodyLayer> layerToWrite = BodyLayers.Where(x => x.LayerType == layer.LayerType);
+            if (!layerToWrite.Any()) continue;
+            layer.CopyLayerValues(layerToWrite.First());
         }
     }
 
@@ -259,12 +248,11 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// All child body parts are detached, all internal body parts are destroyed.
     /// </summary>
     [Server]
-    private void DestroyBodyPart()
+    protected void DestroyBodyPart()
     {
         BeforeDestroyingBodyPart();
-
         DetachChildBodyParts();
-
+        
         // Destroy all internal body parts i
         if (_internalBodyParts != null){
 
@@ -275,7 +263,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
             }
             _internalBodyParts.Purge();
         }
-
+        
         // Dispose of this body part
         InvokeOnBodyPartDestroyed();
         Dispose(true);
@@ -404,7 +392,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     }
 
     /// <summary>
-    /// Inflic damages of a certain kind on a certain body layer type if the layer is present.
+    /// Inflict damages of a certain kind on a certain body layer type if the layer is present.
     /// </summary>
     /// <returns>True if the damage could be inflicted</returns>
     [Server]
@@ -415,6 +403,14 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
 
         BodyLayer layer = FirstBodyLayerOfType(type);
         if (!BodyLayers.Contains(layer)) return false;
+        InflictDamage(layer, damageTypeQuantity);
+
+        OnDamageInflicted?.Invoke(this, EventArgs.Empty);
+        return true;    
+    }
+
+    protected virtual void InflictDamage(BodyLayer layer, DamageTypeQuantity damageTypeQuantity)
+    {
         layer.InflictDamage(damageTypeQuantity);
         if (IsDestroyed)
         {
@@ -424,9 +420,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         {
             DetachBodyPart();
         }
-
-        OnDamageInflicted?.Invoke(this, EventArgs.Empty);
-        return true;    
     }
 
     /// <summary>
@@ -450,7 +443,9 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         foreach (BodyLayer layer in BodyLayers)
         {
             if (!(layer is T))
-                TryInflictDamage(layer.LayerType, damageTypeQuantity);    
+            {
+                TryInflictDamage(layer.LayerType, damageTypeQuantity);
+            }    
         }
     }
 
@@ -575,7 +570,6 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     {
         OnBodyPartLayerAdded?.Invoke(this, EventArgs.Empty);
     }
-
 
     /// <summary>
     /// Add the body layers in their initial states on the player. 

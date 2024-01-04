@@ -16,11 +16,6 @@ namespace SS3D.Systems.Health
 		[FormerlySerializedAs("brain")]
         public Brain Brain;
 
-		public override void Init(BodyPart parent)
-		{
-			base.Init(parent);
-		}
-
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -58,15 +53,14 @@ namespace SS3D.Systems.Health
 
         protected override void AfterSpawningCopiedBodyPart()
         {
-
             GetComponentInParent<Human>()?.DeactivateComponents();
 
             // When detached, spawn a head and set player's mind to be in the head,
             // so that player can still play as a head (death is near though..).
             MindSystem mindSystem = Subsystems.Get<MindSystem>();
 
-            var EntityControllingHead = GetComponentInParent<Entity>();
-            if (EntityControllingHead.Mind != null)
+            Entity entityControllingHead = GetComponentInParent<Entity>();
+            if (entityControllingHead.Mind != null)
             {
                 mindSystem.SwapMinds(GetComponentInParent<Entity>(), _spawnedCopy.GetComponent<Entity>());
                 _spawnedCopy.GetComponent<NetworkObject>().RemoveOwnership();
@@ -81,14 +75,26 @@ namespace SS3D.Systems.Health
             GetComponentInParent<Human>()?.DeactivateComponents();
         }
 
+        protected override void InflictDamage(BodyLayer layer, DamageTypeQuantity damageTypeQuantity)
+        {
+            layer.InflictDamage(damageTypeQuantity);
+            if (IsDestroyed)
+            {
+                DestroyBodyPart();
+            }
+            else if (IsSevered && !_isDetached)
+            {
+                GetComponentInParent<Entity>().Kill();
+                DetachBodyPart();
+            }
+        }
+
         protected override void SpawnOrgans()
         {
             GameObject brainPrefab = Items.HumanBrain;
             GameObject brainGameObject = Instantiate(brainPrefab);
             Brain = brainGameObject.GetComponent<Brain>();
-            
             Brain.HealthController = HealthController;
-            
             Spawn(brainGameObject, Owner);
         }
     }

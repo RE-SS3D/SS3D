@@ -1,9 +1,8 @@
-﻿using SS3D.Data;
-using SS3D.Data.Generated;
+﻿using SS3D.Data.Generated;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Health;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class HumanTorso : BodyPart
 {
@@ -57,6 +56,19 @@ public class HumanTorso : BodyPart
         TryAddBodyLayer(new NerveLayer(this));
 
         InvokeOnBodyPartLayerAdded();
+    }
+    
+    protected override void InflictDamage(BodyLayer layer, DamageTypeQuantity damageTypeQuantity)
+    {
+        layer.InflictDamage(damageTypeQuantity);
+        if (IsDestroyed)
+        {
+            DestroyBodyPart();
+        }
+        else if (IsSevered && !_isDetached)
+        {
+            GetComponentInParent<Entity>().Kill();
+        }
     }
 
     protected override void AfterSpawningCopiedBodyPart() { }
