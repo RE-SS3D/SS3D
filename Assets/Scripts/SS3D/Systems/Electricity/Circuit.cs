@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace System.Electricity
@@ -74,7 +75,7 @@ namespace System.Electricity
         /// Try to satisfy all consumers with power generators and drain storages for power if needed.
         /// </summary>
         /// <param name="poweredConsumers">Which consumers were satisfied</param>
-        /// <returns>Power, that wasn't used</returns>
+        /// <returns>Power from generators, that wasn't used</returns>
         private float ConsumePower(out List<IPowerConsumer> poweredConsumers)
         {
             poweredConsumers = new();
@@ -95,8 +96,13 @@ namespace System.Electricity
             {
                 while (neededPower > maxPowerFromBatteries)
                 {
+                    List<IPowerConsumer> consumersToRemove = poweredConsumers.Where(x => x.PowerNeeded >= neededPower).ToList();
+                    if (!consumersToRemove.Any())
+                    {
+                        consumersToRemove.AddRange(poweredConsumers);
+                    }
                     // Random is used to make sure that unpowered consumers won't be the same each tick
-                    IPowerConsumer consumer = poweredConsumers[RandomGenerator.Next(poweredConsumers.Count)];
+                    IPowerConsumer consumer = consumersToRemove[RandomGenerator.Next(consumersToRemove.Count)];
                     neededPower -= consumer.PowerNeeded;
                     poweredConsumers.Remove(consumer);
                 }
