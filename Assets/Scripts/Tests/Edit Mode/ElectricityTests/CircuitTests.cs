@@ -11,6 +11,8 @@ namespace EditorTests
 {
     public class CircuitTests
     {
+        private const float Tolerance = 0.0000001f;
+        
         /// <summary>
         /// Check if batteries charge at equal rate, given they're not full. If they're close to be full, 
         /// check that they're provided with the amount needed to fill them fully, instead of the equal rate.
@@ -27,11 +29,13 @@ namespace EditorTests
             Circuit circuit = CreateCircuit(electricDevices);
             circuit.UpdateCircuitPower();
 
-            Assert.IsTrue(batteryOne.StoredPower == batteryThree.StoredPower && batteryOne.StoredPower == 3f);
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(batteryThree.StoredPower).Within(Tolerance));
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(3f).Within(Tolerance));
 
             circuit.UpdateCircuitPower();
 
-            Assert.IsTrue(batteryOne.StoredPower == batteryThree.StoredPower && batteryOne.StoredPower == 6.5f);
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(batteryThree.StoredPower).Within(Tolerance));
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(6.5f).Within(Tolerance));
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace EditorTests
             Circuit circuit = CreateCircuit(electricDevices);
             circuit.UpdateCircuitPower();
 
-            Assert.IsTrue(batteryOne.StoredPower == 1f);
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(1f).Within(Tolerance));
         }
 
         /// <summary>
@@ -151,12 +155,13 @@ namespace EditorTests
 
 
         /// <summary>
-        /// Check that power from battery is used only once per update, even if more power is available.
+        /// Check that power from battery is used only once per update, so that if two consumers have lower needs than
+        /// the battery max power rate, but their total needs is above it, only one consumer is powered.
         /// </summary>
         [Test]
         public void BatteryPowerIsUsedOnlyOncePerUpdate()
         {
-            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 50f);
+            BasicBattery batteryOne = CreateBasicBattery(3f, 50f, 50f);
             batteryOne.IsOn = true;
             BasicPowerConsumer consumerOne = CreateBasicConsumer(2f);
             BasicPowerConsumer consumerTwo = CreateBasicConsumer(2f);
@@ -168,7 +173,7 @@ namespace EditorTests
             circuit.UpdateCircuitPower();
 
             // ASSERT
-            Assert.IsTrue(batteryOne.StoredPower == 48f);
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(48f).Within(Tolerance));
             Assert.IsTrue(consumerOne.PowerStatus == PowerStatus.Powered ^ consumerTwo.PowerStatus == PowerStatus.Powered);
         }
 
