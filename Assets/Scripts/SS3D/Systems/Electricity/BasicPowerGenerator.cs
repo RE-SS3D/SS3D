@@ -10,6 +10,11 @@ namespace System.Electricity
     {
         [SerializeField]
         private float _powerProduction = 10f;
-        public float PowerProduction => _powerProduction;
+
+        public float PowerProduction 
+        { 
+          get => _powerProduction;
+          set => _powerProduction = MathF.Max(value, 0f);
+        }
     }
 }
