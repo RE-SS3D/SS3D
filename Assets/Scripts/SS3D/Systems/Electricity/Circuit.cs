@@ -142,6 +142,7 @@ namespace System.Electricity
         private float ChargeStorages(float availablePower)
         {
             if (availablePower <= 0f) return 0f;
+            // Order the list to make sure that storages to be fully charged come first
             List<IPowerStorage> notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn)
                 .OrderBy(x => x.RemainingCapacity).ToList();
 
