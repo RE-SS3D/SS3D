@@ -4,6 +4,7 @@ using SS3D.Systems.Tile;
 using System.Collections;
 using System.Collections.Generic;
 using System.Electricity;
+using System.Linq;
 using System.Reflection.Emit;
 using UnityEngine;
 
@@ -217,6 +218,52 @@ namespace EditorTests
             // ASSERT
             Assert.That(batteryOne.StoredPower, Is.EqualTo(46f).Within(Tolerance));
             Assert.IsTrue(consumerOne.PowerStatus == PowerStatus.Powered && consumerTwo.PowerStatus == PowerStatus.Powered);
+        }
+
+        [Test]
+        public void BatteriesContributeEquallyToPowerConsumer()
+        {
+            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 50f);
+            BasicBattery batteryTwo = CreateBasicBattery(2f, 50f, 50f);
+            batteryOne.IsOn = true;
+            batteryTwo.IsOn = true;
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(4f);
+            List<IElectricDevice> electricDevices = new List<IElectricDevice>() { batteryOne, batteryTwo, consumerOne };
+            Circuit circuit = CreateCircuit(electricDevices);
+            
+            // ACT
+            circuit.UpdateCircuitPower();
+            
+            // ASSERT
+            Assert.That(batteryOne.StoredPower, Is.EqualTo(48f).Within(Tolerance));
+            Assert.That(batteryTwo.StoredPower, Is.EqualTo(48f).Within(Tolerance));
+        }
+        
+        [Test]
+        public void PowerFromMultipleBatteriesIsFullyConsumedByAConsumer()
+        {
+            // Arbitrare values
+            List<BasicBattery> batteries = new List<BasicBattery>() 
+            { 
+                CreateBasicBattery(3f, 50f, 1f), 
+                CreateBasicBattery(5f, 50f, 15f), 
+                CreateBasicBattery(9f, 50f, 40f),
+                CreateBasicBattery(2f, 50f, 30f),
+                CreateBasicBattery(18f, 50f, 16f)
+            };
+
+            float firstSum = batteries.Sum(x => x.StoredPower);
+            batteries.ForEach(x => x.IsOn = true);
+            BasicPowerConsumer consumerOne = CreateBasicConsumer(30f);
+            List<IElectricDevice> electricDevices = (new List<IElectricDevice>() { consumerOne }).Concat(batteries).ToList();
+            Circuit circuit = CreateCircuit(electricDevices);
+            
+            // ACT
+            circuit.UpdateCircuitPower();
+            float secondSum = batteries.Sum(x => x.StoredPower);
+            
+            // ASSERT
+            Assert.That(firstSum - secondSum, Is.EqualTo(consumerOne.PowerNeeded).Within(Tolerance));
         }
 
         private static Circuit CreateCircuit(List<IElectricDevice> electricDevices)
