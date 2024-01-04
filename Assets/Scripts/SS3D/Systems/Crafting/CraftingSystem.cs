@@ -99,8 +99,6 @@ namespace SS3D.Systems.Crafting
 
             IRecipeIngredient recipeTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
 
-            ICraftable craftableTarget = interactionEvent.Target.GetGameObject().GetComponent<ICraftable>();
-
             if (recipeStep.ConsumeTarget) recipeTarget.Consume();
 
             foreach (IRecipeIngredient item in itemToConsume)
@@ -118,12 +116,21 @@ namespace SS3D.Systems.Crafting
                 foreach (GameObject prefab in recipeStep.Result)
                 {
                     GameObject instance = Instantiate(prefab);
+                    // TODO : should add a default behavior, just spawning the thing in place.
                     prefab.GetComponent<ICraftable>()?.Craft(instance, interaction, interactionEvent);
                 }
             }
  
         }
 
+        /// <summary>
+        /// Check if the crafting can occur, by retrieving the recipe and checking enough ingredients are there.
+        /// </summary>
+        /// <param name="interaction"> the interaction used for the crafting.</param>
+        /// <param name="interactionEvent"> Contains some necessary info regarding the interaction occuring.</param>
+        /// <param name="itemToConsume"> TODO : should not be public, maybe split this method in two. </param>
+        /// <param name="recipeStep"></param>
+        /// <returns></returns>
         public bool CanCraft(IInteraction interaction, InteractionEvent interactionEvent, out List<IRecipeIngredient> itemToConsume, out RecipeStep recipeStep)
         {
             itemToConsume = new List<IRecipeIngredient>();
@@ -170,7 +177,7 @@ namespace SS3D.Systems.Crafting
         }
 
         /// <summary>
-        /// Find all items in close proximity from the target of the recipe.
+        /// Find all potential recipe ingredients in close proximity from the target of the recipe.
         /// TODO : only collider for item ? Should then ensure collider of item is on the
         /// same game object as item script for all items. Would avoid the getInParent.
         /// </summary>

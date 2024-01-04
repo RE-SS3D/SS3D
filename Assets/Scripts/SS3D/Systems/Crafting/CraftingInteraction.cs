@@ -142,18 +142,9 @@ namespace SS3D.Systems.Crafting
 
             GameObject recipeResult = recipeStep.Result[0];
 
-            if (recipeResult.TryGetComponent<PlacedTileObject>(out var result))
+            if (recipeResult.TryGetComponent(out PlacedTileObject result))
             {
-                _replace = false;
-
-                bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent<PlacedTileObject>(out var target);
-
-                if (targetIsPlacedTileObject && result.Layer == target.Layer)
-                {
-                    _replace = true;
-                }
-
-                return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
+                return ResultIsValidPlacedTileObject(result, interactionEvent, recipeStep); 
             }
 
             return true;
@@ -162,6 +153,20 @@ namespace SS3D.Systems.Crafting
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
 
+        }
+
+        private bool ResultIsValidPlacedTileObject(PlacedTileObject result, InteractionEvent interactionEvent, RecipeStep recipeStep)
+        {
+            _replace = false;
+
+            bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent<PlacedTileObject>(out var target);
+
+            if (targetIsPlacedTileObject && result.Layer == target.Layer)
+            {
+                _replace = true;
+            }
+
+            return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, _replace);
         }
 
     }
