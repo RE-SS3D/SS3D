@@ -35,6 +35,10 @@ namespace SS3D.Systems.Crafting
 
         private Vector3 _startPosition;
 
+        private bool _replace;
+
+        public bool Replace => _replace;
+
         public CraftingInteraction(float delay, Transform characterTransform)
         {
             _characterTransform = characterTransform;
@@ -140,13 +144,13 @@ namespace SS3D.Systems.Crafting
 
             if (recipeResult.TryGetComponent<PlacedTileObject>(out var result))
             {
-                bool replace = false;
+                _replace = false;
 
                 bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent<PlacedTileObject>(out var target);
 
                 if (targetIsPlacedTileObject && result.Layer == target.Layer)
                 {
-                    replace = true;
+                    _replace = true;
                 }
 
                 return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);

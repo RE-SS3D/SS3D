@@ -12,9 +12,6 @@ namespace SS3D.Systems.Crafting
     /// </summary>
     public class BuildInteraction : CraftingInteraction
     {
-        private bool _replace;
-
-        public bool Replace => _replace;
 
         public BuildInteraction(float delay, Transform characterTransform) : base(delay, characterTransform) { }
 

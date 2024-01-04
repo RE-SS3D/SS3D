@@ -23,10 +23,9 @@ public class SingleStepCraftableTileObject : SingleStepCraftable
         bool replace = false;
         Direction direction = Direction.North;
 
-        if (interaction is BuildInteraction buildInteraction)
+        if (interaction is CraftingInteraction craftingInteraction)
         {
-            replace = buildInteraction.Replace;
-
+            replace = craftingInteraction.Replace;
         }
 
         Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(_tileObject.tileObjectSO, 
