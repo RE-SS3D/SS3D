@@ -94,9 +94,9 @@ namespace System.Electricity
 
             if (neededPower > maxPowerFromBatteries)
             {
-                List<IPowerConsumer> consumersToRemove = poweredConsumers.Where(x => x.PowerNeeded >= neededPower).ToList();
                 while (neededPower > maxPowerFromBatteries)
                 {
+                    List<IPowerConsumer> consumersToRemove = poweredConsumers.Where(x => x.PowerNeeded >= neededPower).ToList();
                     if (!consumersToRemove.Any())
                     {
                         consumersToRemove.AddRange(poweredConsumers);
@@ -105,7 +105,6 @@ namespace System.Electricity
                     IPowerConsumer consumer = consumersToRemove[RandomGenerator.Next(consumersToRemove.Count)];
                     neededPower -= consumer.PowerNeeded;
                     poweredConsumers.Remove(consumer);
-                    consumersToRemove.Remove(consumer);
                 }
             }
             DrainBatteries(neededPower, availableStorages);
