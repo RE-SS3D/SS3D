@@ -7,11 +7,12 @@ public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
     public int StepAmount { get; }
 
     /// <summary>
-    /// Stuff happening at the end of the crafting process, typically spawning a game object at the point of interaction.
+    /// Stuff happening at the end of the crafting process, called on the newly crafted object. Note that Craft is called on
+    /// prefab, implying that the instantiating and spawning process should be done in it, and said instances should be modified.
     /// </summary>
     /// <param name="interaction"> The specific crafting interaction used. </param>
     /// <param name="interactionEvent"> the event linked to the crafting interaction</param>
-    public void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent);
+    public void Craft(IInteraction interaction, InteractionEvent interactionEvent);
 
     public void Modify(IInteraction interaction, InteractionEvent interactionEvent);
 

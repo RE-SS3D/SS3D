@@ -15,9 +15,8 @@ public class SingleStepCraftableTileObject : SingleStepCraftable
 {
 
     [Server]
-    public override void Craft(GameObject instance, IInteraction interaction, InteractionEvent interactionEvent)
+    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
     {
-        Spawn(instance);
         var _tileObject = GetComponent<PlacedTileObject>();
 
         bool replace = false;
