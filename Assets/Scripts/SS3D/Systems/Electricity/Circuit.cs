@@ -116,7 +116,12 @@ namespace System.Electricity
         /// <param name="storages">Storages to drain from</param>
         private void DrainBatteries(float power, List<IPowerStorage> storages)
         {
-            Log.Error(this, "Energy requested for draining is greater than available energy");
+            if(power > storages.Sum(x => x.MaxRemovablePower))
+            {
+                Log.Error(this, "Energy requested for draining batteries is greater than available energy in batteries." +
+                    "This will result in creating some free energy.");
+            }
+            
             float equalAmount = power / storages.Count;
             for (int i = 0; i < storages.Count; i++)
             {
