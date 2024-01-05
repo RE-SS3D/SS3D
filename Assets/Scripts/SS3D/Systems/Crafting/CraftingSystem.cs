@@ -115,9 +115,8 @@ namespace SS3D.Systems.Crafting
             {
                 foreach (GameObject prefab in recipeStep.Result)
                 {
-                    GameObject instance = Instantiate(prefab);
                     // TODO : should add a default behavior, just spawning the thing in place.
-                    prefab.GetComponent<ICraftable>()?.Craft(instance, interaction, interactionEvent);
+                    prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
                 }
             }
  
@@ -197,7 +196,7 @@ namespace SS3D.Systems.Crafting
                 closeItemsFromTarget.Add(item);
             }
 
-            return closeItemsFromTarget;
+            return closeItemsFromTarget.OrderBy(x => Vector3.Distance(x.GameObject.transform.position, center)).ToList();
         }
 
         /// <summary>
@@ -269,6 +268,11 @@ namespace SS3D.Systems.Crafting
             }
 
             objTransform.position = targetPosition;
+        }
+
+        private void DefaultCraft()
+        {
+
         }
     }
 }
