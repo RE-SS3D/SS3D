@@ -36,7 +36,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public bool IsConnected(PlacedTileObject neighbourObject)
         {
-            return neighbourObject?.Connector is ElectricAdjacencyConnector;
+            return (bool) neighbourObject?.Connectors.Any(x=> x is ElectricAdjacencyConnector);
         }
 
         public abstract void UpdateAllConnections();

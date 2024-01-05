@@ -8,6 +8,7 @@ using SS3D.Systems.Tile.Connections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using math = SS3D.Utils.MathUtility;
 
@@ -65,7 +66,8 @@ namespace SS3D.Systems.Tile
         private TileObjectSo _tileObjectSo;
         private Vector2Int _origin;
         private Direction _dir;
-        private IAdjacencyConnector _connector;
+
+        private List<IAdjacencyConnector> _connectors;
         private Vector2Int _worldOrigin;
 
         /// <summary>
@@ -90,7 +92,7 @@ namespace SS3D.Systems.Tile
 
         public TileObjectSo tileObjectSO => _tileObjectSo;
 
-        public bool HasAdjacencyConnector => _connector != null;
+        public bool HasAdjacencyConnector => _connectors.Count != 0;
 
         public WorldObjectAssetReference Asset
         {
@@ -104,7 +106,7 @@ namespace SS3D.Systems.Tile
                 _asset = value;
             }
         }
-        public IAdjacencyConnector Connector => _connector;
+        public List<IAdjacencyConnector> Connectors => _connectors;
 
         /// <summary>
         /// Set up a new PlacedTileObject.
@@ -116,7 +118,7 @@ namespace SS3D.Systems.Tile
             _tileObjectSo = tileObjectSo;
             _origin = origin;
             _dir = dir;
-            _connector = GetComponent<IAdjacencyConnector>();
+            _connectors = GetComponentsInChildren<IAdjacencyConnector>().ToList();
             _worldOrigin = new Vector2Int((int)Math.Round(worldPosition.x), (int)Math.Round(worldPosition.z));
         }
 
@@ -132,13 +134,13 @@ namespace SS3D.Systems.Tile
         public void UpdateAdjacencies()
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateAllConnections();
+                _connectors.ForEach(x => x.UpdateAllConnections());
         }
 
         public void UpdateSingleAdjacency(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             if (HasAdjacencyConnector)
-                _connector.UpdateSingleConnection(dir, neighbourObject, updateNeighbour);
+                _connectors.ForEach(x => x.UpdateSingleConnection(dir, neighbourObject, updateNeighbour));
         }
 
         public SavedPlacedTileObject Save()

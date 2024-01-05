@@ -95,7 +95,7 @@ namespace SS3D.Systems.Tile.Connections
                 _adjacencyMap = new AdjacencyMap();
                 _filter = GetComponent<MeshFilter>();
 
-                _placedObject = GetComponent<PlacedTileObject>();
+                _placedObject = GetComponentInParent<PlacedTileObject>();
                 if (_placedObject == null)
                 {
                     _genericType = TileObjectGenericType.None;

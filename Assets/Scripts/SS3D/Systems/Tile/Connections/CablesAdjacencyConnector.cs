@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object.Synchronizing;
 using FishNet.Object;
+using System.Linq;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -142,7 +143,7 @@ namespace SS3D.Systems.Tile.Connections
         [Server]
         private bool NeighbourIsCable(PlacedTileObject neighbour)
         {
-            return neighbour != null && neighbour.Connector is CablesAdjacencyConnector;
+            return neighbour != null && neighbour.Connectors.Any(x => x is CablesAdjacencyConnector);
         }
 
     }
