@@ -16,7 +16,7 @@ namespace System.Electricity
         private float _storedPower = 0;
 
         [SerializeField][SyncVar]
-        private float _maxPowerRate = 5f;
+        private float _maxPowerRate = 15f;
 
         [SyncVar(OnChange = nameof(HandleSyncEnabled))]
         protected bool _isOn = true;
@@ -34,7 +34,7 @@ namespace System.Electricity
         public float MaxPowerRate => _maxPowerRate;
 
         /// <inheritdoc> </inheritdoc>
-        public float MaxRemovablePower => _maxPowerRate > _storedPower ? _storedPower : _maxPowerRate;
+        public float MaxRemovablePower { get => Math.Min(_storedPower, _maxPowerRate); }
 
         /// <inheritdoc> </inheritdoc>
         public bool IsOn { get => _isOn; set => _isOn = value; }
