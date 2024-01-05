@@ -152,7 +152,9 @@ namespace SS3D.Systems.Crafting
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-
+            particles.Dispose(true);
+            Subsystems.TryGet(out CraftingSystem craftingSystem);
+            craftingSystem.CancelMoveAllObjectsToCraftPoint(_coroutines);
         }
 
         private bool ResultIsValidPlacedTileObject(PlacedTileObject result, InteractionEvent interactionEvent, RecipeStep recipeStep)
@@ -168,6 +170,7 @@ namespace SS3D.Systems.Crafting
 
             return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, _replace);
         }
+
 
     }
 }
