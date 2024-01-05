@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SS3D.Logging;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -91,21 +92,18 @@ namespace System.Electricity
             List<IPowerStorage> availableStorages = _storages.Where(x => x.IsOn && x.MaxRemovablePower > 0)
                 .OrderBy(x => x.MaxRemovablePower).ToList();
             float maxPowerFromBatteries = availableStorages.Sum(x => x.MaxRemovablePower);
-
-            if (neededPower > maxPowerFromBatteries)
+            
+            while (neededPower > maxPowerFromBatteries)
             {
-                while (neededPower > maxPowerFromBatteries)
+                List<IPowerConsumer> consumersToRemove = poweredConsumers.Where(x => x.PowerNeeded >= neededPower).ToList();
+                if (!consumersToRemove.Any())
                 {
-                    List<IPowerConsumer> consumersToRemove = poweredConsumers.Where(x => x.PowerNeeded >= neededPower).ToList();
-                    if (!consumersToRemove.Any())
-                    {
-                        consumersToRemove.AddRange(poweredConsumers);
-                    }
-                    // Random is used to make sure that unpowered consumers won't be the same each tick
-                    IPowerConsumer consumer = consumersToRemove[RandomGenerator.Next(consumersToRemove.Count)];
-                    neededPower -= consumer.PowerNeeded;
-                    poweredConsumers.Remove(consumer);
+                    consumersToRemove.AddRange(poweredConsumers);
                 }
+                // Random is used to make sure that unpowered consumers won't be the same each tick
+                IPowerConsumer consumer = consumersToRemove[RandomGenerator.Next(consumersToRemove.Count)];
+                neededPower -= consumer.PowerNeeded;
+                poweredConsumers.Remove(consumer);
             }
             DrainBatteries(neededPower, availableStorages);
             return 0;
@@ -114,10 +112,11 @@ namespace System.Electricity
         /// <summary>
         /// Drain batteries from storages equally
         /// </summary>
-        /// <param name="power">Power to drain in sum</param>
+        /// <param name="power">Power to drain in sum. Must be always lesser or equal than sum of available power from storages</param>
         /// <param name="storages">Storages to drain from</param>
         private void DrainBatteries(float power, List<IPowerStorage> storages)
         {
+            Log.Error(this, "Energy requested for draining is greater than available energy");
             float equalAmount = power / storages.Count;
             for (int i = 0; i < storages.Count; i++)
             {
