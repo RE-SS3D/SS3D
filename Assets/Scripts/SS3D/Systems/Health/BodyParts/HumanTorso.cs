@@ -65,10 +65,6 @@ public class HumanTorso : BodyPart
         {
             DestroyBodyPart();
         }
-        else if (IsSevered && !_isDetached)
-        {
-            GetComponentInParent<Entity>().Kill();
-        }
     }
 
     protected override void AfterSpawningCopiedBodyPart() { }

@@ -2,6 +2,7 @@
 using SS3D.Core;
 using SS3D.Data.Generated;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -84,9 +85,15 @@ namespace SS3D.Systems.Health
             }
             else if (IsSevered && !_isDetached)
             {
-                GetComponentInParent<Entity>().Kill();
+                //GetComponentInParent<Entity>().Kill();
+                ActivateRagdoll();
                 DetachBodyPart();
             }
+        }
+        
+        private void ActivateRagdoll()
+        {
+            GetComponentInParent<Ragdoll>().KnockdownTimeless();
         }
 
         protected override void SpawnOrgans()

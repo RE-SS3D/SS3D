@@ -52,7 +52,6 @@ namespace SS3D.Systems.Entities
             // TODO: Optimize these GetComponents, this is a temporary solution.
         }
 
-        [ObserversRpc(RunLocally = true)]
         private void ActivateRagdoll()
         {
             if (TryGetComponent(out Ragdoll ragdoll))
