@@ -15,10 +15,6 @@ namespace SS3D.Systems.Crafting
     /// </summary>
     public class BoltInteraction : CraftingInteraction
     {
-        private bool _replace;
-
-        public bool Replace => _replace;
-
         public BoltInteraction(float delay, Transform characterTransform) : base(delay, characterTransform) { }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
