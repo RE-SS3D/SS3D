@@ -70,7 +70,6 @@ namespace SS3D.Systems.Entities.Humanoid
         private void OnSyncKnockdown(bool prev, bool next, bool asServer)
 		{
 			if (prev == next) return;
-            UnityEngine.Debug.Log(IsServer.ToString() + " OnSyncKnockdown: " + next.ToString());
             if (next)
 			{
                 Knockdown();
@@ -147,7 +146,6 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             if (!enabled) return;
             
-            UnityEngine.Debug.Log(IsServer.ToString() + " KnockdownTimeless");
             _isKnockdownTimed = false;
             IsKnockedDown = true;
         }
@@ -166,14 +164,13 @@ namespace SS3D.Systems.Entities.Humanoid
         
         private void Knockdown()
         {
-            UnityEngine.Debug.Log(IsServer.ToString() + " Knockdown");
             _currentState = RagdollState.Ragdoll;
             Vector3 movement = _humanoidLivingController.TargetMovement * 3;
             ToggleController(false);
             ToggleAnimator(false);
+            if (!IsOwner && Owner.ClientId != -1)
+                return;
             
-            if (!IsOwner) return;
-            UnityEngine.Debug.Log(IsServer.ToString() + " ToggleKinematic");
             ToggleKinematic(false);
             foreach (Transform part in _ragdollParts)
             {

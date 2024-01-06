@@ -31,7 +31,10 @@ namespace SS3D.Systems.Entities
             mindSystem.SwapMinds(originEntity, ghostEntity);
 
             RpcUpdateGhostPosition(originEntity, ghostEntity);
-            ActivateRagdoll();
+            if (TryGetComponent(out Ragdoll ragdoll))
+            {
+                ragdoll.KnockdownTimeless();
+            }
             RpcDestroyComponents(originEntity);
         }
 
@@ -52,15 +55,7 @@ namespace SS3D.Systems.Entities
             // TODO: Optimize these GetComponents, this is a temporary solution.
         }
 
-        private void ActivateRagdoll()
-        {
-            if (TryGetComponent(out Ragdoll ragdoll))
-            {
-                ragdoll.KnockdownTimeless();
-            }
-        }
-
-		/// <summary>
+        /// <summary>
 		/// Put Ghost at the same place as the deceased player.
 		/// </summary>
 		[ObserversRpc(RunLocally = true)]

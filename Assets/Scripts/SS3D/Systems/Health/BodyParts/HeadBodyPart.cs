@@ -85,15 +85,9 @@ namespace SS3D.Systems.Health
             }
             else if (IsSevered && !_isDetached)
             {
-                //GetComponentInParent<Entity>().Kill();
-                ActivateRagdoll();
+                GetComponentInParent<Ragdoll>().KnockdownTimeless();
                 DetachBodyPart();
             }
-        }
-        
-        private void ActivateRagdoll()
-        {
-            GetComponentInParent<Ragdoll>().KnockdownTimeless();
         }
 
         protected override void SpawnOrgans()
