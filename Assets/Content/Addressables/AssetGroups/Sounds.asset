@@ -57,10 +57,44 @@ MonoBehaviour:
     m_Address: Assets/Art/Sound/World/Airlocks/AirlockOpen.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: ea4ccc667e0e73345a853c09899d370b
-    m_Address: Assets/Art/Sound/World/Tools/Screwdriver.ogg
   - m_GUID: 59b65ecaf8dffbf49876ab2768490b59
     m_Address: Assets/Art/Sound/Furniture/Machines/Engineering/FuelPowerGenerator.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ad417f29ef4ec7c419fb699b78688e0c
+    m_Address: Assets/Art/Sound/World/Tools/Crowbar.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 57797633aae6aef4fae22a602cff5300
+    m_Address: Assets/Art/Sound/World/Tools/Deconstruct.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ccb729e642a95554ba56df358429626a
+    m_Address: Assets/Art/Sound/World/Tools/Screwdriver.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 045f02041ca109f459362e6ec6964a70
+    m_Address: Assets/Art/Sound/World/Tools/Screwdriver2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9413fff68f4f1034a91eb67996a539e6
+    m_Address: Assets/Art/Sound/World/Tools/Welder.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c3e9889b54817d048ac012f8f3f934b3
+    m_Address: Assets/Art/Sound/World/Tools/Welder2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d1f7fee41cfd0524682cd63b462cfcab
+    m_Address: Assets/Art/Sound/World/Tools/WelderActivate.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: feb3e6fc9d1e8ac46a3535f5f598de4a
+    m_Address: Assets/Art/Sound/World/Tools/Welderdeactivate.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4083176d42f993548a7226cdc6c1b45b
+    m_Address: Assets/Art/Sound/World/Tools/Wirecutter.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

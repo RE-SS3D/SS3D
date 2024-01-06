@@ -15,8 +15,16 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset Can4 = new DatabaseAsset("Can4", "Sounds");
         public static DatabaseAsset AirlockClose = new DatabaseAsset("AirlockClose", "Sounds");
         public static DatabaseAsset AirlockOpen = new DatabaseAsset("AirlockOpen", "Sounds");
-        public static DatabaseAsset Screwdriver = new DatabaseAsset("Screwdriver", "Sounds");
         public static DatabaseAsset FuelPowerGenerator = new DatabaseAsset("FuelPowerGenerator", "Sounds");
+        public static DatabaseAsset Crowbar = new DatabaseAsset("Crowbar", "Sounds");
+        public static DatabaseAsset Deconstruct = new DatabaseAsset("Deconstruct", "Sounds");
+        public static DatabaseAsset Screwdriver = new DatabaseAsset("Screwdriver", "Sounds");
+        public static DatabaseAsset Screwdriver2 = new DatabaseAsset("Screwdriver2", "Sounds");
+        public static DatabaseAsset Welder = new DatabaseAsset("Welder", "Sounds");
+        public static DatabaseAsset Welder2 = new DatabaseAsset("Welder2", "Sounds");
+        public static DatabaseAsset WelderActivate = new DatabaseAsset("WelderActivate", "Sounds");
+        public static DatabaseAsset Welderdeactivate = new DatabaseAsset("Welderdeactivate", "Sounds");
+        public static DatabaseAsset Wirecutter = new DatabaseAsset("Wirecutter", "Sounds");
     }
 }
 

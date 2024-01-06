@@ -36,10 +36,24 @@ MonoBehaviour:
       _value: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
     - _key: AirlockOpen
       _value: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
-    - _key: screwdriver
-      _value: {fileID: 8300000, guid: ea4ccc667e0e73345a853c09899d370b, type: 3}
-    - _key: Screwdriver
-      _value: {fileID: 8300000, guid: ea4ccc667e0e73345a853c09899d370b, type: 3}
     - _key: FuelPowerGenerator
       _value: {fileID: 8300000, guid: 59b65ecaf8dffbf49876ab2768490b59, type: 3}
+    - _key: Crowbar
+      _value: {fileID: 8300000, guid: ad417f29ef4ec7c419fb699b78688e0c, type: 3}
+    - _key: Deconstruct
+      _value: {fileID: 8300000, guid: 57797633aae6aef4fae22a602cff5300, type: 3}
+    - _key: Screwdriver
+      _value: {fileID: 8300000, guid: ccb729e642a95554ba56df358429626a, type: 3}
+    - _key: Screwdriver2
+      _value: {fileID: 8300000, guid: 045f02041ca109f459362e6ec6964a70, type: 3}
+    - _key: Welder
+      _value: {fileID: 8300000, guid: 9413fff68f4f1034a91eb67996a539e6, type: 3}
+    - _key: Welder2
+      _value: {fileID: 8300000, guid: c3e9889b54817d048ac012f8f3f934b3, type: 3}
+    - _key: WelderActivate
+      _value: {fileID: 8300000, guid: d1f7fee41cfd0524682cd63b462cfcab, type: 3}
+    - _key: Welderdeactivate
+      _value: {fileID: 8300000, guid: feb3e6fc9d1e8ac46a3535f5f598de4a, type: 3}
+    - _key: Wirecutter
+      _value: {fileID: 8300000, guid: 4083176d42f993548a7226cdc6c1b45b, type: 3}
     _new: 
