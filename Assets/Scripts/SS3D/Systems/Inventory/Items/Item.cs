@@ -336,20 +336,6 @@ namespace SS3D.Systems.Inventory.Items
             return icon;
         }
 
-        [Server]
-        public void Consume()
-        {
-            NetworkObject.Despawn();
-        }
-
-        [Server]
-        public void Craft(InteractionEvent interaction)
-        {
-            var target = interaction.Target.GetGameObject();
-            GameObject product = Instantiate(gameObject, target.transform.position, target.transform.rotation);
-            InstanceFinder.ServerManager.Spawn(product);
-        }
-
         /// <summary>
         /// Add a new trait to this and sync it
         /// </summary>
