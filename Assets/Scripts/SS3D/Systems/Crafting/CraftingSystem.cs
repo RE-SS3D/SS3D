@@ -95,7 +95,7 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(IInteraction interaction, InteractionEvent interactionEvent)
+        public void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent)
         {
             if (!CanCraft(interaction, interactionEvent, out List<IRecipeIngredient> itemToConsume, out RecipeStep recipeStep)) return;
 
@@ -117,6 +117,8 @@ namespace SS3D.Systems.Crafting
             {
                 foreach (GameObject prefab in recipeStep.Result)
                 {
+                    if (interaction.CraftInHand) interactionEvent = new InteractionEvent(interactionEvent.Source, interactionEvent.Target,
+                        interactionEvent.Source.GameObject.transform.position + interactionEvent.Source.GameObject.transform.forward);
                     // TODO : should add a default behavior, just spawning the thing in place.
                     prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
                 }

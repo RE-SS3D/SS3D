@@ -8,6 +8,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
@@ -37,13 +38,24 @@ namespace SS3D.Systems.Crafting
 
         private bool _replace;
 
+        private CraftingInteractionType _type;
+
+        private bool _craftInHand;
+
+        public Vector3 StartPosition => _startPosition;
+
+        public bool CraftInHand => _craftInHand;
+
         public bool Replace => _replace;
 
-        public CraftingInteraction(float delay, Transform characterTransform)
+        public CraftingInteractionType CraftingInteractionType => _type;
+
+        public CraftingInteraction(float delay, Transform characterTransform, CraftingInteractionType type)
         {
             _characterTransform = characterTransform;
             _startPosition = characterTransform.position;
             Delay = delay;
+            _type = type;
         }
 
         /// <summary>
@@ -74,6 +86,7 @@ namespace SS3D.Systems.Crafting
             if (!InteractionExtensions.RangeCheck(interactionEvent)) return false;
 
             return true;
+            
         }
 
         [Server]
@@ -131,7 +144,9 @@ namespace SS3D.Systems.Crafting
         private bool TargetIsValid(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is Item target)
-                return target.Container == null;
+            {
+                return ItemTargetIsValid(interactionEvent, target);
+            }
 
             return true;
         }
@@ -169,6 +184,24 @@ namespace SS3D.Systems.Crafting
             }
 
             return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, _replace);
+        }
+
+        private bool ItemTargetIsValid(InteractionEvent interactionEvent, Item target)
+        { 
+            // item target is valid if it is in hand holding the item or out of container.
+            if (target.Container != null && interactionEvent.Source is Hand hand && hand.Container == target.Container)
+            {
+                _craftInHand = true;
+                return true;
+            }
+            else if (target.Container == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
 

@@ -177,7 +177,7 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            InteractionEvent interactionEvent = new(source, null);
+            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
 
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
@@ -365,11 +365,12 @@ namespace SS3D.Systems.Interactions
         }
 
         [ServerRpc]
-        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string interactionName)
+        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject,  int index, string interactionName)
         {
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, null);
+            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
+
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
 
             // TODO: Validate access to inventory

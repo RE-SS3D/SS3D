@@ -49,7 +49,6 @@ GameObject:
   - component: {fileID: 8540712827701727508}
   - component: {fileID: 246485557779806861}
   - component: {fileID: -2182379001209221491}
-  - component: {fileID: 5666737066850704637}
   m_Layer: 10
   m_Name: Wrench
   m_TagString: Untagged
@@ -276,17 +275,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d09844dabf08b54d8728da1598381c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5666737066850704637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3792017003477948967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d2bcd0f0e5517f4cbca431f51343195, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
