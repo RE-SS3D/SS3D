@@ -21,11 +21,9 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
     [SerializeField]
     private Transform _dragger;
 
-    /// <summary>
-    /// The distance at which the dragged item should stay from dragger
-    /// </summary>
-    [SerializeField]
-    private float _distanceFromDragger = 1f;
+    private FixedJoint joint;
+
+    private Vector3 _draggerToDragged;
 
     /// <summary>
     /// True if the object is currently being dragged.
@@ -52,13 +50,17 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
 
         if (!_dragged) return;
 
-        gameObject.transform.position = new Vector3(_dragger.transform.position.x, transform.position.y, _dragger.transform.position.z)
-            + _dragger.transform.forward * _distanceFromDragger;
+        gameObject.transform.position =  new Vector3(_dragger.transform.position.x, transform.position.y, _dragger.transform.position.z) + _draggerToDragged;
+
+        
     }
 
     public void SetDrag(bool drag, Transform dragger)
     {
         _dragged= drag;
         _dragger = dragger;
+        _draggerToDragged = new Vector3(transform.position.x - _dragger.transform.position.x, 0f, transform.position.z - _dragger.transform.position.z);
+
+        
     }
 }

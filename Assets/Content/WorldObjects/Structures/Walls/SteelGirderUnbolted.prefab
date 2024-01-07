@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: -2900075557854325373}
   - component: {fileID: 8063692154441053622}
   - component: {fileID: 6528007219760414512}
-  - component: {fileID: 5601811809085926406}
   - component: {fileID: 9093674146940966575}
   - component: {fileID: 846137012520601876}
   m_Layer: 0
@@ -121,7 +120,6 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 6528007219760414512}
-  - {fileID: 5601811809085926406}
   - {fileID: 9093674146940966575}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -134,7 +132,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 110
+  <PrefabId>k__BackingField: 210
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -168,21 +166,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
---- !u!114 &5601811809085926406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3591147544166670882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 832a17aa64c5f07418d4015e67d8647a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: -2900075557854325373}
 --- !u!114 &9093674146940966575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,11 +178,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1b65aaa331f84aa6eff7abc1033dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
   _dragger: {fileID: 0}
-  _distanceFromDragger: 1
   _dragged: 0
 --- !u!114 &846137012520601876
 MonoBehaviour:
