@@ -13,7 +13,7 @@ namespace SS3D.Systems.Crafting
     public class BuildInteraction : CraftingInteraction
     {
 
-        public BuildInteraction(float delay, Transform characterTransform) : base(delay, characterTransform) { }
+        public BuildInteraction(float delay, Transform characterTransform) : base(delay, characterTransform, CraftingInteractionType.Build) { }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {

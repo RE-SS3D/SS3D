@@ -56,11 +56,13 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        private bool TryGetRecipe(IInteraction craftingInteraction, GameObject target, out RecipeStep step)
+        private bool TryGetRecipe(IInteraction interaction, GameObject target, out RecipeStep step)
         {
             step = null;
 
             int stepNumber = 0;
+
+            if (interaction is not CraftingInteraction craftingInteraction) return false;
 
             if (!target.TryGetComponent<IWorldObjectAsset>(out var targetAssetReference)) return false;
 
@@ -74,7 +76,7 @@ namespace SS3D.Systems.Crafting
                 var recipeStep = potentialRecipe.GetStep(stepNumber);
                 if(recipeStep == null) continue;
 
-                if(craftingInteraction.GetGenericName() == recipeStep.InteractionName)
+                if(craftingInteraction.CraftingInteractionType == recipeStep.CraftingInteractionType)
                 {
                     step = recipeStep;
                     return true;

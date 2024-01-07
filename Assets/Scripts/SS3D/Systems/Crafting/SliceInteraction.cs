@@ -9,7 +9,7 @@ namespace SS3D.Systems.Crafting
     public class SliceInteraction : CraftingInteraction
     {
         
-        public SliceInteraction(float delay, Transform characterTransform) : base(delay, characterTransform) { }
+        public SliceInteraction(float delay, Transform characterTransform) : base(delay, characterTransform, CraftingInteractionType.Slice) { }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {

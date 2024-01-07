@@ -48,7 +48,7 @@ namespace SS3D.Systems.Crafting
             /// The name of the crafting interaction, it's part of recipes as specific interactions are needed for specific crafting, not just recipe ingredients.
             /// </summary>
             [SerializeField]
-            private string _interactionName;
+            private CraftingInteractionType _craftingInteractionType;
 
 
 
@@ -103,7 +103,7 @@ namespace SS3D.Systems.Crafting
             /// <summary>
             /// Name of the necessary interaction to perform the recipe.
             /// </summary>
-            public string InteractionName => _interactionName;
+            public CraftingInteractionType CraftingInteractionType => _craftingInteractionType;
 
             /// <summary>
             /// The result of the crafting.

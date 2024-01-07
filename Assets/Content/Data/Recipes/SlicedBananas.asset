@@ -15,7 +15,7 @@ MonoBehaviour:
   _target: {fileID: 11400000, guid: e53ebba96eeba474e8478131c8d24085, type: 2}
   steps:
   - _executionTime: 2
-    _interactionName: Slice
+    _craftingInteractionType: 2
     _result:
     - {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
     _elements:
