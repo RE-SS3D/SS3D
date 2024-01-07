@@ -15,7 +15,7 @@ MonoBehaviour:
   _target: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
   steps:
   - _executionTime: 2
-    _interactionName: Build
+    _craftingInteractionType: 3
     _result:
     - {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
     _elements:
@@ -23,3 +23,5 @@ MonoBehaviour:
       _new: {fileID: 0}
     _consumeTarget: 1
     _craftOnTarget: 0
+    _customCraft: 0
+    _shouldHaveIngredientsInHand: 0

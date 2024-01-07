@@ -9,6 +9,7 @@ namespace SS3D.Systems.Crafting
         Build,
         Bolt,
         Slice,
+        Handcraft,
 
     }
 }

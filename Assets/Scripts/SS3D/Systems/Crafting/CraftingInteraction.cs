@@ -50,6 +50,8 @@ namespace SS3D.Systems.Crafting
 
         public CraftingInteractionType CraftingInteractionType => _type;
 
+        public Transform CharacterTransform => _characterTransform;
+
         public CraftingInteraction(float delay, Transform characterTransform, CraftingInteractionType type)
         {
             _characterTransform = characterTransform;
@@ -65,13 +67,6 @@ namespace SS3D.Systems.Crafting
         /// <returns>If the interaction can be executed</returns>
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            // if target is item, check if item out of container.
-            // if crafting recipe has result, check if result is an item or placed tile objects. 
-            //  if it's an item, no special check.
-            // if it's a placed tile object, check if place is free and all.
-            // if no result, don't need to do any particular check.
-
-
             if (!Subsystems.TryGet(out CraftingSystem craftingSystem)) return false;
 
             if (!craftingSystem.CanCraft(this, interactionEvent, out _itemToConsume, out _craftingRecipe)) return false;

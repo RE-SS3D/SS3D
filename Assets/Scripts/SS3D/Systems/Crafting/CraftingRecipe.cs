@@ -77,6 +77,15 @@ namespace SS3D.Systems.Crafting
             private bool _craftOnTarget;
 
             /// <summary>
+            /// If a default crafting method should be called, or if a custom one should.
+            /// </summary>
+            [SerializeField]
+            private bool _customCraft;
+
+            [SerializeField]
+            private bool _shouldHaveIngredientsInHand;
+
+            /// <summary>
             /// The world objects ids and their respective numbers necessary for the recipe.
             /// </summary>
             public Dictionary<string, int> Elements
@@ -124,6 +133,10 @@ namespace SS3D.Systems.Crafting
             public bool CraftOnTarget => _craftOnTarget;
 
             public bool HasResult => _result.Count > 0;
+
+            public bool CustomCraft => _customCraft;
+
+            public bool ShouldHaveIngredientsInHand => _shouldHaveIngredientsInHand;
         } 
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Codice.CM.Common;
+using FishNet;
 using FishNet.Object;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
@@ -8,6 +10,9 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Substances;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Tile;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -101,13 +106,6 @@ namespace SS3D.Systems.Crafting
 
             IRecipeIngredient recipeTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
 
-            if (recipeStep.ConsumeTarget) recipeTarget.Consume();
-
-            foreach (IRecipeIngredient item in itemToConsume)
-            {
-                item.Consume();
-            }
-
             // Either apply some crafting on the current target, or do it on new game objects.
             if (recipeStep.CraftOnTarget)
             {
@@ -117,13 +115,20 @@ namespace SS3D.Systems.Crafting
             {
                 foreach (GameObject prefab in recipeStep.Result)
                 {
-                    if (interaction.CraftInHand) interactionEvent = new InteractionEvent(interactionEvent.Source, interactionEvent.Target,
-                        interactionEvent.Source.GameObject.transform.position + interactionEvent.Source.GameObject.transform.forward);
-                    // TODO : should add a default behavior, just spawning the thing in place.
-                    prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+                    if(recipeStep.CustomCraft)
+                        prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+                    else
+                        DefaultCraft(interaction, interactionEvent, prefab, recipeStep);
                 }
             }
- 
+
+            if (recipeStep.ConsumeTarget) recipeTarget.Consume();
+
+            foreach (IRecipeIngredient item in itemToConsume)
+            {
+                item.Consume();
+            }
+
         }
 
         /// <summary>
@@ -142,6 +147,11 @@ namespace SS3D.Systems.Crafting
             if (!TryGetRecipe(interaction, interactionEvent.Target.GetGameObject(), out recipeStep)) return false;
 
             List<IRecipeIngredient> closeItemsFromTarget = GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
+
+            if (recipeStep.ShouldHaveIngredientsInHand)
+            {
+                closeItemsFromTarget = closeItemsFromTarget.Where(x => x is Item item && item.Container.ContainerType == ContainerType.Hand).ToList();
+            }
 
             Dictionary<string, int> potentialRecipeElements = ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
 
@@ -274,8 +284,65 @@ namespace SS3D.Systems.Crafting
             objTransform.position = targetPosition;
         }
 
-        private void DefaultCraft()
+        private void DefaultCraft(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
         {
+            // If result is an item held in hand, either put the crafting result in hand or in front of the crafter.
+            if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand &&
+                    targetItem.Container == hand.Container)
+            {
+
+                if(prefab.TryGetComponent(out Item resultItem))
+                {
+                    GameObject instance = Instantiate(prefab);
+
+                    if (recipeStep.ConsumeTarget)
+                    {
+                        hand.Container.Dump();
+                        hand.Container.AddItem(resultItem);
+                    }
+                    else
+                    {
+                        Vector3 characterGround = interaction.CharacterTransform.position;
+                        characterGround.y = 0;
+                        instance.transform.position = characterGround + interaction.CharacterTransform.forward ;
+                    }
+                    InstanceFinder.ServerManager.Spawn(instance);
+                }
+                else
+                {
+                    GameObject instance = Instantiate(prefab);
+
+                    Vector3 characterGround = interaction.CharacterTransform.position;
+                    characterGround.y = 0;
+                    instance.transform.position = characterGround + interaction.CharacterTransform.forward;
+
+                    InstanceFinder.ServerManager.Spawn(instance);
+                    instance.SetActive(true);
+                }
+            }
+
+            // If result is a placed tile object, just place it on the tilemap.
+            else if(prefab.TryGetComponent(out PlacedTileObject resultTileObject))
+            {
+                bool replace = false;
+                Direction direction = Direction.North;
+
+                if (interaction is CraftingInteraction craftingInteraction)
+                {
+                    replace = craftingInteraction.Replace;
+                }
+
+                Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
+                    TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position), direction, false, replace, false);
+            }
+
+            else
+            {
+                GameObject instance = Instantiate(prefab);
+                instance.transform.position = interactionEvent.Point;
+                InstanceFinder.ServerManager.Spawn(instance);
+                instance.SetActive(true);
+            }
 
         }
     }
