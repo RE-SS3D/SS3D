@@ -24,3 +24,4 @@ MonoBehaviour:
     _consumeTarget: 1
     _craftOnTarget: 0
     _customCraft: 1
+    _shouldHaveIngredientsInHand: 0

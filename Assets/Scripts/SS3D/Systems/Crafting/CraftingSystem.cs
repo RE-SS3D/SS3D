@@ -21,6 +21,12 @@ using static SS3D.Systems.Crafting.CraftingRecipe;
 namespace SS3D.Systems.Crafting
 {
 
+    /// <summary>
+    /// TODO : Add deconstruction. When deconstructing something, e.g. going from metal window to metal girder with glass sheets, apply all modifications steps to get to the last one.
+    /// deconstructing should be as simple as a bool in a recipe. This is necessary as girders don't have glass sheets when they're spawned. Then each step of deconstruction goes
+    /// back one step of modification. custom craftable handle that.
+    /// </summary>
+
     public class CraftingSystem : NetworkSystem
     {
         /// <summary>
