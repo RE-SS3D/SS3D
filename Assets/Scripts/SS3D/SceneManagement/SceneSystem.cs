@@ -10,6 +10,9 @@ using System;
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 namespace SS3D.SceneManagement
 {
+    /// <summary>
+    /// Used as a simple scene loader, all the current stuff works in the Game scene but this is used to go from the boot to the launcher scene
+    /// </summary>
 	public sealed class SceneSystem : Core.Behaviours.System
 	{
 		protected override void OnAwake()
