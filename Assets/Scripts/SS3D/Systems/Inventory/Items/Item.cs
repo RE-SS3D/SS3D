@@ -15,8 +15,8 @@ using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Selection;
 using UnityEngine;
 using UnityEngine.Serialization;
-using AssetDatabase = UnityEditor.AssetDatabase;
 #if UNITY_EDITOR
+using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 #endif
 
