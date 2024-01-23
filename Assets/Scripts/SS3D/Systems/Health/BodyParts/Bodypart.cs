@@ -53,6 +53,8 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     public BodyPart ExternalBodyPart => _externalBodyPart;
     public bool IsInsideBodyPart => _externalBodyPart != null;
 
+    protected virtual bool IsDetachable => true;
+
     /// <summary>
     /// A container containing all internal body parts. The head has a brain for an internal body part. Internal body parts should be destroyed
     /// </summary>
@@ -71,7 +73,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// <summary>
     /// Check if this bodypart has been detached. Should always be true for all bodyparts spawned on detach.
     /// </summary>
-    protected bool _isDetached;
+    private bool _isDetached;
 
     protected BodyPart _spawnedCopy;
     public HealthController HealthController;
@@ -191,7 +193,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// Implementation should handle instantiating _bodyPartItem, removing the bodypart game object and doing whatever else is necessary.
     /// </summary>
     [Server]
-    protected void DetachBodyPart()
+    private void DetachBodyPart()
     {
         if (_isDetached) return;
         DetachChildBodyParts();
@@ -248,7 +250,7 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     /// All child body parts are detached, all internal body parts are destroyed.
     /// </summary>
     [Server]
-    protected void DestroyBodyPart()
+    private void DestroyBodyPart()
     {
         BeforeDestroyingBodyPart();
         DetachChildBodyParts();
@@ -409,14 +411,14 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
         return true;    
     }
 
-    protected virtual void InflictDamage(BodyLayer layer, DamageTypeQuantity damageTypeQuantity)
+    private void InflictDamage(BodyLayer layer, DamageTypeQuantity damageTypeQuantity)
     {
         layer.InflictDamage(damageTypeQuantity);
         if (IsDestroyed)
         {
             DestroyBodyPart();
         }
-        else if (IsSevered && !_isDetached)
+        else if (IsDetachable && IsSevered && !_isDetached)
         {
             DetachBodyPart();
         }
