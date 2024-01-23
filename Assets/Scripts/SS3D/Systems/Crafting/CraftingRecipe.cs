@@ -28,9 +28,16 @@ namespace SS3D.Systems.Crafting
 
         public List<RecipeStep> steps;
 
-        public RecipeStep GetStep(int index)
+        public List<RecipeStepLink> stepLinks;
+
+        public RecipeStep GetStep(string name)
         {
-            return steps[index];
+            return steps.First(x => x.Name == name);
+        }
+
+        public RecipeStepLink GetStepLink(string name)
+        {
+            return stepLinks.First(x => x.Name == name);
         }
 
 
@@ -45,36 +52,19 @@ namespace SS3D.Systems.Crafting
             private float _executionTime;
 
             /// <summary>
-            /// The name of the crafting interaction, it's part of recipes as specific interactions are needed for specific crafting, not just recipe ingredients.
-            /// </summary>
-            [SerializeField]
-            private CraftingInteractionType _craftingInteractionType;
-
-
-
-            /// <summary>
             /// A list of resulting objects that will spawn at the end of the crafting process.
             /// </summary>
             [SerializeField]
             private List<WorldObjectAssetReference> _result;
 
             /// <summary>
-            /// Elements of the recipe, that will be consumed in the crafting process.
-            /// </summary>
-            [SerializeField]
-            private SerializableDictionary<WorldObjectAssetReference, int> _elements = new();
-
-            /// <summary>
             /// If true, the target is consumed (despawned).
             /// </summary>
             [SerializeField]
-            private bool _consumeTarget;
+            private bool _isTerminal;
 
-            /// <summary>
-            /// If true, the target is used instead of the result to apply the crafting. Typically useful for multi step recipes, where no new game object is created upon crafting.
-            /// </summary>
             [SerializeField]
-            private bool _craftOnTarget;
+            private string _name;
 
             /// <summary>
             /// If a default crafting method should be called, or if a custom one should.
@@ -84,6 +74,45 @@ namespace SS3D.Systems.Crafting
 
             [SerializeField]
             private bool _shouldHaveIngredientsInHand;
+
+            /// <summary>
+            /// Time it takes in second for the crafting to finish.
+            /// </summary>
+            public float ExecutionTime => _executionTime;
+
+            /// <summary>
+            /// The result of the crafting.
+            /// </summary>
+            public List<GameObject> Result => _result.Select(reference => reference.Prefab).ToList();
+
+           
+
+            /// <summary>
+            /// If true, the target is consumed (despawned).
+            /// </summary>
+            public bool IsTerminal => _isTerminal;
+
+            public bool HasResult => _result.Count > 0;
+
+            public bool CustomCraft => _customCraft;
+
+            public string Name => _name;
+
+        } 
+
+        public class RecipeStepLink
+        {
+            /// <summary>
+            /// Elements of the recipe, that will be consumed in the crafting process, and the necessary number of each.
+            /// </summary>
+            [SerializeField]
+            private SerializableDictionary<WorldObjectAssetReference, int> _elements = new();
+
+            [SerializeField]
+            private List<IngredientCondition> _conditions = new();
+
+            [SerializeField]
+            private string _name;
 
             /// <summary>
             /// The world objects ids and their respective numbers necessary for the recipe.
@@ -104,40 +133,17 @@ namespace SS3D.Systems.Crafting
                 }
             }
 
-            /// <summary>
-            /// Time it takes in second for the crafting to finish.
-            /// </summary>
-            public float ExecutionTime => _executionTime;
-
-            /// <summary>
-            /// Name of the necessary interaction to perform the recipe.
-            /// </summary>
-            public CraftingInteractionType CraftingInteractionType => _craftingInteractionType;
-
-            /// <summary>
-            /// The result of the crafting.
-            /// </summary>
-            public List<GameObject> Result => _result.Select(reference => reference.Prefab).ToList();
-
             public int ElementsNumber => _elements.Sum(x => x.Value);
 
-            /// <summary>
-            /// If true, the target is consumed (despawned).
-            /// </summary>
-            public bool ConsumeTarget => _consumeTarget;
+            public string Name => _name;
 
+        }
 
-            /// <summary>
-            /// If true, the target is used instead of the result to apply the crafting. Typically useful for multi step recipes, where no new game object is created upon crafting.
-            /// </summary>
-            public bool CraftOnTarget => _craftOnTarget;
-
-            public bool HasResult => _result.Count > 0;
-
-            public bool CustomCraft => _customCraft;
-
-            public bool ShouldHaveIngredientsInHand => _shouldHaveIngredientsInHand;
-        } 
+        public abstract class IngredientCondition : ScriptableObject
+        {
+            // TODO add parameters
+            public abstract bool CanUseIngredient();
+        }
     }
 }
 

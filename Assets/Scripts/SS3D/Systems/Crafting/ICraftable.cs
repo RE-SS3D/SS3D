@@ -19,7 +19,7 @@ public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
     /// <summary>
     /// for multi step crafting, at which step of the crafting process we are.
     /// </summary>
-    public int CurrentStepNumber { get; }
+    public string CurrentStepName { get; }
 
     /// <summary>
     /// If we are at the last step.

@@ -71,20 +71,20 @@ namespace SS3D.Systems.Crafting
         {
             step = null;
 
-            int stepNumber = 0;
+            string stepName = "";
 
             if (interaction is not CraftingInteraction craftingInteraction) return false;
 
             if (!target.TryGetComponent<IWorldObjectAsset>(out var targetAssetReference)) return false;
 
-            if (target.TryGetComponent<ICraftable>(out var craftableTarget)) stepNumber = craftableTarget.CurrentStepNumber;
+            if (target.TryGetComponent<ICraftable>(out var craftableTarget)) stepName = craftableTarget.CurrentStepName;
 
             if (!_recipeOrganiser.TryGetValue(targetAssetReference.Asset.Id, out List<CraftingRecipe> recipes)) return false;
 
 
             foreach(CraftingRecipe potentialRecipe in recipes)
             {
-                var recipeStep = potentialRecipe.GetStep(stepNumber);
+                var recipeStep = potentialRecipe.GetStep(stepName);
                 if(recipeStep == null) continue;
 
                 if(craftingInteraction.CraftingInteractionType == recipeStep.CraftingInteractionType)
@@ -113,7 +113,7 @@ namespace SS3D.Systems.Crafting
             IRecipeIngredient recipeTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
 
             // Either apply some crafting on the current target, or do it on new game objects.
-            if (recipeStep.CraftOnTarget)
+            if (!recipeStep.IsTerminal)
             {
                 interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Modify(interaction, interactionEvent);
             }
@@ -128,7 +128,7 @@ namespace SS3D.Systems.Crafting
                 }
             }
 
-            if (recipeStep.ConsumeTarget) recipeTarget.Consume();
+            if (recipeStep.IsTerminal) recipeTarget.Consume();
 
             foreach (IRecipeIngredient item in itemToConsume)
             {
