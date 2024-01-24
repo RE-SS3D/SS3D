@@ -10,6 +10,8 @@ public class HumanTorso : BodyPart
     public Lungs LeftLung;
     public Lungs RightLung;
 
+    protected override bool IsDetachable => false;
+
     public override void OnStartServer()
     {
         base.OnStartServer();
@@ -56,15 +58,6 @@ public class HumanTorso : BodyPart
         TryAddBodyLayer(new NerveLayer(this));
 
         InvokeOnBodyPartLayerAdded();
-    }
-    
-    protected override void InflictDamage(BodyLayer layer, DamageTypeQuantity damageTypeQuantity)
-    {
-        layer.InflictDamage(damageTypeQuantity);
-        if (IsDestroyed)
-        {
-            DestroyBodyPart();
-        }
     }
 
     protected override void AfterSpawningCopiedBodyPart() { }

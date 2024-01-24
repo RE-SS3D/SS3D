@@ -54,6 +54,7 @@ namespace SS3D.Systems.Health
 
         protected override void AfterSpawningCopiedBodyPart()
         {
+            GetComponentInParent<Ragdoll>().KnockdownTimeless();
             GetComponentInParent<Human>()?.DeactivateComponents();
 
             // When detached, spawn a head and set player's mind to be in the head,
@@ -74,20 +75,6 @@ namespace SS3D.Systems.Health
         protected override void BeforeDestroyingBodyPart()
         {
             GetComponentInParent<Human>()?.DeactivateComponents();
-        }
-
-        protected override void InflictDamage(BodyLayer layer, DamageTypeQuantity damageTypeQuantity)
-        {
-            layer.InflictDamage(damageTypeQuantity);
-            if (IsDestroyed)
-            {
-                DestroyBodyPart();
-            }
-            else if (IsSevered && !_isDetached)
-            {
-                GetComponentInParent<Ragdoll>().KnockdownTimeless();
-                DetachBodyPart();
-            }
         }
 
         protected override void SpawnOrgans()
