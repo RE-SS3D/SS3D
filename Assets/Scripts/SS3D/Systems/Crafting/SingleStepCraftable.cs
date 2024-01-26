@@ -11,7 +11,7 @@ public abstract class SingleStepCraftable : NetworkActor, ICraftable
 {
     public int StepAmount => 1;
 
-    public int CurrentStepNumber => 0;
+    public string CurrentStepName => "";
 
     public bool IsLastStep => true;
 

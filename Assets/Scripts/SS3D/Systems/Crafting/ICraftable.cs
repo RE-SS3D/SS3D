@@ -1,11 +1,11 @@
-﻿using SS3D.Interactions;
+﻿using SS3D.Data.AssetDatabases;
+using SS3D.Data.Generated;
+using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
 public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
 {
-    public int StepAmount { get; }
-
     /// <summary>
     /// Stuff happening at the end of the crafting process, called on the newly crafted object. Note that Craft is called on
     /// prefab, implying that the instantiating and spawning process should be done in it, and said instances should be modified.
@@ -21,8 +21,5 @@ public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
     /// </summary>
     public string CurrentStepName { get; }
 
-    /// <summary>
-    /// If we are at the last step.
-    /// </summary>
-    public bool IsLastStep { get; }
+    
 }

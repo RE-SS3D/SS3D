@@ -1,5 +1,7 @@
 ﻿using Coimbra;
+using QuikGraph;
 using SS3D.Data.AssetDatabases;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
 using System.Collections.Generic;
@@ -30,26 +32,26 @@ namespace SS3D.Systems.Crafting
 
         public List<RecipeStepLink> stepLinks;
 
+        /// <summary>
+        /// Graph representing all steps in a recipe and their link between each other.
+        /// Could maybe use tagged edges instead to store crafting data (lenght of recipe, ingredients...)
+        /// </summary>
+        private AdjacencyGraph <RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> _recipeGraph;
+
         public RecipeStep GetStep(string name)
         {
-            return steps.First(x => x.Name == name);
+            return _recipeGraph.Vertices.First(x => x.Name == name);
         }
 
-        public RecipeStepLink GetStepLink(string name)
+        public List<TaggedEdge<RecipeStep, RecipeStepLink>> GetLinksFromStep(string name)
         {
-            return stepLinks.First(x => x.Name == name);
+            _recipeGraph.TryGetOutEdges(GetStep(name), out IEnumerable<TaggedEdge<RecipeStep, RecipeStepLink>> results);
+            return results.ToList();
         }
-
-
 
         [Serializable]
         public class RecipeStep
         {
-            /// <summary>
-            /// The time the crafting should take.
-            /// </summary>
-            [SerializeField]
-            private float _executionTime;
 
             /// <summary>
             /// A list of resulting objects that will spawn at the end of the crafting process.
@@ -71,14 +73,6 @@ namespace SS3D.Systems.Crafting
             /// </summary>
             [SerializeField]
             private bool _customCraft;
-
-            [SerializeField]
-            private bool _shouldHaveIngredientsInHand;
-
-            /// <summary>
-            /// Time it takes in second for the crafting to finish.
-            /// </summary>
-            public float ExecutionTime => _executionTime;
 
             /// <summary>
             /// The result of the crafting.
@@ -112,7 +106,26 @@ namespace SS3D.Systems.Crafting
             private List<IngredientCondition> _conditions = new();
 
             [SerializeField]
-            private string _name;
+            private CraftingInteractionType _craftingInteractionType;
+
+            /// <summary>
+            /// The time the crafting should take.
+            /// </summary>
+            [SerializeField]
+            private float _executionTime;
+
+            private CraftingRecipe _recipe;
+
+            /// <summary>
+            /// Time it takes in second for the crafting to finish.
+            /// </summary>
+            public float ExecutionTime => _executionTime;
+
+            public CraftingRecipe Recipe => _recipe;
+
+            public CraftingInteractionType CraftingInteractionType => CraftingInteractionType;
+
+            public List<IngredientCondition> Conditions => _conditions;
 
             /// <summary>
             /// The world objects ids and their respective numbers necessary for the recipe.
@@ -133,17 +146,33 @@ namespace SS3D.Systems.Crafting
                 }
             }
 
+            public List<IRecipeIngredient> ApplyIngredientConditions(List<IRecipeIngredient> ingredients)
+            {
+                foreach(var condition in _conditions)
+                {
+                    ingredients = condition.UsableIngredients(ingredients);
+                }
+
+                return ingredients;
+            }
+
             public int ElementsNumber => _elements.Sum(x => x.Value);
-
-            public string Name => _name;
-
         }
 
         public abstract class IngredientCondition : ScriptableObject
         {
             // TODO add parameters
-            public abstract bool CanUseIngredient();
+            public abstract List<IRecipeIngredient>  UsableIngredients(List<IRecipeIngredient> ingredients);
         }
+
+        public class ItemsAreHeldInHand : IngredientCondition
+        {
+            public override List<IRecipeIngredient> UsableIngredients(List<IRecipeIngredient> ingredients)
+            {
+                return ingredients.Where(x => x is Item item && item.Container.ContainerType == ContainerType.Hand).ToList();
+            }
+        }
+
     }
 }
 

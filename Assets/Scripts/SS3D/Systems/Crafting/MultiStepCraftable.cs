@@ -11,13 +11,10 @@ public abstract class MultiStepCraftable : NetworkActor, ICraftable
 
     protected int _stepAmount = 1;
 
-    protected int _currentStepNumber = 0;
+    protected string _currentStepName = "";
 
-    public int StepAmount => _stepAmount;
+    public string CurrentStepName => _currentStepName;
 
-    public int CurrentStepNumber => _currentStepNumber;
-
-    public bool IsLastStep => _stepAmount == _currentStepNumber;
 
     public abstract void Craft(IInteraction interaction, InteractionEvent interactionEvent);
 

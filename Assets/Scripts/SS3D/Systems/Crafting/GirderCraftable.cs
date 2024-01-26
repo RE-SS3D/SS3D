@@ -26,7 +26,6 @@ public class GirderCraftable : MultiStepCraftable
     public override void Modify(IInteraction interaction, InteractionEvent interactionEvent)
     {
         AddSheet();
-        _currentStepNumber++;
     }
 
     public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
@@ -37,7 +36,6 @@ public class GirderCraftable : MultiStepCraftable
     // Start is called before the first frame update
     void Awake()
     {
-        _currentStepNumber = 0;
         _stepAmount = 2;
     }
 

@@ -1,6 +1,7 @@
 ﻿using Codice.CM.Common;
 using FishNet;
 using FishNet.Object;
+using QuikGraph;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
@@ -15,7 +16,9 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
+using static QuikGraph.Algorithms.Assignment.HungarianAlgorithm;
 using static SS3D.Systems.Crafting.CraftingRecipe;
 
 namespace SS3D.Systems.Crafting
@@ -29,6 +32,18 @@ namespace SS3D.Systems.Crafting
 
     public class CraftingSystem : NetworkSystem
     {
+
+        public struct IngredientsForRecipeStepLink
+        {
+            public List<IRecipeIngredient> _ingredients;
+            public RecipeStepLink _link;
+
+            public IngredientsForRecipeStepLink(List<IRecipeIngredient> ingredients, RecipeStepLink link)
+            {
+                _ingredients = ingredients;
+                _link = link;
+            }
+        }
         /// <summary>
         /// First string is the id of the target object of the recipe (as the WorldObjectAssetReference's id).
         /// The value is a list of craftingRecipe, for which the target is the key.
@@ -67,34 +82,49 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        private bool TryGetRecipe(IInteraction interaction, GameObject target, out RecipeStep step)
+        /// <summary>
+        /// Given an interaction and a specific target, get all potential recipes links.
+        /// </summary>
+        private bool TryGetRecipeLinks(IInteraction interaction, GameObject target, out List<TaggedEdge<RecipeStep, RecipeStepLink>> links)
         {
-            step = null;
+            links = new List<TaggedEdge<RecipeStep, RecipeStepLink>>();
 
             string stepName = "";
 
             if (interaction is not CraftingInteraction craftingInteraction) return false;
 
-            if (!target.TryGetComponent<IWorldObjectAsset>(out var targetAssetReference)) return false;
+            if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference)) return false;
 
-            if (target.TryGetComponent<ICraftable>(out var craftableTarget)) stepName = craftableTarget.CurrentStepName;
+            if (target.TryGetComponent(out ICraftable craftableTarget)) stepName = craftableTarget.CurrentStepName;
 
             if (!_recipeOrganiser.TryGetValue(targetAssetReference.Asset.Id, out List<CraftingRecipe> recipes)) return false;
 
 
             foreach(CraftingRecipe potentialRecipe in recipes)
             {
-                var recipeStep = potentialRecipe.GetStep(stepName);
-                if(recipeStep == null) continue;
+                List<TaggedEdge<RecipeStep, RecipeStepLink>> potentialLinks =  potentialRecipe.GetLinksFromStep(stepName);
 
-                if(craftingInteraction.CraftingInteractionType == recipeStep.CraftingInteractionType)
+                foreach(TaggedEdge<RecipeStep, RecipeStepLink> link in potentialLinks)
                 {
-                    step = recipeStep;
-                    return true;
+                    if (craftingInteraction.CraftingInteractionType == link.Tag.CraftingInteractionType)
+                    {
+                        links.Add(link);
+                    }
                 }
             }
 
-            return false;
+            return links.Count > 0;
+        }
+
+        private List<IRecipeIngredient> GetIngredientsToConsume(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
+        {
+            List<IRecipeIngredient> closeItemsFromTarget = GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
+
+            closeItemsFromTarget = link.Tag.ApplyIngredientConditions(closeItemsFromTarget);
+
+            closeItemsFromTarget = BuildListOfItemToConsume(closeItemsFromTarget, link.Tag);
+
+            return closeItemsFromTarget;
         }
 
 
@@ -106,31 +136,33 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent)
+        public void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            if (!CanCraft(interaction, interactionEvent, out List<IRecipeIngredient> itemToConsume, out RecipeStep recipeStep)) return;
+            if (!CanCraftRecipeLink(interactionEvent, link))  return;
+
+            List<IRecipeIngredient> ingredients = GetIngredientsToConsume(interactionEvent, link);
 
             IRecipeIngredient recipeTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
 
             // Either apply some crafting on the current target, or do it on new game objects.
-            if (!recipeStep.IsTerminal)
+            if (!link.Target.IsTerminal)
             {
                 interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Modify(interaction, interactionEvent);
             }
             else
             {
-                foreach (GameObject prefab in recipeStep.Result)
+                foreach (GameObject prefab in link.Target.Result)
                 {
-                    if(recipeStep.CustomCraft)
+                    if(link.Target.CustomCraft)
                         prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
                     else
-                        DefaultCraft(interaction, interactionEvent, prefab, recipeStep);
+                        DefaultCraft(interaction, interactionEvent, prefab, link.Target);
                 }
             }
 
-            if (recipeStep.IsTerminal) recipeTarget.Consume();
+            if (link.Target.IsTerminal) recipeTarget.Consume();
 
-            foreach (IRecipeIngredient item in itemToConsume)
+            foreach (IRecipeIngredient item in ingredients)
             {
                 item.Consume();
             }
@@ -138,32 +170,41 @@ namespace SS3D.Systems.Crafting
         }
 
         /// <summary>
-        /// Check if the crafting can occur, by retrieving the recipe and checking enough ingredients are there.
+        /// Return a list of all available links, fulfilling all crafting conditions.
         /// </summary>
-        /// <param name="interaction"> the interaction used for the crafting.</param>
-        /// <param name="interactionEvent"> Contains some necessary info regarding the interaction occuring.</param>
-        /// <param name="itemToConsume"> TODO : should not be public, maybe split this method in two. </param>
-        /// <param name="recipeStep"></param>
         /// <returns></returns>
-        public bool CanCraft(IInteraction interaction, InteractionEvent interactionEvent, out List<IRecipeIngredient> itemToConsume, out RecipeStep recipeStep)
+        public bool AvailableRecipeLinks(IInteraction interaction, InteractionEvent interactionEvent,
+            out List<TaggedEdge<RecipeStep, RecipeStepLink>> availableLinks)
         {
-            itemToConsume = new List<IRecipeIngredient>();
-            recipeStep = null;
+            availableLinks = new();
 
-            if (!TryGetRecipe(interaction, interactionEvent.Target.GetGameObject(), out recipeStep)) return false;
-
-            List<IRecipeIngredient> closeItemsFromTarget = GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
-
-            if (recipeStep.ShouldHaveIngredientsInHand)
+            if (!TryGetRecipeLinks(interaction, interactionEvent.Target.GetGameObject(),
+                    out List<TaggedEdge<RecipeStep, RecipeStepLink>> potentialLinks))
             {
-                closeItemsFromTarget = closeItemsFromTarget.Where(x => x is Item item && item.Container.ContainerType == ContainerType.Hand).ToList();
+                return false;
             }
 
-            Dictionary<string, int> potentialRecipeElements = ItemListToDictionnaryOfRecipeElements(closeItemsFromTarget);
+            foreach (TaggedEdge<RecipeStep, RecipeStepLink> link in potentialLinks)
+            {
+                if (!CanCraftRecipeLink(interactionEvent, link)) continue;
+                availableLinks.Add(link);
+            }
 
-            if (!CheckEnoughCloseItemsForRecipe(potentialRecipeElements, recipeStep)) return false;
+            return availableLinks.Count > 0; 
+        }
 
-            itemToConsume = BuildListOfItemToConsume(closeItemsFromTarget, recipeStep);
+
+        public bool CanCraftRecipeLink(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
+        {
+            if (!TargetIsValid(interactionEvent)) return false;
+
+            if (!ResultIsValid(interactionEvent, link.Target)) return false;
+
+            List<IRecipeIngredient> ingredients = GetIngredientsToConsume(interactionEvent, link);
+
+            Dictionary<string, int> potentialRecipeElements = ItemListToDictionnaryOfRecipeElements(ingredients);
+
+            if (!CheckEnoughCloseItemsForRecipe(potentialRecipeElements, link.Tag)) return false;
 
             return true;
         }
@@ -173,7 +214,7 @@ namespace SS3D.Systems.Crafting
         /// the list than necessary.
         /// </summary>
         private List<IRecipeIngredient> BuildListOfItemToConsume(List<IRecipeIngredient> closeItemsFromTarget,
-            RecipeStep recipeStep)
+            RecipeStepLink recipeStep)
         {
             List<IRecipeIngredient>  itemsToConsume = new List<IRecipeIngredient>();
 
@@ -225,14 +266,14 @@ namespace SS3D.Systems.Crafting
         /// <param name="potentialRecipeElements"> Items that can potentially be used </param>
         /// <param name="recipe"> The recipe for which we want to check items</param>
         /// <returns></returns>
-        private bool CheckEnoughCloseItemsForRecipe(Dictionary<string, int> potentialRecipeElements, RecipeStep recipeStep)
+        private bool CheckEnoughCloseItemsForRecipe(Dictionary<string, int> potentialRecipeElements, RecipeStepLink recipeSteplink)
         {
             // check if there's enough of each item.
-            foreach (string id in recipeStep.Elements.Keys.ToList())
+            foreach (string id in recipeSteplink.Elements.Keys.ToList())
             {
                 int potentialRecipeItemCount = potentialRecipeElements.GetValueOrDefault(id);
 
-                if (potentialRecipeItemCount < recipeStep.Elements[id])
+                if (potentialRecipeItemCount < recipeSteplink.Elements[id])
                 {
                     return false;
                 }
@@ -252,6 +293,8 @@ namespace SS3D.Systems.Crafting
 
             return potentialRecipeElements;
         }
+
+
         [Server]
         public List<Coroutine> MoveAllObjectsToCraftPoint(Vector3 targetPosition, List<GameObject> gameObjectsToMove)
         {
@@ -301,7 +344,7 @@ namespace SS3D.Systems.Crafting
                 {
                     GameObject instance = Instantiate(prefab);
 
-                    if (recipeStep.ConsumeTarget)
+                    if (recipeStep.IsTerminal)
                     {
                         hand.Container.Dump();
                         hand.Container.AddItem(resultItem);
@@ -350,6 +393,61 @@ namespace SS3D.Systems.Crafting
                 instance.SetActive(true);
             }
 
+        }
+
+        private bool TargetIsValid(InteractionEvent interactionEvent)
+        {
+            if (interactionEvent.Target is Item target)
+            {
+                return ItemTargetIsValid(interactionEvent, target);
+            }
+
+            return true;
+        }
+
+        private bool ResultIsValid(InteractionEvent interactionEvent, RecipeStep recipeStep)
+        {
+            if (!recipeStep.HasResult) return true;
+
+            GameObject recipeResult = recipeStep.Result[0];
+
+            if (recipeResult.TryGetComponent(out PlacedTileObject result))
+            {
+                return ResultIsValidPlacedTileObject(result, interactionEvent, recipeStep);
+            }
+
+            return true;
+        }
+
+        private bool ResultIsValidPlacedTileObject(PlacedTileObject result, InteractionEvent interactionEvent, RecipeStep recipeStep)
+        {
+            bool replace = false;
+
+            bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent<PlacedTileObject>(out var target);
+
+            if (targetIsPlacedTileObject && result.Layer == target.Layer)
+            {
+                replace = true;
+            }
+
+            return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
+        }
+
+        private bool ItemTargetIsValid(InteractionEvent interactionEvent, Item target)
+        {
+            // item target is valid if it is in hand holding the item or out of container.
+            if (target.Container != null && interactionEvent.Source is Hand hand && hand.Container == target.Container)
+            {
+                return true;
+            }
+            else if (target.Container == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
