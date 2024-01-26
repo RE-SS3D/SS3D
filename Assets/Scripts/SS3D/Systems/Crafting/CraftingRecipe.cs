@@ -1,6 +1,7 @@
 ﻿using Coimbra;
 using QuikGraph;
 using SS3D.Data.AssetDatabases;
+using SS3D.Substances;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
@@ -38,6 +39,16 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         private AdjacencyGraph <RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> _recipeGraph;
 
+        public void Awake()
+        {
+            _recipeGraph = new();
+
+            foreach(RecipeStep step in steps)
+            {
+                _recipeGraph.AddVertex(step);
+            }
+        }
+
         public RecipeStep GetStep(string name)
         {
             return _recipeGraph.Vertices.First(x => x.Name == name);
@@ -52,6 +63,10 @@ namespace SS3D.Systems.Crafting
         [Serializable]
         public class RecipeStep
         {
+
+            private CraftingRecipe _recipe;
+
+            public CraftingRecipe Recipe => _recipe;
 
             /// <summary>
             /// A list of resulting objects that will spawn at the end of the crafting process.
@@ -68,6 +83,9 @@ namespace SS3D.Systems.Crafting
             [SerializeField]
             private string _name;
 
+            [SerializeField]
+            private bool _isInitialState;
+
             /// <summary>
             /// If a default crafting method should be called, or if a custom one should.
             /// </summary>
@@ -79,7 +97,18 @@ namespace SS3D.Systems.Crafting
             /// </summary>
             public List<GameObject> Result => _result.Select(reference => reference.Prefab).ToList();
 
-           
+
+            public List<WorldObjectAssetReference> Results => _result;
+
+            public RecipeStep(CraftingRecipe recipe, string name)
+            {
+                _recipe = recipe;
+                _isTerminal = false;
+                _name = name;
+                _customCraft = false;
+                _result = new();
+            }
+
 
             /// <summary>
             /// If true, the target is consumed (despawned).
@@ -92,10 +121,12 @@ namespace SS3D.Systems.Crafting
 
             public string Name => _name;
 
-        } 
+        }
 
+        [Serializable]
         public class RecipeStepLink
         {
+
             /// <summary>
             /// Elements of the recipe, that will be consumed in the crafting process, and the necessary number of each.
             /// </summary>
@@ -107,6 +138,12 @@ namespace SS3D.Systems.Crafting
 
             [SerializeField]
             private CraftingInteractionType _craftingInteractionType;
+
+            [SerializeField]
+            private string _from;
+
+            [SerializeField]
+            private string _to;
 
             /// <summary>
             /// The time the crafting should take.
@@ -126,6 +163,10 @@ namespace SS3D.Systems.Crafting
             public CraftingInteractionType CraftingInteractionType => CraftingInteractionType;
 
             public List<IngredientCondition> Conditions => _conditions;
+
+            public string From => _from;
+
+            public string To => _to;
 
             /// <summary>
             /// The world objects ids and their respective numbers necessary for the recipe.

@@ -54,9 +54,7 @@ namespace SS3D.Interactions
         /// <param name="reference">The reference to this interaction</param>
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            _startTime = Time.time;
-            _lastCheck = _startTime;
-            _hasStarted= true;
+            StartCounter();
             return true;
         }
 
@@ -95,6 +93,13 @@ namespace SS3D.Interactions
             }
 
             return true;
+        }
+
+        protected void StartCounter()
+        {
+            _startTime = Time.time;
+            _lastCheck = _startTime;
+            _hasStarted = true;
         }
 
         /// <inheritdoc />

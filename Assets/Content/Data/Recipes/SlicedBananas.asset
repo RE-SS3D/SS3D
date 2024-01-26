@@ -14,13 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 11400000, guid: e53ebba96eeba474e8478131c8d24085, type: 2}
   steps:
-  - _executionTime: 2
-    _craftingInteractionType: 2
-    _result:
+  - _result:
+    - {fileID: 0}
+    _isTerminal: 0
+    _name: TruckerCap
+    _isInitialState: 1
+    _customCraft: 0
+  - _result:
     - {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
-    _elements:
+    _isTerminal: 1
+    _name: Sunglasses
+    _isInitialState: 0
+    _customCraft: 0
+  stepLinks:
+  - _elements:
       _list: []
       _new: {fileID: 0}
-    _consumeTarget: 1
-    _craftOnTarget: 0
-    _customCraft: 0
+    _conditions: []
+    _craftingInteractionType: 2
+    _from: TruckerCap
+    _to: Sunglasses
+    _executionTime: 2

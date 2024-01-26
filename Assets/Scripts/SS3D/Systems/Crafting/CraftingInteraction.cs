@@ -21,6 +21,8 @@ namespace SS3D.Systems.Crafting
 
         protected List<TaggedEdge<RecipeStep, RecipeStepLink>> _availableRecipes;
 
+        protected TaggedEdge<RecipeStep, RecipeStepLink> _chosenLink;
+
         protected List<IRecipeIngredient> _itemToConsume;
 
         private List<Coroutine> _coroutines;
@@ -75,8 +77,29 @@ namespace SS3D.Systems.Crafting
         [Server]
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            
-            base.Start(interactionEvent, reference);
+            Subsystems.TryGet(out CraftingSystem craftingSystem);
+
+            if (!craftingSystem.AvailableRecipeLinks(this, interactionEvent, out _availableRecipes)) return true;
+
+            if (_availableRecipes.Count == 1)
+            {
+                StartCrafting(interactionEvent, _availableRecipes.First());
+                return true;
+            }
+            else
+            {
+                craftingSystem.CraftingMenu.DisplayMenu(_availableRecipes, this, interactionEvent);
+            }
+
+            return true;
+        }
+
+        public void StartCrafting(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
+        {
+            _chosenLink = link;
+
+            StartCounter();
+
             _startPosition = _characterTransform.position;
 
             AddCraftingSmoke(interactionEvent);
@@ -86,8 +109,6 @@ namespace SS3D.Systems.Crafting
             _coroutines = craftingSystem.MoveAllObjectsToCraftPoint(
                 interactionEvent.Target.GetGameObject().transform.position,
                 _itemToConsume.Select(x => x.GameObject).ToList());
-
-            return true;
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)
@@ -95,7 +116,7 @@ namespace SS3D.Systems.Crafting
             particles.Dispose(true);
             Subsystems.TryGet(out CraftingSystem craftingSystem);
             craftingSystem.CancelMoveAllObjectsToCraftPoint(_coroutines);
-            craftingSystem.Craft(this, interactionEvent, _availableRecipes.First());
+            craftingSystem.Craft(this, interactionEvent, _chosenLink);
         }
 
         private void AddCraftingSmoke(InteractionEvent interactionEvent)

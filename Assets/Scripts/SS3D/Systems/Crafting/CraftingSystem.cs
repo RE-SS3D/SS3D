@@ -32,6 +32,8 @@ namespace SS3D.Systems.Crafting
 
     public class CraftingSystem : NetworkSystem
     {
+        [SerializeField]
+        private CraftingMenu _craftingMenu;
 
         public struct IngredientsForRecipeStepLink
         {
@@ -49,6 +51,8 @@ namespace SS3D.Systems.Crafting
         /// The value is a list of craftingRecipe, for which the target is the key.
         /// </summary>
         private Dictionary<string, List<CraftingRecipe>> _recipeOrganiser = new();
+
+        public CraftingMenu CraftingMenu => _craftingMenu;
 
         public override void OnStartNetwork()
         {
