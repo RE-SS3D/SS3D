@@ -13,6 +13,7 @@ using SS3D.Logging;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Selection;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
@@ -274,16 +275,26 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public virtual void SetContainer(AttachedContainer newContainer)
         {
+            IEnumerable<Collider> colliders = GetComponents<Collider>().Concat(GetComponentsInChildren<Collider>());
+
+            if ((newContainer == null) != (_container == null))
+            {
+                if (newContainer == null)
+                {
+                    foreach (Collider collider in colliders)
+                    {
+                        collider.enabled = true;
+                    }
+                }
+                else
+                {
+                    foreach (Collider collider in colliders)
+                    {
+                        collider.enabled = false;
+                    }
+                }
+            }
             _container = newContainer;
-            
-            if (_container != null)
-            {
-                GetComponentInChildren<Collider>().enabled = false;
-            }
-            else
-            {
-                GetComponentInChildren<Collider>().enabled = true;
-            }
         }
 
         // Generate preview of the same object, but without stored items.
