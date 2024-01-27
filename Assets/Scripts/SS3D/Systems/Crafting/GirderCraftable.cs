@@ -1,4 +1,6 @@
 ﻿using SS3D.Core;
+using SS3D.Data;
+using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -10,54 +12,52 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class GirderCraftable : MultiStepCraftable
 {
 
     [SerializeField]
-    private MeshRenderer mesh;
+    private MeshRenderer sheetMesh;
 
     [SerializeField]
     private AdvancedAdjacencyConnector _sheetConnector;
 
+    [SerializeField]
+    private Material _palette;
+
+    [SerializeField]
+    private Material _glass;
 
 
-
-    public override void Modify(IInteraction interaction, InteractionEvent interactionEvent)
+    public override void Modify(IInteraction interaction, InteractionEvent interactionEvent, string step)
     {
-        AddSheet();
-    }
+        _currentStepName = step;
 
-    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent)
-    {
-        SpawnGirder(interaction, interactionEvent);
-    }
-
-    // Start is called before the first frame update
-    void Awake()
-    {
-        _stepAmount = 2;
-    }
-
-    private void AddSheet()
-    {
-        mesh.enabled = true;
-    }
-
-    private void SpawnGirder(IInteraction interaction, InteractionEvent interactionEvent)
-    {
-        var _tileObject = GetComponent<PlacedTileObject>();
-
-        bool replace = false;
-        Direction direction = Direction.North;
-
-        if (interaction is BuildInteraction buildInteraction)
+        switch (step)
         {
-            replace = buildInteraction.Replace;
-
+            case "SteelGirderWithMetalSheet":
+                AddMetalSheet();
+                break;
+            case "SteelGirderWithGlassSheet":
+                AddGlassSheet();
+                break;
         }
-
-        Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(_tileObject.tileObjectSO,
-            TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position), direction, false, replace, false);
     }
+
+    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent) { }
+
+    private void AddMetalSheet()
+    {
+        sheetMesh.material = _palette;
+        sheetMesh.enabled = true;
+    }
+
+    private void AddGlassSheet()
+    {
+        sheetMesh.material = _glass;
+        sheetMesh.enabled = true;
+    }
+
+
 }

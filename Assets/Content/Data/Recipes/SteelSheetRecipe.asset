@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
-  m_Name: SteelGirderUnboltedRecipe
+  m_Name: SteelSheetRecipe
   m_EditorClassIdentifier: 
-  _target: {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
+  _target: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
   steps:
   - _result: []
     _isTerminal: 0
-    _name: SteelGirderUnbolted
+    _name: SteelSheet
     _isInitialState: 1
     _customCraft: 0
   - _result:
-    - {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
+    - {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
     _isTerminal: 1
-    _name: SteelGirder
+    _name: SteelGirderUnbolted
     _isInitialState: 0
     _customCraft: 0
   stepLinks:
@@ -30,7 +30,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 1
-    _from: SteelGirderUnbolted
-    _to: SteelGirder
+    _craftingInteractionType: 3
+    _from: SteelSheet
+    _to: SteelGirderUnbolted
     _executionTime: 2

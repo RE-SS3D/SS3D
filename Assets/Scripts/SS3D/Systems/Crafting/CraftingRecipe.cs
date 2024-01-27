@@ -33,30 +33,47 @@ namespace SS3D.Systems.Crafting
 
         public List<RecipeStepLink> stepLinks;
 
+        public string RootStepName => Target.Prefab.name;
+
         /// <summary>
         /// Graph representing all steps in a recipe and their link between each other.
         /// Could maybe use tagged edges instead to store crafting data (lenght of recipe, ingredients...)
         /// </summary>
         private AdjacencyGraph <RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> _recipeGraph;
 
-        public void Awake()
+        private void OnValidate()
+        {
+            Init();
+        }
+
+        private void Init()
         {
             _recipeGraph = new();
 
-            foreach(RecipeStep step in steps)
+            foreach (RecipeStep step in steps)
             {
                 _recipeGraph.AddVertex(step);
             }
+
+            foreach (RecipeStepLink link in stepLinks)
+            {
+                TryGetStep(link.From, out RecipeStep stepFrom);
+                TryGetStep(link.To, out RecipeStep stepTo);
+                _recipeGraph.AddEdge(new TaggedEdge<RecipeStep, RecipeStepLink>(stepFrom, stepTo, link));
+            }
+            
         }
 
-        public RecipeStep GetStep(string name)
+        public bool TryGetStep(string name, out RecipeStep step)
         {
-            return _recipeGraph.Vertices.First(x => x.Name == name);
+            step = _recipeGraph.Vertices.FirstOrDefault(x => x.Name == name);
+            return step != null;
         }
 
         public List<TaggedEdge<RecipeStep, RecipeStepLink>> GetLinksFromStep(string name)
         {
-            _recipeGraph.TryGetOutEdges(GetStep(name), out IEnumerable<TaggedEdge<RecipeStep, RecipeStepLink>> results);
+            if (!TryGetStep(name, out RecipeStep step)) return new List<TaggedEdge<RecipeStep, RecipeStepLink>>();
+            _recipeGraph.TryGetOutEdges(step, out IEnumerable<TaggedEdge<RecipeStep, RecipeStepLink>> results);
             return results.ToList();
         }
 
@@ -160,7 +177,7 @@ namespace SS3D.Systems.Crafting
 
             public CraftingRecipe Recipe => _recipe;
 
-            public CraftingInteractionType CraftingInteractionType => CraftingInteractionType;
+            public CraftingInteractionType CraftingInteractionType => _craftingInteractionType;
 
             public List<IngredientCondition> Conditions => _conditions;
 

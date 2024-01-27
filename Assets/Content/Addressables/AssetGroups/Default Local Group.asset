@@ -16,7 +16,19 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: a8f988e8c8dd50c4ea7f7f7e5f300082
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 3decef2c351e13b4194d1994c485a170
+    m_Address: Assets/Content/Data/Recipes/SteelGirderUnboltedRecipe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e822c85b4d3a8d24aa2b69f363f07974
+    m_Address: Assets/Content/Data/Recipes/SteelSheetRecipe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d1b0e08058890c34093ef49f967e68f6
+    m_Address: Assets/Content/Data/Recipes/SteelGirderRecipe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

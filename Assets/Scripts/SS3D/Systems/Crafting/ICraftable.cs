@@ -14,7 +14,7 @@ public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
     /// <param name="interactionEvent"> the event linked to the crafting interaction</param>
     public void Craft(IInteraction interaction, InteractionEvent interactionEvent);
 
-    public void Modify(IInteraction interaction, InteractionEvent interactionEvent);
+    public void Modify(IInteraction interaction, InteractionEvent interactionEvent, string step);
 
     /// <summary>
     /// for multi step crafting, at which step of the crafting process we are.

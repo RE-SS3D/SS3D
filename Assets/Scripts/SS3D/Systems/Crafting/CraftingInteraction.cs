@@ -106,9 +106,11 @@ namespace SS3D.Systems.Crafting
 
             Subsystems.TryGet(out CraftingSystem craftingSystem);
 
+            List<GameObject> ingredientsToConsume = craftingSystem.GetIngredientsToConsume(interactionEvent, link).Select(x => x.GameObject).ToList();
+
             _coroutines = craftingSystem.MoveAllObjectsToCraftPoint(
                 interactionEvent.Target.GetGameObject().transform.position,
-                _itemToConsume.Select(x => x.GameObject).ToList());
+                ingredientsToConsume);
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)

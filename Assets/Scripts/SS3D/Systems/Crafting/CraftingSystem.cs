@@ -20,6 +20,7 @@ using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using static QuikGraph.Algorithms.Assignment.HungarianAlgorithm;
 using static SS3D.Systems.Crafting.CraftingRecipe;
+using static UnityEngine.GraphicsBuffer;
 
 namespace SS3D.Systems.Crafting
 {
@@ -93,20 +94,17 @@ namespace SS3D.Systems.Crafting
         {
             links = new List<TaggedEdge<RecipeStep, RecipeStepLink>>();
 
-            string stepName = "";
-
             if (interaction is not CraftingInteraction craftingInteraction) return false;
 
             if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference)) return false;
 
-            if (target.TryGetComponent(out ICraftable craftableTarget)) stepName = craftableTarget.CurrentStepName;
+            string currentStepName = CurrentStepName(target);
 
             if (!_recipeOrganiser.TryGetValue(targetAssetReference.Asset.Id, out List<CraftingRecipe> recipes)) return false;
 
-
             foreach(CraftingRecipe potentialRecipe in recipes)
             {
-                List<TaggedEdge<RecipeStep, RecipeStepLink>> potentialLinks =  potentialRecipe.GetLinksFromStep(stepName);
+                List<TaggedEdge<RecipeStep, RecipeStepLink>> potentialLinks =  potentialRecipe.GetLinksFromStep(currentStepName);
 
                 foreach(TaggedEdge<RecipeStep, RecipeStepLink> link in potentialLinks)
                 {
@@ -120,7 +118,7 @@ namespace SS3D.Systems.Crafting
             return links.Count > 0;
         }
 
-        private List<IRecipeIngredient> GetIngredientsToConsume(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
+        public List<IRecipeIngredient> GetIngredientsToConsume(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
             List<IRecipeIngredient> closeItemsFromTarget = GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
 
@@ -151,26 +149,44 @@ namespace SS3D.Systems.Crafting
             // Either apply some crafting on the current target, or do it on new game objects.
             if (!link.Target.IsTerminal)
             {
-                interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Modify(interaction, interactionEvent);
-            }
-            else
-            {
-                foreach (GameObject prefab in link.Target.Result)
-                {
-                    if(link.Target.CustomCraft)
-                        prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
-                    else
-                        DefaultCraft(interaction, interactionEvent, prefab, link.Target);
-                }
+                interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
             }
 
-            if (link.Target.IsTerminal) recipeTarget.Consume();
+            foreach (GameObject prefab in link.Target.Result)
+            {
+                if(link.Target.CustomCraft)
+                    prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+                else
+                    DefaultCraft(interaction, interactionEvent, prefab, link.Target);
+            }
+
+
+            if (link.Target.IsTerminal) recipeTarget?.Consume();
 
             foreach (IRecipeIngredient item in ingredients)
             {
                 item.Consume();
             }
 
+        }
+
+        private string CurrentStepName(GameObject target)
+        {
+            if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference)) return "";
+
+            string rootStepName = targetAssetReference.Asset.Prefab.name;
+            string stepName;
+
+            if (target.TryGetComponent(out ICraftable craftableTarget) && craftableTarget.CurrentStepName != rootStepName)
+            {
+                stepName = craftableTarget.CurrentStepName;
+            }
+            else
+            {
+                stepName = targetAssetReference.Asset.Prefab.name;
+            }
+
+            return stepName;
         }
 
         /// <summary>
