@@ -225,7 +225,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 39
+  <PrefabId>k__BackingField: 77
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -245,7 +245,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1602098408367427586}
   _networkObjectCache: {fileID: 1602098408367427586}
-  _asset: {fileID: 11400000, guid: 9e4b9aa465bc48d4faa9b53cd0132f11, type: 2}
+  _asset: {fileID: 11400000, guid: 2577eda4621dd6248b3c3813ef15ad76, type: 2}
   _name: hatchet
   _weight: 1
   _startingTraits: []

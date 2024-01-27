@@ -67,10 +67,18 @@ PrefabInstance:
       propertyPath: _name
       value: Jumpsuit Botany
       objectReference: {fileID: 0}
+    - target: {fileID: 1256076610048116208, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _asset
+      value: 
+      objectReference: {fileID: 11400000, guid: 6a9a8af0ce91a634ab42f12ebc7b24a6, type: 2}
     - target: {fileID: 2146244375638019884, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 8281616745360485254, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: <PrefabId>k__BackingField
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 2703128900779190152

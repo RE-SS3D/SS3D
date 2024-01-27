@@ -226,7 +226,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 42
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -246,7 +246,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 1773710978803455870}
-  _asset: {fileID: 0}
+  _asset: {fileID: 11400000, guid: 3f647cba5228eee4c96dcb4d68c089af, type: 2}
   _name: Steel sheet
   _weight: 1
   _startingTraits: []

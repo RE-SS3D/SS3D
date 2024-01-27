@@ -90,6 +90,13 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset HumanIntestineSmall = new DatabaseAsset("HumanIntestineSmall", "Items");
         public static DatabaseAsset GlassShard = new DatabaseAsset("GlassShard", "Items");
         public static DatabaseAsset JumpsuitEngineer = new DatabaseAsset("JumpsuitEngineer", "Items");
+        public static DatabaseAsset MicroLaser = new DatabaseAsset("MicroLaser", "Items");
+        public static DatabaseAsset MatterBin = new DatabaseAsset("MatterBin", "Items");
+        public static DatabaseAsset Medkit = new DatabaseAsset("Medkit", "Items");
+        public static DatabaseAsset HealthScanner = new DatabaseAsset("HealthScanner", "Items");
+        public static DatabaseAsset Hatchet = new DatabaseAsset("Hatchet", "Items");
+        public static DatabaseAsset ElectricalWire = new DatabaseAsset("ElectricalWire", "Items");
+        public static DatabaseAsset ElectricalCable = new DatabaseAsset("ElectricalCable", "Items");
     }
 }
 

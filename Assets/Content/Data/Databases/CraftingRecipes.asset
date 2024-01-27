@@ -20,10 +20,4 @@ MonoBehaviour:
       _value: {fileID: 11400000, guid: 5dafa9029944cdc448a9e1d6d67e438f, type: 2}
     - _key: WeirdComplexRecipe
       _value: {fileID: 11400000, guid: 5069902a314070f4ca869692cbc791fa, type: 2}
-    - _key: WallRecipe
-      _value: {fileID: 11400000, guid: d1b0e08058890c34093ef49f967e68f6, type: 2}
-    - _key: SteelGirderRecipe
-      _value: {fileID: 11400000, guid: 3decef2c351e13b4194d1994c485a170, type: 2}
-    - _key: SteelGirderUnboltedRecipe
-      _value: {fileID: 11400000, guid: e822c85b4d3a8d24aa2b69f363f07974, type: 2}
     _new: 

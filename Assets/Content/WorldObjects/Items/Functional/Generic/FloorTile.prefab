@@ -194,7 +194,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 26
+  <PrefabId>k__BackingField: 118
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -214,7 +214,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8767567404870203102}
   _networkObjectCache: {fileID: 8767567404870203102}
-  _asset: {fileID: 11400000, guid: b759f5ec1b4de73429ca98ebdfe43886, type: 2}
+  _asset: {fileID: 11400000, guid: 943460668ce3db0429d1617490f983ef, type: 2}
   _name: Grey floor tile
   _weight: 1
   _startingTraits: []

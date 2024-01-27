@@ -160,7 +160,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 30
+  <PrefabId>k__BackingField: 97
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1602098408367427586}
   _networkObjectCache: {fileID: 1602098408367427586}
-  _asset: {fileID: 11400000, guid: 4d84c9a7bcbaa564d8958c6875c8c02d, type: 2}
+  _asset: {fileID: 11400000, guid: d09858427deec014fb0abe5ea0b79bdd, type: 2}
   _name: Matter Bin
   _weight: 1
   _startingTraits: []

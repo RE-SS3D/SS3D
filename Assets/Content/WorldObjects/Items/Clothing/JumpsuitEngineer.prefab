@@ -67,13 +67,17 @@ PrefabInstance:
       propertyPath: _name
       value: Jumpsuit Engineer
       objectReference: {fileID: 0}
+    - target: {fileID: 1256076610048116208, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _asset
+      value: 
+      objectReference: {fileID: 11400000, guid: c3e196c40ac645e4d840edb82a27baf9, type: 2}
     - target: {fileID: 2146244375638019884, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 7310264250969126733, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 125
+      value: 155
       objectReference: {fileID: 0}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <AssetPathHash>k__BackingField

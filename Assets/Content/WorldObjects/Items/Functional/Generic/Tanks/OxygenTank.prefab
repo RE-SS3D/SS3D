@@ -184,6 +184,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 2717170585512287581}
   - {fileID: 2885876316184551953}
+  - {fileID: -4941992892754288966}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -195,7 +196,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 121
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -215,6 +216,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8767567404870203102}
   _networkObjectCache: {fileID: 8767567404870203102}
+  _asset: {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}
   _name: Oxygen Tank
   _weight: 1
   _startingTraits: []
@@ -234,9 +236,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 8767567404870203102}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8767567404870203102}
   InitialSubstances:
   - Substance: {fileID: 11400000, guid: 2030145386ed160418f9a07c5d68774f, type: 2}
     MilliMoles: 2000

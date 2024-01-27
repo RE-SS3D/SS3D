@@ -212,7 +212,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 51
+  <PrefabId>k__BackingField: 144
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -245,7 +245,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7923090970201565529}
   _networkObjectCache: {fileID: 7923090970201565529}
-  _asset: {fileID: 11400000, guid: c3e196c40ac645e4d840edb82a27baf9, type: 2}
+  _asset: {fileID: 11400000, guid: 715777b8c0a0f1b4cb29ee4dab0326e4, type: 2}
   _name: Welder
   _weight: 1
   _startingTraits:

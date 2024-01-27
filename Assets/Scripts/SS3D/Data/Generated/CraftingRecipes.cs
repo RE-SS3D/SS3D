@@ -7,9 +7,6 @@ namespace SS3D.Data.Generated
     {
         public static DatabaseAsset SlicedBananas = new DatabaseAsset("SlicedBananas", "CraftingRecipes");
         public static DatabaseAsset WeirdComplexRecipe = new DatabaseAsset("WeirdComplexRecipe", "CraftingRecipes");
-        public static DatabaseAsset WallRecipe = new DatabaseAsset("WallRecipe", "CraftingRecipes");
-        public static DatabaseAsset SteelGirderRecipe = new DatabaseAsset("SteelGirderRecipe", "CraftingRecipes");
-        public static DatabaseAsset SteelGirderUnboltedRecipe = new DatabaseAsset("SteelGirderUnboltedRecipe", "CraftingRecipes");
     }
 }
 
