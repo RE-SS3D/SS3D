@@ -22,6 +22,9 @@ public class CraftingAssetSlot : MonoBehaviour
 
     private TaggedEdge<RecipeStep, RecipeStepLink> _link;
 
+    [SerializeField]
+    private GameObject _craftingSlotPartPrefab;
+
 
     /// <summary>
     /// Load an UI icon and string for the item/tile.
@@ -48,7 +51,8 @@ public class CraftingAssetSlot : MonoBehaviour
 
         foreach(Tuple<WorldObjectAssetReference, string> assetAndName in assetsAndNames)
         {
-            gameObject.AddComponent<TMP_Text>().text = assetAndName.Item2;
+            GameObject craftingSlotPart = Instantiate(_craftingSlotPartPrefab, gameObject.transform);
+            craftingSlotPart.GetComponent<TMP_Text>().text = assetAndName.Item2;
         }
 
     }

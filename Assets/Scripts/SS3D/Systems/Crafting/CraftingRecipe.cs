@@ -54,10 +54,12 @@ namespace SS3D.Systems.Crafting
             foreach (RecipeStep step in steps)
             {
                 _recipeGraph.AddVertex(step);
+                step.Recipe = this;
             }
 
             foreach (RecipeStepLink link in stepLinks)
             {
+                link.Recipe = this;
                 bool stepFromFound = TryGetStep(link.From, out RecipeStep stepFrom);
                 bool stepToFound = TryGetStep(link.To, out RecipeStep stepTo);
 
@@ -90,9 +92,7 @@ namespace SS3D.Systems.Crafting
         public class RecipeStep
         {
 
-            private CraftingRecipe _recipe;
-
-            public CraftingRecipe Recipe => _recipe;
+            public CraftingRecipe Recipe { get; set; }
 
             /// <summary>
             /// A list of resulting objects that will spawn at the end of the crafting process.
@@ -128,7 +128,7 @@ namespace SS3D.Systems.Crafting
 
             public RecipeStep(CraftingRecipe recipe, string name)
             {
-                _recipe = recipe;
+                Recipe = recipe;
                 _isTerminal = false;
                 _name = name;
                 _customCraft = false;
@@ -177,14 +177,14 @@ namespace SS3D.Systems.Crafting
             [SerializeField]
             private float _executionTime;
 
-            private CraftingRecipe _recipe;
+
 
             /// <summary>
             /// Time it takes in second for the crafting to finish.
             /// </summary>
             public float ExecutionTime => _executionTime;
 
-            public CraftingRecipe Recipe => _recipe;
+            public CraftingRecipe Recipe { get; set; }
 
             public CraftingInteractionType CraftingInteractionType => _craftingInteractionType;
 
