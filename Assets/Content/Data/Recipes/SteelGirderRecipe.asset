@@ -55,10 +55,12 @@ MonoBehaviour:
     _to: SteelWall
     _executionTime: 1
   - _elements:
-      _list: []
+      _list:
+      - _key: {fileID: 11400000, guid: 3c8e8f4d958f81744a729dc344342955, type: 2}
+        _value: 1
       _new: {fileID: 0}
     _conditions: []
     _craftingInteractionType: 0
     _from: SteelGirder
-    _to: SteelGirderWithGlassheet
+    _to: SteelGirderWithGlassSheet
     _executionTime: 1

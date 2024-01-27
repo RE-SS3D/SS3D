@@ -1,6 +1,7 @@
 ﻿using Coimbra;
 using QuikGraph;
 using SS3D.Data.AssetDatabases;
+using SS3D.Logging;
 using SS3D.Substances;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
@@ -57,9 +58,17 @@ namespace SS3D.Systems.Crafting
 
             foreach (RecipeStepLink link in stepLinks)
             {
-                TryGetStep(link.From, out RecipeStep stepFrom);
-                TryGetStep(link.To, out RecipeStep stepTo);
-                _recipeGraph.AddEdge(new TaggedEdge<RecipeStep, RecipeStepLink>(stepFrom, stepTo, link));
+                bool stepFromFound = TryGetStep(link.From, out RecipeStep stepFrom);
+                bool stepToFound = TryGetStep(link.To, out RecipeStep stepTo);
+
+                if(stepFromFound && stepToFound)
+                {
+                    _recipeGraph.AddEdge(new TaggedEdge<RecipeStep, RecipeStepLink>(stepFrom, stepTo, link));
+                }
+                else
+                {
+                    Log.Error(this, $"step with name {link.From} or step with name {link.To} not found in recipe {name}");
+                }
             }
             
         }
