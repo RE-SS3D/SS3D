@@ -272,13 +272,18 @@ namespace SS3D.Systems.Inventory.Items
         /// Modify the container of this item, can pass null to make this item not depending on any container.
         /// </summary>
         [Server]
-        public void SetContainer(AttachedContainer newContainer)
+        public virtual void SetContainer(AttachedContainer newContainer)
         {
-            if (_container == newContainer)
-            {
-                return;
-            }
             _container = newContainer;
+            
+            if (_container != null)
+            {
+                GetComponentInChildren<Collider>().enabled = false;
+            }
+            else
+            {
+                GetComponentInChildren<Collider>().enabled = true;
+            }
         }
 
         // Generate preview of the same object, but without stored items.
