@@ -152,7 +152,6 @@ GameObject:
   - component: {fileID: 9201248993357086619}
   - component: {fileID: 6072928490511251397}
   - component: {fileID: -6923105539505770605}
-  - component: {fileID: -7035138225470946694}
   - component: {fileID: -7978277362494375466}
   m_Layer: 0
   m_Name: SteelWall
@@ -261,7 +260,6 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 3395800597640737248}
-  - {fileID: -7035138225470946694}
   - {fileID: -7978277362494375466}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -352,21 +350,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c8e320c604f095048a0cc4aeccc5eabb, type: 2}
---- !u!114 &-7035138225470946694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3591147544166670882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 150845becef31a74f856d94d0a218ffe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: -2900075557854325373}
-  _networkObjectCache: {fileID: -2900075557854325373}
 --- !u!114 &-7978277362494375466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,7 +362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
   _asset: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}

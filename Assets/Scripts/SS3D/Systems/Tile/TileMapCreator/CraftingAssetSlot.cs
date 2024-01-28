@@ -35,6 +35,8 @@ public class CraftingAssetSlot : MonoBehaviour
 
         _link= link;
 
+        _interaction = interaction;
+
         List<Tuple<WorldObjectAssetReference, string>> assetsAndNames = new();
 
         _interactionEvent = interactionEvent;

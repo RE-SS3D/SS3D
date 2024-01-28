@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 8548522104926483527}
   - component: {fileID: 8883224489736837113}
   - component: {fileID: 5074914819189183492}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CraftingMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}

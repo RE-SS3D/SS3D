@@ -65,7 +65,7 @@ namespace SS3D.Interactions
         /// <param name="reference">The reference to this interaction</param>
         public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (_lastCheck + CheckInterval < Time.time)
+            if (_lastCheck + CheckInterval < Time.time && _hasStarted)
             {
                 if (!CanInteract(interactionEvent))
                 {
@@ -77,7 +77,7 @@ namespace SS3D.Interactions
                 _lastCheck = Time.time;
             }
 
-            if (_startTime + Delay < Time.time)
+            if (_startTime + Delay < Time.time && _hasStarted)
             {
                 if (CanInteract(interactionEvent))
                 {

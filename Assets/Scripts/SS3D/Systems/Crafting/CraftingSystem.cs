@@ -335,8 +335,10 @@ namespace SS3D.Systems.Crafting
 
         public void CancelMoveAllObjectsToCraftPoint(List<Coroutine> coroutines)
         {
+            if (coroutines == null) return;
             foreach (Coroutine coroutine in coroutines)
             {
+                if(coroutine == null) continue;
                 StopCoroutine(coroutine);
             }
         }
@@ -396,9 +398,10 @@ namespace SS3D.Systems.Crafting
                 bool replace = false;
                 Direction direction = Direction.North;
 
-                if (interaction is CraftingInteraction craftingInteraction)
+                if(interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject)
+                    && targetTileObject.Layer == resultTileObject.Layer)
                 {
-                    replace = craftingInteraction.Replace;
+                    replace = true;
                 }
 
                 Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,

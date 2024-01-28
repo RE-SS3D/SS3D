@@ -28,15 +28,6 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
 
     private InputSystem _inputSystem;
 
-    private bool _mouseOverUI = false;
-
-    private PanelTab _tab;
-
-    /// <summary>
-    /// List of tile objects and items to load in the tilemap menu, that will show in the slots.
-    /// </summary>
-    private List<GenericObjectSo> _objectDatabase;
-
     /// <summary>
     ///  The model for a single slot, to display tile objects in the menu.
     /// </summary>
@@ -54,6 +45,8 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
     [SerializeField]
     private GameObject _contentRoot;
 
+    public bool IsEnabled => _enabled;
+
 
 
     protected override void OnStart()
@@ -63,12 +56,6 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
         _inputSystem = Subsystems.Get<InputSystem>();
         _controls = _inputSystem.Inputs.TileCreator;
         _inputSystem.ToggleAction(_controls.ToggleMenu, true);
-        _objectDatabase = Subsystems.Get<TileSystem>().Loader.Assets;
-    }
-    
-    public void DisplayMenu(List<TaggedEdge<RecipeStep, RecipeStepLink>> links, CraftingInteraction interaction, InteractionEvent interactionEvent)
-    {
-        LoadObjectGrid(links, interaction, interactionEvent);
     }
 
     /// <summary>
@@ -76,7 +63,6 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
     /// </summary>
     public void OnPointerEnter(PointerEventData eventData)
     {
-        _mouseOverUI = true;
         _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
     }
 
@@ -85,48 +71,41 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
     /// </summary>
     public void OnPointerExit(PointerEventData eventData)
     {
-        _mouseOverUI = false;
         _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
     }
 
     private void ShowUI(bool isShow)
     {        
-        _tab.Panel.gameObject.SetActive(isShow);
+        gameObject.SetActive(isShow);
     }
 
     /// <summary>
     /// Method called when the control to open the tilemap menu is performed.
     /// </summary>
-    private void HandleToggleMenu(InputAction.CallbackContext context)
+    public void ToggleMenu(List<TaggedEdge<RecipeStep, RecipeStepLink>> links, CraftingInteraction interaction, InteractionEvent interactionEvent, bool enabled)
     {
+        if (enabled == _enabled) return;
+        _enabled = enabled;
+
+        ClearGrid();
+
         if (_enabled)
         {
             _inputSystem.ToggleActionMap(_controls, false, new[] { _controls.ToggleMenu });
             _inputSystem.ToggleCollisions(_controls, true);
+
+            foreach (TaggedEdge<RecipeStep, RecipeStepLink> link in links)
+            {
+                Instantiate(_craftingSlotPrefab, _contentRoot.transform, true).GetComponent<CraftingAssetSlot>().Setup(link, interaction, interactionEvent);
+            }
         }
         else
         {
             _inputSystem.ToggleActionMap(_controls, true, new[] { _controls.ToggleMenu });
             _inputSystem.ToggleCollisions(_controls, false);
         }
-        _enabled = !_enabled;
+        
         ShowUI(_enabled);
-    }
-
-
-    /// <summary>
-    /// Change number of columns in asset grid to fit it's width.
-    /// Elements of the group will take as much width as possible, but won't exceed width of the menu.
-    /// </summary>
-    private void AdjustGridWidth()
-    {
-        GridLayoutGroup grid = _contentRoot.GetComponent<GridLayoutGroup>();
-        float cellWidth = grid.cellSize.x;
-        float paddingWidth = grid.spacing.x;
-        float width = gameObject.GetComponent<RectTransform>().rect.width;
-        int constraintCount = Convert.ToInt32(Math.Floor(width / (cellWidth + paddingWidth)));
-        if (constraintCount != grid.constraintCount)
-            grid.constraintCount = constraintCount;
     }
 
     /// <summary>
@@ -137,21 +116,6 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
         for (int i = 0; i < _contentRoot.transform.childCount; i++)
         {
             _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
-        }
-    }
-
-    /// <summary>
-    /// Load a list of tile objects and place them in the UI box grid.
-    /// </summary>
-    private void LoadObjectGrid(List<TaggedEdge<RecipeStep, RecipeStepLink>> links, CraftingInteraction interaction, InteractionEvent interactionEvent)
-    {
-        ClearGrid();
-        
-        foreach (TaggedEdge<RecipeStep, RecipeStepLink> link in links)
-        {
-            string recipeStepName = link.Target.Name;
-
-            Instantiate(_craftingSlotPrefab, _contentRoot.transform, true).GetComponent<CraftingAssetSlot>().Setup(link, interaction, interactionEvent);
         }
     }
 }

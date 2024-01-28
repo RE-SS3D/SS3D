@@ -97,6 +97,8 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset Hatchet = new DatabaseAsset("Hatchet", "Items");
         public static DatabaseAsset ElectricalWire = new DatabaseAsset("ElectricalWire", "Items");
         public static DatabaseAsset ElectricalCable = new DatabaseAsset("ElectricalCable", "Items");
+        public static DatabaseAsset SteelWindow = new DatabaseAsset("SteelWindow", "Items");
+        public static DatabaseAsset SteelWallReinforced = new DatabaseAsset("SteelWallReinforced", "Items");
     }
 }
 

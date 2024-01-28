@@ -88,7 +88,7 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                craftingSystem.CraftingMenu.DisplayMenu(_availableRecipes, this, interactionEvent);
+                craftingSystem.CraftingMenu.ToggleMenu(_availableRecipes, this, interactionEvent, true);
             }
 
             return true;
@@ -111,6 +111,8 @@ namespace SS3D.Systems.Crafting
             _coroutines = craftingSystem.MoveAllObjectsToCraftPoint(
                 interactionEvent.Target.GetGameObject().transform.position,
                 ingredientsToConsume);
+
+            craftingSystem.CraftingMenu.ToggleMenu(_availableRecipes, this, interactionEvent, false);
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)

@@ -35,6 +35,28 @@ MonoBehaviour:
     _name: SteelWall
     _isInitialState: 0
     _customCraft: 0
+  - _result:
+    - {fileID: 11400000, guid: 72ff3e5319a440c448928af8af541920, type: 2}
+    _isTerminal: 1
+    _name: SteelWindow
+    _isInitialState: 0
+    _customCraft: 0
+  - _result: []
+    _isTerminal: 0
+    _name: ReinforcedSteelGirder
+    _isInitialState: 0
+    _customCraft: 0
+  - _result: []
+    _isTerminal: 0
+    _name: ReinforcedSteelGirderWithBoltedMetalSheets
+    _isInitialState: 0
+    _customCraft: 0
+  - _result:
+    - {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
+    _isTerminal: 1
+    _name: ReinforcedWall
+    _isInitialState: 0
+    _customCraft: 0
   stepLinks:
   - _elements:
       _list:
@@ -47,7 +69,9 @@ MonoBehaviour:
     _to: SteelGirderWithMetalSheet
     _executionTime: 1
   - _elements:
-      _list: []
+      _list:
+      - _key: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+        _value: 1
       _new: {fileID: 0}
     _conditions: []
     _craftingInteractionType: 0
@@ -63,4 +87,34 @@ MonoBehaviour:
     _craftingInteractionType: 0
     _from: SteelGirder
     _to: SteelGirderWithGlassSheet
+    _executionTime: 1
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 3c8e8f4d958f81744a729dc344342955, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 0
+    _from: SteelGirderWithGlassSheet
+    _to: SteelWindow
+    _executionTime: 1
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 3f647cba5228eee4c96dcb4d68c089af, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: SteelGirder
+    _to: ReinforcedSteelGirder
+    _executionTime: 1
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 05cd3679ee853174fb8651304e81f0cd, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: ReinforcedSteelGirder
+    _to: ReinforcedSteelGirderWithBoltedMetalSheets
     _executionTime: 1
