@@ -55,7 +55,6 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
         ShowUI(false);
         _inputSystem = Subsystems.Get<InputSystem>();
         _controls = _inputSystem.Inputs.TileCreator;
-        _inputSystem.ToggleAction(_controls.ToggleMenu, true);
     }
 
     /// <summary>
@@ -91,7 +90,6 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
 
         if (_enabled)
         {
-            _inputSystem.ToggleActionMap(_controls, false, new[] { _controls.ToggleMenu });
             _inputSystem.ToggleCollisions(_controls, true);
 
             foreach (TaggedEdge<RecipeStep, RecipeStepLink> link in links)
@@ -101,7 +99,6 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
         }
         else
         {
-            _inputSystem.ToggleActionMap(_controls, true, new[] { _controls.ToggleMenu });
             _inputSystem.ToggleCollisions(_controls, false);
         }
         

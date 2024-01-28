@@ -204,4 +204,6 @@ MonoBehaviour:
       _value: {fileID: 3591147544166670882, guid: b9c224febb4233f4e912745553097652, type: 3}
     - _key: SteelWallReinforced
       _value: {fileID: 3591147544166670882, guid: abcc60752234e584d8d98c9dec03e7cc, type: 3}
+    - _key: SteelWindowReinforced
+      _value: {fileID: 3591147544166670882, guid: f2493b5478dd8e946ba98861f533362e, type: 3}
     _new: 

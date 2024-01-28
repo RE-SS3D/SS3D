@@ -393,6 +393,10 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWallReinforced.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: f2493b5478dd8e946ba98861f533362e
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindowReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

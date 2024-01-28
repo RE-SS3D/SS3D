@@ -18,10 +18,25 @@ public class GirderCraftable : MultiStepCraftable
 {
 
     [SerializeField]
-    private MeshRenderer sheetMesh;
+    private MeshRenderer _wallSheetMesh;
+
+    [SerializeField]
+    private MeshRenderer _windowSheetMesh;
+
+    [SerializeField]
+    private MeshRenderer _lowerReinforcedSheetMesh;
+
+    [SerializeField]
+    private MeshRenderer _higherReinforcedWallSheetMesh;
+
+    [SerializeField]
+    private MeshRenderer _higherReinforcedWindowSheetMesh;
 
     [SerializeField]
     private AdvancedAdjacencyConnector _sheetConnector;
+
+    [SerializeField]
+    private MeshRenderer _struts;
 
     [SerializeField]
     private Material _palette;
@@ -40,7 +55,16 @@ public class GirderCraftable : MultiStepCraftable
                 AddMetalSheet();
                 break;
             case "SteelGirderWithGlassSheet":
-                AddGlassSheet();
+                AddWindowSheet();
+                break;
+            case "ReinforcedSteelGirder":
+                AddStruts();
+                break;
+            case "ReinforcedSteelGirderWithBoltedMetalSheets":
+                AddReinforcedSteelSheets();
+                break;
+            case "ReinforcedSteelGirderWithBoltedGlassSheets":
+                AddReinforcedWindowSheets();
                 break;
         }
     }
@@ -49,14 +73,36 @@ public class GirderCraftable : MultiStepCraftable
 
     private void AddMetalSheet()
     {
-        sheetMesh.material = _palette;
-        sheetMesh.enabled = true;
+        _wallSheetMesh.material = _palette;
+        _wallSheetMesh.enabled = true;
     }
 
-    private void AddGlassSheet()
+    private void AddWindowSheet()
     {
-        sheetMesh.material = _glass;
-        sheetMesh.enabled = true;
+        _windowSheetMesh.material = _glass;
+        _windowSheetMesh.enabled = true;
+    }
+
+    private void AddReinforcedSteelSheets()
+    {
+        _lowerReinforcedSheetMesh.material = _palette;
+        _lowerReinforcedSheetMesh.enabled = true;
+        _higherReinforcedWallSheetMesh.material = _palette;
+        _higherReinforcedWallSheetMesh.enabled = true;
+    }
+
+    private void AddReinforcedWindowSheets()
+    {
+        _lowerReinforcedSheetMesh.material = _palette;
+        _lowerReinforcedSheetMesh.enabled = true;
+        _higherReinforcedWindowSheetMesh.material = _palette;
+        _higherReinforcedWindowSheetMesh.enabled = true;
+    }
+
+    private void AddStruts()
+    {
+        _struts.material = _palette;
+        _struts.enabled = true;
     }
 
 
