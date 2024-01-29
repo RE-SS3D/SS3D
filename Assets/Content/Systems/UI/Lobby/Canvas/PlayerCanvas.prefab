@@ -861,7 +861,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3785844209189093823, guid: af039f84b4a245049b5b62799af01384, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3869199081985676184, guid: af039f84b4a245049b5b62799af01384, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1513,11 +1513,11 @@ PrefabInstance:
       objectReference: {fileID: 8720228674029226883}
     - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
       propertyPath: SerializedTransformProperties.Position.x
-      value: 188.21634
+      value: 196.66476
       objectReference: {fileID: 0}
     - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
       propertyPath: SerializedTransformProperties.Position.y
-      value: -4.8246155
+      value: -3.855011
       objectReference: {fileID: 0}
     - target: {fileID: 9154675693299657064, guid: af039f84b4a245049b5b62799af01384, type: 3}
       propertyPath: SerializedTransformProperties.Rotation.w
@@ -2080,6 +2080,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3810371244597919609}
     m_Modifications:
+    - target: {fileID: 2277446418770330748, guid: d2e0ed0ea636629409f5ea4b10bedddd, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.018318176
+      objectReference: {fileID: 0}
     - target: {fileID: 5531324580603550561, guid: d2e0ed0ea636629409f5ea4b10bedddd, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -2115,14 +2119,6 @@ PrefabInstance:
     - target: {fileID: 5709768780194680726, guid: d2e0ed0ea636629409f5ea4b10bedddd, type: 3}
       propertyPath: m_AnchorMin.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5709768780194680726, guid: d2e0ed0ea636629409f5ea4b10bedddd, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 5709768780194680726, guid: d2e0ed0ea636629409f5ea4b10bedddd, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 5709768780194680726, guid: d2e0ed0ea636629409f5ea4b10bedddd, type: 3}
       propertyPath: m_LocalPosition.x
