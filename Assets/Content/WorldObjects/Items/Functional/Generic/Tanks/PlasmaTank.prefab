@@ -216,6 +216,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8767567404870203102}
   _networkObjectCache: {fileID: 8767567404870203102}
+  _asset: {fileID: 11400000, guid: a34baef34dca37c449a6f5872216edfc, type: 2}
   _name: Plasma Tank
   _weight: 1
   _startingTraits: []

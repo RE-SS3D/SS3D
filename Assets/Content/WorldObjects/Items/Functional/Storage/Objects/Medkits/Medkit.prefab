@@ -388,7 +388,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  _asset: {fileID: 11400000, guid: 734468cf273e2144d945698e4793b7c5, type: 2}
+  _asset: {fileID: 11400000, guid: d9cc887ee78f4f64f9c399b8aaffe9f9, type: 2}
   _name: Medkit
   _weight: 1
   _startingTraits: []

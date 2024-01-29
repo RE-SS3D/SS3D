@@ -215,6 +215,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8767567404870203102}
   _networkObjectCache: {fileID: 8767567404870203102}
+  _asset: {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}
   _name: Oxygen Tank
   _weight: 1
   _startingTraits: []

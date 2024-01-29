@@ -246,7 +246,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 1773710978803455870}
-  _asset: {fileID: 0}
+  _asset: {fileID: 11400000, guid: 40f2a5ef12396ce469ae6fa7474a6bc6, type: 2}
   _name: Cable
   _weight: 1
   _startingTraits: []
