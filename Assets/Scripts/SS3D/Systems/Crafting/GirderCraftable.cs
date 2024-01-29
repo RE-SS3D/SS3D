@@ -88,7 +88,7 @@ public class GirderCraftable : MultiStepCraftable
         }
     }
 
-    public override void Craft(IInteraction interaction, InteractionEvent interactionEvent) { }
+    public override GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent) { return gameObject; }
 
     private void AddMetalSheet()
     {

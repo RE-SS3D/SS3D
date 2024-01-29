@@ -12,7 +12,7 @@ public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
     /// </summary>
     /// <param name="interaction"> The specific crafting interaction used. </param>
     /// <param name="interactionEvent"> the event linked to the crafting interaction</param>
-    public void Craft(IInteraction interaction, InteractionEvent interactionEvent);
+    public GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent);
 
     public void Modify(IInteraction interaction, InteractionEvent interactionEvent, string step);
 

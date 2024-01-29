@@ -17,7 +17,7 @@ public abstract class MultiStepCraftable : NetworkActor, ICraftable
     public string CurrentStepName => _currentStepName;
 
 
-    public abstract void Craft(IInteraction interaction, InteractionEvent interactionEvent);
+    public abstract GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent);
 
     public abstract void Modify(IInteraction interaction, InteractionEvent interactionEvent, string step);
 

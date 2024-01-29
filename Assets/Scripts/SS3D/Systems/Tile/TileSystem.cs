@@ -87,7 +87,7 @@ namespace SS3D.Systems.Tile
 	        switch (genericObjectSo)
 	        {
 		        case TileObjectSo so:
-			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false);
+			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false, out GameObject placedObject);
 		        case ItemObjectSo so:
 			        _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
 			        break;

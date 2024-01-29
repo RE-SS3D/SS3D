@@ -154,10 +154,17 @@ namespace SS3D.Systems.Crafting
 
             foreach (GameObject prefab in link.Target.Result)
             {
+                GameObject resultInstance;
+
                 if(link.Target.CustomCraft)
-                    prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+                    resultInstance = prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
                 else
-                    DefaultCraft(interaction, interactionEvent, prefab, link.Target);
+                    resultInstance = DefaultCraft(interaction, interactionEvent, prefab, link.Target);
+
+                if (link.Tag.ModifyResult)
+                {
+                    resultInstance.GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
+                }
             }
 
 
@@ -355,8 +362,10 @@ namespace SS3D.Systems.Crafting
             objTransform.position = targetPosition;
         }
 
-        private void DefaultCraft(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
+        private GameObject DefaultCraft(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
         {
+            GameObject instance;
+
             // If result is an item held in hand, either put the crafting result in hand or in front of the crafter.
             if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand &&
                     targetItem.Container == hand.Container)
@@ -364,7 +373,7 @@ namespace SS3D.Systems.Crafting
 
                 if(prefab.TryGetComponent(out Item resultItem))
                 {
-                    GameObject instance = Instantiate(prefab);
+                    instance = Instantiate(prefab);
 
                     if (recipeStep.IsTerminal)
                     {
@@ -381,7 +390,7 @@ namespace SS3D.Systems.Crafting
                 }
                 else
                 {
-                    GameObject instance = Instantiate(prefab);
+                    instance = Instantiate(prefab);
 
                     Vector3 characterGround = interaction.CharacterTransform.position;
                     characterGround.y = 0;
@@ -405,16 +414,18 @@ namespace SS3D.Systems.Crafting
                 }
 
                 Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
-                    TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position), direction, false, replace, false);
+                    TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position), direction, false, replace, false, out instance);
             }
 
             else
             {
-                GameObject instance = Instantiate(prefab);
+                instance = Instantiate(prefab);
                 instance.transform.position = interactionEvent.Point;
                 InstanceFinder.ServerManager.Spawn(instance);
                 instance.SetActive(true);
             }
+
+            return instance;
 
         }
 

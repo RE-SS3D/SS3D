@@ -171,6 +171,9 @@ namespace SS3D.Systems.Crafting
             [SerializeField]
             private string _to;
 
+            [SerializeField]
+            private bool _modifyResult;
+
             /// <summary>
             /// The time the crafting should take.
             /// </summary>
@@ -193,6 +196,8 @@ namespace SS3D.Systems.Crafting
             public string From => _from;
 
             public string To => _to;
+
+            public bool ModifyResult => _modifyResult;
 
             /// <summary>
             /// The world objects ids and their respective numbers necessary for the recipe.
