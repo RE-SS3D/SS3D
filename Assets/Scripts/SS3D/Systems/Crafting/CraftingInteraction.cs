@@ -98,6 +98,8 @@ namespace SS3D.Systems.Crafting
         {
             _chosenLink = link;
 
+            Delay = link.Tag.ExecutionTime;
+
             StartCounter();
 
             _startPosition = _characterTransform.position;

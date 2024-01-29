@@ -9,6 +9,6 @@ public class WeldInteraction : CraftingInteraction
 
     public override string GetGenericName()
     {
-        return "HandCraft";
+        return "Weld";
     }
 }

@@ -420,7 +420,7 @@ namespace SS3D.Systems.Crafting
             else
             {
                 instance = Instantiate(prefab);
-                instance.transform.position = interactionEvent.Point;
+                instance.transform.position = interactionEvent.Target.GetGameObject().transform.position;
                 InstanceFinder.ServerManager.Spawn(instance);
                 instance.SetActive(true);
             }

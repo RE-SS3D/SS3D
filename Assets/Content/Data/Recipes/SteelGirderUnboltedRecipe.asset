@@ -25,12 +25,28 @@ MonoBehaviour:
     _name: SteelGirder
     _isInitialState: 0
     _customCraft: 0
+  - _result:
+    - {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+    _isTerminal: 1
+    _name: SteelSheet
+    _isInitialState: 0
+    _customCraft: 0
   stepLinks:
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 0
+    _from: SteelGirderUnbolted
+    _to: SteelGirder
+    _modifyResult: 0
+    _executionTime: 2
   - _elements:
       _list: []
       _new: {fileID: 0}
     _conditions: []
     _craftingInteractionType: 1
     _from: SteelGirderUnbolted
-    _to: SteelGirder
+    _to: SteelSheet
+    _modifyResult: 0
     _executionTime: 2
