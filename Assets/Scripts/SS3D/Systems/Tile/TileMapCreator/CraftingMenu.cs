@@ -21,7 +21,7 @@ using UnityEngine.UI;
 using static SS3D.Systems.Crafting.CraftingRecipe;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
-public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
+public class CraftingMenu : View, IPointerEnterHandler, IPointerExitHandler
 {
 
     private Controls.TileCreatorActions _controls;
@@ -76,6 +76,11 @@ public class CraftingMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHan
     private void ShowUI(bool isShow)
     {        
         gameObject.SetActive(isShow);
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("crafting menu disabled");
     }
 
     /// <summary>
