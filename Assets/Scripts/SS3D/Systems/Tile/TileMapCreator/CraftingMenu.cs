@@ -78,11 +78,6 @@ public class CraftingMenu : View, IPointerEnterHandler, IPointerExitHandler
         gameObject.SetActive(isShow);
     }
 
-    private void OnDisable()
-    {
-        Debug.Log("crafting menu disabled");
-    }
-
     /// <summary>
     /// Method called when the control to open the tilemap menu is performed.
     /// </summary>
