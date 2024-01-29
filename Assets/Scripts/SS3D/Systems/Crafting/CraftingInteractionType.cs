@@ -10,6 +10,7 @@ namespace SS3D.Systems.Crafting
         Bolt,
         Slice,
         Handcraft,
-
+        Pry,
+        Weld,
     }
 }
