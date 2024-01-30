@@ -1,15 +1,16 @@
-﻿using SS3D.Data;
-using SS3D.Data.Generated;
+﻿using SS3D.Data.Generated;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Health;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class HumanTorso : BodyPart
 {
     public Heart Heart;
     public Lungs LeftLung;
     public Lungs RightLung;
+
+    protected override bool IsDetachable => false;
 
     public override void OnStartServer()
     {

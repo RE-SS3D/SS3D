@@ -85,7 +85,7 @@ namespace System.Electricity
         }
 
         [Server]
-        private void HandleCircuitsUpdate()
+        public void HandleCircuitsUpdate()
         {
             // Updating the graph on each change is unreliable in case of events, that change a lot of elements at one time, such as explosions.
             // Therefore, the graph updates each tick if it gets dirty.
