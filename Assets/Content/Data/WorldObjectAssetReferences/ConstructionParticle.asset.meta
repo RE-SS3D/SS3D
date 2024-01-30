@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Content/Data/WorldObjectAssetReferences/ConstructionParticle.asset.meta
 guid: 85cd6ca53abf56345b5f5e27b3f8c4a9
+========
+guid: 40f2a5ef12396ce469ae6fa7474a6bc6
+>>>>>>>> develop:Assets/Content/Data/WorldObjectAssetReferences/ElectricalCable.asset.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000
