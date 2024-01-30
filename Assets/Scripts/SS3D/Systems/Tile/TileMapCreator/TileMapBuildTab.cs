@@ -121,12 +121,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
             var tmpComponent = (TextMeshProUGUI)_buildOrDelete.targetGraphic;
             if (IsDeleting)
             {
-                tmpComponent.text = " Delete";
+                tmpComponent.text = "Delete";
                 tmpComponent.color = _deleteColor;
             }
             else
             {
-                tmpComponent.text = " Build";
+                tmpComponent.text = "Build";
                 tmpComponent.color = _buildColor;
             }
         }
