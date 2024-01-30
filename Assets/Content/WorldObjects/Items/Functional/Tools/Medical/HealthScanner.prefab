@@ -248,7 +248,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 261983550380735922}
   _networkObjectCache: {fileID: 261983550380735922}
-  _asset: {fileID: 11400000, guid: f5a2860feace1434ea982b06d2445f9f, type: 2}
+  _asset: {fileID: 11400000, guid: 8b24dd8aaf23acb41b038d6e4394f749, type: 2}
   _name: Health Scanner
   _weight: 1
   _startingTraits: []
