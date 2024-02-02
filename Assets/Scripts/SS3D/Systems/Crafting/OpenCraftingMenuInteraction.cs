@@ -84,7 +84,7 @@ public class OpenCraftingMenuInteraction : Interaction
 
             foreach(TaggedEdge<RecipeStep, RecipeStepLink> recipeLink in availableRecipes)
             {
-                CraftingInteraction interaction = new CraftingInteraction(1f, 
+                CraftingInteraction interaction = new CraftingInteraction(recipeLink.Tag.ExecutionTime, 
                     interactionEvent.Source.GameObject.GetComponent<InteractionSource>().transform, type, recipeLink);
 
                 craftingInteractions.Add(interaction);
