@@ -152,6 +152,8 @@ namespace SS3D.Systems.Crafting
                 interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
             }
 
+            if (link.Target.IsTerminal) recipeTarget?.Consume();
+
             foreach (GameObject prefab in link.Target.Result)
             {
                 GameObject resultInstance;
@@ -166,9 +168,6 @@ namespace SS3D.Systems.Crafting
                     resultInstance.GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
                 }
             }
-
-
-            if (link.Target.IsTerminal) recipeTarget?.Consume();
 
             foreach (IRecipeIngredient item in ingredients)
             {
