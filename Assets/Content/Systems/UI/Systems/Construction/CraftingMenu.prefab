@@ -584,6 +584,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71a3e51e853fbc04f966014d5bd7876e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 0}
+  _networkObjectCache: {fileID: 0}
   _craftingSlotPrefab: {fileID: 2526814804305374919, guid: 950de92fa59738547b6c973f1d12cdb9, type: 3}
   _contentRoot: {fileID: 6714851228330351432}
 --- !u!1 &7479828693098926492

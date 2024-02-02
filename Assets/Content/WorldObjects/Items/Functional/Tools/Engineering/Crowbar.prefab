@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -368119461391624815}
   - component: {fileID: 8720207852131239820}
   - component: {fileID: -2383566575337408285}
-  - component: {fileID: -5731835017243827547}
+  - component: {fileID: 4853142667098648343}
   m_Layer: 10
   m_Name: Crowbar
   m_TagString: Untagged
@@ -189,8 +189,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: dbead8b9456722f4eb3d0a7be247e5c6, type: 2}
---- !u!114 &-5731835017243827547
+--- !u!114 &4853142667098648343
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -258,9 +258,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1888703706215615217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12c77a14ef1690448ac6d11ef9d2bc64, type: 3}
+  m_Script: {fileID: 11500000, guid: 1dd866b0631d05441982a4824740ff8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  types: 04000000
 --- !u!1 &2468349444349537438
 GameObject:
   m_ObjectHideFlags: 0

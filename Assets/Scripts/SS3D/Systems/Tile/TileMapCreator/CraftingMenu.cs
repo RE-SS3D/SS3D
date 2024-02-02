@@ -20,8 +20,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using static SS3D.Systems.Crafting.CraftingRecipe;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
-public class CraftingMenu : View, IPointerEnterHandler, IPointerExitHandler
+public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandler
 {
 
     private Controls.TileCreatorActions _controls;
@@ -35,19 +36,10 @@ public class CraftingMenu : View, IPointerEnterHandler, IPointerExitHandler
     private GameObject _craftingSlotPrefab;
 
     /// <summary>
-    /// Is the menu enabled
-    /// </summary>
-    private bool _enabled = false;
-
-    /// <summary>
     /// Game object parent of the area in the tile map menu where the tile object slots will display.
     /// </summary>
     [SerializeField]
     private GameObject _contentRoot;
-
-    public bool IsEnabled => _enabled;
-
-
 
     protected override void OnStart()
     {
@@ -81,29 +73,23 @@ public class CraftingMenu : View, IPointerEnterHandler, IPointerExitHandler
     /// <summary>
     /// Method called when the control to open the tilemap menu is performed.
     /// </summary>
-    public void ToggleMenu(List<TaggedEdge<RecipeStep, RecipeStepLink>> links, CraftingInteraction interaction, InteractionEvent interactionEvent, bool enabled)
+    public void DisplayMenu(List<CraftingInteraction> interactions, InteractionEvent interactionEvent, InteractionReference reference)
     {
-        if (enabled == _enabled) return;
-        _enabled = enabled;
-
         ClearGrid();
 
-        if (_enabled)
+        foreach (CraftingInteraction interaction in interactions)
         {
-            _inputSystem.ToggleCollisions(_controls, true);
+            Instantiate(_craftingSlotPrefab, _contentRoot.transform, true).GetComponent<CraftingAssetSlot>().Setup(interaction, interactionEvent, reference);
+        }
 
-            foreach (TaggedEdge<RecipeStep, RecipeStepLink> link in links)
-            {
-                Instantiate(_craftingSlotPrefab, _contentRoot.transform, true).GetComponent<CraftingAssetSlot>().Setup(link, interaction, interactionEvent);
-            }
-        }
-        else
-        {
-            _inputSystem.ToggleCollisions(_controls, false);
-        }
-        
-        ShowUI(_enabled);
+        ShowUI(true);
     }
+
+    public void HideMenu()
+    {
+        ShowUI(false);
+    }
+
 
     /// <summary>
     /// Clear all tile slots in the content area of the tilemap menu.

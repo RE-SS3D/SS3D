@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 5289822754746829837}
   - component: {fileID: 926079960710381547}
   - component: {fileID: 1357399863125752432}
-  - component: {fileID: -2142424975522696481}
+  - component: {fileID: 5301111114796155391}
   m_Layer: 10
   m_Name: Welder
   m_TagString: Untagged
@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 7aa5d3607b524d1448e4c5c0356c6c19, type: 2}
---- !u!114 &-2142424975522696481
+--- !u!114 &5301111114796155391
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -289,6 +289,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7393721560307922778}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 412c7cc7bed4da24f8d35282b95d6d90, type: 3}
+  m_Script: {fileID: 11500000, guid: 1dd866b0631d05441982a4824740ff8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  types: 05000000

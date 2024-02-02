@@ -20,7 +20,7 @@ public class CraftingAssetSlot : MonoBehaviour
 
     private InteractionEvent _interactionEvent;
 
-    private TaggedEdge<RecipeStep, RecipeStepLink> _link;
+    private InteractionReference _interactionReference;
 
     [SerializeField]
     private GameObject _craftingSlotPartPrefab;
@@ -30,25 +30,22 @@ public class CraftingAssetSlot : MonoBehaviour
     /// Load an UI icon and string for the item/tile.
     /// </summary>
     /// <param name="genericObjectSo"></param>
-    public void Setup(TaggedEdge<RecipeStep, RecipeStepLink> link, CraftingInteraction interaction, InteractionEvent interactionEvent)
+    public void Setup(CraftingInteraction interaction, InteractionEvent interactionEvent, InteractionReference reference)
     {
-
-        _link= link;
-
         _interaction = interaction;
+        _interactionReference = reference;
+        _interactionEvent = interactionEvent;
 
         List<Tuple<WorldObjectAssetReference, string>> assetsAndNames = new();
 
-        _interactionEvent = interactionEvent;
-
-        foreach(WorldObjectAssetReference assetReference in link.Target.Results)
+        foreach(WorldObjectAssetReference assetReference in interaction.ChosenLink.Target.Results)
         {
             assetsAndNames.Add(new Tuple<WorldObjectAssetReference, string>(assetReference, assetReference.Prefab.name));
         }
 
-        if (!link.Target.IsTerminal)
+        if (!interaction.ChosenLink.Target.IsTerminal)
         {
-            assetsAndNames.Add(new Tuple<WorldObjectAssetReference, string>(link.Target.Recipe.Target, link.Target.Name));
+            assetsAndNames.Add(new Tuple<WorldObjectAssetReference, string>(interaction.ChosenLink.Target.Recipe.Target, interaction.ChosenLink.Target.Name));
         }
 
         foreach(Tuple<WorldObjectAssetReference, string> assetAndName in assetsAndNames)
@@ -61,6 +58,7 @@ public class CraftingAssetSlot : MonoBehaviour
 
     public void OnClick()
     {
-        _interaction.StartCrafting(_interactionEvent, _link);
+        var reference =  _interactionEvent.Source.Interact(_interactionEvent, _interaction);
+        _interactionEvent.Source.ClientInteract(_interactionEvent, _interaction, reference);
     }
 }

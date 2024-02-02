@@ -12,14 +12,12 @@ using static SS3D.Systems.Crafting.CraftingRecipe;
 
 namespace SS3D.Systems.Crafting
 {
-    public abstract class CraftingInteraction : DelayedInteraction
+    public class CraftingInteraction : DelayedInteraction
     {
 
         private ParticleSystem particles;
 
         private MeshRenderer targetRenderer;
-
-        protected List<TaggedEdge<RecipeStep, RecipeStepLink>> _availableRecipes;
 
         protected TaggedEdge<RecipeStep, RecipeStepLink> _chosenLink;
 
@@ -31,41 +29,27 @@ namespace SS3D.Systems.Crafting
 
         private Vector3 _startPosition;
 
-        private bool _replace;
-
         private CraftingInteractionType _type;
 
-        private bool _craftInHand;
-
         public Vector3 StartPosition => _startPosition;
-
-        public bool CraftInHand => _craftInHand;
-
-        public bool Replace => _replace;
 
         public CraftingInteractionType CraftingInteractionType => _type;
 
         public Transform CharacterTransform => _characterTransform;
 
-        public CraftingInteraction(float delay, Transform characterTransform, CraftingInteractionType type)
+        public TaggedEdge<RecipeStep, RecipeStepLink> ChosenLink => _chosenLink;
+
+        public CraftingInteraction(float delay, Transform characterTransform, CraftingInteractionType type, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
             _characterTransform = characterTransform;
             _startPosition = characterTransform.position;
             Delay = delay;
             _type = type;
+            _chosenLink = link;
         }
 
-        /// <summary>
-        /// Checks if this interaction can be executed. 
-        /// </summary>
-        /// <param name="interactionEvent">The interaction source</param>
-        /// <returns>If the interaction can be executed</returns>
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (!Subsystems.TryGet(out CraftingSystem craftingSystem)) return false;
-
-            if (!craftingSystem.AvailableRecipeLinks(this, interactionEvent, out _availableRecipes)) return false;
-
             // Check for movement once the interaction started.
             if (HasStarted && !InteractionExtensions.CharacterMoveCheck(_startPosition, _characterTransform.position)) return false;
 
@@ -77,29 +61,6 @@ namespace SS3D.Systems.Crafting
         [Server]
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
-
-            if (!craftingSystem.AvailableRecipeLinks(this, interactionEvent, out _availableRecipes)) return true;
-
-            if (_availableRecipes.Count == 1)
-            {
-                StartCrafting(interactionEvent, _availableRecipes.First());
-                return true;
-            }
-            else
-            {
-                craftingSystem.CraftingMenu.ToggleMenu(_availableRecipes, this, interactionEvent, true);
-            }
-
-            return true;
-        }
-
-        public void StartCrafting(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
-        {
-            _chosenLink = link;
-
-            Delay = link.Tag.ExecutionTime;
-
             StartCounter();
 
             _startPosition = _characterTransform.position;
@@ -108,13 +69,15 @@ namespace SS3D.Systems.Crafting
 
             Subsystems.TryGet(out CraftingSystem craftingSystem);
 
-            List<GameObject> ingredientsToConsume = craftingSystem.GetIngredientsToConsume(interactionEvent, link).Select(x => x.GameObject).ToList();
+            List<GameObject> ingredientsToConsume = craftingSystem.GetIngredientsToConsume(interactionEvent, _chosenLink).Select(x => x.GameObject).ToList();
 
             _coroutines = craftingSystem.MoveAllObjectsToCraftPoint(
                 interactionEvent.Target.GetGameObject().transform.position,
                 ingredientsToConsume);
 
-            craftingSystem.CraftingMenu.ToggleMenu(_availableRecipes, this, interactionEvent, false);
+            ViewLocator.Get<CraftingMenu>().First().HideMenu();
+
+            return true;
         }
 
         protected override void StartDelayed(InteractionEvent interactionEvent)
@@ -122,7 +85,7 @@ namespace SS3D.Systems.Crafting
             particles.Dispose(true);
             Subsystems.TryGet(out CraftingSystem craftingSystem);
             craftingSystem.CancelMoveAllObjectsToCraftPoint(_coroutines);
-            craftingSystem.Craft(this, interactionEvent, _chosenLink);
+            craftingSystem.Craft(this, interactionEvent);
         }
 
         private void AddCraftingSmoke(InteractionEvent interactionEvent)

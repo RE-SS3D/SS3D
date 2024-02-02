@@ -90,11 +90,9 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Given an interaction and a specific target, get all potential recipes links.
         /// </summary>
-        private bool TryGetRecipeLinks(IInteraction interaction, GameObject target, out List<TaggedEdge<RecipeStep, RecipeStepLink>> links)
+        private bool TryGetRecipeLinks(CraftingInteractionType interactionType, GameObject target, out List<TaggedEdge<RecipeStep, RecipeStepLink>> links)
         {
             links = new List<TaggedEdge<RecipeStep, RecipeStepLink>>();
-
-            if (interaction is not CraftingInteraction craftingInteraction) return false;
 
             if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference)) return false;
 
@@ -108,7 +106,7 @@ namespace SS3D.Systems.Crafting
 
                 foreach(TaggedEdge<RecipeStep, RecipeStepLink> link in potentialLinks)
                 {
-                    if (craftingInteraction.CraftingInteractionType == link.Tag.CraftingInteractionType)
+                    if (interactionType == link.Tag.CraftingInteractionType)
                     {
                         links.Add(link);
                     }
@@ -138,8 +136,10 @@ namespace SS3D.Systems.Crafting
         /// <param name="recipe"></param>
         /// <param name="itemToConsume"></param>
         [Server]
-        public void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
+        public void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent)
         {
+            var link = interaction.ChosenLink;
+
             if (!CanCraftRecipeLink(interactionEvent, link))  return;
 
             List<IRecipeIngredient> ingredients = GetIngredientsToConsume(interactionEvent, link);
@@ -200,12 +200,12 @@ namespace SS3D.Systems.Crafting
         /// Return a list of all available links, fulfilling all crafting conditions.
         /// </summary>
         /// <returns></returns>
-        public bool AvailableRecipeLinks(IInteraction interaction, InteractionEvent interactionEvent,
+        public bool AvailableRecipeLinks(CraftingInteractionType interactionType, InteractionEvent interactionEvent,
             out List<TaggedEdge<RecipeStep, RecipeStepLink>> availableLinks)
         {
             availableLinks = new();
 
-            if (!TryGetRecipeLinks(interaction, interactionEvent.Target.GetGameObject(),
+            if (!TryGetRecipeLinks(interactionType, interactionEvent.Target.GetGameObject(),
                     out List<TaggedEdge<RecipeStep, RecipeStepLink>> potentialLinks))
             {
                 return false;
