@@ -177,7 +177,7 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
-            var itemCollider = GetComponent<Collider>();
+            Collider itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
                 itemCollider.enabled = false;
@@ -195,7 +195,7 @@ namespace SS3D.Systems.Inventory.Items
                 if (IsServer)
                     _rigidbody.isKinematic = false;
             }
-            var itemCollider = GetComponent<Collider>();
+            Collider itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
             {
                 itemCollider.enabled = true;
@@ -253,7 +253,7 @@ namespace SS3D.Systems.Inventory.Items
         public string Describe()
         {
             string traits = "";
-            foreach (var trait in _traits)
+            foreach (Trait trait in _traits)
             {
                 traits += trait.Name + " ";
             }
@@ -275,9 +275,17 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public virtual void SetContainer(AttachedContainer newContainer)
         {
-            IEnumerable<Collider> colliders = GetComponents<Collider>().Concat(GetComponentsInChildren<Collider>());
+            List<Collider> collidersToExcept = new();
+            if (_container != null)
+            {
+                foreach (Item item in _container.Items)
+                {
+                    collidersToExcept.AddRange(item.GetComponentsInChildren<Collider>());
+                }
+            }
+            IEnumerable<Collider> colliders = GetComponentsInChildren<Collider>().Except(collidersToExcept);
 
-            if ((newContainer == null) != (_container == null))
+            if ((newContainer == null) ^ (_container == null))
             {
                 if (newContainer == null)
                 {
