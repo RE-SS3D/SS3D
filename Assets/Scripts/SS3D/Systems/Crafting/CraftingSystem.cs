@@ -152,6 +152,7 @@ namespace SS3D.Systems.Crafting
                 interactionEvent.Target.GetGameObject().GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
             }
 
+            // Important to do that before spawning, or it'll mess with the spawning of tile objects.
             if (link.Target.IsTerminal) recipeTarget?.Consume();
 
             foreach (GameObject prefab in link.Target.Result)

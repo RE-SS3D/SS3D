@@ -369,6 +369,7 @@ GameObject:
   - component: {fileID: 6753708217938451176}
   - component: {fileID: 6528007219760414512}
   - component: {fileID: 6634051451888538392}
+  - component: {fileID: 978290459806476930}
   m_Layer: 0
   m_Name: SteelGirder
   m_TagString: Untagged
@@ -526,6 +527,27 @@ MonoBehaviour:
   _struts: {fileID: 7379630380104514676}
   _palette: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
   _glass: {fileID: 2100000, guid: 74425a37eae99c946a92da0339e05c48, type: 2}
+--- !u!114 &978290459806476930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be678463edb44cf4186d58912bf424d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _connectors:
+  - {fileID: 8643350734135927136}
+  - {fileID: 8564450842066674741}
+  - {fileID: 8309238590450996122}
+  - {fileID: 1921803125721189503}
+  - {fileID: 3784341899280207488}
+  - {fileID: 1778875250064888452}
+  - {fileID: 8757138310547956779}
+  - {fileID: 1826826728141998556}
 --- !u!1 &3784341899280207488
 GameObject:
   m_ObjectHideFlags: 0
