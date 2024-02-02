@@ -36,6 +36,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Clear()
         {
+            _loadMapContentRoot.gameObject.SetActive(false);
+
             for (int i = 0; i < _loadMapContentRoot.transform.childCount; i++)
             {
                 _loadMapContentRoot.transform.GetChild(i).gameObject.Dispose(true);
@@ -47,6 +49,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Display()
         {
+            _loadMapContentRoot.gameObject.SetActive(true);
             var MapNames = SaveSystem.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
 
             foreach (string mapName in MapNames)
