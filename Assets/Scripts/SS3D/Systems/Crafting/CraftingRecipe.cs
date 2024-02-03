@@ -42,6 +42,8 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         private AdjacencyGraph<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> _recipeGraph;
 
+        public AdjacencyGraph<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> RecipeGraph => _recipeGraph;
+
         private void OnValidate()
         {
             Init();
