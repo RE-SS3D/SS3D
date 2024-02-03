@@ -8,11 +8,12 @@ using UnityEngine;
 
 namespace SS3D.Systems.Crafting
 {
+    [CreateAssetMenu(fileName = "IngredientsAreHeldInHand", menuName = "SS3D/Crafting/IngredientConditions/IngredientsAreHeldInHand")]
     public class IngredientsAreHeldInHand : IngredientCondition
     {
         public override List<IRecipeIngredient> UsableIngredients(List<IRecipeIngredient> ingredients)
         {
-            return ingredients.Where(x => x is Item item && item.Container.ContainerType == ContainerType.Hand).ToList();
+            return ingredients.Where(x => x.GameObject.TryGetComponent(out Item item) && item.Container?.ContainerType == ContainerType.Hand).ToList();
         }
     }
 }

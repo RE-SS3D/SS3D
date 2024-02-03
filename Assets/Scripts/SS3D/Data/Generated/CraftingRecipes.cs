@@ -11,6 +11,7 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset SteelGirderUnboltedRecipe = new DatabaseAsset("SteelGirderUnboltedRecipe", "CraftingRecipes");
         public static DatabaseAsset SteelSheetRecipe = new DatabaseAsset("SteelSheetRecipe", "CraftingRecipes");
         public static DatabaseAsset ReinforcedWallRecipe = new DatabaseAsset("ReinforcedWallRecipe", "CraftingRecipes");
+        public static DatabaseAsset SteelWallRecipe = new DatabaseAsset("SteelWallRecipe", "CraftingRecipes");
     }
 }
 

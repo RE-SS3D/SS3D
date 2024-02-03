@@ -28,4 +28,6 @@ MonoBehaviour:
       _value: {fileID: 11400000, guid: b7f1e5d68b05f6743a606736245ff481, type: 2}
     - _key: ReinforcedWallRecipe
       _value: {fileID: 11400000, guid: 115e1db3f2858c14fa6b736f67e552be, type: 2}
+    - _key: SteelWallRecipe
+      _value: {fileID: 11400000, guid: 3d6dc37a96797e442bafcb066f1f9aef, type: 2}
     _new: 

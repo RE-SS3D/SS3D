@@ -170,6 +170,11 @@ namespace SS3D.Systems.Crafting
                 }
             }
 
+            foreach(GameObject prefab in link.Tag.SecondaryResults)
+            {
+                  DefaultCraft(interaction, interactionEvent, prefab, link.Target);
+            }
+
             foreach (IRecipeIngredient item in ingredients)
             {
                 item.Consume();

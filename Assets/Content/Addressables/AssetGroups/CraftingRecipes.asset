@@ -41,6 +41,10 @@ MonoBehaviour:
     m_Address: Assets/Content/Data/Recipes/ReinforcedWallRecipe.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 3d6dc37a96797e442bafcb066f1f9aef
+    m_Address: Assets/Content/Data/Recipes/SteelWallRecipe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

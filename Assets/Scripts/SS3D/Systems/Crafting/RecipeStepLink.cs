@@ -41,7 +41,11 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private float _executionTime;
 
-
+        /// <summary>
+        ///  Things produced by going through this recipe link, upon reaching next step.
+        /// </summary>
+        [SerializeField]
+        private List<WorldObjectAssetReference> _secondaryresults;
 
         /// <summary>
         /// Time it takes in second for the crafting to finish.
@@ -78,6 +82,11 @@ namespace SS3D.Systems.Crafting
                 return elements;
             }
         }
+
+        /// <summary>
+        /// The result of the crafting.
+        /// </summary>
+        public List<GameObject> SecondaryResults => _secondaryresults.Select(reference => reference.Prefab).ToList();
 
         public List<IRecipeIngredient> ApplyIngredientConditions(List<IRecipeIngredient> ingredients)
         {
