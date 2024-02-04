@@ -16,8 +16,6 @@ using UnityEditor.PackageManager.UI;
 /// </summary>
 public class CraftingRecipeEditor : EditorWindow
 {
-    private CraftingRecipe _recipe;
-
     private float _repulsiveConstant = 1;
 
     private float _attractiveConstant = 1;
@@ -38,6 +36,8 @@ public class CraftingRecipeEditor : EditorWindow
     private readonly Rect _zoomArea = new Rect(200.0f, 200.0f, 1200.0f, 600.0f);
     private float _zoom = 1.0f;
     private Vector2 _zoomCoordsOrigin = Vector2.zero;
+
+    private const float CircleSize = 5f;
 
     private Vector2 ConvertScreenCoordsToZoomCoords(Vector2 screenCoords)
     {
@@ -65,9 +65,9 @@ public class CraftingRecipeEditor : EditorWindow
 
         if (GUILayout.Button("draw graph"))
         {
-            _recipe = Selection.activeObject as CraftingRecipe;
+            CraftingRecipe recipe = Selection.activeObject as CraftingRecipe;
 
-            _graphWithPosition = InitializeGraphWithPositions();
+            _graphWithPosition = InitializeGraphWithPositions(recipe.RecipeGraph);
 
             EditorCoroutineUtility.StartCoroutine(SpringEmbedderAlgorithm(_graphWithPosition), this);
         }
@@ -141,17 +141,23 @@ public class CraftingRecipeEditor : EditorWindow
 
     }
 
-    private AdjacencyGraph<RecipeStepWithPosition, TaggedEdge<RecipeStepWithPosition, RecipeStepLink>> InitializeGraphWithPositions()
+    /// <summary>
+    /// Create a new graph very similar to the one passed in parameter, but enhance with position data, and initialize those positions
+    /// in a random circle.
+    /// </summary>
+    /// <returns></returns>
+    private AdjacencyGraph<RecipeStepWithPosition, TaggedEdge<RecipeStepWithPosition, RecipeStepLink>> InitializeGraphWithPositions(
+        AdjacencyGraph<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> originalGraph)
     {
         AdjacencyGraph<RecipeStepWithPosition, TaggedEdge<RecipeStepWithPosition, RecipeStepLink>> graphWithPosition = new();
 
         // make a new graph giving positions to vertices.
-        foreach (var edge in _recipe.RecipeGraph.Edges)
+        foreach (TaggedEdge<RecipeStep, RecipeStepLink> edge in originalGraph.Edges)
         {
             RecipeStepWithPosition source = graphWithPosition.Vertices.FirstOrDefault(x => x.step == edge.Source);
             RecipeStepWithPosition target = graphWithPosition.Vertices.FirstOrDefault(x => x.step == edge.Target);
 
-            var edgeWithPosition = new TaggedEdge<RecipeStepWithPosition, RecipeStepLink>(
+            TaggedEdge<RecipeStepWithPosition, RecipeStepLink> edgeWithPosition = new TaggedEdge<RecipeStepWithPosition, RecipeStepLink>(
                 source != null ? source : new RecipeStepWithPosition() { step = edge.Source, position = GetRandomCirclePosition() },
                 target != null ? target : new RecipeStepWithPosition() { step = edge.Target, position = GetRandomCirclePosition() },
                 edge.Tag
@@ -165,13 +171,13 @@ public class CraftingRecipeEditor : EditorWindow
     private void DrawGraph(AdjacencyGraph<RecipeStepWithPosition, TaggedEdge<RecipeStepWithPosition, RecipeStepLink>> graphWithPosition)
     {
         // draw the graph
-        foreach (var stepWithPosition in graphWithPosition.Vertices)
+        foreach (RecipeStepWithPosition stepWithPosition in graphWithPosition.Vertices)
         {
             Color color = stepWithPosition.step.IsTerminal ? Color.red : stepWithPosition.step.IsInitialState ? Color.green : Color.gray;
             Handles.color = color;
-            Handles.DrawSolidDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, 5f);
+            Handles.DrawSolidDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, CircleSize);
             Handles.color = Color.black;
-            Handles.DrawWireDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, 5f);
+            Handles.DrawWireDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, CircleSize);
 
             EditorGUI.LabelField(new Rect(stepWithPosition.position.x, stepWithPosition.position.y, 200, 20), stepWithPosition.step.Name);
         }
@@ -224,7 +230,7 @@ public class CraftingRecipeEditor : EditorWindow
     {
         Tuple<RecipeStepWithPosition, Vector2>[] forcesOnVertice = new Tuple<RecipeStepWithPosition, Vector2>[graph.VertexCount];
         int i = 0;
-        foreach(var vertice in graph.Vertices)
+        foreach(RecipeStepWithPosition vertice in graph.Vertices)
         {
             forcesOnVertice[i] = new Tuple<RecipeStepWithPosition, Vector2>(vertice, ComputeForceSingleVertice(vertice, graph));
             i++;
@@ -241,7 +247,7 @@ public class CraftingRecipeEditor : EditorWindow
 
         List<RecipeStepWithPosition> conVertices = new List<RecipeStepWithPosition>();
 
-        foreach(var edge in graph.Edges)
+        foreach(TaggedEdge<RecipeStepWithPosition, RecipeStepLink> edge in graph.Edges)
         {
             if(edge.Target == vertice && edge.Source != vertice) 
             {
@@ -269,7 +275,7 @@ public class CraftingRecipeEditor : EditorWindow
     {
         Vector2 result = Vector2.zero;
         
-        foreach (var target in vertices)
+        foreach (RecipeStepWithPosition target in vertices)
         {
             result += AttractiveForce(vertice.position, target.position);
         }
@@ -280,7 +286,7 @@ public class CraftingRecipeEditor : EditorWindow
     private Vector2 ComputeRepulsiveComponent(RecipeStepWithPosition vertice, IEnumerable<RecipeStepWithPosition> vertices)
     {
         Vector2 result = Vector2.zero;
-        foreach (var target in vertices)
+        foreach (RecipeStepWithPosition target in vertices)
         {
             result += RepulsiveForce(vertice.position, target.position);
         }
