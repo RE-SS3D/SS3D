@@ -72,13 +72,7 @@ public class CraftingRecipeEditor : EditorWindow
 
             if (recipe == null) return;
 
-            //_graphWithPosition = InitializeGraphWithPositions(recipe.RecipeGraph);
-
-
-
             EditorCoroutineUtility.StartCoroutine(Start(recipe), this);
-
-            //EditorCoroutineUtility.StartCoroutine(SpringEmbedderAlgorithm(_graphWithPosition), this);
         }
 
 
@@ -185,7 +179,10 @@ public class CraftingRecipeEditor : EditorWindow
             Handles.color = Color.black;
             Handles.DrawWireDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, CircleSize);
 
-            EditorGUI.LabelField(new Rect(stepWithPosition.position.x, stepWithPosition.position.y, 200, 20), stepWithPosition.vertice.Name);
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.fontSize = (int) Mathf.Clamp(12f/_zoom, 4f, 25f);
+
+            EditorGUI.LabelField(new Rect(stepWithPosition.position.x, stepWithPosition.position.y, 200, 20), stepWithPosition.vertice.Name, style);
         }
         Handles.color = Color.white;
 
