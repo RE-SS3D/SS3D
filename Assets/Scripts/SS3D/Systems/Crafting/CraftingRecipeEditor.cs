@@ -61,10 +61,10 @@ public class CraftingRecipeEditor : EditorWindow
 
         DrawGraph(_graphWithPosition);
 
-        _repulsiveConstant = EditorGUILayout.Slider("Repulsive constant", _repulsiveConstant, 0, 100);
-        _attractiveConstant = EditorGUILayout.Slider("Attractive constant", _attractiveConstant, 0, 100);
+        _repulsiveConstant = EditorGUILayout.Slider("Repulsive constant", _repulsiveConstant, 0, 1000);
+        _attractiveConstant = EditorGUILayout.Slider("Attractive constant", _attractiveConstant, 0, 1000);
         _idealLenght = EditorGUILayout.Slider("Ideal lenght", _idealLenght, 0, 800);
-        _delta = EditorGUILayout.Slider("Delta", _delta, 0, 20);
+        _delta = EditorGUILayout.Slider("Delta", _delta, 0, 50);
         _maxIteration = Math.Max(100, EditorGUILayout.IntField("Max iteration", _maxIteration));
 
     }
@@ -95,8 +95,16 @@ public class CraftingRecipeEditor : EditorWindow
         // draw the graph
         foreach (var stepWithPosition in graphWithPosition.Vertices)
         {
-            Handles.DrawWireDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, 10f);
+            Color color = stepWithPosition.step.IsTerminal ? Color.red : stepWithPosition.step.IsInitialState ? Color.green : Color.gray;
+            Handles.color = color;
+            Handles.DrawSolidDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, 5f);
+            Handles.color = Color.black;
+            Handles.DrawWireDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, 5f);
+
+            EditorGUI.LabelField(new Rect(stepWithPosition.position.x, stepWithPosition.position.y, 200, 20), stepWithPosition.step.Name);
         }
+        Handles.color = Color.white;
+
 
         foreach (TaggedEdge<RecipeStepWithPosition, RecipeStepLink> edge in graphWithPosition.Edges)
         {

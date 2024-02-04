@@ -62,6 +62,8 @@ namespace SS3D.Systems.Crafting
 
         public bool HasResult => _result.Count > 0;
 
+        public bool IsInitialState => _isInitialState;
+
         public bool CustomCraft => _customCraft;
 
         public string Name => _name;
