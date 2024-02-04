@@ -9,7 +9,11 @@ using Unity.EditorCoroutines.Editor;
 using Codice.Client.BaseCommands.TubeClient;
 using System;
 using QuikGraph.Algorithms;
+using UnityEditor.PackageManager.UI;
 
+/// <summary>
+/// Custom window to display the recipe graph of a recipe opened in inspector.
+/// </summary>
 public class CraftingRecipeEditor : EditorWindow
 {
     private CraftingRecipe _recipe;
@@ -26,6 +30,88 @@ public class CraftingRecipeEditor : EditorWindow
 
     private AdjacencyGraph<RecipeStepWithPosition, TaggedEdge<RecipeStepWithPosition, RecipeStepLink>> _graphWithPosition;
 
+    private const float KZoomMin = 0.1f;
+    private const float KZoomMax = 10.0f;
+
+    private readonly Rect _zoomArea = new Rect(200.0f, 200.0f, 1200.0f, 600.0f);
+    private float _zoom = 1.0f;
+    private Vector2 _zoomCoordsOrigin = Vector2.zero;
+
+    private Vector2 ConvertScreenCoordsToZoomCoords(Vector2 screenCoords)
+    {
+        return (screenCoords - _zoomArea.TopLeft()) / _zoom + _zoomCoordsOrigin;
+    }
+
+    private void DrawZoomArea()
+    {
+        // Within the zoom area all coordinates are relative to the top left corner of the zoom area
+        // with the width and height being scaled versions of the original/unzoomed area's width and height.
+        EditorZoomArea.Begin(_zoom, _zoomArea);
+
+        GUILayout.BeginArea(new Rect(- _zoomCoordsOrigin.x, - _zoomCoordsOrigin.y, 1600.0f, 900.0f));
+
+        DrawGraph(_graphWithPosition);
+
+        GUILayout.EndArea();
+
+        EditorZoomArea.End();
+    }
+
+    private void DrawNonZoomArea()
+    {
+        EditorGUILayout.LabelField("Recipe display", EditorStyles.boldLabel);
+
+        if (GUILayout.Button("draw graph"))
+        {
+            _recipe = Selection.activeObject as CraftingRecipe;
+
+            _graphWithPosition = InitializeGraphWithPositions();
+
+            EditorCoroutineUtility.StartCoroutine(SpringEmbedderAlgorithm(_graphWithPosition), this);
+        }
+
+
+        _zoom = EditorGUILayout.Slider("Zoom", _zoom, KZoomMin, KZoomMax);
+        _repulsiveConstant = EditorGUILayout.Slider("Repulsive constant", _repulsiveConstant, 0, 1000);
+        _attractiveConstant = EditorGUILayout.Slider("Attractive constant", _attractiveConstant, 0, 1000);
+        _idealLenght = EditorGUILayout.Slider("Ideal lenght", _idealLenght, 0, 800);
+        _delta = EditorGUILayout.Slider("Delta", _delta, 0, 50);
+        _maxIteration = Math.Max(100, EditorGUILayout.IntField("Max iteration", _maxIteration)); 
+    }
+
+    private void HandleEvents()
+    {
+        // Allow adjusting the zoom with the mouse wheel as well. In this case, use the mouse coordinates
+        // as the zoom center instead of the top left corner of the zoom area. This is achieved by
+        // maintaining an origin that is used as offset when drawing any GUI elements in the zoom area.
+        if (Event.current.type == EventType.ScrollWheel)
+        {
+            Vector2 screenCoordsMousePos = Event.current.mousePosition;
+            Vector2 delta = Event.current.delta;
+            Vector2 zoomCoordsMousePos = ConvertScreenCoordsToZoomCoords(screenCoordsMousePos);
+            float zoomDelta = -delta.y / 150.0f;
+            float oldZoom = _zoom;
+            _zoom += zoomDelta;
+            _zoom = Mathf.Clamp(_zoom, KZoomMin, KZoomMax);
+            _zoomCoordsOrigin += (zoomCoordsMousePos - _zoomCoordsOrigin) - (oldZoom / _zoom) * (zoomCoordsMousePos - _zoomCoordsOrigin);
+
+            Event.current.Use();
+        }
+
+        // Allow moving the zoom area's origin by dragging with the middle mouse button or dragging
+        // with the left mouse button with Alt pressed.
+        if (Event.current.type == EventType.MouseDrag &&
+            (Event.current.button == 0 && Event.current.modifiers == EventModifiers.Alt) ||
+            Event.current.button == 2)
+        {
+            Vector2 delta = Event.current.delta;
+            delta /= _zoom;
+            _zoomCoordsOrigin += delta;
+
+            Event.current.Use();
+        }
+    }
+
     private class RecipeStepWithPosition
     {
         public RecipeStep step;
@@ -35,37 +121,20 @@ public class CraftingRecipeEditor : EditorWindow
     [MenuItem("Window/SS3D/Crafting Recipe Display")]
     public static void ShowWindow()
     {
-        GetWindow<CraftingRecipeEditor>("Crafting Recipe Display");
-    }
-
-    private void OnEnable()
-    {
-        // Try to get the GraphData from the selected object in the Inspector
-        _recipe = Selection.activeObject as CraftingRecipe;
-
-        _graphWithPosition = InitializeGraphWithPositions();
-
-        SpringEmbedderAlgorithm(_graphWithPosition);
+        CraftingRecipeEditor window = GetWindow<CraftingRecipeEditor>("Crafting Recipe Display");
+        window.minSize = new Vector2(600.0f, 300.0f);
+        window.wantsMouseMove = true;
     }
 
     private void OnGUI()
     {
-        EditorGUILayout.LabelField("Recipe display", EditorStyles.boldLabel);
-
-        if (GUILayout.Button("draw graph"))
-        {
-            _graphWithPosition = InitializeGraphWithPositions();
-
-            EditorCoroutineUtility.StartCoroutine(SpringEmbedderAlgorithm(_graphWithPosition), this);
-        }
-
-        DrawGraph(_graphWithPosition);
-
-        _repulsiveConstant = EditorGUILayout.Slider("Repulsive constant", _repulsiveConstant, 0, 1000);
-        _attractiveConstant = EditorGUILayout.Slider("Attractive constant", _attractiveConstant, 0, 1000);
-        _idealLenght = EditorGUILayout.Slider("Ideal lenght", _idealLenght, 0, 800);
-        _delta = EditorGUILayout.Slider("Delta", _delta, 0, 50);
-        _maxIteration = Math.Max(100, EditorGUILayout.IntField("Max iteration", _maxIteration));
+        HandleEvents();
+        // The zoom area clipping is sometimes not fully confined to the passed in rectangle. At certain
+        // zoom levels you will get a line of pixels rendered outside of the passed in area because of
+        // floating point imprecision in the scaling. Therefore, it is recommended to draw the zoom
+        // area first and then draw everything else so that there is no undesired overlap.
+        DrawZoomArea();
+        DrawNonZoomArea();
 
     }
 
@@ -224,3 +293,4 @@ public class CraftingRecipeEditor : EditorWindow
         return (_attractiveConstant * Mathf.Log(Vector2.Distance(v1, v2)) / _idealLenght)* (v2 - v1).normalized;
     }
 }
+
