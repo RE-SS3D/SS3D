@@ -72,10 +72,15 @@ public class GirderCraftable : MultiStepCraftable
                 AddSupports();
                 AddReinforcedSteelSheets();
                 break;
-            case "ReinforcedSteelGirderWithBoltedGlassSheets":
+            case "ReinforcedSteelGirderWithBoltedReinforcedGlassSheets":
                 AddStruts();
                 AddSupports();
                 AddReinforcedWindowSheets();
+                break;
+            case "ReinforcedSteelGirderWithBoltedGlassSheets":
+                AddStruts();
+                AddSupports();
+                AddWindowSheet();
                 break;
             case "ReinforcedSteelGirderWithBoltedMetalSheets":
                 AddStruts();

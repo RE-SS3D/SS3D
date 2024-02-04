@@ -103,11 +103,9 @@ namespace SS3D.Utils
         private static Vector2 ComputeForceSingleVertice(VerticeWithPosition<TVertex> vertice,
             AdjacencyGraph<VerticeWithPosition<TVertex>, TaggedEdge<VerticeWithPosition<TVertex>, TTag>> graph)
         {
-            // Issue, should not be only out edges, but also "in" edges.
-            // Idea : go trough the list of edges, keep all target or source vertice when current vertice is the edge.
-
             List<VerticeWithPosition<TVertex>> conVertices = new List<VerticeWithPosition<TVertex>>();
 
+            // Inefficient way of getting neighbour edges, but I could not find a better one.
             foreach (Edge<VerticeWithPosition<TVertex>> edge in graph.Edges)
             {
                 if (edge.Target == vertice && edge.Source != vertice)

@@ -47,9 +47,9 @@ GameObject:
   - component: {fileID: 1363585423008195204}
   - component: {fileID: 261983550380735922}
   - component: {fileID: 6377164133976095912}
-  - component: {fileID: 4940994118234552533}
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
+  - component: {fileID: 4004628490018734234}
   m_Layer: 10
   m_Name: KitchenKnife
   m_TagString: Untagged
@@ -254,18 +254,6 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8869951128713715569}
   AttachmentPointAlt: {fileID: 8869951128713715569}
   _container: {fileID: 0}
---- !u!114 &4940994118234552533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6059877305a7fb48a28d8ef0e6b92b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5464842264619517571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,3 +279,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 8a5c0f9e0f2b82648852272822078abc, type: 2}
+--- !u!114 &4004628490018734234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794527162878356835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd866b0631d05441982a4824740ff8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  types: 02000000
