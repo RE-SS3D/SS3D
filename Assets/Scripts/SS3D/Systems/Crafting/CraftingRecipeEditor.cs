@@ -180,7 +180,9 @@ public class CraftingRecipeEditor : EditorWindow
 
         foreach (TaggedEdge<RecipeStepWithPosition, RecipeStepLink> edge in graphWithPosition.Edges)
         {
-            Handles.DrawLine(edge.Source.position, edge.Target.position);
+            Handles.DrawAAPolyLine(3, edge.Source.position, edge.Target.position);
+
+            DrawArrowhead(edge.Source.position, edge.Target.position, 20, 8f);
         }
     }
 
@@ -294,6 +296,17 @@ public class CraftingRecipeEditor : EditorWindow
     private Vector2 AttractiveForce(Vector2 v1, Vector2 v2)
     {
         return (_attractiveConstant * Mathf.Log(Vector2.Distance(v1, v2)) / _idealLenght)* (v2 - v1).normalized;
+    }
+
+    // Helper method to draw arrowhead
+    private void DrawArrowhead(Vector2 start, Vector2 end, float arrowheadAngle, float arrowheadLength)
+    {
+        Vector2 direction = (end - start).normalized;
+        Vector2 arrowheadLeft = Quaternion.Euler(0, 0, arrowheadAngle) * -direction * arrowheadLength;
+        Vector2 arrowheadRight = Quaternion.Euler(0, 0, -arrowheadAngle) * -direction * arrowheadLength;
+
+        Handles.DrawAAPolyLine(3, new Vector3(end.x, end.y, 0), new Vector3(end.x + arrowheadLeft.x, end.y + arrowheadLeft.y, 0));
+        Handles.DrawAAPolyLine(3, new Vector3(end.x, end.y, 0), new Vector3(end.x + arrowheadRight.x, end.y + arrowheadRight.y, 0));
     }
 }
 
