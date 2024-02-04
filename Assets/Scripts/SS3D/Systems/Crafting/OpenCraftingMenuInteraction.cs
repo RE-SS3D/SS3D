@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 using static SS3D.Systems.Crafting.CraftingRecipe;
 
@@ -91,7 +92,17 @@ public class OpenCraftingMenuInteraction : Interaction
             }
         }
 
-        ViewLocator.Get<CraftingMenu>().First().DisplayMenu(craftingInteractions, interactionEvent, reference);
+        if(craftingInteractions.Count > 1)
+        {
+            ViewLocator.Get<CraftingMenu>().First().DisplayMenu(craftingInteractions, interactionEvent, reference);
+        }
+        else if(craftingInteractions.Count == 1)
+        {
+            var craftingReference =interactionEvent.Source.Interact(interactionEvent, craftingInteractions.First());
+            interactionEvent.Source.ClientInteract(interactionEvent, craftingInteractions.First(), craftingReference);
+        }
+
+        
 
         return true;
     }
