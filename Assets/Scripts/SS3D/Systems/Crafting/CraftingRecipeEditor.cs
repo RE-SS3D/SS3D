@@ -67,6 +67,8 @@ public class CraftingRecipeEditor : EditorWindow
         {
             CraftingRecipe recipe = Selection.activeObject as CraftingRecipe;
 
+            if (recipe == null) return;
+
             _graphWithPosition = InitializeGraphWithPositions(recipe.RecipeGraph);
 
             EditorCoroutineUtility.StartCoroutine(SpringEmbedderAlgorithm(_graphWithPosition), this);
