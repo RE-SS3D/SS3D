@@ -66,7 +66,7 @@ namespace SS3D.Utils
             return UnityEngine.Random.insideUnitCircle * 300 + new Vector2(400, 400);
         }
 
-        public static void ComputeOneStep(
+        public static bool ComputeOneStep(
             AdjacencyGraph<VerticeWithPosition<TVertex>, TaggedEdge<VerticeWithPosition<TVertex>, TTag>> graphWithPosition)
         {
 
@@ -76,12 +76,14 @@ namespace SS3D.Utils
                 (current, next) => current.magnitude > next.magnitude ? current : next,
                 result => result);
 
-            if (maxForce.magnitude < ForceToStop) { return; }
+            if (maxForce.magnitude < ForceToStop) { return true; }
 
             for (int j = 0; j < forcesOnVertices.Length; j++)
             {
                 forcesOnVertices[j].Item1.position += Delta * forcesOnVertices[j].Item2;
             }
+
+            return false;
         }
 
         private static Tuple<VerticeWithPosition<TVertex>, Vector2>[] ComputeForceAllVertices(

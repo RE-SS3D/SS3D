@@ -98,11 +98,15 @@ public class CraftingRecipeEditor : EditorWindow
 
         int t = 0;
 
+        bool forceReachedMinimum = false;
+
         while (t < _maxIteration)
         {
             SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.SetParameters(_repulsiveConstant, _attractiveConstant,
                 _idealLenght, _delta, _forceToStop);
-            SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.ComputeOneStep(_graphWithPosition);
+            forceReachedMinimum = SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.ComputeOneStep(_graphWithPosition);
+
+            if (forceReachedMinimum) break;
             t++;
             Repaint();
             yield return null;
