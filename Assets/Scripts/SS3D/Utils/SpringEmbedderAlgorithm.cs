@@ -15,6 +15,9 @@ namespace SS3D.Utils
         public Vector2 position;
     }
 
+    /// <summary>
+    /// Inspired by this doc : https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v6.pdf
+    /// </summary>
     public static class SpringEmbedderAlgorithm<TVertex, TEdge, TTag>
     {
 
@@ -122,7 +125,6 @@ namespace SS3D.Utils
 
             IEnumerable<VerticeWithPosition<TVertex>> unconnectedVertices = graph.Vertices.Except(currentVertice);
 
-            //var notOutVertices = graph.Edges.Except(outVertices);
             Vector2 attractive = ComputeAttractiveComponent(vertice, conVertices);
             Vector2 repulsive = ComputeRepulsiveComponent(vertice, unconnectedVertices);
 
