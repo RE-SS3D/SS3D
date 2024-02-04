@@ -28,6 +28,8 @@ public class CraftingRecipeEditor : EditorWindow
 
     private float _delta = 1f;
 
+    private float _forceToStop = 0.1f;
+
     private AdjacencyGraph<RecipeStepWithPosition, TaggedEdge<RecipeStepWithPosition, RecipeStepLink>> _graphWithPosition;
 
     private const float KZoomMin = 0.1f;
@@ -76,6 +78,7 @@ public class CraftingRecipeEditor : EditorWindow
         _attractiveConstant = EditorGUILayout.Slider("Attractive constant", _attractiveConstant, 0, 1000);
         _idealLenght = EditorGUILayout.Slider("Ideal lenght", _idealLenght, 0, 800);
         _delta = EditorGUILayout.Slider("Delta", _delta, 0, 50);
+        _forceToStop = EditorGUILayout.Slider("Max force to stop", _forceToStop, 0.001f, 5);
         _maxIteration = Math.Max(100, EditorGUILayout.IntField("Max iteration", _maxIteration)); 
     }
 
@@ -198,11 +201,11 @@ public class CraftingRecipeEditor : EditorWindow
 
             forcesOnVertices = ComputeForceAllVertices(graph);
 
-            Vector2 forcesSum = forcesOnVertices.Select(x => x.Item2).Aggregate(Vector2.zero,
-                (current, next) => current + next,
+            Vector2 maxForce = forcesOnVertices.Select(x => x.Item2).Aggregate(Vector2.zero,
+                (current, next) => current.magnitude > next.magnitude ? current : next,
                 result => result);
 
-            Debug.Log(forcesSum);
+            if(maxForce.magnitude < _forceToStop) { break; }
 
             for(int j =0; j< forcesOnVertices.Length; j++)
             {
