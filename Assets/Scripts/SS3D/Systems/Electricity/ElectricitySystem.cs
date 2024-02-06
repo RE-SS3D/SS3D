@@ -112,7 +112,7 @@ namespace System.Electricity
             VerticeCoordinates deviceCoordinates = new ((short)tileObject.WorldOrigin.x, (short)tileObject.WorldOrigin.y,
                     (byte)tileObject.Layer, (byte)tileObject.Direction);
             _electricityGraph.AddVertex(deviceCoordinates);
-            List<PlacedTileObject> neighbours = tileObject.Connectors.First(x => x is ElectricAdjacencyConnector)?.GetNeighbours();
+            List<PlacedTileObject> neighbours = tileObject.Connector?.GetNeighbours();
             foreach(PlacedTileObject neighbour in neighbours)
             {
                 VerticeCoordinates neighbourCoordinates = new ((short)neighbour.WorldOrigin.x, (short)neighbour.WorldOrigin.y,

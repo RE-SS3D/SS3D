@@ -67,7 +67,7 @@ namespace SS3D.Systems.Tile
         private Vector2Int _origin;
         private Direction _dir;
 
-        private List<IAdjacencyConnector> _connectors;
+        private IAdjacencyConnector _connector;
         private Vector2Int _worldOrigin;
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SS3D.Systems.Tile
 
         public TileObjectSo tileObjectSO => _tileObjectSo;
 
-        public bool HasAdjacencyConnector => _connectors.Count != 0;
+        public bool HasAdjacencyConnector => _connector != null;
 
         public WorldObjectAssetReference Asset
         {
@@ -106,7 +106,7 @@ namespace SS3D.Systems.Tile
                 _asset = value;
             }
         }
-        public List<IAdjacencyConnector> Connectors => _connectors;
+        public IAdjacencyConnector Connector => _connector;
 
         /// <summary>
         /// Set up a new PlacedTileObject.
@@ -118,7 +118,7 @@ namespace SS3D.Systems.Tile
             _tileObjectSo = tileObjectSo;
             _origin = origin;
             _dir = dir;
-            _connectors = GetComponentsInChildren<IAdjacencyConnector>().ToList();
+            _connector = GetComponent<IAdjacencyConnector>();
             _worldOrigin = new Vector2Int((int)Math.Round(worldPosition.x), (int)Math.Round(worldPosition.z));
         }
 
@@ -134,13 +134,13 @@ namespace SS3D.Systems.Tile
         public void UpdateAdjacencies()
         {
             if (HasAdjacencyConnector)
-                _connectors.ForEach(x => x.UpdateAllConnections());
+                _connector.UpdateAllConnections();
         }
 
         public void UpdateSingleAdjacency(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
             if (HasAdjacencyConnector)
-                _connectors.ForEach(x => x.UpdateSingleConnection(dir, neighbourObject, updateNeighbour));
+                _connector.UpdateSingleConnection(dir, neighbourObject, updateNeighbour);
         }
 
         public SavedPlacedTileObject Save()

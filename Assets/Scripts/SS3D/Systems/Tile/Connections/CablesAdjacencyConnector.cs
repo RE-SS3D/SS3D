@@ -143,7 +143,7 @@ namespace SS3D.Systems.Tile.Connections
         [Server]
         private bool NeighbourIsCable(PlacedTileObject neighbour)
         {
-            return neighbour != null && neighbour.Connectors.Any(x => x is CablesAdjacencyConnector);
+            return neighbour != null && neighbour.Connector is CablesAdjacencyConnector;
         }
 
     }
