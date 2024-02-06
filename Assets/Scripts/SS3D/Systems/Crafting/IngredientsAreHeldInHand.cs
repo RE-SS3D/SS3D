@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Crafting
 {
+    /// <summary>
+    /// Ingredient condition to check if ingredients are held in hand.
+    /// </summary>
     [CreateAssetMenu(fileName = "IngredientsAreHeldInHand", menuName = "SS3D/Crafting/IngredientConditions/IngredientsAreHeldInHand")]
     public class IngredientsAreHeldInHand : IngredientCondition
     {
