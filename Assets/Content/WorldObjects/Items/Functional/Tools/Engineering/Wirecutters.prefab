@@ -49,7 +49,6 @@ GameObject:
   - component: {fileID: 6800495836141411361}
   - component: {fileID: 8006545930481202674}
   - component: {fileID: -7296570193560198535}
-  - component: {fileID: -1384775441898835860}
   m_Layer: 10
   m_Name: Wirecutters
   m_TagString: Untagged
@@ -219,8 +218,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -279,15 +278,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: ace64dc9007327f46a1be3f95894b9b4, type: 2}
---- !u!114 &-1384775441898835860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2402587210622244651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6059877305a7fb48a28d8ef0e6b92b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
