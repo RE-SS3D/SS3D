@@ -51,8 +51,7 @@ public class CraftingAssetSlot : MonoBehaviour
 
         foreach(Tuple<WorldObjectAssetReference, string> assetAndName in assetsAndNames)
         {
-            GameObject craftingSlotPart = Instantiate(_craftingSlotPartPrefab, gameObject.transform);
-            craftingSlotPart.GetComponent<TMP_Text>().text = assetAndName.Item2;
+            GetComponentInChildren<TMP_Text>().text = assetAndName.Item2;
         }
 
     }
