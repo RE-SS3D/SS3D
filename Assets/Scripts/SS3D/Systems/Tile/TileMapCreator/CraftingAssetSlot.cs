@@ -16,7 +16,7 @@ using System.Linq;
 
 public class CraftingAssetSlot : MonoBehaviour
 {
-    private List<Tuple<WorldObjectAssetReference, string>> assetsAndNames;
+    private string resultName ;
 
     private CraftingInteraction _interaction;
 
@@ -27,33 +27,26 @@ public class CraftingAssetSlot : MonoBehaviour
 
 
     /// <summary>
-    /// Load an UI icon and string for the item/tile.
+    /// Set up the name of the recipe step in a UI slot for the crafting menu. 
     /// </summary>
-    /// <param name="genericObjectSo"></param>
     public void Setup(CraftingInteraction interaction, InteractionEvent interactionEvent)
     {
         _interaction = interaction;
         _interactionEvent = interactionEvent;
 
-        List<Tuple<WorldObjectAssetReference, string>> assetsAndNames = new();
-
-        // Prepare every results to be shown
-        foreach(WorldObjectAssetReference assetReference in interaction.ChosenLink.Target.Results)
+        // Prepare the main result of the recipe if it exist
+        if(interaction.ChosenLink.Target.TryGetResult(out WorldObjectAssetReference result))
         {
-            assetsAndNames.Add(new Tuple<WorldObjectAssetReference, string>(assetReference, assetReference.Prefab.name));
+            resultName = result.Prefab.name;
         }
 
-        // If the link doesn't lead to a new result, show the modified object too.
+        // If the link doesn't lead to a new result, show the modified object.
         if (!interaction.ChosenLink.Target.IsTerminal)
         {
-            assetsAndNames.Add(new Tuple<WorldObjectAssetReference, string>(interaction.ChosenLink.Target.Recipe.Target, interaction.ChosenLink.Target.Name));
+            resultName = interaction.ChosenLink.Target.Name;
         }
 
-        foreach(Tuple<WorldObjectAssetReference, string> assetAndName in assetsAndNames)
-        {
-            GetComponentInChildren<TMP_Text>().text = assetAndName.Item2;
-        }
-
+        GetComponentInChildren<TMP_Text>().text = resultName;
     }
 
     public void OnClick()

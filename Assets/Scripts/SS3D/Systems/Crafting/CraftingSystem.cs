@@ -155,14 +155,14 @@ namespace SS3D.Systems.Crafting
             // Important to do that before spawning, or it'll mess with the spawning of tile objects.
             if (link.Target.IsTerminal) recipeTarget?.Consume();
 
-            foreach (GameObject prefab in link.Target.Result)
+            if(link.Target.TryGetResult(out WorldObjectAssetReference result))
             {
                 GameObject resultInstance;
 
-                if(link.Target.CustomCraft)
-                    resultInstance = prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+                if (link.Target.CustomCraft)
+                    resultInstance = result.Prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
                 else
-                    resultInstance = DefaultCraft(interaction, interactionEvent, prefab, link.Target);
+                    resultInstance = DefaultCraft(interaction, interactionEvent, result.Prefab, link.Target);
 
                 if (link.Tag.ModifyResult)
                 {
@@ -446,11 +446,9 @@ namespace SS3D.Systems.Crafting
 
         private bool ResultIsValid(InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
-            if (!recipeStep.HasResult) return true;
+            if (!recipeStep.TryGetResult(out WorldObjectAssetReference recipeResult)) return true;
 
-            GameObject recipeResult = recipeStep.Result[0];
-
-            if (recipeResult.TryGetComponent(out PlacedTileObject result))
+            if (recipeResult.Prefab.TryGetComponent(out PlacedTileObject result))
             {
                 return ResultIsValidPlacedTileObject(result, interactionEvent, recipeStep);
             }

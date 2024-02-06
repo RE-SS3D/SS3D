@@ -30,15 +30,24 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public WorldObjectAssetReference Target => _target;
 
+
+        /// <summary>
+        /// A bunch of recipe steps, representing each steps of the recipe.
+        /// </summary>
         public List<RecipeStep> steps;
 
+        /// <summary>
+        /// A bunch of recipe links, which link recipe step together.
+        /// </summary>
         public List<RecipeStepLink> stepLinks;
 
+        /// <summary>
+        /// First step of the recipe, which should have the same name as the target of the recipe.
+        /// </summary>
         public string RootStepName => Target.Prefab.name;
 
         /// <summary>
         /// Graph representing all steps in a recipe and their link between each other.
-        /// Could maybe use tagged edges instead to store crafting data (lenght of recipe, ingredients...)
         /// </summary>
         private AdjacencyGraph<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> _recipeGraph;
 
@@ -50,7 +59,8 @@ namespace SS3D.Systems.Crafting
         }
 
         /// <summary>
-        /// Editor only method, that build the directed graph representing the recipe.
+        /// Editor only method, that build the directed graph representing the recipe, whenever something in the 
+        /// crafting recipe is modified.
         /// </summary>
         private void Init()
         {
@@ -80,6 +90,10 @@ namespace SS3D.Systems.Crafting
 
         }
 
+        /// <summary>
+        /// Try to get a specific step with a specific name.
+        /// </summary>
+        /// <returns></returns>
         public bool TryGetStep(string name, out RecipeStep step)
         {
             step = _recipeGraph.Vertices.FirstOrDefault(x => x.Name == name);

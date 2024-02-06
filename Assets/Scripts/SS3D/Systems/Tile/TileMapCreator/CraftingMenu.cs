@@ -145,7 +145,8 @@ public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandl
 
         if (_interaction.ChosenLink.Target.IsTerminal)
         {
-            asset = Subsystems.Get<TileSystem>().GetAsset(_interaction.ChosenLink.Target.Results.First().Id);
+            _interaction.ChosenLink.Target.TryGetResult(out WorldObjectAssetReference result);
+            asset = Subsystems.Get<TileSystem>().GetAsset(result.Id);
         }
         else
         {

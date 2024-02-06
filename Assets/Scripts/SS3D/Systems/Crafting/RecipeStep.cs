@@ -17,7 +17,7 @@ namespace SS3D.Systems.Crafting
         /// A list of resulting objects that will spawn at the end of the crafting process.
         /// </summary>
         [SerializeField]
-        private List<WorldObjectAssetReference> _result;
+        private WorldObjectAssetReference _result;
 
         /// <summary>
         /// If true, the target is consumed (despawned).
@@ -37,14 +37,6 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private bool _customCraft;
 
-        /// <summary>
-        /// The result of the crafting.
-        /// </summary>
-        public List<GameObject> Result => _result.Select(reference => reference.Prefab).ToList();
-
-
-        public List<WorldObjectAssetReference> Results => _result;
-
         public RecipeStep(CraftingRecipe recipe, string name)
         {
             Recipe = recipe;
@@ -56,16 +48,31 @@ namespace SS3D.Systems.Crafting
 
 
         /// <summary>
-        /// If true, the target is consumed (despawned).
+        /// If true, this is a final step of the recipe and the recipe target should be consumed (despawned).
+        /// There can be more than one terminal step.
         /// </summary>
         public bool IsTerminal => _isTerminal;
 
-        public bool HasResult => _result.Count > 0;
+        public bool TryGetResult(out WorldObjectAssetReference result)
+        {
+            result = _result;
+            return _result != null;
+        } 
 
+        /// <summary>
+        /// If true, is the original step of the recipe. Only one original step can exist.
+        /// </summary>
         public bool IsInitialState => _isInitialState;
 
+        /// <summary>
+        /// If true, the result of the recipe step should use a custom craft method, instead of the default one.
+        /// Should only be true on a terminal step.
+        /// </summary>
         public bool CustomCraft => _customCraft;
 
+        /// <summary>
+        /// Name of the recipe step.
+        /// </summary>
         public string Name => _name;
 
     }
