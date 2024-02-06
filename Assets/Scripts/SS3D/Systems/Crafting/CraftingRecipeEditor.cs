@@ -55,7 +55,7 @@ public class CraftingRecipeEditor : EditorWindow
 
         GUILayout.BeginArea(new Rect(- _zoomCoordsOrigin.x, - _zoomCoordsOrigin.y, 1600.0f, 900.0f));
 
-        DrawGraph(_graphWithPosition);
+        if(_graphWithPosition != null) DrawGraph(_graphWithPosition);
 
         GUILayout.EndArea();
 
@@ -72,7 +72,7 @@ public class CraftingRecipeEditor : EditorWindow
 
             if (recipe == null) return;
 
-            EditorCoroutineUtility.StartCoroutine(Start(recipe), this);
+            EditorCoroutineUtility.StartCoroutine(ComputeGraphPositions(recipe), this);
         }
 
 
@@ -85,7 +85,7 @@ public class CraftingRecipeEditor : EditorWindow
         _maxIteration = Math.Max(100, EditorGUILayout.IntField("Max iteration", _maxIteration));
     }
 
-    public IEnumerator Start(CraftingRecipe recipe)
+    public IEnumerator ComputeGraphPositions(CraftingRecipe recipe)
     {
         _graphWithPosition =
     SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.InitializeGraphWithPositions(recipe.RecipeGraph);
@@ -140,12 +140,6 @@ public class CraftingRecipeEditor : EditorWindow
         }
     }
 
-    private class RecipeStepWithPosition
-    {
-        public RecipeStep step;
-        public Vector2 position;
-    }
-
     [MenuItem("Window/SS3D/Crafting Recipe Display")]
     public static void ShowWindow()
     {
@@ -157,12 +151,14 @@ public class CraftingRecipeEditor : EditorWindow
     private void OnGUI()
     {
         HandleEvents();
+        DrawNonZoomArea();
+
         // The zoom area clipping is sometimes not fully confined to the passed in rectangle. At certain
         // zoom levels you will get a line of pixels rendered outside of the passed in area because of
         // floating point imprecision in the scaling. Therefore, it is recommended to draw the zoom
         // area first and then draw everything else so that there is no undesired overlap.
         DrawZoomArea();
-        DrawNonZoomArea();
+
 
         
 
