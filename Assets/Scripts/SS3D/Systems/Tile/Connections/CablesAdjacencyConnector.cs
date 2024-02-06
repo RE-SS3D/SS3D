@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object.Synchronizing;
 using FishNet.Object;
-using System.Linq;
 
 namespace SS3D.Systems.Tile.Connections
 {
