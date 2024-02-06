@@ -7,19 +7,29 @@ using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 using SS3D.Core;
 
-public class Craft : MonoBehaviour, IInteractionSourceExtension
+namespace SS3D.Systems.Crafting
 {
-    [SerializeField]
-    private List<CraftingInteractionType> types;
-
-    public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+    /// <summary>
+    /// Interaction source extension script, to make some game object become source of crafting interactions.
+    /// More precisely, it triggers opening the crafting menu interactions, which create crafting interaction.
+    /// </summary>
+    public class Craft : MonoBehaviour, IInteractionSourceExtension
     {
-        OpenCraftingMenuInteraction openCraftingMenuInteraction= new OpenCraftingMenuInteraction(types);
+        /// <summary>
+        /// The different types of interaction the game object with this component on can support. 
+        /// </summary>
+        [SerializeField]
+        private List<CraftingInteractionType> types;
 
-        foreach (IInteractionTarget target in targets)
+        public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            interactions.Add(new InteractionEntry(target, openCraftingMenuInteraction));
-        }
+            OpenCraftingMenuInteraction openCraftingMenuInteraction = new OpenCraftingMenuInteraction(types);
 
+            foreach (IInteractionTarget target in targets)
+            {
+                interactions.Add(new InteractionEntry(target, openCraftingMenuInteraction));
+            }
+
+        }
     }
 }

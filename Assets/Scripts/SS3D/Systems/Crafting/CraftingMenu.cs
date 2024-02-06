@@ -27,36 +27,53 @@ using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
 namespace SS3D.Systems.Crafting
 {
+    /// <summary>
+    /// Main script orchestrating displaying the crafting menu, triggering interactions when the player interacts with it.
+    /// The crafting menu should work this way currently : Select the thing you want to craft in a name list, once selected,
+    /// it should show all icons of things crafted. When clicking build button, it crafts the thing.
+    /// </summary>
     public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandler
     {
-
-        private Controls.TileCreatorActions _controls;
-
         private InputSystem _inputSystem;
 
         /// <summary>
-        ///  The model for a single slot, to display tile objects in the menu.
+        ///  The model for a single slot, to display recipe step names in the crafting menu.
         /// </summary>
         [SerializeField]
         private GameObject _textSlotPrefab;
 
+        /// <summary>
+        /// The model for an icon for object that are result of the recipe.
+        /// </summary>
         [SerializeField]
         private GameObject _pictureSlotPrefab;
 
         /// <summary>
-        /// Game object parent of the area in the tile map menu where the tile object slots will display.
+        /// Game object parent of the area in the crafting menu where the recipe step names will show up.
         /// </summary>
         [SerializeField]
         private GameObject _textSlotArea;
 
+        /// <summary>
+        /// Game object parent of the area in the crafting menu where the recipe results icons will show up.
+        /// </summary>
         [SerializeField]
         private GameObject _pictureSlotArea;
 
 
+        /// <summary>
+        /// Selected interaction.
+        /// </summary>
         private CraftingInteraction _interaction;
 
+        /// <summary>
+        /// Event linked to selected interaction.
+        /// </summary>
         private InteractionEvent _interactionEvent;
 
+        /// <summary>
+        /// TMP field to display the selected recipe step's name. 
+        /// </summary>
         [SerializeField]
         private TextMeshProUGUI _objectTitle;
 
@@ -67,7 +84,6 @@ namespace SS3D.Systems.Crafting
             base.OnStart();
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
-            _controls = _inputSystem.Inputs.TileCreator;
         }
 
         /// <summary>
@@ -92,7 +108,8 @@ namespace SS3D.Systems.Crafting
         }
 
         /// <summary>
-        /// Method called when the control to open the tilemap menu is performed.
+        /// Method called when the crafting menu is opened, normally only when multiple options are possible
+        /// for crafting.
         /// </summary>
         public void DisplayMenu(List<CraftingInteraction> interactions, InteractionEvent interactionEvent, InteractionReference reference)
         {
@@ -113,7 +130,7 @@ namespace SS3D.Systems.Crafting
 
 
         /// <summary>
-        /// Clear all tile slots in the content area of the tilemap menu.
+        /// Clear all recipe step's name and result icons in the crafting menu.
         /// </summary>
         private void ClearGrid()
         {
@@ -125,6 +142,9 @@ namespace SS3D.Systems.Crafting
             ClearPictures();
         }
 
+        /// <summary>
+        /// Clear the icons in the crafting menu.
+        /// </summary>
         private void ClearPictures()
         {
             for (int i = 0; i < _pictureSlotArea.transform.childCount; i++)
@@ -133,6 +153,9 @@ namespace SS3D.Systems.Crafting
             }
         }
 
+        /// <summary>
+        /// Set up a given interaction, which will be called upon clicking on the build button.
+        /// </summary>
         public void SetSelectedInteraction(CraftingInteraction interaction, InteractionEvent interactionEvent)
         {
 
@@ -159,6 +182,9 @@ namespace SS3D.Systems.Crafting
             _pictureSlot.GetComponent<AssetSlot>().Setup(asset);
         }
 
+        /// <summary>
+        /// Trigger the selected crafting interaction.
+        /// </summary>
         public void OnBuildClick()
         {
             if (_interaction == null || _interactionEvent == null) return;
