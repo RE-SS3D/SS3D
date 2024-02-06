@@ -11,6 +11,8 @@ using static SS3D.Systems.Crafting.CraftingRecipe;
 using SS3D.Systems.Crafting;
 using UnityEngine.AddressableAssets;
 using SS3D.Interactions;
+using SS3D.Core;
+using System.Linq;
 
 public class CraftingAssetSlot : MonoBehaviour
 {
@@ -20,8 +22,6 @@ public class CraftingAssetSlot : MonoBehaviour
 
     private InteractionEvent _interactionEvent;
 
-    private InteractionReference _interactionReference;
-
     [SerializeField]
     private GameObject _craftingSlotPartPrefab;
 
@@ -30,19 +30,20 @@ public class CraftingAssetSlot : MonoBehaviour
     /// Load an UI icon and string for the item/tile.
     /// </summary>
     /// <param name="genericObjectSo"></param>
-    public void Setup(CraftingInteraction interaction, InteractionEvent interactionEvent, InteractionReference reference)
+    public void Setup(CraftingInteraction interaction, InteractionEvent interactionEvent)
     {
         _interaction = interaction;
-        _interactionReference = reference;
         _interactionEvent = interactionEvent;
 
         List<Tuple<WorldObjectAssetReference, string>> assetsAndNames = new();
 
+        // Prepare every results to be shown
         foreach(WorldObjectAssetReference assetReference in interaction.ChosenLink.Target.Results)
         {
             assetsAndNames.Add(new Tuple<WorldObjectAssetReference, string>(assetReference, assetReference.Prefab.name));
         }
 
+        // If the link doesn't lead to a new result, show the modified object too.
         if (!interaction.ChosenLink.Target.IsTerminal)
         {
             assetsAndNames.Add(new Tuple<WorldObjectAssetReference, string>(interaction.ChosenLink.Target.Recipe.Target, interaction.ChosenLink.Target.Name));
@@ -58,7 +59,6 @@ public class CraftingAssetSlot : MonoBehaviour
 
     public void OnClick()
     {
-        var reference =  _interactionEvent.Source.Interact(_interactionEvent, _interaction);
-        _interactionEvent.Source.ClientInteract(_interactionEvent, _interaction, reference);
+        ViewLocator.Get<CraftingMenu>().First().SetSelectedInteraction(_interaction, _interactionEvent);
     }
 }

@@ -13,7 +13,10 @@ using SS3D.Systems.Tile.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -33,13 +36,29 @@ public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandl
     ///  The model for a single slot, to display tile objects in the menu.
     /// </summary>
     [SerializeField]
-    private GameObject _craftingSlotPrefab;
+    private GameObject _textSlotPrefab;
+
+    [SerializeField]
+    private GameObject _pictureSlotPrefab;
 
     /// <summary>
     /// Game object parent of the area in the tile map menu where the tile object slots will display.
     /// </summary>
     [SerializeField]
-    private GameObject _contentRoot;
+    private GameObject _textSlotArea;
+
+    [SerializeField]
+    private GameObject _pictureSlotArea;
+
+
+    private CraftingInteraction _interaction;
+
+    private InteractionEvent _interactionEvent;
+
+    [SerializeField]
+    private TextMeshProUGUI _objectTitle;
+
+    
 
     protected override void OnStart()
     {
@@ -79,9 +98,9 @@ public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandl
 
         foreach (CraftingInteraction interaction in interactions)
         {
-            Instantiate(_craftingSlotPrefab, _contentRoot.transform, true).GetComponent<CraftingAssetSlot>().Setup(interaction, interactionEvent, reference);
+            Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(interaction, interactionEvent);
         }
-
+      
         ShowUI(true);
     }
 
@@ -96,9 +115,51 @@ public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandl
     /// </summary>
     private void ClearGrid()
     {
-        for (int i = 0; i < _contentRoot.transform.childCount; i++)
+        for (int i = 0; i < _textSlotArea.transform.childCount; i++)
         {
-            _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
+            _textSlotArea.transform.GetChild(i).gameObject.Dispose(true);
         }
+
+        ClearPictures();
+    }
+
+    private void ClearPictures()
+    {
+        for (int i = 0; i < _pictureSlotArea.transform.childCount; i++)
+        {
+            _pictureSlotArea.transform.GetChild(i).gameObject.Dispose(true);
+        }
+    }
+
+    public void SetSelectedInteraction(CraftingInteraction interaction, InteractionEvent interactionEvent)
+    {
+
+        ClearPictures();
+
+        _interaction = interaction;
+        _interactionEvent = interactionEvent;
+
+        _objectTitle.text =  _interaction.ChosenLink.Target.Name;
+
+        GenericObjectSo asset;
+
+        if (_interaction.ChosenLink.Target.IsTerminal)
+        {
+            asset = Subsystems.Get<TileSystem>().GetAsset(_interaction.ChosenLink.Target.Results.First().Id);
+        }
+        else
+        {
+            asset = Subsystems.Get<TileSystem>().GetAsset(_interaction.ChosenLink.Target.Recipe.Target.Id);
+        }
+
+        GameObject _pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
+        _pictureSlot.GetComponent<AssetSlot>().Setup(asset);
+    }
+
+    public void OnBuildClick()
+    {
+        if(_interaction == null || _interactionEvent == null) return;
+        InteractionReference reference = _interactionEvent.Source.Interact(_interactionEvent, _interaction);
+        _interactionEvent.Source.ClientInteract(_interactionEvent, _interaction, reference);
     }
 }
