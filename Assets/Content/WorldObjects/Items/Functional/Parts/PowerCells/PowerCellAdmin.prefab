@@ -67,6 +67,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PowerCellAdmin
       objectReference: {fileID: 0}
+    - target: {fileID: 6800495836141411361, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: _asset
+      value: 
+      objectReference: {fileID: 11400000, guid: 19be5347e4fe0e346b5f3a3a9b3081fa, type: 2}
     - target: {fileID: 7662851888128253710, guid: de67200a4c96d444f800399a033ddfef, type: 3}
       propertyPath: m_Mesh
       value: 

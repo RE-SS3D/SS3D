@@ -178,4 +178,18 @@ MonoBehaviour:
       _value: {fileID: 7125681683583715523, guid: 5cab1a9f6c7f74948b84d0d625319efe, type: 3}
     - _key: JumpsuitEngineer
       _value: {fileID: 4245634344425516727, guid: 7436f4976849b994aaee40df1bca7d89, type: 3}
+    - _key: MicroLaser
+      _value: {fileID: 2402587210622244651, guid: 84cec183559b4954c883b11f20f767c9, type: 3}
+    - _key: MatterBin
+      _value: {fileID: 2402587210622244651, guid: ed77d98d3e75b7946b404face1fe8f82, type: 3}
+    - _key: Medkit
+      _value: {fileID: 5533951594911835035, guid: 1e64a1c37be1f7c44a5d242d6ec6da10, type: 3}
+    - _key: HealthScanner
+      _value: {fileID: 3794527162878356835, guid: e9f99df80a74fd242aa46e53c7ec0376, type: 3}
+    - _key: Hatchet
+      _value: {fileID: 2402587210622244651, guid: 9e967cb4084bf064c8a0ca5f57a33b0c, type: 3}
+    - _key: ElectricalWire
+      _value: {fileID: 7125681683583715523, guid: cc71128d4bcc0c548ac11481000ac424, type: 3}
+    - _key: ElectricalCable
+      _value: {fileID: 7125681683583715523, guid: 0e69918696f58e04f846e985ec7405fe, type: 3}
     _new: 

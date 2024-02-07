@@ -137,6 +137,7 @@ namespace SS3D.Systems.Entities.Humanoid
         }
 
         private void WalkingBehavior() { }
+        
         /// <summary>
         /// Cast knockdown, that isn't going to expire until Recover()
         /// </summary>
@@ -144,6 +145,7 @@ namespace SS3D.Systems.Entities.Humanoid
         public void KnockdownTimeless()
         {
             if (!enabled) return;
+            
             _isKnockdownTimed = false;
             IsKnockedDown = true;
         }
@@ -159,14 +161,16 @@ namespace SS3D.Systems.Entities.Humanoid
             _knockdownTimer += seconds;
             IsKnockedDown = true;
         }
+        
         private void Knockdown()
         {
             _currentState = RagdollState.Ragdoll;
             Vector3 movement = _humanoidLivingController.TargetMovement * 3;
             ToggleController(false);
             ToggleAnimator(false);
+            if (!IsOwner && Owner.ClientId != -1)
+                return;
             
-            if (!IsOwner) return;
             ToggleKinematic(false);
             foreach (Transform part in _ragdollParts)
             {
@@ -331,16 +335,29 @@ namespace SS3D.Systems.Entities.Humanoid
 		}
         private void ToggleController(bool enable)
         {
-            _humanoidLivingController.enabled = enable;
-            _characterController.enabled = enable;
+            if (_humanoidLivingController != null)
+            {
+                _humanoidLivingController.enabled = enable;
+            }
+            if (_characterController != null)
+            {
+                _characterController.enabled = enable;
+            }
         }
         private void ToggleAnimator(bool enable)
         {
             // Speed=0 prevents animator from choosing Walking animations after enabling it
             if (!enable)
                 _animator.SetFloat("Speed", 0);
-            _animator.enabled = enable;
-            _networkAnimator.enabled = enable;
+
+            if (_animator != null)
+            {
+                _animator.enabled = enable;
+            }
+            if (_networkAnimator != null)
+            {
+                _networkAnimator.enabled = enable;
+            }
         }
     }
 }

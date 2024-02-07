@@ -347,6 +347,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 1773710978803455870}
+  _asset: {fileID: 11400000, guid: 761f8c0e668a1d94ca1e59a4d7561a75, type: 2}
   _name: Steel sheet
   _weight: 1
   _startingTraits: []
