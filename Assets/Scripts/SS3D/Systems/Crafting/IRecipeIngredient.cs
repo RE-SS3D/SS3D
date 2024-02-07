@@ -1,7 +1,15 @@
 ﻿using SS3D.Interactions.Interfaces;
 
-
-public interface IRecipeIngredient : INetworkObjectProvider, IGameObjectProvider
+namespace SS3D.Systems.Crafting
 {
-    public void Consume();
+    /// <summary>
+    /// Interface for things that need to be consumed when a crafting interaction leads to consuming them.
+    /// </summary>
+    public interface IRecipeIngredient : INetworkObjectProvider, IGameObjectProvider
+    {
+        /// <summary>
+        /// Despawn the game object in an expected way.
+        /// </summary>
+        public void Consume();
+    }
 }

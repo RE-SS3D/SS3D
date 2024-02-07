@@ -6,26 +6,29 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using UnityEngine;
 
-/// <summary>
-/// Simple implementation of the IRecipeIngredient interface. Upon consumption of a crafting ingredient, simply despawn it.
-/// </summary>
-public class RecipeIngredient : NetworkActor, IRecipeIngredient
+namespace SS3D.Systems.Crafting
 {
-    [Server]
-    public void Consume()
+    /// <summary>
+    /// Simple implementation of the IRecipeIngredient interface. Upon consumption of a crafting ingredient, simply despawn it.
+    /// </summary>
+    public class RecipeIngredient : NetworkActor, IRecipeIngredient
     {
-        if (TryGetComponent(out Item item)  && item.IsInContainer())
+        [Server]
+        public void Consume()
         {
-            item.Container.RemoveItem(item);
-        }
+            if (TryGetComponent(out Item item) && item.IsInContainer())
+            {
+                item.Container.RemoveItem(item);
+            }
 
-        if(TryGetComponent(out PlacedTileObject tileObject))
-        {
-            Subsystems.Get<TileSystem>().CurrentMap.ClearTileObject(gameObject.transform.position, tileObject.Layer, tileObject.Direction);
-            return;
-        }
+            if (TryGetComponent(out PlacedTileObject tileObject))
+            {
+                Subsystems.Get<TileSystem>().CurrentMap.ClearTileObject(gameObject.transform.position, tileObject.Layer, tileObject.Direction);
+                return;
+            }
 
-        NetworkObject.Despawn();
-        gameObject.Dispose(true);
+            NetworkObject.Despawn();
+            gameObject.Dispose(true);
+        }
     }
 }
