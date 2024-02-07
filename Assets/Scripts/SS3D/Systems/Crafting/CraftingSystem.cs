@@ -1,4 +1,5 @@
 ﻿using Codice.CM.Common;
+using Coimbra;
 using FishNet;
 using FishNet.Object;
 using QuikGraph;
@@ -9,18 +10,12 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
-using SS3D.Interactions.Interfaces;
-using SS3D.Substances;
-using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
-using static QuikGraph.Algorithms.Assignment.HungarianAlgorithm;
-using static SS3D.Systems.Crafting.CraftingRecipe;
-using static UnityEngine.GraphicsBuffer;
+using Hand = SS3D.Systems.Inventory.Containers.Hand;
 
 namespace SS3D.Systems.Crafting
 {
@@ -37,6 +32,17 @@ namespace SS3D.Systems.Crafting
         /// The value is a list of craftingRecipe, for which the target is the key.
         /// </summary>
         private Dictionary<string, List<CraftingRecipe>> _recipeOrganiser = new();
+
+        /// <summary>
+        /// Dictionnary linking reference to crafting interactions to a list of coroutines, to start and cancel them.
+        /// Sould be mostly used to move ingredients on target.
+        /// </summary>
+        private Dictionary<InteractionReference, List<Coroutine>> _coroutinesOrganiser = new();
+
+        /// <summary>
+        /// Dictionnary linking crafting interaction references to particles, to start and cancel them.
+        /// </summary>
+        private Dictionary<InteractionReference, ParticleSystem> _craftingSmokes = new();
 
         public override void OnStartNetwork()
         {
@@ -99,6 +105,9 @@ namespace SS3D.Systems.Crafting
             return links.Count > 0;
         }
 
+        /// <summary>
+        /// Get available ingredients meeting all conditions for the recipe.
+        /// </summary>
         public List<IRecipeIngredient> GetIngredientsToConsume(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
             List<IRecipeIngredient> closeItemsFromTarget = GetCloseItemsFromTarget(interactionEvent.Target.GetGameObject());
@@ -165,6 +174,9 @@ namespace SS3D.Systems.Crafting
 
         }
 
+        /// <summary>
+        /// Return the current step name of whatever game object is passed in parameter.
+        /// </summary>
         private string CurrentStepName(GameObject target)
         {
             if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference)) return "";
@@ -208,7 +220,9 @@ namespace SS3D.Systems.Crafting
             return availableLinks.Count > 0; 
         }
 
-
+        /// <summary>
+        /// Check if all conditions are met to craft following a given recipe link.
+        /// </summary>
         public bool CanCraftRecipeLink(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
             if (!TargetIsValid(interactionEvent)) return false;
@@ -314,37 +328,44 @@ namespace SS3D.Systems.Crafting
         /// Move objects toward the crafting target, at constant speed.
         /// </summary>
         [Server]
-        public List<Coroutine> MoveAllObjectsToCraftPoint(Vector3 targetPosition, List<GameObject> gameObjectsToMove)
+        public void MoveAllObjectsToCraftPoint(CraftingInteraction interaction,InteractionEvent interactionEvent, InteractionReference reference)
         {
             float distance;
             float speed;
 
+            Vector3 targetPosition = interactionEvent.Target.GetGameObject().transform.position;
+
+            List<GameObject> ingredientsToConsume = 
+                GetIngredientsToConsume(interactionEvent, interaction.ChosenLink).Select(x => x.GameObject).ToList();
+
+            
             List<Coroutine> coroutines = new();
 
-            foreach (GameObject go in gameObjectsToMove)
+            foreach (GameObject go in ingredientsToConsume)
             {
                 distance = Vector3.Distance(go.transform.position, targetPosition);
                 speed = 5f * distance;
                 coroutines.Add(StartCoroutine(MoveObjectToTarget(go.transform, targetPosition, speed)));
             }
 
-            return coroutines;
+            _coroutinesOrganiser.Add(reference, coroutines);
+
+            AddCraftingSmoke(interactionEvent, reference);
         }
 
         /// <summary>
         /// Stop moving objects, should be called when the interaction is cancelled.
         /// </summary>
-        public void CancelMoveAllObjectsToCraftPoint(List<Coroutine> coroutines)
+        public void CancelMoveAllObjectsToCraftPoint(InteractionReference reference)
         {
-            if (coroutines == null) return;
-            foreach (Coroutine coroutine in coroutines)
-            {
-                if(coroutine == null) continue;
-                StopCoroutine(coroutine);
-            }
+            _coroutinesOrganiser[reference].Where(x => x!= null).ToList().ForEach(x => StopCoroutine(x) );
+
+            _craftingSmokes[reference].Dispose(true);
         }
 
-
+        /// <summary>
+        /// Should be called by a coroutine, moves another gameObject to a specific target, at a given speed
+        /// </summary>
         private System.Collections.IEnumerator MoveObjectToTarget(Transform objTransform, Vector3 targetPosition, float speed)
         {
             while (Vector3.Distance(objTransform.position, targetPosition) > 0.1f)
@@ -357,6 +378,9 @@ namespace SS3D.Systems.Crafting
             objTransform.position = targetPosition;
         }
 
+        /// <summary>
+        /// Method that should handle basic spawning for everything.
+        /// </summary>
         private GameObject DefaultCraft(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
         {
             GameObject instance;
@@ -365,51 +389,13 @@ namespace SS3D.Systems.Crafting
             if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand &&
                     targetItem.Container == hand.Container)
             {
-
-                if(prefab.TryGetComponent(out Item resultItem))
-                {
-                    instance = Instantiate(prefab);
-
-                    if (recipeStep.IsTerminal)
-                    {
-                        hand.Container.Dump();
-                        hand.Container.AddItem(resultItem);
-                    }
-                    else
-                    {
-                        Vector3 characterGround = interaction.CharacterTransform.position;
-                        characterGround.y = 0;
-                        instance.transform.position = characterGround + interaction.CharacterTransform.forward ;
-                    }
-                    InstanceFinder.ServerManager.Spawn(instance);
-                }
-                else
-                {
-                    instance = Instantiate(prefab);
-
-                    Vector3 characterGround = interaction.CharacterTransform.position;
-                    characterGround.y = 0;
-                    instance.transform.position = characterGround + interaction.CharacterTransform.forward;
-
-                    InstanceFinder.ServerManager.Spawn(instance);
-                    instance.SetActive(true);
-                }
+                instance = DefaultCraftItemHeldInHand(prefab, hand, recipeStep, interaction);
             }
 
             // If result is a placed tile object, just place it on the tilemap.
             else if(prefab.TryGetComponent(out PlacedTileObject resultTileObject))
             {
-                bool replace = false;
-                Direction direction = Direction.North;
-
-                if(interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject)
-                    && targetTileObject.Layer == resultTileObject.Layer)
-                {
-                    replace = true;
-                }
-
-                Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
-                    TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position), direction, false, replace, false, out instance);
+                instance = DefaultCraftTileObject(interactionEvent, resultTileObject);
             }
 
             else
@@ -424,6 +410,72 @@ namespace SS3D.Systems.Crafting
 
         }
 
+        /// <summary>
+        /// Handles spawning item, when the target is an item held in hand, and the result is whatever.
+        /// </summary>>
+        private GameObject DefaultCraftItemHeldInHand(GameObject prefab, Hand hand, RecipeStep recipeStep, CraftingInteraction interaction)
+        {
+            GameObject instance;
+
+            if (prefab.TryGetComponent(out Item resultItem))
+            {
+                instance = Instantiate(prefab);
+
+                // If result is an item, replace whatever is in hand by the new item.
+                if (recipeStep.IsTerminal)
+                {
+                    hand.Container.Dump();
+                    hand.Container.AddItem(resultItem);
+                }
+                else
+                {
+                    Vector3 characterGround = interaction.CharacterTransform.position;
+                    characterGround.y = 0;
+                    instance.transform.position = characterGround + interaction.CharacterTransform.forward;
+                }
+                InstanceFinder.ServerManager.Spawn(instance);
+            }
+            else
+            {
+                instance = Instantiate(prefab);
+
+                Vector3 characterGround = interaction.CharacterTransform.position;
+                characterGround.y = 0;
+                instance.transform.position = characterGround + interaction.CharacterTransform.forward;
+
+                InstanceFinder.ServerManager.Spawn(instance);
+                instance.SetActive(true);
+            }
+
+            return instance;
+        }
+
+        /// <summary>
+        /// The default method to craft new tile objects.
+        /// </summary>
+        private GameObject DefaultCraftTileObject(InteractionEvent interactionEvent, PlacedTileObject resultTileObject)
+        {
+            GameObject instance;
+
+            bool replace = false;
+            Direction direction = Direction.North;
+
+            if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject)
+                && targetTileObject.Layer == resultTileObject.Layer)
+            {
+                replace = true;
+            }
+
+            Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
+                TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position),
+                direction, false, replace, false, out instance);
+
+            return instance;
+        }
+        
+        /// <summary>
+        /// Check if the crafting recipe target is valid (well placed, in good conditions... whatever).
+        /// </summary>
         private bool TargetIsValid(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is Item target)
@@ -434,6 +486,9 @@ namespace SS3D.Systems.Crafting
             return true;
         }
 
+        /// <summary>
+        /// Check if the result of the crafting recipe is valid. Valid depends on the type of the result.
+        /// </summary>
         private bool ResultIsValid(InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
             if (!recipeStep.TryGetResult(out WorldObjectAssetReference recipeResult)) return true;
@@ -446,6 +501,9 @@ namespace SS3D.Systems.Crafting
             return true;
         }
 
+        /// <summary>
+        /// Check if the result placed object won't conflict with other placed tile objects. Should check collisions too probably.
+        /// </summary>
         private bool ResultIsValidPlacedTileObject(PlacedTileObject result, InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
             bool replace = false;
@@ -460,6 +518,9 @@ namespace SS3D.Systems.Crafting
             return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
         }
 
+        /// <summary>
+        /// Check if a given item is in a valid configuration to be used in a crafting interaction.
+        /// </summary>
         private bool ItemTargetIsValid(InteractionEvent interactionEvent, Item target)
         {
             // item target is valid if it is in hand holding the item or out of container.
@@ -475,6 +536,33 @@ namespace SS3D.Systems.Crafting
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Add smoke particles around the crafted target during crafting.
+        /// </summary>
+        private void AddCraftingSmoke(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            GameObject particleGameObject = GameObject.Instantiate(ParticlesEffects.ConstructionParticle.Prefab, interactionEvent.Target.GetGameObject().transform.position, Quaternion.identity);
+            ParticleSystem particles = particleGameObject.GetComponent<ParticleSystem>();
+
+            // Get the shape module of the dust cloud particle system
+            ParticleSystem.ShapeModule shapeModule = particles.shape;
+
+            // Adjust the shape to match the object's bounds
+            MeshRenderer targetRenderer = interactionEvent.Target.GetGameObject().GetComponentInChildren<MeshRenderer>();
+            if (targetRenderer != null)
+            {
+                shapeModule.enabled = true;
+                shapeModule.shapeType = ParticleSystemShapeType.MeshRenderer;
+                shapeModule.meshRenderer = targetRenderer;
+            }
+            else
+            {
+                Debug.LogWarning("The object to hide does not have a Renderer component.");
+            }
+
+            _craftingSmokes.Add(reference, particles);
         }
     }
 }

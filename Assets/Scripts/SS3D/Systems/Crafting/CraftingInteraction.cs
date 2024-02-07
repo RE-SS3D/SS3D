@@ -19,16 +19,11 @@ namespace SS3D.Systems.Crafting
     public class CraftingInteraction : DelayedInteraction
     {
 
-        private ParticleSystem particles;
-
-        private MeshRenderer targetRenderer;
 
         /// <summary>
         /// The recipe link associated to this interaction. Crafting interactions are always associated to a recipe link.
         /// </summary>
         protected TaggedEdge<RecipeStep, RecipeStepLink> _chosenLink;
-
-        private List<Coroutine> _coroutines;
 
         /// <summary>
         /// The transform of the game object executing the crafting interaction, useful to check if the source moved
@@ -97,52 +92,20 @@ namespace SS3D.Systems.Crafting
 
             _startPosition = _characterTransform.position;
 
-            AddCraftingSmoke(interactionEvent);
-
             Subsystems.TryGet(out CraftingSystem craftingSystem);
 
-            List<GameObject> ingredientsToConsume = craftingSystem.GetIngredientsToConsume(interactionEvent, _chosenLink).Select(x => x.GameObject).ToList();
-
-            _coroutines = craftingSystem.MoveAllObjectsToCraftPoint(
-                interactionEvent.Target.GetGameObject().transform.position,
-                ingredientsToConsume);
+            craftingSystem.MoveAllObjectsToCraftPoint(this, interactionEvent, reference);
 
             ViewLocator.Get<CraftingMenu>().First().HideMenu();
 
             return true;
         }
 
-        protected override void StartDelayed(InteractionEvent interactionEvent)
+        protected override void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            particles.Dispose(true);
             Subsystems.TryGet(out CraftingSystem craftingSystem);
-            craftingSystem.CancelMoveAllObjectsToCraftPoint(_coroutines);
+            craftingSystem.CancelMoveAllObjectsToCraftPoint(reference);
             craftingSystem.Craft(this, interactionEvent);
-        }
-
-        /// <summary>
-        /// Add smoke particles around the crafted target during crafting.
-        /// </summary>
-        private void AddCraftingSmoke(InteractionEvent interactionEvent)
-        {
-            GameObject particleGameObject = GameObject.Instantiate(ParticlesEffects.ConstructionParticle.Prefab, interactionEvent.Target.GetGameObject().transform.position, Quaternion.identity);
-            particles = particleGameObject.GetComponent<ParticleSystem>();
-
-            // Get the shape module of the dust cloud particle system
-            ParticleSystem.ShapeModule shapeModule = particles.shape;
-
-            // Adjust the shape to match the object's bounds
-            targetRenderer = interactionEvent.Target.GetGameObject().GetComponentInChildren<MeshRenderer>();
-            if (targetRenderer != null)
-            {
-                shapeModule.enabled = true;
-                shapeModule.shapeType = ParticleSystemShapeType.MeshRenderer;
-                shapeModule.meshRenderer = targetRenderer;
-            }
-            else
-            {
-                Debug.LogWarning("The object to hide does not have a Renderer component.");
-            }
         }
 
         public override string GetName(InteractionEvent interactionEvent)
@@ -150,13 +113,10 @@ namespace SS3D.Systems.Crafting
             return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
         }
 
-       
-
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            particles.Dispose(true);
             Subsystems.TryGet(out CraftingSystem craftingSystem);
-            craftingSystem.CancelMoveAllObjectsToCraftPoint(_coroutines);
+            craftingSystem.CancelMoveAllObjectsToCraftPoint(reference);
         }
 
 

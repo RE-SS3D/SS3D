@@ -81,7 +81,7 @@ namespace SS3D.Interactions
             {
                 if (CanInteract(interactionEvent))
                 {
-                    StartDelayed(interactionEvent);
+                    StartDelayed(interactionEvent, reference);
                     return false;
                 }
                 else
@@ -109,6 +109,6 @@ namespace SS3D.Interactions
         /// Starts the interaction after the delay has passed
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
-        protected abstract void StartDelayed(InteractionEvent interactionEvent);
+        protected abstract void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference);
     }
 }
