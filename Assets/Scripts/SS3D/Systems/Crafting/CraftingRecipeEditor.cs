@@ -1,205 +1,264 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using SS3D.Systems.Crafting;
-using System.Collections.Generic;
 using QuikGraph;
-using System.Linq;
 using System.Collections;
 using Unity.EditorCoroutines.Editor;
-using Codice.Client.BaseCommands.TubeClient;
 using System;
-using QuikGraph.Algorithms;
-using UnityEditor.PackageManager.UI;
 using SS3D.Utils;
-using UnityEngine.UIElements;
-using SS3D.Substances;
 
-/// <summary>
-/// Custom window to display the recipe graph of a recipe opened in inspector.
-/// </summary>
-public class CraftingRecipeEditor : EditorWindow
+namespace SS3D.Systems.Crafting
 {
-    private float _repulsiveConstant = 1;
-
-    private float _attractiveConstant = 1;
-
-    private float _idealLenght = 80;
-
-    private int _maxIteration = 300;
-
-    private float _delta = 1f;
-
-    private float _forceToStop = 0.1f;
-
-    private AdjacencyGraph<VerticeWithPosition<RecipeStep>, TaggedEdge<VerticeWithPosition<RecipeStep>, RecipeStepLink>> _graphWithPosition;
-
-    private const float KZoomMin = 0.1f;
-    private const float KZoomMax = 10.0f;
-
-    private readonly Rect _zoomArea = new Rect(200.0f, 200.0f, 1200.0f, 600.0f);
-    private float _zoom = 1.0f;
-    private Vector2 _zoomCoordsOrigin = Vector2.zero;
-
-    private const float CircleSize = 5f;
-
-    private Vector2 ConvertScreenCoordsToZoomCoords(Vector2 screenCoords)
+    /// <summary>
+    /// Custom window to display the recipe graph of a recipe opened in inspector. The 
+    /// recipe graph is shown as a visual graph, and it's node positions are chosen using a force constrained algorithm.
+    /// This window should show the graph position being dynamically chosen, like an animation.
+    /// It need a craftin recipe open in inspector to show the graph.
+    /// </summary>
+    public class CraftingRecipeEditor : EditorWindow
     {
-        return (screenCoords - _zoomArea.TopLeft()) / _zoom + _zoomCoordsOrigin;
-    }
+        /// <summary>
+        /// How much vertices are repulsive to each other.
+        /// </summary>
+        private float _repulsiveConstant = 1;
 
-    private void DrawZoomArea()
-    {
-        // Within the zoom area all coordinates are relative to the top left corner of the zoom area
-        // with the width and height being scaled versions of the original/unzoomed area's width and height.
-        EditorZoomArea.Begin(_zoom, _zoomArea);
+        /// <summary>
+        /// How much vertices linked by an an edge attract each other.
+        /// </summary>
+        private float _attractiveConstant = 1;
 
-        GUILayout.BeginArea(new Rect(- _zoomCoordsOrigin.x, - _zoomCoordsOrigin.y, 1600.0f, 900.0f));
+        /// <summary>
+        /// Ideal lenght between vertices.
+        /// </summary>
+        private float _idealLenght = 80;
 
-        if(_graphWithPosition != null) DrawGraph(_graphWithPosition);
+        /// <summary>
+        /// How much iteration will the force algorithm make before stopping.
+        /// </summary>
+        private int _maxIteration = 300;
 
-        GUILayout.EndArea();
+        /// <summary>
+        /// Delta acts like a "speed" factor for the algorithm, the higher it is, the faster it converges
+        /// toward the solution, but values too high can lead to divergence.
+        /// </summary>
+        private float _delta = 1f;
 
-        EditorZoomArea.End();
-    }
+        /// <summary>
+        /// Another criteria to stop the algorithm is what's the max force exerted on any vertices is at a given iteration.
+        /// When lower than a given amount we consider it won't move much still, and we stop.
+        /// </summary>
+        private float _forceToStop = 0.1f;
 
-    private void DrawNonZoomArea()
-    {
-        EditorGUILayout.LabelField("Recipe display", EditorStyles.boldLabel);
+        /// <summary>
+        /// Enhanced recipe Graph with position for vertices. 
+        /// </summary>
+        private AdjacencyGraph<VerticeWithPosition<RecipeStep>, TaggedEdge<VerticeWithPosition<RecipeStep>, RecipeStepLink>> _graphWithPosition;
 
-        if (GUILayout.Button("draw graph"))
+        /// <summary>
+        /// Minimum zoom allowed
+        /// </summary>
+        private const float KZoomMin = 0.1f;
+
+        /// <summary>
+        /// Maximum zoom allowed
+        /// </summary>
+        private const float KZoomMax = 10.0f;
+
+        /// <summary>
+        /// Area in which the zooming will occur.
+        /// </summary>
+        private readonly Rect _zoomArea = new Rect(200.0f, 200.0f, 1200.0f, 600.0f);
+
+        /// <summary>
+        /// The current value of the zoom.
+        /// </summary>
+        private float _zoom = 1.0f;
+
+        private Vector2 _zoomCoordsOrigin = Vector2.zero;
+
+        /// <summary>
+        /// Size of vertices drawn in the window.
+        /// </summary>
+        private const float CircleSize = 5f;
+
+        /// <summary>
+        /// Helper method to find coordinates when zooming from the screen coordinates.
+        /// </summary>
+        private Vector2 ConvertScreenCoordsToZoomCoords(Vector2 screenCoords)
         {
-            CraftingRecipe recipe = Selection.activeObject as CraftingRecipe;
-
-            if (recipe == null) return;
-
-            EditorCoroutineUtility.StartCoroutine(ComputeGraphPositions(recipe), this);
+            return (screenCoords - _zoomArea.TopLeft()) / _zoom + _zoomCoordsOrigin;
         }
 
-
-        _zoom = EditorGUILayout.Slider("Zoom", _zoom, KZoomMin, KZoomMax);
-        _repulsiveConstant = EditorGUILayout.Slider("Repulsive constant", _repulsiveConstant, 0, 1000);
-        _attractiveConstant = EditorGUILayout.Slider("Attractive constant", _attractiveConstant, 0, 1000);
-        _idealLenght = EditorGUILayout.Slider("Ideal lenght", _idealLenght, 0, 800);
-        _delta = EditorGUILayout.Slider("Delta", _delta, 0, 50);
-        _forceToStop = EditorGUILayout.Slider("Max force to stop", _forceToStop, 0.001f, 5);
-        _maxIteration = Math.Max(100, EditorGUILayout.IntField("Max iteration", _maxIteration));
-    }
-
-    public IEnumerator ComputeGraphPositions(CraftingRecipe recipe)
-    {
-        _graphWithPosition =
-    SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.InitializeGraphWithPositions(recipe.RecipeGraph);
-
-        int t = 0;
-
-        bool forceReachedMinimum = false;
-
-        while (t < _maxIteration)
+        /// <summary>
+        /// Draw the area of the window that can be zoomed/panned.
+        /// </summary>
+        private void DrawZoomArea()
         {
-            SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.SetParameters(_repulsiveConstant, _attractiveConstant,
-                _idealLenght, _delta, _forceToStop);
-            forceReachedMinimum = SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.ComputeOneStep(_graphWithPosition);
+            // Within the zoom area all coordinates are relative to the top left corner of the zoom area
+            // with the width and height being scaled versions of the original/unzoomed area's width and height.
+            EditorZoomArea.Begin(_zoom, _zoomArea);
 
-            if (forceReachedMinimum) break;
-            t++;
-            Repaint();
-            yield return null;
-        }
-    }
+            GUILayout.BeginArea(new Rect(-_zoomCoordsOrigin.x, -_zoomCoordsOrigin.y, 1600.0f, 900.0f));
 
-    private void HandleEvents()
-    {
-        // Allow adjusting the zoom with the mouse wheel as well. In this case, use the mouse coordinates
-        // as the zoom center instead of the top left corner of the zoom area. This is achieved by
-        // maintaining an origin that is used as offset when drawing any GUI elements in the zoom area.
-        if (Event.current.type == EventType.ScrollWheel)
-        {
-            Vector2 screenCoordsMousePos = Event.current.mousePosition;
-            Vector2 delta = Event.current.delta;
-            Vector2 zoomCoordsMousePos = ConvertScreenCoordsToZoomCoords(screenCoordsMousePos);
-            float zoomDelta = -delta.y / 150.0f;
-            float oldZoom = _zoom;
-            _zoom += zoomDelta;
-            _zoom = Mathf.Clamp(_zoom, KZoomMin, KZoomMax);
-            _zoomCoordsOrigin += (zoomCoordsMousePos - _zoomCoordsOrigin) - (oldZoom / _zoom) * (zoomCoordsMousePos - _zoomCoordsOrigin);
+            if (_graphWithPosition != null) DrawGraph(_graphWithPosition);
 
-            Event.current.Use();
+            GUILayout.EndArea();
+
+            EditorZoomArea.End();
         }
 
-        // Allow moving the zoom area's origin by dragging with the middle mouse button or dragging
-        // with the left mouse button with Alt pressed.
-        if (Event.current.type == EventType.MouseDrag &&
-            (Event.current.button == 0 && Event.current.modifiers == EventModifiers.Alt) ||
-            Event.current.button == 2)
+        /// <summary>
+        /// Draw the area of the window that won't be zoomed/panned.
+        /// </summary>
+        private void DrawNonZoomArea()
         {
-            Vector2 delta = Event.current.delta;
-            delta /= _zoom;
-            _zoomCoordsOrigin += delta;
+            EditorGUILayout.LabelField("Recipe display", EditorStyles.boldLabel);
 
-            Event.current.Use();
+            if (GUILayout.Button("draw graph"))
+            {
+                CraftingRecipe recipe = Selection.activeObject;
+
+                if (recipe == null) return;
+
+                EditorCoroutineUtility.StartCoroutine(ComputeGraphPositions(recipe), this);
+            }
+
+
+            _zoom = EditorGUILayout.Slider("Zoom", _zoom, KZoomMin, KZoomMax);
+            _repulsiveConstant = EditorGUILayout.Slider("Repulsive constant", _repulsiveConstant, 0, 1000);
+            _attractiveConstant = EditorGUILayout.Slider("Attractive constant", _attractiveConstant, 0, 1000);
+            _idealLenght = EditorGUILayout.Slider("Ideal lenght", _idealLenght, 0, 800);
+            _delta = EditorGUILayout.Slider("Delta", _delta, 0, 50);
+            _forceToStop = EditorGUILayout.Slider("Max force to stop", _forceToStop, 0.001f, 5);
+            _maxIteration = Math.Max(100, EditorGUILayout.IntField("Max iteration", _maxIteration));
         }
-    }
 
-    [MenuItem("Window/SS3D/Crafting Recipe Display")]
-    public static void ShowWindow()
-    {
-        CraftingRecipeEditor window = GetWindow<CraftingRecipeEditor>("Crafting Recipe Display");
-        window.minSize = new Vector2(600.0f, 300.0f);
-        window.wantsMouseMove = true;
-    }
-
-    private void OnGUI()
-    {
-        HandleEvents();
-        DrawNonZoomArea();
-
-        // The zoom area clipping is sometimes not fully confined to the passed in rectangle. At certain
-        // zoom levels you will get a line of pixels rendered outside of the passed in area because of
-        // floating point imprecision in the scaling. Therefore, it is recommended to draw the zoom
-        // area first and then draw everything else so that there is no undesired overlap.
-        DrawZoomArea();
-
-
-        
-
-    }
-
-    private void DrawGraph(AdjacencyGraph<VerticeWithPosition<RecipeStep>, TaggedEdge<VerticeWithPosition<RecipeStep>, RecipeStepLink>> graphWithPosition)
-    {
-        // draw the graph
-        foreach (VerticeWithPosition<RecipeStep> stepWithPosition in graphWithPosition.Vertices)
+        /// <summary>
+        /// Apply the spring embedder algorithm and do one step each frame, this is supposed to be called by a coroutine.
+        /// </summary>
+        /// <param name="recipe"></param>
+        /// <returns></returns>
+        public IEnumerator ComputeGraphPositions(CraftingRecipe recipe)
         {
-            Color color = stepWithPosition.vertice.IsTerminal ? Color.red : stepWithPosition.vertice.IsInitialState ? Color.green : Color.gray;
-            Handles.color = color;
-            Handles.DrawSolidDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, CircleSize);
-            Handles.color = Color.black;
-            Handles.DrawWireDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, CircleSize);
+            _graphWithPosition =
+        SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.InitializeGraphWithPositions(recipe.RecipeGraph);
 
-            GUIStyle style = new GUIStyle(GUI.skin.label);
-            style.fontSize = (int) Mathf.Clamp(12f/_zoom, 4f, 25f);
+            int t = 0;
 
-            EditorGUI.LabelField(new Rect(stepWithPosition.position.x, stepWithPosition.position.y, 200, 20), stepWithPosition.vertice.Name, style);
+            bool forceReachedMinimum = false;
+
+            while (t < _maxIteration)
+            {
+                SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.SetParameters(_repulsiveConstant, _attractiveConstant,
+                    _idealLenght, _delta, _forceToStop);
+                forceReachedMinimum = SpringEmbedderAlgorithm<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>, RecipeStepLink>.ComputeOneStep(_graphWithPosition);
+
+                if (forceReachedMinimum) break;
+                t++;
+                Repaint();
+                yield return null;
+            }
         }
-        Handles.color = Color.white;
 
-
-        foreach (TaggedEdge<VerticeWithPosition<RecipeStep>, RecipeStepLink> edge in graphWithPosition.Edges)
+        /// <summary>
+        /// Handle user inputs for zoom and panning
+        /// </summary>
+        private void HandleEvents()
         {
-            Handles.DrawAAPolyLine(3, edge.Source.position, edge.Target.position);
+            // Allow adjusting the zoom with the mouse wheel as well. In this case, use the mouse coordinates
+            // as the zoom center instead of the top left corner of the zoom area. This is achieved by
+            // maintaining an origin that is used as offset when drawing any GUI elements in the zoom area.
+            if (Event.current.type == EventType.ScrollWheel)
+            {
+                Vector2 screenCoordsMousePos = Event.current.mousePosition;
+                Vector2 delta = Event.current.delta;
+                Vector2 zoomCoordsMousePos = ConvertScreenCoordsToZoomCoords(screenCoordsMousePos);
+                float zoomDelta = -delta.y / 150.0f;
+                float oldZoom = _zoom;
+                _zoom += zoomDelta;
+                _zoom = Mathf.Clamp(_zoom, KZoomMin, KZoomMax);
+                _zoomCoordsOrigin += (zoomCoordsMousePos - _zoomCoordsOrigin) - (oldZoom / _zoom) * (zoomCoordsMousePos - _zoomCoordsOrigin);
 
-            DrawArrowhead(edge.Source.position, edge.Target.position, 20, 8f);
+                Event.current.Use();
+            }
+
+            // Allow moving the zoom area's origin by dragging with the middle mouse button or dragging
+            // with the left mouse button with Alt pressed.
+            if (Event.current.type == EventType.MouseDrag &&
+                (Event.current.button == 0 && Event.current.modifiers == EventModifiers.Alt) ||
+                Event.current.button == 2)
+            {
+                Vector2 delta = Event.current.delta;
+                delta /= _zoom;
+                _zoomCoordsOrigin += delta;
+
+                Event.current.Use();
+            }
         }
-    }
 
-    // Helper method to draw arrowhead
-    private void DrawArrowhead(Vector2 start, Vector2 end, float arrowheadAngle, float arrowheadLength)
-    {
-        Vector2 direction = (end - start).normalized;
-        Vector2 arrowheadLeft = Quaternion.Euler(0, 0, arrowheadAngle) * -direction * arrowheadLength;
-        Vector2 arrowheadRight = Quaternion.Euler(0, 0, -arrowheadAngle) * -direction * arrowheadLength;
+        /// <summary>
+        /// Show this window with the right size and parameters.
+        /// </summary>
+        [MenuItem("Window/SS3D/Crafting Recipe Display")]
+        public static void ShowWindow()
+        {
+            CraftingRecipeEditor window = GetWindow<CraftingRecipeEditor>("Crafting Recipe Display");
+            window.minSize = new Vector2(600.0f, 300.0f);
+            window.wantsMouseMove = true;
+        }
 
-        Handles.DrawAAPolyLine(3, new Vector3(end.x, end.y, 0), new Vector3(end.x + arrowheadLeft.x, end.y + arrowheadLeft.y, 0));
-        Handles.DrawAAPolyLine(3, new Vector3(end.x, end.y, 0), new Vector3(end.x + arrowheadRight.x, end.y + arrowheadRight.y, 0));
+        private void OnGUI()
+        {
+            HandleEvents();
+            DrawNonZoomArea();
+
+            // The zoom area clipping is sometimes not fully confined to the passed in rectangle. At certain
+            // zoom levels you will get a line of pixels rendered outside of the passed in area because of
+            // floating point imprecision in the scaling. Therefore, it is recommended to draw the zoom
+            // area first and then draw everything else so that there is no undesired overlap.
+            DrawZoomArea();
+        }
+
+        /// <summary>
+        /// Draw the graph
+        /// </summary>
+        private void DrawGraph(AdjacencyGraph<VerticeWithPosition<RecipeStep>, TaggedEdge<VerticeWithPosition<RecipeStep>, RecipeStepLink>> graphWithPosition)
+        {
+            foreach (VerticeWithPosition<RecipeStep> stepWithPosition in graphWithPosition.Vertices)
+            {
+                Color color = stepWithPosition.vertice.IsTerminal ? Color.red : stepWithPosition.vertice.IsInitialState ? Color.green : Color.gray;
+                Handles.color = color;
+                Handles.DrawSolidDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, CircleSize);
+                Handles.color = Color.black;
+                Handles.DrawWireDisc(new Vector3(stepWithPosition.position.x, stepWithPosition.position.y, 0), Vector3.forward, CircleSize);
+
+                GUIStyle style = new GUIStyle(GUI.skin.label);
+                style.fontSize = (int)Mathf.Clamp(12f / _zoom, 4f, 25f);
+
+                EditorGUI.LabelField(new Rect(stepWithPosition.position.x, stepWithPosition.position.y, 200, 20), stepWithPosition.vertice.Name, style);
+            }
+            Handles.color = Color.white;
+
+
+            foreach (TaggedEdge<VerticeWithPosition<RecipeStep>, RecipeStepLink> edge in graphWithPosition.Edges)
+            {
+                Handles.DrawAAPolyLine(3, edge.Source.position, edge.Target.position);
+
+                DrawArrowhead(edge.Source.position, edge.Target.position, 20, 8f);
+            }
+        }
+
+        /// <summary>
+        /// Helper method to draw the arrowhead at the tip of edges.
+        /// </summary>
+        private void DrawArrowhead(Vector2 start, Vector2 end, float arrowheadAngle, float arrowheadLength)
+        {
+            Vector2 direction = (end - start).normalized;
+            Vector2 arrowheadLeft = Quaternion.Euler(0, 0, arrowheadAngle) * -direction * arrowheadLength;
+            Vector2 arrowheadRight = Quaternion.Euler(0, 0, -arrowheadAngle) * -direction * arrowheadLength;
+
+            Handles.DrawAAPolyLine(3, new Vector3(end.x, end.y, 0), new Vector3(end.x + arrowheadLeft.x, end.y + arrowheadLeft.y, 0));
+            Handles.DrawAAPolyLine(3, new Vector3(end.x, end.y, 0), new Vector3(end.x + arrowheadRight.x, end.y + arrowheadRight.y, 0));
+        }
     }
 }
 
