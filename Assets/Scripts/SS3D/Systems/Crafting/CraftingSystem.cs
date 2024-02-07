@@ -26,34 +26,17 @@ namespace SS3D.Systems.Crafting
 {
 
     /// <summary>
-    /// TODO : Add deconstruction. When deconstructing something, e.g. going from metal window to metal girder with glass sheets, apply all modifications steps to get to the last one.
-    /// deconstructing should be as simple as a bool in a recipe. This is necessary as girders don't have glass sheets when they're spawned. Then each step of deconstruction goes
-    /// back one step of modification. custom craftable handle that.
+    /// Core of the crafting, store and organize recipes, check what can be crafted, hold the actual craft logic.
     /// </summary>
 
     public class CraftingSystem : NetworkSystem
     {
-        [SerializeField]
-        private CraftingMenu _craftingMenu;
 
-        public struct IngredientsForRecipeStepLink
-        {
-            public List<IRecipeIngredient> _ingredients;
-            public RecipeStepLink _link;
-
-            public IngredientsForRecipeStepLink(List<IRecipeIngredient> ingredients, RecipeStepLink link)
-            {
-                _ingredients = ingredients;
-                _link = link;
-            }
-        }
         /// <summary>
         /// First string is the id of the target object of the recipe (as the WorldObjectAssetReference's id).
         /// The value is a list of craftingRecipe, for which the target is the key.
         /// </summary>
         private Dictionary<string, List<CraftingRecipe>> _recipeOrganiser = new();
-
-        public CraftingMenu CraftingMenu => _craftingMenu;
 
         public override void OnStartNetwork()
         {
@@ -327,6 +310,9 @@ namespace SS3D.Systems.Crafting
         }
 
 
+        /// <summary>
+        /// Move objects toward the crafting target, at constant speed.
+        /// </summary>
         [Server]
         public List<Coroutine> MoveAllObjectsToCraftPoint(Vector3 targetPosition, List<GameObject> gameObjectsToMove)
         {
@@ -345,6 +331,9 @@ namespace SS3D.Systems.Crafting
             return coroutines;
         }
 
+        /// <summary>
+        /// Stop moving objects, should be called when the interaction is cancelled.
+        /// </summary>
         public void CancelMoveAllObjectsToCraftPoint(List<Coroutine> coroutines)
         {
             if (coroutines == null) return;
@@ -354,6 +343,7 @@ namespace SS3D.Systems.Crafting
                 StopCoroutine(coroutine);
             }
         }
+
 
         private System.Collections.IEnumerator MoveObjectToTarget(Transform objTransform, Vector3 targetPosition, float speed)
         {

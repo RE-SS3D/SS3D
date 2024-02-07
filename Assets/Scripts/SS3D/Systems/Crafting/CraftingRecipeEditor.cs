@@ -115,7 +115,7 @@ namespace SS3D.Systems.Crafting
 
             if (GUILayout.Button("draw graph"))
             {
-                CraftingRecipe recipe = Selection.activeObject;
+                CraftingRecipe recipe = UnityEditor.Selection.activeObject as CraftingRecipe;
 
                 if (recipe == null) return;
 
