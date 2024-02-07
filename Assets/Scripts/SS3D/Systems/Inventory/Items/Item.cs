@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Coimbra;
-using FishNet;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
-using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inventory.Containers;
@@ -17,7 +15,6 @@ using SS3D.Systems.Inventory.Interactions;
 using SS3D.Systems.Selection;
 using UnityEngine;
 using UnityEngine.Serialization;
-
 #if UNITY_EDITOR
 using UnityEditor;
 using AssetDatabase = UnityEditor.AssetDatabase;
