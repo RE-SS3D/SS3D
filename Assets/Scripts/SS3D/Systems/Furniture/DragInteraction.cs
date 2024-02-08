@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {
+    /// <summary>
+    /// Interaction used to drag heavy stuff around the map.
+    /// </summary>
     public class DragInteraction : Interaction
     {
         /// <summary>

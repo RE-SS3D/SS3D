@@ -7,27 +7,40 @@ using System.Linq;
 
 namespace SS3D.Systems.Crafting
 {
+    /// <summary>
+    /// Represent a single step in a recipe, hold an optionnal result from reaching the step, has a name,
+    /// and some data regarding what to do when it's reached.
+    /// </summary>
     [Serializable]
     public class RecipeStep
     {
-
+        /// <summary>
+        /// The recipe this step belongs to.
+        /// </summary>
         public CraftingRecipe Recipe { get; set; }
 
         /// <summary>
-        /// A list of resulting objects that will spawn at the end of the crafting process.
+        /// A resulting object that will spawn at the end of the crafting process, optionnal, should be only on
+        /// terminal steps.
         /// </summary>
         [SerializeField]
         private WorldObjectAssetReference _result;
 
         /// <summary>
-        /// If true, the target is consumed (despawned).
+        /// If true, the target is consumed (despawned). A step can't be terminal and initial at the same time.
         /// </summary>
         [SerializeField]
         private bool _isTerminal;
 
+        /// <summary>
+        /// The name of the step. Choose it carefully as it is currently how one can refer to it.
+        /// </summary>
         [SerializeField]
         private string _name;
 
+        /// <summary>
+        /// /// If true, the recipe start here. It should be unique. A step can't be terminal and initial at the same time.
+        /// </summary>
         [SerializeField]
         private bool _isInitialState;
 

@@ -13,6 +13,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Put this script on things that can be dragged by a player, such as unbolted furnitures.
+/// </summary>
 public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
 {
     /// <summary>
@@ -20,8 +23,6 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
     /// </summary>
     [SerializeField]
     private Transform _dragger;
-
-    private FixedJoint joint;
 
     private Vector3 _draggerToDragged;
 
@@ -50,16 +51,16 @@ public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
 
         if (!_dragged) return;
 
-        gameObject.transform.position =  new Vector3(_dragger.transform.position.x, transform.position.y, _dragger.transform.position.z) + _draggerToDragged;
-
-        
+        gameObject.transform.position =  
+            new Vector3(_dragger.transform.position.x, transform.position.y, _dragger.transform.position.z) + _draggerToDragged;
     }
 
     public void SetDrag(bool drag, Transform dragger)
     {
         _dragged= drag;
         _dragger = dragger;
-        _draggerToDragged = new Vector3(transform.position.x - _dragger.transform.position.x, 0f, transform.position.z - _dragger.transform.position.z);
+        _draggerToDragged = 
+            new Vector3(transform.position.x - _dragger.transform.position.x, 0f, transform.position.z - _dragger.transform.position.z);
 
         
     }

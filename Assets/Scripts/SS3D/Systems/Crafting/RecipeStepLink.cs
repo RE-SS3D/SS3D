@@ -8,7 +8,7 @@ using SS3D.Data.AssetDatabases;
 namespace SS3D.Systems.Crafting
 {
     /// <summary>
-    /// Class representing 
+    /// Class representing a link between two recipe steps.
     /// </summary>
     [Serializable]
     public class RecipeStepLink
@@ -20,18 +20,33 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private SerializableDictionary<WorldObjectAssetReference, int> _elements = new();
 
+        /// <summary>
+        /// Bunch of conditions for ingredients to be valid.
+        /// </summary>
         [SerializeField]
         private List<IngredientCondition> _conditions = new();
 
+        /// <summary>
+        /// The needed type of crafting interaction to go through this link
+        /// </summary>
         [SerializeField]
         private CraftingInteractionType _craftingInteractionType;
 
+        /// <summary>
+        /// The source recipe step.
+        /// </summary>
         [SerializeField]
         private string _from;
 
+        /// <summary>
+        /// The target recipe step.
+        /// </summary>
         [SerializeField]
         private string _to;
 
+        /// <summary>
+        /// Should the result spawning from reaching the target step be modified ? Useful for deconstruction.
+        /// </summary>
         [SerializeField]
         private bool _modifyResult;
 
@@ -54,14 +69,29 @@ namespace SS3D.Systems.Crafting
 
         public CraftingRecipe Recipe { get; set; }
 
+        /// <summary>
+        /// The needed type of crafting interaction to go through this link
+        /// </summary>
         public CraftingInteractionType CraftingInteractionType => _craftingInteractionType;
 
+        /// <summary>
+        /// Bunch of conditions for ingredients to be valid.
+        /// </summary>
         public List<IngredientCondition> Conditions => _conditions;
 
+        /// <summary>
+        /// The source recipe step.
+        /// </summary>
         public string From => _from;
 
+        /// <summary>
+        /// The target recipe step.
+        /// </summary>
         public string To => _to;
 
+        /// <summary>
+        /// Should the result spawning from reaching the target step be modified ? Useful for deconstruction.
+        /// </summary>
         public bool ModifyResult => _modifyResult;
 
         /// <summary>
@@ -88,6 +118,9 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public List<GameObject> SecondaryResults => _secondaryresults.Select(reference => reference.Prefab).ToList();
 
+        /// <summary>
+        /// Filter ingredients based on conditions added on this recipe step link.
+        /// </summary>
         public List<IRecipeIngredient> ApplyIngredientConditions(List<IRecipeIngredient> ingredients)
         {
             foreach (var condition in _conditions)
@@ -97,8 +130,6 @@ namespace SS3D.Systems.Crafting
 
             return ingredients;
         }
-
-        public int ElementsNumber => _elements.Sum(x => x.Value);
     }
 }
 

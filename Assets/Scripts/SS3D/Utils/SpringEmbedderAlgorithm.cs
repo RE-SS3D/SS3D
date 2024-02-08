@@ -17,20 +17,41 @@ namespace SS3D.Utils
 
     /// <summary>
     /// Inspired by this doc : https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v6.pdf
+    /// The spring embedder algorithm simulates the behavior of negative charged particles, linked by spring between
+    /// themselves, and the shape it takes after it reaches its minimum energy leads to an easy-to-read graph.
     /// </summary>
     public static class SpringEmbedderAlgorithm<TVertex, TEdge, TTag>
     {
-
+        /// <summary>
+        /// How much vertices are repulsive to each other.
+        /// </summary>
         private static float RepulsiveConstant = 1;
 
+        /// <summary>
+        /// How much vertices linked by an an edge attract each other.
+        /// </summary>
         private static float AttractiveConstant = 1;
 
+        /// <summary>
+        /// Ideal lenght between vertices.
+        /// </summary>
         private static float IdealLenght = 80;
 
+        /// <summary>
+        /// Delta acts like a "speed" factor for the algorithm, the higher it is, the faster it converges
+        /// toward the solution, but values too high can lead to divergence.
+        /// </summary>
         private static float Delta = 1f;
 
+        /// <summary>
+        /// Another criteria to stop the algorithm is what's the max force exerted on any vertices is at a given iteration.
+        /// When lower than a given amount we consider it won't move much still, and we stop.
+        /// </summary>
         private static float ForceToStop = 0.1f;
 
+        /// <summary>
+        /// Set all parameters of the algorithm, should be called 
+        /// </summary>Z
         public static void SetParameters(float repulsive, float attractive, float idealLenght, float delta, float forceToStop)
         {
             RepulsiveConstant= repulsive;
@@ -40,6 +61,9 @@ namespace SS3D.Utils
             Delta = delta;
         }
 
+        /// <summary>
+        /// Take any graph with tagged edges, and return an enhanced graph with a position for each edges.
+        /// </summary>
         public static AdjacencyGraph<VerticeWithPosition<TVertex>, TaggedEdge<VerticeWithPosition<TVertex>, TTag>> InitializeGraphWithPositions(
             AdjacencyGraph<TVertex, TaggedEdge<TVertex, TTag>> originalGraph)
         {
@@ -64,11 +88,17 @@ namespace SS3D.Utils
             return graphWithPosition;
         }
 
+        /// <summary>
+        /// Used to initialize randomly the position of vertices.
+        /// </summary>
         private static Vector2 GetRandomCirclePosition()
         {
             return UnityEngine.Random.insideUnitCircle * 300 + new Vector2(400, 400);
         }
 
+        /// <summary>
+        /// Compute a sing step of the algorithm, return true if conditions are met to stop it.
+        /// </summary>
         public static bool ComputeOneStep(
             AdjacencyGraph<VerticeWithPosition<TVertex>, TaggedEdge<VerticeWithPosition<TVertex>, TTag>> graphWithPosition)
         {
@@ -89,6 +119,9 @@ namespace SS3D.Utils
             return false;
         }
 
+        /// <summary>
+        /// Compute the average force exerted on each vertices in the graph.
+        /// </summary>
         private static Tuple<VerticeWithPosition<TVertex>, Vector2>[] ComputeForceAllVertices(
             AdjacencyGraph<VerticeWithPosition<TVertex>, TaggedEdge<VerticeWithPosition<TVertex>, TTag>> graph)
         {
@@ -103,6 +136,9 @@ namespace SS3D.Utils
             return forcesOnVertice;
         }
 
+        /// <summary>
+        /// Compute the average force exerted on a single vertice in the graph.
+        /// </summary>
         private static Vector2 ComputeForceSingleVertice(VerticeWithPosition<TVertex> vertice,
             AdjacencyGraph<VerticeWithPosition<TVertex>, TaggedEdge<VerticeWithPosition<TVertex>, TTag>> graph)
         {
@@ -131,6 +167,9 @@ namespace SS3D.Utils
             return attractive + repulsive;
         }
 
+        /// <summary>
+        /// Compute the attractive average force exerted by vertices on a single vertice.
+        /// </summary>
         private static Vector2 ComputeAttractiveComponent(VerticeWithPosition<TVertex> vertice, IEnumerable<VerticeWithPosition<TVertex>> vertices)
         {
             Vector2 result = Vector2.zero;
@@ -143,6 +182,9 @@ namespace SS3D.Utils
             return result;
         }
 
+        /// <summary>
+        /// Compute the repulsive average force exerted by vertices on a single vertice.
+        /// </summary>
         private static Vector2 ComputeRepulsiveComponent(VerticeWithPosition<TVertex> vertice, IEnumerable<VerticeWithPosition<TVertex>> vertices)
         {
             Vector2 result = Vector2.zero;
@@ -154,11 +196,17 @@ namespace SS3D.Utils
             return result;
         }
 
+        /// <summary>
+        /// Method to compute the repulsive force between two vertices.
+        /// </summary>
         private static Vector2 RepulsiveForce(Vector2 v1, Vector2 v2)
         {
             return (RepulsiveConstant / (Vector2.Distance(v1, v2) * Vector2.Distance(v1, v2))) * (v1 - v2).normalized;
         }
 
+        /// <summary>
+        /// Method to compute the attractive force between two vertices.
+        /// </summary>
         private static Vector2 AttractiveForce(Vector2 v1, Vector2 v2)
         {
             return (AttractiveConstant * Mathf.Log(Vector2.Distance(v1, v2)) / IdealLenght) * (v2 - v1).normalized;
