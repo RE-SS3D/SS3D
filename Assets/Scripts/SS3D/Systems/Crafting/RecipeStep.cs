@@ -20,19 +20,6 @@ namespace SS3D.Systems.Crafting
         public CraftingRecipe Recipe { get; set; }
 
         /// <summary>
-        /// A resulting object that will spawn at the end of the crafting process, optionnal, should be only on
-        /// terminal steps.
-        /// </summary>
-        [SerializeField]
-        private WorldObjectAssetReference _result;
-
-        /// <summary>
-        /// If true, the target is consumed (despawned). A step can't be terminal and initial at the same time.
-        /// </summary>
-        [SerializeField]
-        private bool _isTerminal;
-
-        /// <summary>
         /// The name of the step. Choose it carefully as it is currently how one can refer to it.
         /// </summary>
         [SerializeField]
@@ -45,10 +32,23 @@ namespace SS3D.Systems.Crafting
         private bool _isInitialState;
 
         /// <summary>
+        /// If true, the target is consumed (despawned). A step can't be terminal and initial at the same time.
+        /// </summary>
+        [SerializeField]
+        private bool _isTerminal;
+
+        /// <summary>
         /// If a default crafting method should be called, or if a custom one should.
         /// </summary>
         [SerializeField]
         private bool _customCraft;
+
+        /// <summary>
+        /// A resulting object that will spawn at the end of the crafting process, optionnal, should be only on
+        /// terminal steps.
+        /// </summary>
+        [SerializeField]
+        private WorldObjectAssetReference _result;
 
         public RecipeStep(CraftingRecipe recipe, string name)
         {

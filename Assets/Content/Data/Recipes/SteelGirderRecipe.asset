@@ -14,76 +14,76 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
   steps:
-  - _result: {fileID: 0}
-    _isTerminal: 0
-    _name: SteelGirder
+  - _name: SteelGirder
     _isInitialState: 1
-    _customCraft: 0
-  - _result: {fileID: 0}
     _isTerminal: 0
-    _name: SteelGirderWithMetalSheet
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 0}
+    _result: {fileID: 0}
+  - _name: SteelGirderWithMetalSheet
+    _isInitialState: 0
     _isTerminal: 0
-    _name: SteelGirderWithGlassSheet
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
+    _result: {fileID: 0}
+  - _name: SteelGirderWithGlassSheet
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: SteelWall
+    _isInitialState: 0
     _isTerminal: 1
-    _name: SteelWall
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 11400000, guid: 72ff3e5319a440c448928af8af541920, type: 2}
+    _result: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
+  - _name: SteelWindow
+    _isInitialState: 0
     _isTerminal: 1
-    _name: SteelWindow
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 0}
+    _result: {fileID: 11400000, guid: 72ff3e5319a440c448928af8af541920, type: 2}
+  - _name: ReinforcedSteelGirderWithStruts
+    _isInitialState: 0
     _isTerminal: 0
-    _name: ReinforcedSteelGirderWithStruts
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 0}
+    _result: {fileID: 0}
+  - _name: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
+    _isInitialState: 0
     _isTerminal: 0
-    _name: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
+    _result: {fileID: 0}
+  - _name: ReinforcedWall
+    _isInitialState: 0
     _isTerminal: 1
-    _name: ReinforcedWall
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 0}
+    _result: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
+  - _name: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
+    _isInitialState: 0
     _isTerminal: 0
-    _name: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 11400000, guid: b841d8cacfb432a4789bbb387b08fe81, type: 2}
+    _result: {fileID: 0}
+  - _name: ReinforcedWindow
+    _isInitialState: 0
     _isTerminal: 1
-    _name: ReinforcedWindow
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 0}
+    _result: {fileID: 11400000, guid: b841d8cacfb432a4789bbb387b08fe81, type: 2}
+  - _name: ReinforcedSteelGirderWithBoltedMetalSheets
+    _isInitialState: 0
     _isTerminal: 0
-    _name: ReinforcedSteelGirderWithBoltedMetalSheets
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 0}
+    _result: {fileID: 0}
+  - _name: ReinforcedSteelGirder
+    _isInitialState: 0
     _isTerminal: 0
-    _name: ReinforcedSteelGirder
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
+    _result: {fileID: 0}
+  - _name: UnboltedSteelGirder
+    _isInitialState: 0
     _isTerminal: 1
-    _name: UnboltedSteelGirder
-    _isInitialState: 0
     _customCraft: 0
-  - _result: {fileID: 0}
+    _result: {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
+  - _name: ReinforcedSteelGirderWithBoltedGlassSheets
+    _isInitialState: 0
     _isTerminal: 0
-    _name: ReinforcedSteelGirderWithBoltedGlassSheets
-    _isInitialState: 0
     _customCraft: 0
+    _result: {fileID: 0}
   stepLinks:
   - _elements:
       _list:

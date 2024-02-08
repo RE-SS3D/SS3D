@@ -25,10 +25,6 @@ MonoBehaviour:
     m_Address: Assets/Content/Data/Recipes/WeirdComplexRecipe.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 3decef2c351e13b4194d1994c485a170
-    m_Address: Assets/Content/Data/Recipes/SteelGirderUnboltedRecipe.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 41ed3a9a199817b47b7ba22ecb7c1ab4
     m_Address: Assets/Content/Data/Recipes/SteelGirderUnboltedRecipe.asset
     m_ReadOnly: 0

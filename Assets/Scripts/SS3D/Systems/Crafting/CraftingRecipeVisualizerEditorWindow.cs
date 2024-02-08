@@ -201,7 +201,7 @@ namespace SS3D.Systems.Crafting
         [MenuItem("Window/SS3D/Crafting Recipe Display")]
         public static void ShowWindow()
         {
-            CraftingRecipeEditor window = GetWindow<CraftingRecipeEditor>("Crafting Recipe Display");
+            CraftingRecipeVisualizerEditorWindow window = GetWindow<CraftingRecipeVisualizerEditorWindow>("Crafting Recipe Display");
             window.minSize = new Vector2(600.0f, 300.0f);
             window.wantsMouseMove = true;
         }
