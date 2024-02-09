@@ -1,17 +1,10 @@
 ﻿using QuikGraph;
 using SS3D.Core;
-using SS3D.Data;
-using SS3D.Data.Generated;
 using SS3D.Interactions;
-using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Crafting;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
-using static SS3D.Systems.Crafting.CraftingRecipe;
 
 public class OpenCraftingMenuInteraction : Interaction
 {
