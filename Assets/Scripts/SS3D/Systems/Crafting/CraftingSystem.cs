@@ -9,6 +9,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Logging;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
@@ -86,7 +87,11 @@ namespace SS3D.Systems.Crafting
 
             string currentStepName = CurrentStepName(target);
 
-            if (!_recipeOrganiser.TryGetValue(targetAssetReference.Asset.Id, out List<CraftingRecipe> recipes)) return false;
+            if (!_recipeOrganiser.TryGetValue(targetAssetReference.Asset.Id, out List<CraftingRecipe> recipes))
+            {
+                Log.Information(this, $"no recipes with target's name {targetAssetReference.Asset.Id}");
+                return false;
+            }
 
             foreach(CraftingRecipe potentialRecipe in recipes)
             {
@@ -161,7 +166,7 @@ namespace SS3D.Systems.Crafting
                 }
             }
 
-            foreach(GameObject prefab in link.Tag.SecondaryResults)
+            foreach(GameObject prefab in link.Tag.SecondaryResults.Select(x => x.Prefab).ToList())
             {
                   DefaultCraft(interaction, interactionEvent, prefab, link.Target);
             }
@@ -395,6 +400,14 @@ namespace SS3D.Systems.Crafting
             else if(prefab.TryGetComponent(out PlacedTileObject resultTileObject))
             {
                 instance = DefaultCraftTileObject(interactionEvent, resultTileObject);
+            }
+
+            else if(interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject) && prefab.TryGetComponent(out Draggable draggable))
+            {
+                instance = Instantiate(prefab);
+                instance.transform.position = interactionEvent.Target.GetGameObject().transform.position;
+                InstanceFinder.ServerManager.Spawn(instance);
+                instance.SetActive(true);
             }
 
             else

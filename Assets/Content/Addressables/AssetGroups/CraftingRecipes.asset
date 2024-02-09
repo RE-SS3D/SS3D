@@ -17,10 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 32ec404d3166dea4b8246e46ce1581b0
   m_SerializeEntries:
-  - m_GUID: 5dafa9029944cdc448a9e1d6d67e438f
-    m_Address: Assets/Content/Data/Recipes/SlicedBananas.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 5069902a314070f4ca869692cbc791fa
     m_Address: Assets/Content/Data/Recipes/WeirdComplexRecipe.asset
     m_ReadOnly: 0
@@ -39,6 +35,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 3d6dc37a96797e442bafcb066f1f9aef
     m_Address: Assets/Content/Data/Recipes/SteelWallRecipe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3decef2c351e13b4194d1994c485a170
+    m_Address: Assets/Content/Data/Recipes/SteelGirderRecipe.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

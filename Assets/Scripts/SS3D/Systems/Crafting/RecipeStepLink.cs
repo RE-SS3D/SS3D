@@ -116,7 +116,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// The result of the crafting.
         /// </summary>
-        public List<GameObject> SecondaryResults => _secondaryresults.Select(reference => reference.Prefab).ToList();
+        public List<WorldObjectAssetReference> SecondaryResults => _secondaryresults;
 
         /// <summary>
         /// Filter ingredients based on conditions added on this recipe step link.

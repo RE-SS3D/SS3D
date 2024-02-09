@@ -28,10 +28,10 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Set up the name of the recipe step in a UI slot for the crafting menu. 
         /// </summary>
-        public void Setup(WorldObjectAssetReference asset, int index)
+        public void Setup(string recipeStepName, int index)
         {
             _index = index;
-            GetComponentInChildren<TMP_Text>().text = asset.Prefab.name;
+            GetComponentInChildren<TMP_Text>().text = recipeStepName;
         }
 
         /// <summary>

@@ -14,17 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
   steps:
-  - _result: []
-    _isTerminal: 0
-    _name: SteelWallReinforced
+  - _name: SteelWallReinforced
     _isInitialState: 1
+    _isTerminal: 0
     _customCraft: 0
-  - _result:
-    - {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
-    _isTerminal: 1
-    _name: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
+    _result: {fileID: 0}
+  - _name: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
     _isInitialState: 0
+    _isTerminal: 1
     _customCraft: 0
+    _result: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
   stepLinks:
   - _elements:
       _list: []
@@ -35,3 +34,4 @@ MonoBehaviour:
     _to: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
     _modifyResult: 1
     _executionTime: 4
+    _secondaryresults: []

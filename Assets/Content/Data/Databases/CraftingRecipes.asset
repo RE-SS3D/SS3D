@@ -16,8 +16,6 @@ MonoBehaviour:
   AssetGroup: {fileID: 11400000, guid: ead2cce9e35a7304ab5b8cc67d03347b, type: 2}
   Assets:
     _list:
-    - _key: SlicedBananas
-      _value: {fileID: 11400000, guid: 5dafa9029944cdc448a9e1d6d67e438f, type: 2}
     - _key: WeirdComplexRecipe
       _value: {fileID: 11400000, guid: 5069902a314070f4ca869692cbc791fa, type: 2}
     - _key: SteelGirderUnboltedRecipe
@@ -28,4 +26,6 @@ MonoBehaviour:
       _value: {fileID: 11400000, guid: 115e1db3f2858c14fa6b736f67e552be, type: 2}
     - _key: SteelWallRecipe
       _value: {fileID: 11400000, guid: 3d6dc37a96797e442bafcb066f1f9aef, type: 2}
+    - _key: SteelGirderRecipe
+      _value: {fileID: 11400000, guid: 3decef2c351e13b4194d1994c485a170, type: 2}
     _new: 

@@ -7,6 +7,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -111,14 +112,23 @@ namespace SS3D.Systems.Crafting
         [Server]
         public void DisplayMenu(List<CraftingInteraction> interactions, InteractionEvent interactionEvent, InteractionReference reference)
         {
+            if(interactions.Count == 1)
+            {
+                _interaction = interactions[0];
+                _interactionEvent = interactionEvent;
+                StartSelectedInteraction();
+                return;
+            }
+
             _interactionsForConnection.Remove(interactionEvent.Source.NetworkObject.Owner);
             _interactionsForConnection.Add(interactionEvent.Source.NetworkObject.Owner, interactions);
 
             _eventForConnection.Remove(interactionEvent.Source.NetworkObject.Owner);
             _eventForConnection.Add(interactionEvent.Source.NetworkObject.Owner, interactionEvent);
 
-            List<WorldObjectAssetReference> assets = interactions.Select(x => x.ChosenLink.Target.GetResultOrTarget()).ToList();
-            TargetOpenCraftingMenu(interactionEvent.Source.NetworkObject.Owner, assets);
+            List<string> stepNames = interactions.Select(x => x.ChosenLink.Target.Name).ToList();
+            TargetOpenCraftingMenu(interactionEvent.Source.NetworkObject.Owner, stepNames);
+            SetSelectedInteraction(0, interactionEvent.Source.NetworkObject.Owner);
         }
 
         public void HideMenu()
@@ -157,10 +167,29 @@ namespace SS3D.Systems.Crafting
         [ServerRpc(RequireOwnership = false)]
         public void RpcSetSelectedInteraction(int index, NetworkConnection conn = null)
         {
+            SetSelectedInteraction(index, conn);
+        }
+
+        [Server]
+        private void SetSelectedInteraction(int index, NetworkConnection conn = null)
+        {
             _interaction = _interactionsForConnection[conn][index];
             _interactionEvent = _eventForConnection[conn];
 
-            TargetSetVisuals(conn, _interaction.ChosenLink.Target.GetResultOrTarget(), _interaction.ChosenLink.Target.Name);
+            List<WorldObjectAssetReference> results = new();
+
+            if (_interaction.ChosenLink.Target.IsTerminal && _interaction.ChosenLink.Target.TryGetResult(out WorldObjectAssetReference result))
+            {
+                results.Add(result);
+            }
+            else if (!_interaction.ChosenLink.Target.IsTerminal)
+            {
+                results.Add(_interaction.ChosenLink.Target.Recipe.Target);
+            }
+
+            results.AddRange(_interaction.ChosenLink.Tag.SecondaryResults);
+
+            TargetSetVisuals(conn, results, _interaction.ChosenLink.Target.Name);
         }
 
         /// <summary>
@@ -174,13 +203,13 @@ namespace SS3D.Systems.Crafting
         }
 
         [TargetRpc]
-        private void TargetOpenCraftingMenu(NetworkConnection conn, List<WorldObjectAssetReference> assets)
+        private void TargetOpenCraftingMenu(NetworkConnection conn, List<string> stepNames)
         {
             ClearGrid();
             int index = 0;
-            foreach (WorldObjectAssetReference asset in assets)
+            foreach (string name in stepNames)
             {
-                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(asset, index);
+                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(name, index);
                 index++;
             }
 
@@ -188,14 +217,18 @@ namespace SS3D.Systems.Crafting
         }
 
         [TargetRpc]
-        private void TargetSetVisuals(NetworkConnection conn, WorldObjectAssetReference result, string nextRecipeStepName)
+        private void TargetSetVisuals(NetworkConnection conn, List<WorldObjectAssetReference> results, string nextRecipeStepName)
         {
 
             ClearPictures();
 
-            GenericObjectSo asset = Subsystems.Get<TileSystem>().GetAsset(result.Id);
-            GameObject _pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
-            _pictureSlot.GetComponent<AssetSlot>().Setup(asset);
+            foreach(WorldObjectAssetReference result in results)
+            {
+                GenericObjectSo asset = Subsystems.Get<TileSystem>().GetAsset(result.Id);
+                GameObject _pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
+                _pictureSlot.GetComponent<AssetSlot>().Setup(asset);
+            }
+
             _objectTitle.text = nextRecipeStepName;
         }
 
@@ -204,6 +237,12 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
         private void RpcStartSelectedInteraction()
+        {
+            StartSelectedInteraction();
+        }
+
+        [Server]
+        private void StartSelectedInteraction()
         {
             if (_interaction == null || _interactionEvent == null) return;
             InteractionReference reference = _interactionEvent.Source.Interact(_interactionEvent, _interaction);

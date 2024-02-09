@@ -24,7 +24,29 @@ MonoBehaviour:
     _isTerminal: 1
     _customCraft: 0
     _result: {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
+  - _name: SteelRods
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: FloorTiles
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 0}
   stepLinks:
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: SteelSheet
+    _to: SteelRods
+    _modifyResult: 0
+    _executionTime: 2
+    _secondaryresults:
+    - {fileID: 11400000, guid: 3f647cba5228eee4c96dcb4d68c089af, type: 2}
+    - {fileID: 11400000, guid: 3f647cba5228eee4c96dcb4d68c089af, type: 2}
   - _elements:
       _list: []
       _new: {fileID: 0}
@@ -35,3 +57,17 @@ MonoBehaviour:
     _modifyResult: 0
     _executionTime: 2
     _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: SteelSheet
+    _to: FloorTiles
+    _modifyResult: 0
+    _executionTime: 2
+    _secondaryresults:
+    - {fileID: 11400000, guid: 943460668ce3db0429d1617490f983ef, type: 2}
+    - {fileID: 11400000, guid: 943460668ce3db0429d1617490f983ef, type: 2}
+    - {fileID: 11400000, guid: 943460668ce3db0429d1617490f983ef, type: 2}
+    - {fileID: 11400000, guid: 943460668ce3db0429d1617490f983ef, type: 2}

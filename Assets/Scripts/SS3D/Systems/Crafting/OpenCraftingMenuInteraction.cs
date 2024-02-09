@@ -2,6 +2,7 @@
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Systems.Crafting;
+using SS3D.Systems.Entities.Humanoid;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -79,7 +80,7 @@ public class OpenCraftingMenuInteraction : Interaction
             foreach(TaggedEdge<RecipeStep, RecipeStepLink> recipeLink in availableRecipes)
             {
                 CraftingInteraction interaction = new CraftingInteraction(recipeLink.Tag.ExecutionTime, 
-                    interactionEvent.Source.GameObject.GetComponent<InteractionSource>().transform, type, recipeLink);
+                    interactionEvent.Source.GameObject.GetComponentInParent<HumanoidController>().transform, type, recipeLink);
 
                 craftingInteractions.Add(interaction);
             }
