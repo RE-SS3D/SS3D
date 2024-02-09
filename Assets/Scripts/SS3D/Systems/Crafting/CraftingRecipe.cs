@@ -1,14 +1,8 @@
-﻿using Coimbra;
-using QuikGraph;
+﻿using QuikGraph;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
-using SS3D.Substances;
-using SS3D.Systems.Inventory.Containers;
-using SS3D.Systems.Inventory.Items;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Crafting
@@ -53,6 +47,11 @@ namespace SS3D.Systems.Crafting
 
         public AdjacencyGraph<RecipeStep, TaggedEdge<RecipeStep, RecipeStepLink>> RecipeGraph => _recipeGraph;
 
+        private void Awake()
+        {
+            Init();
+        }
+
         private void OnValidate()
         {
             Init();
@@ -96,6 +95,12 @@ namespace SS3D.Systems.Crafting
         /// <returns></returns>
         public bool TryGetStep(string name, out RecipeStep step)
         {
+            if(_recipeGraph == null)
+            {
+                Log.Error(this, "recipe graph should not be null");
+                step = null;
+                return false;
+            }
             step = _recipeGraph.Vertices.FirstOrDefault(x => x.Name == name);
             return step != null;
         }

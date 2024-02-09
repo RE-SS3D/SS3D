@@ -1,27 +1,17 @@
 ﻿using Coimbra;
-using DynamicPanels;
-using QuikGraph;
+using Cysharp.Threading.Tasks;
+using FishNet.Connection;
+using FishNet.Object;
 using SS3D.Core;
-using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
-using SS3D.Systems.Crafting;
-using SS3D.Systems.Inputs;
 using SS3D.Systems.Tile;
-using SS3D.Systems.Tile.TileMapCreator;
 using SS3D.Systems.Tile.UI;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using static SS3D.Systems.Crafting.CraftingRecipe;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
@@ -77,11 +67,18 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private TextMeshProUGUI _objectTitle;
 
+        /// <summary>
+        /// Server only, don't try to access it on client. Hold a list of potential interactions for each client, when
+        /// they open the crafting menu.
+        /// </summary>
+        private Dictionary<NetworkConnection, List<CraftingInteraction>> _interactionsForConnection = new();
+
+        private Dictionary<NetworkConnection, InteractionEvent> _eventForConnection = new();
 
 
-        protected override void OnStart()
+        public override void OnStartNetwork()
         {
-            base.OnStart();
+            base.OnStartNetwork();
             ShowUI(false);
             _inputSystem = Subsystems.Get<InputSystem>();
         }
@@ -111,16 +108,17 @@ namespace SS3D.Systems.Crafting
         /// Method called when the crafting menu is opened, normally only when multiple options are possible
         /// for crafting.
         /// </summary>
+        [Server]
         public void DisplayMenu(List<CraftingInteraction> interactions, InteractionEvent interactionEvent, InteractionReference reference)
         {
-            ClearGrid();
+            _interactionsForConnection.Remove(interactionEvent.Source.NetworkObject.Owner);
+            _interactionsForConnection.Add(interactionEvent.Source.NetworkObject.Owner, interactions);
 
-            foreach (CraftingInteraction interaction in interactions)
-            {
-                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(interaction, interactionEvent);
-            }
+            _eventForConnection.Remove(interactionEvent.Source.NetworkObject.Owner);
+            _eventForConnection.Add(interactionEvent.Source.NetworkObject.Owner, interactionEvent);
 
-            ShowUI(true);
+            List<WorldObjectAssetReference> assets = interactions.Select(x => x.ChosenLink.Target.GetResultOrTarget()).ToList();
+            TargetOpenCraftingMenu(interactionEvent.Source.NetworkObject.Owner, assets);
         }
 
         public void HideMenu()
@@ -156,36 +154,55 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Set up a given interaction, which will be called upon clicking on the build button.
         /// </summary>
-        public void SetSelectedInteraction(CraftingInteraction interaction, InteractionEvent interactionEvent)
+        [ServerRpc(RequireOwnership = false)]
+        public void RpcSetSelectedInteraction(int index, NetworkConnection conn = null)
         {
+            _interaction = _interactionsForConnection[conn][index];
+            _interactionEvent = _eventForConnection[conn];
 
-            ClearPictures();
-
-            _interaction = interaction;
-            _interactionEvent = interactionEvent;
-
-            _objectTitle.text = _interaction.ChosenLink.Target.Name;
-
-            GenericObjectSo asset;
-
-            if (_interaction.ChosenLink.Target.IsTerminal)
-            {
-                _interaction.ChosenLink.Target.TryGetResult(out WorldObjectAssetReference result);
-                asset = Subsystems.Get<TileSystem>().GetAsset(result.Id);
-            }
-            else
-            {
-                asset = Subsystems.Get<TileSystem>().GetAsset(_interaction.ChosenLink.Target.Recipe.Target.Id);
-            }
-
-            GameObject _pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
-            _pictureSlot.GetComponent<AssetSlot>().Setup(asset);
+            TargetSetVisuals(conn, _interaction.ChosenLink.Target.GetResultOrTarget(), _interaction.ChosenLink.Target.Name);
         }
 
         /// <summary>
         /// Trigger the selected crafting interaction.
         /// </summary>
+        [Client]
         public void OnBuildClick()
+        {
+            RpcStartSelectedInteraction();
+        }
+
+        [TargetRpc]
+        private void TargetOpenCraftingMenu(NetworkConnection conn, List<WorldObjectAssetReference> assets)
+        {
+            ClearGrid();
+            int index = 0;
+            foreach (WorldObjectAssetReference asset in assets)
+            {
+                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(asset, index);
+                index++;
+            }
+
+            ShowUI(true);
+        }
+
+        [TargetRpc]
+        private void TargetSetVisuals(NetworkConnection conn, WorldObjectAssetReference result, string nextRecipeStepName)
+        {
+
+            ClearPictures();
+
+            GenericObjectSo asset = Subsystems.Get<TileSystem>().GetAsset(result.Id);
+            GameObject _pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
+            _pictureSlot.GetComponent<AssetSlot>().Setup(asset);
+            _objectTitle.text = nextRecipeStepName;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ServerRpc(RequireOwnership = false)]
+        private void RpcStartSelectedInteraction()
         {
             if (_interaction == null || _interactionEvent == null) return;
             InteractionReference reference = _interactionEvent.Source.Interact(_interactionEvent, _interaction);

@@ -1,9 +1,6 @@
 ﻿using SS3D.Data.AssetDatabases;
-using SS3D.Systems.Crafting;
-using System.Collections.Generic;
 using System;
 using UnityEngine;
-using System.Linq;
 
 namespace SS3D.Systems.Crafting
 {
@@ -71,6 +68,11 @@ namespace SS3D.Systems.Crafting
             result = _result;
             return _result != null;
         } 
+
+        public WorldObjectAssetReference GetResultOrTarget()
+        {
+            return _result != null ? _result : Recipe.Target;
+        }
 
         /// <summary>
         /// If true, is the original step of the recipe. Only one original step can exist.
