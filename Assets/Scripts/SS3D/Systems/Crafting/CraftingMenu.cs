@@ -170,6 +170,7 @@ namespace SS3D.Systems.Crafting
         public void OnBuildClick()
         {
             RpcStartSelectedInteraction();
+            ShowUI(false);
         }
 
         [TargetRpc]

@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object;
+using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
@@ -9,6 +10,7 @@ using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
+using static QuikGraph.Algorithms.Assignment.HungarianAlgorithm;
 
 namespace SS3D.Systems.Crafting
 {
@@ -69,44 +71,7 @@ namespace SS3D.Systems.Crafting
         {
             _currentStepName = step;
 
-            ClearAllMeshes();
-
-            switch (step)
-            {
-                case "SteelGirderWithMetalSheet":
-                    AddMetalSheet();
-                    break;
-                case "SteelGirderWithGlassSheet":
-                    AddWindowSheet();
-                    break;
-                case "ReinforcedSteelGirderWithStruts":
-                    AddStruts();
-                    AddSupports();
-                    break;
-                case "ReinforcedSteelGirderWithBoltedReinforcedMetalSheets":
-                    AddStruts();
-                    AddSupports();
-                    AddReinforcedSteelSheets();
-                    break;
-                case "ReinforcedSteelGirderWithBoltedReinforcedGlassSheets":
-                    AddStruts();
-                    AddSupports();
-                    AddReinforcedWindowSheets();
-                    break;
-                case "ReinforcedSteelGirderWithBoltedGlassSheets":
-                    AddStruts();
-                    AddSupports();
-                    AddWindowSheet();
-                    break;
-                case "ReinforcedSteelGirderWithBoltedMetalSheets":
-                    AddStruts();
-                    AddSupports();
-                    AddMetalSheet();
-                    break;
-                case "ReinforcedSteelGirder":
-                    AddSupports();
-                    break;
-            }
+            ClientModify(step);
         }
 
         public override GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent) { return gameObject; }
@@ -159,6 +124,54 @@ namespace SS3D.Systems.Crafting
             _higherReinforcedWindowSheetMesh.enabled = false;
             _struts.enabled = false;
             _supportMesh.enabled = false;
+        }
+
+        [ObserversRpc(BufferLast = true)]
+        private void ClientModify(string stepName)
+        {
+            SetMeshes(stepName);
+        }
+
+        private void SetMeshes(string stepName)
+        {
+            ClearAllMeshes();
+
+            switch (stepName)
+            {
+                case "SteelGirderWithMetalSheet":
+                    AddMetalSheet();
+                    break;
+                case "SteelGirderWithGlassSheet":
+                    AddWindowSheet();
+                    break;
+                case "ReinforcedSteelGirderWithStruts":
+                    AddStruts();
+                    AddSupports();
+                    break;
+                case "ReinforcedSteelGirderWithBoltedReinforcedMetalSheets":
+                    AddStruts();
+                    AddSupports();
+                    AddReinforcedSteelSheets();
+                    break;
+                case "ReinforcedSteelGirderWithBoltedReinforcedGlassSheets":
+                    AddStruts();
+                    AddSupports();
+                    AddReinforcedWindowSheets();
+                    break;
+                case "ReinforcedSteelGirderWithBoltedGlassSheets":
+                    AddStruts();
+                    AddSupports();
+                    AddWindowSheet();
+                    break;
+                case "ReinforcedSteelGirderWithBoltedMetalSheets":
+                    AddStruts();
+                    AddSupports();
+                    AddMetalSheet();
+                    break;
+                case "ReinforcedSteelGirder":
+                    AddSupports();
+                    break;
+            }
         }
     }
 }
