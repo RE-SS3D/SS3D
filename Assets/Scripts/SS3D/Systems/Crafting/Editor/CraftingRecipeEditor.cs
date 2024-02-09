@@ -42,6 +42,14 @@ namespace SS3D.Systems.Crafting
                 }
             }
 
+            // Add a button to add a new step
+            if (GUILayout.Button("Add Step"))
+            {
+                // Increase the array size by 1 and get the new element
+                stepsProperty.arraySize++;
+                serializedObject.ApplyModifiedProperties();
+            }
+
             // Draw stepLinks list property
             EditorGUILayout.PropertyField(stepLinksProperty, true); // 'true' means to draw children
 

@@ -401,7 +401,7 @@ namespace SS3D.Systems.Crafting
             {
                 instance = Instantiate(prefab);
                 Vector3 characterGround = interaction.CharacterTransform.position;
-                characterGround.y = 0;
+                characterGround.y = 0.1f;
                 instance.transform.position = characterGround + interaction.CharacterTransform.forward;
                 InstanceFinder.ServerManager.Spawn(instance);
                 instance.SetActive(true);

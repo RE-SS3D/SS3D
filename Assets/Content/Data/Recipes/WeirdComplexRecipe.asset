@@ -14,16 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 11400000, guid: 3747dddbc41cad94bbbfc43bfed384c3, type: 2}
   steps:
-  - _executionTime: 2
-    _craftingInteractionType: 2
-    _result:
-    - {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
-    _elements:
-      _list:
-      - _key: {fileID: 11400000, guid: 739991c49857a3d40b2060d96908de45, type: 2}
-        _value: 1
-      - _key: {fileID: 11400000, guid: 88cb0aca0b6265d49b25526ca55295e9, type: 2}
-        _value: 1
+  - _name: BikeHorn
+    _isInitialState: 1
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: WeirdStuff
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 0}
+  stepLinks:
+  - _elements:
+      _list: []
       _new: {fileID: 0}
-    _consumeTarget: 1
-    _craftOnTarget: 0
+    _conditions: []
+    _craftingInteractionType: 2
+    _from: BikeHorn
+    _to: WeirdStuff
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults:
+    - {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
+    - {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
+    - {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}
