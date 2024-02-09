@@ -400,7 +400,9 @@ namespace SS3D.Systems.Crafting
             else
             {
                 instance = Instantiate(prefab);
-                instance.transform.position = interactionEvent.Target.GetGameObject().transform.position;
+                Vector3 characterGround = interaction.CharacterTransform.position;
+                characterGround.y = 0;
+                instance.transform.position = characterGround + interaction.CharacterTransform.forward;
                 InstanceFinder.ServerManager.Spawn(instance);
                 instance.SetActive(true);
             }

@@ -74,7 +74,7 @@ MonoBehaviour:
     _isTerminal: 0
     _customCraft: 0
     _result: {fileID: 0}
-  - _name: UnboltedSteelGirder
+  - _name: SteelGirderUnbolted
     _isInitialState: 0
     _isTerminal: 1
     _customCraft: 0
@@ -92,7 +92,7 @@ MonoBehaviour:
       _new: {fileID: 0}
     _conditions:
     - {fileID: 11400000, guid: 22f5cb218c973ef4291a27c11ca43fe9, type: 2}
-    _craftingInteractionType: 0
+    _craftingInteractionType: 3
     _from: SteelGirder
     _to: SteelGirderWithMetalSheet
     _modifyResult: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
         _value: 1
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 0
+    _craftingInteractionType: 3
     _from: SteelGirder
     _to: SteelGirderWithGlassSheet
     _modifyResult: 0
@@ -233,17 +233,7 @@ MonoBehaviour:
     _conditions: []
     _craftingInteractionType: 1
     _from: SteelGirder
-    _to: UnboltedSteelGirder
-    _modifyResult: 0
-    _executionTime: 1
-    _secondaryresults: []
-  - _elements:
-      _list: []
-      _new: {fileID: 0}
-    _conditions: []
-    _craftingInteractionType: 0
-    _from: SteelGirder
-    _to: UnboltedSteelGirder
+    _to: SteelGirderUnbolted
     _modifyResult: 0
     _executionTime: 1
     _secondaryresults: []

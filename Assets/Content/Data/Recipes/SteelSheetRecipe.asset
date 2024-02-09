@@ -14,17 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
   steps:
-  - _result: []
-    _isTerminal: 0
-    _name: SteelSheet
+  - _name: SteelSheet
     _isInitialState: 1
+    _isTerminal: 0
     _customCraft: 0
-  - _result:
-    - {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
-    _isTerminal: 1
-    _name: SteelGirderUnbolted
+    _result: {fileID: 0}
+  - _name: SteelGirderUnbolted
     _isInitialState: 0
+    _isTerminal: 1
     _customCraft: 0
+    _result: {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
   stepLinks:
   - _elements:
       _list: []
@@ -33,4 +32,6 @@ MonoBehaviour:
     _craftingInteractionType: 3
     _from: SteelSheet
     _to: SteelGirderUnbolted
+    _modifyResult: 0
     _executionTime: 2
+    _secondaryresults: []
