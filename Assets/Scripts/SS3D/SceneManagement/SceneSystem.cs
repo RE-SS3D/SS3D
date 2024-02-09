@@ -27,13 +27,13 @@ namespace SS3D.SceneManagement
 			LoadMainScene();
 		}
 
-		/// <summary>
-		/// Starts the launcher or the game, depending if the game was opened without or with command line args.
-		/// </summary>
-		private void LoadMainScene()
-		{
-			ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
-            
+        /// <summary>
+        /// Starts the launcher or the game, depending if the game was opened without or with command line args.
+        /// </summary>
+        private void LoadMainScene()
+        {
+            ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+
             bool isUsingCommandLineArgs = false;
 
             if (!UnityEngine.Application.isEditor)
@@ -41,16 +41,27 @@ namespace SS3D.SceneManagement
                 isUsingCommandLineArgs = Environment.GetCommandLineArgs().Length > 1;
             }
 
-			DatabaseAsset sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
+            DatabaseAsset sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
 
-            Log.Information(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
+            Log.Information(this, $"Loading main scene as {sceneToLoad.Name}", Logs.Important);
 
-			if (applicationSettings.ForceLauncher || !isUsingCommandLineArgs)
-			{
-				sceneToLoad = Scenes.Launcher;
-			}                                  
+            if (applicationSettings.ForceLauncher)
+            {
+                sceneToLoad = Scenes.Launcher;
+            }
+            else if (!isUsingCommandLineArgs)
+            {
+                if (UnityEngine.Application.isEditor && !applicationSettings.ForceLauncher)
+                {
+                    sceneToLoad = Scenes.Intro;
+                }
+                else
+                {
+                    sceneToLoad = Scenes.Launcher;
+                }
+            }
 
-			// This call is async and not awaited. Hence the pragma disable.
+            // This call is async and not awaited. Hence the pragma disable.
 			#pragma warning disable CS4014
 			Scene.LoadAsync(sceneToLoad);
 			#pragma warning restore CS4014

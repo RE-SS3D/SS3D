@@ -50,7 +50,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Display()
         {
             _loadMapContentRoot.gameObject.SetActive(true);
-            var MapNames = SaveSystem.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
+            var MapNames = LocalStorage.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
 
             foreach (string mapName in MapNames)
             {

@@ -25,10 +25,10 @@ namespace SS3D.Networking
         {
             base.OnAwake();
 
-            ApplicationInitializing.AddListener(HandleApplicationPreInitializing);
+            ApplicationPreInitializing.AddListener(HandleApplicationPreInitializing);
         }
 
-        private void HandleApplicationPreInitializing(ref EventContext context, in ApplicationInitializing applicationInitializing)
+        private void HandleApplicationPreInitializing(ref EventContext context, in ApplicationPreInitializing applicationInitializing)
         {
             NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
 
