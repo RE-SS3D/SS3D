@@ -369,7 +369,7 @@ namespace SS3D.Systems.Crafting
 
             _coroutinesOrganiser.Add(reference, coroutines);
 
-            AddCraftingSmoke(interactionEvent, reference);
+            AddCraftingSmoke(interactionEvent.Target.GetGameObject(), reference.Id);
         }
 
         /// <summary>
@@ -379,8 +379,7 @@ namespace SS3D.Systems.Crafting
         public void CancelMoveAllObjectsToCraftPoint(InteractionReference reference)
         {
             _coroutinesOrganiser[reference].Where(x => x!= null).ToList().ForEach(x => StopCoroutine(x) );
-
-            _craftingSmokes[reference].Dispose(true);
+            CancelCraftingSmoke(reference.Id);
         }
 
         /// <summary>
@@ -579,16 +578,17 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Add smoke particles around the crafted target during crafting.
         /// </summary>
-        private void AddCraftingSmoke(InteractionEvent interactionEvent, InteractionReference reference)
+        [ObserversRpc]
+        private void AddCraftingSmoke(GameObject target, int referenceId)
         {
-            GameObject particleGameObject = GameObject.Instantiate(ParticlesEffects.ConstructionParticle.Prefab, interactionEvent.Target.GetGameObject().transform.position, Quaternion.identity);
+            GameObject particleGameObject = GameObject.Instantiate(ParticlesEffects.ConstructionParticle.Prefab, target.transform.position, Quaternion.identity);
             ParticleSystem particles = particleGameObject.GetComponent<ParticleSystem>();
 
             // Get the shape module of the dust cloud particle system
             ParticleSystem.ShapeModule shapeModule = particles.shape;
 
             // Adjust the shape to match the object's bounds
-            MeshRenderer targetRenderer = interactionEvent.Target.GetGameObject().GetComponentInChildren<MeshRenderer>();
+            MeshRenderer targetRenderer = target.GetComponentInChildren<MeshRenderer>();
             if (targetRenderer != null)
             {
                 shapeModule.enabled = true;
@@ -600,7 +600,14 @@ namespace SS3D.Systems.Crafting
                 Debug.LogWarning("The object to hide does not have a Renderer component.");
             }
 
-            _craftingSmokes.Add(reference, particles);
+            _craftingSmokes.Add(new InteractionReference(referenceId), particles);
+        }
+
+        [ObserversRpc]
+        private void CancelCraftingSmoke(int referenceId)
+        {
+            _craftingSmokes[new InteractionReference(referenceId)]?.Dispose(true);
+            _craftingSmokes.Remove(new InteractionReference(referenceId));
         }
 
         /// <summary>
