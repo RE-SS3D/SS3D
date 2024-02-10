@@ -10,6 +10,7 @@ using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Logging;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
@@ -106,6 +107,11 @@ namespace SS3D.Systems.Crafting
                 }
             }
 
+            if(links.Count == 0) 
+            {
+                Log.Information(this, $"no recipe links matching interaction type {interactionType}, from recipe step {currentStepName} ");
+            }
+
             return links.Count > 0;
         }
 
@@ -183,7 +189,12 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         private string CurrentStepName(GameObject target)
         {
-            if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference)) return "";
+            if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference))
+            {
+                Log.Warning(this, $"GameObject {target} has no IWorldObjectAsset component, can't retrieve the current step name");
+                return "";
+            }
+              
 
             string rootStepName = targetAssetReference.Asset.Prefab.name;
             string stepName;
@@ -229,9 +240,13 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public bool CanCraftRecipeLink(InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            if (!TargetIsValid(interactionEvent)) return false;
+            // Server only checks
+            if (IsServer)
+            {
+                if (!TargetIsValid(interactionEvent)) return false;
 
-            if (!ResultIsValid(interactionEvent, link.Target)) return false;
+                if (!ResultIsValid(interactionEvent, link.Target)) return false;
+            }
 
             List<IRecipeIngredient> ingredients = GetIngredientsToConsume(interactionEvent, link);
 
@@ -486,10 +501,11 @@ namespace SS3D.Systems.Crafting
 
             return instance;
         }
-        
+
         /// <summary>
         /// Check if the crafting recipe target is valid (well placed, in good conditions... whatever).
         /// </summary>
+        [Server]
         private bool TargetIsValid(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is Item target)
@@ -503,6 +519,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Check if the result of the crafting recipe is valid. Valid depends on the type of the result.
         /// </summary>
+        [Server]
         private bool ResultIsValid(InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
             if (!recipeStep.TryGetResult(out WorldObjectAssetReference recipeResult)) return true;
@@ -518,6 +535,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Check if the result placed object won't conflict with other placed tile objects. Should check collisions too probably.
         /// </summary>
+        [Server]
         private bool ResultIsValidPlacedTileObject(PlacedTileObject result, InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
             bool replace = false;
@@ -535,6 +553,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Check if a given item is in a valid configuration to be used in a crafting interaction.
         /// </summary>
+        [Server]
         private bool ItemTargetIsValid(InteractionEvent interactionEvent, Item target)
         {
             // item target is valid if it is in hand holding the item or out of container.
@@ -577,6 +596,26 @@ namespace SS3D.Systems.Crafting
             }
 
             _craftingSmokes.Add(reference, particles);
+        }
+
+        public List<CraftingInteraction> CreateInteractions(InteractionEvent interactionEvent, CraftingInteractionType craftingInteractionType)
+        {
+            List<CraftingInteraction> craftingInteractions = new();
+
+
+            if (!AvailableRecipeLinks(craftingInteractionType, interactionEvent,
+            out List<TaggedEdge<RecipeStep, RecipeStepLink>> availableRecipes)) return craftingInteractions;
+
+            foreach (TaggedEdge<RecipeStep, RecipeStepLink> recipeLink in availableRecipes)
+            {
+                CraftingInteraction interaction = new CraftingInteraction(recipeLink.Tag.ExecutionTime,
+                    interactionEvent.Source.GameObject.GetComponentInParent<HumanoidController>().transform, craftingInteractionType, recipeLink);
+
+                craftingInteractions.Add(interaction);
+            }
+
+
+            return craftingInteractions;
         }
     }
 }

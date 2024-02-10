@@ -19,11 +19,11 @@ namespace SS3D.Systems.Crafting
         /// The different types of interaction the game object with this component on can support. 
         /// </summary>
         [SerializeField]
-        private List<CraftingInteractionType> types;
+        private CraftingInteractionType type;
 
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            OpenCraftingMenuInteraction openCraftingMenuInteraction = new OpenCraftingMenuInteraction(types);
+            OpenCraftingMenuInteraction openCraftingMenuInteraction = new OpenCraftingMenuInteraction(type);
 
             foreach (IInteractionTarget target in targets)
             {

@@ -3,6 +3,7 @@ using SS3D.Interactions;
 using UnityEngine;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
+using FishNet.Object.Synchronizing;
 
 namespace SS3D.Systems.Crafting
 {
@@ -11,7 +12,7 @@ namespace SS3D.Systems.Crafting
     /// </summary>
     public abstract class MultiStepCraftable : NetworkActor, ICraftable
     {
-
+        [SyncVar]
         protected string _currentStepName = "";
 
         public string CurrentStepName => _currentStepName;

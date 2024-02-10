@@ -67,6 +67,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Called by the crafting system mostly, to change the current girder prefab model into another one, modifying its mesh.
         /// </summary>
+        [Server]
         public override void Modify(IInteraction interaction, InteractionEvent interactionEvent, string step)
         {
             _currentStepName = step;
@@ -115,6 +116,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Put the girder back to its initial mesh.
         /// </summary>
+        [Client]
         private void ClearAllMeshes()
         {
             _wallSheetMesh.enabled = false;
@@ -132,6 +134,7 @@ namespace SS3D.Systems.Crafting
             SetMeshes(stepName);
         }
 
+        [Client]
         private void SetMeshes(string stepName)
         {
             ClearAllMeshes();

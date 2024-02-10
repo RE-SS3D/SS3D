@@ -5,6 +5,9 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.UI;
 using System;
@@ -13,6 +16,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.GraphicsBuffer;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
@@ -68,6 +72,8 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private TextMeshProUGUI _objectTitle;
 
+
+
         /// <summary>
         /// Server only, don't try to access it on client. Hold a list of potential interactions for each client, when
         /// they open the crafting menu.
@@ -110,15 +116,9 @@ namespace SS3D.Systems.Crafting
         /// for crafting.
         /// </summary>
         [Server]
-        public void DisplayMenu(List<CraftingInteraction> interactions, InteractionEvent interactionEvent, InteractionReference reference)
+        public void DisplayMenu(List<CraftingInteraction> interactions, InteractionEvent interactionEvent, InteractionReference reference,
+            CraftingInteractionType craftingInteractionType)
         {
-            if(interactions.Count == 1)
-            {
-                _interaction = interactions[0];
-                _interactionEvent = interactionEvent;
-                StartSelectedInteraction();
-                return;
-            }
 
             _interactionsForConnection.Remove(interactionEvent.Source.NetworkObject.Owner);
             _interactionsForConnection.Add(interactionEvent.Source.NetworkObject.Owner, interactions);
@@ -126,9 +126,18 @@ namespace SS3D.Systems.Crafting
             _eventForConnection.Remove(interactionEvent.Source.NetworkObject.Owner);
             _eventForConnection.Add(interactionEvent.Source.NetworkObject.Owner, interactionEvent);
 
-            List<string> stepNames = interactions.Select(x => x.ChosenLink.Target.Name).ToList();
-            TargetOpenCraftingMenu(interactionEvent.Source.NetworkObject.Owner, stepNames);
-            SetSelectedInteraction(0, interactionEvent.Source.NetworkObject.Owner);
+            if (interactions.Count == 1)
+            {
+                _interaction = interactions[0];
+                _interactionEvent = interactionEvent;
+                StartSelectedInteraction(craftingInteractionType);
+            }
+            else
+            {
+                List<string> stepNames = interactions.Select(x => x.ChosenLink.Target.Name).ToList();
+                TargetOpenCraftingMenu(interactionEvent.Source.NetworkObject.Owner, stepNames);
+                SetSelectedInteraction(0, interactionEvent.Source.NetworkObject.Owner);
+            }
         }
 
         public void HideMenu()
@@ -232,21 +241,54 @@ namespace SS3D.Systems.Crafting
             _objectTitle.text = nextRecipeStepName;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         [ServerRpc(RequireOwnership = false)]
         private void RpcStartSelectedInteraction()
         {
-            StartSelectedInteraction();
+            if(_interaction == null)
+            {
+                Log.Error(this, "can't start selected interaction, it's null");
+                return;
+            }
+            StartSelectedInteraction(_interaction.CraftingInteractionType);
         }
 
         [Server]
-        private void StartSelectedInteraction()
+        private void StartSelectedInteraction(CraftingInteractionType type)
         {
-            if (_interaction == null || _interactionEvent == null) return;
+            if (_interaction == null || _interactionEvent == null) 
+            {
+                Log.Error(this, "can't start selected interaction, it's null, or it's interactionEvent is null");
+                return;
+            }
+
             InteractionReference reference = _interactionEvent.Source.Interact(_interactionEvent, _interaction);
-            _interactionEvent.Source.ClientInteract(_interactionEvent, _interaction, reference);
+            int index  = _interactionsForConnection[_interactionEvent.Source.NetworkObject.Owner].IndexOf(_interaction);
+            RpcClientInteract(_interactionEvent.Source.NetworkObject.Owner, _interactionEvent.Target.GetGameObject(), 
+                _interactionEvent.Source.GameObject, reference.Id, index, _interaction.CraftingInteractionType);
+        }
+
+        /// <summary>
+        /// Launch the crafting interaction client side (currently only displaying the loading bar).
+        /// </summary>
+        /// <param name="conn"> Connection on which to start the client interaction</param>
+        /// <param name="target"> Target of the interaction </param>
+        /// <param name="sourceObject"> Source of the interaction </param>
+        /// <param name="referenceId"> The reference of the interaction, client interaction should be set with the same id as server interaction.</param>
+        /// <param name="index"> Index of the interaction, upon creating available interaction from a given interaction event, and a crafting interaction type,
+        /// this suppose that created interactions will be the same and in the same order on both client and server.</param>
+        /// <param name="type"> Type of the chosen crafting interaction, used to retrieve potential interactions.</param>
+        [TargetRpc]
+        private void RpcClientInteract(NetworkConnection conn, GameObject target, GameObject sourceObject, int referenceId, int index, CraftingInteractionType type)
+        {
+            Subsystems.TryGet(out CraftingSystem craftingSystem);
+
+            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
+            
+            InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
+
+            List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, type);
+
+            interactionEvent.Source.ClientInteract(interactionEvent, craftingInteractions[index], new InteractionReference(referenceId));
         }
     }
 }

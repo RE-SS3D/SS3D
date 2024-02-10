@@ -10,11 +10,11 @@ using UnityEngine;
 public class OpenCraftingMenuInteraction : Interaction
 {
 
-    private List<CraftingInteractionType> _craftingInteractionTypes;
+    private CraftingInteractionType _craftingInteractionType;
 
-    public OpenCraftingMenuInteraction(List<CraftingInteractionType> craftingInteractions)
+    public OpenCraftingMenuInteraction(CraftingInteractionType craftingInteraction)
     {
-        _craftingInteractionTypes = craftingInteractions;
+        _craftingInteractionType = craftingInteraction;
     }
 
     public override string GetGenericName()
@@ -51,11 +51,8 @@ public class OpenCraftingMenuInteraction : Interaction
 
         bool recipesAvailable = true;
 
-        foreach (CraftingInteractionType type in _craftingInteractionTypes)
-        {
-            recipesAvailable &= craftingSystem.AvailableRecipeLinks(type, interactionEvent,
+        recipesAvailable &= craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent,
             out List<TaggedEdge<RecipeStep, RecipeStepLink>> availableRecipes);
-        }
 
         return recipesAvailable;
     }
@@ -68,35 +65,12 @@ public class OpenCraftingMenuInteraction : Interaction
     /// <returns>If the interaction should continue running</returns>
     public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
     {
-        List<CraftingInteraction> craftingInteractions = new();
 
         Subsystems.TryGet(out CraftingSystem craftingSystem);
 
-        foreach(CraftingInteractionType type in _craftingInteractionTypes)
-        {
-            if (!craftingSystem.AvailableRecipeLinks(type, interactionEvent,
-            out List<TaggedEdge<RecipeStep, RecipeStepLink>> availableRecipes)) continue;
+        List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, _craftingInteractionType);
 
-            foreach(TaggedEdge<RecipeStep, RecipeStepLink> recipeLink in availableRecipes)
-            {
-                CraftingInteraction interaction = new CraftingInteraction(recipeLink.Tag.ExecutionTime, 
-                    interactionEvent.Source.GameObject.GetComponentInParent<HumanoidController>().transform, type, recipeLink);
-
-                craftingInteractions.Add(interaction);
-            }
-        }
-
-        if(craftingInteractions.Count > 1)
-        {
-            ViewLocator.Get<CraftingMenu>().First().DisplayMenu(craftingInteractions, interactionEvent, reference);
-        }
-        else if(craftingInteractions.Count == 1)
-        {
-            var craftingReference =interactionEvent.Source.Interact(interactionEvent, craftingInteractions.First());
-            interactionEvent.Source.ClientInteract(interactionEvent, craftingInteractions.First(), craftingReference);
-        }
-
-        
+        ViewLocator.Get<CraftingMenu>().First().DisplayMenu(craftingInteractions, interactionEvent, reference, _craftingInteractionType);
 
         return true;
     }
