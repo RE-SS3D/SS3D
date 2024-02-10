@@ -5,6 +5,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Systems.Crafting;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
@@ -173,6 +174,9 @@ namespace SS3D.Systems.Crafting
                     break;
                 case "ReinforcedSteelGirder":
                     AddSupports();
+                    break;
+                default:
+                    Log.Error(this, "step name passed in parameter is not handled by girderCraftable");
                     break;
             }
         }

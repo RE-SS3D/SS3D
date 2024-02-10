@@ -375,6 +375,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Stop moving objects, should be called when the interaction is cancelled.
         /// </summary>
+        [Server]
         public void CancelMoveAllObjectsToCraftPoint(InteractionReference reference)
         {
             _coroutinesOrganiser[reference].Where(x => x!= null).ToList().ForEach(x => StopCoroutine(x) );
@@ -385,6 +386,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Should be called by a coroutine, moves another gameObject to a specific target, at a given speed
         /// </summary>
+        [Server]
         private System.Collections.IEnumerator MoveObjectToTarget(Transform objTransform, Vector3 targetPosition, float speed)
         {
             while (Vector3.Distance(objTransform.position, targetPosition) > 0.1f)
@@ -400,6 +402,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Method that should handle basic spawning for everything.
         /// </summary>
+        [Server]
         private GameObject DefaultCraft(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
         {
             GameObject instance;
@@ -442,6 +445,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Handles spawning item, when the target is an item held in hand, and the result is whatever.
         /// </summary>>
+        [Server]
         private GameObject DefaultCraftItemHeldInHand(GameObject prefab, Hand hand, RecipeStep recipeStep, CraftingInteraction interaction)
         {
             GameObject instance;
@@ -482,6 +486,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// The default method to craft new tile objects.
         /// </summary>
+        [Server]
         private GameObject DefaultCraftTileObject(InteractionEvent interactionEvent, PlacedTileObject resultTileObject)
         {
             GameObject instance;
@@ -598,6 +603,10 @@ namespace SS3D.Systems.Crafting
             _craftingSmokes.Add(reference, particles);
         }
 
+        /// <summary>
+        /// Create available interactions for a given interaction type.
+        /// </summary>
+        [ServerOrClient]
         public List<CraftingInteraction> CreateInteractions(InteractionEvent interactionEvent, CraftingInteractionType craftingInteractionType)
         {
             List<CraftingInteraction> craftingInteractions = new();

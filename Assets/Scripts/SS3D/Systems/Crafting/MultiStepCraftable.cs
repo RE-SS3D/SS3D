@@ -4,6 +4,7 @@ using UnityEngine;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
 using FishNet.Object.Synchronizing;
+using SS3D.Logging;
 
 namespace SS3D.Systems.Crafting
 {
@@ -25,6 +26,7 @@ namespace SS3D.Systems.Crafting
         {
             if (!gameObject.TryGetComponent(out IWorldObjectAsset targetAssetReference))
             {
+                Log.Error(this, $"{gameObject} has a ICraftable component but no IWorldObjectAsset component set up on them, add one or it'll cause trouble for multi step crafting");
                 _currentStepName = "";
             }
             else
