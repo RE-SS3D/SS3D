@@ -1,14 +1,11 @@
-﻿using Coimbra;
-using FishNet.Object;
+﻿using FishNet.Object;
+using JetBrains.Annotations;
 using QuikGraph;
 using SS3D.Core;
-using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static SS3D.Systems.Crafting.CraftingRecipe;
 
 namespace SS3D.Systems.Crafting
 {
@@ -23,13 +20,13 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// The recipe link associated to this interaction. Crafting interactions are always associated to a recipe link.
         /// </summary>
-        protected TaggedEdge<RecipeStep, RecipeStepLink> _chosenLink;
+        private readonly TaggedEdge<RecipeStep, RecipeStepLink> _chosenLink;
 
         /// <summary>
         /// The transform of the game object executing the crafting interaction, useful to check if the source moved
         /// during the interaction, for example.
         /// </summary>
-        private Transform _characterTransform;
+        private readonly Transform _characterTransform;
 
         /// <summary>
         /// The start position of the source of the interaction, when the interaction begins.
@@ -39,7 +36,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// Type of this interaction, defines which recipe will be available.
         /// </summary>
-        private CraftingInteractionType _type;
+        private readonly CraftingInteractionType _type;
 
         /// <summary>
         /// The start position of the source of the interaction, when the interaction begins.
@@ -103,11 +100,14 @@ namespace SS3D.Systems.Crafting
 
         protected override void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
-            craftingSystem.CancelMoveAllObjectsToCraftPoint(reference);
-            craftingSystem.Craft(this, interactionEvent);
+            if (Subsystems.TryGet(out CraftingSystem craftingSystem))
+            {
+                craftingSystem.CancelMoveAllObjectsToCraftPoint(reference);
+                craftingSystem.Craft(this, interactionEvent);
+            }
         }
 
+        [NotNull]
         public override string GetName(InteractionEvent interactionEvent)
         {
             return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
