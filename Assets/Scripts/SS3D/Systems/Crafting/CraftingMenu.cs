@@ -1,7 +1,7 @@
 ﻿using Coimbra;
-using Cysharp.Threading.Tasks;
 using FishNet.Connection;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
@@ -10,13 +10,11 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.UI;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.GraphicsBuffer;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
@@ -78,9 +76,9 @@ namespace SS3D.Systems.Crafting
         /// Server only, don't try to access it on client. Hold a list of potential interactions for each client, when
         /// they open the crafting menu.
         /// </summary>
-        private Dictionary<NetworkConnection, List<CraftingInteraction>> _interactionsForConnection = new();
+        private readonly Dictionary<NetworkConnection, List<CraftingInteraction>> _interactionsForConnection = new();
 
-        private Dictionary<NetworkConnection, InteractionEvent> _eventForConnection = new();
+        private readonly Dictionary<NetworkConnection, InteractionEvent> _eventForConnection = new();
 
 
         public override void OnStartNetwork()
@@ -174,7 +172,7 @@ namespace SS3D.Systems.Crafting
         /// Set up a given interaction, which will be called upon clicking on the build button.
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
-        public void RpcSetSelectedInteraction(int index, NetworkConnection conn = null)
+        public void RpcSetSelectedInteraction(int index, [CanBeNull] NetworkConnection conn = null)
         {
             SetSelectedInteraction(index, conn);
         }
@@ -216,9 +214,9 @@ namespace SS3D.Systems.Crafting
         {
             ClearGrid();
             int index = 0;
-            foreach (string name in stepNames)
+            foreach (string stepName in stepNames)
             {
-                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(name, index);
+                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(stepName, index);
                 index++;
             }
 
@@ -234,8 +232,8 @@ namespace SS3D.Systems.Crafting
             foreach(WorldObjectAssetReference result in results)
             {
                 GenericObjectSo asset = Subsystems.Get<TileSystem>().GetAsset(result.Id);
-                GameObject _pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
-                _pictureSlot.GetComponent<AssetSlot>().Setup(asset);
+                GameObject pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
+                pictureSlot.GetComponent<AssetSlot>().Setup(asset);
             }
 
             _objectTitle.text = nextRecipeStepName;
