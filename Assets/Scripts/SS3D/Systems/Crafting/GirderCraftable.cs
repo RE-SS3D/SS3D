@@ -1,17 +1,8 @@
 ﻿using FishNet.Object;
-using SS3D.Core;
-using SS3D.Data;
-using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
-using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
-using SS3D.Systems.Crafting;
-using SS3D.Systems.Tile;
-using SS3D.Systems.Tile.Connections;
-using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
-using static QuikGraph.Algorithms.Assignment.HungarianAlgorithm;
 
 namespace SS3D.Systems.Crafting
 {
@@ -91,11 +82,6 @@ namespace SS3D.Systems.Crafting
         private void AddReinforcedSteelSheets()
         {
             _higherReinforcedWallSheetMesh.enabled = true;
-        }
-
-        private void AddLowerReinforcedSteelSheets()
-        {
-            _lowerReinforcedSheetMesh.enabled = true;
         }
 
         private void AddReinforcedWindowSheets()
