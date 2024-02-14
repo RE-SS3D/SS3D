@@ -273,8 +273,19 @@ namespace SS3D.Systems.Inventory.Items
         /// Modify the container of this item, can pass null to make this item not depending on any container.
         /// </summary>
         [Server]
-        public virtual void SetContainer(AttachedContainer newContainer)
+        public void SetContainer(AttachedContainer newContainer)
         {
+            if ((newContainer == null) ^ (_container == null))
+            {
+                ToggleCollider(newContainer == null);
+            }
+            _container = newContainer;
+        }
+
+        [ObserversRpc]
+        private void ToggleCollider(bool isEnable)
+        {
+            Debug.Log("Toggle Collider");
             List<Collider> collidersToExcept = new();
             if (_container != null)
             {
@@ -284,25 +295,10 @@ namespace SS3D.Systems.Inventory.Items
                 }
             }
             IEnumerable<Collider> colliders = GetComponentsInChildren<Collider>().Except(collidersToExcept);
-
-            if ((newContainer == null) ^ (_container == null))
-            {
-                if (newContainer == null)
-                {
-                    foreach (Collider collider in colliders)
-                    {
-                        collider.enabled = true;
-                    }
-                }
-                else
-                {
-                    foreach (Collider collider in colliders)
-                    {
-                        collider.enabled = false;
-                    }
-                }
+            foreach (Collider collider in colliders) 
+            { 
+                collider.enabled = isEnable;
             }
-            _container = newContainer;
         }
 
         // Generate preview of the same object, but without stored items.
