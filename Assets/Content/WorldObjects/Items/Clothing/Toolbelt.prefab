@@ -205,7 +205,8 @@ MonoBehaviour:
   _asset: {fileID: 11400000, guid: 9cf2801a7b335074190840fc9112d582, type: 2}
   _name: Belt
   _weight: 1
-  _startingTraits: []
+  _startingTraits:
+  - {fileID: 11400000, guid: 5a7c5e53d45ef364ea78fcb8bb8e6b7f, type: 2}
   _rigidbody: {fileID: 8317416473142320945}
   AttachmentPoint: {fileID: 4492906417869608502}
   AttachmentPointAlt: {fileID: 4492906417869608502}
