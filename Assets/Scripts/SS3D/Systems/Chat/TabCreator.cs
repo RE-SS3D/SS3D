@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Coimbra;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -13,22 +14,22 @@ namespace SS3D.Engine.Chat
         [SerializeField] private ChatChannels chatChannels = null;
         [SerializeField] private ChatWindow chatWindow = null;
 
-        private List<ChatFilterOption> options = new List<ChatFilterOption>();
+        private readonly List<ChatFilterOption> _options = new List<ChatFilterOption>();
 
         private void OnEnable()
         {
             foreach (Transform child in optionContainer.transform)
             {
-                DestroyImmediate(child.gameObject);
+                child.gameObject.Dispose(false);
             }
 
-            options.Clear();
+            _options.Clear();
 
             foreach (ChatChannel channel in chatChannels.GetHidable())
             {
                 ChatFilterOption option = Instantiate(optionPrefab, optionContainer);
                 option.Init(channel);
-                options.Add(option);
+                _options.Add(option);
             }
         }
 
@@ -45,10 +46,13 @@ namespace SS3D.Engine.Chat
                 tabNameField.text = "Honk!";
             }
 
-            List<ChatChannel> channels = options.Select(option => option.TickedChannel())
-                .Where(channel => !string.IsNullOrEmpty(channel.Name)).ToList();
+            List<ChatChannel> channels = _options
+                .Select(option => option.TickedChannel())
+                .Where(channel => !string.IsNullOrEmpty(channel.Name))
+                .ToList();
         
-            foreach (ChatChannel channel in chatChannels.GetUnhidable()){
+            foreach (ChatChannel channel in chatChannels.GetUnhidable())
+            {
                 channels.Add(channel);
             }
         
