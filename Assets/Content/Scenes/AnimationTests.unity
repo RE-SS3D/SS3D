@@ -123,7 +123,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &907920814
+--- !u!1001 &145982141
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -132,11 +132,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3714097311666575904, guid: eafba36adbcdffc4f85cbb87ea7f23a7, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3714097311666575904, guid: eafba36adbcdffc4f85cbb87ea7f23a7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.7865963
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3714097311666575904, guid: eafba36adbcdffc4f85cbb87ea7f23a7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -144,7 +144,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3714097311666575904, guid: eafba36adbcdffc4f85cbb87ea7f23a7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.2261136
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3714097311666575904, guid: eafba36adbcdffc4f85cbb87ea7f23a7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -272,7 +272,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &2102786593
 GameObject:
