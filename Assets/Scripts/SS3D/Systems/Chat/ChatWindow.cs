@@ -1,8 +1,12 @@
 using FishNet;
+using FishNet.Connection;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -17,25 +21,30 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public class ChatWindow : View, IDragHandler
     {
+        [SerializeField] private ChatChannels chatChannels = null;
+        [SerializeField] private List<String> restrictedChannels = new List<String>(){"System"};
         [SerializeField] private RectTransform tabRow = null;
         [SerializeField] private TextMeshProUGUI ChatText = null;
         [SerializeField] private TMP_InputField inputField = null;
         [SerializeField] private ChatTab chatTabPrefab = null;
         [SerializeField] private TMP_Dropdown channelDropDown = null;
 
-        private ChatTabData currentTabData;
-        private ChatRegister chatRegister;
-
-        public ChatRegister ChatRegister => chatRegister;
-
-        public void Init(ChatTabData tabData, ChatRegister chatRegister)
+        private readonly List<ChatMessage> _messages = new List<ChatMessage>();
+        
+        private ChatTabData _currentTabData;
+        
+        protected override void OnAwake()
         {
-            this.chatRegister = chatRegister;
+            base.OnAwake();
 
-            AddTab(tabData);
-            LoadChannelSelector(tabData);
+            ChatTabData allTab = new ChatTabData("All", chatChannels.GetChannels(), false, null);
+            AddTab(allTab);
+            LoadChannelSelector(allTab);
 
             ToggleChatWindowUI(); // Hide window by default
+            
+            InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
+            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
         }
 
         public RectTransform GetTabRow()
@@ -139,12 +148,12 @@ namespace SS3D.Engine.Chat
 
         public void UpdateMessages()
         {
-            LoadTabChatLog(currentTabData);
+            LoadTabChatLog(_currentTabData);
         }
 
         private void LoadTabChatLog(ChatTabData tabData)
         {
-            List<ChatMessage> relevantMessages = chatRegister.GetRelevantMessages(tabData);
+            List<ChatMessage> relevantMessages = GetRelevantMessages(tabData);
             StringBuilder sb = new StringBuilder();
             foreach (ChatMessage message in relevantMessages)
             {
@@ -176,7 +185,7 @@ namespace SS3D.Engine.Chat
 
         public void LoadTab(ChatTabData tabData)
         {
-            currentTabData = tabData;
+            _currentTabData = tabData;
             LoadTabChatLog(tabData);
             LoadChannelSelector(tabData);
         }
@@ -184,21 +193,20 @@ namespace SS3D.Engine.Chat
         public void CloseTab()
         {
             // If the current tab can't be closed and there are no other tabs, hide the entire window instead.
-            if(!currentTabData.Removable && tabRow.childCount < 2)
+            if(!_currentTabData.Removable && tabRow.childCount < 2)
             {
                 ToggleChatWindowUI();
             }
 
-            if (currentTabData.Removable)
+            if (_currentTabData.Removable)
             {
                 if (tabRow.childCount < 2)
                 {
-                    chatRegister.DeleteChatWindow(this);
                     return;
                 }
 
-                Button a = GetNextTabButton(currentTabData.Tab.gameObject);
-                DestroyImmediate(currentTabData.Tab.gameObject);
+                Button a = GetNextTabButton(_currentTabData.Tab.gameObject);
+                DestroyImmediate(_currentTabData.Tab.gameObject);
                 SelectTab(a.gameObject);
                 StartCoroutine(UpdateCurrentDataTabNextFrame());
             }
@@ -206,22 +214,22 @@ namespace SS3D.Engine.Chat
 
         public void ToggleChatWindowUI()
         {
-            CanvasGroup Chat = GetComponentInChildren<CanvasGroup>();
-            if(Chat)
+            CanvasGroup chat = GetComponentInChildren<CanvasGroup>();
+            if(chat)
             {
-                bool IsVisible = Chat.alpha == 1 ? true : false;
-                if(IsVisible)
+                bool isVisible = chat.alpha >= 1.0f;
+                if(isVisible)
                 {
                     // Hide and disable input
-                    Chat.alpha = 0f;
-                    Chat.blocksRaycasts = false;
+                    chat.alpha = 0f;
+                    chat.blocksRaycasts = false;
                     EventSystem.current.SetSelectedGameObject(null,null); // Set focus to the viewport again
                 }
                 else
                 {
                     // Make visible and enable input
-                    Chat.alpha = 1f;
-                    Chat.blocksRaycasts = true;
+                    chat.alpha = 1f;
+                    chat.blocksRaycasts = true;
                 }
             }
         }
@@ -241,10 +249,10 @@ namespace SS3D.Engine.Chat
             }
 
             ChatMessage chatMessage = new ChatMessage();
-            chatMessage.channel = currentTabData.Channels[channelDropDown.value];
+            chatMessage.channel = _currentTabData.Channels[channelDropDown.value];
             chatMessage.text = text;
             inputField.text = "";
-            if (chatRegister.RestrictedChannels.Contains(chatMessage.channel.Name))
+            if (restrictedChannels.Contains(chatMessage.channel.Name))
             {
                 return; //do not allow talking in restricted channels
             }
@@ -290,6 +298,30 @@ namespace SS3D.Engine.Chat
         {
             inputField.Select();
 
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
+            InstanceFinder.ServerManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
+        }
+
+        private void OnChatBroadcast(ChatMessage msg)
+        {
+            _messages.Add(msg);
+            UpdateMessages();
+        }
+        
+        public void OnChatBroadcast(NetworkConnection conn, ChatMessage msg)
+        {
+            InstanceFinder.ServerManager.Broadcast(msg);
+        }
+        
+        public List<ChatMessage> GetRelevantMessages(ChatTabData tabData)
+        {
+            return _messages.Where(x => tabData.Channels.Any(y => x.channel.Name.Equals(y.Name))).ToList();
         }
     }
 

@@ -59,8 +59,7 @@ namespace SS3D.Engine.Chat
                 return;
             }
 
-            chatWindow.ChatRegister.CreateChatWindow(new ChatTabData(tabNameField.text, channels, true, null),
-                chatWindow, Vector2.zero);
+            chatWindow.AddTab(new ChatTabData(tabNameField.text, channels, true, null));
 
             Close();
         }

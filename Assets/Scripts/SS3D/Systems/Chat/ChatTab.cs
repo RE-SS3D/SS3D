@@ -137,8 +137,6 @@ namespace SS3D.Engine.Chat
                     ChatTab chatTab = window.AddTab(Data);
                     PlaceTab(chatTab, window, eventData.position);
                     // Delete the old chat window if it wouldn't have any tabs after deleting this one
-                    if (chatWindow.GetTabCount() < 2)
-                        chatWindow.ChatRegister.DeleteChatWindow(chatWindow);
                     DestroyImmediate(gameObject);
                     chatWindow.SelectNextTab(gameObject);
                 }
@@ -148,7 +146,7 @@ namespace SS3D.Engine.Chat
                 // Create a new chat window as long as there are multiple tabs
                 if (chatWindow.GetTabCount() > 1)
                 {
-                    chatWindow.ChatRegister.CreateChatWindow(Data, null, Input.mousePosition);
+                    chatWindow.AddTab(Data);
                     DestroyImmediate(gameObject);
                     chatWindow.SelectNextTab(gameObject);
                 }
