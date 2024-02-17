@@ -4317,7 +4317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minSize: {x: 300, y: 150}
-  maxSize: {x: 600, y: 600}
+  maxSize: {x: 600, y: 400}
   panelRectTransform: {fileID: 4960745178968688197}
 --- !u!1 &8185580775600343488
 GameObject:
