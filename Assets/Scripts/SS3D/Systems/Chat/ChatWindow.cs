@@ -127,24 +127,6 @@ namespace SS3D.Engine.Chat
 
             return null;
         }
-        
-        public void SelectNextTab(GameObject selectedTab)
-        {
-            EnableAllTabs();
-
-            Button nextTabButton = GetNextTabButton(selectedTab);
-            if (nextTabButton == null)
-            {
-                return;
-            }
-            
-            nextTabButton.interactable = false;
-
-            // Update the selected channel
-            LoadTab(nextTabButton.gameObject.GetComponent<ChatTab>().GetChatTabData());
-            channelDropDown.value = 0;
-            channelDropDown.RefreshShownValue();
-        }
 
         public void UpdateMessages()
         {
