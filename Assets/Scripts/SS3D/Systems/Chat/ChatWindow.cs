@@ -74,7 +74,7 @@ namespace SS3D.Engine.Chat
         private void LoadChannelSelector(ChatTabData tabData)
         {
             channelDropDown.options.Clear();
-            foreach (ChatChannel channel in tabData.Channels)
+            foreach (ChatChannel channel in tabData.channels)
             {
                 //Need a more robust way to do this. Not adding the option makes the index mismatch when sending messages.
                 //if (chatRegister.restrictedChannels.Contains(channel.Name)) continue;
@@ -177,20 +177,20 @@ namespace SS3D.Engine.Chat
         public void CloseTab()
         {
             // If the current tab can't be closed and there are no other tabs, hide the entire window instead.
-            if(!_currentTabData.Removable && tabRow.childCount < 2)
+            if(!_currentTabData.removable && tabRow.childCount < 2)
             {
                 ToggleChatWindowUI();
             }
 
-            if (_currentTabData.Removable)
+            if (_currentTabData.removable)
             {
                 if (tabRow.childCount < 2)
                 {
                     return;
                 }
 
-                Button a = GetNextTabButton(_currentTabData.Tab.gameObject);
-                DestroyImmediate(_currentTabData.Tab.gameObject);
+                Button a = GetNextTabButton(_currentTabData.tab.gameObject);
+                DestroyImmediate(_currentTabData.tab.gameObject);
                 SelectTab(a.gameObject);
                 StartCoroutine(UpdateCurrentDataTabNextFrame());
             }
@@ -232,7 +232,7 @@ namespace SS3D.Engine.Chat
             }
 
             ChatMessage chatMessage = new ChatMessage();
-            chatMessage.channel = _currentTabData.Channels[channelDropDown.value];
+            chatMessage.channel = _currentTabData.channels[channelDropDown.value];
             chatMessage.text = text;
             inputField.text = "";
             if (restrictedChannels.Contains(chatMessage.channel.name))
@@ -304,7 +304,7 @@ namespace SS3D.Engine.Chat
         
         public List<ChatMessage> GetRelevantMessages(ChatTabData tabData)
         {
-            return _messages.Where(x => tabData.Channels.Any(y => x.channel.name.Equals(y.name))).ToList();
+            return _messages.Where(x => tabData.channels.Any(y => x.channel.name.Equals(y.name))).ToList();
         }
     }
 

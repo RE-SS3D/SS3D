@@ -32,9 +32,9 @@ namespace SS3D.Engine.Chat
         {
             this.Data = data;
             chatWindow = window;
-            Text.text = data.Name;
+            Text.text = data.name;
             transform.SetAsFirstSibling();
-            this.Data.Tab = this;
+            this.Data.tab = this;
             StartCoroutine(FixTabWidth());
             oldPos = transform.position;
         }
