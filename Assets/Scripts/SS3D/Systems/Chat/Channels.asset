@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df12eddc03ad45cd9a7628f3caf4b5ce, type: 3}
   m_Name: Channels
   m_EditorClassIdentifier: 
-  Channels:
+  channels:
   - name: OOC
     abbreviation: ooc
     color: {r: 1, g: 0.10849059, b: 0.25398695, a: 1}
