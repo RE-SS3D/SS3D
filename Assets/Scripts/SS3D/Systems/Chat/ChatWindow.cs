@@ -20,6 +20,7 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public class ChatWindow : View, IDragHandler
     {
+        [SerializeField] private bool defaultChat;
         [SerializeField] private ChatChannels chatChannels = null;
         [SerializeField] private List<String> restrictedChannels = new List<String>(){"System"};
         [SerializeField] private RectTransform tabRow = null;
@@ -32,19 +33,20 @@ namespace SS3D.Engine.Chat
         private readonly List<ChatMessage> _messages = new List<ChatMessage>();
         
         private ChatTabData _currentTabData;
-        private Canvas _canvas;
         
         protected override void OnAwake()
         {
             base.OnAwake();
 
-            _canvas = GetComponentInParent<Canvas>();
-            ChatTabData allTab = new ChatTabData("All", chatChannels.GetChannels(), false, null);
-            AddTab(allTab);
-            LoadChannelSelector(allTab);
+            if (defaultChat)
+            {
+                ChatTabData allTab = new ChatTabData("All", chatChannels.GetChannels(), false, null);
+                AddTab(allTab);
+                LoadChannelSelector(allTab);
 
-            ToggleChatWindowUI(); // Hide window by default
-            
+                ToggleChatWindowUI(); // Hide window by default
+            }
+
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
             InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
         }
@@ -93,7 +95,7 @@ namespace SS3D.Engine.Chat
         {
             ChatTab chatTab = Instantiate(chatTabPrefab, tabRow);
             chatTab.Init(tabData, this);
-            LoadTab(chatTab.Data);
+            LoadTab(chatTab.GetChatTabData());
 
             SelectTab(chatTab.gameObject);
             return chatTab;
@@ -163,7 +165,7 @@ namespace SS3D.Engine.Chat
 
             if (newTab)
             {
-                LoadTab(newTab.Data);
+                LoadTab(newTab.GetChatTabData());
             }
         }
 
@@ -177,7 +179,7 @@ namespace SS3D.Engine.Chat
         public void CloseTab()
         {
             // If the current tab can't be closed and there are no other tabs, hide the entire window instead.
-            if(!_currentTabData.removable && tabRow.childCount < 2)
+            if (!_currentTabData.removable && tabRow.childCount < 2)
             {
                 ToggleChatWindowUI();
             }
@@ -201,7 +203,7 @@ namespace SS3D.Engine.Chat
             if (canvasGroup)
             {
                 bool isVisible = canvasGroup.alpha >= 1.0f;
-                if(isVisible)
+                if (isVisible)
                 {
                     // Hide and disable input
                     canvasGroup.alpha = 0f;
@@ -220,7 +222,7 @@ namespace SS3D.Engine.Chat
         private IEnumerator UpdateCurrentDataTabNextFrame()
         {
             yield return null;
-            if (tabRow.GetChild(0)) LoadTab(tabRow.GetChild(0).GetComponent<ChatTab>().Data);
+            if (tabRow.GetChild(0)) LoadTab(tabRow.GetChild(0).GetComponent<ChatTab>().GetChatTabData());
         }
 
         public void SendMessage()
@@ -259,7 +261,7 @@ namespace SS3D.Engine.Chat
         public void OnDrag(PointerEventData eventData)
         {
             RectTransform moveTransform = (RectTransform)transform;
-            moveTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
+            moveTransform.position += (Vector3)eventData.delta;
         }
 
         public bool PlayerIsTyping()

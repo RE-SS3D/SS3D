@@ -115,8 +115,9 @@ GameObject:
   - component: {fileID: 5971959249371347940}
   - component: {fileID: 8501182309282052842}
   - component: {fileID: 3776898454994291792}
+  - component: {fileID: 6707796396350026159}
   m_Layer: 5
-  m_Name: ToggleChatButton
+  m_Name: ToggleAllChatsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,9 +196,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3593454824574577023}
-        m_TargetAssemblyTypeName: SS3D.Engine.Chat.ChatWindow, SS3D.Systems
-        m_MethodName: ToggleChatWindowUI
+      - m_Target: {fileID: 6707796396350026159}
+        m_TargetAssemblyTypeName: SS3D.Engine.Chat.ToggleChats, SS3D.Systems
+        m_MethodName: ToggleAllChats
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -237,6 +238,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6707796396350026159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1589564895295227613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90d49caecbaa4c61a42d7ee4434b3035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chatWindowsContainer: {fileID: 3810371244597919609}
 --- !u!1 &2953822347573922298
 GameObject:
   m_ObjectHideFlags: 0
@@ -2356,6 +2370,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChatWindow
       objectReference: {fileID: 0}
+    - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
+      propertyPath: defaultChat
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
 --- !u!224 &1737347329555631587 stripped
@@ -2363,17 +2381,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4960745178968688197, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
   m_PrefabInstance: {fileID: 6684563704950426534}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3593454824574577023 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
-  m_PrefabInstance: {fileID: 6684563704950426534}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19c825e65f25ab14e8c8b5bc5c47497d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &6752008115007009143
 PrefabInstance:
   m_ObjectHideFlags: 0
