@@ -1,5 +1,6 @@
 using FishNet;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -247,8 +248,21 @@ namespace SS3D.Engine.Chat
             {
                 return; //do not allow talking in restricted channels
             }
+            
+            // Tags should be escaped only in unrestricted channels thus preserving the ability
+            // to stylize in restricted channels.
+            chatMessage.text = chatMessage.text.Replace("<", "<nobr><</nobr>");
+            
+            chatMessage.sender = InstanceFinder.ClientManager.Connection.FirstObject.GetComponent<Player>().Ckey;
 
-            InstanceFinder.ClientManager.Broadcast(chatMessage);
+            if (InstanceFinder.IsServer)
+            {
+                InstanceFinder.ServerManager.Broadcast(chatMessage);
+            }
+            else if (InstanceFinder.IsClient)
+            {
+                InstanceFinder.ClientManager.Broadcast(chatMessage);
+            }
         }
 
         public void OnDrag(PointerEventData eventData)

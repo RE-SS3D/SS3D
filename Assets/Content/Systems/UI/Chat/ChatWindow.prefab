@@ -4058,6 +4058,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4960745178968688197}
   - component: {fileID: 7861828484222706393}
+  - component: {fileID: 6708715522356447205}
   - component: {fileID: 4377438578111886795}
   - component: {fileID: 3219069519076208049}
   m_Layer: 5
@@ -4106,6 +4107,21 @@ MonoBehaviour:
   inputField: {fileID: 1788033111410862037}
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36, type: 3}
   channelDropDown: {fileID: 3465179352210583905}
+--- !u!114 &6708715522356447205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7269661753032637313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
+  restrictedChannels:
+  - System
 --- !u!114 &4377438578111886795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4125,7 +4141,7 @@ MonoBehaviour:
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: -513.608, y: -288.90448, z: 0}
+    Position: {x: -960, y: -540, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1

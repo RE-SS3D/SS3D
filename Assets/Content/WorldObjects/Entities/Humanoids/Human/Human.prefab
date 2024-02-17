@@ -6607,7 +6607,6 @@ GameObject:
   - component: {fileID: -8255755562304280350}
   - component: {fileID: 8703868999579586524}
   - component: {fileID: -4713880493128437662}
-  - component: {fileID: 316769167833102813}
   m_Layer: 11
   m_Name: Human
   m_TagString: Player
@@ -7198,26 +7197,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 4ed10cfc097470a4cb34c5ce119c3756, type: 2}
---- !u!114 &316769167833102813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6415765038646171405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
-  chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
-  chatWindowPrefab: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
-  restrictedChannels:
-  - System
-  messages: []
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0

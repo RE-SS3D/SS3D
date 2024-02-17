@@ -14,7 +14,7 @@ namespace SS3D.Engine.Chat
     /// Behaviour responsible for storing chat messages and communicating new ones over the network.
     /// Should be attached to the player prefab.
     /// </summary>
-    public class ChatRegister : NetworkBehaviour
+    public class ChatRegister : MonoBehaviour
     {
         [SerializeField] private ChatChannels chatChannels = null;
         [SerializeField] private List<String> restrictedChannels = new List<String>(){"System"};
@@ -26,23 +26,10 @@ namespace SS3D.Engine.Chat
         
         private readonly List<ChatMessage> _messages = new List<ChatMessage>();
 
-        public override void OnStartServer()
+        private void OnEnable()
         {
-            base.OnStartServer();
-
-            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-
-            if (!IsOwner)
-            {
-                return;
-            }
-
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
+            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
             
             _chatWindows = new List<ChatWindow>();
             CreateChatWindow(new ChatTabData("All", chatChannels.GetChannels(), false, null), null, Vector2.zero);
@@ -50,49 +37,19 @@ namespace SS3D.Engine.Chat
 
         private void OnDisable()
         {
-            if (IsOwner)
-            {
-                InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
-            }
+            InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
+            InstanceFinder.ServerManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
         }
 
         private void OnChatBroadcast(ChatMessage msg)
         {
-            if (!IsOwner) 
-            {
-                return;
-            }
-            
             _messages.Add(msg);
             UpdateMessages();
         }
         
         public void OnChatBroadcast(NetworkConnection conn, ChatMessage msg)
         {
-            if (!IsOwner)
-            {
-                return;
-            }
-
-            NetworkObject nob = conn.FirstObject;
-
-            if (nob == null)
-            {
-                return;
-            }
-
-            if (restrictedChannels.Contains(msg.channel.Name))
-            {
-                return;
-            }
-            
-            // Tags should be escaped only in unrestricted channels thus preserving the ability
-            // to stylize in restricted channels.
-            msg.text = msg.text.Replace("<", "<nobr><</nobr>");
-            
-            msg.sender = nob.GetComponent<Player>().Ckey;
-        
-            ServerManager.Broadcast(nob, msg, true);
+            InstanceFinder.ServerManager.Broadcast(msg);
         }
 
         /// <summary>
