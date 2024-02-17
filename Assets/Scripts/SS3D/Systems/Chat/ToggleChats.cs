@@ -2,12 +2,14 @@
 
 namespace SS3D.Engine.Chat
 {
-    public class ToggleChat : MonoBehaviour
+    public class ToggleChats : MonoBehaviour
     {
-        public void ToggleChat()
+        [SerializeField]
+        private Transform chatWindowsContainer;
+        
+        public void ToggleAllChats()
         {
-            
-            foreach (ChatWindow chatWindow in transform.GetComponentsInParent<ChatWindow>())
+            foreach (ChatWindow chatWindow in chatWindowsContainer.GetComponentsInChildren<ChatWindow>())
             {
                 chatWindow.ToggleChatWindowUI();
             }
