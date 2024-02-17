@@ -9,14 +9,14 @@ namespace SS3D.Engine.Chat
         [SerializeField] private TextMeshProUGUI label = null;
         [SerializeField] private Toggle toggle = null;
 
-        private ChatChannel channel;
+        private ChatChannel _channel;
 
         public void Init(ChatChannel channel)
         {
-            this.channel = channel;
+            _channel = channel;
             label.text = channel.name;
         }
 
-        public ChatChannel TickedChannel() => toggle.isOn ? channel : new ChatChannel();
+        public ChatChannel TickedChannel() => toggle.isOn ? _channel : new ChatChannel();
     }
 }
