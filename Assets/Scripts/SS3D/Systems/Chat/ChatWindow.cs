@@ -1,6 +1,5 @@
 using FishNet;
 using FishNet.Connection;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using System;
@@ -28,15 +27,18 @@ namespace SS3D.Engine.Chat
         [SerializeField] private TMP_InputField inputField = null;
         [SerializeField] private ChatTab chatTabPrefab = null;
         [SerializeField] private TMP_Dropdown channelDropDown = null;
+        [SerializeField] private CanvasGroup canvasGroup = null;
 
         private readonly List<ChatMessage> _messages = new List<ChatMessage>();
         
         private ChatTabData _currentTabData;
+        private Canvas _canvas;
         
         protected override void OnAwake()
         {
             base.OnAwake();
 
+            _canvas = GetComponentInParent<Canvas>();
             ChatTabData allTab = new ChatTabData("All", chatChannels.GetChannels(), false, null);
             AddTab(allTab);
             LoadChannelSelector(allTab);
@@ -196,22 +198,21 @@ namespace SS3D.Engine.Chat
 
         public void ToggleChatWindowUI()
         {
-            CanvasGroup chat = GetComponentInChildren<CanvasGroup>();
-            if(chat)
+            if (canvasGroup)
             {
-                bool isVisible = chat.alpha >= 1.0f;
+                bool isVisible = canvasGroup.alpha >= 1.0f;
                 if(isVisible)
                 {
                     // Hide and disable input
-                    chat.alpha = 0f;
-                    chat.blocksRaycasts = false;
+                    canvasGroup.alpha = 0f;
+                    canvasGroup.blocksRaycasts = false;
                     EventSystem.current.SetSelectedGameObject(null,null); // Set focus to the viewport again
                 }
                 else
                 {
                     // Make visible and enable input
-                    chat.alpha = 1f;
-                    chat.blocksRaycasts = true;
+                    canvasGroup.alpha = 1f;
+                    canvasGroup.blocksRaycasts = true;
                 }
             }
         }
@@ -258,7 +259,7 @@ namespace SS3D.Engine.Chat
         public void OnDrag(PointerEventData eventData)
         {
             RectTransform moveTransform = (RectTransform)transform;
-            moveTransform.position += (Vector3)eventData.delta;
+            moveTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
         }
 
         public bool PlayerIsTyping()
