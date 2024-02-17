@@ -48,7 +48,7 @@ namespace SS3D.Engine.Chat
 
             List<ChatChannel> channels = _options
                 .Select(option => option.TickedChannel())
-                .Where(channel => !string.IsNullOrEmpty(channel.Name))
+                .Where(channel => !string.IsNullOrEmpty(channel.name))
                 .ToList();
         
             foreach (ChatChannel channel in chatChannels.GetUnhidable())

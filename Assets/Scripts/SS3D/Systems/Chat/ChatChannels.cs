@@ -16,11 +16,11 @@ namespace SS3D.Engine.Chat
         }
         public List<ChatChannel> GetHidable()
         {
-            return Channels.FindAll(channel => {return channel.Hidable;});
+            return Channels.FindAll(channel => {return channel.hidable;});
         }
         public List<ChatChannel> GetUnhidable()
         {
-            return Channels.FindAll(channel => {return !channel.Hidable;});
+            return Channels.FindAll(channel => {return !channel.hidable;});
         }
     }
 }

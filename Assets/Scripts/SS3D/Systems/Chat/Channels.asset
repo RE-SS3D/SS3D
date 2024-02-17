@@ -13,47 +13,47 @@ MonoBehaviour:
   m_Name: Channels
   m_EditorClassIdentifier: 
   Channels:
-  - Name: OOC
-    Abbreviation: ooc
-    Color: {r: 1, g: 0.10849059, b: 0.25398695, a: 1}
-    Hidable: 1
-  - Name: AI
-    Abbreviation: AI
-    Color: {r: 1, g: 0.33333334, b: 1, a: 1}
-    Hidable: 1
-  - Name: Binary
-    Abbreviation: Bin
-    Color: {r: 0, g: 0, b: 0, a: 1}
-    Hidable: 1
-  - Name: Command
-    Abbreviation: Com
-    Color: {r: 0.5803922, g: 0.56078434, b: 0.10196079, a: 1}
-    Hidable: 1
-  - Name: Engineering
-    Abbreviation: Eng
-    Color: {r: 0.9843138, g: 0.3372549, b: 0.07450981, a: 1}
-    Hidable: 1
-  - Name: Medical
-    Abbreviation: Med
-    Color: {r: 0.20000002, g: 0.44705886, b: 0.6431373, a: 1}
-    Hidable: 1
-  - Name: Public
-    Abbreviation: Pub
-    Color: {r: 0, g: 0.5019608, b: 0, a: 1}
-    Hidable: 1
-  - Name: Science
-    Abbreviation: Sci
-    Color: {r: 0.6, g: 0.20000002, b: 0.6, a: 1}
-    Hidable: 1
-  - Name: Security
-    Abbreviation: Sec
-    Color: {r: 0.6392157, g: 0, b: 0, a: 1}
-    Hidable: 1
-  - Name: Service
-    Abbreviation: Ser
-    Color: {r: 0.43137258, g: 0.6666667, b: 0.17254902, a: 1}
-    Hidable: 1
-  - Name: Supply
-    Abbreviation: Sup
-    Color: {r: 0.65882355, g: 0.45098042, b: 0.16862746, a: 1}
-    Hidable: 1
+  - name: OOC
+    abbreviation: ooc
+    color: {r: 1, g: 0.10849059, b: 0.25398695, a: 1}
+    hidable: 1
+  - name: AI
+    abbreviation: AI
+    color: {r: 1, g: 0.33333334, b: 1, a: 1}
+    hidable: 1
+  - name: Binary
+    abbreviation: Bin
+    color: {r: 0, g: 0, b: 0, a: 1}
+    hidable: 1
+  - name: Command
+    abbreviation: Com
+    color: {r: 0.5803922, g: 0.56078434, b: 0.10196079, a: 1}
+    hidable: 1
+  - name: Engineering
+    abbreviation: Eng
+    color: {r: 0.9843138, g: 0.3372549, b: 0.07450981, a: 1}
+    hidable: 1
+  - name: Medical
+    abbreviation: Med
+    color: {r: 0.20000002, g: 0.44705886, b: 0.6431373, a: 1}
+    hidable: 1
+  - name: Public
+    abbreviation: Pub
+    color: {r: 0, g: 0.5019608, b: 0, a: 1}
+    hidable: 1
+  - name: Science
+    abbreviation: Sci
+    color: {r: 0.6, g: 0.20000002, b: 0.6, a: 1}
+    hidable: 1
+  - name: Security
+    abbreviation: Sec
+    color: {r: 0.6392157, g: 0, b: 0, a: 1}
+    hidable: 1
+  - name: Service
+    abbreviation: Ser
+    color: {r: 0.43137258, g: 0.6666667, b: 0.17254902, a: 1}
+    hidable: 1
+  - name: Supply
+    abbreviation: Sup
+    color: {r: 0.65882355, g: 0.45098042, b: 0.16862746, a: 1}
+    hidable: 1

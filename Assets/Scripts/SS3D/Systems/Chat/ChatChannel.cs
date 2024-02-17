@@ -6,9 +6,9 @@ namespace SS3D.Engine.Chat
     [Serializable]
     public struct ChatChannel
     {
-        public string Name;
-        public string Abbreviation;
-        public Color Color;
-        public bool Hidable;
+        public string name;
+        public string abbreviation;
+        public Color color;
+        public bool hidable;
     }
 }

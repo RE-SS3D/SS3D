@@ -82,8 +82,8 @@ namespace SS3D.Engine.Chat
                 channelDropDown.options.Add(
                     new TMP_Dropdown.OptionData(
                         string.Format("<color=#{0}>[{1}]</color>",
-                            ColorUtility.ToHtmlStringRGBA(channel.Color),
-                            channel.Abbreviation)
+                            ColorUtility.ToHtmlStringRGBA(channel.color),
+                            channel.abbreviation)
                     )
                 );
             }
@@ -143,8 +143,8 @@ namespace SS3D.Engine.Chat
             {
                 sb.AppendFormat(
                     "<color=#{0}>[{1}] {2}: {3}\n",
-                    ColorUtility.ToHtmlStringRGBA(message.channel.Color),
-                    message.channel.Abbreviation,
+                    ColorUtility.ToHtmlStringRGBA(message.channel.color),
+                    message.channel.abbreviation,
                     message.sender,
                     message.text);
             }
@@ -235,7 +235,7 @@ namespace SS3D.Engine.Chat
             chatMessage.channel = _currentTabData.Channels[channelDropDown.value];
             chatMessage.text = text;
             inputField.text = "";
-            if (restrictedChannels.Contains(chatMessage.channel.Name))
+            if (restrictedChannels.Contains(chatMessage.channel.name))
             {
                 return; //do not allow talking in restricted channels
             }
@@ -304,7 +304,7 @@ namespace SS3D.Engine.Chat
         
         public List<ChatMessage> GetRelevantMessages(ChatTabData tabData)
         {
-            return _messages.Where(x => tabData.Channels.Any(y => x.channel.Name.Equals(y.Name))).ToList();
+            return _messages.Where(x => tabData.Channels.Any(y => x.channel.name.Equals(y.name))).ToList();
         }
     }
 

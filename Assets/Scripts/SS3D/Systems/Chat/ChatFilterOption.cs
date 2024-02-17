@@ -14,7 +14,7 @@ namespace SS3D.Engine.Chat
         public void Init(ChatChannel channel)
         {
             this.channel = channel;
-            label.text = channel.Name;
+            label.text = channel.name;
         }
 
         public ChatChannel TickedChannel() => toggle.isOn ? channel : new ChatChannel();
