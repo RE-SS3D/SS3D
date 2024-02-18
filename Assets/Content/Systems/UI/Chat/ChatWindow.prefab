@@ -3771,7 +3771,7 @@ GameObject:
   - component: {fileID: 7861828484222706393}
   m_Layer: 5
   m_Name: ChatWindow
-  m_TagString: ChatWindow
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3866,10 +3866,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19c825e65f25ab14e8c8b5bc5c47497d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requiresChatController: 0
   defaultChat: 0
   chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
-  restrictedChannels:
-  - {fileID: 11400000, guid: 9cf83e6d190541b4f82b84de530639dd, type: 2}
   initialChannel: {fileID: 0}
   tabRow: {fileID: 5578169005156871225}
   chatText: {fileID: 5578169004254389989}
@@ -3877,6 +3876,8 @@ MonoBehaviour:
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36, type: 3}
   channelDropDown: {fileID: 3465179352210583905}
   canvasGroup: {fileID: 9222210945431415582}
+  hideOnInitialize: 0
+  canBeDragged: 0
 --- !u!1 &7332559107077124948
 GameObject:
   m_ObjectHideFlags: 0

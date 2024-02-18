@@ -2375,6 +2375,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
+      propertyPath: canBeDragged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
       propertyPath: hideOnInitialize
       value: 1
       objectReference: {fileID: 0}
