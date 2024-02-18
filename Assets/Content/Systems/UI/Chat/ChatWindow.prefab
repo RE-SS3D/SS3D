@@ -3889,7 +3889,7 @@ MonoBehaviour:
   restrictedChannels:
   - System
   tabRow: {fileID: 5578169005156871225}
-  ChatText: {fileID: 5578169004254389989}
+  chatText: {fileID: 5578169004254389989}
   inputField: {fileID: 1788033111410862037}
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36, type: 3}
   channelDropDown: {fileID: 3465179352210583905}

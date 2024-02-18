@@ -22,9 +22,9 @@ namespace SS3D.Engine.Chat
     {
         [SerializeField] private bool defaultChat;
         [SerializeField] private ChatChannels chatChannels = null;
-        [SerializeField] private List<String> restrictedChannels = new List<String>(){"System"};
+        [SerializeField] private List<String> restrictedChannels = new List<String>() { "System" };
         [SerializeField] private RectTransform tabRow = null;
-        [SerializeField] private TextMeshProUGUI ChatText = null;
+        [SerializeField] private TextMeshProUGUI chatText = null;
         [SerializeField] private TMP_InputField inputField = null;
         [SerializeField] private ChatTab chatTabPrefab = null;
         [SerializeField] private TMP_Dropdown channelDropDown = null;
@@ -151,7 +151,7 @@ namespace SS3D.Engine.Chat
                     message.text);
             }
 
-            ChatText.text = sb.ToString();
+            chatText.text = sb.ToString();
         }
 
         public void LoadTab()
@@ -264,25 +264,14 @@ namespace SS3D.Engine.Chat
             moveTransform.position += (Vector3)eventData.delta;
         }
 
-        public bool PlayerIsTyping()
-        {
-            return (EventSystem.current.currentSelectedGameObject != null);
-        }
-
         public void FinishTyping()
         {
-            if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)))
+            if (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
             {
                 SendMessage();
             }
 
             EventSystem.current.SetSelectedGameObject(null);
-
-        }
-        public void FocusInputField()
-        {
-            inputField.Select();
-
         }
 
         protected override void OnDestroyed()
@@ -298,16 +287,15 @@ namespace SS3D.Engine.Chat
             _messages.Add(msg);
             UpdateMessages();
         }
-        
-        public void OnChatBroadcast(NetworkConnection conn, ChatMessage msg)
+
+        private void OnChatBroadcast(NetworkConnection conn, ChatMessage msg)
         {
             InstanceFinder.ServerManager.Broadcast(msg);
         }
-        
-        public List<ChatMessage> GetRelevantMessages(ChatTabData tabData)
+
+        private List<ChatMessage> GetRelevantMessages(ChatTabData tabData)
         {
             return _messages.Where(x => tabData.channels.Any(y => x.channel.name.Equals(y.name))).ToList();
         }
     }
-
 }
