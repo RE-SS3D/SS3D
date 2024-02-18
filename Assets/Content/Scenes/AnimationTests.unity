@@ -623,16 +623,47 @@ PrefabInstance:
       propertyPath: m_Name
       value: DummyHuman
       objectReference: {fileID: 0}
+    - target: {fileID: 4153415939737701389, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9999946
+      objectReference: {fileID: 0}
+    - target: {fileID: 4153415939737701389, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.0000004317612
+      objectReference: {fileID: 0}
+    - target: {fileID: 4153415939737701389, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.003298652
+      objectReference: {fileID: 0}
+    - target: {fileID: 4153415939737701389, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0001308895
+      objectReference: {fileID: 0}
+    - target: {fileID: 4153415939737701389, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4518981069195611147, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_Weight
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905410476576329231, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_TranslationOffset.x
+      value: -0.005799084
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905410476576329231, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_TranslationOffset.y
+      value: -0.3382697
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905410476576329231, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_TranslationOffset.z
+      value: -0.0220027
       objectReference: {fileID: 0}
     - target: {fileID: 5647843704594023121, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -90
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4518981069195611147, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
 --- !u!1 &1170073663
 GameObject:
