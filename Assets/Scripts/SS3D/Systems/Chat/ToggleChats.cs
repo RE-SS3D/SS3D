@@ -9,9 +9,9 @@ namespace SS3D.Engine.Chat
         
         public void ToggleAllChats()
         {
-            ChatWindow[] allChatWindows = chatWindowsContainer.GetComponentsInChildren<ChatWindow>();
+            InGameChatWindow[] allChatWindows = chatWindowsContainer.GetComponentsInChildren<InGameChatWindow>();
             bool hideChats = allChatWindows[0].CanvasGroup.alpha >= 1.0f;
-            foreach (ChatWindow chatWindow in allChatWindows)
+            foreach (InGameChatWindow chatWindow in allChatWindows)
             {
                 if (hideChats)
                 {

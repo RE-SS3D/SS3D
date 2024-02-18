@@ -4,18 +4,20 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace SS3D.Engine.Chat
 {
     public class ChatTab : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
     {
-        [SerializeField] private ChatWindow chatWindowPrefab = null;
+        [FormerlySerializedAs("chatWindowPrefab")]
+        [SerializeField] private InGameChatWindow inGameChatWindowPrefab = null;
         [SerializeField] private TextMeshProUGUI text = null;
         [SerializeField] private ChatTabData data;
         
         private Image _image;
-        private ChatWindow _chatWindow;
+        private InGameChatWindow _inGameChatWindow;
         private Vector3 _oldPos;
 
         public ChatTabData GetChatTabData() => data;
@@ -25,10 +27,10 @@ namespace SS3D.Engine.Chat
             _image = GetComponent<Image>();
         }
 
-        public void Init(ChatTabData newData, ChatWindow window)
+        public void Init(ChatTabData newData, InGameChatWindow window)
         {
             data = newData;
-            _chatWindow = window;
+            _inGameChatWindow = window;
             text.text = newData.name;
             transform.SetAsFirstSibling();
             data.tab = this;
@@ -51,13 +53,13 @@ namespace SS3D.Engine.Chat
 
         public void OpenTab()
         {
-            _chatWindow.SelectTab(gameObject);
+            _inGameChatWindow.SelectTab(gameObject);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             _oldPos = transform.position;
-            _chatWindow.LoadTab();
+            _inGameChatWindow.LoadTab();
         
             text.raycastTarget = false;
             _image.raycastTarget = false;
@@ -72,11 +74,11 @@ namespace SS3D.Engine.Chat
         /// Places the tab close to where the mouse dropped the tab off at. Reorders the other tabs to adjust.
         /// </summary>
         /// <param name="chatTab">The tab to compare positions with.</param>
-        /// <param name="chatWindow">The ChatWindow which contains the TabRow the tab goes into.</param>
+        /// <param name="inGameChatWindow">The ChatWindow which contains the TabRow the tab goes into.</param>
         /// <param name="mousePos">The position of the mouse to compare which direction the tab will move to.</param>
-        private void PlaceTab(ChatTab chatTab, ChatWindow chatWindow, Vector3 mousePos)
+        private void PlaceTab(ChatTab chatTab, InGameChatWindow inGameChatWindow, Vector3 mousePos)
         {
-            RectTransform tabRow = chatWindow.GetTabRow();
+            RectTransform tabRow = inGameChatWindow.GetTabRow();
             int index = chatTab.transform.GetSiblingIndex();
             
             // If we are moving the tab to the right
@@ -133,31 +135,31 @@ namespace SS3D.Engine.Chat
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            ChatWindow chatWindow = eventData.hovered
-                .FirstOrDefault(x => x.GetComponentInParent<ChatWindow>() != null)?
-                .GetComponentInParent<ChatWindow>();
-            if (chatWindow != null)
+            InGameChatWindow inGameChatWindow = eventData.hovered
+                .FirstOrDefault(x => x.GetComponentInParent<InGameChatWindow>() != null)?
+                .GetComponentInParent<InGameChatWindow>();
+            if (inGameChatWindow != null)
             {
                 // Check if dropping on the same window
-                if (chatWindow == _chatWindow)
+                if (inGameChatWindow == _inGameChatWindow)
                 {
-                    PlaceTab(this, _chatWindow, eventData.position);
-                    _chatWindow.SelectTab(gameObject);
+                    PlaceTab(this, _inGameChatWindow, eventData.position);
+                    _inGameChatWindow.SelectTab(gameObject);
                 }
                 else
                 {
-                    ChatTab chatTab = chatWindow.AddTab(data);
-                    PlaceTab(chatTab, chatWindow, eventData.position);
-                    Button a = _chatWindow.GetNextTabButton(gameObject);
+                    ChatTab chatTab = inGameChatWindow.AddTab(data);
+                    PlaceTab(chatTab, inGameChatWindow, eventData.position);
+                    Button a = _inGameChatWindow.GetNextTabButton(gameObject);
                     gameObject.Dispose(false);
 
                     if (a == null)
                     {
-                        _chatWindow.gameObject.Dispose(false);
+                        _inGameChatWindow.gameObject.Dispose(false);
                     }
                     else
                     {
-                        _chatWindow.SelectTab(a.gameObject);
+                        _inGameChatWindow.SelectTab(a.gameObject);
                     }
 
                     return;
@@ -166,17 +168,17 @@ namespace SS3D.Engine.Chat
             else
             {
                 // Create a new chat window as long as there are multiple tabs
-                if (_chatWindow.GetTabCount() > 1)
+                if (_inGameChatWindow.GetTabCount() > 1)
                 {
-                    ChatWindow newChatWindow = Instantiate(chatWindowPrefab).GetComponent<ChatWindow>();
-                    newChatWindow.transform.SetParent(_chatWindow.transform.parent);
-                    newChatWindow.transform.position = Input.mousePosition;
-                    newChatWindow.transform.localScale = _chatWindow.transform.localScale;
-                    newChatWindow.gameObject.SetActive(true);
-                    newChatWindow.AddTab(data);
-                    Button a = _chatWindow.GetNextTabButton(gameObject);
+                    InGameChatWindow newInGameChatWindow = Instantiate(inGameChatWindowPrefab).GetComponent<InGameChatWindow>();
+                    newInGameChatWindow.transform.SetParent(_inGameChatWindow.transform.parent);
+                    newInGameChatWindow.transform.position = Input.mousePosition;
+                    newInGameChatWindow.transform.localScale = _inGameChatWindow.transform.localScale;
+                    newInGameChatWindow.gameObject.SetActive(true);
+                    newInGameChatWindow.AddTab(data);
+                    Button a = _inGameChatWindow.GetNextTabButton(gameObject);
                     gameObject.Dispose(false);
-                    _chatWindow.SelectTab(a.gameObject);
+                    _inGameChatWindow.SelectTab(a.gameObject);
 
                     return;
                 }

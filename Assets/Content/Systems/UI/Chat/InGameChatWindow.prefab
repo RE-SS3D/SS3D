@@ -281,8 +281,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1793,7 +1793,7 @@ MonoBehaviour:
   optionPrefab: {fileID: 9141987758252414755, guid: 1b072aeb6b5816348b8a8d95a9d7c9c1, type: 3}
   optionContainer: {fileID: 259773888143952910}
   chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
-  chatWindow: {fileID: 7861828484222706393}
+  inGameChatWindow: {fileID: 7861828484222706393}
 --- !u!114 &7605719517590421236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2472,9 +2472,9 @@ MonoBehaviour:
     [System] Welcome!
 
     [Whi]
-    Uknown: <i><size=20>Tss...</i></size>
+    Unknown: <i><size=12>Tss...</i></size>
 
-    [Sho] Me: <size=24>What!?</size>'
+    [Sho] Me: <size=16>What!?</size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
   m_sharedMaterial: {fileID: 6294272732967332687, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
@@ -2501,8 +2501,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3008,8 +3008,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3499,8 +3499,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3777,7 +3777,7 @@ GameObject:
   - component: {fileID: 9222210945431415582}
   - component: {fileID: 7861828484222706393}
   m_Layer: 5
-  m_Name: ChatWindow
+  m_Name: InGameChatWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3873,18 +3873,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19c825e65f25ab14e8c8b5bc5c47497d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiresChatController: 0
-  defaultChat: 0
   chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
-  initialChannel: {fileID: 0}
-  tabRow: {fileID: 5578169005156871225}
   chatText: {fileID: 5578169004254389989}
   inputField: {fileID: 3551843282541818943}
+  defaultChat: 0
+  tabRow: {fileID: 5578169005156871225}
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36, type: 3}
   channelDropDown: {fileID: 3465179352210583905}
   canvasGroup: {fileID: 9222210945431415582}
-  hideOnInitialize: 0
-  canBeDragged: 0
 --- !u!1 &7332559107077124948
 GameObject:
   m_ObjectHideFlags: 0
@@ -4591,8 +4587,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

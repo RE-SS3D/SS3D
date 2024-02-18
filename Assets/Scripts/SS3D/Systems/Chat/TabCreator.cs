@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Engine.Chat
 {
@@ -12,7 +13,8 @@ namespace SS3D.Engine.Chat
         [SerializeField] private ChatFilterOption optionPrefab = null;
         [SerializeField] private RectTransform optionContainer = null;
         [SerializeField] private ChatChannels chatChannels = null;
-        [SerializeField] private ChatWindow chatWindow = null;
+        [FormerlySerializedAs("chatWindow")]
+        [SerializeField] private InGameChatWindow inGameChatWindow = null;
 
         private readonly List<ChatFilterOption> _options = new List<ChatFilterOption>();
 
@@ -63,7 +65,7 @@ namespace SS3D.Engine.Chat
                 return;
             }
 
-            chatWindow.AddTab(new ChatTabData(tabNameField.text, channels, true, null));
+            inGameChatWindow.AddTab(new ChatTabData(tabNameField.text, channels, true, null));
 
             Close();
         }

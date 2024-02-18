@@ -19,6 +19,6 @@ MonoBehaviour:
   canFormatText: 0
   distanceBased: 1
   maxDistance: 2
-  prefix: <i><size=20>
+  prefix: <i><size=12>
   suffix: </size></i>
   hideSenderName: 0

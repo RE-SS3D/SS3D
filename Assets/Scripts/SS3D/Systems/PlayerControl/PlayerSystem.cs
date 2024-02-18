@@ -7,6 +7,7 @@ using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Engine.Chat;
 using SS3D.Logging;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
@@ -185,6 +186,8 @@ namespace SS3D.Systems.PlayerControl
                 }
 
                 _serverPlayers.Add(ckey, player);
+                
+                ChatMessageSender.SendServerMessage("System", $"{ckey} joined!");
             }
 
             player.GiveOwnership(conn);

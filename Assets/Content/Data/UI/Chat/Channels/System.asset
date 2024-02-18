@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2d6eaeb9ae4b9f85a3ab7c93c2a1bb, type: 3}
   m_Name: System
   m_EditorClassIdentifier: 
-  abbreviation: Sys
+  abbreviation: 
   color: {r: 1, g: 0, b: 0.019583702, a: 1}
   hidable: 0
   roleRequiredToUse: 3
