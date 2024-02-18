@@ -99,7 +99,7 @@ namespace SS3D.Systems.Tile
             get => _asset;
             set
             {
-                if (Application.isPlaying)
+                if (UnityEngine.Application.isPlaying)
                 {
                     Serilog.Log.Warning($"Field {nameof(Asset)} is being modified in runtime. This should not happen in normal conditions.");
                 }
