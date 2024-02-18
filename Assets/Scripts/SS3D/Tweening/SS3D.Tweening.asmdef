@@ -1,0 +1,20 @@
+{
+    "name": "SS3D.Tweening",
+    "rootNamespace": "",
+    "references": [
+        "Coimbra",
+        "SS3D.Application",
+        "DOTween.Modules",
+        "SS3D.Core",
+        "Coimbra.Services.Events"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

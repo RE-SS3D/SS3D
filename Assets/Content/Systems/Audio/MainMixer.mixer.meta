@@ -1,8 +1,12 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Content/Systems/Audio/MainMixer.mixer.meta
 guid: 8b82305b98242f041bddb6cd5d19ba78
 NativeFormatImporter:
+========
+guid: b4518125d36bb5e45971863d51f0c278
+AssemblyDefinitionImporter:
+>>>>>>>> 06209241 (Rework how application is initialized):Assets/Scripts/SS3D/Tweening/SS3D.Tweening.asmdef.meta
   externalObjects: {}
-  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

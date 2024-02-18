@@ -1,0 +1,23 @@
+{
+    "name": "SS3D.Application",
+    "rootNamespace": "",
+    "references": [
+        "Coimbra",
+        "Coimbra.Services",
+        "Coimbra.Services.Events",
+        "SS3D.Core",
+        "SS3D.Logging",
+        "UltimateDiscordSDK",
+        "ToolbarExtender.Editor",
+        "DOTween.Modules"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

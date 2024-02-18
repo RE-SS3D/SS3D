@@ -19,7 +19,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
             #else
-                Application.Quit();
+                UnityEngine.Application.Quit();
             #endif
             return "Done";
         }

@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Core.Settings;
+using SS3D.Networking;
 using SS3D.UI.Buttons;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -11,6 +12,7 @@ using SS3D.Systems.Entities.Humanoid;
 using System;
 using SS3D.Systems.PlayerControl;
 using System.Linq;
+using Tests.Play_Mode.Framework.Helpers;
 
 namespace SS3D.Tests
 {
