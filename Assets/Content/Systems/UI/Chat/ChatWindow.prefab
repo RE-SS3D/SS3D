@@ -305,7 +305,7 @@ MonoBehaviour:
   m_enableKerning: 1
   m_enableExtraPadding: 1
   checkPaddingRequired: 0
-  m_isRichText: 0
+  m_isRichText: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -3888,9 +3888,10 @@ MonoBehaviour:
   chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
   restrictedChannels:
   - System
+  initialChannel: 
   tabRow: {fileID: 5578169005156871225}
   chatText: {fileID: 5578169004254389989}
-  inputField: {fileID: 1788033111410862037}
+  inputField: {fileID: 0}
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36, type: 3}
   channelDropDown: {fileID: 3465179352210583905}
   canvasGroup: {fileID: 9222210945431415582}
@@ -4706,7 +4707,7 @@ GameObject:
   - component: {fileID: 6079348134346494250}
   - component: {fileID: 9022248370139519483}
   - component: {fileID: 9203729462099591075}
-  - component: {fileID: 1788033111410862037}
+  - component: {fileID: 5388152138396681921}
   m_Layer: 5
   m_Name: Text Input
   m_TagString: Untagged
@@ -4773,7 +4774,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1788033111410862037
+--- !u!114 &5388152138396681921
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4782,7 +4783,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8858361151572742920}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Script: {fileID: 11500000, guid: 3593a3537918e7f4ab6caf21354048bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -4836,7 +4837,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7861828484222706393}
-        m_TargetAssemblyTypeName: 
+        m_TargetAssemblyTypeName: SS3D.Engine.Chat.ChatWindow, SS3D.Systems
         m_MethodName: FinishTyping
         m_Mode: 1
         m_Arguments:
@@ -4875,8 +4876,8 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
-  m_RichText: 0
-  m_GlobalFontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_RichText: 1
+  m_GlobalFontAsset: {fileID: 0}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1
