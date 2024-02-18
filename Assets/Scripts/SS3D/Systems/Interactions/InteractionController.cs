@@ -123,11 +123,6 @@ namespace SS3D.Systems.Interactions
         [Client]
         private void HandleUse(InputAction.CallbackContext callbackContext)
         {
-            if (EventSystem.current.currentSelectedGameObject != null)
-            {
-                return;
-            }
-            
             // Activate item in selected hand
             Hands hands = GetComponent<Hands>();
             if (hands == null)

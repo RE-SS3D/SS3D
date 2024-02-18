@@ -131,11 +131,6 @@ namespace SS3D.Systems.Inventory.Containers
         [Client]
         private void HandleSwapHands(InputAction.CallbackContext context)
         {
-            if (UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
-            {
-                return;
-            }
-            
             // We don't swap hand if there's a single one.
             if (!IsOwner || !enabled || PlayerHands.Count <= 1)
             {
@@ -180,11 +175,6 @@ namespace SS3D.Systems.Inventory.Containers
         [Client]
         private void HandleDropHeldItem(InputAction.CallbackContext context)
         {
-            if (UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
-            {
-                return;
-            }
-
             SelectedHand.CmdDropHeldItem();
         }
 

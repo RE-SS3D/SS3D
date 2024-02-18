@@ -30,11 +30,6 @@ namespace SS3D.Systems.Inventory.UI
 
         private void HandleToggleClothing(InputAction.CallbackContext context)
         {
-            if (UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
-            {
-                return;
-            }
-            
             Toggle();
         }
         /// <summary>

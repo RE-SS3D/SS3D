@@ -114,10 +114,6 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 return;
             }
-            if (UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
-            {
-                return;
-            }
             
             ProcessCharacterMovement();
         }
