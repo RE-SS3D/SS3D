@@ -1,5 +1,6 @@
 ﻿using FishNet.Broadcast;
 using System;
+using UnityEngine;
 
 namespace SS3D.Engine.Chat
 {
@@ -9,5 +10,6 @@ namespace SS3D.Engine.Chat
         public string sender;
         public string text;
         public string channel;
+        public Vector3 origin;
     }
 }

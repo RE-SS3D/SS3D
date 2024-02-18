@@ -11,5 +11,7 @@ namespace SS3D.Engine.Chat
         public bool hidable;
         public ServerRoleTypes roleRequiredToUse;
         public bool canFormatText;
+        public bool distanceBased;
+        public float maxDistance;
     }
 }

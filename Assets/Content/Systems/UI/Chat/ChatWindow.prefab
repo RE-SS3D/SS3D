@@ -223,8 +223,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 2.5, y: -1.4999992}
+  m_SizeDelta: {x: -5, y: -3.0000017}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4116170837934256590
 CanvasRenderer:
@@ -256,8 +256,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
-  m_sharedMaterial: {fileID: 7281274998819037971, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
+  m_sharedMaterial: {fileID: 6294272732967332687, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -281,18 +281,18 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
+  m_characterSpacing: -5
+  m_wordSpacing: -15
   m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
@@ -2467,10 +2467,17 @@ MonoBehaviour:
       m_Calls: []
   m_text: '[OOC] Unknown: Hello!
 
-    [OOC] Server: Hi :)'
+    [OOC] Server: Hi :)
+
+    [System] Welcome!
+
+    [Whi]
+    Uknown: <i><size=20>Tss...</i></size>
+
+    [Sho] Me: <size=24>What!?</size>'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
-  m_sharedMaterial: {fileID: 7281274998819037971, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
+  m_sharedMaterial: {fileID: 6294272732967332687, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2504,9 +2511,9 @@ MonoBehaviour:
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_characterSpacing: -5
+  m_wordSpacing: -15
+  m_lineSpacing: 25
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -4526,8 +4533,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 2.5, y: -1.4999992}
+  m_SizeDelta: {x: -5, y: -3.0000017}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7306984374970402045
 CanvasRenderer:
@@ -4559,8 +4566,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Enter text...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
-  m_sharedMaterial: {fileID: 7281274998819037971, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
+  m_sharedMaterial: {fileID: 6294272732967332687, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4584,18 +4591,18 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 2
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
+  m_characterSpacing: -5
+  m_wordSpacing: -15
   m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
@@ -4662,8 +4669,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.5}
-  m_SizeDelta: {x: -20, y: -13}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -4, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3552679071145529103
 MonoBehaviour:

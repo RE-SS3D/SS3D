@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd2d6eaeb9ae4b9f85a3ab7c93c2a1bb, type: 3}
-  m_Name: System
+  m_Name: Shout
   m_EditorClassIdentifier: 
-  abbreviation: Sys
-  color: {r: 1, g: 0, b: 0.019583702, a: 1}
-  hidable: 0
-  roleRequiredToUse: 3
-  canFormatText: 1
-  distanceBased: 0
-  maxDistance: 0
+  abbreviation: Sho
+  color: {r: 1, g: 0.5879578, b: 0.36320752, a: 1}
+  hidable: 1
+  roleRequiredToUse: 0
+  canFormatText: 0
+  distanceBased: 1
+  maxDistance: 10

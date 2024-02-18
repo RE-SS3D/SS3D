@@ -4,6 +4,7 @@ using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Permissions;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.PlayerControl;
 using System.Collections;
@@ -327,6 +328,13 @@ namespace SS3D.Engine.Chat
                 sender = playerCkey,
             };
 
+            if (chatChannel.distanceBased)
+            {
+                Player player = playerSystem.GetPlayer(playerCkey);
+                Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+                chatMessage.origin = entity.Position;
+            }
+
             if (chatChannel.roleRequiredToUse != ServerRoleTypes.None)
             {
                 PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
@@ -375,6 +383,20 @@ namespace SS3D.Engine.Chat
 
         private void OnChatBroadcast(ChatMessage msg)
         {
+            ChatChannel channel = chatChannels.GetChannels().First(x => x.name == msg.channel);
+
+            if (channel.distanceBased)
+            {
+                PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+                string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
+                Player player = playerSystem.GetPlayer(playerCkey);
+                Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+                if (Vector3.Distance(entity.Position, msg.origin) > channel.maxDistance)
+                {
+                    return;
+                }
+            }
+            
             _messages.Add(msg);
             UpdateMessages();
         }
