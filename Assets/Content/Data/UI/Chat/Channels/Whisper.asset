@@ -21,3 +21,4 @@ MonoBehaviour:
   maxDistance: 2
   prefix: <i><size=20>
   suffix: </size></i>
+  hideSenderName: 0
