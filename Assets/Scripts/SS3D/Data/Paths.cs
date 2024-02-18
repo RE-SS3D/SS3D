@@ -1,6 +1,4 @@
 ﻿using JetBrains.Annotations;
-using SS3D.Logging;
-using System;
 using System.IO;
 using UnityEngine;
 
@@ -15,7 +13,7 @@ namespace SS3D.Data
 		/// Gets the config path from the root path, excluding everything outside the game root folder.
 		/// </summary>
 		[NotNull]
-		private static string GamePath => Application.isEditor ? EditorGameFilePath : BuiltGameFilePath;
+		private static string GamePath => UnityEngine.Application.isEditor ? EditorGameFilePath : BuiltGameFilePath;
 		
 		/// <summary>
 		/// Gets the full path to the application folder.

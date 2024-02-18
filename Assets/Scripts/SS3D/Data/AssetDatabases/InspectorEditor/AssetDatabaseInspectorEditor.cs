@@ -50,7 +50,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         /// <returns></returns>
         public override VisualElement CreateInspectorGUI()
         {
-            if (Application.isPlaying)
+            if (UnityEngine.Application.isPlaying)
             {
                 return null;
             }

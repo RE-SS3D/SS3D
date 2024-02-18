@@ -18,3 +18,4 @@ MonoBehaviour:
   Ckey: editorUser
   ServerAddress: 127.0.0.1
   ServerPort: 1151
+  EnableNetworkBandwidthUsageStats: 1

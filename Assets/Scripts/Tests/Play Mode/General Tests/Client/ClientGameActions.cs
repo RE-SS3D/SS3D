@@ -18,6 +18,7 @@ using UnityEngine.Windows;
 using SS3D.Systems.Inventory.Containers;
 using System.Security.Cryptography;
 using SS3D.Core.Settings;
+using SS3D.Networking;
 
 namespace SS3D.Tests
 {

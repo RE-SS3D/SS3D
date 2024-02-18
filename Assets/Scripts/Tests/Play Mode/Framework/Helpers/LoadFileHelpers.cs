@@ -1,12 +1,12 @@
-﻿using System.Diagnostics;
-using UnityEngine;
-using SS3D.Core.Settings;
-using SS3D.Core.Utils;
-using System.Runtime.InteropServices;
+﻿using SS3D.CommandLine;
+using SS3D.Networking;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using UnityEngine;
 
-namespace SS3D.Tests
+namespace Tests.Play_Mode.Framework.Helpers
 {
     /// <summary>
     /// This class manages all actions relating to opening and closing the built executable automatically.

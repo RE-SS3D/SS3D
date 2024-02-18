@@ -50,7 +50,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Display()
         {
             _loadMapContentRoot.gameObject.SetActive(true);
-            var MapNames = SaveSystem.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
+            var MapNames = LocalStorage.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
 
             foreach (string mapName in MapNames)
             {
@@ -88,7 +88,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                SaveSystem.DeleteFile(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
+                LocalStorage.DeleteFile(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
             }
             else
             {
@@ -149,7 +149,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             else
             {
                 string savePath = Subsystems.Get<TileSystem>().SavePath;
-                SaveSystem.RenameFile(savePath + "/" + oldName, savePath + "/" + mapNameField.text);
+                LocalStorage.RenameFile(savePath + "/" + oldName, savePath + "/" + mapNameField.text);
             }
 
             Refresh();

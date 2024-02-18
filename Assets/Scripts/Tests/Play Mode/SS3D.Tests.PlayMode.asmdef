@@ -13,7 +13,9 @@
         "SS3D.Tests.Common",
         "Unity.InputSystem",
         "Unity.InputSystem.TestFramework",
-        "SS3D.Data"
+        "SS3D.Data",
+        "SS3D.Networking",
+        "SS3D.CommandLine"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
