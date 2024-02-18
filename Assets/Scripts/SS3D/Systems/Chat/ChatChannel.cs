@@ -15,5 +15,6 @@ namespace SS3D.Engine.Chat
         public float maxDistance;
         public string prefix;
         public string suffix;
+        public bool hideSenderName;
     }
 }

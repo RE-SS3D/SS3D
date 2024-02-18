@@ -203,12 +203,23 @@ namespace SS3D.Engine.Chat
                 ChatChannel chatChannel = chatChannels.GetChannels().FirstOrDefault(x => x.name == message.channel);
                 if (chatChannel != null)
                 {
-                    sb.AppendFormat(
-                        "<color=#{0}>[{1}] {2}: {3}\n",
-                        ColorUtility.ToHtmlStringRGBA(chatChannel.color),
-                        chatChannel.abbreviation,
-                        message.sender,
-                        message.text);
+                    if (chatChannel.hideSenderName)
+                    {
+                        sb.AppendFormat(
+                            "<color=#{0}>[{1}] {2}\n",
+                            ColorUtility.ToHtmlStringRGBA(chatChannel.color),
+                            chatChannel.abbreviation,
+                            message.text);
+                    }
+                    else
+                    {
+                        sb.AppendFormat(
+                            "<color=#{0}>[{1}] {2}: {3}\n",
+                            ColorUtility.ToHtmlStringRGBA(chatChannel.color),
+                            chatChannel.abbreviation,
+                            message.sender,
+                            message.text);
+                    }
                 }
             }
 
