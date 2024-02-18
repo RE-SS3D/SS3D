@@ -1,3 +1,4 @@
+using Coimbra;
 using FishNet;
 using FishNet.Connection;
 using SS3D.Core;
@@ -38,6 +39,8 @@ namespace SS3D.Engine.Chat
         
         private ChatTabData _currentTabData;
         private Controls.HotkeysActions _controls;
+
+        public CanvasGroup CanvasGroup => canvasGroup;
         
         protected override void OnAwake()
         {
@@ -49,7 +52,7 @@ namespace SS3D.Engine.Chat
                 AddTab(allTab);
                 LoadChannelSelector(allTab);
 
-                ToggleChatWindowUI(); // Hide window by default
+                HideChatWindowUI();
             }
 
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
@@ -189,43 +192,45 @@ namespace SS3D.Engine.Chat
             // If the current tab can't be closed and there are no other tabs, hide the entire window instead.
             if (!_currentTabData.removable && tabRow.childCount < 2)
             {
-                ToggleChatWindowUI();
+                HideChatWindowUI();
             }
 
             if (_currentTabData.removable)
             {
                 if (tabRow.childCount < 2)
                 {
+                    // To ensure player always has at least one chat window
+                    if (transform.parent.GetComponentsInChildren<ChatWindow>().Length < 2)
+                    {
+                        HideChatWindowUI();
+                        return;
+                    }
+
+                    gameObject.Dispose(false);
                     return;
                 }
 
                 Button a = GetNextTabButton(_currentTabData.tab.gameObject);
-                DestroyImmediate(_currentTabData.tab.gameObject);
+                _currentTabData.tab.gameObject.Dispose(false);
                 SelectTab(a.gameObject);
                 StartCoroutine(UpdateCurrentDataTabNextFrame());
             }
         }
 
-        public void ToggleChatWindowUI()
+        public void ShowChatWindowUI()
         {
-            if (canvasGroup)
-            {
-                bool isVisible = canvasGroup.alpha >= 1.0f;
-                if (isVisible)
-                {
-                    // Hide and disable input
-                    canvasGroup.alpha = 0f;
-                    canvasGroup.blocksRaycasts = false;
-                    EventSystem.current.SetSelectedGameObject(null,null); // Set focus to the viewport again
-                }
-                else
-                {
-                    // Make visible and enable input
-                    canvasGroup.alpha = 1f;
-                    canvasGroup.blocksRaycasts = true;
-                }
-            }
+            canvasGroup.alpha = 1f;
+            canvasGroup.blocksRaycasts = true;
         }
+
+        public void HideChatWindowUI()
+        {
+            // Hide and disable input
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
+            EventSystem.current.SetSelectedGameObject(null,null); // Set focus to the viewport again
+        }
+        
 
         private IEnumerator UpdateCurrentDataTabNextFrame()
         {
