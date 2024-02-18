@@ -15,6 +15,7 @@ namespace SS3D.Engine.Chat
                 return;
             }
 
+            ViewLocator.Get<LobbyChatWindow>().First().Deinitialize();
             ViewLocator.Get<InGameChatWindow>().First().Initialize();
         }
     }

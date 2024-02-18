@@ -51,6 +51,19 @@ namespace SS3D.Engine.Chat
             _initialized = true;
         }
 
+        public void Deinitialize()
+        {
+            if (!_initialized)
+            {
+                return;
+            }
+            
+            InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
+            InstanceFinder.ServerManager.UnregisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);
+            
+            _initialized = false;
+        }
+
         protected override void OnEnabled()
         {
             base.OnDisabled();
