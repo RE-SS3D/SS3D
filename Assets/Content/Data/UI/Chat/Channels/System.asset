@@ -16,3 +16,4 @@ MonoBehaviour:
   color: {r: 1, g: 0, b: 0.019583702, a: 1}
   hidable: 0
   roleRequiredToUse: 3
+  canFormatText: 1

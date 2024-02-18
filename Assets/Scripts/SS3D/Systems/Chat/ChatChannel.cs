@@ -10,5 +10,6 @@ namespace SS3D.Engine.Chat
         public Color color;
         public bool hidable;
         public ServerRoleTypes roleRequiredToUse;
+        public bool canFormatText;
     }
 }

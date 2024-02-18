@@ -308,31 +308,39 @@ namespace SS3D.Engine.Chat
             {
                 return;
             }
+            
+            inputField.text = "";
+            
+            ChatChannel chatChannel = chatChannels.GetChannels().FirstOrDefault(x => x.name == _channelDropdownOptions[channelDropDown.value]);
+            if (chatChannel == null)
+            {
+                return;
+            }
 
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             
-            ChatMessage chatMessage = new ChatMessage();
-            chatMessage.channel = _channelDropdownOptions[channelDropDown.value];
-            chatMessage.text = text;
-            chatMessage.sender = playerCkey;
-            
-            inputField.text = "";
+            ChatMessage chatMessage = new ChatMessage
+            {
+                channel = chatChannel.name,
+                text = text,
+                sender = playerCkey,
+            };
 
-            ChatChannel chatChannel = chatChannels.GetChannels().FirstOrDefault(x => x.name == chatMessage.channel);
-            if (chatChannel != null && chatChannel.roleRequiredToUse != ServerRoleTypes.None)
+            if (chatChannel.roleRequiredToUse != ServerRoleTypes.None)
             {
                 PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
 
-                // Checks if player can write in the channel
                 if (!permissionSystem.IsAtLeast(playerCkey, chatChannel.roleRequiredToUse))
+                {
                     return;
+                }
             }
             
-            // Tags should be escaped only in unrestricted channels thus preserving the ability
-            // to stylize in restricted channels.
-            chatMessage.text = chatMessage.text.Replace("<", "<nobr><</nobr>");
-            
+            if (!chatChannel.canFormatText)
+            {
+                chatMessage.text = chatMessage.text.Replace("<", "<nobr><</nobr>");
+            }
 
             if (InstanceFinder.IsServer)
             {
