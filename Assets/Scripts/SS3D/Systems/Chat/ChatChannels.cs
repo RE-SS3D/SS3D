@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Engine.Chat
 {
-    [Serializable] [CreateAssetMenu(fileName = "New Chat Channels", menuName = "Chat/Channels")]
+    [CreateAssetMenu(fileName = "New Chat Channels", menuName = "SS3D/UI/Chat/Channels")]
     public class ChatChannels : ScriptableObject
     {
         [SerializeField]

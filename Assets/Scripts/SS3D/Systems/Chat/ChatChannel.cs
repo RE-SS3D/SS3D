@@ -1,12 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SS3D.Engine.Chat
 {
-    [Serializable]
-    public struct ChatChannel
+    [CreateAssetMenu(fileName = "New Chat Channel", menuName = "SS3D/UI/Chat/Chat Channel")]
+    public class ChatChannel : ScriptableObject
     {
-        public string name;
         public string abbreviation;
         public Color color;
         public bool hidable;

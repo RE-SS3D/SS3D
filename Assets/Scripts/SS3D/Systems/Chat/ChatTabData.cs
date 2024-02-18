@@ -7,11 +7,11 @@ namespace SS3D.Engine.Chat
     public struct ChatTabData
     {
         public string name;
-        public List<ChatChannel> channels;
+        public List<string> channels;
         public bool removable;
         public ChatTab tab;
 
-        public ChatTabData(string name, List<ChatChannel> channels, bool removable, ChatTab tabTransform)
+        public ChatTabData(string name, List<string> channels, bool removable, ChatTab tabTransform)
         {
             this.name = name;
             this.channels = channels;

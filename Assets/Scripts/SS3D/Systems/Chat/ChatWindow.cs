@@ -27,7 +27,8 @@ namespace SS3D.Engine.Chat
     {
         [SerializeField] private bool defaultChat;
         [SerializeField] private ChatChannels chatChannels = null;
-        [SerializeField] private List<String> restrictedChannels = new List<String>() { "System" };
+        [SerializeField] private List<ChatChannel> restrictedChannels;
+        [SerializeField] private ChatChannel initialChannel;
         [SerializeField] private RectTransform tabRow = null;
         [SerializeField] private TextMeshProUGUI chatText = null;
         [SerializeField] private TMP_InputField inputField = null;
@@ -48,10 +49,26 @@ namespace SS3D.Engine.Chat
 
             if (defaultChat)
             {
-                ChatTabData allTab = new ChatTabData("All", chatChannels.GetChannels(), false, null);
-                AddTab(allTab);
-                LoadChannelSelector(allTab);
-
+                ChatTabData initialTab;
+                if (initialChannel != null)
+                {
+                    initialTab = new ChatTabData(
+                        initialChannel.name,
+                        new List<string>() { initialChannel.name }, 
+                        false, 
+                        null);
+                }
+                else
+                {
+                    initialTab = new ChatTabData(
+                        "All", 
+                        chatChannels.GetChannels().Select(x => x.name).ToList(), 
+                        false, 
+                        null);
+                }
+                
+                AddTab(initialTab);
+                LoadChannelSelector(initialTab);
                 HideChatWindowUI();
             }
 
@@ -87,18 +104,19 @@ namespace SS3D.Engine.Chat
         private void LoadChannelSelector(ChatTabData tabData)
         {
             channelDropDown.options.Clear();
-            foreach (ChatChannel channel in tabData.channels)
+            foreach (string channelName in tabData.channels)
             {
                 //Need a more robust way to do this. Not adding the option makes the index mismatch when sending messages.
                 //if (chatRegister.restrictedChannels.Contains(channel.Name)) continue;
 
-                channelDropDown.options.Add(
-                    new TMP_Dropdown.OptionData(
-                        string.Format("<color=#{0}>[{1}]</color>",
-                            ColorUtility.ToHtmlStringRGBA(channel.color),
-                            channel.abbreviation)
-                    )
-                );
+                ChatChannel channel = chatChannels.GetChannels().FirstOrDefault(x => x.name == channelName);
+                if (channel != null)
+                {
+                    channelDropDown.options.Add(
+                        new TMP_Dropdown.OptionData(
+                            $"<color=#{ColorUtility.ToHtmlStringRGBA(channel.color)}>[{channel.abbreviation}]</color>")
+                    );
+                }
             }
         }
 
@@ -152,14 +170,19 @@ namespace SS3D.Engine.Chat
         {
             List<ChatMessage> relevantMessages = GetRelevantMessages(tabData);
             StringBuilder sb = new StringBuilder();
+            
             foreach (ChatMessage message in relevantMessages)
             {
-                sb.AppendFormat(
-                    "<color=#{0}>[{1}] {2}: {3}\n",
-                    ColorUtility.ToHtmlStringRGBA(message.channel.color),
-                    message.channel.abbreviation,
-                    message.sender,
-                    message.text);
+                ChatChannel chatChannel = chatChannels.GetChannels().FirstOrDefault(x => x.name == message.channel);
+                if (chatChannel != null)
+                {
+                    sb.AppendFormat(
+                        "<color=#{0}>[{1}] {2}: {3}\n",
+                        ColorUtility.ToHtmlStringRGBA(chatChannel.color),
+                        chatChannel.abbreviation,
+                        message.sender,
+                        message.text);
+                }
             }
 
             chatText.text = sb.ToString();
@@ -265,7 +288,7 @@ namespace SS3D.Engine.Chat
             chatMessage.channel = _currentTabData.channels[channelDropDown.value];
             chatMessage.text = text;
             inputField.text = "";
-            if (restrictedChannels.Contains(chatMessage.channel.name))
+            if (restrictedChannels.Any(x => x.name == chatMessage.channel))
             {
                 return; //do not allow talking in restricted channels
             }
@@ -314,7 +337,7 @@ namespace SS3D.Engine.Chat
 
         private List<ChatMessage> GetRelevantMessages(ChatTabData tabData)
         {
-            return _messages.Where(x => tabData.channels.Any(y => x.channel.name.Equals(y.name))).ToList();
+            return _messages.Where(x => tabData.channels.Any(y => x.channel.Equals(y))).ToList();
         }
     }
 }

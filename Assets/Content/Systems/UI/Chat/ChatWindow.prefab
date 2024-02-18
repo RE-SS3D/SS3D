@@ -3869,8 +3869,8 @@ MonoBehaviour:
   defaultChat: 0
   chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
   restrictedChannels:
-  - System
-  initialChannel: 
+  - {fileID: 11400000, guid: 9cf83e6d190541b4f82b84de530639dd, type: 2}
+  initialChannel: {fileID: 0}
   tabRow: {fileID: 5578169005156871225}
   chatText: {fileID: 5578169004254389989}
   inputField: {fileID: 3551843282541818943}

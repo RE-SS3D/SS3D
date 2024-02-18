@@ -46,14 +46,14 @@ namespace SS3D.Engine.Chat
                 tabNameField.text = "Honk!";
             }
 
-            List<ChatChannel> channels = _options
-                .Select(option => option.TickedChannel())
-                .Where(channel => !string.IsNullOrEmpty(channel.name))
+            List<string> channels = _options
+                .Select(option => option.TickedChannel()?.name)
+                .Where(channel => channel != null)
                 .ToList();
         
             foreach (ChatChannel channel in chatChannels.GetUnhidable())
             {
-                channels.Add(channel);
+                channels.Add(channel.name);
             }
         
             //A tab without channels is pointless

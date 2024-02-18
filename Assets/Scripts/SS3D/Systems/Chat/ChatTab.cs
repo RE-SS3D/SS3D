@@ -32,6 +32,7 @@ namespace SS3D.Engine.Chat
             text.text = newData.name;
             transform.SetAsFirstSibling();
             data.tab = this;
+
             StartCoroutine(FixTabWidth());
             _oldPos = transform.position;
         }

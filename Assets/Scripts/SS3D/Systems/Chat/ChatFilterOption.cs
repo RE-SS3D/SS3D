@@ -17,6 +17,6 @@ namespace SS3D.Engine.Chat
             label.text = channel.name;
         }
 
-        public ChatChannel TickedChannel() => toggle.isOn ? _channel : new ChatChannel();
+        public ChatChannel TickedChannel() => toggle.isOn ? _channel : null;
     }
 }

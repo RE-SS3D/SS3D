@@ -8,6 +8,6 @@ namespace SS3D.Engine.Chat
     {
         public string sender;
         public string text;
-        public ChatChannel channel;
+        public string channel;
     }
 }
