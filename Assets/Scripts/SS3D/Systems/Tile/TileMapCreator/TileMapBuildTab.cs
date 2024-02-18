@@ -58,10 +58,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public bool IsDeleting => _isDeleting;
 
         // purpulish color when deleting
-        private Color _deleteColor = new Color(0xA9, 0x00, 0xFF, 0xFF);
+        private Color _deleteColor = new Color(169/255f, 102/255f, 223/255f, 1f);
 
         // bluish color when building
-        private Color _buildColor = new Color(0x31, 0x32, 0xDD, 0xFF);
+        private Color _buildColor = new Color(88/255f, 148/255f, 223/255f, 1f);
 
 
         /// <summary>
@@ -121,12 +121,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
             var tmpComponent = (TextMeshProUGUI)_buildOrDelete.targetGraphic;
             if (IsDeleting)
             {
-                tmpComponent.text = " Delete";
+                tmpComponent.text = "Delete";
                 tmpComponent.color = _deleteColor;
             }
             else
             {
-                tmpComponent.text = " Build";
+                tmpComponent.text = "Build";
                 tmpComponent.color = _buildColor;
             }
         }

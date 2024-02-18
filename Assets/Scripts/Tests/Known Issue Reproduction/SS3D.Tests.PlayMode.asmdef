@@ -13,7 +13,8 @@
         "SS3D.Tests.PlayMode",
         "SS3D.Tests.Common",
         "Unity.InputSystem",
-        "Unity.InputSystem.TestFramework"
+        "Unity.InputSystem.TestFramework",
+        "SS3D.Networking"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

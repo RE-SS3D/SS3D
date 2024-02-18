@@ -49,7 +49,7 @@ namespace SS3D.Networking
 
         private void SubscribeToEvents()
         {
-            _quitButton.onClick.AddListener(Application.Quit);
+            _quitButton.onClick.AddListener(UnityEngine.Application.Quit);
             _retryButton.onClick.AddListener(OnRetryButtonPressed);
 
             InstanceFinder.ClientManager.OnClientConnectionState += HandleServerConnectionFailed;
@@ -57,7 +57,7 @@ namespace SS3D.Networking
 
         private void UnsubscribeFromEvents()
         {
-            _quitButton.onClick.RemoveListener(Application.Quit);
+            _quitButton.onClick.RemoveListener(UnityEngine.Application.Quit);
             _retryButton.onClick.RemoveListener(OnRetryButtonPressed);
         }
         

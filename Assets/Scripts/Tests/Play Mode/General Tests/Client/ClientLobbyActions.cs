@@ -14,6 +14,7 @@ using Coimbra;
 using System.Diagnostics;
 using FishNet.Managing;
 using FishNet;
+using SS3D.Networking;
 
 namespace SS3D.Tests
 {

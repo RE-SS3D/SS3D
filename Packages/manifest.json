@@ -56,14 +56,9 @@
       "name": "package.openupm.com",
       "url": "https://package.openupm.com",
       "scopes": [
-        "com.johannesmp.unityscenereference"
-      ]
-    },
-    {
-      "name": "com.coimbrastudios.core",
-      "url": "https://package.openupm.com",
-      "scopes": [
-        "com.coimbrastudios.core"
+        "com.johannesmp.unityscenereference",
+        "com.coimbrastudios.core",
+        "com.cysharp.unitask"
       ]
     }
   ]

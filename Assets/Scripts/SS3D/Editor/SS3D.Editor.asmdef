@@ -1,0 +1,39 @@
+{
+    "name": "SS3D.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0a0471484b079be408cb3a0d7fe94736",
+        "GUID:3cf19ecc459d5694491bb233fc4fccbd",
+        "GUID:493bb11add906094faa30425cab7ce2e",
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [
+        "Android",
+        "EmbeddedLinux",
+        "GameCoreScarlett",
+        "GameCoreXboxOne",
+        "iOS",
+        "LinuxStandalone64",
+        "CloudRendering",
+        "Lumin",
+        "macOSStandalone",
+        "PS4",
+        "PS5",
+        "Stadia",
+        "Switch",
+        "tvOS",
+        "WSA",
+        "WebGL",
+        "WindowsStandalone32",
+        "WindowsStandalone64",
+        "XboxOne"
+    ],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

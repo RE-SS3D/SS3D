@@ -248,7 +248,7 @@ MonoBehaviour:
   _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 32768
-  _startFilter: {fileID: 0}
+  _startFilter: {fileID: 11400000, guid: 5012319ac2389e94e819989fd0a54f01, type: 2}
 --- !u!114 &3856680766676271507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -830,7 +830,7 @@ MonoBehaviour:
   _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 8
-  _startFilter: {fileID: 0}
+  _startFilter: {fileID: 11400000, guid: 91b02707a12a4c546912f7432612d85f, type: 2}
 --- !u!114 &8136951514244066473
 MonoBehaviour:
   m_ObjectHideFlags: 0

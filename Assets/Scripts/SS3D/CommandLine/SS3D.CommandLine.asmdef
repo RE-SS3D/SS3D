@@ -1,0 +1,23 @@
+{
+    "name": "SS3D.CommandLine",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:d2bbca7254de5e746857b04cfb560876",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:493bb11add906094faa30425cab7ce2e",
+        "GUID:92a1e40b8cccf8645adbdd275ac6371a",
+        "GUID:eb124556ba20d60469be9771eb1f0360",
+        "GUID:3cf19ecc459d5694491bb233fc4fccbd"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
