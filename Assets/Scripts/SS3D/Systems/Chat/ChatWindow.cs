@@ -3,9 +3,9 @@ using FishNet;
 using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Entities;
+using SS3D.Permissions;
 using SS3D.Systems.Inputs;
-using System;
+using SS3D.Systems.PlayerControl;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,6 @@ namespace SS3D.Engine.Chat
     {
         [SerializeField] private bool defaultChat;
         [SerializeField] private ChatChannels chatChannels = null;
-        [SerializeField] private List<ChatChannel> restrictedChannels;
         [SerializeField] private ChatChannel initialChannel;
         [SerializeField] private RectTransform tabRow = null;
         [SerializeField] private TextMeshProUGUI chatText = null;
@@ -40,6 +39,7 @@ namespace SS3D.Engine.Chat
         
         private ChatTabData _currentTabData;
         private Controls.HotkeysActions _controls;
+        private readonly List<string> _channelDropdownOptions = new List<string>();
 
         public CanvasGroup CanvasGroup => canvasGroup;
         
@@ -47,6 +47,15 @@ namespace SS3D.Engine.Chat
         {
             base.OnAwake();
 
+            InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
+            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
+            
+            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
+            _controls.SendChatMessage.performed += HandleSendMessage;
+        }
+
+        public void Initialize()
+        {
             if (defaultChat)
             {
                 ChatTabData initialTab;
@@ -68,15 +77,8 @@ namespace SS3D.Engine.Chat
                 }
                 
                 AddTab(initialTab);
-                LoadChannelSelector(initialTab);
                 HideChatWindowUI();
             }
-
-            InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
-            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
-            
-            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
-            _controls.SendChatMessage.performed += HandleSendMessage;
         }
 
         public RectTransform GetTabRow()
@@ -104,18 +106,29 @@ namespace SS3D.Engine.Chat
         private void LoadChannelSelector(ChatTabData tabData)
         {
             channelDropDown.options.Clear();
+            _channelDropdownOptions.Clear();
+            
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
+            PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
+            
             foreach (string channelName in tabData.channels)
             {
-                //Need a more robust way to do this. Not adding the option makes the index mismatch when sending messages.
-                //if (chatRegister.restrictedChannels.Contains(channel.Name)) continue;
-
-                ChatChannel channel = chatChannels.GetChannels().FirstOrDefault(x => x.name == channelName);
-                if (channel != null)
+                ChatChannel chatChannel = chatChannels.GetChannels().FirstOrDefault(x => x.name == channelName);
+                if (chatChannel != null)
                 {
+                    // Checks if player can use tab
+                    if (chatChannel.roleRequiredToUse != ServerRoleTypes.None 
+                        && !permissionSystem.IsAtLeast(playerCkey, chatChannel.roleRequiredToUse))
+                    {
+                            continue;
+                    }
+                    
                     channelDropDown.options.Add(
                         new TMP_Dropdown.OptionData(
-                            $"<color=#{ColorUtility.ToHtmlStringRGBA(channel.color)}>[{channel.abbreviation}]</color>")
+                            $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.color)}>[{chatChannel.abbreviation}]</color>")
                     );
+                    _channelDropdownOptions.Add(channelName);
                 }
             }
         }
@@ -251,7 +264,6 @@ namespace SS3D.Engine.Chat
             // Hide and disable input
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = false;
-            EventSystem.current.SetSelectedGameObject(null,null); // Set focus to the viewport again
         }
         
 
@@ -284,20 +296,30 @@ namespace SS3D.Engine.Chat
                 return;
             }
 
+            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
+            
             ChatMessage chatMessage = new ChatMessage();
-            chatMessage.channel = _currentTabData.channels[channelDropDown.value];
+            chatMessage.channel = _channelDropdownOptions[channelDropDown.value];
             chatMessage.text = text;
+            chatMessage.sender = playerCkey;
+            
             inputField.text = "";
-            if (restrictedChannels.Any(x => x.name == chatMessage.channel))
+
+            ChatChannel chatChannel = chatChannels.GetChannels().FirstOrDefault(x => x.name == chatMessage.channel);
+            if (chatChannel != null && chatChannel.roleRequiredToUse != ServerRoleTypes.None)
             {
-                return; //do not allow talking in restricted channels
+                PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
+
+                // Checks if player can write in the channel
+                if (!permissionSystem.IsAtLeast(playerCkey, chatChannel.roleRequiredToUse))
+                    return;
             }
             
             // Tags should be escaped only in unrestricted channels thus preserving the ability
             // to stylize in restricted channels.
             chatMessage.text = chatMessage.text.Replace("<", "<nobr><</nobr>");
             
-            chatMessage.sender = InstanceFinder.ClientManager.Connection.FirstObject.GetComponent<Player>().Ckey;
 
             if (InstanceFinder.IsServer)
             {

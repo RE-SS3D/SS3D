@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SS3D.Permissions;
+using UnityEngine;
 
 namespace SS3D.Engine.Chat
 {
@@ -8,5 +9,6 @@ namespace SS3D.Engine.Chat
         public string abbreviation;
         public Color color;
         public bool hidable;
+        public ServerRoleTypes roleRequiredToUse;
     }
 }
