@@ -548,6 +548,15 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SendChatMessage"",
+                    ""type"": ""Button"",
+                    ""id"": ""5a3b326c-585b-405e-9194-3c4fb6a1e206"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -592,6 +601,28 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Toggle Internal Clothing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""07b29e12-4dd9-465b-949b-af69ad326643"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SendChatMessage"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1dd9660b-cc74-4ad4-8bf0-e3559b911ccf"",
+                    ""path"": ""<Keyboard>/numpadEnter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SendChatMessage"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1048,6 +1079,7 @@ namespace SS3D.Systems.Inputs
             m_Hotkeys_Use = m_Hotkeys.FindAction("Use", throwIfNotFound: true);
             m_Hotkeys_Drop = m_Hotkeys.FindAction("Drop", throwIfNotFound: true);
             m_Hotkeys_ToggleInternalClothing = m_Hotkeys.FindAction("Toggle Internal Clothing", throwIfNotFound: true);
+            m_Hotkeys_SendChatMessage = m_Hotkeys.FindAction("SendChatMessage", throwIfNotFound: true);
             // Other
             m_Other = asset.FindActionMap("Other", throwIfNotFound: true);
             m_Other_Fade = m_Other.FindAction("Fade", throwIfNotFound: true);
@@ -1308,6 +1340,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Hotkeys_Use;
         private readonly InputAction m_Hotkeys_Drop;
         private readonly InputAction m_Hotkeys_ToggleInternalClothing;
+        private readonly InputAction m_Hotkeys_SendChatMessage;
         public struct HotkeysActions
         {
             private @Controls m_Wrapper;
@@ -1316,6 +1349,7 @@ namespace SS3D.Systems.Inputs
             public InputAction @Use => m_Wrapper.m_Hotkeys_Use;
             public InputAction @Drop => m_Wrapper.m_Hotkeys_Drop;
             public InputAction @ToggleInternalClothing => m_Wrapper.m_Hotkeys_ToggleInternalClothing;
+            public InputAction @SendChatMessage => m_Wrapper.m_Hotkeys_SendChatMessage;
             public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1337,6 +1371,9 @@ namespace SS3D.Systems.Inputs
                     @ToggleInternalClothing.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleInternalClothing;
                     @ToggleInternalClothing.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleInternalClothing;
                     @ToggleInternalClothing.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleInternalClothing;
+                    @SendChatMessage.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSendChatMessage;
+                    @SendChatMessage.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSendChatMessage;
+                    @SendChatMessage.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSendChatMessage;
                 }
                 m_Wrapper.m_HotkeysActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1353,6 +1390,9 @@ namespace SS3D.Systems.Inputs
                     @ToggleInternalClothing.started += instance.OnToggleInternalClothing;
                     @ToggleInternalClothing.performed += instance.OnToggleInternalClothing;
                     @ToggleInternalClothing.canceled += instance.OnToggleInternalClothing;
+                    @SendChatMessage.started += instance.OnSendChatMessage;
+                    @SendChatMessage.performed += instance.OnSendChatMessage;
+                    @SendChatMessage.canceled += instance.OnSendChatMessage;
                 }
             }
         }
@@ -1619,6 +1659,7 @@ namespace SS3D.Systems.Inputs
             void OnUse(InputAction.CallbackContext context);
             void OnDrop(InputAction.CallbackContext context);
             void OnToggleInternalClothing(InputAction.CallbackContext context);
+            void OnSendChatMessage(InputAction.CallbackContext context);
         }
         public interface IOtherActions
         {

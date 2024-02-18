@@ -256,8 +256,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
+  m_sharedMaterial: {fileID: 7281274998819037971, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -281,8 +281,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2465,30 +2465,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '-
+  m_text: '[OOC] Unknown: Hello!
 
-    -
-
-    -
-
-    -
-
-    -
-
-    -
-
-    -
-
-    -
-
-    -
-
-    -
-
-'
+    [OOC] Server: Hi :)'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
+  m_sharedMaterial: {fileID: 7281274998819037971, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2512,13 +2494,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -3891,7 +3873,7 @@ MonoBehaviour:
   initialChannel: 
   tabRow: {fileID: 5578169005156871225}
   chatText: {fileID: 5578169004254389989}
-  inputField: {fileID: 0}
+  inputField: {fileID: 3551843282541818943}
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36, type: 3}
   channelDropDown: {fileID: 3465179352210583905}
   canvasGroup: {fileID: 9222210945431415582}
@@ -4576,8 +4558,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Enter text...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
+  m_sharedMaterial: {fileID: 7281274998819037971, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4601,8 +4583,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4707,7 +4689,7 @@ GameObject:
   - component: {fileID: 6079348134346494250}
   - component: {fileID: 9022248370139519483}
   - component: {fileID: 9203729462099591075}
-  - component: {fileID: 5388152138396681921}
+  - component: {fileID: 3551843282541818943}
   m_Layer: 5
   m_Name: Text Input
   m_TagString: Untagged
@@ -4774,7 +4756,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5388152138396681921
+--- !u!114 &3551843282541818943
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4783,7 +4765,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8858361151572742920}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3593a3537918e7f4ab6caf21354048bb, type: 3}
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -4831,14 +4813,20 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 25
   m_CharacterLimit: 0
   m_OnEndEdit:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnSubmit:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnSelect:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7861828484222706393}
         m_TargetAssemblyTypeName: SS3D.Engine.Chat.ChatWindow, SS3D.Systems
-        m_MethodName: FinishTyping
+        m_MethodName: OnInputFieldSelect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4848,15 +4836,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_OnSubmit:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSelect:
-    m_PersistentCalls:
-      m_Calls: []
   m_OnDeselect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7861828484222706393}
+        m_TargetAssemblyTypeName: SS3D.Engine.Chat.ChatWindow, SS3D.Systems
+        m_MethodName: OnInputFieldDeselect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTextSelection:
     m_PersistentCalls:
       m_Calls: []
@@ -4877,7 +4871,7 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_RichText: 1
-  m_GlobalFontAsset: {fileID: 0}
+  m_GlobalFontAsset: {fileID: 11400000, guid: 211cc0b58afe00e479d31e1cc6ba11b6, type: 2}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1

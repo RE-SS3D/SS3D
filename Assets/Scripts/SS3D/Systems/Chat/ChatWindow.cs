@@ -1,7 +1,9 @@
 using FishNet;
 using FishNet.Connection;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Inputs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +12,9 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Engine.Chat
 {
@@ -33,6 +37,7 @@ namespace SS3D.Engine.Chat
         private readonly List<ChatMessage> _messages = new List<ChatMessage>();
         
         private ChatTabData _currentTabData;
+        private Controls.HotkeysActions _controls;
         
         protected override void OnAwake()
         {
@@ -49,6 +54,9 @@ namespace SS3D.Engine.Chat
 
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
             InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
+            
+            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
+            _controls.SendChatMessage.performed += HandleSendMessage;
         }
 
         public RectTransform GetTabRow()
@@ -224,6 +232,21 @@ namespace SS3D.Engine.Chat
             yield return null;
             if (tabRow.GetChild(0)) LoadTab(tabRow.GetChild(0).GetComponent<ChatTab>().GetChatTabData());
         }
+        
+        public void OnInputFieldSelect()
+        {
+            Subsystems.Get<InputSystem>().ToggleAllActions(false, new [] { _controls.SendChatMessage });
+        }
+
+        public void OnInputFieldDeselect()
+        {
+            Subsystems.Get<InputSystem>().ToggleAllActions(true, new [] { _controls.SendChatMessage });
+        }
+
+        private void HandleSendMessage(InputAction.CallbackContext context)
+        {
+            SendMessage();
+        }
 
         public void SendMessage()
         {
@@ -264,20 +287,13 @@ namespace SS3D.Engine.Chat
             moveTransform.position += (Vector3)eventData.delta;
         }
 
-        public void FinishTyping()
-        {
-            if (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
-            {
-                SendMessage();
-            }
-        }
-
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
             
             InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
             InstanceFinder.ServerManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
+            _controls.SendChatMessage.performed -= HandleSendMessage;
         }
 
         private void OnChatBroadcast(ChatMessage msg)

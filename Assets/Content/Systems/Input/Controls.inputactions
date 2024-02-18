@@ -524,6 +524,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SendChatMessage",
+                    "type": "Button",
+                    "id": "5a3b326c-585b-405e-9194-3c4fb6a1e206",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -568,6 +577,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Internal Clothing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "07b29e12-4dd9-465b-949b-af69ad326643",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SendChatMessage",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1dd9660b-cc74-4ad4-8bf0-e3559b911ccf",
+                    "path": "<Keyboard>/numpadEnter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SendChatMessage",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
