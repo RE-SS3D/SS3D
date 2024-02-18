@@ -25,6 +25,8 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public class ChatWindow : View, IDragHandler
     {
+        public bool requiresChatController;
+        
         [SerializeField] private bool defaultChat;
         [SerializeField] private ChatChannels chatChannels = null;
         [SerializeField] private ChatChannel initialChannel;
@@ -34,28 +36,35 @@ namespace SS3D.Engine.Chat
         [SerializeField] private ChatTab chatTabPrefab = null;
         [SerializeField] private TMP_Dropdown channelDropDown = null;
         [SerializeField] private CanvasGroup canvasGroup = null;
+        [SerializeField] private bool hideOnInitialize = false;
+        [SerializeField] private bool canBeDragged = false;
 
         private readonly List<ChatMessage> _messages = new List<ChatMessage>();
         
         private ChatTabData _currentTabData;
-        private Controls.HotkeysActions _controls;
+        private Controls.OtherActions _controls;
         private readonly List<string> _channelDropdownOptions = new List<string>();
 
         public CanvasGroup CanvasGroup => canvasGroup;
         
-        protected override void OnAwake()
+        protected override void OnEnabled()
         {
-            base.OnAwake();
+            base.OnEnabled();
 
-            InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
-            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
-            
-            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
-            _controls.SendChatMessage.performed += HandleSendMessage;
+            if (!requiresChatController)
+            {
+                Initialize();
+            }
         }
 
         public void Initialize()
         {
+            InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
+            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnChatBroadcast);
+            
+            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            _controls.SendChatMessage.performed += HandleSendMessage;
+            
             if (defaultChat)
             {
                 ChatTabData initialTab;
@@ -77,7 +86,11 @@ namespace SS3D.Engine.Chat
                 }
                 
                 AddTab(initialTab);
-                HideChatWindowUI();
+
+                if (hideOnInitialize)
+                {
+                    HideChatWindowUI();
+                }
             }
         }
 
@@ -333,16 +346,22 @@ namespace SS3D.Engine.Chat
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (!canBeDragged)
+            {
+                return;
+            }
+            
             RectTransform moveTransform = (RectTransform)transform;
             moveTransform.position += (Vector3)eventData.delta;
         }
 
-        protected override void OnDestroyed()
+        protected override void OnDisabled()
         {
-            base.OnDestroyed();
-            
+            base.OnDisabled();
+
             InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
             InstanceFinder.ServerManager.UnregisterBroadcast<ChatMessage>(OnChatBroadcast);
+
             _controls.SendChatMessage.performed -= HandleSendMessage;
         }
 

@@ -33,7 +33,11 @@ namespace SS3D.Engine.Chat
             transform.SetAsFirstSibling();
             data.tab = this;
 
-            StartCoroutine(FixTabWidth());
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(FixTabWidth());
+            }
+
             _oldPos = transform.position;
         }
 

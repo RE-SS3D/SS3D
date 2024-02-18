@@ -16,7 +16,10 @@ namespace SS3D.Engine.Chat
 
             foreach (ChatWindow chatWindow in ViewLocator.Get<ChatWindow>())
             {
-                chatWindow.Initialize();
+                if (chatWindow.requiresChatController)
+                {
+                    chatWindow.Initialize();
+                }
             }
         }
     }
