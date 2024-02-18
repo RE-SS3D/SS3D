@@ -19,3 +19,5 @@ MonoBehaviour:
   canFormatText: 1
   distanceBased: 0
   maxDistance: 0
+  prefix: 
+  suffix: 

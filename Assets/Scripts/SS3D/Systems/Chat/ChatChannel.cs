@@ -13,5 +13,7 @@ namespace SS3D.Engine.Chat
         public bool canFormatText;
         public bool distanceBased;
         public float maxDistance;
+        public string prefix;
+        public string suffix;
     }
 }

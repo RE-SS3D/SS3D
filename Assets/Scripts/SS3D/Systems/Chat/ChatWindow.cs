@@ -348,6 +348,7 @@ namespace SS3D.Engine.Chat
             if (!chatChannel.canFormatText)
             {
                 chatMessage.text = chatMessage.text.Replace("<", "<nobr><</nobr>");
+                chatMessage.text = $"{chatChannel.prefix}{chatMessage.text}{chatChannel.suffix}";
             }
 
             if (InstanceFinder.IsServer)
