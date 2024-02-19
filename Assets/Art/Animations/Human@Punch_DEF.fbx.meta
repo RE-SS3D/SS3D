@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2fb0ed244ea680343aa86a70793b23a5
+guid: da98e2789290c404ea421dc23ee81bcb
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -17,14 +17,29 @@ ModelImporter:
     removeConstantScaleCurves: 1
     motionNodeName: HumanArmature
     rigImportErrors: 
-    rigImportWarnings: 
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'thigh_l'
+      : position error = 5.710223 mm\n\t'thigh_r' : position error = 5.710156 mm\n\t'spine'
+      : position error = 5.710193 mm\n\t'chest' : position error = 7.979074 mm\n\t'c_thumb1_r'
+      : position error = 2.960802 mm\n\t'c_ring1_r' : position error = 2.960671 mm\n\t'c_middle1_r'
+      : position error = 2.960752 mm\n\t'c_index1_r' : position error = 2.960816
+      mm\n\t'upper_arm_l' : position error = 6.207804 mm\n"
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'DEF_Punch' has import animation warnings that
+      might lower retargeting quality:\n\t'c_thumb1_r' has translation animation
+      that will be discarded.\n\t'c_ring1_r' has translation animation that will
+      be discarded.\n\t'c_ring2_r' has translation animation that will be discarded.\n\t'c_ring3_r'
+      has translation animation that will be discarded.\n\t'c_middle1_r' has translation
+      animation that will be discarded.\n\t'c_middle2_r' has translation animation
+      that will be discarded.\n\t'c_middle3_r' has translation animation that will
+      be discarded.\n\t'c_index1_r' has translation animation that will be discarded.\n\t'c_index2_r'
+      has translation animation that will be discarded.\n\t'c_index3_r' has translation
+      animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -33,19 +48,19 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: ThrowRight
-      takeName: mixamo.com
-      internalID: -203655887218126122
-      firstFrame: 0
-      lastFrame: 66
+      name: Punch_DEF
+      takeName: DEF_Punch
+      internalID: -9079064199848669221
+      firstFrame: 40
+      lastFrame: 70
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
+      loopTime: 1
+      loopBlend: 1
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
@@ -53,14 +68,14 @@ ModelImporter:
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
-      mirror: 1
+      mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+      additiveReferencePoseFrame: 39.9
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -876,10 +891,10 @@ ModelImporter:
     legTwist: 0.5
     armStretch: 0.05
     legStretch: 0.05
-    feetSpacing: 0
+    feetSpacing: 0.006
     globalScale: 1
     rootMotionBoneName: 
-    hasTranslationDoF: 0
+    hasTranslationDoF: 1
     hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}

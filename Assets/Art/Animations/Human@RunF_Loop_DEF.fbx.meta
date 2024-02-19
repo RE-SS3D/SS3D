@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2fb0ed244ea680343aa86a70793b23a5
+guid: ee5bd9de001638345b7240890c768648
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -17,14 +17,17 @@ ModelImporter:
     removeConstantScaleCurves: 1
     motionNodeName: HumanArmature
     rigImportErrors: 
-    rigImportWarnings: 
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'thigh_l'
+      : position error = 13.641048 mm\n\t'thigh_r' : position error = 13.751703 mm\n\t'spine'
+      : position error = 32.482731 mm\n\t'chest' : position error = 26.951851 mm\n"
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -33,19 +36,19 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: ThrowRight
-      takeName: mixamo.com
-      internalID: -203655887218126122
+      name: RunF_Loop_DEF
+      takeName: Take 001
+      internalID: 1827226128182048838
       firstFrame: 0
-      lastFrame: 66
+      lastFrame: 16
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
+      loopTime: 1
+      loopBlend: 1
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
@@ -53,7 +56,7 @@ ModelImporter:
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
-      mirror: 1
+      mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
@@ -876,10 +879,10 @@ ModelImporter:
     legTwist: 0.5
     armStretch: 0.05
     legStretch: 0.05
-    feetSpacing: 0
+    feetSpacing: 0.006
     globalScale: 1
     rootMotionBoneName: 
-    hasTranslationDoF: 0
+    hasTranslationDoF: 1
     hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
