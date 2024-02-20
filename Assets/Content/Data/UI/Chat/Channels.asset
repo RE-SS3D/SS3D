@@ -28,3 +28,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8f3dc943fab83654baab9ab3df400baf, type: 2}
   - {fileID: 11400000, guid: 80bd652e9f7cee141a0434e3fe9c19d7, type: 2}
   - {fileID: 11400000, guid: 1ddc3674379576142b10b84ada130723, type: 2}
+  - {fileID: 11400000, guid: 56d6c77c339c8134bb7e32bffa05f5d3, type: 2}
+  channelForAllChatsSystemMessages: {fileID: 11400000, guid: 9cf83e6d190541b4f82b84de530639dd, type: 2}
+  channelForInGameChatSystemMessages: {fileID: 11400000, guid: 56d6c77c339c8134bb7e32bffa05f5d3, type: 2}

@@ -21,8 +21,6 @@ namespace SS3D.Engine.Chat
             {
                 return;
             }
-
-            ViewLocator.Get<LobbyChatWindow>().First().Deinitialize();
             
             InGameChatWindow inGameChatWindow = ViewLocator.Get<InGameChatWindow>().First();
             inGameChatWindow.availableChannels = GetListOfAvailableChatChannels();

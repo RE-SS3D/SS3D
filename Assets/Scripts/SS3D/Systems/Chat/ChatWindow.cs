@@ -1,5 +1,4 @@
 ﻿using FishNet;
-using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
@@ -38,32 +37,7 @@ namespace SS3D.Engine.Chat
             base.OnAwake();
             
             _controls = Subsystems.Get<InputSystem>().Inputs.Other;
-        }
-        
-        public virtual void Initialize()
-        {
-            if (_initialized)
-            {
-                return;
-            }
-            
-            InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
-            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);
-            
-            _initialized = true;
-        }
-
-        public void Deinitialize()
-        {
-            if (!_initialized)
-            {
-                return;
-            }
-            
-            InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
-            InstanceFinder.ServerManager.UnregisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);
-            
-            _initialized = false;
+            ChatMessageSender.InitializeIfNeeded();
         }
 
         protected override void OnEnabled()
@@ -71,6 +45,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed += HandleSendMessage;
+            ChatMessageSender.ChatWindows.Add(this);
         }
 
         protected override void OnDisabled()
@@ -78,6 +53,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed -= HandleSendMessage;
+            ChatMessageSender.ChatWindows.Remove(this);
         }
 
         protected virtual void HandleSendMessage(InputAction.CallbackContext context)
@@ -111,7 +87,9 @@ namespace SS3D.Engine.Chat
             }
             else
             {
-                ChatMessageSender.SendServerMessageToCurrentPlayer("System", $"UNAUTHORIZED ACCESS TO CHANNEL [{chatChannel.name}]");
+                ChatMessageSender.SendServerMessageToCurrentPlayer(
+                    chatChannels.GetChannelForInGameChatSystemMessages.name, 
+                    $"[UNAUTHORIZED ACCESS TO {chatChannel.name} CHANNEL]");
             }
         }
 
@@ -146,11 +124,6 @@ namespace SS3D.Engine.Chat
 
         public void OnClientReceiveChatMessage(ChatMessage msg)
         {
-            if (!_initialized)
-            {
-                return;
-            }
-
             if (!availableChannels.Contains(msg.channel))
             {
                 return;
@@ -171,11 +144,6 @@ namespace SS3D.Engine.Chat
             
             _chatMessages.Add(msg);
             UpdateMessages();
-        }
-
-        protected static void OnServerReceiveChatMessage(NetworkConnection conn, ChatMessage msg)
-        {
-            InstanceFinder.ServerManager.Broadcast(msg);
         }
 
         protected List<ChatMessage> GetMessagesInChannels(List<string> chatChannelsNames)

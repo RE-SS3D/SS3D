@@ -1,7 +1,4 @@
-﻿using FishNet;
-using SS3D.Core;
-using SS3D.Systems.PlayerControl;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -26,7 +23,6 @@ namespace SS3D.Engine.Chat
             base.OnEnabled();
 
             availableChannels = chatChannelsThatAreVisible.Select(x => x.name).ToList();
-            Initialize();
             UpdateMessages();
             StartCoroutine(WelcomeMessageDelayed());
         }
@@ -35,7 +31,7 @@ namespace SS3D.Engine.Chat
         {
             yield return new WaitForSecondsRealtime(welcomeMessageDelayInSeconds);
             
-            ChatMessageSender.SendServerMessageToCurrentPlayer("System", welcomeMessage);
+            ChatMessageSender.SendServerMessageToCurrentPlayer(chatChannels.GetChannelForAllChatsSystemMessages.name, welcomeMessage);
         }
 
         protected override void HandleSendMessage(InputAction.CallbackContext context)

@@ -39,10 +39,8 @@ namespace SS3D.Engine.Chat
         protected override ChatChannel GetCurrentChatChannel() => 
             chatChannels.GetChannels().FirstOrDefault(x => x.name == _channelDropdownOptions[channelDropDown.value]);
         
-        public override void Initialize()
+        public void Initialize()
         {
-            base.Initialize();
-            
             if (defaultChat)
             {
                 ChatTabData initialTab = new ChatTabData(

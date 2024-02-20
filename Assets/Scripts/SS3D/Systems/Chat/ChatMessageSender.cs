@@ -1,14 +1,46 @@
 ﻿using FishNet;
+using FishNet.Connection;
 using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace SS3D.Engine.Chat
 {
     public static class ChatMessageSender
     {
+        public static readonly List<ChatWindow> ChatWindows = new List<ChatWindow>();
+
+        private static bool Initialized;
+
+        public static void InitializeIfNeeded()
+        {
+            if (Initialized)
+            {
+                return;
+            }
+            
+            InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
+            InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);
+            
+            Initialized = true;
+        }
+
+        private static void OnServerReceiveChatMessage(NetworkConnection conn, ChatMessage msg)
+        {
+            InstanceFinder.ServerManager.Broadcast(msg);
+        }
+        
+
+        private static void OnClientReceiveChatMessage(ChatMessage msg)
+        {
+            foreach (ChatWindow chatWindow in ChatWindows)
+            {
+                chatWindow.OnClientReceiveChatMessage(msg);
+            }
+        }
+        
         public static void SendPlayerMessage([NotNull] ChatChannel chatChannel, string text, Player player)
         {
             ChatMessage chatMessage = new ChatMessage
@@ -69,15 +101,13 @@ namespace SS3D.Engine.Chat
         
         public static void SendServerMessageToCurrentPlayer([NotNull] string chatChannelName, string text)
         {
-            ChatMessage chatMessage = new ChatMessage
-            {
-                channel = chatChannelName,
-                text = text,
-                sender = "Server",
-            };
-
-            ViewLocator.Get<InGameChatWindow>().First().OnClientReceiveChatMessage(chatMessage);
-            ViewLocator.Get<LobbyChatWindow>().First().OnClientReceiveChatMessage(chatMessage);
+            OnClientReceiveChatMessage(
+                new ChatMessage
+                {
+                    channel = chatChannelName,
+                    text = text,
+                    sender = "Server",
+                });
         }
     }
 }
