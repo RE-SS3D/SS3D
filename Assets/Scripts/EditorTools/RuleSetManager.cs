@@ -62,9 +62,15 @@ public class RuleSetManager : EditorWindow
     private void ButtonAddClicked()
     {
         // Check if the XML file exists
-        if (!File.Exists(RulesetRootPath))
+        if (!File.Exists(Ss3DRulesetPath))
         {
-            Debug.LogWarning("The source ruleset does not exist.");
+            Debug.LogError($"The source {Ss3DRulesetPath} does not exist.");
+            return;
+        }
+
+        if (!File.Exists(ExternalRulesetPath))
+        {
+            Debug.LogError($"The source {ExternalRulesetPath} does not exist.");
             return;
         }
 
