@@ -24,7 +24,8 @@ namespace SS3D.Engine.Chat
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            
+
+            availableChannels = chatChannelsThatAreVisible.Select(x => x.name).ToList();
             Initialize();
             UpdateMessages();
             StartCoroutine(WelcomeMessageDelayed());

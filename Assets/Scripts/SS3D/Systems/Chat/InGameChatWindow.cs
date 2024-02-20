@@ -47,7 +47,7 @@ namespace SS3D.Engine.Chat
             {
                 ChatTabData initialTab = new ChatTabData(
                     "All", 
-                    chatChannels.GetChannels().Select(x => x.name).ToList(), 
+                    availableChannels, 
                     false, 
                     null);
                     

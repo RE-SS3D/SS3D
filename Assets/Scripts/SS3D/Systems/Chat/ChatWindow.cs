@@ -24,7 +24,9 @@ namespace SS3D.Engine.Chat
         [SerializeField] protected TMP_InputField inputField = null;
         [SerializeField] private TextMeshProUGUI chatText = null;
         
-        private readonly List<ChatMessage> _messages = new List<ChatMessage>();
+        [HideInInspector] public List<string> availableChannels = new List<string>();
+        
+        private readonly List<ChatMessage> _chatMessages = new List<ChatMessage>();
         
         private Controls.OtherActions _controls;
         private bool _initialized;
@@ -102,7 +104,15 @@ namespace SS3D.Engine.Chat
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             Player player = playerSystem.GetPlayer(playerCkey);
-            ChatMessageSender.SendPlayerMessage(chatChannel, text, player);
+
+            if (availableChannels.Contains(chatChannel.name))
+            {
+                ChatMessageSender.SendPlayerMessage(chatChannel, text, player);
+            }
+            else
+            {
+                ChatMessageSender.SendServerMessageToCurrentPlayer("System", $"UNAUTHORIZED ACCESS TO CHANNEL [{chatChannel.name}]");
+            }
         }
 
         protected void ShowMessages(List<ChatMessage> messages)
@@ -140,6 +150,11 @@ namespace SS3D.Engine.Chat
             {
                 return;
             }
+
+            if (!availableChannels.Contains(msg.channel))
+            {
+                return;
+            }
             
             ChatChannel channel = chatChannels.GetChannels().First(x => x.name == msg.channel);
             if (channel.distanceBased)
@@ -154,7 +169,7 @@ namespace SS3D.Engine.Chat
                 }
             }
             
-            _messages.Add(msg);
+            _chatMessages.Add(msg);
             UpdateMessages();
         }
 
@@ -165,7 +180,7 @@ namespace SS3D.Engine.Chat
 
         protected List<ChatMessage> GetMessagesInChannels(List<string> chatChannelsNames)
         {
-            return _messages.Where(x => chatChannelsNames.Any(y => x.channel.Equals(y))).ToList();
+            return _chatMessages.Where(x => chatChannelsNames.Any(y => x.channel.Equals(y))).ToList();
         }
         
         protected virtual void UpdateMessages() {}

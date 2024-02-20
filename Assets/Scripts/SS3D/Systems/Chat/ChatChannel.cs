@@ -1,4 +1,5 @@
 ﻿using SS3D.Permissions;
+using SS3D.Systems;
 using UnityEngine;
 
 namespace SS3D.Engine.Chat
@@ -16,5 +17,6 @@ namespace SS3D.Engine.Chat
         public string prefix;
         public string suffix;
         public bool hideSenderName;
+        public Trait requiredTraitInHeadset;
     }
 }

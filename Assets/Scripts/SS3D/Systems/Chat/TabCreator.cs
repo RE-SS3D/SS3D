@@ -13,7 +13,6 @@ namespace SS3D.Engine.Chat
         [SerializeField] private ChatFilterOption optionPrefab = null;
         [SerializeField] private RectTransform optionContainer = null;
         [SerializeField] private ChatChannels chatChannels = null;
-        [FormerlySerializedAs("chatWindow")]
         [SerializeField] private InGameChatWindow inGameChatWindow = null;
 
         private readonly List<ChatFilterOption> _options = new List<ChatFilterOption>();
@@ -27,7 +26,11 @@ namespace SS3D.Engine.Chat
 
             _options.Clear();
 
-            foreach (ChatChannel channel in chatChannels.GetHidable())
+            List<ChatChannel> availableChannelsToChoose = chatChannels
+                .GetHidable()
+                .Where(chatChannel => inGameChatWindow.availableChannels.Contains(chatChannel.name))
+                .ToList();
+            foreach (ChatChannel channel in availableChannelsToChoose)
             {
                 ChatFilterOption option = Instantiate(optionPrefab, optionContainer);
                 option.Init(channel);
@@ -50,7 +53,9 @@ namespace SS3D.Engine.Chat
 
             List<string> channels = _options
                 .Select(option => option.TickedChannel()?.name)
-                .Where(channel => channel != null)
+                .Where(chatChannel => 
+                    chatChannel != null
+                    && inGameChatWindow.availableChannels.Contains(chatChannel))
                 .ToList();
         
             foreach (ChatChannel channel in chatChannels.GetUnhidable())
