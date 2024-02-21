@@ -134,7 +134,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 2312129763742525980}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &8626656600768578774
 MonoBehaviour:
@@ -791,7 +791,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 2312129763742525980}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &6233962219268866637
 MonoBehaviour:
@@ -1564,7 +1564,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 2312129763742525980}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &6911900315559804093
 MonoBehaviour:
@@ -2483,7 +2483,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 9089863125375551091}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &7590913349156985469
 MonoBehaviour:
@@ -3502,7 +3502,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 9089863125375551091}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &1527032890679831709
 MonoBehaviour:
@@ -3683,7 +3683,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 2312129763742525980}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &8067289659534850981
 MonoBehaviour:
@@ -4370,7 +4370,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 9089863125375551091}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &7534105608452820685
 MonoBehaviour:
@@ -5329,7 +5329,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 9089863125375551091}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &8410791339138828931
 MonoBehaviour:
@@ -6019,7 +6019,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 2312129763742525980}
   m_AABB:
     m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &4138789318277530234
 MonoBehaviour:
@@ -7973,7 +7973,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 9089863125375551091}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 1, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &2091115627957921416
 MonoBehaviour:
@@ -9602,7 +9602,7 @@ SkinnedMeshRenderer:
   m_RootBone: {fileID: 2312129763742525980}
   m_AABB:
     m_Center: {x: -0.00065279007, y: 0.106628984, z: 0.035876624}
-    m_Extent: {x: 0.29011708, y: 0.3872579, z: 0.18311787}
+    m_Extent: {x: 1, y: 0.25, z: 1}
   m_DirtyAABB: 0
 --- !u!114 &4684017524585288931
 MonoBehaviour:
