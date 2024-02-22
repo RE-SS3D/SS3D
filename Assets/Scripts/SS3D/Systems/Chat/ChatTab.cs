@@ -171,7 +171,8 @@ namespace SS3D.Engine.Chat
                     InGameChatWindow newInGameChatWindow = Instantiate(_inGameChatWindowPrefab).GetComponent<InGameChatWindow>();
                     Transform newInGameChatWindowTransform = newInGameChatWindow.transform;
                     Transform previousInGameChatWindowTransform = _inGameChatWindow.transform;
-                    
+
+                    newInGameChatWindow.AvailableChannels = _inGameChatWindow.AvailableChannels;
                     newInGameChatWindowTransform.SetParent(previousInGameChatWindowTransform.parent);
                     newInGameChatWindowTransform.position = Input.mousePosition;
                     newInGameChatWindowTransform.localScale = previousInGameChatWindowTransform.localScale;

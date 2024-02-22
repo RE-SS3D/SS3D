@@ -62,7 +62,11 @@ namespace SS3D.Engine.Chat
         [Client]
         private void OnAvailableChannelsChanged(SyncListOperation operation, int index, string oldItem, string newItem, bool asServer)
         {
-            ViewLocator.Get<InGameChatWindow>().First().AvailableChannels = AvailableChannels.ToList();
+            List<string> availableChannels = AvailableChannels.ToList();
+            foreach (InGameChatWindow inGameChatWindow in ViewLocator.Get<InGameChatWindow>())
+            {
+                inGameChatWindow.AvailableChannels = availableChannels;
+            }
         }
         
         [Server]
