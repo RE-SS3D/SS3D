@@ -25,7 +25,7 @@ namespace SS3D.Engine.Chat
             _image = GetComponent<Image>();
         }
 
-        public void Init(ChatTabData newData, InGameChatWindow window)
+        public void Setup(ChatTabData newData, InGameChatWindow window)
         {
             _chatTabData = newData;
             _inGameChatWindow = window;

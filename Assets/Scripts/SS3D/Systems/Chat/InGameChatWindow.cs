@@ -110,7 +110,7 @@ namespace SS3D.Engine.Chat
         public ChatTab AddTab(ChatTabData tabData)
         {
             ChatTab chatTab = Instantiate(_chatTabPrefab, _tabRow);
-            chatTab.Init(tabData, this);
+            chatTab.Setup(tabData, this);
             LoadTab(chatTab.GetChatTabData());
 
             SelectTab(chatTab.gameObject);
