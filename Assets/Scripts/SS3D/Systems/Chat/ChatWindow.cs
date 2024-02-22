@@ -135,27 +135,27 @@ namespace SS3D.Engine.Chat
             _chatText.text = sb.ToString();
         }
 
-        public void OnClientReceiveChatMessage(ChatMessage msg)
+        public void OnClientReceiveChatMessage(ChatMessage message)
         {
-            if (!AvailableChannels.Contains(msg.Channel))
+            if (!AvailableChannels.Contains(message.Channel))
             {
                 return;
             }
             
-            ChatChannel channel = _chatChannels.GetChannels().First(x => x.name == msg.Channel);
+            ChatChannel channel = _chatChannels.GetChannels().First(x => x.name == message.Channel);
             if (channel.DistanceBased)
             {
                 PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
                 string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
                 Player player = playerSystem.GetPlayer(playerCkey);
                 Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-                if (Vector3.Distance(entity.Position, msg.Origin) > channel.MaxDistance)
+                if (Vector3.Distance(entity.Position, message.Origin) > channel.MaxDistance)
                 {
                     return;
                 }
             }
             
-            _chatMessages.Add(msg);
+            _chatMessages.Add(message);
             UpdateMessages();
         }
 
