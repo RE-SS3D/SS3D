@@ -300,7 +300,7 @@ GameObject:
   - component: {fileID: 6734554438716495333}
   - component: {fileID: 9141987758252414755}
   m_Layer: 5
-  m_Name: ChatFilterOption
+  m_Name: ChatToggleUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

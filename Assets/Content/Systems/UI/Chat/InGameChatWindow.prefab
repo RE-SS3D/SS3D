@@ -1790,9 +1790,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tabNameField: {fileID: 2578072138093865936}
-  _optionPrefab: {fileID: 9141987758252414755, guid: 1b072aeb6b5816348b8a8d95a9d7c9c1, type: 3}
+  _optionToggleUIPrefab: {fileID: 9141987758252414755, guid: 1b072aeb6b5816348b8a8d95a9d7c9c1, type: 3}
   _optionContainer: {fileID: 259773888143952910}
-  _chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
   _inGameChatWindow: {fileID: 7861828484222706393}
 --- !u!114 &7605719517590421236
 MonoBehaviour:
@@ -3873,11 +3872,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19c825e65f25ab14e8c8b5bc5c47497d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
   _inputField: {fileID: 3551843282541818943}
   _chatText: {fileID: 5578169004254389989}
-  _availableChannels: []
-  _defaultChat: 0
+  AvailableChannels: []
   _tabRow: {fileID: 5578169005156871225}
   _chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36, type: 3}
   _channelDropDown: {fileID: 3465179352210583905}

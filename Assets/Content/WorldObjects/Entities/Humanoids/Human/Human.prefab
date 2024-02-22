@@ -7214,8 +7214,7 @@ MonoBehaviour:
   _componentIndexCache: 17
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
-  humanInventory: {fileID: 1089183168752255729}
+  _humanInventory: {fileID: 1089183168752255729}
 --- !u!1 &6418095482179841189
 GameObject:
   m_ObjectHideFlags: 0
