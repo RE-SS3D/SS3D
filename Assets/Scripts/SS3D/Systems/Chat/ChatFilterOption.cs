@@ -11,7 +11,7 @@ namespace SS3D.Engine.Chat
 
         private ChatChannel _channel;
 
-        public void Init(ChatChannel channel)
+        public void Setup(ChatChannel channel)
         {
             _channel = channel;
             _label.text = channel.name;

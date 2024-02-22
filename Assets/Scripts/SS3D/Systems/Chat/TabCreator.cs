@@ -32,7 +32,7 @@ namespace SS3D.Engine.Chat
             foreach (ChatChannel channel in availableChannelsToChoose)
             {
                 ChatFilterOption option = Instantiate(_optionPrefab, _optionContainer);
-                option.Init(channel);
+                option.Setup(channel);
                 _options.Add(option);
             }
         }
