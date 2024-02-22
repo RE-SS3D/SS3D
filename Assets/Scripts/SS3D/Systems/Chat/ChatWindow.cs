@@ -123,25 +123,7 @@ namespace SS3D.Engine.Chat
             StringBuilder sb = new StringBuilder();
             foreach (ChatMessage message in messages)
             {
-                ChatChannel chatChannel = _chatChannels.GetChannels().First(x => x.name == message.Channel);
-
-                sb.Append(chatChannel.Prefix);
-                
-                sb.AppendFormat("<color=#{0}>", ColorUtility.ToHtmlStringRGBA(chatChannel.Color));
-                
-                if (!string.IsNullOrEmpty(chatChannel.Abbreviation))
-                {
-                    sb.AppendFormat("[{0}] ", chatChannel.Abbreviation);
-                }
-                
-                if (!chatChannel.HideSenderName)
-                {
-                    sb.AppendFormat("{0}: " , message.Sender);
-                }
-                
-                sb.AppendFormat("{0}\n", message.Text);
-                
-                sb.Append(chatChannel.Suffix);
+                sb.Append(message.ToString());
             }
 
             _chatText.text = sb.ToString();
