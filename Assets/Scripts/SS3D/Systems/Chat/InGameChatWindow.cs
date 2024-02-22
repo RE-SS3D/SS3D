@@ -84,15 +84,23 @@ namespace SS3D.Engine.Chat
                             continue;
                     }
 
-                    string abbreviation = 
-                        !string.IsNullOrEmpty(chatChannel.TabName) 
-                            ? chatChannel.TabName 
-                            : !string.IsNullOrEmpty(chatChannel.Abbreviation)
-                                ? chatChannel.Abbreviation 
-                                : chatChannel.name;
+                    string tabName;
+                    if (!string.IsNullOrEmpty(chatChannel.TabName))
+                    {
+                        tabName = chatChannel.TabName;
+                    }
+                    else if (!string.IsNullOrEmpty(chatChannel.Abbreviation))
+                    {
+                        tabName = chatChannel.Abbreviation;
+                    }
+                    else
+                    {
+                        tabName = chatChannel.name;
+                    }
+
                     _channelDropDown.options.Add(
                         new TMP_Dropdown.OptionData(
-                            $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.Color)}>[{abbreviation}]</color>")
+                            $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.Color)}>[{tabName}]</color>")
                     );
                     _channelDropdownOptions.Add(channelName);
                 }
