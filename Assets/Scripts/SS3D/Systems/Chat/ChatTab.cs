@@ -11,14 +11,14 @@ namespace SS3D.Engine.Chat
     public class ChatTab : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
     {
         [SerializeField] private InGameChatWindow _inGameChatWindowPrefab = null;
-        [SerializeField] private TextMeshProUGUI _text = null;
-        [SerializeField] private ChatTabData _data;
+        [SerializeField] private TextMeshProUGUI _textComponent = null;
+        [SerializeField] private ChatTabData _chatTabData;
         
         private Image _image;
         private InGameChatWindow _inGameChatWindow;
         private Vector3 _oldPos;
 
-        public ChatTabData GetChatTabData() => _data;
+        public ChatTabData GetChatTabData() => _chatTabData;
 
         private void Awake()
         {
@@ -27,11 +27,11 @@ namespace SS3D.Engine.Chat
 
         public void Init(ChatTabData newData, InGameChatWindow window)
         {
-            _data = newData;
+            _chatTabData = newData;
             _inGameChatWindow = window;
-            _text.text = newData.Name;
+            _textComponent.text = newData.Name;
             transform.SetAsFirstSibling();
-            _data.Tab = this;
+            _chatTabData.Tab = this;
 
             if (gameObject.activeInHierarchy)
             {
@@ -46,7 +46,7 @@ namespace SS3D.Engine.Chat
             yield return null;
             
             ((RectTransform)transform).SetSizeWithCurrentAnchors(
-                RectTransform.Axis.Horizontal, 20 + _text.GetRenderedValues(true).x);
+                RectTransform.Axis.Horizontal, 20 + _textComponent.GetRenderedValues(true).x);
         }
 
         public void OpenTab()
@@ -59,7 +59,7 @@ namespace SS3D.Engine.Chat
             _oldPos = transform.position;
             _inGameChatWindow.LoadTab();
         
-            _text.raycastTarget = false;
+            _textComponent.raycastTarget = false;
             _image.raycastTarget = false;
         }
 
@@ -146,7 +146,7 @@ namespace SS3D.Engine.Chat
                 }
                 else
                 {
-                    ChatTab chatTab = inGameChatWindow.AddTab(_data);
+                    ChatTab chatTab = inGameChatWindow.AddTab(_chatTabData);
                     PlaceTab(chatTab, inGameChatWindow, eventData.position);
                     Button a = _inGameChatWindow.GetNextTabButton(gameObject);
                     gameObject.Dispose(false);
@@ -173,7 +173,7 @@ namespace SS3D.Engine.Chat
                     newInGameChatWindow.transform.position = Input.mousePosition;
                     newInGameChatWindow.transform.localScale = _inGameChatWindow.transform.localScale;
                     newInGameChatWindow.gameObject.SetActive(true);
-                    newInGameChatWindow.AddTab(_data);
+                    newInGameChatWindow.AddTab(_chatTabData);
                     Button a = _inGameChatWindow.GetNextTabButton(gameObject);
                     gameObject.Dispose(false);
                     _inGameChatWindow.SelectTab(a.gameObject);
@@ -187,7 +187,7 @@ namespace SS3D.Engine.Chat
                 }
             }
             
-            _text.raycastTarget = true;
+            _textComponent.raycastTarget = true;
             _image.raycastTarget = true;
         }
     }

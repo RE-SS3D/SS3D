@@ -283,8 +283,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inGameChatWindowPrefab: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
-  _text: {fileID: 5640277009816019503}
-  _data:
+  _textComponent: {fileID: 5640277009816019503}
+  _chatTabData:
     Name: 
     Channels: []
     Removable: 0
