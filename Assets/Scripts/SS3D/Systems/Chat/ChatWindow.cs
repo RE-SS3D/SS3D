@@ -45,7 +45,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed += HandleSendMessage;
-            ChatMessageSender.ChatWindows.Add(this);
+            ChatMessageSender.RegisterChatWindow(this);
         }
 
         protected override void OnDisabled()
@@ -53,7 +53,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed -= HandleSendMessage;
-            ChatMessageSender.ChatWindows.Remove(this);
+            ChatMessageSender.UnregisterChatWindow(this);
         }
 
         protected virtual void HandleSendMessage(InputAction.CallbackContext context)
