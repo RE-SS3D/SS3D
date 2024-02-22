@@ -9,18 +9,28 @@ using SS3D.Systems.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace SS3D.Engine.Chat
 {
     public class ChatSystem : NetworkSystem
     {
+        [SerializeField] private ChatChannels _chatChannels;
+        
         private const string ChatLogFolderName = "Chat";
         private readonly List<ChatWindow> _chatWindows = new List<ChatWindow>();
         private string _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
+        
+        public static Dictionary<string, ChatChannel> RegisteredChatChannels;
 
         public override void OnStartNetwork()
         {
             _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
+
+            foreach (ChatChannel chatChannel in _chatChannels.GetChannels())
+            {
+                RegisteredChatChannels.Add(chatChannel.name, chatChannel);
+            }
             
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
             InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);

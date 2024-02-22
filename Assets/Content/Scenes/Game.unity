@@ -538,9 +538,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a894827ddaaa4a74bc4cdd1f1da7f0c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 8
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1506918116}
-  _networkObjectCache: {fileID: 1506918116}
+  _networkObjectCache: {fileID: 478615869}
+  _chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
 --- !u!114 &478615869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -554,10 +555,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 10
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  _networkBehaviours:
+  - {fileID: 478615868}
+  <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
@@ -2113,7 +2115,6 @@ MonoBehaviour:
   - {fileID: 606666310}
   - {fileID: 274660132}
   - {fileID: 478499396}
-  - {fileID: 478615868}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 516802435}
@@ -2124,6 +2125,7 @@ MonoBehaviour:
   - {fileID: 474682044}
   - {fileID: 661652618}
   - {fileID: 1000564558}
+  - {fileID: 478615869}
   SerializedTransformProperties:
     Position: {x: 698.9584, y: 414.30542, z: -44.10029}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
