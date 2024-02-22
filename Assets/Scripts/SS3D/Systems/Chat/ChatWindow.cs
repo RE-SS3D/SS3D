@@ -30,7 +30,6 @@ namespace SS3D.Engine.Chat
         
         private InputSystem _inputSystem;
         private Controls.OtherActions _controls;
-        private bool _initialized;
 
         protected virtual ChatChannel GetCurrentChatChannel() => null;
 
