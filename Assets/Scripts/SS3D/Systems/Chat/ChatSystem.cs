@@ -15,12 +15,11 @@ namespace SS3D.Engine.Chat
 {
     public class ChatSystem : NetworkSystem
     {
-        private const string ChatLogFolderName = "Chat";
-        private readonly List<ChatWindow> _chatWindows = new List<ChatWindow>();
-        private string _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
-        
         public readonly Dictionary<string, ChatChannel> RegisteredChatChannels = new Dictionary<string, ChatChannel>();
         public Action<ChatMessage> OnMessageReceived; 
+        
+        private const string ChatLogFolderName = "Chat";
+        private string _chatLogPath;
 
         public override void OnStartNetwork()
         {
@@ -34,16 +33,6 @@ namespace SS3D.Engine.Chat
             
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
             InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);
-        }
-
-        public void RegisterChatWindow(ChatWindow chatWindow)
-        {
-            _chatWindows.Add(chatWindow);
-        }
-
-        public void UnregisterChatWindow(ChatWindow chatWindow)
-        {
-            _chatWindows.Remove(chatWindow);
         }
 
         private void OnServerReceiveChatMessage(NetworkConnection conn, ChatMessage msg)
