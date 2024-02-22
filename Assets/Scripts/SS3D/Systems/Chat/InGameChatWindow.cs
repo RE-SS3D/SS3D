@@ -20,7 +20,6 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public sealed class InGameChatWindow : ChatWindow, IDragHandler
     {
-        [SerializeField] private bool _defaultChat;
         [SerializeField] private RectTransform _tabRow = null;
         [SerializeField] private ChatTab _chatTabPrefab = null;
         [SerializeField] private TMP_Dropdown _channelDropDown = null;
@@ -39,19 +38,16 @@ namespace SS3D.Engine.Chat
         protected override ChatChannel GetCurrentChatChannel() => 
             ChatSystem.RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
         
-        public void Initialize()
+        public void InitializeWithAllAvailableChannels()
         {
-            if (_defaultChat)
-            {
-                ChatTabData initialTab = new ChatTabData(
-                    "All", 
-                    AvailableChannels, 
-                    false, 
-                    null);
-                    
-                AddTab(initialTab);
-                HideChatWindowUI();
-            }
+            ChatTabData initialTab = new ChatTabData(
+                "All", 
+                AvailableChannels, 
+                false, 
+                null);
+                
+            AddTab(initialTab);
+            HideChatWindowUI();
         }
 
         public void EnableAllTabs()

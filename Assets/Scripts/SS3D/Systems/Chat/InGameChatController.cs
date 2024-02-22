@@ -47,7 +47,7 @@ namespace SS3D.Engine.Chat
             
             InGameChatWindow inGameChatWindow = ViewLocator.Get<InGameChatWindow>().First();
             inGameChatWindow.AvailableChannels = AvailableChannels.ToList();
-            inGameChatWindow.Initialize();
+            inGameChatWindow.InitializeWithAllAvailableChannels();
             
             AvailableChannels.OnChange += OnAvailableChannelsChanged;
         }
