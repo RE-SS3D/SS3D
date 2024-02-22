@@ -5630,15 +5630,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8844eb845658433c9b443d2a1d9be9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
-  inputField: {fileID: 2510810101235906787}
-  chatText: {fileID: 6844132202617154105}
-  chatChannelsThatAreVisible:
+  _chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
+  _inputField: {fileID: 2510810101235906787}
+  _chatText: {fileID: 6844132202617154105}
+  _availableChannels: []
+  _chatChannelsThatAreVisible:
   - {fileID: 11400000, guid: 9cf83e6d190541b4f82b84de530639dd, type: 2}
   - {fileID: 11400000, guid: 602dd714765b66e4e8c8f6b963312b27, type: 2}
-  chatChannelUsedForSendingMessages: {fileID: 11400000, guid: 602dd714765b66e4e8c8f6b963312b27, type: 2}
-  welcomeMessageDelayInSeconds: 1
-  welcomeMessage: <size=30>Welcome to SS3D!</size>
+  _chatChannelUsedForSendingMessages: {fileID: 11400000, guid: 602dd714765b66e4e8c8f6b963312b27, type: 2}
+  _welcomeMessageDelayInSeconds: 1
+  _welcomeMessage: <size=30>Welcome to SS3D!</size>
 --- !u!1 &4370972905362277894
 GameObject:
   m_ObjectHideFlags: 0

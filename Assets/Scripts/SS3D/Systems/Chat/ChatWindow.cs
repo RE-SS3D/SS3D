@@ -20,11 +20,11 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public abstract class ChatWindow : View, IPointerEnterHandler, IPointerExitHandler
     {
-        [SerializeField] protected ChatChannels chatChannels = null;
-        [SerializeField] protected TMP_InputField inputField = null;
-        [SerializeField] private TextMeshProUGUI chatText = null;
+        [SerializeField] protected ChatChannels _chatChannels = null;
+        [SerializeField] protected TMP_InputField _inputField = null;
+        [SerializeField] private TextMeshProUGUI _chatText = null;
         
-        [HideInInspector] public List<string> availableChannels = new List<string>();
+        [HideInInspector] public List<string> _availableChannels = new List<string>();
         
         private readonly List<ChatMessage> _chatMessages = new List<ChatMessage>();
         
@@ -76,13 +76,13 @@ namespace SS3D.Engine.Chat
 
         public void SendMessage()
         {
-            string text = inputField.text;
+            string text = _inputField.text;
             if (text.Length <= 0)
             {
                 return;
             }
             
-            inputField.text = "";
+            _inputField.text = "";
             
             ChatChannel chatChannel = GetCurrentChatChannel();
             if (chatChannel == null)
@@ -94,14 +94,14 @@ namespace SS3D.Engine.Chat
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             Player player = playerSystem.GetPlayer(playerCkey);
 
-            if (availableChannels.Contains(chatChannel.name))
+            if (_availableChannels.Contains(chatChannel.name))
             {
                 ChatMessageSender.SendPlayerMessage(chatChannel, text, player);
             }
             else
             {
                 ChatMessageSender.SendServerMessageToCurrentPlayer(
-                    chatChannels.GetChannelForInGameChatSystemMessages.name, 
+                    _chatChannels.GetChannelForInGameChatSystemMessages.name, 
                     $"[UNAUTHORIZED ACCESS TO {chatChannel.name} CHANNEL]");
             }
         }
@@ -111,45 +111,45 @@ namespace SS3D.Engine.Chat
             StringBuilder sb = new StringBuilder();
             foreach (ChatMessage message in messages)
             {
-                ChatChannel chatChannel = chatChannels.GetChannels().First(x => x.name == message.channel);
+                ChatChannel chatChannel = _chatChannels.GetChannels().First(x => x.name == message.Channel);
 
-                sb.Append(chatChannel.prefix);
+                sb.Append(chatChannel.Prefix);
                 
-                sb.AppendFormat("<color=#{0}>", ColorUtility.ToHtmlStringRGBA(chatChannel.color));
+                sb.AppendFormat("<color=#{0}>", ColorUtility.ToHtmlStringRGBA(chatChannel.Color));
                 
-                if (!string.IsNullOrEmpty(chatChannel.abbreviation))
+                if (!string.IsNullOrEmpty(chatChannel.Abbreviation))
                 {
-                    sb.AppendFormat("[{0}] ", chatChannel.abbreviation);
+                    sb.AppendFormat("[{0}] ", chatChannel.Abbreviation);
                 }
                 
-                if (!chatChannel.hideSenderName)
+                if (!chatChannel.HideSenderName)
                 {
-                    sb.AppendFormat("{0}: " , message.sender);
+                    sb.AppendFormat("{0}: " , message.Sender);
                 }
                 
-                sb.AppendFormat("{0}\n", message.text);
+                sb.AppendFormat("{0}\n", message.Text);
                 
-                sb.Append(chatChannel.suffix);
+                sb.Append(chatChannel.Suffix);
             }
 
-            chatText.text = sb.ToString();
+            _chatText.text = sb.ToString();
         }
 
         public void OnClientReceiveChatMessage(ChatMessage msg)
         {
-            if (!availableChannels.Contains(msg.channel))
+            if (!_availableChannels.Contains(msg.Channel))
             {
                 return;
             }
             
-            ChatChannel channel = chatChannels.GetChannels().First(x => x.name == msg.channel);
-            if (channel.distanceBased)
+            ChatChannel channel = _chatChannels.GetChannels().First(x => x.name == msg.Channel);
+            if (channel.DistanceBased)
             {
                 PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
                 string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
                 Player player = playerSystem.GetPlayer(playerCkey);
                 Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-                if (Vector3.Distance(entity.Position, msg.origin) > channel.maxDistance)
+                if (Vector3.Distance(entity.Position, msg.Origin) > channel.MaxDistance)
                 {
                     return;
                 }
@@ -161,7 +161,7 @@ namespace SS3D.Engine.Chat
 
         protected List<ChatMessage> GetMessagesInChannels(List<string> chatChannelsNames)
         {
-            return _chatMessages.Where(x => chatChannelsNames.Any(y => x.channel.Equals(y))).ToList();
+            return _chatMessages.Where(x => chatChannelsNames.Any(y => x.Channel.Equals(y))).ToList();
         }
         
         protected virtual void UpdateMessages() {}

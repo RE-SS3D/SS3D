@@ -20,32 +20,32 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public sealed class InGameChatWindow : ChatWindow, IDragHandler
     {
-        [SerializeField] private bool defaultChat;
-        [SerializeField] private RectTransform tabRow = null;
-        [SerializeField] private ChatTab chatTabPrefab = null;
-        [SerializeField] private TMP_Dropdown channelDropDown = null;
-        [SerializeField] private CanvasGroup canvasGroup = null;
+        [SerializeField] private bool _defaultChat;
+        [SerializeField] private RectTransform _tabRow = null;
+        [SerializeField] private ChatTab _chatTabPrefab = null;
+        [SerializeField] private TMP_Dropdown _channelDropDown = null;
+        [SerializeField] private CanvasGroup _canvasGroup = null;
 
         private readonly List<string> _channelDropdownOptions = new List<string>();
         
         private ChatTabData _currentTabData;
 
-        public CanvasGroup CanvasGroup => canvasGroup;
+        public CanvasGroup CanvasGroup => _canvasGroup;
 
-        public RectTransform GetTabRow() => tabRow;
+        public RectTransform GetTabRow() => _tabRow;
 
-        public int GetTabCount() => tabRow.childCount;
+        public int GetTabCount() => _tabRow.childCount;
         
         protected override ChatChannel GetCurrentChatChannel() => 
-            chatChannels.GetChannels().FirstOrDefault(x => x.name == _channelDropdownOptions[channelDropDown.value]);
+            _chatChannels.GetChannels().FirstOrDefault(x => x.name == _channelDropdownOptions[_channelDropDown.value]);
         
         public void Initialize()
         {
-            if (defaultChat)
+            if (_defaultChat)
             {
                 ChatTabData initialTab = new ChatTabData(
                     "All", 
-                    availableChannels, 
+                    _availableChannels, 
                     false, 
                     null);
                     
@@ -56,7 +56,7 @@ namespace SS3D.Engine.Chat
 
         public void EnableAllTabs()
         {
-            Button[] buttons = tabRow.GetComponentsInChildren<Button>();
+            Button[] buttons = _tabRow.GetComponentsInChildren<Button>();
             foreach (Button button in buttons)
             {
                 button.interactable = true;
@@ -65,34 +65,34 @@ namespace SS3D.Engine.Chat
 
         private void LoadChannelSelector(ChatTabData tabData)
         {
-            channelDropDown.options.Clear();
+            _channelDropDown.options.Clear();
             _channelDropdownOptions.Clear();
             
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
             
-            foreach (string channelName in tabData.channels)
+            foreach (string channelName in tabData.Channels)
             {
-                ChatChannel chatChannel = chatChannels.GetChannels().FirstOrDefault(x => x.name == channelName);
+                ChatChannel chatChannel = _chatChannels.GetChannels().FirstOrDefault(x => x.name == channelName);
                 if (chatChannel != null)
                 {
                     // Checks if player can use tab
-                    if (chatChannel.roleRequiredToUse != ServerRoleTypes.None 
-                        && !permissionSystem.IsAtLeast(playerCkey, chatChannel.roleRequiredToUse))
+                    if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None 
+                        && !permissionSystem.IsAtLeast(playerCkey, chatChannel.RoleRequiredToUse))
                     {
                             continue;
                     }
 
                     string abbreviation = 
-                        !string.IsNullOrEmpty(chatChannel.tabName) 
-                            ? chatChannel.tabName 
-                            : !string.IsNullOrEmpty(chatChannel.abbreviation)
-                                ? chatChannel.abbreviation 
+                        !string.IsNullOrEmpty(chatChannel.TabName) 
+                            ? chatChannel.TabName 
+                            : !string.IsNullOrEmpty(chatChannel.Abbreviation)
+                                ? chatChannel.Abbreviation 
                                 : chatChannel.name;
-                    channelDropDown.options.Add(
+                    _channelDropDown.options.Add(
                         new TMP_Dropdown.OptionData(
-                            $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.color)}>[{abbreviation}]</color>")
+                            $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.Color)}>[{abbreviation}]</color>")
                     );
                     _channelDropdownOptions.Add(channelName);
                 }
@@ -101,7 +101,7 @@ namespace SS3D.Engine.Chat
 
         public ChatTab AddTab(ChatTabData tabData)
         {
-            ChatTab chatTab = Instantiate(chatTabPrefab, tabRow);
+            ChatTab chatTab = Instantiate(_chatTabPrefab, _tabRow);
             chatTab.Init(tabData, this);
             LoadTab(chatTab.GetChatTabData());
 
@@ -119,14 +119,14 @@ namespace SS3D.Engine.Chat
             Button selectedButton = selectedTab.GetComponent<Button>();
             selectedButton.interactable = false;
             LoadTab(selectedTab.GetComponent<ChatTab>().GetChatTabData());
-            channelDropDown.value = 0;
-            channelDropDown.RefreshShownValue();
+            _channelDropDown.value = 0;
+            _channelDropDown.RefreshShownValue();
         }
 
         public Button GetNextTabButton(GameObject selectedTab)
         {
             // Get the next button that isn't the one given
-            Button[] buttons = tabRow.GetComponentsInChildren<Button>();
+            Button[] buttons = _tabRow.GetComponentsInChildren<Button>();
             Button selectedButton = selectedTab.GetComponent<Button>();
             foreach (Button button in buttons)
             {
@@ -146,18 +146,18 @@ namespace SS3D.Engine.Chat
 
         private void LoadTabChatLog(ChatTabData tabData)
         {
-            List<ChatMessage> relevantMessages = GetMessagesInChannels(tabData.channels);
+            List<ChatMessage> relevantMessages = GetMessagesInChannels(tabData.Channels);
             ShowMessages(relevantMessages);
         }
 
         public void LoadTab()
         {
-            if (tabRow.childCount <= 0)
+            if (_tabRow.childCount <= 0)
             {
                 return;
             }
 
-            ChatTab newTab = tabRow.GetChild(0).GetComponent<ChatTab>();
+            ChatTab newTab = _tabRow.GetChild(0).GetComponent<ChatTab>();
 
             if (newTab)
             {
@@ -175,14 +175,14 @@ namespace SS3D.Engine.Chat
         public void CloseTab()
         {
             // If the current tab can't be closed and there are no other tabs, hide the entire window instead.
-            if (!_currentTabData.removable && tabRow.childCount < 2)
+            if (!_currentTabData.Removable && _tabRow.childCount < 2)
             {
                 HideChatWindowUI();
             }
 
-            if (_currentTabData.removable)
+            if (_currentTabData.Removable)
             {
-                if (tabRow.childCount < 2)
+                if (_tabRow.childCount < 2)
                 {
                     // To ensure player always has at least one chat window
                     if (transform.parent.GetComponentsInChildren<InGameChatWindow>().Length < 2)
@@ -195,8 +195,8 @@ namespace SS3D.Engine.Chat
                     return;
                 }
 
-                Button a = GetNextTabButton(_currentTabData.tab.gameObject);
-                _currentTabData.tab.gameObject.Dispose(false);
+                Button a = GetNextTabButton(_currentTabData.Tab.gameObject);
+                _currentTabData.Tab.gameObject.Dispose(false);
                 SelectTab(a.gameObject);
                 StartCoroutine(UpdateCurrentDataTabNextFrame());
             }
@@ -206,9 +206,9 @@ namespace SS3D.Engine.Chat
         {
             yield return null;
 
-            if (tabRow.GetChild(0))
+            if (_tabRow.GetChild(0))
             {
-                LoadTab(tabRow.GetChild(0).GetComponent<ChatTab>().GetChatTabData());
+                LoadTab(_tabRow.GetChild(0).GetComponent<ChatTab>().GetChatTabData());
             }
         }
 
@@ -220,14 +220,14 @@ namespace SS3D.Engine.Chat
 
         public void ShowChatWindowUI()
         {
-            canvasGroup.alpha = 1f;
-            canvasGroup.blocksRaycasts = true;
+            _canvasGroup.alpha = 1f;
+            _canvasGroup.blocksRaycasts = true;
         }
 
         public void HideChatWindowUI()
         {
-            canvasGroup.alpha = 0f;
-            canvasGroup.blocksRaycasts = false;
+            _canvasGroup.alpha = 0f;
+            _canvasGroup.blocksRaycasts = false;
         }
     }
 }

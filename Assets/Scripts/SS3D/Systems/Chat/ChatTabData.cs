@@ -6,17 +6,17 @@ namespace SS3D.Engine.Chat
     [Serializable]
     public struct ChatTabData
     {
-        public string name;
-        public List<string> channels;
-        public bool removable;
-        public ChatTab tab;
+        public string Name;
+        public List<string> Channels;
+        public bool Removable;
+        public ChatTab Tab;
 
         public ChatTabData(string name, List<string> channels, bool removable, ChatTab tabTransform)
         {
-            this.name = name;
-            this.channels = channels;
-            this.removable = removable;
-            tab = tabTransform;
+            Name = name;
+            Channels = channels;
+            Removable = removable;
+            Tab = tabTransform;
         }
     }
 }

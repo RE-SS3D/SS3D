@@ -53,7 +53,7 @@ namespace SS3D.Engine.Chat
             try
             {
                 using StreamWriter writer = new StreamWriter(ChatLogPath, true);
-                writer.WriteLine($"[{msg.channel}] [{msg.sender}] {msg.text}");
+                writer.WriteLine($"[{msg.Channel}] [{msg.Sender}] {msg.Text}");
             }
             catch (Exception e)
             {
@@ -78,32 +78,32 @@ namespace SS3D.Engine.Chat
         {
             ChatMessage chatMessage = new ChatMessage
             {
-                channel = chatChannel.name,
-                text = text,
-                sender = player.Ckey,
+                Channel = chatChannel.name,
+                Text = text,
+                Sender = player.Ckey,
             };
 
             if (player != null)
             {
-                if (chatChannel.distanceBased)
+                if (chatChannel.DistanceBased)
                 {
                     Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
-                    chatMessage.origin = entity.Position;
+                    chatMessage.Origin = entity.Position;
                 }
 
-                if (chatChannel.roleRequiredToUse != ServerRoleTypes.None)
+                if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None)
                 {
                     PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
 
-                    if (!permissionSystem.IsAtLeast(player.Ckey, chatChannel.roleRequiredToUse))
+                    if (!permissionSystem.IsAtLeast(player.Ckey, chatChannel.RoleRequiredToUse))
                     {
                         return;
                     }
                 }
                 
-                if (!chatChannel.canFormatText)
+                if (!chatChannel.CanFormatText)
                 {
-                    chatMessage.text = chatMessage.text.Replace("<", "<nobr><</nobr>");
+                    chatMessage.Text = chatMessage.Text.Replace("<", "<nobr><</nobr>");
                 }
             }
 
@@ -121,9 +121,9 @@ namespace SS3D.Engine.Chat
         {
             ChatMessage chatMessage = new ChatMessage
             {
-                channel = chatChannelName,
-                text = text,
-                sender = "Server",
+                Channel = chatChannelName,
+                Text = text,
+                Sender = "Server",
             };
 
             if (InstanceFinder.IsServer)
@@ -137,9 +137,9 @@ namespace SS3D.Engine.Chat
             OnClientReceiveChatMessage(
                 new ChatMessage
                 {
-                    channel = chatChannelName,
-                    text = text,
-                    sender = "Server",
+                    Channel = chatChannelName,
+                    Text = text,
+                    Sender = "Server",
                 });
         }
     }

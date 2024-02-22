@@ -11,39 +11,39 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public class LobbyChatWindow : ChatWindow
     {
-        [SerializeField] private ChatChannel[] chatChannelsThatAreVisible;
-        [SerializeField] private ChatChannel chatChannelUsedForSendingMessages;
-        [SerializeField] private float welcomeMessageDelayInSeconds;
-        [SerializeField] [TextArea] private string welcomeMessage;
+        [SerializeField] private ChatChannel[] _chatChannelsThatAreVisible;
+        [SerializeField] private ChatChannel _chatChannelUsedForSendingMessages;
+        [SerializeField] private float _welcomeMessageDelayInSeconds;
+        [SerializeField] [TextArea] private string _welcomeMessage;
 
-        protected override ChatChannel GetCurrentChatChannel() => chatChannelUsedForSendingMessages;
+        protected override ChatChannel GetCurrentChatChannel() => _chatChannelUsedForSendingMessages;
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
 
-            availableChannels = chatChannelsThatAreVisible.Select(x => x.name).ToList();
+            _availableChannels = _chatChannelsThatAreVisible.Select(x => x.name).ToList();
             UpdateMessages();
             StartCoroutine(WelcomeMessageDelayed());
         }
 
         private IEnumerator WelcomeMessageDelayed()
         {
-            yield return new WaitForSecondsRealtime(welcomeMessageDelayInSeconds);
+            yield return new WaitForSecondsRealtime(_welcomeMessageDelayInSeconds);
             
-            ChatMessageSender.SendServerMessageToCurrentPlayer(chatChannels.GetChannelForAllChatsSystemMessages.name, welcomeMessage);
+            ChatMessageSender.SendServerMessageToCurrentPlayer(_chatChannels.GetChannelForAllChatsSystemMessages.name, _welcomeMessage);
         }
 
         protected override void HandleSendMessage(InputAction.CallbackContext context)
         {
             base.HandleSendMessage(context);
             
-            inputField.Select();
+            _inputField.Select();
         }
 
         protected override void UpdateMessages()
         {
-            ShowMessages(GetMessagesInChannels(availableChannels));
+            ShowMessages(GetMessagesInChannels(_availableChannels));
         }
     }
 }

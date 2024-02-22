@@ -282,10 +282,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b18134e436ce47719d88cc1f13a46a36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chatWindowPrefab: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
-  text: {fileID: 5640277009816019503}
-  data:
-    name: 
-    channels: []
-    removable: 0
-    tab: {fileID: 0}
+  _inGameChatWindowPrefab: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
+  _text: {fileID: 5640277009816019503}
+  _data:
+    Name: 
+    Channels: []
+    Removable: 0
+    Tab: {fileID: 0}

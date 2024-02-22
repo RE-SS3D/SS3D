@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90d49caecbaa4c61a42d7ee4434b3035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chatWindowsContainer: {fileID: 3810371244597919609}
+  _chatWindowsContainer: {fileID: 3810371244597919609}
 --- !u!1 &2953822347573922298
 GameObject:
   m_ObjectHideFlags: 0
@@ -2372,6 +2372,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
       propertyPath: defaultChat
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
+      propertyPath: _defaultChat
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}

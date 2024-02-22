@@ -12,6 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2d6eaeb9ae4b9f85a3ab7c93c2a1bb, type: 3}
   m_Name: AI
   m_EditorClassIdentifier: 
-  abbreviation: AI
-  color: {r: 1, g: 0.33333334, b: 1, a: 1}
-  hidable: 1
+  Abbreviation: AI
+  TabName: 
+  Color: {r: 1, g: 0.33333334, b: 1, a: 1}
+  Hidable: 1
+  RoleRequiredToUse: 0
+  CanFormatText: 0
+  DistanceBased: 0
+  MaxDistance: 0
+  Prefix: 
+  Suffix: 
+  HideSenderName: 0
+  RequiredTraitInHeadset: {fileID: 0}

@@ -12,19 +12,19 @@ namespace SS3D.Engine.Chat
 {
     public sealed class InGameChatController : NetworkActor
     {
-        [SerializeField] private ChatChannels chatChannels;
-        [SerializeField] private HumanInventory humanInventory;
+        [SerializeField] private ChatChannels _chatChannels;
+        [SerializeField] private HumanInventory _humanInventory;
         
         [SyncObject]
         public readonly SyncList<string> AvailableChannels = new SyncList<string>();
 
         protected override void OnAwake()
         {
-            List<string> initialAvailableChannels = chatChannels
+            List<string> initialAvailableChannels = _chatChannels
                 .GetChannels()
                 .Where(x => 
-                    !x.hidable
-                    || x.requiredTraitInHeadset == null
+                    !x.Hidable
+                    || x.RequiredTraitInHeadset == null
                     || HasHeadsetForChatChannel(x))
                 .Select(x => x.name)
                 .ToList();
@@ -45,17 +45,17 @@ namespace SS3D.Engine.Chat
             }
             
             InGameChatWindow inGameChatWindow = ViewLocator.Get<InGameChatWindow>().First();
-            inGameChatWindow.availableChannels = AvailableChannels.ToList();
+            inGameChatWindow._availableChannels = AvailableChannels.ToList();
             inGameChatWindow.Initialize();
             
-            AvailableChannels.OnChange += (_, _, _, _, _) => { inGameChatWindow.availableChannels = AvailableChannels.ToList(); };
+            AvailableChannels.OnChange += (_, _, _, _, _) => { inGameChatWindow._availableChannels = AvailableChannels.ToList(); };
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             
-            humanInventory.OnContainerContentChanged += OnInventoryItemsUpdated;
+            _humanInventory.OnContainerContentChanged += OnInventoryItemsUpdated;
         }
         
         [Server]
@@ -87,11 +87,11 @@ namespace SS3D.Engine.Chat
 
         [Server]
         private List<string> GetListOfAvailableChannels() => 
-            chatChannels
+            _chatChannels
                 .GetChannels()
                 .Where(x => 
-                    !x.hidable
-                    || x.requiredTraitInHeadset == null
+                    !x.Hidable
+                    || x.RequiredTraitInHeadset == null
                     || HasHeadsetForChatChannel(x))
                 .Select(x => x.name)
                 .ToList();
@@ -99,19 +99,19 @@ namespace SS3D.Engine.Chat
         [Server]
         private bool HasHeadsetForChatChannel(ChatChannel chatChannel)
         {
-            if (humanInventory == null)
+            if (_humanInventory == null)
             {
                 return false;
             }
 
-            if (humanInventory.TryGetTypeContainer(ContainerType.EarLeft, 0, out AttachedContainer earLeftContainer)
-                && earLeftContainer.Items.Any(x => x.HasTrait(chatChannel.requiredTraitInHeadset)))
+            if (_humanInventory.TryGetTypeContainer(ContainerType.EarLeft, 0, out AttachedContainer earLeftContainer)
+                && earLeftContainer.Items.Any(x => x.HasTrait(chatChannel.RequiredTraitInHeadset)))
             {
                 return true;
             }
 
-            if (humanInventory.TryGetTypeContainer(ContainerType.EarRight, 0, out AttachedContainer earRightContainer)
-                && earRightContainer.Items.Any(x => x.HasTrait(chatChannel.requiredTraitInHeadset)))
+            if (_humanInventory.TryGetTypeContainer(ContainerType.EarRight, 0, out AttachedContainer earRightContainer)
+                && earRightContainer.Items.Any(x => x.HasTrait(chatChannel.RequiredTraitInHeadset)))
             {
                 return true;
             }

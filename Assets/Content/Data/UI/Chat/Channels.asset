@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df12eddc03ad45cd9a7628f3caf4b5ce, type: 3}
   m_Name: Channels
   m_EditorClassIdentifier: 
-  channels:
+  _channels:
   - {fileID: 11400000, guid: 9cf83e6d190541b4f82b84de530639dd, type: 2}
   - {fileID: 11400000, guid: f1d8f919b4075c24f8be32586f73abbb, type: 2}
   - {fileID: 11400000, guid: 694967c72a06ee44081d595de21c885e, type: 2}
@@ -29,5 +29,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 80bd652e9f7cee141a0434e3fe9c19d7, type: 2}
   - {fileID: 11400000, guid: 1ddc3674379576142b10b84ada130723, type: 2}
   - {fileID: 11400000, guid: 56d6c77c339c8134bb7e32bffa05f5d3, type: 2}
-  channelForAllChatsSystemMessages: {fileID: 11400000, guid: 9cf83e6d190541b4f82b84de530639dd, type: 2}
-  channelForInGameChatSystemMessages: {fileID: 11400000, guid: 56d6c77c339c8134bb7e32bffa05f5d3, type: 2}
+  _channelForAllChatsSystemMessages: {fileID: 11400000, guid: 9cf83e6d190541b4f82b84de530639dd, type: 2}
+  _channelForInGameChatSystemMessages: {fileID: 11400000, guid: 56d6c77c339c8134bb7e32bffa05f5d3, type: 2}

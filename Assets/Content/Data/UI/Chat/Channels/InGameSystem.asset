@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2d6eaeb9ae4b9f85a3ab7c93c2a1bb, type: 3}
   m_Name: InGameSystem
   m_EditorClassIdentifier: 
-  abbreviation: 
-  tabName: IGS
-  color: {r: 1, g: 0, b: 0.019583702, a: 1}
-  hidable: 0
-  roleRequiredToUse: 3
-  canFormatText: 1
-  distanceBased: 0
-  maxDistance: 0
-  prefix: 
-  suffix: 
-  hideSenderName: 1
-  requiredTraitInHeadset: {fileID: 0}
+  Abbreviation: 
+  TabName: IGS
+  Color: {r: 1, g: 0, b: 0.019583702, a: 1}
+  Hidable: 0
+  RoleRequiredToUse: 3
+  CanFormatText: 1
+  DistanceBased: 0
+  MaxDistance: 0
+  Prefix: 
+  Suffix: 
+  HideSenderName: 1
+  RequiredTraitInHeadset: {fileID: 0}

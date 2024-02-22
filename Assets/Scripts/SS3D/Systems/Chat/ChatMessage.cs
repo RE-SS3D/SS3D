@@ -7,9 +7,9 @@ namespace SS3D.Engine.Chat
     [Serializable]
     public struct ChatMessage : IBroadcast
     {
-        public string sender;
-        public string text;
-        public string channel;
-        public Vector3 origin;
+        public string Sender;
+        public string Text;
+        public string Channel;
+        public Vector3 Origin;
     }
 }
