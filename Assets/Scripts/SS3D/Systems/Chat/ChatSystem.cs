@@ -19,7 +19,8 @@ namespace SS3D.Engine.Chat
         private readonly List<ChatWindow> _chatWindows = new List<ChatWindow>();
         private string _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
         
-        public static Dictionary<string, ChatChannel> RegisteredChatChannels;
+        public readonly Dictionary<string, ChatChannel> RegisteredChatChannels = new Dictionary<string, ChatChannel>();
+        public Action<ChatMessage> OnMessageReceived; 
 
         public override void OnStartNetwork()
         {
@@ -63,17 +64,14 @@ namespace SS3D.Engine.Chat
             }
         }
 
-        private void OnClientReceiveChatMessage(ChatMessage msg)
+        private void OnClientReceiveChatMessage(ChatMessage message)
         {
             if (InstanceFinder.IsServer)
             {
-                AddMessageToServerChatLog(msg);
+                AddMessageToServerChatLog(message);
             }
-            
-            foreach (ChatWindow chatWindow in _chatWindows)
-            {
-                chatWindow.OnClientReceiveChatMessage(msg);
-            }
+
+            OnMessageReceived?.Invoke(message);
         }
         
         public void SendPlayerMessage([NotNull] ChatChannel chatChannel, string text, Player player)

@@ -34,10 +34,10 @@ namespace SS3D.Engine.Chat
         public RectTransform GetTabRow() => _tabRow;
 
         public int GetTabCount() => _tabRow.childCount;
-        
+
         protected override ChatChannel GetCurrentChatChannel() => 
-            ChatSystem.RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
-        
+            Subsystems.Get<ChatSystem>().RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
+
         public void InitializeWithAllAvailableChannels()
         {
             ChatTabData initialTab = new ChatTabData(
@@ -67,17 +67,18 @@ namespace SS3D.Engine.Chat
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
+            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
             
             foreach (string channelName in tabData.Channels)
             {
-                ChatChannel chatChannel = ChatSystem.RegisteredChatChannels[channelName];
+                ChatChannel chatChannel = chatSystem.RegisteredChatChannels[channelName];
                 if (chatChannel != null)
                 {
                     // Checks if player can use tab
                     if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None 
                         && !permissionSystem.IsAtLeast(playerCkey, chatChannel.RoleRequiredToUse))
                     {
-                            continue;
+                        continue;
                     }
 
                     string tabName;

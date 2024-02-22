@@ -32,12 +32,10 @@ namespace SS3D.Engine.Chat
         private IEnumerator WelcomeMessageDelayed()
         {
             yield return new WaitForSecondsRealtime(_welcomeMessageDelayInSeconds);
-
-            if (Subsystems.TryGet(out ChatSystem chatSystem))
-            {
-                ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
-                chatSystem.SendServerMessageToCurrentPlayer(chatChannels.allSystemMessagesChannel.name, _welcomeMessage);
-            }
+            
+            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+            chatSystem.SendServerMessageToCurrentPlayer(chatChannels.allSystemMessagesChannel.name, _welcomeMessage);
         }
 
         protected override void HandleSendMessage(InputAction.CallbackContext context)

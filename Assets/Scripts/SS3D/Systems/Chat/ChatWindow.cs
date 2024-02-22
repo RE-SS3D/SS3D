@@ -46,11 +46,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed += HandleSendMessage;
-
-            if (Subsystems.TryGet(out ChatSystem chatSystem))
-            {
-                chatSystem.RegisterChatWindow(this);
-            }
+            Subsystems.Get<ChatSystem>().OnMessageReceived += OnClientReceiveChatMessage;
         }
 
         protected override void OnDisabled()
@@ -58,11 +54,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed -= HandleSendMessage;
-
-            if (Subsystems.TryGet(out ChatSystem chatSystem))
-            {
-                chatSystem.UnregisterChatWindow(this);
-            }
+            Subsystems.Get<ChatSystem>().OnMessageReceived -= OnClientReceiveChatMessage;
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -82,11 +74,6 @@ namespace SS3D.Engine.Chat
 
         public void SendMessage()
         {
-            if (!Subsystems.TryGet(out ChatSystem chatSystem))
-            {
-                return;
-            }
-            
             string text = _inputField.text;
             if (text.Length <= 0)
             {
@@ -95,16 +82,12 @@ namespace SS3D.Engine.Chat
             
             _inputField.text = "";
             
-            ChatChannel chatChannel = GetCurrentChatChannel();
-            if (chatChannel == null)
-            {
-                return;
-            }
-            
             PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             Player player = playerSystem.GetPlayer(playerCkey);
-
+            ChatChannel chatChannel = GetCurrentChatChannel();
+            
             if (AvailableChannels.Contains(chatChannel.name))
             {
                 chatSystem.SendPlayerMessage(chatChannel, text, player);
@@ -136,7 +119,8 @@ namespace SS3D.Engine.Chat
                 return;
             }
             
-            ChatChannel channel = ChatSystem.RegisteredChatChannels[message.Channel];
+            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+            ChatChannel channel = chatSystem.RegisteredChatChannels[message.Channel];
             if (channel.DistanceBased)
             {
                 PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
