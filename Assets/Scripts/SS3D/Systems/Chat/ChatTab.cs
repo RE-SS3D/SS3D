@@ -169,9 +169,12 @@ namespace SS3D.Engine.Chat
                 if (_inGameChatWindow.GetTabCount() > 1)
                 {
                     InGameChatWindow newInGameChatWindow = Instantiate(_inGameChatWindowPrefab).GetComponent<InGameChatWindow>();
-                    newInGameChatWindow.transform.SetParent(_inGameChatWindow.transform.parent);
-                    newInGameChatWindow.transform.position = Input.mousePosition;
-                    newInGameChatWindow.transform.localScale = _inGameChatWindow.transform.localScale;
+                    Transform newInGameChatWindowTransform = newInGameChatWindow.transform;
+                    Transform previousInGameChatWindowTransform = _inGameChatWindow.transform;
+                    
+                    newInGameChatWindowTransform.SetParent(previousInGameChatWindowTransform.parent);
+                    newInGameChatWindowTransform.position = Input.mousePosition;
+                    newInGameChatWindowTransform.localScale = previousInGameChatWindowTransform.localScale;
                     newInGameChatWindow.gameObject.SetActive(true);
                     newInGameChatWindow.AddTab(_chatTabData);
                     Button a = _inGameChatWindow.GetNextTabButton(gameObject);
