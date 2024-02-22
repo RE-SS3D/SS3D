@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: InGameSystem
   m_EditorClassIdentifier: 
   abbreviation: 
+  tabName: IGS
   color: {r: 1, g: 0, b: 0.019583702, a: 1}
   hidable: 0
   roleRequiredToUse: 3
@@ -22,3 +23,4 @@ MonoBehaviour:
   prefix: 
   suffix: 
   hideSenderName: 1
+  requiredTraitInHeadset: {fileID: 0}

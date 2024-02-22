@@ -54,9 +54,6 @@ namespace SS3D.Engine.Chat
             }
         }
 
-        /// <summary>
-        /// Enables all tabs to be interactable.
-        /// </summary>
         public void EnableAllTabs()
         {
             Button[] buttons = tabRow.GetComponentsInChildren<Button>();
@@ -87,7 +84,12 @@ namespace SS3D.Engine.Chat
                             continue;
                     }
 
-                    string abbreviation = !string.IsNullOrEmpty(chatChannel.abbreviation) ? chatChannel.abbreviation : chatChannel.name;
+                    string abbreviation = 
+                        !string.IsNullOrEmpty(chatChannel.tabName) 
+                            ? chatChannel.tabName 
+                            : !string.IsNullOrEmpty(chatChannel.abbreviation)
+                                ? chatChannel.abbreviation 
+                                : chatChannel.name;
                     channelDropDown.options.Add(
                         new TMP_Dropdown.OptionData(
                             $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.color)}>[{abbreviation}]</color>")
