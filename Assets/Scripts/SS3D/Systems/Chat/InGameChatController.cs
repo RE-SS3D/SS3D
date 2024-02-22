@@ -48,7 +48,7 @@ namespace SS3D.Engine.Chat
             inGameChatWindow.AvailableChannels = AvailableChannels.ToList();
             inGameChatWindow.Initialize();
             
-            AvailableChannels.OnChange += (_, _, _, _, _) => { inGameChatWindow.AvailableChannels = AvailableChannels.ToList(); };
+            AvailableChannels.OnChange += OnAvailableChannelsChanged;
         }
 
         public override void OnStartServer()
@@ -56,6 +56,12 @@ namespace SS3D.Engine.Chat
             base.OnStartServer();
             
             _humanInventory.OnContainerContentChanged += OnInventoryItemsUpdated;
+        }
+
+        [Client]
+        private void OnAvailableChannelsChanged(SyncListOperation operation, int index, string oldItem, string newItem, bool asServer)
+        {
+            ViewLocator.Get<InGameChatWindow>().First().AvailableChannels = AvailableChannels.ToList();
         }
         
         [Server]
