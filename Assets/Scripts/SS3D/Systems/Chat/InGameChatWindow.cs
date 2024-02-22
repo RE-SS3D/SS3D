@@ -37,7 +37,7 @@ namespace SS3D.Engine.Chat
         public int GetTabCount() => _tabRow.childCount;
         
         protected override ChatChannel GetCurrentChatChannel() => 
-            _chatChannels.GetChannels().FirstOrDefault(x => x.name == _channelDropdownOptions[_channelDropDown.value]);
+            ChatSystem.RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
         
         public void Initialize()
         {
@@ -74,7 +74,7 @@ namespace SS3D.Engine.Chat
             
             foreach (string channelName in tabData.Channels)
             {
-                ChatChannel chatChannel = _chatChannels.GetChannels().FirstOrDefault(x => x.name == channelName);
+                ChatChannel chatChannel = ChatSystem.RegisteredChatChannels[channelName];
                 if (chatChannel != null)
                 {
                     // Checks if player can use tab

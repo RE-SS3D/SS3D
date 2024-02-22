@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using Coimbra;
+using SS3D.Core;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -34,7 +35,8 @@ namespace SS3D.Engine.Chat
 
             if (Subsystems.TryGet(out ChatSystem chatSystem))
             {
-                chatSystem.SendServerMessageToCurrentPlayer(_chatChannels.GetChannelForAllChatsSystemMessages.name, _welcomeMessage);
+                ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+                chatSystem.SendServerMessageToCurrentPlayer(chatChannels.allSystemMessagesChannel.name, _welcomeMessage);
             }
         }
 

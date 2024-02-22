@@ -1,4 +1,5 @@
-﻿using FishNet.Object;
+﻿using Coimbra;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -12,7 +13,6 @@ namespace SS3D.Engine.Chat
 {
     public sealed class InGameChatController : NetworkActor
     {
-        [SerializeField] private ChatChannels _chatChannels;
         [SerializeField] private HumanInventory _humanInventory;
         
         [SyncObject]
@@ -20,8 +20,9 @@ namespace SS3D.Engine.Chat
 
         protected override void OnAwake()
         {
-            List<string> initialAvailableChannels = _chatChannels
-                .GetChannels()
+            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+            List<string> initialAvailableChannels = 
+                chatChannels.allChannels
                 .Where(x => 
                     !x.Hidable
                     || x.RequiredTraitInHeadset == null
@@ -93,8 +94,7 @@ namespace SS3D.Engine.Chat
 
         [Server]
         private List<string> GetListOfAvailableChannels() => 
-            _chatChannels
-                .GetChannels()
+            ScriptableSettings.GetOrFind<ChatChannels>().allChannels
                 .Where(x => 
                     !x.Hidable
                     || x.RequiredTraitInHeadset == null

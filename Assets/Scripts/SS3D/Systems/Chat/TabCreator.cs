@@ -11,7 +11,6 @@ namespace SS3D.Engine.Chat
         [SerializeField] private TMP_InputField _tabNameField = null;
         [SerializeField] private ChatFilterOptionToggleUI _optionToggleUIPrefab = null;
         [SerializeField] private RectTransform _optionContainer = null;
-        [SerializeField] private ChatChannels _chatChannels = null;
         [SerializeField] private InGameChatWindow _inGameChatWindow = null;
 
         private readonly List<ChatFilterOptionToggleUI> _options = new List<ChatFilterOptionToggleUI>();
@@ -25,10 +24,12 @@ namespace SS3D.Engine.Chat
 
             _options.Clear();
 
-            List<ChatChannel> availableChannelsToChoose = _chatChannels
-                .GetHidable()
-                .Where(chatChannel => _inGameChatWindow.AvailableChannels.Contains(chatChannel.name))
-                .ToList();
+            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+            List<ChatChannel> availableChannelsToChoose = 
+                chatChannels
+                    .GetHidableChannels()
+                    .Where(chatChannel => _inGameChatWindow.AvailableChannels.Contains(chatChannel.name))
+                    .ToList();
             foreach (ChatChannel channel in availableChannelsToChoose)
             {
                 ChatFilterOptionToggleUI optionToggleUI = Instantiate(_optionToggleUIPrefab, _optionContainer);
@@ -60,7 +61,8 @@ namespace SS3D.Engine.Chat
                 }
             }
         
-            foreach (ChatChannel channel in _chatChannels.GetUnhidable())
+            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+            foreach (ChatChannel channel in chatChannels.GetUnhidableChannels())
             {
                 channels.Add(channel.name);
             }

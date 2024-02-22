@@ -1,4 +1,5 @@
-﻿using FishNet;
+﻿using Coimbra;
+using FishNet;
 using FishNet.Connection;
 using JetBrains.Annotations;
 using SS3D.Core;
@@ -9,14 +10,11 @@ using SS3D.Systems.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace SS3D.Engine.Chat
 {
     public class ChatSystem : NetworkSystem
     {
-        [SerializeField] private ChatChannels _chatChannels;
-        
         private const string ChatLogFolderName = "Chat";
         private readonly List<ChatWindow> _chatWindows = new List<ChatWindow>();
         private string _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
@@ -27,7 +25,8 @@ namespace SS3D.Engine.Chat
         {
             _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
 
-            foreach (ChatChannel chatChannel in _chatChannels.GetChannels())
+            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+            foreach (ChatChannel chatChannel in chatChannels.allChannels)
             {
                 RegisteredChatChannels.Add(chatChannel.name, chatChannel);
             }

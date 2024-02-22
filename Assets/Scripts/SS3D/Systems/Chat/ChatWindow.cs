@@ -1,4 +1,5 @@
-﻿using FishNet;
+﻿using Coimbra;
+using FishNet;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
@@ -20,7 +21,6 @@ namespace SS3D.Engine.Chat
     /// </summary>
     public abstract class ChatWindow : View, IPointerEnterHandler, IPointerExitHandler
     {
-        [SerializeField] protected ChatChannels _chatChannels = null;
         [SerializeField] protected TMP_InputField _inputField = null;
         [SerializeField] private TextMeshProUGUI _chatText = null;
         
@@ -112,8 +112,9 @@ namespace SS3D.Engine.Chat
             }
             else
             {
+                ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
                 chatSystem.SendServerMessageToCurrentPlayer(
-                    _chatChannels.GetChannelForInGameChatSystemMessages.name, 
+                    chatChannels.inGameSystemMessagesChannel.name, 
                     $"[UNAUTHORIZED ACCESS TO {chatChannel.name} CHANNEL]");
             }
         }
@@ -136,7 +137,7 @@ namespace SS3D.Engine.Chat
                 return;
             }
             
-            ChatChannel channel = _chatChannels.GetChannels().First(x => x.name == message.Channel);
+            ChatChannel channel = ChatSystem.RegisteredChatChannels[message.Channel];
             if (channel.DistanceBased)
             {
                 PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
