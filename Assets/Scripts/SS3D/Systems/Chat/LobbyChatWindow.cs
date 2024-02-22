@@ -7,7 +7,7 @@ namespace SS3D.Engine.Chat
 {
     /// <summary>
     /// Behaviour responsible for handling chat UI from the lobby.
-    /// Should be attached to the lobby chat UI prefab.
+    /// Should be attached to the lobby UI.
     /// </summary>
     public class LobbyChatWindow : ChatWindow
     {
@@ -43,7 +43,7 @@ namespace SS3D.Engine.Chat
 
         protected override void UpdateMessages()
         {
-            ShowMessages(GetMessagesInChannels(chatChannelsThatAreVisible.Select(x => x.name).ToList()));
+            ShowMessages(GetMessagesInChannels(availableChannels));
         }
     }
 }

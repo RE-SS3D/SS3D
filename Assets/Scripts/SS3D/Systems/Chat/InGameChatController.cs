@@ -1,4 +1,6 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
@@ -13,6 +15,26 @@ namespace SS3D.Engine.Chat
         [SerializeField] private ChatChannels chatChannels;
         [SerializeField] private HumanInventory humanInventory;
         
+        [SyncObject]
+        public readonly SyncList<string> AvailableChannels = new SyncList<string>();
+
+        protected override void OnAwake()
+        {
+            List<string> initialAvailableChannels = chatChannels
+                .GetChannels()
+                .Where(x => 
+                    !x.hidable
+                    || x.requiredTraitInHeadset == null
+                    || HasHeadsetForChatChannel(x))
+                .Select(x => x.name)
+                .ToList();
+
+            foreach (string initialAvailableChannel in initialAvailableChannels)
+            {
+                AvailableChannels.Add(initialAvailableChannel);
+            }
+        }
+        
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -23,12 +45,20 @@ namespace SS3D.Engine.Chat
             }
             
             InGameChatWindow inGameChatWindow = ViewLocator.Get<InGameChatWindow>().First();
-            inGameChatWindow.availableChannels = GetListOfAvailableChatChannels();
+            inGameChatWindow.availableChannels = AvailableChannels.ToList();
             inGameChatWindow.Initialize();
-
-            humanInventory.OnContainerContentChanged += OnInventoryItemsUpdated;
+            
+            AvailableChannels.OnChange += (_, _, _, _, _) => { inGameChatWindow.availableChannels = AvailableChannels.ToList(); };
         }
 
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            
+            humanInventory.OnContainerContentChanged += OnInventoryItemsUpdated;
+        }
+        
+        [Server]
         private void OnInventoryItemsUpdated(AttachedContainer container, Item oldItem, Item newItem, ContainerChangeType type)
         {
             if (container.ContainerType is not (ContainerType.EarLeft or ContainerType.EarRight))
@@ -36,10 +66,27 @@ namespace SS3D.Engine.Chat
                 return;
             }
 
-            ViewLocator.Get<InGameChatWindow>().First().availableChannels = GetListOfAvailableChatChannels();
+            List<string> newAvailableChannels = GetListOfAvailableChannels();
+
+            foreach (string currentAvailableChannel in AvailableChannels)
+            {
+                if (!newAvailableChannels.Contains(currentAvailableChannel))
+                {
+                    AvailableChannels.Remove(currentAvailableChannel);
+                }
+            }
+
+            foreach (string newAvailableChannel in newAvailableChannels)
+            {
+                if (!AvailableChannels.Contains(newAvailableChannel))
+                {
+                    AvailableChannels.Add(newAvailableChannel);
+                }
+            }
         }
 
-        private List<string> GetListOfAvailableChatChannels() => 
+        [Server]
+        private List<string> GetListOfAvailableChannels() => 
             chatChannels
                 .GetChannels()
                 .Where(x => 
@@ -49,6 +96,7 @@ namespace SS3D.Engine.Chat
                 .Select(x => x.name)
                 .ToList();
 
+        [Server]
         private bool HasHeadsetForChatChannel(ChatChannel chatChannel)
         {
             if (humanInventory == null)
