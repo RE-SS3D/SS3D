@@ -24,7 +24,7 @@ namespace SS3D.Engine.Chat
         [SerializeField] protected TMP_InputField _inputField = null;
         [SerializeField] private TextMeshProUGUI _chatText = null;
         
-        [HideInInspector] public List<string> _availableChannels = new List<string>();
+        [HideInInspector] public List<string> AvailableChannels = new List<string>();
         
         private readonly List<ChatMessage> _chatMessages = new List<ChatMessage>();
         
@@ -94,7 +94,7 @@ namespace SS3D.Engine.Chat
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             Player player = playerSystem.GetPlayer(playerCkey);
 
-            if (_availableChannels.Contains(chatChannel.name))
+            if (AvailableChannels.Contains(chatChannel.name))
             {
                 ChatMessageSender.SendPlayerMessage(chatChannel, text, player);
             }
@@ -137,7 +137,7 @@ namespace SS3D.Engine.Chat
 
         public void OnClientReceiveChatMessage(ChatMessage msg)
         {
-            if (!_availableChannels.Contains(msg.Channel))
+            if (!AvailableChannels.Contains(msg.Channel))
             {
                 return;
             }

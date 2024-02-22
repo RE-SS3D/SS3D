@@ -27,7 +27,7 @@ namespace SS3D.Engine.Chat
 
             List<ChatChannel> availableChannelsToChoose = _chatChannels
                 .GetHidable()
-                .Where(chatChannel => _inGameChatWindow._availableChannels.Contains(chatChannel.name))
+                .Where(chatChannel => _inGameChatWindow.AvailableChannels.Contains(chatChannel.name))
                 .ToList();
             foreach (ChatChannel channel in availableChannelsToChoose)
             {
@@ -54,7 +54,7 @@ namespace SS3D.Engine.Chat
                 .Select(option => option.TickedChannel()?.name)
                 .Where(chatChannel => 
                     chatChannel != null
-                    && _inGameChatWindow._availableChannels.Contains(chatChannel))
+                    && _inGameChatWindow.AvailableChannels.Contains(chatChannel))
                 .ToList();
         
             foreach (ChatChannel channel in _chatChannels.GetUnhidable())

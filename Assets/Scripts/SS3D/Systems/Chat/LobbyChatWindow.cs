@@ -22,7 +22,7 @@ namespace SS3D.Engine.Chat
         {
             base.OnEnabled();
 
-            _availableChannels = _chatChannelsThatAreVisible.Select(x => x.name).ToList();
+            AvailableChannels = _chatChannelsThatAreVisible.Select(x => x.name).ToList();
             UpdateMessages();
             StartCoroutine(WelcomeMessageDelayed());
         }
@@ -43,7 +43,7 @@ namespace SS3D.Engine.Chat
 
         protected override void UpdateMessages()
         {
-            ShowMessages(GetMessagesInChannels(_availableChannels));
+            ShowMessages(GetMessagesInChannels(AvailableChannels));
         }
     }
 }

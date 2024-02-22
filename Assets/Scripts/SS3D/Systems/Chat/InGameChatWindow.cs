@@ -45,7 +45,7 @@ namespace SS3D.Engine.Chat
             {
                 ChatTabData initialTab = new ChatTabData(
                     "All", 
-                    _availableChannels, 
+                    AvailableChannels, 
                     false, 
                     null);
                     

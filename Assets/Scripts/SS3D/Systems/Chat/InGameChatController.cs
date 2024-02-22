@@ -45,10 +45,10 @@ namespace SS3D.Engine.Chat
             }
             
             InGameChatWindow inGameChatWindow = ViewLocator.Get<InGameChatWindow>().First();
-            inGameChatWindow._availableChannels = AvailableChannels.ToList();
+            inGameChatWindow.AvailableChannels = AvailableChannels.ToList();
             inGameChatWindow.Initialize();
             
-            AvailableChannels.OnChange += (_, _, _, _, _) => { inGameChatWindow._availableChannels = AvailableChannels.ToList(); };
+            AvailableChannels.OnChange += (_, _, _, _, _) => { inGameChatWindow.AvailableChannels = AvailableChannels.ToList(); };
         }
 
         public override void OnStartServer()
