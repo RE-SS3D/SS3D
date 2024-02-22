@@ -177,9 +177,10 @@ namespace SS3D.Engine.Chat
                     newInGameChatWindowTransform.localScale = previousInGameChatWindowTransform.localScale;
                     newInGameChatWindow.gameObject.SetActive(true);
                     newInGameChatWindow.AddTab(_chatTabData);
-                    Button a = _inGameChatWindow.GetNextTabButton(gameObject);
+                    
+                    Button nextTabButton = _inGameChatWindow.GetNextTabButton(gameObject);
                     gameObject.Dispose(false);
-                    _inGameChatWindow.SelectTab(a.gameObject);
+                    _inGameChatWindow.SelectTab(nextTabButton.gameObject);
 
                     return;
                 }
