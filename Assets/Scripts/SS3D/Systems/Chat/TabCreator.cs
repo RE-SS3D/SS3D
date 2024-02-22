@@ -9,12 +9,12 @@ namespace SS3D.Engine.Chat
     public class TabCreator : MonoBehaviour
     {
         [SerializeField] private TMP_InputField _tabNameField = null;
-        [SerializeField] private ChatFilterOption _optionPrefab = null;
+        [SerializeField] private ChatFilterOptionToggleUI _optionToggleUIPrefab = null;
         [SerializeField] private RectTransform _optionContainer = null;
         [SerializeField] private ChatChannels _chatChannels = null;
         [SerializeField] private InGameChatWindow _inGameChatWindow = null;
 
-        private readonly List<ChatFilterOption> _options = new List<ChatFilterOption>();
+        private readonly List<ChatFilterOptionToggleUI> _options = new List<ChatFilterOptionToggleUI>();
 
         private void OnEnable()
         {
@@ -31,9 +31,9 @@ namespace SS3D.Engine.Chat
                 .ToList();
             foreach (ChatChannel channel in availableChannelsToChoose)
             {
-                ChatFilterOption option = Instantiate(_optionPrefab, _optionContainer);
-                option.Setup(channel);
-                _options.Add(option);
+                ChatFilterOptionToggleUI optionToggleUI = Instantiate(_optionToggleUIPrefab, _optionContainer);
+                optionToggleUI.Setup(channel);
+                _options.Add(optionToggleUI);
             }
         }
 
@@ -50,12 +50,15 @@ namespace SS3D.Engine.Chat
                 _tabNameField.text = "Honk!";
             }
 
-            List<string> channels = _options
-                .Select(option => option.TickedChannel()?.name)
-                .Where(chatChannel => 
-                    chatChannel != null
-                    && _inGameChatWindow.AvailableChannels.Contains(chatChannel))
-                .ToList();
+            List<string> channels = new List<string>();
+            foreach (ChatFilterOptionToggleUI option in _options)
+            {
+                if (option.TryGetTickedChannel(out ChatChannel chatChannel)
+                && _inGameChatWindow.AvailableChannels.Contains(chatChannel.name))
+                {
+                    channels.Add(chatChannel.name);
+                }
+            }
         
             foreach (ChatChannel channel in _chatChannels.GetUnhidable())
             {
