@@ -40,7 +40,6 @@ namespace SS3D.Engine.Chat
             
             _inputSystem = Subsystems.Get<InputSystem>();
             _controls = _inputSystem.Inputs.Other;
-            ChatMessageSender.InitializeIfNeeded();
         }
 
         protected override void OnEnabled()
@@ -48,7 +47,11 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed += HandleSendMessage;
-            ChatMessageSender.RegisterChatWindow(this);
+
+            if (Subsystems.TryGet(out ChatSystem chatSystem))
+            {
+                chatSystem.RegisterChatWindow(this);
+            }
         }
 
         protected override void OnDisabled()
@@ -56,7 +59,11 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed -= HandleSendMessage;
-            ChatMessageSender.UnregisterChatWindow(this);
+
+            if (Subsystems.TryGet(out ChatSystem chatSystem))
+            {
+                chatSystem.UnregisterChatWindow(this);
+            }
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -76,6 +83,11 @@ namespace SS3D.Engine.Chat
 
         public void SendMessage()
         {
+            if (!Subsystems.TryGet(out ChatSystem chatSystem))
+            {
+                return;
+            }
+            
             string text = _inputField.text;
             if (text.Length <= 0)
             {
@@ -96,11 +108,11 @@ namespace SS3D.Engine.Chat
 
             if (AvailableChannels.Contains(chatChannel.name))
             {
-                ChatMessageSender.SendPlayerMessage(chatChannel, text, player);
+                chatSystem.SendPlayerMessage(chatChannel, text, player);
             }
             else
             {
-                ChatMessageSender.SendServerMessageToCurrentPlayer(
+                chatSystem.SendServerMessageToCurrentPlayer(
                     _chatChannels.GetChannelForInGameChatSystemMessages.name, 
                     $"[UNAUTHORIZED ACCESS TO {chatChannel.name} CHANNEL]");
             }

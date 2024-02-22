@@ -2,6 +2,7 @@
 using FishNet.Connection;
 using JetBrains.Annotations;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
@@ -11,70 +12,62 @@ using System.IO;
 
 namespace SS3D.Engine.Chat
 {
-    public static class ChatMessageSender
+    public class ChatSystem : NetworkSystem
     {
         private const string ChatLogFolderName = "Chat";
-        
-        private static readonly string ChatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
-        private static readonly List<ChatWindow> ChatWindows = new List<ChatWindow>();
-        
-        private static bool Initialized;
+        private readonly List<ChatWindow> _chatWindows = new List<ChatWindow>();
+        private string _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
 
-        public static void InitializeIfNeeded()
+        public override void OnStartNetwork()
         {
-            if (Initialized)
-            {
-                return;
-            }
+            _chatLogPath = $"{UnityEngine.Application.dataPath}/../Logs/{ChatLogFolderName}.txt";
             
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
             InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);
-            
-            Initialized = true;
         }
 
-        public static void RegisterChatWindow(ChatWindow chatWindow)
+        public void RegisterChatWindow(ChatWindow chatWindow)
         {
-            ChatWindows.Add(chatWindow);
+            _chatWindows.Add(chatWindow);
         }
 
-        public static void UnregisterChatWindow(ChatWindow chatWindow)
+        public void UnregisterChatWindow(ChatWindow chatWindow)
         {
-            ChatWindows.Remove(chatWindow);
+            _chatWindows.Remove(chatWindow);
         }
 
-        private static void OnServerReceiveChatMessage(NetworkConnection conn, ChatMessage msg)
+        private void OnServerReceiveChatMessage(NetworkConnection conn, ChatMessage msg)
         {
             InstanceFinder.ServerManager.Broadcast(msg);
         }
 
-        private static void AddMessageToServerChatLog(ChatMessage msg)
+        private void AddMessageToServerChatLog(ChatMessage msg)
         {
             try
             {
-                using StreamWriter writer = new StreamWriter(ChatLogPath, true);
+                using StreamWriter writer = new StreamWriter(_chatLogPath, true);
                 writer.WriteLine($"[{msg.Channel}] [{msg.Sender}] {msg.Text}");
             }
             catch (Exception e)
             {
-                Log.Information(typeof(ChatMessageSender), "Error when writing chat message into log: {error}", Logs.ServerOnly, e.Message);
+                Log.Information(typeof(ChatSystem), "Error when writing chat message into log: {error}", Logs.ServerOnly, e.Message);
             }
         }
 
-        private static void OnClientReceiveChatMessage(ChatMessage msg)
+        private void OnClientReceiveChatMessage(ChatMessage msg)
         {
             if (InstanceFinder.IsServer)
             {
                 AddMessageToServerChatLog(msg);
             }
             
-            foreach (ChatWindow chatWindow in ChatWindows)
+            foreach (ChatWindow chatWindow in _chatWindows)
             {
                 chatWindow.OnClientReceiveChatMessage(msg);
             }
         }
         
-        public static void SendPlayerMessage([NotNull] ChatChannel chatChannel, string text, Player player)
+        public void SendPlayerMessage([NotNull] ChatChannel chatChannel, string text, Player player)
         {
             ChatMessage chatMessage = new ChatMessage
             {
@@ -117,7 +110,7 @@ namespace SS3D.Engine.Chat
             }
         }
         
-        public static void SendServerMessage([NotNull] string chatChannelName, string text)
+        public void SendServerMessage([NotNull] string chatChannelName, string text)
         {
             ChatMessage chatMessage = new ChatMessage
             {
@@ -132,7 +125,7 @@ namespace SS3D.Engine.Chat
             }
         }
         
-        public static void SendServerMessageToCurrentPlayer([NotNull] string chatChannelName, string text)
+        public void SendServerMessageToCurrentPlayer([NotNull] string chatChannelName, string text)
         {
             OnClientReceiveChatMessage(
                 new ChatMessage

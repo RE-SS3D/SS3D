@@ -187,7 +187,10 @@ namespace SS3D.Systems.PlayerControl
 
                 _serverPlayers.Add(ckey, player);
                 
-                ChatMessageSender.SendServerMessage("System", $"{ckey} joined!");
+                if (Subsystems.TryGet(out ChatSystem chatSystem))
+                {
+                    chatSystem.SendServerMessage("System", $"{ckey} joined!");
+                }
             }
 
             player.GiveOwnership(conn);

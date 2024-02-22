@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SS3D.Core;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -30,8 +31,11 @@ namespace SS3D.Engine.Chat
         private IEnumerator WelcomeMessageDelayed()
         {
             yield return new WaitForSecondsRealtime(_welcomeMessageDelayInSeconds);
-            
-            ChatMessageSender.SendServerMessageToCurrentPlayer(_chatChannels.GetChannelForAllChatsSystemMessages.name, _welcomeMessage);
+
+            if (Subsystems.TryGet(out ChatSystem chatSystem))
+            {
+                chatSystem.SendServerMessageToCurrentPlayer(_chatChannels.GetChannelForAllChatsSystemMessages.name, _welcomeMessage);
+            }
         }
 
         protected override void HandleSendMessage(InputAction.CallbackContext context)
