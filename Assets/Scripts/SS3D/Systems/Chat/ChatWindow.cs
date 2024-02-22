@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
@@ -17,7 +18,7 @@ namespace SS3D.Engine.Chat
     /// <summary>
     /// Behaviour responsible for handling chat functionality.
     /// </summary>
-    public abstract class ChatWindow : View
+    public abstract class ChatWindow : View, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] protected ChatChannels chatChannels = null;
         [SerializeField] protected TMP_InputField inputField = null;
@@ -27,6 +28,7 @@ namespace SS3D.Engine.Chat
         
         private readonly List<ChatMessage> _chatMessages = new List<ChatMessage>();
         
+        private InputSystem _inputSystem;
         private Controls.OtherActions _controls;
         private bool _initialized;
 
@@ -36,7 +38,8 @@ namespace SS3D.Engine.Chat
         {
             base.OnAwake();
             
-            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            _inputSystem = Subsystems.Get<InputSystem>();
+            _controls = _inputSystem.Inputs.Other;
             ChatMessageSender.InitializeIfNeeded();
         }
 
@@ -54,6 +57,16 @@ namespace SS3D.Engine.Chat
 
             _controls.SendChatMessage.performed -= HandleSendMessage;
             ChatMessageSender.UnregisterChatWindow(this);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
         }
 
         protected virtual void HandleSendMessage(InputAction.CallbackContext context)
