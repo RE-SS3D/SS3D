@@ -270,6 +270,13 @@ namespace SS3D.Systems.Inventory.Items
             _container = newContainer;
         }
 
+        /// <summary>
+        /// enable or disable all colliders related to this item, including in children gameObject.
+        /// Does not touch any colliders that would belong to other items, if this item is a container and contains other items.
+        /// TODO : might want to replace GetComponentsInChildren with a manual setup of the container list.
+        /// TODO : Issue might occurs if some game object with their own colliders are children of this item, no case for now.
+        /// </summary>
+        [ServerOrClient]
         private void ToggleCollider(bool isEnable)
         {
             List<Collider> collidersToExcept = new();
