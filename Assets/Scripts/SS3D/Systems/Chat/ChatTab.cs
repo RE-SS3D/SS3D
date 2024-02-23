@@ -17,6 +17,7 @@ namespace SS3D.Engine.Chat
         private Image _image;
         private InGameChatWindow _inGameChatWindow;
         private Vector3 _oldPos;
+        private Transform _previousButtonRow;
 
         public ChatTabData GetChatTabData() => _chatTabData;
 
@@ -56,6 +57,10 @@ namespace SS3D.Engine.Chat
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            _previousButtonRow = transform.parent;
+            // Move the tab button outside the Viewport so it's visible while being dragged
+            transform.SetParent(_inGameChatWindow.transform, true);
+            
             _oldPos = transform.position;
             _inGameChatWindow.LoadTab();
         
@@ -138,6 +143,9 @@ namespace SS3D.Engine.Chat
                 .GetComponentInParent<InGameChatWindow>();
             if (inGameChatWindow != null)
             {
+                transform.SetParent(_previousButtonRow);
+                _previousButtonRow = null;
+                
                 // Check if dropping on the same window
                 if (inGameChatWindow == _inGameChatWindow)
                 {
@@ -166,7 +174,7 @@ namespace SS3D.Engine.Chat
             else
             {
                 // Create a new chat window as long as there are multiple tabs
-                if (_inGameChatWindow.GetTabCount() > 1)
+                if (_inGameChatWindow.GetTabCount() > 0)
                 {
                     InGameChatWindow newInGameChatWindow = Instantiate(_inGameChatWindowPrefab).GetComponent<InGameChatWindow>();
                     Transform newInGameChatWindowTransform = newInGameChatWindow.transform;
@@ -188,6 +196,8 @@ namespace SS3D.Engine.Chat
                 // There aren't multiple tabs, just revert back to where you were before
                 else
                 {
+                    transform.SetParent(_previousButtonRow);
+                    _previousButtonRow = null;
                     transform.position = _oldPos;
                 }
             }
