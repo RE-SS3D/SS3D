@@ -23,7 +23,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private Item[] _displayedItems;
 
-        public void Start()
+        public void Awake()
         {
             Assert.IsNotNull(attachedContainer);
             
