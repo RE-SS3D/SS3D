@@ -5,6 +5,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.PlayerControl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace SS3D.Engine.Chat
         private InputSystem _inputSystem;
         private Controls.OtherActions _controls;
 
-        protected virtual ChatChannel GetCurrentChatChannel() => null;
+        protected virtual ChatChannel GetCurrentChatChannel() => throw new NotImplementedException();
 
         protected override void OnAwake()
         {
