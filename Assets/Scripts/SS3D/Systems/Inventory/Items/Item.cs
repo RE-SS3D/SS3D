@@ -177,11 +177,7 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
-            Collider itemCollider = GetComponent<Collider>();
-            if (itemCollider != null)
-            {
-                itemCollider.enabled = false;
-            }
+            ToggleCollider(false);
         }
 
         /// <summary>
@@ -195,11 +191,7 @@ namespace SS3D.Systems.Inventory.Items
                 if (IsServer)
                     _rigidbody.isKinematic = false;
             }
-            Collider itemCollider = GetComponent<Collider>();
-            if (itemCollider != null)
-            {
-                itemCollider.enabled = true;
-            }
+            ToggleCollider(true);
         }
         
         
@@ -275,17 +267,11 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public void SetContainer(AttachedContainer newContainer)
         {
-            if ((newContainer == null) ^ (_container == null))
-            {
-                ToggleCollider(newContainer == null);
-            }
             _container = newContainer;
         }
 
-        [ObserversRpc]
         private void ToggleCollider(bool isEnable)
         {
-            Debug.Log("Toggle Collider");
             List<Collider> collidersToExcept = new();
             if (_container != null)
             {
