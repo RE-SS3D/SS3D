@@ -33,7 +33,7 @@ namespace SS3D.Logging
         public void Format(LogEvent logEvent, TextWriter output)
         {
 
-            foreach (var token in _outputTemplate.Tokens)
+            foreach (MessageTemplateToken token in _outputTemplate.Tokens)
             {
                 if (token is TextToken tt)
                 {
@@ -41,7 +41,7 @@ namespace SS3D.Logging
                     continue;
                 }
 
-                var pt = (PropertyToken)token;
+                PropertyToken pt = (PropertyToken)token;
 
                 if (pt.PropertyName == OutputProperties.NewLinePropertyName)
                 {
@@ -59,14 +59,13 @@ namespace SS3D.Logging
                 }
                 if (pt.PropertyName == OutputProperties.TimestampPropertyName)
                 {
-                    var scalarValue = new ScalarValue(logEvent.Timestamp);
+                    ScalarValue scalarValue = new ScalarValue(logEvent.Timestamp);
                     scalarValue.Render(output, pt.Format, _formatProvider);
                     continue;
                 }
                 if(pt.PropertyName == "SourceContext")
                 {
                     RenderSourceContext(logEvent, output);
-                    continue;
                 }
             }
         }
@@ -91,7 +90,7 @@ namespace SS3D.Logging
         /// <param name="formatProvider"></param>
         private void RenderMessageTemplate(MessageTemplate messageTemplate, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output, string format = null)
         {
-            foreach (var token in messageTemplate.Tokens)
+            foreach (MessageTemplateToken token in messageTemplate.Tokens)
             {
                 if (token is TextToken tt)
                 {
@@ -99,7 +98,7 @@ namespace SS3D.Logging
                     continue;
                 }
 
-                var pt = (PropertyToken)token;
+                PropertyToken pt = (PropertyToken)token;
 
                 //InfoLog property is only used to color SourceContext, see RenderSourceContext method.
                 if (pt.PropertyName == "InfoLog") continue;
@@ -110,7 +109,7 @@ namespace SS3D.Logging
 
         private void RenderPropertyToken(PropertyToken pt, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output)
         {
-            if (!properties.TryGetValue(pt.PropertyName, out var propertyValue))
+            if (!properties.TryGetValue(pt.PropertyName, out LogEventPropertyValue propertyValue))
             {
                 return;
             }
@@ -129,11 +128,11 @@ namespace SS3D.Logging
         /// </summary>
         private void RenderSourceContext(LogEvent logEvent, TextWriter output)
         {
-            logEvent.Properties.TryGetValue("InfoLog", out var InfoLogPropertyValue);
-            var ScalarInfoLogPropertyValue = InfoLogPropertyValue as ScalarValue;
+            logEvent.Properties.TryGetValue("InfoLog", out LogEventPropertyValue InfoLogPropertyValue);
+            ScalarValue ScalarInfoLogPropertyValue = InfoLogPropertyValue as ScalarValue;
 
-            logEvent.Properties.TryGetValue("SourceContext", out var SourceContextPropertyValue);
-            var ScalarSourceContextPropertyValue = SourceContextPropertyValue as ScalarValue;
+            logEvent.Properties.TryGetValue("SourceContext", out LogEventPropertyValue SourceContextPropertyValue);
+            ScalarValue ScalarSourceContextPropertyValue = SourceContextPropertyValue as ScalarValue;
 
             if (ScalarSourceContextPropertyValue?.Value is string sourceContext)
             {

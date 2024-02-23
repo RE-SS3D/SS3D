@@ -71,7 +71,7 @@ namespace SS3D.Logging
             // Does not apply override if the logging level corresponds to the global minimum level.
             foreach (NamespaceLogLevel levelForNameSpace in Settings.SS3DNameSpaces)
             {
-                if (levelForNameSpace.Level == Settings.defaultLogLevel) continue;
+                if (levelForNameSpace.Level == Settings.DefaultLogLevel) continue;
 
                 configuration = configuration.MinimumLevel.Override(levelForNameSpace.Name, levelForNameSpace.Level);
             }
@@ -85,25 +85,22 @@ namespace SS3D.Logging
             {
                 path = overrideLogPath;
             }
-            else
+            else if (InstanceFinder.IsHost)
             {
-                if (InstanceFinder.IsHost)
-                {
-                    path = "LogHost.json";
-                }
-                else if (InstanceFinder.IsClientOnly)
-                {
-                    path = "LogClient" + InstanceFinder.NetworkManager.ClientManager.Connection.ClientId + ".json";
-                }
-                else if (InstanceFinder.IsServerOnly)
-                {
-                    path = "LogServer.json";
-                }
+                path = "LogHost.json";
+            }
+            else if (InstanceFinder.IsClientOnly)
+            {
+                path = "LogClient" + InstanceFinder.NetworkManager.ClientManager.Connection.ClientId + ".json";
+            }
+            else if (InstanceFinder.IsServerOnly)
+            {
+                path = "LogServer.json";
             }
 
             path = LogFolderPath + path;
 
-            configuration = configuration.WriteTo.File(new CompactJsonFormatter(), LogFolderPath + path);
+            configuration.WriteTo.File(new CompactJsonFormatter(), LogFolderPath + path);
 
             return configuration;
         }
@@ -113,7 +110,7 @@ namespace SS3D.Logging
         /// </summary>
         private static LoggerConfiguration ConfigureMinimumLevel(LoggerConfiguration loggerConfiguration)
         {
-             switch (Settings.defaultLogLevel)
+             switch (Settings.DefaultLogLevel)
              {
                  case LogEventLevel.Verbose: return loggerConfiguration.MinimumLevel.Verbose();
                  case LogEventLevel.Debug: return loggerConfiguration.MinimumLevel.Debug();

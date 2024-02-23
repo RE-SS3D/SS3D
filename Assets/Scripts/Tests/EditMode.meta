@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/SS3D/Application.meta
+guid: 39d8a54cf665feb499ef77251b3b7ce5
+========
+guid: 3958892eecab2dc4bb25cae8722d4443
+>>>>>>>> 38d64305 (Revert code changes and add code linting back):Assets/Scripts/Tests/EditMode.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
