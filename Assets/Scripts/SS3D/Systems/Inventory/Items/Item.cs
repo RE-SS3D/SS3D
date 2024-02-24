@@ -69,6 +69,9 @@ namespace SS3D.Systems.Inventory.Items
         [SyncObject]
         private readonly SyncList<Trait> _traits = new();
 
+        /// <summary>
+        /// Where the item is stored
+        /// </summary>
         [SyncVar]
         private AttachedContainer _container;
 
@@ -76,6 +79,9 @@ namespace SS3D.Systems.Inventory.Items
 
         public ReadOnlyCollection<Trait> Traits => ((List<Trait>) _traits.Collection).AsReadOnly();
 
+        /// <summary>
+        /// Where the item is stored
+        /// </summary>
         public AttachedContainer Container => _container;
 
         private bool _initialised = false;
