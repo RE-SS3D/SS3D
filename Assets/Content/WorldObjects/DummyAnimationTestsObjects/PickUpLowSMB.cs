@@ -3,7 +3,7 @@ using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
-public class DummyPunchIk : StateMachineBehaviour
+public class PickUpLowSMB : StateMachineBehaviour
 {
 
     private DummyIkController _dummyIkController;
@@ -17,8 +17,6 @@ public class DummyPunchIk : StateMachineBehaviour
 
         // Start coroutine to smoothly transition weight
         animator.GetComponent<DummyIkController>().StartCoroutine(ModifyWeightOverTime(stateInfo));
-
-
     }
 
     public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

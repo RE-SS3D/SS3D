@@ -310,8 +310,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 0.7
-  speed: 1
-  height: 2
+  speed: 0.5
+  minHeight: 0
+  maxHeight: 1.5
+  waveFrequency: 8
 --- !u!4 &443146526 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3197388170385834841, guid: cd482cb34628ac14e9af1fbff1e7fa93, type: 3}
