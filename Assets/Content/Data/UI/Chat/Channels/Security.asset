@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2d6eaeb9ae4b9f85a3ab7c93c2a1bb, type: 3}
   m_Name: Security
   m_EditorClassIdentifier: 
-  Abbreviation: Sec
-  TabName: 
-  Color: {r: 0.6392157, g: 0, b: 0, a: 1}
+  Abbreviation: 
+  TabName: S
+  Color: {r: 0.8207547, g: 0.18195976, b: 0.18195976, a: 1}
   Hidable: 1
   RoleRequiredToUse: 0
   CanFormatText: 0
   DistanceBased: 0
   MaxDistance: 0
-  Prefix: 
-  Suffix: 
+  defaultVerb: says
+  TextPrefix: 
+  TextSuffix: 
   HideSenderName: 0
   RequiredTraitInHeadset: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}

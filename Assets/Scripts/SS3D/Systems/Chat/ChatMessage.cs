@@ -1,5 +1,6 @@
 ﻿using FishNet.Broadcast;
 using SS3D.Core;
+using SS3D.Systems.Entities;
 using System;
 using System.Text;
 using UnityEngine;
@@ -13,30 +14,31 @@ namespace SS3D.Engine.Chat
         public string Text;
         public string Channel;
         public Vector3 Origin;
-
-        public override string ToString()
+        
+        public void FormatText(Player player, ChatChannel chatChannel)
         {
-            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
-            ChatChannel chatChannel = chatSystem.RegisteredChatChannels[Channel];
-            
-            StringBuilder sb = new StringBuilder();
-            sb.Append(chatChannel.Prefix);
-            sb.AppendFormat("<color=#{0}>", ColorUtility.ToHtmlStringRGBA(chatChannel.Color));
-                
-            if (!string.IsNullOrEmpty(chatChannel.Abbreviation))
+            if (chatChannel.DistanceBased)
             {
-                sb.AppendFormat("[{0}] ", chatChannel.Abbreviation);
+                Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+                Origin = entity.Position;
             }
-                
-            if (!chatChannel.HideSenderName)
+
+            if (!chatChannel.CanFormatText)
             {
-                sb.AppendFormat("{0}: ", Sender);
+                Text = Text.Replace("<", "<nobr><</nobr>");
             }
-                
-            sb.AppendFormat("{0}\n", Text);
-            sb.Append(chatChannel.Suffix);
-            
-            return sb.ToString();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(chatChannel.GetColorTagOpening());
+            stringBuilder.Append(chatChannel.GetTabText());
+            stringBuilder.Append(chatChannel.GetTextBeforeMessage(player));
+            stringBuilder.Append(chatChannel.TextPrefix);
+            stringBuilder.Append(Text);
+            stringBuilder.Append(chatChannel.TextSuffix);
+            stringBuilder.Append(chatChannel.GetTextAfterMessage());
+            stringBuilder.Append(chatChannel.GetColorTagClosing());
+
+            Text = stringBuilder.ToString();
         }
     }
 }

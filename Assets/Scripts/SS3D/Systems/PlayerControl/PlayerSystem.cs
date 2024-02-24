@@ -188,7 +188,8 @@ namespace SS3D.Systems.PlayerControl
                 _serverPlayers.Add(ckey, player);
                 
                 ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
-                chatSystem.SendServerMessage("System", $"{ckey} joined!");
+                ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+                chatSystem.SendServerMessage(chatChannels.allSystemMessagesChannel, $"{ckey} joined!");
             }
 
             player.GiveOwnership(conn);

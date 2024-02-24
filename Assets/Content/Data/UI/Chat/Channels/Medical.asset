@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2d6eaeb9ae4b9f85a3ab7c93c2a1bb, type: 3}
   m_Name: Medical
   m_EditorClassIdentifier: 
-  Abbreviation: Med
-  TabName: 
+  Abbreviation: 
+  TabName: M
   Color: {r: 0.2, g: 0.44705883, b: 0.6431373, a: 1}
   Hidable: 1
   RoleRequiredToUse: 0
   CanFormatText: 0
   DistanceBased: 0
   MaxDistance: 0
-  Prefix: 
-  Suffix: 
+  defaultVerb: says
+  TextPrefix: 
+  TextSuffix: 
   HideSenderName: 0
   RequiredTraitInHeadset: {fileID: 0}

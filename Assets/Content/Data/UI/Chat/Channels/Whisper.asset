@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2d6eaeb9ae4b9f85a3ab7c93c2a1bb, type: 3}
   m_Name: Whisper
   m_EditorClassIdentifier: 
-  Abbreviation: Whi
-  TabName: 
+  Abbreviation: 
+  TabName: W
   Color: {r: 1, g: 0.7028302, b: 1, a: 1}
   Hidable: 1
   RoleRequiredToUse: 0
   CanFormatText: 0
   DistanceBased: 1
   MaxDistance: 2
-  Prefix: <i><size=12>
-  Suffix: </size></i>
+  defaultVerb: whispers
+  TextPrefix: <size=12>
+  TextSuffix: </size>
   HideSenderName: 0
   RequiredTraitInHeadset: {fileID: 0}

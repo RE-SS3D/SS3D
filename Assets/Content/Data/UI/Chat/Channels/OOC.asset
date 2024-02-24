@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: OOC
   m_EditorClassIdentifier: 
   Abbreviation: ooc
-  TabName: 
+  TabName: O
+  ShowTabName: 1
   Color: {r: 1, g: 0.10980392, b: 0.25490198, a: 1}
   Hidable: 1
   RoleRequiredToUse: 0

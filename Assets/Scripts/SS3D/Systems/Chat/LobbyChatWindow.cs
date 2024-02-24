@@ -35,7 +35,7 @@ namespace SS3D.Engine.Chat
             
             ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
             ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
-            chatSystem.SendServerMessageToCurrentPlayer(chatChannels.allSystemMessagesChannel.name, _welcomeMessage);
+            chatSystem.SendServerMessageToCurrentPlayer(chatChannels.allSystemMessagesChannel, _welcomeMessage);
         }
 
         protected override void HandleSendMessage(InputAction.CallbackContext context)

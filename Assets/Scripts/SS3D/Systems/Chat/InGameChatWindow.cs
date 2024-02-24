@@ -5,7 +5,6 @@ using SS3D.Permissions;
 using SS3D.Systems.PlayerControl;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -86,10 +85,6 @@ namespace SS3D.Engine.Chat
                     {
                         tabName = chatChannel.TabName;
                     }
-                    else if (!string.IsNullOrEmpty(chatChannel.Abbreviation))
-                    {
-                        tabName = chatChannel.Abbreviation;
-                    }
                     else
                     {
                         tabName = chatChannel.name;
@@ -97,7 +92,7 @@ namespace SS3D.Engine.Chat
 
                     _channelDropDown.options.Add(
                         new TMP_Dropdown.OptionData(
-                            $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.Color)}>[{tabName}]</color>")
+                            $"<color=#{ColorUtility.ToHtmlStringRGBA(chatChannel.Color)}>{tabName}</color>")
                     );
                     _channelDropdownOptions.Add(channelName);
                 }

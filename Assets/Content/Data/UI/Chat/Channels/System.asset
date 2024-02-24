@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: System
   m_EditorClassIdentifier: 
   Abbreviation: 
-  TabName: SYS
+  TabName: S
+  ShowTabName: 0
   Color: {r: 1, g: 0, b: 0.019583702, a: 1}
   Hidable: 0
   RoleRequiredToUse: 3

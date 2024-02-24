@@ -97,7 +97,7 @@ namespace SS3D.Engine.Chat
             {
                 ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
                 chatSystem.SendServerMessageToCurrentPlayer(
-                    chatChannels.inGameSystemMessagesChannel.name, 
+                    chatChannels.inGameSystemMessagesChannel, 
                     $"[UNAUTHORIZED ACCESS TO {chatChannel.name} CHANNEL]");
             }
         }
@@ -107,7 +107,7 @@ namespace SS3D.Engine.Chat
             StringBuilder sb = new StringBuilder();
             foreach (ChatMessage message in messages)
             {
-                sb.Append(message.ToString());
+                sb.AppendLine(message.Text);
             }
 
             _chatText.text = sb.ToString();

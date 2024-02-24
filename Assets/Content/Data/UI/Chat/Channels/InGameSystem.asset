@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: InGameSystem
   m_EditorClassIdentifier: 
   Abbreviation: 
-  TabName: IGS
+  TabName: I
+  ShowTabName: 0
   Color: {r: 1, g: 0, b: 0.019583702, a: 1}
   Hidable: 0
   RoleRequiredToUse: 3
