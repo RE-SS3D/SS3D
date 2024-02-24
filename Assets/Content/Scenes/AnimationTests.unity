@@ -289,7 +289,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 350909783}
   m_LocalRotation: {x: -0, y: 0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -0.629, y: 0.07, z: -0.451}
+  m_LocalPosition: {x: -0.38, y: 0.07, z: -0.296}
   m_LocalScale: {x: 0.099999994, y: 0.099999994, z: 0.099999994}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -480,6 +480,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: efb33bc648a1e614eb0af7d290a10461, type: 3}
+--- !u!114 &551516101 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3841955490933452954, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+  m_PrefabInstance: {fileID: 1043702774}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &642105699 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4089496606853742746, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
@@ -705,6 +716,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3841955490933452954, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Weight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3841955490933452954, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
+      value: 
+      objectReference: {fileID: 350909787}
     - target: {fileID: 3966220969826696441, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_Effectors.Array.size
       value: 1
@@ -785,6 +804,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: _headIKConstraint
+      value: 
+      objectReference: {fileID: 551516101}
     - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: _rightPunchTarget
       value: 
