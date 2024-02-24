@@ -79,6 +79,26 @@ namespace SS3D.Systems.Inventory.Items
         public AttachedContainer Container => _container;
 
         private bool _initialised = false;
+        
+        /// <summary>
+        /// All colliders, related to the item, except of colliders, related to stored items
+        /// </summary>
+        private Collider[] _nativeColliders;
+        /// <summary>
+        /// All colliders, related to the item, except of colliders, related to stored items
+        /// </summary>
+        public Collider[] NativeColliders
+        {
+            get
+            {
+                if (_nativeColliders == null)
+                {
+                    _nativeColliders = GetNativeColliders();
+                }
+                return _nativeColliders;
+            }
+            set => _nativeColliders = value;
+        }
 
         public WorldObjectAssetReference Asset
         {
@@ -119,7 +139,7 @@ namespace SS3D.Systems.Inventory.Items
             get => InventorySprite();
             set => _sprite = value;
         }
-
+        
         protected override void OnStart()
         {
             base.OnStart();
@@ -134,6 +154,23 @@ namespace SS3D.Systems.Inventory.Items
             {
                 _rigidbody.isKinematic = true;
             }
+
+            _nativeColliders ??= GetNativeColliders();
+            Debug.Log("Start " + name);
+        }
+
+        /// <summary>
+        /// Get all colliders, related to the item, except of colliders, related to stored items
+        /// </summary>
+        private Collider[] GetNativeColliders()
+        {
+            List<Collider> collidersToExcept = new();
+            AttachedContainer[] containers = GetComponentsInChildren<AttachedContainer>();
+            foreach (Item item in containers.SelectMany(container => container.Items))
+            {
+                collidersToExcept.AddRange(item.GetComponentsInChildren<Collider>());
+            }
+            return GetComponentsInChildren<Collider>().Except(collidersToExcept).ToArray();
         }
 
         public override void OnStartServer()
@@ -194,6 +231,18 @@ namespace SS3D.Systems.Inventory.Items
             ToggleCollider(true);
         }
         
+        /// <summary>
+        /// Enable or disable all colliders related to the item. Does not touch any colliders that would belong to stored items (if there are any).
+        /// TODO : might want to replace GetComponentsInChildren with a manual setup of the container list.
+        /// </summary>
+        [ServerOrClient]
+        protected virtual void ToggleCollider(bool isEnable)
+        {
+            foreach (Collider collider in NativeColliders) 
+            { 
+                collider.enabled = isEnable;
+            }
+        }
         
         /// <param name="visible">Should the item be visible</param>
         [ServerOrClient]
@@ -270,29 +319,7 @@ namespace SS3D.Systems.Inventory.Items
             _container = newContainer;
         }
 
-        /// <summary>
-        /// enable or disable all colliders related to this item, including in children gameObject.
-        /// Does not touch any colliders that would belong to other items, if this item is a container and contains other items.
-        /// TODO : might want to replace GetComponentsInChildren with a manual setup of the container list.
-        /// TODO : Issue might occurs if some game object with their own colliders are children of this item, no case for now.
-        /// </summary>
-        [ServerOrClient]
-        private void ToggleCollider(bool isEnable)
-        {
-            List<Collider> collidersToExcept = new();
-            if (_container != null)
-            {
-                foreach (Item item in _container.Items)
-                {
-                    collidersToExcept.AddRange(item.GetComponentsInChildren<Collider>());
-                }
-            }
-            IEnumerable<Collider> colliders = GetComponentsInChildren<Collider>().Except(collidersToExcept);
-            foreach (Collider collider in colliders) 
-            { 
-                collider.enabled = isEnable;
-            }
-        }
+       
 
         // Generate preview of the same object, but without stored items.
         [ServerOrClient]
