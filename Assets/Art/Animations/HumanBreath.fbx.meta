@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e75c1b0b81831a04ead512c19deb6d68
+guid: 9effc996af8cf18499a3ffc2fe8a1c4b
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -15,16 +15,19 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     removeConstantScaleCurves: 1
-    motionNodeName: 
+    motionNodeName: HumanArmature
     rigImportErrors: 
-    rigImportWarnings: 
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'thigh_l'
+      : position error = 7.118051 mm\n\t'thigh_r' : position error = 7.503114 mm\n\t'spine'
+      : position error = 14.290064 mm\n\t'chest' : position error = 8.680725 mm\n"
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -33,18 +36,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: mixamo.com
-      takeName: mixamo.com
-      internalID: -203655887218126122
+      name: Breath
+      takeName: Take 001
+      internalID: 1827226128182048838
       firstFrame: 0
-      lastFrame: 44
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -104,7 +107,15 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips: []
+  referencedClips:
+  - d7e444fc7025fac47ad5133555e2bf08
+  - ba6a02eef58f9034e80dae86783d52d1
+  - 606406d0317b14d40ace437e68a37c4a
+  - 5f4117c3fc8c8df46a93f25c6f52fc62
+  - da98e2789290c404ea421dc23ee81bcb
+  - 163ceaa8c5473a9439bc7dd3a91763b0
+  - 30930b4a9daf7af48a2fd7c3aa4dcc23
+  - 963a03244d7a3d4459034bc0fc0d605b
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
@@ -878,8 +889,8 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: 
-    hasTranslationDoF: 0
+    rootMotionBoneName: HumanArmature
+    hasTranslationDoF: 1
     hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}

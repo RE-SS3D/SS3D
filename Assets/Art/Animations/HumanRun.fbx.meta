@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 963a03244d7a3d4459034bc0fc0d605b
+guid: 163ceaa8c5473a9439bc7dd3a91763b0
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -19,21 +19,15 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
       copied configuration does not match position in animation file:\n\t'thigh_l'
-      : position error = 15.986629 mm\n\t'thigh_r' : position error = 6.886298 mm\n\t'spine'
-      : position error = 29.874777 mm\n\t'chest' : position error = 14.579489 mm\n"
+      : position error = 13.750935 mm\n\t'lower_leg_l' : position error = 3.028578
+      mm\n\t'thigh_r' : position error = 13.640636 mm\n\t'spine' : position error
+      = 38.537518 mm\n\t'chest' : position error = 28.130583 mm\n"
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
-      might lower retargeting quality:\n\t'c_thumb1_r' has translation animation
-      that will be discarded.\n\t'c_ring1_r' has translation animation that will
-      be discarded.\n\t'c_middle1_r' has translation animation that will be discarded.\n\t'c_index1_r'
-      has translation animation that will be discarded.\n"
-    animationRetargetingWarnings: "\nRetargeting quality report for clip 'Take 001':\n\tLeftFoot
-      average position error 0.4 mm and maximum position error 3.5 mm at time 0:18
-      (13.3%) Frame 18\n\tRightFoot average position error 0.5 mm and maximum position
-      error 28.6 mm at time 0:13 (11.0%) Frame 13\n"
-    animationDoRetargetingWarnings: 1
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    importConstraints: 1
+    importConstraints: 0
     animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -43,11 +37,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: WalkN_Loop_DEF
-      takeName: Take 001
-      internalID: 1827226128182048838
-      firstFrame: 24
-      lastFrame: 48
+      name: Run
+      takeName: Human@RunCycle
+      internalID: 7173464507756139056
+      firstFrame: 0
+      lastFrame: 20
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -114,7 +108,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips: []
+  referencedClips:
+  - d7e444fc7025fac47ad5133555e2bf08
+  - ba6a02eef58f9034e80dae86783d52d1
+  - 606406d0317b14d40ace437e68a37c4a
+  - 5f4117c3fc8c8df46a93f25c6f52fc62
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
@@ -886,9 +884,9 @@ ModelImporter:
     legTwist: 0.5
     armStretch: 0.05
     legStretch: 0.05
-    feetSpacing: 0.006
+    feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: 
+    rootMotionBoneName: HumanArmature
     hasTranslationDoF: 1
     hasExtraRoot: 1
     skeletonHasParents: 1

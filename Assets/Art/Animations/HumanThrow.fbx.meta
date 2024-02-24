@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 50eb7c9a068eb894d92effe039bcc536
+guid: 30930b4a9daf7af48a2fd7c3aa4dcc23
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -15,11 +15,21 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     removeConstantScaleCurves: 1
-    motionNodeName: 
+    motionNodeName: HumanArmature
     rigImportErrors: 
-    rigImportWarnings: 
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'thigh_l'
+      : position error = 5.710223 mm\n\t'thigh_r' : position error = 5.710156 mm\n\t'spine'
+      : position error = 5.710193 mm\n\t'chest' : position error = 7.979074 mm\n\t'c_thumb1_r'
+      : position error = 2.960802 mm\n\t'c_ring1_r' : position error = 2.960671 mm\n\t'c_middle1_r'
+      : position error = 2.960752 mm\n\t'c_index1_r' : position error = 2.960816
+      mm\n\t'upper_arm_l' : position error = 6.207804 mm\n"
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'DEF_ThrowItem' has import animation warnings
+      that might lower retargeting quality:\n\t'c_thumb1_r' has translation animation
+      that will be discarded.\n\t'c_ring1_r' has translation animation that will
+      be discarded.\n\t'c_middle1_r' has translation animation that will be discarded.\n\t'c_index1_r'
+      has translation animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -33,18 +43,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: mixamo.com
-      takeName: mixamo.com
-      internalID: -203655887218126122
+      name: Throw
+      takeName: DEF_ThrowItem
+      internalID: -7538654608850558957
       firstFrame: 0
-      lastFrame: 44
+      lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -104,7 +114,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips: []
+  referencedClips:
+  - d7e444fc7025fac47ad5133555e2bf08
+  - ba6a02eef58f9034e80dae86783d52d1
+  - 606406d0317b14d40ace437e68a37c4a
+  - 5f4117c3fc8c8df46a93f25c6f52fc62
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
@@ -876,10 +890,10 @@ ModelImporter:
     legTwist: 0.5
     armStretch: 0.05
     legStretch: 0.05
-    feetSpacing: 0
+    feetSpacing: 0.006
     globalScale: 1
     rootMotionBoneName: 
-    hasTranslationDoF: 0
+    hasTranslationDoF: 1
     hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
