@@ -12,16 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
   m_Name: WeirdComplexRecipe
   m_EditorClassIdentifier: 
-  _executionTime: 0
-  _interactionName: Slice
   _target: {fileID: 11400000, guid: 3747dddbc41cad94bbbfc43bfed384c3, type: 2}
-  _result:
-  - {fileID: 11400000, guid: 739991c49857a3d40b2060d96908de45, type: 2}
-  - {fileID: 11400000, guid: 88cb0aca0b6265d49b25526ca55295e9, type: 2}
-  _elements:
-    _list:
-    - _key: {fileID: 11400000, guid: 162ccd1fc7d534046874df3d9dcf2315, type: 2}
-      _value: 2
-    - _key: {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
-      _value: 1
-    _new: {fileID: 0}
+  steps:
+  - _name: BikeHorn
+    _isInitialState: 1
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: WeirdStuff
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 0}
+  stepLinks:
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 2
+    _from: BikeHorn
+    _to: WeirdStuff
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults:
+    - {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
+    - {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
+    - {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}

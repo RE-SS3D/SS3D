@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 5289822754746829837}
   - component: {fileID: 926079960710381547}
   - component: {fileID: 1357399863125752432}
+  - component: {fileID: 5301111114796155391}
   m_Layer: 10
   m_Name: Welder
   m_TagString: Untagged
@@ -212,7 +213,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 51
+  <PrefabId>k__BackingField: 145
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -279,3 +280,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 7aa5d3607b524d1448e4c5c0356c6c19, type: 2}
+--- !u!114 &5301111114796155391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393721560307922778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd866b0631d05441982a4824740ff8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 5

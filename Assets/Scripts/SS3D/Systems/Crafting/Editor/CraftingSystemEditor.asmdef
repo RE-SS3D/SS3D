@@ -1,0 +1,20 @@
+{
+    "name": "CraftingSystemEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
+        "GUID:92a1e40b8cccf8645adbdd275ac6371a",
+        "GUID:478a2357cc57436488a56e564b08d223"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

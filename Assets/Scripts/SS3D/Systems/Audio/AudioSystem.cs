@@ -7,7 +7,6 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio
 {
@@ -121,7 +120,8 @@ namespace SS3D.Systems.Audio
         [ObserversRpc]
         public void RpcStopAudioSource(NetworkObject parent)
         {
-            parent.GetComponentInChildren<AudioSource>().Stop();
+            AudioSource audioSource = parent.GetComponentInChildren<AudioSource>();
+            audioSource?.Stop();
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace SS3D.Systems.Audio
             //Check the list for an audio source that isn't being used.
             foreach (AudioSource source in audioSources.List)
             {
-                if (!source.isPlaying)
+                if (source != null && !source.isPlaying)
                 {
                     //If we found one, exit the foreach loop.
                     validSource = source;
@@ -229,10 +229,10 @@ namespace SS3D.Systems.Audio
                 foreach (AudioSource source in List)
                 {
                     //Check that the audio source is idle, and we have more than our minimum number.
-                    if (!source.isPlaying && List.Count > MinAudioSources)
+                    if (source == null || (!source.isPlaying && List.Count > MinAudioSources))
                     {
                         List.Remove(source);
-                        source.gameObject.Dispose(true);
+                        source?.gameObject.Dispose(true);
                     }
                 }
             }

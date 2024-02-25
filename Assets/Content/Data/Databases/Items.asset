@@ -150,6 +150,14 @@ MonoBehaviour:
       _value: {fileID: 7927487060350510867, guid: c69ed93dc225ea049bbf1a02662c48c0, type: 3}
     - _key: PowerCell
       _value: {fileID: 2402587210622244651, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+    - _key: SteelWall
+      _value: {fileID: 3591147544166670882, guid: 45d13347efae0f54882e0e56dd770bb1, type: 3}
+    - _key: SteelGirder
+      _value: {fileID: 3591147544166670882, guid: 6c2559c2017ada740b245951a23c2e1d, type: 3}
+    - _key: Plenum
+      _value: {fileID: 8028539322119499722, guid: 3b33b5cf16a677a4e85a110679cde32a, type: 3}
+    - _key: SteelGirderUnbolted
+      _value: {fileID: 3591147544166670882, guid: 5dba4171f2124fb48b0e32c0e10841e0, type: 3}
     - _key: GlassReinforcedSheet
       _value: {fileID: 7125681683583715523, guid: a1a7407e08bb2914c97f431063bf83e2, type: 3}
     - _key: GlassSheet
@@ -192,4 +200,10 @@ MonoBehaviour:
       _value: {fileID: 7125681683583715523, guid: cc71128d4bcc0c548ac11481000ac424, type: 3}
     - _key: ElectricalCable
       _value: {fileID: 7125681683583715523, guid: 0e69918696f58e04f846e985ec7405fe, type: 3}
+    - _key: SteelWindow
+      _value: {fileID: 3591147544166670882, guid: b9c224febb4233f4e912745553097652, type: 3}
+    - _key: SteelWallReinforced
+      _value: {fileID: 3591147544166670882, guid: abcc60752234e584d8d98c9dec03e7cc, type: 3}
+    - _key: SteelWindowReinforced
+      _value: {fileID: 3591147544166670882, guid: f2493b5478dd8e946ba98861f533362e, type: 3}
     _new: 

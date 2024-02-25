@@ -1,0 +1,292 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
+  m_Name: SteelGirderRecipe
+  m_EditorClassIdentifier: 
+  _target: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
+  steps:
+  - _name: SteelGirder
+    _isInitialState: 1
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: SteelGirderWithMetalSheet
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: SteelGirderWithGlassSheet
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: SteelWall
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
+  - _name: SteelWindow
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 11400000, guid: 72ff3e5319a440c448928af8af541920, type: 2}
+  - _name: ReinforcedSteelGirderWithStruts
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: ReinforcedWall
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
+  - _name: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: ReinforcedWindow
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 11400000, guid: b841d8cacfb432a4789bbb387b08fe81, type: 2}
+  - _name: ReinforcedSteelGirderWithBoltedMetalSheets
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: ReinforcedSteelGirder
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  - _name: SteelGirderUnbolted
+    _isInitialState: 0
+    _isTerminal: 1
+    _customCraft: 0
+    _result: {fileID: 11400000, guid: 6fbb4f54f5632024680a17fba3fdf53d, type: 2}
+  - _name: ReinforcedSteelGirderWithBoltedGlassSheets
+    _isInitialState: 0
+    _isTerminal: 0
+    _customCraft: 0
+    _result: {fileID: 0}
+  stepLinks:
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions:
+    - {fileID: 11400000, guid: 22f5cb218c973ef4291a27c11ca43fe9, type: 2}
+    _craftingInteractionType: 3
+    _from: SteelGirder
+    _to: SteelGirderWithMetalSheet
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 0
+    _from: SteelGirderWithMetalSheet
+    _to: SteelWall
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 3c8e8f4d958f81744a729dc344342955, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: SteelGirder
+    _to: SteelGirderWithGlassSheet
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 0
+    _from: SteelGirderWithGlassSheet
+    _to: SteelWindow
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 3f647cba5228eee4c96dcb4d68c089af, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: SteelGirder
+    _to: ReinforcedSteelGirderWithStruts
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 05cd3679ee853174fb8651304e81f0cd, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: ReinforcedSteelGirderWithStruts
+    _to: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 0
+    _from: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
+    _to: ReinforcedWall
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list:
+      - _key: {fileID: 11400000, guid: 761f8c0e668a1d94ca1e59a4d7561a75, type: 2}
+        _value: 1
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: ReinforcedSteelGirderWithStruts
+    _to: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 0
+    _from: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
+    _to: ReinforcedWindow
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 5
+    _from: ReinforcedWall
+    _to: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
+    _modifyResult: 0
+    _executionTime: 4
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 4
+    _from: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
+    _to: ReinforcedSteelGirderWithBoltedMetalSheets
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: ReinforcedSteelGirderWithBoltedMetalSheets
+    _to: ReinforcedSteelGirderWithStruts
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults:
+    - {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 1
+    _from: ReinforcedSteelGirder
+    _to: SteelGirder
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 1
+    _from: SteelGirder
+    _to: SteelGirderUnbolted
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: SteelGirderWithMetalSheet
+    _to: SteelGirder
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults:
+    - {fileID: 11400000, guid: 8cfc0ba9b0715224ca017ad6ddfbd66b, type: 2}
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: SteelGirderWithGlassSheet
+    _to: SteelGirder
+    _modifyResult: 0
+    _executionTime: 1
+    _secondaryresults:
+    - {fileID: 11400000, guid: 3c8e8f4d958f81744a729dc344342955, type: 2}
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 4
+    _from: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
+    _to: ReinforcedSteelGirderWithBoltedGlassSheets
+    _modifyResult: 0
+    _executionTime: 4
+    _secondaryresults: []
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 3
+    _from: ReinforcedSteelGirderWithBoltedGlassSheets
+    _to: ReinforcedSteelGirderWithStruts
+    _modifyResult: 0
+    _executionTime: 2
+    _secondaryresults:
+    - {fileID: 11400000, guid: 3c8e8f4d958f81744a729dc344342955, type: 2}
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 2
+    _from: ReinforcedSteelGirderWithStruts
+    _to: ReinforcedSteelGirder
+    _modifyResult: 0
+    _executionTime: 5
+    _secondaryresults: []

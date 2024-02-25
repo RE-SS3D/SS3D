@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/SS3D/Systems/Crafting/Editor.meta
+guid: 8bbd585144f61a045ad7344f37fe334f
+========
 guid: 45e3ca56ffb946a44bc85f5ac5482dd3
+>>>>>>>> develop:Assets/Scripts/SS3D/Application.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

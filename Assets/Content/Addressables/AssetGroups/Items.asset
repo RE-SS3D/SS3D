@@ -285,6 +285,22 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCell.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 45d13347efae0f54882e0e56dd770bb1
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6c2559c2017ada740b245951a23c2e1d
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirder.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3b33b5cf16a677a4e85a110679cde32a
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Plenum.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5dba4171f2124fb48b0e32c0e10841e0
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirderUnbolted.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: a1a7407e08bb2914c97f431063bf83e2
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheetReinforced.prefab
     m_ReadOnly: 0
@@ -367,6 +383,18 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 0e69918696f58e04f846e985ec7405fe
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalCable.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b9c224febb4233f4e912745553097652
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindow.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: abcc60752234e584d8d98c9dec03e7cc
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWallReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f2493b5478dd8e946ba98861f533362e
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindowReinforced.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

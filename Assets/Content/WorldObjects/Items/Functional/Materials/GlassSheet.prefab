@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 5296084984690686628}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: 4129408090615520002}
+  - component: {fileID: 1465153506310873417}
   m_Layer: 10
   m_Name: GlassSheet
   m_TagString: Untagged
@@ -316,6 +317,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 2568864249795578972}
   - {fileID: 5296084984690686628}
+  - {fileID: 1465153506310873417}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -327,7 +329,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 117
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -380,6 +382,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: e882fe5f76c752a4a8c9ac937eb30ebb, type: 2}
+--- !u!114 &1465153506310873417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 1773710978803455870}
+  _networkObjectCache: {fileID: 1773710978803455870}
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

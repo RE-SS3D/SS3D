@@ -54,9 +54,7 @@ namespace SS3D.Interactions
         /// <param name="reference">The reference to this interaction</param>
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            _startTime = Time.time;
-            _lastCheck = _startTime;
-            _hasStarted= true;
+            StartCounter();
             return true;
         }
 
@@ -67,7 +65,7 @@ namespace SS3D.Interactions
         /// <param name="reference">The reference to this interaction</param>
         public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (_lastCheck + CheckInterval < Time.time)
+            if (_lastCheck + CheckInterval < Time.time && _hasStarted)
             {
                 if (!CanInteract(interactionEvent))
                 {
@@ -79,11 +77,11 @@ namespace SS3D.Interactions
                 _lastCheck = Time.time;
             }
 
-            if (_startTime + Delay < Time.time)
+            if (_startTime + Delay < Time.time && _hasStarted)
             {
                 if (CanInteract(interactionEvent))
                 {
-                    StartDelayed(interactionEvent);
+                    StartDelayed(interactionEvent, reference);
                     return false;
                 }
                 else
@@ -97,6 +95,13 @@ namespace SS3D.Interactions
             return true;
         }
 
+        protected void StartCounter()
+        {
+            _startTime = Time.time;
+            _lastCheck = _startTime;
+            _hasStarted = true;
+        }
+
         /// <inheritdoc />
         public abstract override void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
 
@@ -104,6 +109,6 @@ namespace SS3D.Interactions
         /// Starts the interaction after the delay has passed
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
-        protected abstract void StartDelayed(InteractionEvent interactionEvent);
+        protected abstract void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference);
     }
 }

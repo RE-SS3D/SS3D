@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: -2900075557854325373}
   - component: {fileID: 3011383631706744183}
   - component: {fileID: 6332977986281627431}
+  - component: {fileID: -6351445020948675988}
   m_Layer: 0
   m_Name: SteelWallReinforced
   m_TagString: Untagged
@@ -268,7 +269,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 145
+  <PrefabId>k__BackingField: 174
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -320,7 +321,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDirection: 0
-  AllowedDirections: 00000000
+  _allowedDirections: 00000000
+--- !u!114 &-6351445020948675988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -2900075557854325373}
+  _networkObjectCache: {fileID: 0}
+  _asset: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
+  _tileObjectSo: {fileID: 11400000, guid: 8723b9e3524165d4abbbb6e295e85330, type: 2}
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

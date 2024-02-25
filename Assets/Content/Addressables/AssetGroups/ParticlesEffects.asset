@@ -25,6 +25,10 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/World/VFX/Health/BleedingParticle.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: ca5e6b5f7c6c5054a8f8155ef44e3e43
+    m_Address: Assets/Content/WorldObjects/World/VFX/Construction/ConstructionParticle.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

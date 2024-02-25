@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384097cfa3559042be45b4f6328d961, type: 3}
+  m_Name: SteelWallRecipe
+  m_EditorClassIdentifier: 
+  _target: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
+  steps:
+  - _result: []
+    _isTerminal: 0
+    _name: SteelWall
+    _isInitialState: 1
+    _customCraft: 0
+  - _result:
+    - {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
+    _isTerminal: 1
+    _name: SteelGirderWithMetalSheet
+    _isInitialState: 0
+    _customCraft: 0
+  stepLinks:
+  - _elements:
+      _list: []
+      _new: {fileID: 0}
+    _conditions: []
+    _craftingInteractionType: 5
+    _from: SteelWall
+    _to: SteelGirderWithMetalSheet
+    _modifyResult: 1
+    _executionTime: 2
+    _secondaryresults: []

@@ -20,4 +20,6 @@ MonoBehaviour:
       _value: {fileID: 7714517724079113232, guid: 17b0d9163e9cdf14aa557557e7d9d76b, type: 3}
     - _key: BleedingParticle
       _value: {fileID: 6016476664605660376, guid: a6a77c26ee7edd94c804f4ddd851c8ba, type: 3}
+    - _key: ConstructionParticle
+      _value: {fileID: 9126258469831405173, guid: ca5e6b5f7c6c5054a8f8155ef44e3e43, type: 3}
     _new: 

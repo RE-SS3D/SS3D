@@ -47,7 +47,6 @@ GameObject:
   - component: {fileID: 1363585423008195204}
   - component: {fileID: 261983550380735922}
   - component: {fileID: 6377164133976095912}
-  - component: {fileID: 4940994118234552533}
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
   m_Layer: 10
@@ -228,7 +227,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 6
+  <PrefabId>k__BackingField: 113
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -256,18 +255,6 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 8869951128713715569}
   AttachmentPointAlt: {fileID: 7904818470334036375}
   _container: {fileID: 0}
---- !u!114 &4940994118234552533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6059877305a7fb48a28d8ef0e6b92b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5464842264619517571
 MonoBehaviour:
   m_ObjectHideFlags: 0
