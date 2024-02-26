@@ -73,6 +73,11 @@ namespace SS3D.Engine.Chat
                 ChatChannel chatChannel = chatSystem.RegisteredChatChannels[channelName];
                 if (chatChannel != null)
                 {
+                    if (chatChannel.CodeOnlyChannel)
+                    {
+                        continue;
+                    }
+                    
                     // Checks if player can use tab
                     if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None 
                         && !permissionSystem.IsAtLeast(playerCkey, chatChannel.RoleRequiredToUse))

@@ -31,11 +31,18 @@ namespace SS3D.Engine.Chat
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(chatChannel.GetColorTagOpening());
             stringBuilder.Append(chatChannel.GetTabText());
-            stringBuilder.Append(chatChannel.GetTextBeforeMessage(player));
+            stringBuilder.Append(chatChannel.GetSenderText(player));
+            if (chatChannel.SurroundMessageWithQuotationMarks)
+            {
+                stringBuilder.Append("\"");
+            }
             stringBuilder.Append(chatChannel.TextPrefix);
             stringBuilder.Append(Text);
             stringBuilder.Append(chatChannel.TextSuffix);
-            stringBuilder.Append(chatChannel.GetTextAfterMessage());
+            if (chatChannel.SurroundMessageWithQuotationMarks)
+            {
+                stringBuilder.Append("\"");
+            }
             stringBuilder.Append(chatChannel.GetColorTagClosing());
 
             Text = stringBuilder.ToString();

@@ -16,6 +16,8 @@ namespace SS3D.Engine.Chat
         public Color Color;
         [Tooltip("If enabled, player will be able to exclude it from their InGame chat.")]
         public bool Hidable;
+        [Tooltip("If disabled, no one will be able to write on this channel - only through code")]
+        public bool CodeOnlyChannel;
         public ServerRoleTypes RoleRequiredToUse;
         public bool CanFormatText;
         public bool DistanceBased;
@@ -26,7 +28,10 @@ namespace SS3D.Engine.Chat
         public string TextPrefix;
         [Tooltip("Can be format, even if canFormatText is disabled. Useful for adding specific format to a channel.")]
         public string TextSuffix;
+        [Tooltip("If false, player name (ckey) will be used instead")]
+        public bool UseCharacterName;
         public bool HideSenderName;
+        public bool SurroundMessageWithQuotationMarks;
         public Trait RequiredTraitInHeadset;
 
         public string GetColorTagOpening() => $"<color=#{ColorUtility.ToHtmlStringRGBA(Color)}>";
@@ -43,37 +48,33 @@ namespace SS3D.Engine.Chat
             return "";
         }
         
-        public string GetTextBeforeMessage(Player player)
+        public string GetSenderText(Player player)
         {
-            if (HideSenderName)
+            if (HideSenderName || player == null)
             {
                 return "";
-            }
-
-            if (player == null)
-            {
-                throw new NullReferenceException("No player found for sending a message in a channel where sender name is required");
             }
             
             if (!string.IsNullOrEmpty(Abbreviation))
             {
+                // TODO: replace Character {player.Ckey} with the character name
+                if (UseCharacterName)
+                {
+                    return $"Character {player.Ckey}: ";
+                }
+                
                 return $"{player.Ckey}: ";
             }
 
             // This is a good place to add all functionality about specific verbs depending on the character situation
-            // Also player.Ckey should probably be replaced with the character name
             
-            return $"{player.Ckey} {defaultVerb}, \"";
-        }
-        
-        public string GetTextAfterMessage()
-        {
-            if (HideSenderName || !string.IsNullOrEmpty(Abbreviation))
+            // TODO: replace Character {player.Ckey} with the character name
+            if (UseCharacterName)
             {
-                return "";
+                return $"Character {player.Ckey} {defaultVerb}, ";
             }
             
-            return "\"";
+            return $"{player.Ckey} {defaultVerb}, ";
         }
     }
 }

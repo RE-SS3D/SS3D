@@ -10,6 +10,7 @@ namespace SS3D.Engine.Chat
         public List<ChatChannel> allChannels = new List<ChatChannel>();
         public ChatChannel allSystemMessagesChannel;
         public ChatChannel inGameSystemMessagesChannel;
+        public ChatChannel stationAlertsChannel;
 
         public List<ChatChannel> GetHidableChannels() => allChannels.FindAll(channel => channel.Hidable);
         
