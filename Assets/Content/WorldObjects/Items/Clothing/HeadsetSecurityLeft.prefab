@@ -109,10 +109,10 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 5b8254c4cf98fcc4abf5012b35a20d1d, type: 2}
     - target: {fileID: 8996871635369454886, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
       propertyPath: _startingTraits.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8996871635369454886, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
-      propertyPath: _startingTraits.Array.data[1]
+      propertyPath: _startingTraits.Array.data[2]
       value: 
       objectReference: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
     m_RemovedComponents: []

@@ -14,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Abbreviation: 
   TabName: S
-  ShowTabName: 0
   Color: {r: 1, g: 0, b: 0.019583702, a: 1}
   Hidable: 0
-  RoleRequiredToUse: 3
+  CodeOnlyChannel: 1
+  RoleRequiredToUse: 0
   CanFormatText: 1
   DistanceBased: 0
   MaxDistance: 0
-  Prefix: 
-  Suffix: 
+  defaultVerb: 
+  TextPrefix: 
+  TextSuffix: 
   HideSenderName: 1
   RequiredTraitInHeadset: {fileID: 0}

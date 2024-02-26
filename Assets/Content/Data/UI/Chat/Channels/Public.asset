@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Abbreviation: 
   TabName: P
-  Color: {r: 0, g: 0.5019608, b: 0, a: 1}
+  Color: {r: 0.36187258, g: 0.7169812, b: 0.36187258, a: 1}
   Hidable: 1
+  CodeOnlyChannel: 0
   RoleRequiredToUse: 0
   CanFormatText: 0
   DistanceBased: 0
@@ -23,5 +24,7 @@ MonoBehaviour:
   defaultVerb: says
   TextPrefix: 
   TextSuffix: 
+  UseCharacterName: 1
   HideSenderName: 0
-  RequiredTraitInHeadset: {fileID: 0}
+  SurroundMessageWithQuotationMarks: 1
+  RequiredTraitInHeadset: {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}

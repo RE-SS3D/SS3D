@@ -238,6 +238,7 @@ MonoBehaviour:
   _weight: 1
   _startingTraits:
   - {fileID: 11400000, guid: ebb958676aabcb647b8d1b51b1ed8098, type: 2}
+  - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
   _rigidbody: {fileID: 6277089716624455366}
   AttachmentPoint: {fileID: 0}
   AttachmentPointAlt: {fileID: 0}

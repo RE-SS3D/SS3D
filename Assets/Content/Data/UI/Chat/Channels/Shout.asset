@@ -16,6 +16,7 @@ MonoBehaviour:
   TabName: S
   Color: {r: 1, g: 0.5879578, b: 0.36320752, a: 1}
   Hidable: 1
+  CodeOnlyChannel: 0
   RoleRequiredToUse: 0
   CanFormatText: 0
   DistanceBased: 1
@@ -23,5 +24,7 @@ MonoBehaviour:
   defaultVerb: shouts
   TextPrefix: <size=16>
   TextSuffix: </size>
+  UseCharacterName: 1
   HideSenderName: 0
+  SurroundMessageWithQuotationMarks: 1
   RequiredTraitInHeadset: {fileID: 0}

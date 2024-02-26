@@ -16,6 +16,7 @@ MonoBehaviour:
   TabName: E
   Color: {r: 0.9843137, g: 0.3372549, b: 0.07450981, a: 1}
   Hidable: 1
+  CodeOnlyChannel: 0
   RoleRequiredToUse: 0
   CanFormatText: 0
   DistanceBased: 0
@@ -23,5 +24,7 @@ MonoBehaviour:
   defaultVerb: says
   TextPrefix: 
   TextSuffix: 
+  UseCharacterName: 1
   HideSenderName: 0
-  RequiredTraitInHeadset: {fileID: 0}
+  SurroundMessageWithQuotationMarks: 1
+  RequiredTraitInHeadset: {fileID: 11400000, guid: fb93106681974e74d8c3f654af725c05, type: 2}

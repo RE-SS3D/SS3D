@@ -16,6 +16,7 @@ MonoBehaviour:
   TabName: W
   Color: {r: 1, g: 0.7028302, b: 1, a: 1}
   Hidable: 1
+  CodeOnlyChannel: 0
   RoleRequiredToUse: 0
   CanFormatText: 0
   DistanceBased: 1
@@ -23,5 +24,7 @@ MonoBehaviour:
   defaultVerb: whispers
   TextPrefix: <size=12>
   TextSuffix: </size>
+  UseCharacterName: 1
   HideSenderName: 0
+  SurroundMessageWithQuotationMarks: 1
   RequiredTraitInHeadset: {fileID: 0}
