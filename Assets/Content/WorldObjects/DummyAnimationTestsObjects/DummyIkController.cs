@@ -5,13 +5,13 @@ using UnityEngine.Animations.Rigging;
 
 public class DummyIkController : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject _rightPunchTarget;
+
+    public GameObject RightHandIkTarget;
 
     [SerializeField]
     private TwoBoneIKConstraint _rightArmTwoBoneIKConstraint;
     
-    public GameObject  RightPunchTarget => _rightPunchTarget;
+
     
     [SerializeField]
     private ChainIKConstraint _rightArmChainIKConstraint;

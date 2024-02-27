@@ -42,4 +42,9 @@ public class DummyAnimatorController : Actor
             
         _animator.SetFloat(Animations.Humanoid.MovementSpeed, speed);
     }
+
+    public void TriggerPickUp()
+    {
+        _animator.SetTrigger("PickUpRight");
+    }
 }

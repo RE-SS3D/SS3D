@@ -2713,6 +2713,7 @@ GameObject:
   - component: {fileID: 1557544769380776910}
   - component: {fileID: 1459663542338213736}
   - component: {fileID: 2643222421258484460}
+  - component: {fileID: 3473079973903976204}
   m_Layer: 0
   m_Name: DummyHuman
   m_TagString: Untagged
@@ -2929,6 +2930,18 @@ MonoBehaviour:
   _movementController: {fileID: 1459663542338213736}
   _animator: {fileID: 7307990926274805850}
   _lerpMultiplier: 2
+--- !u!114 &3473079973903976204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8617e3a73d0706c42a87a606965fb992, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0
@@ -4268,7 +4281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 796b75e345bd64d47a31edd757bd2670, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_Root: {fileID: 4153415939737701389}
     m_Tip: {fileID: 6356800398579286298}
