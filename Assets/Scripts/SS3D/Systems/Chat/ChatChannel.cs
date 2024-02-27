@@ -54,27 +54,26 @@ namespace SS3D.Engine.Chat
             {
                 return "";
             }
+
+            string senderName;
+            if (UseCharacterName)
+            {
+                // TODO: replace {player.Ckey} with the character name
+                senderName = player.Ckey;
+            }
+            else
+            {
+                senderName = player.Ckey;
+            }
             
             if (!string.IsNullOrEmpty(Abbreviation))
             {
-                // TODO: replace Character {player.Ckey} with the character name
-                if (UseCharacterName)
-                {
-                    return $"Character {player.Ckey}: ";
-                }
-                
-                return $"{player.Ckey}: ";
+                return $"{senderName}: ";
             }
 
             // This is a good place to add all functionality about specific verbs depending on the character situation
             
-            // TODO: replace Character {player.Ckey} with the character name
-            if (UseCharacterName)
-            {
-                return $"Character {player.Ckey} {defaultVerb}, ";
-            }
-            
-            return $"{player.Ckey} {defaultVerb}, ";
+            return $"{senderName} {defaultVerb}, ";
         }
     }
 }
