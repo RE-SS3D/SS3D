@@ -186,7 +186,7 @@ namespace SS3D.Systems.Entities
                 ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
                 
                 // TODO: replace with character name and role
-                chatSystem.SendPlayerMessage(chatChannels.stationAlertsChannel, $"{player.Ckey}, assistant, has joined the ship", player);
+                chatSystem.SendServerMessage(chatChannels.stationAlertsChannel, $"{player.Ckey}, assistant, has joined the ship");
             }
         }
 
