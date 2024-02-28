@@ -47,4 +47,9 @@ public class DummyAnimatorController : Actor
     {
         _animator.SetTrigger("PickUpRight");
     }
+    
+    public void TriggerThrow()
+    {
+        _animator.SetTrigger("ThrowRight");
+    }
 }
