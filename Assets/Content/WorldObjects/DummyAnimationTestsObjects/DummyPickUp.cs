@@ -6,6 +6,8 @@ using UnityEngine;
 public class DummyPickUp : MonoBehaviour
 {
 
+    public float itemMoveDuration;
+    public float itemReachDuration;
     private void Update()
     {
 
@@ -33,8 +35,9 @@ public class DummyPickUp : MonoBehaviour
 
     private IEnumerator PutItemInHand(DummyItem item)
     {
-        yield return new WaitForSeconds(0.4f);
-        GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
+        yield return new WaitForSeconds(itemReachDuration);
+        
+        StartCoroutine(MoveItemToHold(item.gameObject,  GetComponent<DummyIkController>().gunHold));
     }
 
     private void TryPickUp()
@@ -60,5 +63,29 @@ public class DummyPickUp : MonoBehaviour
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
         GetComponent<DummyHands>().RemoveItemFromSelectedHand();
+        GetComponent<DummyIkController>().holdRig.weight = 0f;
+    }
+    
+    private IEnumerator MoveItemToHold(GameObject item, GameObject targetHold)
+    {
+        Vector3 initialPosition = item.transform.position;
+        Quaternion initialRotation = item.transform.rotation;
+        float timer = 0.0f;
+
+        while (timer < itemMoveDuration)
+        {
+            float t = timer / itemMoveDuration;
+            item.transform.position = Vector3.Lerp(initialPosition, targetHold.transform.position, t);
+            item.transform.rotation = Quaternion.Lerp(initialRotation, targetHold.transform.rotation, t);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure final transform matches the target values exactly
+        item.transform.position = targetHold.transform.position;
+        item.transform.rotation = targetHold.transform.rotation;
+        
+        GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
     }
 }

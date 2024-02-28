@@ -14,18 +14,22 @@ public class PickUpHighSMB : StateMachineBehaviour
         _dummyIkController = animator.GetComponent<DummyIkController>();
 
         // Start coroutine to smoothly transition weight
-        animator.GetComponent<DummyIkController>().StartCoroutine(ModifyWeightOverTime(stateInfo));
+        animator.GetComponent<DummyIkController>().StartCoroutine(ModifyPickUpIkRigWeight(stateInfo));
+        animator.GetComponent<DummyIkController>().StartCoroutine(ModifyHoldIkRigWeight(stateInfo));
     }
 
     public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(stateInfo.normalizedTime < 0.5f)
+        if (stateInfo.normalizedTime < 0.5f)
+        {
             OrientPlayerTowardTarget(animator.transform, stateInfo);
         
-        OrientTargetForHandRotation();
+            OrientTargetForHandRotation();
+        }
+         
     }
 
-    private IEnumerator ModifyWeightOverTime(AnimatorStateInfo stateInfo)
+    private IEnumerator ModifyPickUpIkRigWeight(AnimatorStateInfo stateInfo)
     {
         
         float elapsedTime = 0f;
@@ -35,13 +39,11 @@ public class PickUpHighSMB : StateMachineBehaviour
             float currentLoopNormalizedTime = elapsedTime/(_pickUpTimeFactor*stateInfo.length);
 
             if (currentLoopNormalizedTime < 0.5f) {  
-                _dummyIkController.RightArmChainIKConstraint.weight = currentLoopNormalizedTime *2;
-                _dummyIkController.HeadIKConstraint.weight = currentLoopNormalizedTime *2;
+                _dummyIkController.pickUpRig.weight = currentLoopNormalizedTime *2;
             }
             else
             {
-                _dummyIkController.RightArmChainIKConstraint.weight = 2f - 2f * currentLoopNormalizedTime;
-                _dummyIkController.HeadIKConstraint.weight = 2f - 2f * currentLoopNormalizedTime;
+                _dummyIkController.pickUpRig.weight = 2f - 2f * currentLoopNormalizedTime;
             }
 
             elapsedTime += Time.deltaTime;
@@ -49,9 +51,38 @@ public class PickUpHighSMB : StateMachineBehaviour
         }
 
         // Ensure the weight reaches the target value exactly
-        _dummyIkController.RightArmChainIKConstraint.weight = 0f;
+        _dummyIkController.pickUpRig.weight = 0f;
+    }
+    
+    private IEnumerator ModifyHoldIkRigWeight(AnimatorStateInfo stateInfo)
+    {
+        
+        float elapsedTime = 0f;
+
+        while (elapsedTime < _pickUpTimeFactor*stateInfo.length)
+        {
+            float currentLoopNormalizedTime = elapsedTime/(_pickUpTimeFactor*stateInfo.length);
+
+            if (currentLoopNormalizedTime < 0.5f)
+            {
+                yield return null;
+            }
+            else
+            {
+                _dummyIkController.holdRig.weight = currentLoopNormalizedTime;
+            }
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the weight reaches the target value exactly
+        _dummyIkController.holdRig.weight = 1f;
     }
 
+    /// <summary>
+    /// Slowly turn the character to make sure it's facing the aimed target.
+    /// </summary>
     private void OrientPlayerTowardTarget(Transform playerTransform, AnimatorStateInfo stateInfo)
     {
         
@@ -68,10 +99,13 @@ public class PickUpHighSMB : StateMachineBehaviour
         playerTransform.rotation = Quaternion.Lerp(playerTransform.rotation, rotation, 2*stateInfo.normalizedTime);
     }
 
+    /// <summary>
+    /// Create a rotation of the IK target to make sure the hand reach in a natural way the item.
+    /// The rotation is such that it's Y axis is aligned with the line crossing through the character shoulder and IK target.
+    /// </summary>
     private void OrientTargetForHandRotation()
     {
-        Vector3 armTargetDirection = _dummyIkController.RightHandIkTarget.transform.position 
-            - _dummyIkController.RightArmTwoBoneIKConstraint.data.root.position;
+        Vector3 armTargetDirection = _dummyIkController.RightHandIkTarget.transform.position - _dummyIkController.RightUpperArm.transform.position;
         
         Quaternion targetRotation = Quaternion.LookRotation(armTargetDirection.normalized, Vector3.down);
         

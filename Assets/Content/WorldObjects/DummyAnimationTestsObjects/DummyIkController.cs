@@ -8,9 +8,13 @@ public class DummyIkController : MonoBehaviour
 
     public GameObject RightHandIkTarget;
 
-    [SerializeField]
-    private TwoBoneIKConstraint _rightArmTwoBoneIKConstraint;
+    public GameObject RightUpperArm;
+
+    public Rig pickUpRig;
     
+    public Rig holdRig;
+
+    public GameObject gunHold;
 
     
     [SerializeField]
@@ -20,8 +24,6 @@ public class DummyIkController : MonoBehaviour
     private MultiAimConstraint _headIKConstraint;
     
     public ChainIKConstraint  RightArmChainIKConstraint => _rightArmChainIKConstraint;
-
-    public TwoBoneIKConstraint RightArmTwoBoneIKConstraint => _rightArmTwoBoneIKConstraint;
     
     public MultiAimConstraint HeadIKConstraint => _headIKConstraint;
 }
