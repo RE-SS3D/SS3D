@@ -1,4 +1,5 @@
 using SS3D.Systems.Inventory.Containers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,16 @@ public class DummyPickUp : MonoBehaviour
 
     public float itemMoveDuration;
     public float itemReachDuration;
+
+    private float _pickUpDuration;
+
+    public DummyIkController dummyIkController;
+
+    private void Start()
+    {
+        _pickUpDuration = itemMoveDuration + itemReachDuration;
+    }
+    
     private void Update()
     {
 
@@ -28,8 +39,24 @@ public class DummyPickUp : MonoBehaviour
     private void PickUp(DummyItem item)
     {
         GetComponent<DummyAnimatorController>().TriggerPickUp();
-        GetComponent<DummyIkController>().RightHandIkTarget.transform.position = item.rightHandHold.transform.position;
-        GetComponent<DummyIkController>().RightHandIkTarget.transform.rotation = item.rightHandHold.transform.rotation;
+
+        StartCoroutine(ModifyPickUpIkRigWeight());
+        
+        GetComponent<DummyIkController>().rightHandPickUpIkTarget.transform.parent = item.rightHandHold.transform;
+        GetComponent<DummyIkController>().rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+        
+        GetComponent<DummyIkController>().leftHandPickUpIkTarget.transform.parent = item.leftHandHold.transform;
+        GetComponent<DummyIkController>().leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+        
+        GetComponent<DummyIkController>().rightHandHoldIkTarget.transform.parent = item.rightHandHold.transform;
+        GetComponent<DummyIkController>().rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
+        GetComponent<DummyIkController>().rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+        
+        GetComponent<DummyIkController>().leftHandHoldIkTarget.transform.parent = item.leftHandHold.transform;
+        GetComponent<DummyIkController>().leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
+        GetComponent<DummyIkController>().leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+
+
         StartCoroutine(PutItemInHand(item));
     }
 
@@ -87,5 +114,55 @@ public class DummyPickUp : MonoBehaviour
         item.transform.rotation = targetHold.transform.rotation;
         
         GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
+    }
+    
+    private IEnumerator ModifyPickUpIkRigWeight()
+    {
+        
+        float elapsedTime = 0f;
+        bool startHolding = false;
+
+        while (elapsedTime < _pickUpDuration)
+        {
+            float currentLoopNormalizedTime = elapsedTime/_pickUpDuration;
+
+            if (currentLoopNormalizedTime < 0.5f) {  
+                dummyIkController.pickUpRig.weight = currentLoopNormalizedTime *2;
+            }
+            else
+            {
+                if (!startHolding)
+                {
+                    StartCoroutine(ModifyHoldIkRigWeight());
+                    startHolding = true;
+                }
+                dummyIkController.pickUpRig.weight = 2f - 2f * currentLoopNormalizedTime;
+            }
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the weight reaches the target value exactly
+        dummyIkController.pickUpRig.weight = 0f;
+    }
+    
+    private IEnumerator ModifyHoldIkRigWeight()
+    {
+        
+        float elapsedTime = 0f;
+
+        while (elapsedTime < itemMoveDuration)
+        {
+            float weight = elapsedTime/itemMoveDuration;
+
+            dummyIkController.holdRig.weight = weight;
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the weight reaches the target value exactly
+        dummyIkController.holdRig.weight = 1f;
     }
 }

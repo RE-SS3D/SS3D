@@ -12,15 +12,11 @@ public class PickUpHighSMB : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         _dummyIkController = animator.GetComponent<DummyIkController>();
-
-        // Start coroutine to smoothly transition weight
-        animator.GetComponent<DummyIkController>().StartCoroutine(ModifyPickUpIkRigWeight(stateInfo));
-        animator.GetComponent<DummyIkController>().StartCoroutine(ModifyHoldIkRigWeight(stateInfo));
     }
 
     public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.normalizedTime < 0.5f)
+        if (stateInfo.normalizedTime < 0.3f)
         {
             OrientPlayerTowardTarget(animator.transform, stateInfo);
         
@@ -28,58 +24,7 @@ public class PickUpHighSMB : StateMachineBehaviour
         }
          
     }
-
-    private IEnumerator ModifyPickUpIkRigWeight(AnimatorStateInfo stateInfo)
-    {
-        
-        float elapsedTime = 0f;
-
-        while (elapsedTime < _pickUpTimeFactor*stateInfo.length)
-        {
-            float currentLoopNormalizedTime = elapsedTime/(_pickUpTimeFactor*stateInfo.length);
-
-            if (currentLoopNormalizedTime < 0.5f) {  
-                _dummyIkController.pickUpRig.weight = currentLoopNormalizedTime *2;
-            }
-            else
-            {
-                _dummyIkController.pickUpRig.weight = 2f - 2f * currentLoopNormalizedTime;
-            }
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure the weight reaches the target value exactly
-        _dummyIkController.pickUpRig.weight = 0f;
-    }
     
-    private IEnumerator ModifyHoldIkRigWeight(AnimatorStateInfo stateInfo)
-    {
-        
-        float elapsedTime = 0f;
-
-        while (elapsedTime < _pickUpTimeFactor*stateInfo.length)
-        {
-            float currentLoopNormalizedTime = elapsedTime/(_pickUpTimeFactor*stateInfo.length);
-
-            if (currentLoopNormalizedTime < 0.5f)
-            {
-                yield return null;
-            }
-            else
-            {
-                _dummyIkController.holdRig.weight = currentLoopNormalizedTime;
-            }
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure the weight reaches the target value exactly
-        _dummyIkController.holdRig.weight = 1f;
-    }
-
     /// <summary>
     /// Slowly turn the character to make sure it's facing the aimed target.
     /// </summary>
@@ -87,7 +32,7 @@ public class PickUpHighSMB : StateMachineBehaviour
     {
         
         // Calculate the direction from this object to the target object
-        Vector3 directionFromPlayerToTarget = _dummyIkController.RightHandIkTarget.transform.position - playerTransform.position;
+        Vector3 directionFromPlayerToTarget = _dummyIkController.rightHandPickUpIkTarget.transform.position - playerTransform.position;
         
         // The y component should be 0 so the human rotate only on the XZ plane.
         directionFromPlayerToTarget.y = 0f;
@@ -105,12 +50,12 @@ public class PickUpHighSMB : StateMachineBehaviour
     /// </summary>
     private void OrientTargetForHandRotation()
     {
-        Vector3 armTargetDirection = _dummyIkController.RightHandIkTarget.transform.position - _dummyIkController.RightUpperArm.transform.position;
+        Vector3 armTargetDirection = _dummyIkController.rightHandPickUpIkTarget.transform.position - _dummyIkController.RightUpperArm.transform.position;
         
         Quaternion targetRotation = Quaternion.LookRotation(armTargetDirection.normalized, Vector3.down);
         
         targetRotation *= Quaternion.AngleAxis(90f, Vector3.right);
 
-        _dummyIkController.RightHandIkTarget.transform.rotation = targetRotation;
+        _dummyIkController.rightHandPickUpIkTarget.transform.rotation = targetRotation;
     }
 }

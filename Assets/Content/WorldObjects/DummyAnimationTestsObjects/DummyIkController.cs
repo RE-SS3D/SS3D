@@ -6,7 +6,13 @@ using UnityEngine.Animations.Rigging;
 public class DummyIkController : MonoBehaviour
 {
 
-    public GameObject RightHandIkTarget;
+    public GameObject rightHandPickUpIkTarget;
+    
+    public GameObject leftHandPickUpIkTarget;
+    
+    public GameObject rightHandHoldIkTarget;
+    
+    public GameObject leftHandHoldIkTarget;
 
     public GameObject RightUpperArm;
 
