@@ -1,0 +1,13 @@
+{
+  "name": "com.kybernetik.inspector-gadgets",
+  "displayName": "Inspector Gadgets",
+  "version": "7.0.0",
+  "unity": "2019.4",
+  "description": "Inspector Gadgets is a Unity plugin which enhances various aspects of the Unity Editor to streamline your development workflow.",
+  "author": {
+    "name": "Kailas Dierk",
+    "email": "mail@kybernetik.com.au",
+    "url": "https://kybernetik.com.au"
+  },
+  "hideInEditor": false
+}
