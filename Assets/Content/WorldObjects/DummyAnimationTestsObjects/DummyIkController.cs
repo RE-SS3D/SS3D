@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
 
 public class DummyIkController : MonoBehaviour
@@ -90,11 +91,19 @@ public class DummyIkController : MonoBehaviour
 
     public void SetOffsetOnItemPositionConstraint(Transform hold, bool onRightShoulder)
     {
-        Vector3 armPosition = onRightShoulder ? rightUpperArm.position : leftUpperArm.position;
         Transform arm = onRightShoulder ? rightUpperArm : leftUpperArm;
         
+        Debug.Log(arm.position);
+        
+        // probably doesn't work because of rotations
         Vector3 holdPositionRelative = arm.InverseTransformPoint(hold.position);
+        
+        var sources = itemHoldPositionIkConstraint.data.sourceObjects;
+        sources.SetWeight(0, onRightShoulder ? 1 : 0);
+        sources.SetWeight(1, onRightShoulder ? 0 : 1);
+        itemHoldPositionIkConstraint.data.sourceObjects = sources;
+
        
-       itemHoldPositionIkConstraint.data.offset = holdPositionRelative;
+       itemHoldPositionIkConstraint.data.offset = holdPositionRelative-arm.localPosition;
     }
 }

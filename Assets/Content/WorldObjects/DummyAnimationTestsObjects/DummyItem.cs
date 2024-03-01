@@ -20,9 +20,13 @@ public class DummyItem : MonoBehaviour
 
     public TwoHandHoldType twoHandHold;
     
-    public Transform rightHandHold;
+    public Transform primaryRightHandHold;
     
-    public Transform leftHandHold;
+    public Transform secondaryRightHandHold;
+    
+    public Transform primaryLeftHandHold;
+
+    public Transform secondaryLeftHandHold;
 
     public bool canHoldTwoHand;
 

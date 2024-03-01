@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3657686483164383253
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3416135191583572658}
+  m_Layer: 0
+  m_Name: SecondaryRightHandHold
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3416135191583572658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3657686483164383253}
+  m_LocalRotation: {x: 0.17749724, y: -0.32002875, z: 0.5224868, w: 0.77011937}
+  m_LocalPosition: {x: 0.08, y: -0.14499995, z: 0.15000004}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6352803376296011595}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 37.431, y: -22.778, z: 60.502}
 --- !u!1 &4459621749739819944
 GameObject:
   m_ObjectHideFlags: 0
@@ -9,7 +40,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5154380250611511651}
-  - component: {fileID: 2748607904046757542}
   m_Layer: 0
   m_Name: LeftHandHold
   m_TagString: Untagged
@@ -24,27 +54,45 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4459621749739819944}
+  m_LocalRotation: {x: 0.7133665, y: -0.58096975, z: -0.23146646, w: 0.31623688}
+  m_LocalPosition: {x: 0.054, y: -0.081, z: -0.233}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6352803376296011595}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: -1.923, y: -222.993, z: -255.334}
+--- !u!1 &5826210204305728289
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 397271564552974130}
+  m_Layer: 0
+  m_Name: SecondaryLeftHandHold
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &397271564552974130
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5826210204305728289}
   m_LocalRotation: {x: -0, y: -0, z: -0.7174933, w: 0.6965654}
   m_LocalPosition: {x: -0.166, y: -0.145, z: 0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6352803376296011595}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -91.696}
---- !u!114 &2748607904046757542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4459621749739819944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29c310078792d154a91b70b2d063176b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 0
 --- !u!1 &6008472259372973553
 GameObject:
   m_ObjectHideFlags: 0
@@ -81,6 +129,8 @@ Transform:
   - {fileID: 7902189497938638389}
   - {fileID: 5008804419156306236}
   - {fileID: 5154380250611511651}
+  - {fileID: 3416135191583572658}
+  - {fileID: 397271564552974130}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -148,8 +198,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   singleHandHold: 1
   twoHandHold: 0
-  rightHandHold: {fileID: 5008804419156306236}
-  leftHandHold: {fileID: 5154380250611511651}
+  primaryRightHandHold: {fileID: 5008804419156306236}
+  secondaryRightHandHold: {fileID: 3416135191583572658}
+  primaryLeftHandHold: {fileID: 5154380250611511651}
+  secondaryLeftHandHold: {fileID: 397271564552974130}
   canHoldTwoHand: 1
   canHoldOneHand: 1
 --- !u!64 &1927847066278913763
@@ -191,7 +243,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5008804419156306236}
-  - component: {fileID: 3953044354977077164}
   m_Layer: 0
   m_Name: RightHandHold
   m_TagString: Untagged
@@ -214,19 +265,6 @@ Transform:
   m_Father: {fileID: 6352803376296011595}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -1.923, y: -222.993, z: -255.334}
---- !u!114 &3953044354977077164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6508875988268761688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29c310078792d154a91b70b2d063176b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 1
 --- !u!1 &7112094186763712524
 GameObject:
   m_ObjectHideFlags: 0

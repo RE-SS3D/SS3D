@@ -67,13 +67,13 @@ public class DummyPickUp : MonoBehaviour
         }
 
         Transform hold = dummyIkController.TargetFromHoldTypeAndHand(item.singleHandHold, item.twoHandHold, withTwoHands, hands.selectedHand);
-       //dummyIkController.holdPositionTarget.position = hold.position;
+        dummyIkController.holdPositionTarget.position = hold.position;
         dummyIkController.holdPositionTarget.rotation = hold.rotation;
 
         dummyIkController.SetOffsetOnItemPositionConstraint(hold, hands.selectedHand == DummyHands.Hand.RightHand);
         
         
-        MoveIkTargets(item);
+        MoveIkTargets(item, hands.selectedHand);
         
         GetComponent<DummyAnimatorController>().TriggerPickUp();
 
@@ -196,21 +196,41 @@ public class DummyPickUp : MonoBehaviour
         dummyIkController.holdRig.weight = 1f;
     }
 
-    private void MoveIkTargets(DummyItem item)
+    private void MoveIkTargets(DummyItem item, DummyHands.Hand selectedHand)
     {
-        dummyIkController.rightHandPickUpIkTarget.transform.parent = item.rightHandHold.transform;
-        dummyIkController.rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+        if (selectedHand == DummyHands.Hand.RightHand)
+        {
+            dummyIkController.rightHandPickUpIkTarget.transform.parent = item.primaryRightHandHold.transform;
+            dummyIkController.rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
         
-        dummyIkController.leftHandPickUpIkTarget.transform.parent = item.leftHandHold.transform;
-        dummyIkController.leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+            dummyIkController.leftHandPickUpIkTarget.transform.parent = item.secondaryLeftHandHold.transform;
+            dummyIkController.leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
         
-        dummyIkController.rightHandHoldIkTarget.transform.parent = item.rightHandHold.transform;
-        dummyIkController.rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
-        dummyIkController.rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+            dummyIkController.rightHandHoldIkTarget.transform.parent = item.primaryRightHandHold.transform;
+            dummyIkController.rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
+            dummyIkController.rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
         
-        dummyIkController.leftHandHoldIkTarget.transform.parent = item.leftHandHold.transform;
-        dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
-        dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+            dummyIkController.leftHandHoldIkTarget.transform.parent = item.secondaryLeftHandHold.transform;
+            dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
+            dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            dummyIkController.rightHandPickUpIkTarget.transform.parent = item.secondaryRightHandHold.transform;
+            dummyIkController.rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+        
+            dummyIkController.leftHandPickUpIkTarget.transform.parent = item.primaryLeftHandHold.transform;
+            dummyIkController.leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+        
+            dummyIkController.rightHandHoldIkTarget.transform.parent = item.secondaryRightHandHold.transform;
+            dummyIkController.rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
+            dummyIkController.rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+        
+            dummyIkController.leftHandHoldIkTarget.transform.parent = item.primaryLeftHandHold.transform;
+            dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
+            dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+        }
+
     }
 
   
