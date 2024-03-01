@@ -146,8 +146,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f69105775d221409591f2e3dcf4c98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  singleHandHold: 1
+  twoHandHold: 0
   rightHandHold: {fileID: 5008804419156306236}
   leftHandHold: {fileID: 5154380250611511651}
+  canHoldTwoHand: 1
+  canHoldOneHand: 1
 --- !u!64 &1927847066278913763
 MeshCollider:
   m_ObjectHideFlags: 0

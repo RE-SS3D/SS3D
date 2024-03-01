@@ -50,7 +50,7 @@ public class PickUpHighSMB : StateMachineBehaviour
     /// </summary>
     private void OrientTargetForHandRotation()
     {
-        Vector3 armTargetDirection = _dummyIkController.rightHandPickUpIkTarget.transform.position - _dummyIkController.RightUpperArm.transform.position;
+        Vector3 armTargetDirection = _dummyIkController.rightHandPickUpIkTarget.transform.position - _dummyIkController.rightUpperArm.transform.position;
         
         Quaternion targetRotation = Quaternion.LookRotation(armTargetDirection.normalized, Vector3.down);
         

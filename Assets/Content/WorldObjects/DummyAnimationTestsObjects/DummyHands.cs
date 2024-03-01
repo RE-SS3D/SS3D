@@ -18,12 +18,6 @@ public class DummyHands : MonoBehaviour
 
     public GameObject itemInLeftHand;
     public GameObject itemInRightHand;
-    
-    public Transform rightHandHoldTransform;
-
-    public Transform leftHandHoldTransform;
-    
-    public Transform GunHoldTransform;
 
     public GameObject ItemInSelectedHand
     { 
@@ -33,26 +27,12 @@ public class DummyHands : MonoBehaviour
             if (selectedHand == Hand.LeftHand)
             {
                 itemInLeftHand = value;
-
-                if (value is not null)
-                {
-                    value.transform.parent = rightHandHoldTransform;
-                    value.transform.parent = GunHoldTransform;
-                }
-
                 leftHandFull = itemInLeftHand is not null;
 
             }
             else
             {
                 itemInRightHand = value;
-
-                if (value is not null)
-                {
-                    value.transform.parent = leftHandHoldTransform;
-                    value.transform.parent = GunHoldTransform;
-                }
-
                 rightHandFull = itemInRightHand is not null;
             }
             
@@ -86,8 +66,6 @@ public class DummyHands : MonoBehaviour
     public void AddItemToSelectedHand(GameObject item)
     {
         ItemInSelectedHand = item;
-        item.transform.localPosition = Vector3.zero;
-        item.transform.localRotation = Quaternion.identity;
         item.GetComponent<Rigidbody>().isKinematic = true;
         item.GetComponent<Collider>().enabled = false;
     }

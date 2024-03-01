@@ -14,6 +14,8 @@ public class DummyPickUp : MonoBehaviour
 
     public DummyIkController dummyIkController;
 
+    public DummyHands hands;
+
     private void Start()
     {
         _pickUpDuration = itemMoveDuration + itemReachDuration;
@@ -38,23 +40,46 @@ public class DummyPickUp : MonoBehaviour
 
     private void PickUp(DummyItem item)
     {
+        bool withTwoHands = false;
+
+        if (!hands.leftHandFull && !hands.rightHandFull && item.canHoldTwoHand)
+        {
+            dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 1;
+            dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 1;
+            withTwoHands = true;
+        }
+        else if (hands.IsSelectedHandEmpty  && item.canHoldOneHand)
+        {
+            if (hands.selectedHand == DummyHands.Hand.LeftHand)
+            {
+                dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
+                dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 1;
+            }
+            else
+            {
+                dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 1;
+                dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
+            }
+        }
+        else
+        {
+            return;
+        }
+
+        Transform hold = dummyIkController.TargetFromHoldTypeAndHand(item.singleHandHold, item.twoHandHold, withTwoHands, hands.selectedHand);
+       //dummyIkController.holdPositionTarget.position = hold.position;
+        dummyIkController.holdPositionTarget.rotation = hold.rotation;
+
+        dummyIkController.SetOffsetOnItemPositionConstraint(hold, hands.selectedHand == DummyHands.Hand.RightHand);
+        
+        
+        MoveIkTargets(item);
+        
         GetComponent<DummyAnimatorController>().TriggerPickUp();
 
         StartCoroutine(ModifyPickUpIkRigWeight());
         
-        GetComponent<DummyIkController>().rightHandPickUpIkTarget.transform.parent = item.rightHandHold.transform;
-        GetComponent<DummyIkController>().rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
-        
-        GetComponent<DummyIkController>().leftHandPickUpIkTarget.transform.parent = item.leftHandHold.transform;
-        GetComponent<DummyIkController>().leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
-        
-        GetComponent<DummyIkController>().rightHandHoldIkTarget.transform.parent = item.rightHandHold.transform;
-        GetComponent<DummyIkController>().rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
-        GetComponent<DummyIkController>().rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
-        
-        GetComponent<DummyIkController>().leftHandHoldIkTarget.transform.parent = item.leftHandHold.transform;
-        GetComponent<DummyIkController>().leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
-        GetComponent<DummyIkController>().leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+      
 
 
         StartCoroutine(PutItemInHand(item));
@@ -64,7 +89,7 @@ public class DummyPickUp : MonoBehaviour
     {
         yield return new WaitForSeconds(itemReachDuration);
         
-        StartCoroutine(MoveItemToHold(item.gameObject,  GetComponent<DummyIkController>().gunHold));
+        StartCoroutine(MoveItemToHold(item.gameObject));
     }
 
     private void TryPickUp()
@@ -90,28 +115,33 @@ public class DummyPickUp : MonoBehaviour
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
         GetComponent<DummyHands>().RemoveItemFromSelectedHand();
-        GetComponent<DummyIkController>().holdRig.weight = 0f;
+        dummyIkController.holdRig.weight = 0f;
     }
     
-    private IEnumerator MoveItemToHold(GameObject item, GameObject targetHold)
+    private IEnumerator MoveItemToHold(GameObject item)
     {
         Vector3 initialPosition = item.transform.position;
         Quaternion initialRotation = item.transform.rotation;
         float timer = 0.0f;
 
+        Transform targetHold = dummyIkController.holdPositionTarget;
+
         while (timer < itemMoveDuration)
         {
             float t = timer / itemMoveDuration;
-            item.transform.position = Vector3.Lerp(initialPosition, targetHold.transform.position, t);
-            item.transform.rotation = Quaternion.Lerp(initialRotation, targetHold.transform.rotation, t);
+            item.transform.position = Vector3.Lerp(initialPosition, targetHold.position, t);
+            item.transform.rotation = Quaternion.Lerp(initialRotation, targetHold.rotation, t);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final transform matches the target values exactly
-        item.transform.position = targetHold.transform.position;
-        item.transform.rotation = targetHold.transform.rotation;
+        item.transform.position = targetHold.position;
+        item.transform.rotation = targetHold.rotation;
+
+        item.transform.parent = targetHold;
+        
         
         GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
     }
@@ -165,4 +195,23 @@ public class DummyPickUp : MonoBehaviour
         // Ensure the weight reaches the target value exactly
         dummyIkController.holdRig.weight = 1f;
     }
+
+    private void MoveIkTargets(DummyItem item)
+    {
+        dummyIkController.rightHandPickUpIkTarget.transform.parent = item.rightHandHold.transform;
+        dummyIkController.rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+        
+        dummyIkController.leftHandPickUpIkTarget.transform.parent = item.leftHandHold.transform;
+        dummyIkController.leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+        
+        dummyIkController.rightHandHoldIkTarget.transform.parent = item.rightHandHold.transform;
+        dummyIkController.rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
+        dummyIkController.rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+        
+        dummyIkController.leftHandHoldIkTarget.transform.parent = item.leftHandHold.transform;
+        dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
+        dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+    }
+
+  
 }

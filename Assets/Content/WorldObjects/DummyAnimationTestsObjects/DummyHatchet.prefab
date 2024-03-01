@@ -128,8 +128,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f69105775d221409591f2e3dcf4c98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rightHandHold: {fileID: 0}
-  leftHandHold: {fileID: 0}
+  singleHandHold: 0
+  twoHandHold: 0
+  rightHandHold: {fileID: 1723189298052394240}
+  leftHandHold: {fileID: 1723189298052394240}
+  canHoldTwoHand: 0
+  canHoldOneHand: 1
 --- !u!1 &7403023618397329741
 GameObject:
   m_ObjectHideFlags: 0
