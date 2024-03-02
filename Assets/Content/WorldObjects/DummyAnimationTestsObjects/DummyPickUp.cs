@@ -44,6 +44,8 @@ public class DummyPickUp : MonoBehaviour
 
         if (!hands.leftHandFull && !hands.rightHandFull && item.canHoldTwoHand)
         {
+            dummyIkController.rightArmChainIKConstraint.weight = 1;
+            dummyIkController.leftArmChainIKConstraint.weight = 1;
             dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 1;
             dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 1;
             withTwoHands = true;
@@ -52,13 +54,15 @@ public class DummyPickUp : MonoBehaviour
         {
             if (hands.selectedHand == DummyHands.Hand.LeftHand)
             {
-                dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
+                dummyIkController.rightArmChainIKConstraint.weight = 0;
+                dummyIkController.leftArmChainIKConstraint.weight = 1;
                 dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 1;
             }
             else
             {
+                dummyIkController.rightArmChainIKConstraint.weight = 1;
+                dummyIkController.leftArmChainIKConstraint.weight = 0;
                 dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 1;
-                dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
             }
         }
         else
@@ -67,13 +71,31 @@ public class DummyPickUp : MonoBehaviour
         }
 
         Transform hold = dummyIkController.TargetFromHoldTypeAndHand(item.singleHandHold, item.twoHandHold, withTwoHands, hands.selectedHand);
-        dummyIkController.holdPositionTarget.position = hold.position;
-        dummyIkController.holdPositionTarget.rotation = hold.rotation;
 
-        dummyIkController.SetOffsetOnItemPositionConstraint(hold, hands.selectedHand == DummyHands.Hand.RightHand);
+        if (withTwoHands)
+        {
+            dummyIkController.rightHoldPositionTarget.position = hold.position;
+            dummyIkController.rightHoldPositionTarget.rotation = hold.rotation;
+            dummyIkController.leftHoldPositionTarget.position = hold.position;
+            dummyIkController.leftHoldPositionTarget.rotation = hold.rotation;
+        }
+        else if(hands.selectedHand == DummyHands.Hand.LeftHand)
+        {
+            dummyIkController.leftHoldPositionTarget.position = hold.position;
+            dummyIkController.leftHoldPositionTarget.rotation = hold.rotation;
+        }
+        else
+        {
+            dummyIkController.rightHoldPositionTarget.position = hold.position;
+            dummyIkController.rightHoldPositionTarget.rotation = hold.rotation;
+        }
+        
+
+        dummyIkController.SetOffsetOnItemPositionConstraint(item.singleHandHold, item.twoHandHold, withTwoHands,
+            hands.selectedHand,hold, hands.selectedHand == DummyHands.Hand.RightHand);
         
         
-        MoveIkTargets(item, hands.selectedHand);
+        MoveIkTargets(item, hands.selectedHand, withTwoHands);
         
         GetComponent<DummyAnimatorController>().TriggerPickUp();
 
@@ -114,8 +136,26 @@ public class DummyPickUp : MonoBehaviour
     private void TryThrow()
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
+        DummyItem item = GetComponent<DummyHands>().ItemInSelectedHand.GetComponent<DummyItem>();
+
+        if (!hands.IsSelectedHandEmpty && hands.IsNonSelectedHandEmpty && item.canHoldTwoHand)
+        {
+            dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
+            dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
+        }
+        else if (!hands.IsSelectedHandEmpty  && item.canHoldOneHand)
+        {
+            if (hands.selectedHand == DummyHands.Hand.LeftHand)
+            {
+                dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
+            }
+            else
+            {
+                dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
+            }
+        }
+        
         GetComponent<DummyHands>().RemoveItemFromSelectedHand();
-        dummyIkController.holdRig.weight = 0f;
     }
     
     private IEnumerator MoveItemToHold(GameObject item)
@@ -123,8 +163,16 @@ public class DummyPickUp : MonoBehaviour
         Vector3 initialPosition = item.transform.position;
         Quaternion initialRotation = item.transform.rotation;
         float timer = 0.0f;
+        Transform targetHold;
 
-        Transform targetHold = dummyIkController.holdPositionTarget;
+        if (hands.selectedHand == DummyHands.Hand.LeftHand)
+        {
+            targetHold = dummyIkController.leftHoldPositionTarget;
+        }
+        else
+        {
+            targetHold = dummyIkController.rightHoldPositionTarget;
+        }
 
         while (timer < itemMoveDuration)
         {
@@ -196,39 +244,47 @@ public class DummyPickUp : MonoBehaviour
         dummyIkController.holdRig.weight = 1f;
     }
 
-    private void MoveIkTargets(DummyItem item, DummyHands.Hand selectedHand)
+    private void MoveIkTargets(DummyItem item, DummyHands.Hand selectedHand, bool withTwoHands)
     {
         if (selectedHand == DummyHands.Hand.RightHand)
         {
             dummyIkController.rightHandPickUpIkTarget.transform.parent = item.primaryRightHandHold.transform;
             dummyIkController.rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
         
-            dummyIkController.leftHandPickUpIkTarget.transform.parent = item.secondaryLeftHandHold.transform;
-            dummyIkController.leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
-        
             dummyIkController.rightHandHoldIkTarget.transform.parent = item.primaryRightHandHold.transform;
             dummyIkController.rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
             dummyIkController.rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+
+            if (withTwoHands)
+            {
+                dummyIkController.leftHandPickUpIkTarget.transform.parent = item.secondaryLeftHandHold.transform;
+                dummyIkController.leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
         
-            dummyIkController.leftHandHoldIkTarget.transform.parent = item.secondaryLeftHandHold.transform;
-            dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
-            dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+                dummyIkController.leftHandHoldIkTarget.transform.parent = item.secondaryLeftHandHold.transform;
+                dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
+                dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+            }
+
         }
         else
         {
-            dummyIkController.rightHandPickUpIkTarget.transform.parent = item.secondaryRightHandHold.transform;
-            dummyIkController.rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
-        
             dummyIkController.leftHandPickUpIkTarget.transform.parent = item.primaryLeftHandHold.transform;
             dummyIkController.leftHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+            
+            dummyIkController.leftHandHoldIkTarget.transform.parent = item.primaryLeftHandHold.transform;
+            dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
+            dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+        
+            if (withTwoHands)
+            {
+            dummyIkController.rightHandPickUpIkTarget.transform.parent = item.secondaryRightHandHold.transform;
+            dummyIkController.rightHandPickUpIkTarget.transform.localPosition = Vector3.zero;
+            
         
             dummyIkController.rightHandHoldIkTarget.transform.parent = item.secondaryRightHandHold.transform;
             dummyIkController.rightHandHoldIkTarget.transform.localPosition = Vector3.zero;
             dummyIkController.rightHandHoldIkTarget.transform.localRotation = Quaternion.identity;
-        
-            dummyIkController.leftHandHoldIkTarget.transform.parent = item.primaryLeftHandHold.transform;
-            dummyIkController.leftHandHoldIkTarget.transform.localPosition = Vector3.zero;
-            dummyIkController.leftHandHoldIkTarget.transform.localRotation = Quaternion.identity;
+            }
         }
 
     }

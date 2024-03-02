@@ -12,10 +12,8 @@ public class DummyIkController : MonoBehaviour
     public GameObject leftHandPickUpIkTarget;
     
     public GameObject rightHandHoldIkTarget;
-    
-    public GameObject leftHandHoldIkTarget;
 
-    public GameObject holdWithNoRootRotation;
+    public GameObject leftHandHoldIkTarget;
 
     public Transform rightUpperArm;
 
@@ -31,12 +29,16 @@ public class DummyIkController : MonoBehaviour
     
     public TwoBoneIKConstraint leftHandHoldTwoBoneIkConstraint;
 
-    public MultiPositionConstraint itemHoldPositionIkConstraint;
+    public MultiPositionConstraint itemRightHoldPositionIkConstraint;
+    
+    public MultiPositionConstraint itemLeftHoldPositionIkConstraint;
 
     // Hold positions
     
     // The game object that moves to put itself on holds
-    public Transform holdPositionTarget;
+    public Transform rightHoldPositionTarget;
+    
+    public Transform leftHoldPositionTarget;
     
     public Transform gunHoldRight;
 
@@ -51,15 +53,16 @@ public class DummyIkController : MonoBehaviour
     public Transform shoulderHoldLeft;
 
     
-    [SerializeField]
-    private ChainIKConstraint _rightArmChainIKConstraint;
+
+    public ChainIKConstraint rightArmChainIKConstraint;
+    
+    public ChainIKConstraint leftArmChainIKConstraint;
     
     [SerializeField]
     private MultiAimConstraint _headIKConstraint;
     
     
-    
-    public ChainIKConstraint  RightArmChainIKConstraint => _rightArmChainIKConstraint;
+
     
     public MultiAimConstraint HeadIKConstraint => _headIKConstraint;
 
@@ -89,21 +92,43 @@ public class DummyIkController : MonoBehaviour
         return selectedHand == DummyHands.Hand.LeftHand ? toolBoxHoldLeft  : toolboxHoldRight;
     }
 
-    public void SetOffsetOnItemPositionConstraint(Transform hold, bool onRightShoulder)
+    private Vector3 OffsetFromHoldTypeAndHand(DummyItem.SingleHandHoldType singleHoldType, DummyItem.TwoHandHoldType twoHandHoldType,
+        bool withTwoHand, DummyHands.Hand selectedHand)
     {
-        Transform arm = onRightShoulder ? rightUpperArm : leftUpperArm;
+        if (withTwoHand)
+        {
+            switch (twoHandHoldType)
+            {
+                case DummyItem.TwoHandHoldType.Gun :
+                    return selectedHand == DummyHands.Hand.LeftHand ? new Vector3(0.15f,-0.08f,0.26f) : new Vector3(-0.15f,-0.08f,0.26f);
+            }
+        }
+        else
+        {
+            switch (singleHoldType)
+            {
+                case DummyItem.SingleHandHoldType.Shoulder :
+                    return selectedHand == DummyHands.Hand.LeftHand ? new Vector3()  : new Vector3();
+                case  DummyItem.SingleHandHoldType.Toolbox :
+                    return selectedHand == 
+                        DummyHands.Hand.LeftHand ? new Vector3(0.06f,-0.64f,0.11f)  : new Vector3(-0.06f, -0.64f, 0.11f);
+            }
+        }
         
-        Debug.Log(arm.position);
-        
-        // probably doesn't work because of rotations
-        Vector3 holdPositionRelative = arm.InverseTransformPoint(hold.position);
-        
-        var sources = itemHoldPositionIkConstraint.data.sourceObjects;
-        sources.SetWeight(0, onRightShoulder ? 1 : 0);
-        sources.SetWeight(1, onRightShoulder ? 0 : 1);
-        itemHoldPositionIkConstraint.data.sourceObjects = sources;
-
-       
-       itemHoldPositionIkConstraint.data.offset = holdPositionRelative-arm.localPosition;
+        // if no match return a toolbox hold.
+        return selectedHand == DummyHands.Hand.LeftHand ? new Vector3(0.06f,-0.64f,0.11f)  : new Vector3(-0.06f, -0.64f, 0.11f);
     }
+
+    public void SetOffsetOnItemPositionConstraint(DummyItem.SingleHandHoldType singleHoldType, DummyItem.TwoHandHoldType twoHandHoldType,
+        bool withTwoHand, DummyHands.Hand selectedHand, Transform hold, bool onRightShoulder)
+    {
+        itemLeftHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(singleHoldType, twoHandHoldType, withTwoHand, selectedHand);
+        itemRightHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(singleHoldType, twoHandHoldType, withTwoHand, selectedHand);
+    }
+    
+    /// left hint toolbox pose (0.148, -0.549, 0.338)
+    /// target hold rotation 0 270 0
+    /// Offset Vector3(0.0599999987,-0.639999986,0.109999999)
+    /// left hold position Vector3(-0.0149999997,0.379999995,0.238999993)
+    /// left hold rotation (348.4, 0, 180)
 }

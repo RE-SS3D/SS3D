@@ -40,6 +40,8 @@ public class DummyHands : MonoBehaviour
         } 
 
     } 
+    
+    public bool IsNonSelectedHandEmpty => selectedHand == Hand.LeftHand ? !rightHandFull : !leftHandFull;
 
     public bool IsSelectedHandEmpty => selectedHand == Hand.LeftHand ? !leftHandFull : !rightHandFull;
     
@@ -47,7 +49,7 @@ public class DummyHands : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (!Input.GetKey(KeyCode.X))
+        if (!Input.GetKeyDown(KeyCode.X))
             return;
 
         selectedHand = selectedHand == Hand.LeftHand ? Hand.RightHand : Hand.LeftHand;
@@ -55,12 +57,15 @@ public class DummyHands : MonoBehaviour
         Debug.Log($"Selected hand is {selectedHand}");
     }
 
-    public void RemoveItemFromSelectedHand()
+    public DummyItem RemoveItemFromSelectedHand()
     {
+        GameObject item = ItemInSelectedHand;
         ItemInSelectedHand.transform.parent = null;
         ItemInSelectedHand.gameObject.GetComponent<Rigidbody>().isKinematic = false;
         ItemInSelectedHand.gameObject.GetComponent<Collider>().enabled = true;
         ItemInSelectedHand = null;
+
+        return item.GetComponent<DummyItem>();
     }
 
     public void AddItemToSelectedHand(GameObject item)
