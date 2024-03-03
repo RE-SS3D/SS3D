@@ -190,6 +190,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7184709795803183432, guid: b2527e259e3b63544a9641a16aa4f2fa, type: 3}
   m_PrefabInstance: {fileID: 90547219}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &113506386
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 113506387}
+  m_Layer: 0
+  m_Name: LeftHandHoldTargetIk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &113506387
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113506386}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.659, y: 2.045, z: -0.0040000007}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &164959854 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3197388170385834841, guid: cd482cb34628ac14e9af1fbff1e7fa93, type: 3}
@@ -1055,6 +1086,10 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2142891004495607562, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Data.m_Target
+      value: 
+      objectReference: {fileID: 1710756111}
     - target: {fileID: 2175836309007415168, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.036
@@ -1087,9 +1122,13 @@ PrefabInstance:
       propertyPath: m_Data.m_SourceObjects.m_Item0.transform
       value: 
       objectReference: {fileID: 350909787}
+    - target: {fileID: 3450567292757048057, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Data.m_Target
+      value: 
+      objectReference: {fileID: 113506387}
     - target: {fileID: 3714097311666575904, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3714097311666575904, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1232,6 +1271,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 350909783}
     - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: leftHandHoldIkTarget
+      value: 
+      objectReference: {fileID: 113506387}
+    - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: rightHandHoldIkTarget
+      value: 
+      objectReference: {fileID: 1710756111}
+    - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: leftHandPickUpIkTarget
       value: 
       objectReference: {fileID: 887779103}
@@ -1254,6 +1301,37 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+--- !u!1 &1710756110
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1710756111}
+  m_Layer: 0
+  m_Name: RightHandHoldTargetIk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1710756111
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1710756110}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.659, y: 2.045, z: -0.0040000007}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1742912438
 PrefabInstance:
   m_ObjectHideFlags: 0

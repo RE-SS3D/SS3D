@@ -672,13 +672,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 439406537723989880}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.90029466, y: 0.15874627, z: 0.07037985, w: 0.3991437}
   m_LocalPosition: {x: 0.231, y: 1.285, z: 0.015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 24
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1003641818656327200
 MeshFilter:
@@ -1904,7 +1904,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 22
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: -40.798, y: -100.625, z: 31.232}
 --- !u!33 &6982979211777733384
 MeshFilter:
@@ -2842,7 +2842,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 23
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5683872306199495010
 MeshFilter:
@@ -3318,9 +3318,9 @@ Transform:
   - {fileID: 3162762470123075684}
   - {fileID: 5029736816765645950}
   - {fileID: 8867980937904334229}
+  - {fileID: 6048018365037233454}
   - {fileID: 5850001831997321599}
   - {fileID: 682390552445027629}
-  - {fileID: 6048018365037233454}
   - {fileID: 5870208139668738663}
   - {fileID: 4606741981008285273}
   - {fileID: 4363011775381521912}
@@ -3448,8 +3448,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rightHandPickUpIkTarget: {fileID: 0}
   leftHandPickUpIkTarget: {fileID: 0}
-  rightHandHoldIkTarget: {fileID: 4363011775381521912}
-  leftHandHoldIkTarget: {fileID: 3720527799557840007}
+  rightHandHoldIkTarget: {fileID: 0}
+  leftHandHoldIkTarget: {fileID: 0}
+  rightHandItemPositionIkTarget: {fileID: 4363011775381521912}
+  leftHandItemPositionIkTarget: {fileID: 3720527799557840007}
   rightUpperArm: {fileID: 802911981376609306}
   leftUpperArm: {fileID: 7446386329022654784}
   pickUpRig: {fileID: 1252846949690250700}
@@ -5725,7 +5727,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7620028408545265866}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.8680563, y: 0.15222429, z: 0.08054269, w: 0.465638}
   m_LocalPosition: {x: -0.206, y: 1.285, z: 0.015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

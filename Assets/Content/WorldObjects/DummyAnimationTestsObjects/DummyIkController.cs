@@ -13,6 +13,7 @@ public class DummyIkController : MonoBehaviour
     {
         Pickup,
         Hold,
+        ItemPosition,
     }
 
     // The transforms that moves to put itself on hold positions
@@ -23,6 +24,10 @@ public class DummyIkController : MonoBehaviour
     public Transform rightHandHoldIkTarget;
 
     public Transform leftHandHoldIkTarget;
+
+    public Transform rightHandItemPositionIkTarget;
+
+    public Transform leftHandItemPositionIkTarget;
 
     // bones 
     public Transform rightUpperArm;
@@ -75,6 +80,8 @@ public class DummyIkController : MonoBehaviour
     public Transform SelectedHandPickupIkTarget => 
         GetComponent<DummyHands>().selectedHand == DummyHands.Hand.RightHand ? rightHandPickUpIkTarget : leftHandPickUpIkTarget;
 
+    public Transform SelectedHandItemPositionIkTarget => 
+        GetComponent<DummyHands>().selectedHand == DummyHands.Hand.RightHand ? rightHandItemPositionIkTarget : leftHandItemPositionIkTarget;
     
     public void Start()
     {
@@ -87,9 +94,9 @@ public class DummyIkController : MonoBehaviour
         holdData.Add(new(DummyItem.HandHoldType.Toolbox, toolboxHoldRight,
             new Vector3(-0.06f, -0.64f, 0.11f), DummyHands.Hand.RightHand));
         holdData.Add(new(DummyItem.HandHoldType.Shoulder, shoulderHoldLeft,
-            new Vector3(0f, 0f, 0f), DummyHands.Hand.LeftHand));
+            new Vector3(0f, 0.18f, 0f), DummyHands.Hand.LeftHand));
         holdData.Add(new(DummyItem.HandHoldType.Shoulder, shoulderHoldRight,
-            new Vector3(0f, 0f, 0f), DummyHands.Hand.RightHand));
+            new Vector3(0f, 0.18f, 0f), DummyHands.Hand.RightHand));
     }
     
     public record HoldAndOffset(DummyItem.HandHoldType HandHoldType, Transform holdTarget, Vector3 Offset, DummyHands.Hand PrimaryHand);
@@ -144,6 +151,9 @@ public class DummyIkController : MonoBehaviour
                 break;
             case IkTargetType.Hold:
                 targetToSet = hand == DummyHands.Hand.RightHand ? rightHandHoldIkTarget : leftHandHoldIkTarget;
+                break;
+            case IkTargetType.ItemPosition:
+                targetToSet = hand == DummyHands.Hand.RightHand ? rightHandItemPositionIkTarget : leftHandItemPositionIkTarget;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
