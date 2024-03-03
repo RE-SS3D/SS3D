@@ -672,13 +672,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 439406537723989880}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.90029466, y: 0.15874627, z: 0.07037985, w: 0.3991437}
   m_LocalPosition: {x: 0.231, y: 1.285, z: 0.015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 24
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1003641818656327200
 MeshFilter:
@@ -1904,7 +1904,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 22
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: -40.798, y: -100.625, z: 31.232}
 --- !u!33 &6982979211777733384
 MeshFilter:
@@ -2842,7 +2842,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 23
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5683872306199495010
 MeshFilter:
@@ -3314,13 +3314,13 @@ Transform:
   - {fileID: 3362543718434004155}
   - {fileID: 7280184628898207537}
   - {fileID: 4319828436440283126}
-  - {fileID: 3162762470123075684}
   - {fileID: 8256616088293826340}
+  - {fileID: 3162762470123075684}
   - {fileID: 5029736816765645950}
   - {fileID: 8867980937904334229}
+  - {fileID: 6048018365037233454}
   - {fileID: 5850001831997321599}
   - {fileID: 682390552445027629}
-  - {fileID: 6048018365037233454}
   - {fileID: 5870208139668738663}
   - {fileID: 4606741981008285273}
   - {fileID: 4363011775381521912}
@@ -3361,9 +3361,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_RigLayers:
-  - m_Rig: {fileID: 1252846949690250700}
-    m_Active: 1
   - m_Rig: {fileID: 4843964150380460072}
+    m_Active: 1
+  - m_Rig: {fileID: 1252846949690250700}
     m_Active: 1
   m_Effectors: []
 --- !u!114 &2614927798672868032
@@ -3448,8 +3448,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rightHandPickUpIkTarget: {fileID: 0}
   leftHandPickUpIkTarget: {fileID: 0}
-  rightHandHoldIkTarget: {fileID: 547331446051564162}
-  leftHandHoldIkTarget: {fileID: 8797928814924332265}
+  rightHandHoldIkTarget: {fileID: 0}
+  leftHandHoldIkTarget: {fileID: 0}
+  rightHandItemPositionIkTarget: {fileID: 4363011775381521912}
+  leftHandItemPositionIkTarget: {fileID: 3720527799557840007}
   rightUpperArm: {fileID: 802911981376609306}
   leftUpperArm: {fileID: 7446386329022654784}
   pickUpRig: {fileID: 1252846949690250700}
@@ -3458,17 +3460,15 @@ MonoBehaviour:
   leftHandHoldTwoBoneIkConstraint: {fileID: 3450567292757048057}
   itemRightHoldPositionIkConstraint: {fileID: 6263492953658661066}
   itemLeftHoldPositionIkConstraint: {fileID: 3209808476875596154}
-  rightHoldPositionTarget: {fileID: 4363011775381521912}
-  leftHoldPositionTarget: {fileID: 3720527799557840007}
+  rightArmChainIKConstraint: {fileID: 2532537050071209971}
+  leftArmChainIKConstraint: {fileID: 2592208313181239853}
+  headIKConstraint: {fileID: 2851688491558728783}
   gunHoldRight: {fileID: 5850001831997321599}
   gunHoldLeft: {fileID: 5870208139668738663}
   toolboxHoldRight: {fileID: 682390552445027629}
   toolBoxHoldLeft: {fileID: 4606741981008285273}
   shoulderHoldRight: {fileID: 8867980937904334229}
   shoulderHoldLeft: {fileID: 6048018365037233454}
-  rightArmChainIKConstraint: {fileID: 2532537050071209971}
-  leftArmChainIKConstraint: {fileID: 2592208313181239853}
-  _headIKConstraint: {fileID: 2851688491558728783}
 --- !u!143 &1557544769380776910
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3586,7 +3586,7 @@ Transform:
   - {fileID: 7344439903334976350}
   - {fileID: 8900560248658806380}
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1252846949690250700
 MonoBehaviour:
@@ -4244,7 +4244,7 @@ MonoBehaviour:
     m_Root: {fileID: 802911981376609306}
     m_Mid: {fileID: 56314186812711448}
     m_Tip: {fileID: 6356800398579286298}
-    m_Target: {fileID: 0}
+    m_Target: {fileID: 4363011775381521912}
     m_Hint: {fileID: 2570101578385771908}
     m_TargetPositionWeight: 1
     m_TargetRotationWeight: 1
@@ -4319,7 +4319,7 @@ Transform:
   - {fileID: 6305849888995174770}
   - {fileID: 7988154616977013968}
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 19
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4843964150380460072
 MonoBehaviour:
@@ -5568,7 +5568,7 @@ MonoBehaviour:
     m_Root: {fileID: 7446386329022654784}
     m_Mid: {fileID: 8425781932946354035}
     m_Tip: {fileID: 8420821262611087137}
-    m_Target: {fileID: 0}
+    m_Target: {fileID: 3720527799557840007}
     m_Hint: {fileID: 9099685994337818100}
     m_TargetPositionWeight: 1
     m_TargetRotationWeight: 1
@@ -5727,7 +5727,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7620028408545265866}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.8680563, y: 0.15222429, z: 0.08054269, w: 0.465638}
   m_LocalPosition: {x: -0.206, y: 1.285, z: 0.015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

@@ -5,20 +5,18 @@ using UnityEngine;
 public class DummyItem : MonoBehaviour
 {
 
-    public enum SingleHandHoldType
+    public enum HandHoldType
     {
+        None,
         Toolbox,
         Shoulder,
+        DoubleHandGun,
     }
 
-    public enum TwoHandHoldType
-    {
-        Gun,
-    }
+    public HandHoldType singleHandHold;
+    
+    public HandHoldType twoHandHold;
 
-    public SingleHandHoldType singleHandHold;
-
-    public TwoHandHoldType twoHandHold;
     
     public Transform primaryRightHandHold;
     
@@ -32,15 +30,4 @@ public class DummyItem : MonoBehaviour
 
     public bool canHoldOneHand;
     
-    // Start is called before the first frame update
-    private void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
-        
-    }
 }
