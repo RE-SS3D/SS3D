@@ -36,7 +36,6 @@ public class DummyHands : MonoBehaviour
                 rightHandFull = itemInRightHand is not null;
             }
             
-
         } 
 
     } 
@@ -44,6 +43,8 @@ public class DummyHands : MonoBehaviour
     public bool IsNonSelectedHandEmpty => selectedHand == Hand.LeftHand ? !rightHandFull : !leftHandFull;
 
     public bool IsSelectedHandEmpty => selectedHand == Hand.LeftHand ? !leftHandFull : !rightHandFull;
+
+    public bool BothHandEmpty => !leftHandFull && !rightHandFull;
     
 
     // Update is called once per frame

@@ -196,8 +196,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f69105775d221409591f2e3dcf4c98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singleHandHold: 1
-  twoHandHold: 0
+  singleHandHold: 2
+  twoHandHold: 3
   primaryRightHandHold: {fileID: 5008804419156306236}
   secondaryRightHandHold: {fileID: 3416135191583572658}
   primaryLeftHandHold: {fileID: 5154380250611511651}
