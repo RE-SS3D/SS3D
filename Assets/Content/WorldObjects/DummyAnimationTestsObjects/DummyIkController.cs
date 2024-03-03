@@ -1,3 +1,4 @@
+using SS3D.Systems.Inventory.Containers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -113,8 +114,10 @@ public class DummyIkController : MonoBehaviour
 
     public void SetOffsetOnItemPositionConstraint(DummyItem.HandHoldType holdType, DummyHands.Hand selectedHand)
     {
-        itemLeftHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
-        itemRightHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
+        if(selectedHand == DummyHands.Hand.RightHand)
+            itemRightHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
+        else
+            itemLeftHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
     }
     
     public void SetWorldPositionRotationOfIkTargets(IkTargetType type, Transform toCopy)
