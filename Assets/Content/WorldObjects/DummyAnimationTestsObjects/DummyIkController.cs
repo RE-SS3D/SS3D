@@ -10,6 +10,8 @@ using UnityEngine.Animations.Rigging;
 public class DummyIkController : MonoBehaviour
 {
 
+    public DummyHands hands;
+    
     public enum IkTargetType
     {
         Pickup,
@@ -163,6 +165,111 @@ public class DummyIkController : MonoBehaviour
         }
 
         return targetToSet;
+    }
+
+    public void UpdateItemHold(DummyItem item, bool alreadyInHand)
+    {
+         bool withTwoHands = false;
+
+        if ((hands.BothHandEmpty || alreadyInHand)  && item.canHoldTwoHand)
+        {
+            rightArmChainIKConstraint.weight = 1;
+            leftArmChainIKConstraint.weight = 1;
+            rightHandHoldTwoBoneIkConstraint.weight = 1;
+            leftHandHoldTwoBoneIkConstraint.weight = 1;
+            withTwoHands = true;
+        }
+        else if (hands.IsSelectedHandEmpty  && item.canHoldOneHand)
+        {
+            if (hands.selectedHand == DummyHands.Hand.LeftHand)
+            {
+                rightArmChainIKConstraint.weight = 0;
+                leftArmChainIKConstraint.weight = 1;
+                leftHandHoldTwoBoneIkConstraint.weight = 1;
+            }
+            else
+            {
+                rightArmChainIKConstraint.weight = 1;
+                leftArmChainIKConstraint.weight = 0;
+                rightHandHoldTwoBoneIkConstraint.weight = 1;
+            }
+        }
+        else
+        {
+            return;
+        }
+
+        Transform hold = TargetFromHoldTypeAndHand(withTwoHands ? item.twoHandHold : item.singleHandHold, hands.selectedHand);
+
+        if (withTwoHands)
+        {
+            SetWorldPositionRotationOfIkTargets(DummyIkController.IkTargetType.ItemPosition, hold);
+        }
+        else if(hands.selectedHand == DummyHands.Hand.LeftHand)
+        {
+            SetWorldPositionRotationOfIkTarget(DummyIkController.IkTargetType.ItemPosition,
+                DummyHands.Hand.LeftHand, hold);
+        }
+        else
+        {
+            SetWorldPositionRotationOfIkTarget(DummyIkController.IkTargetType.ItemPosition,
+                DummyHands.Hand.RightHand, hold);
+        }
+        
+
+        SetOffsetOnItemPositionConstraint(withTwoHands ? item.twoHandHold : item.singleHandHold, hands.selectedHand);
+        
+        MoveIkTargets(item, withTwoHands);
+        
+        StartCoroutine(MoveItemToHold(item.gameObject, 0.2f));
+    }
+    
+    private void MoveIkTargets(DummyItem item, bool withTwoHands)
+    {
+        Transform primaryParent = hands.selectedHand == DummyHands.Hand.RightHand ?
+            item.primaryRightHandHold.transform : item.primaryLeftHandHold.transform;
+        
+        Transform secondaryParent = hands.selectedHand == DummyHands.Hand.RightHand ?
+            item.secondaryLeftHandHold.transform : item.secondaryRightHandHold.transform;
+        
+        SetParentTransformOfIkTarget(DummyIkController.IkTargetType.Pickup,
+            hands.selectedHand,  primaryParent);
+        SetParentTransformOfIkTarget(DummyIkController.IkTargetType.Hold,
+            hands.selectedHand,  primaryParent);
+
+        if (withTwoHands)
+        {
+            SetParentTransformOfIkTarget(DummyIkController.IkTargetType.Pickup,
+                hands.UnselectedHand,  secondaryParent);
+            SetParentTransformOfIkTarget(DummyIkController.IkTargetType.Hold,
+                hands.UnselectedHand,  secondaryParent);
+        }
+
+    }
+    
+    private IEnumerator MoveItemToHold(GameObject item, float itemMoveDuration)
+    {
+        Vector3 initialPosition = item.transform.position;
+        Quaternion initialRotation = item.transform.rotation;
+        float timer = 0.0f;
+        Transform targetHold = SelectedHandItemPositionIkTarget;
+
+        while (timer < itemMoveDuration)
+        {
+            float t = timer / itemMoveDuration;
+            item.transform.position = Vector3.Lerp(initialPosition, targetHold.position, t);
+            item.transform.rotation = Quaternion.Lerp(initialRotation, targetHold.rotation, t);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure final transform matches the target values exactly
+        item.transform.position = targetHold.position;
+        item.transform.rotation = targetHold.rotation;
+        item.transform.parent = targetHold;
+        
+        GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
     }
     
     

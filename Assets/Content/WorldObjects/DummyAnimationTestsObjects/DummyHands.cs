@@ -21,6 +21,8 @@ public class DummyHands : MonoBehaviour
 
     public Hand UnselectedHand => 
         selectedHand == Hand.LeftHand ? Hand.RightHand : Hand.LeftHand;
+    
+    public GameObject ItemInUnselectedHand => selectedHand == Hand.LeftHand ? itemInRightHand : itemInLeftHand;
 
     public GameObject ItemInSelectedHand
     { 
