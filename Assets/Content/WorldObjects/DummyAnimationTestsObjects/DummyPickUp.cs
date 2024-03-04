@@ -44,7 +44,9 @@ public class DummyPickUp : MonoBehaviour
 
         StartCoroutine(ModifyPickUpIkRigWeight());
         
-        dummyIkController.UpdateItemHold(item, false);
+        dummyIkController.UpdateItemHold(item, false, hands.selectedHand);
+        
+        GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
 
     }
 
@@ -99,7 +101,8 @@ public class DummyPickUp : MonoBehaviour
 
         if (gameObjectInUnselectedHand.GetComponent<DummyItem>().canHoldTwoHand)
         {
-            dummyIkController.UpdateItemHold(gameObjectInUnselectedHand.GetComponent<DummyItem>(), true);
+            dummyIkController.UpdateItemHold(gameObjectInUnselectedHand.GetComponent<DummyItem>(),
+                true, hands.UnselectedHand);
         }
     }
     

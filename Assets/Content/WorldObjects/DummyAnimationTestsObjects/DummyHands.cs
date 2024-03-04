@@ -24,11 +24,25 @@ public class DummyHands : MonoBehaviour
     
     public GameObject ItemInUnselectedHand => selectedHand == Hand.LeftHand ? itemInRightHand : itemInLeftHand;
 
+    public Hand OtherHand(Hand hand)
+    {
+        return hand == Hand.LeftHand ? Hand.RightHand : Hand.LeftHand;
+    }
+
+    public bool IsHandFull(Hand hand)
+    {
+        return hand == Hand.RightHand ? rightHandFull : leftHandFull;
+    }
+
     public GameObject ItemInSelectedHand
     { 
         get => selectedHand == Hand.LeftHand ? itemInLeftHand : itemInRightHand;
         private set
         {
+            if(value != null)
+                Debug.Log($"add item {value} to hand {selectedHand}");
+            else
+                Debug.Log($"remove item from hand {selectedHand}");
             if (selectedHand == Hand.LeftHand)
             {
                 itemInLeftHand = value;
