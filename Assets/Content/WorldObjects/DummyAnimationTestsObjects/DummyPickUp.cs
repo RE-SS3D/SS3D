@@ -26,7 +26,7 @@ public class DummyPickUp : MonoBehaviour
 
         if (!Input.GetMouseButtonDown(0))
             return;
-
+        
         if (GetComponent<DummyHands>().IsSelectedHandEmpty)
         {
             TryPickUp();
@@ -48,6 +48,11 @@ public class DummyPickUp : MonoBehaviour
         
         GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
 
+        if (!hands.IsNonSelectedHandEmpty && hands.ItemInUnselectedHand.GetComponent<DummyItem>().canHoldOneHand)
+        {
+            dummyIkController.UpdateItemHold(hands.ItemInUnselectedHand.GetComponent<DummyItem>(), true, hands.UnselectedHand);
+        }
+
     }
 
     private void TryPickUp()
@@ -61,6 +66,8 @@ public class DummyPickUp : MonoBehaviour
             // Check if the collider belongs to a GameObject
             GameObject obj = hit.collider.gameObject;
 
+            // should add conditions to check other objects doesn't require two hands.
+            // also check picked up object doesn't require two hands if other hand is full.
             if (obj.TryGetComponent(out DummyItem item))
             {
                 PickUp(item);

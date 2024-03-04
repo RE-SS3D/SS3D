@@ -34,6 +34,11 @@ public class DummyHands : MonoBehaviour
         return hand == Hand.RightHand ? rightHandFull : leftHandFull;
     }
 
+    public bool OtherHandFull(Hand hand)
+    {
+        return hand == Hand.RightHand ? leftHandFull : rightHandFull;
+    }
+
     public GameObject ItemInSelectedHand
     { 
         get => selectedHand == Hand.LeftHand ? itemInLeftHand : itemInRightHand;

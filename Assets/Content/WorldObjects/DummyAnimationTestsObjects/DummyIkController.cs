@@ -176,7 +176,7 @@ public class DummyIkController : MonoBehaviour
     {
          bool withTwoHands = false;
 
-        if ((hands.BothHandEmpty || alreadyInHand)  && item.canHoldTwoHand)
+        if ((hands.BothHandEmpty || (!hands.OtherHandFull(hand) && alreadyInHand))  && item.canHoldTwoHand)
         {
             rightArmChainIKConstraint.weight = 1;
             leftArmChainIKConstraint.weight = 1;
@@ -184,7 +184,7 @@ public class DummyIkController : MonoBehaviour
             leftHandHoldTwoBoneIkConstraint.weight = 1;
             withTwoHands = true;
         }
-        else if (hands.IsSelectedHandEmpty  && item.canHoldOneHand)
+        else if (item.canHoldOneHand)
         {
             if (hand == DummyHands.Hand.LeftHand)
             {
@@ -208,16 +208,16 @@ public class DummyIkController : MonoBehaviour
 
         if (withTwoHands)
         {
-            SetWorldPositionRotationOfIkTargets(DummyIkController.IkTargetType.ItemPosition, hold);
+            SetWorldPositionRotationOfIkTargets(IkTargetType.ItemPosition, hold);
         }
         else if(hand == DummyHands.Hand.LeftHand)
         {
-            SetWorldPositionRotationOfIkTarget(DummyIkController.IkTargetType.ItemPosition,
+            SetWorldPositionRotationOfIkTarget(IkTargetType.ItemPosition,
                 DummyHands.Hand.LeftHand, hold);
         }
         else
         {
-            SetWorldPositionRotationOfIkTarget(DummyIkController.IkTargetType.ItemPosition,
+            SetWorldPositionRotationOfIkTarget(IkTargetType.ItemPosition,
                 DummyHands.Hand.RightHand, hold);
         }
         
