@@ -3314,8 +3314,8 @@ Transform:
   - {fileID: 3362543718434004155}
   - {fileID: 7280184628898207537}
   - {fileID: 4319828436440283126}
-  - {fileID: 8256616088293826340}
   - {fileID: 3162762470123075684}
+  - {fileID: 8256616088293826340}
   - {fileID: 5029736816765645950}
   - {fileID: 8867980937904334229}
   - {fileID: 6048018365037233454}
@@ -3361,9 +3361,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_RigLayers:
-  - m_Rig: {fileID: 4843964150380460072}
-    m_Active: 1
   - m_Rig: {fileID: 1252846949690250700}
+    m_Active: 1
+  - m_Rig: {fileID: 4843964150380460072}
     m_Active: 1
   m_Effectors: []
 --- !u!114 &2614927798672868032
@@ -3587,7 +3587,7 @@ Transform:
   - {fileID: 7344439903334976350}
   - {fileID: 8900560248658806380}
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 19
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1252846949690250700
 MonoBehaviour:
@@ -4320,7 +4320,7 @@ Transform:
   - {fileID: 6305849888995174770}
   - {fileID: 7988154616977013968}
   m_Father: {fileID: 3714097311666575904}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4843964150380460072
 MonoBehaviour:

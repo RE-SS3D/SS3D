@@ -18,7 +18,7 @@ public class PickUpHighSMB : StateMachineBehaviour
     {
         if (stateInfo.normalizedTime < 0.3f)
         {
-            OrientPlayerTowardTarget(animator.transform, stateInfo);
+            //OrientPlayerTowardTarget(animator.transform, stateInfo);
         
             OrientTargetForHandRotation();
         }

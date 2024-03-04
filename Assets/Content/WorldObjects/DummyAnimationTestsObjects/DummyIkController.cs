@@ -183,14 +183,18 @@ public class DummyIkController : MonoBehaviour
             rightHandHoldTwoBoneIkConstraint.weight = 1;
             leftHandHoldTwoBoneIkConstraint.weight = 1;
             withTwoHands = true;
+            item.heldWithTwoHands = true;
         }
         else if (item.canHoldOneHand)
         {
+            item.heldWithOneHand = true;
+            
             if (hand == DummyHands.Hand.LeftHand)
             {
                 rightArmChainIKConstraint.weight = 0;
                 leftArmChainIKConstraint.weight = 1;
                 leftHandHoldTwoBoneIkConstraint.weight = 1;
+               
             }
             else
             {

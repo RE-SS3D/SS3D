@@ -29,5 +29,9 @@ public class DummyItem : MonoBehaviour
     public bool canHoldTwoHand;
 
     public bool canHoldOneHand;
-    
+
+    public bool heldWithOneHand;
+
+    public bool heldWithTwoHands;
+
 }

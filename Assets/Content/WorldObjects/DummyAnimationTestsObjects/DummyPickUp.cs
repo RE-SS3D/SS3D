@@ -48,7 +48,9 @@ public class DummyPickUp : MonoBehaviour
         
         GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
 
-        if (!hands.IsNonSelectedHandEmpty && hands.ItemInUnselectedHand.GetComponent<DummyItem>().canHoldOneHand)
+        if (!hands.IsNonSelectedHandEmpty 
+            && hands.ItemInUnselectedHand.GetComponent<DummyItem>().canHoldOneHand
+            && hands.ItemInUnselectedHand.GetComponent<DummyItem>().heldWithTwoHands)
         {
             dummyIkController.UpdateItemHold(hands.ItemInUnselectedHand.GetComponent<DummyItem>(), true, hands.UnselectedHand);
         }
@@ -80,10 +82,14 @@ public class DummyPickUp : MonoBehaviour
         GetComponent<DummyAnimatorController>().TriggerThrow();
         DummyItem item = GetComponent<DummyHands>().ItemInSelectedHand.GetComponent<DummyItem>();
 
+        item.heldWithOneHand = false;
+        item.heldWithTwoHands = false;
+
         if (!hands.IsSelectedHandEmpty && hands.IsNonSelectedHandEmpty && item.canHoldTwoHand)
         {
             dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
             dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
+            
         }
         else if (!hands.IsSelectedHandEmpty  && item.canHoldOneHand)
         {
