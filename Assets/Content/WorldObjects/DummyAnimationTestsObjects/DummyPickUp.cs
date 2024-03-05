@@ -125,7 +125,6 @@ public class DummyPickUp : MonoBehaviour
     {
         
         float elapsedTime = 0f;
-        bool startHolding = false;
 
         while (elapsedTime < _pickUpDuration)
         {
@@ -136,11 +135,6 @@ public class DummyPickUp : MonoBehaviour
             }
             else
             {
-                if (!startHolding)
-                {
-                    StartCoroutine(ModifyHoldIkRigWeight());
-                    startHolding = true;
-                }
                 dummyIkController.pickUpRig.weight = 2f - 2f * currentLoopNormalizedTime;
             }
 
@@ -152,24 +146,7 @@ public class DummyPickUp : MonoBehaviour
         dummyIkController.pickUpRig.weight = 0f;
     }
     
-    private IEnumerator ModifyHoldIkRigWeight()
-    {
-        
-        float elapsedTime = 0f;
 
-        while (elapsedTime < itemMoveDuration)
-        {
-            float weight = elapsedTime/itemMoveDuration;
-
-            dummyIkController.holdRig.weight = weight;
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure the weight reaches the target value exactly
-        dummyIkController.holdRig.weight = 1f;
-    }
 
 
 
