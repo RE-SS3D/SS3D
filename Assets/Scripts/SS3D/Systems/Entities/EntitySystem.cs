@@ -9,6 +9,7 @@ using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Settings;
+using SS3D.Engine.Chat;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Roles;
@@ -181,6 +182,11 @@ namespace SS3D.Systems.Entities
             if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
                 SpawnPlayer(player);
+                ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+                ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+                
+                // TODO: replace with character name and role
+                chatSystem.SendServerMessage(chatChannels.stationAlertsChannel, $"{player.Ckey}, assistant, has joined the ship");
             }
         }
 
