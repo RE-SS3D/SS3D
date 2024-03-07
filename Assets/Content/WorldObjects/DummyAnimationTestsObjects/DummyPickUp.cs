@@ -59,6 +59,8 @@ public class DummyPickUp : MonoBehaviour
 
     private IEnumerator StartPickUpCoroutines(DummyItem item)
     {
+        OrientTargetForHandRotation(hands.selectedHand);
+        StartCoroutine(OrientPlayerTowardTarget(transform, hands.selectedHand));
         yield return ModifyPickUpIkRigWeightToReach();
         StartCoroutine(dummyIkController.MoveItemToHold(item.gameObject, itemMoveDuration, hands.selectedHand));
         yield return ModifyPickUpIkRigWeightToHold();
@@ -161,8 +163,9 @@ public class DummyPickUp : MonoBehaviour
     /// <summary>
     /// Slowly turn the character to make sure it's facing the aimed target.
     /// </summary>
-    private void OrientPlayerTowardTarget(Transform playerTransform, AnimatorStateInfo stateInfo, DummyHands.Hand hand)
+    private IEnumerator OrientPlayerTowardTarget(Transform playerTransform, DummyHands.Hand hand)
     {
+        float elapsedTime = 0f;
         
         // Calculate the direction from this object to the target object
         Vector3 directionFromPlayerToTarget = dummyIkController.PickUpTargetLocker(hand).position - playerTransform.position;
@@ -173,8 +176,14 @@ public class DummyPickUp : MonoBehaviour
         // Create a rotation to look in that direction
         Quaternion rotation = Quaternion.LookRotation(directionFromPlayerToTarget);
 
-        // Interpolate the rotation based on the normalized time of the animation
-        playerTransform.rotation = Quaternion.Lerp(playerTransform.rotation, rotation, 2*stateInfo.normalizedTime);
+        while (elapsedTime < itemReachDuration)
+        {
+            // Interpolate the rotation based on the normalized time of the animation
+            playerTransform.rotation = Quaternion.Lerp(playerTransform.rotation, rotation, elapsedTime/itemReachDuration);
+            
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
     }
     
     /// <summary>
