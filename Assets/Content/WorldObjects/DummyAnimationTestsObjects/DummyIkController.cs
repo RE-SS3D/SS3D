@@ -90,6 +90,16 @@ public class DummyIkController : MonoBehaviour
     {
         return hand == DummyHands.Hand.RightHand ? rightHandItemPositionIkTarget : leftHandItemPositionIkTarget;
     }
+
+    public Transform PickUpTargetLocker(DummyHands.Hand hand)
+    {
+        return hand == DummyHands.Hand.RightHand ? rightHandPickUpIkTarget : leftHandPickUpIkTarget;
+    }
+
+    public Transform UpperArm(DummyHands.Hand hand)
+    {
+        return hand == DummyHands.Hand.RightHand ? rightUpperArm : leftUpperArm;
+    }
     
     public void Start()
     {
@@ -230,7 +240,8 @@ public class DummyIkController : MonoBehaviour
         
         MoveIkTargets(item, withTwoHands, hand);
         
-        StartCoroutine(MoveItemToHold(item.gameObject, 0.2f, hand));
+        if(alreadyInHand)
+            StartCoroutine(MoveItemToHold(item.gameObject, 0.5f, hand));
     }
     
     private void MoveIkTargets(DummyItem item, bool withTwoHands, DummyHands.Hand hand)
@@ -256,7 +267,7 @@ public class DummyIkController : MonoBehaviour
 
     }
     
-    private IEnumerator MoveItemToHold(GameObject item, float itemMoveDuration, DummyHands.Hand hand)
+    public IEnumerator MoveItemToHold(GameObject item, float itemMoveDuration, DummyHands.Hand hand)
     {
         Vector3 initialPosition = item.transform.position;
         Quaternion initialRotation = item.transform.rotation;

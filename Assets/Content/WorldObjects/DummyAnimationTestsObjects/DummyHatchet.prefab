@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f69105775d221409591f2e3dcf4c98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singleHandHold: 0
+  singleHandHold: 1
   twoHandHold: 0
   primaryRightHandHold: {fileID: 8799798233636070235}
   secondaryRightHandHold: {fileID: 8799798233636070235}
@@ -169,6 +169,8 @@ MonoBehaviour:
   secondaryLeftHandHold: {fileID: 7039453874243628011}
   canHoldTwoHand: 0
   canHoldOneHand: 1
+  heldWithOneHand: 0
+  heldWithTwoHands: 0
 --- !u!1 &7403023618397329741
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,7 +42,7 @@ public class DummyPickUp : MonoBehaviour
     {
         GetComponent<DummyAnimatorController>().TriggerPickUp();
 
-        StartCoroutine(ModifyPickUpIkRigWeight());
+        StartCoroutine(StartPickUpCoroutines(item));
         
         dummyIkController.UpdateItemHold(item, false, hands.selectedHand);
         
@@ -55,6 +55,13 @@ public class DummyPickUp : MonoBehaviour
             dummyIkController.UpdateItemHold(hands.ItemInUnselectedHand.GetComponent<DummyItem>(), true, hands.UnselectedHand);
         }
 
+    }
+
+    private IEnumerator StartPickUpCoroutines(DummyItem item)
+    {
+        yield return ModifyPickUpIkRigWeightToReach();
+        StartCoroutine(dummyIkController.MoveItemToHold(item.gameObject, itemMoveDuration, hands.selectedHand));
+        yield return ModifyPickUpIkRigWeightToHold();
     }
 
     private void TryPickUp()
@@ -121,29 +128,68 @@ public class DummyPickUp : MonoBehaviour
     
     
     
-    private IEnumerator ModifyPickUpIkRigWeight()
+    private IEnumerator ModifyPickUpIkRigWeightToReach()
     {
-        
         float elapsedTime = 0f;
 
-        while (elapsedTime < _pickUpDuration)
+        while (elapsedTime < itemReachDuration)
         {
-            float currentLoopNormalizedTime = elapsedTime/_pickUpDuration;
+            dummyIkController.pickUpRig.weight = elapsedTime/_pickUpDuration;
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
 
-            if (currentLoopNormalizedTime < 0.5f) {  
-                dummyIkController.pickUpRig.weight = currentLoopNormalizedTime *2;
-            }
-            else
-            {
-                dummyIkController.pickUpRig.weight = 2f - 2f * currentLoopNormalizedTime;
-            }
+        // Ensure the weight reaches the target value exactly
+        dummyIkController.pickUpRig.weight = 1f;
+    }
+    
+    private IEnumerator ModifyPickUpIkRigWeightToHold()
+    {
+        float elapsedTime = 0f;
 
+        while (elapsedTime < itemReachDuration)
+        {
+            dummyIkController.pickUpRig.weight = 1 - elapsedTime/itemMoveDuration;
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         // Ensure the weight reaches the target value exactly
         dummyIkController.pickUpRig.weight = 0f;
+    }
+
+    /// <summary>
+    /// Slowly turn the character to make sure it's facing the aimed target.
+    /// </summary>
+    private void OrientPlayerTowardTarget(Transform playerTransform, AnimatorStateInfo stateInfo, DummyHands.Hand hand)
+    {
+        
+        // Calculate the direction from this object to the target object
+        Vector3 directionFromPlayerToTarget = dummyIkController.PickUpTargetLocker(hand).position - playerTransform.position;
+        
+        // The y component should be 0 so the human rotate only on the XZ plane.
+        directionFromPlayerToTarget.y = 0f;
+        
+        // Create a rotation to look in that direction
+        Quaternion rotation = Quaternion.LookRotation(directionFromPlayerToTarget);
+
+        // Interpolate the rotation based on the normalized time of the animation
+        playerTransform.rotation = Quaternion.Lerp(playerTransform.rotation, rotation, 2*stateInfo.normalizedTime);
+    }
+    
+    /// <summary>
+    /// Create a rotation of the IK target to make sure the hand reach in a natural way the item.
+    /// The rotation is such that it's Y axis is aligned with the line crossing through the character shoulder and IK target.
+    /// </summary>
+    private void OrientTargetForHandRotation(DummyHands.Hand hand)
+    {
+        Vector3 armTargetDirection = dummyIkController.PickUpTargetLocker(hand).position - dummyIkController.UpperArm(hand).position;
+        
+        Quaternion targetRotation = Quaternion.LookRotation(armTargetDirection.normalized, Vector3.down);
+        
+        targetRotation *= Quaternion.AngleAxis(90f, Vector3.right);
+
+        dummyIkController.PickUpTargetLocker(hand).transform.rotation = targetRotation;
     }
     
 
