@@ -743,7 +743,7 @@ GameObject:
   - component: {fileID: 6095407646413577592}
   - component: {fileID: 2870043123095489278}
   m_Layer: 0
-  m_Name: RightHoldTarget
+  m_Name: RightItemPositionTargetLocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3277,6 +3277,8 @@ GameObject:
   - component: {fileID: 2643222421258484460}
   - component: {fileID: 3473079973903976204}
   - component: {fileID: 4366303252165034965}
+  - component: {fileID: 8542638990947268518}
+  - component: {fileID: 408292127236538780}
   m_Layer: 0
   m_Name: DummyHuman
   m_TagString: Untagged
@@ -3447,12 +3449,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hands: {fileID: 4366303252165034965}
-  rightHandPickUpIkTarget: {fileID: 0}
-  leftHandPickUpIkTarget: {fileID: 0}
-  rightHandHoldIkTarget: {fileID: 0}
-  leftHandHoldIkTarget: {fileID: 0}
-  rightHandItemPositionIkTarget: {fileID: 4363011775381521912}
-  leftHandItemPositionIkTarget: {fileID: 3720527799557840007}
+  rightPickUpTargetLocker: {fileID: 0}
+  leftPickUpTargetLocker: {fileID: 0}
+  rightHoldTargetLocker: {fileID: 0}
+  leftHoldTargetLocker: {fileID: 0}
+  rightItemPositionTargetLocker: {fileID: 4363011775381521912}
+  leftItemPositionTargetLocker: {fileID: 3720527799557840007}
   rightUpperArm: {fileID: 802911981376609306}
   leftUpperArm: {fileID: 7446386329022654784}
   pickUpRig: {fileID: 1252846949690250700}
@@ -3549,11 +3551,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a50440716bed13447980dae8db6593dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftHandFull: 0
-  rightHandFull: 0
+  leftHand: {fileID: 8542638990947268518}
+  rightHand: {fileID: 408292127236538780}
   selectedHand: 0
-  itemInLeftHand: {fileID: 0}
-  itemInRightHand: {fileID: 0}
+--- !u!114 &8542638990947268518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6371626722efc843ba2622b9a6d7d5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemInHand: {fileID: 0}
+  handType: 0
+  handHoldTargetLocker: {fileID: 0}
+  pickupTargetLocker: {fileID: 0}
+  itemPositionTargetLocker: {fileID: 3720527799557840007}
+  upperArm: {fileID: 7446386329022654784}
+--- !u!114 &408292127236538780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6371626722efc843ba2622b9a6d7d5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemInHand: {fileID: 0}
+  handType: 1
+  handHoldTargetLocker: {fileID: 0}
+  pickupTargetLocker: {fileID: 0}
+  itemPositionTargetLocker: {fileID: 4363011775381521912}
+  upperArm: {fileID: 802911981376609306}
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0
@@ -6690,7 +6726,7 @@ GameObject:
   - component: {fileID: 7785071309136467704}
   - component: {fileID: 5240443347303950148}
   m_Layer: 0
-  m_Name: LeftHoldTarget
+  m_Name: LeftItemPositionTargetLocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -27,7 +27,7 @@ public class DummyPickUp : MonoBehaviour
         if (!Input.GetMouseButtonDown(0))
             return;
         
-        if (GetComponent<DummyHands>().IsSelectedHandEmpty)
+        if (GetComponent<DummyHands>().SelectedHand.Empty)
         {
             TryPickUp();
         }
@@ -44,25 +44,27 @@ public class DummyPickUp : MonoBehaviour
 
         StartCoroutine(StartPickUpCoroutines(item));
         
-        dummyIkController.UpdateItemHold(item, false, hands.selectedHand);
+        dummyIkController.UpdateItemHold(item, false, hands.SelectedHand);
         
-        GetComponent<DummyHands>().AddItemToSelectedHand(item.gameObject);
+        GetComponent<DummyHands>().SelectedHand.AddItem(item);
 
-        if (!hands.IsNonSelectedHandEmpty 
-            && hands.ItemInUnselectedHand.GetComponent<DummyItem>().canHoldOneHand
-            && hands.ItemInUnselectedHand.GetComponent<DummyItem>().heldWithTwoHands)
+        if (hands.UnselectedHand.Full 
+            && hands.UnselectedHand.itemInHand.canHoldOneHand
+            && hands.UnselectedHand.itemInHand.heldWithTwoHands)
         {
-            dummyIkController.UpdateItemHold(hands.ItemInUnselectedHand.GetComponent<DummyItem>(), true, hands.UnselectedHand);
+            dummyIkController.UpdateItemHold(hands.UnselectedHand.itemInHand, true, hands.UnselectedHand);
         }
 
     }
 
     private IEnumerator StartPickUpCoroutines(DummyItem item)
     {
-        OrientTargetForHandRotation(hands.selectedHand);
-        StartCoroutine(OrientPlayerTowardTarget(transform, hands.selectedHand));
+        OrientTargetForHandRotation(hands.SelectedHand);
+        StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
+            transform, item.transform, itemReachDuration, false, true));
         yield return ModifyPickUpIkRigWeightToReach();
-        StartCoroutine(dummyIkController.MoveItemToHold(item.gameObject, itemMoveDuration, hands.selectedHand));
+        StartCoroutine(DummyTransformHelper.LerpTransform(item.transform,
+            hands.SelectedHand.itemPositionTargetLocker, itemMoveDuration));
         yield return ModifyPickUpIkRigWeightToHold();
     }
 
@@ -89,20 +91,20 @@ public class DummyPickUp : MonoBehaviour
     private void TryThrow()
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
-        DummyItem item = GetComponent<DummyHands>().ItemInSelectedHand.GetComponent<DummyItem>();
+        DummyItem item = hands.SelectedHand.itemInHand;
 
         item.heldWithOneHand = false;
         item.heldWithTwoHands = false;
 
-        if (!hands.IsSelectedHandEmpty && hands.IsNonSelectedHandEmpty && item.canHoldTwoHand)
+        if (hands.SelectedHand.Full && hands.UnselectedHand.Empty && item.canHoldTwoHand)
         {
             dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
             dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
             
         }
-        else if (!hands.IsSelectedHandEmpty  && item.canHoldOneHand)
+        else if (hands.SelectedHand.Full  && item.canHoldOneHand)
         {
-            if (hands.selectedHand == DummyHands.Hand.LeftHand)
+            if (hands.SelectedHand.handType == DummyHands.HandType.LeftHand)
             {
                 dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
             }
@@ -112,18 +114,18 @@ public class DummyPickUp : MonoBehaviour
             }
         }
 
-        GetComponent<DummyHands>().RemoveItemFromSelectedHand();
+        hands.SelectedHand.RemoveItem();
         
-        GameObject gameObjectInUnselectedHand = GetComponent<DummyHands>().ItemInUnselectedHand;
+        DummyItem itemInUnselectedHand = hands.UnselectedHand.itemInHand;
 
-        if (gameObjectInUnselectedHand == null)
+        if (itemInUnselectedHand == null)
         {
             return;
         }
 
-        if (gameObjectInUnselectedHand.GetComponent<DummyItem>().canHoldTwoHand)
+        if (itemInUnselectedHand.canHoldTwoHand)
         {
-            dummyIkController.UpdateItemHold(gameObjectInUnselectedHand.GetComponent<DummyItem>(),
+            dummyIkController.UpdateItemHold(itemInUnselectedHand,
                 true, hands.UnselectedHand);
         }
     }
@@ -159,46 +161,20 @@ public class DummyPickUp : MonoBehaviour
         // Ensure the weight reaches the target value exactly
         dummyIkController.pickUpRig.weight = 0f;
     }
-
-    /// <summary>
-    /// Slowly turn the character to make sure it's facing the aimed target.
-    /// </summary>
-    private IEnumerator OrientPlayerTowardTarget(Transform playerTransform, DummyHands.Hand hand)
-    {
-        float elapsedTime = 0f;
-        
-        // Calculate the direction from this object to the target object
-        Vector3 directionFromPlayerToTarget = dummyIkController.PickUpTargetLocker(hand).position - playerTransform.position;
-        
-        // The y component should be 0 so the human rotate only on the XZ plane.
-        directionFromPlayerToTarget.y = 0f;
-        
-        // Create a rotation to look in that direction
-        Quaternion rotation = Quaternion.LookRotation(directionFromPlayerToTarget);
-
-        while (elapsedTime < itemReachDuration)
-        {
-            // Interpolate the rotation based on the normalized time of the animation
-            playerTransform.rotation = Quaternion.Lerp(playerTransform.rotation, rotation, elapsedTime/itemReachDuration);
-            
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-    }
     
     /// <summary>
     /// Create a rotation of the IK target to make sure the hand reach in a natural way the item.
     /// The rotation is such that it's Y axis is aligned with the line crossing through the character shoulder and IK target.
     /// </summary>
-    private void OrientTargetForHandRotation(DummyHands.Hand hand)
+    private void OrientTargetForHandRotation(DummyHand hand)
     {
-        Vector3 armTargetDirection = dummyIkController.PickUpTargetLocker(hand).position - dummyIkController.UpperArm(hand).position;
+        Vector3 armTargetDirection = hand.pickupTargetLocker.position - hand.upperArm.position;
         
         Quaternion targetRotation = Quaternion.LookRotation(armTargetDirection.normalized, Vector3.down);
         
         targetRotation *= Quaternion.AngleAxis(90f, Vector3.right);
 
-        dummyIkController.PickUpTargetLocker(hand).transform.rotation = targetRotation;
+        hand.pickupTargetLocker.rotation = targetRotation;
     }
     
 

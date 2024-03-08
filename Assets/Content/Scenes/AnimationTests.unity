@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 113506389}
   - component: {fileID: 113506388}
   m_Layer: 0
-  m_Name: LeftHandHoldTargetIk
+  m_Name: LeftHoldTargetLocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 350909786}
   - component: {fileID: 350909785}
   m_Layer: 0
-  m_Name: RightHandPickupTargetIk
+  m_Name: RightPickupTargetLocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -753,7 +753,7 @@ GameObject:
   - component: {fileID: 887779105}
   - component: {fileID: 887779104}
   m_Layer: 0
-  m_Name: LeftHandPickupTargetIk
+  m_Name: LeftPickupTargetLocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1106,6 +1106,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 408292127236538780, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: pickupTargetLocker
+      value: 
+      objectReference: {fileID: 350909787}
+    - target: {fileID: 408292127236538780, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: handHoldTargetLocker
+      value: 
+      objectReference: {fileID: 1710756111}
+    - target: {fileID: 547331446051564162, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Name
+      value: RightItemPositionTargetLocker
+      objectReference: {fileID: 0}
     - target: {fileID: 547331446051564162, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1343,7 +1355,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 113506387}
     - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: leftHoldTargetLocker
+      value: 
+      objectReference: {fileID: 113506387}
+    - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: rightHandHoldIkTarget
+      value: 
+      objectReference: {fileID: 1710756111}
+    - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: rightHoldTargetLocker
       value: 
       objectReference: {fileID: 1710756111}
     - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
@@ -1351,9 +1371,29 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 887779103}
     - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: leftPickUpTargetLocker
+      value: 
+      objectReference: {fileID: 887779103}
+    - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: rightHandPickUpIkTarget
       value: 
       objectReference: {fileID: 350909787}
+    - target: {fileID: 7853070027302126534, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: rightPickUpTargetLocker
+      value: 
+      objectReference: {fileID: 350909787}
+    - target: {fileID: 8542638990947268518, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: pickupTargetLocker
+      value: 
+      objectReference: {fileID: 887779103}
+    - target: {fileID: 8542638990947268518, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: handHoldTargetLocker
+      value: 
+      objectReference: {fileID: 113506387}
+    - target: {fileID: 8797928814924332265, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Name
+      value: LeftItemPositionTargetLocker
+      objectReference: {fileID: 0}
     - target: {fileID: 8797928814924332265, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1385,7 +1425,7 @@ GameObject:
   - component: {fileID: 1710756113}
   - component: {fileID: 1710756112}
   m_Layer: 0
-  m_Name: RightHandHoldTargetIk
+  m_Name: RightHoldTargetLocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

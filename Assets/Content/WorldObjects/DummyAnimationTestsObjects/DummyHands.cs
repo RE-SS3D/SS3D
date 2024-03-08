@@ -5,71 +5,28 @@ using UnityEngine;
 public class DummyHands : MonoBehaviour
 {
 
-    public enum Hand
+    public DummyHand leftHand;
+    public DummyHand rightHand;
+    
+    public enum HandType
     {
         LeftHand = 0,
         RightHand = 1,
     }
 
-    public bool leftHandFull;
-    public bool rightHandFull;
-
-    public Hand selectedHand = Hand.LeftHand;
-
-    public GameObject itemInLeftHand;
-    public GameObject itemInRightHand;
-
-    public Hand UnselectedHand => 
-        selectedHand == Hand.LeftHand ? Hand.RightHand : Hand.LeftHand;
+    public HandType selectedHand = HandType.LeftHand;
     
-    public GameObject ItemInUnselectedHand => selectedHand == Hand.LeftHand ? itemInRightHand : itemInLeftHand;
-
-    public Hand OtherHand(Hand hand)
-    {
-        return hand == Hand.LeftHand ? Hand.RightHand : Hand.LeftHand;
-    }
-
-    public bool IsHandFull(Hand hand)
-    {
-        return hand == Hand.RightHand ? rightHandFull : leftHandFull;
-    }
-
-    public bool OtherHandFull(Hand hand)
-    {
-        return hand == Hand.RightHand ? leftHandFull : rightHandFull;
-    }
-
-    public GameObject ItemInSelectedHand
-    { 
-        get => selectedHand == Hand.LeftHand ? itemInLeftHand : itemInRightHand;
-        private set
-        {
-            if(value != null)
-                Debug.Log($"add item {value} to hand {selectedHand}");
-            else
-                Debug.Log($"remove item from hand {selectedHand}");
-            if (selectedHand == Hand.LeftHand)
-            {
-                itemInLeftHand = value;
-                leftHandFull = itemInLeftHand is not null;
-
-            }
-            else
-            {
-                itemInRightHand = value;
-                rightHandFull = itemInRightHand is not null;
-            }
-            
-        } 
-
-    } 
+    public DummyHand SelectedHand => selectedHand == HandType.LeftHand ? leftHand : rightHand;
     
-    public bool IsNonSelectedHandEmpty => selectedHand == Hand.LeftHand ? !rightHandFull : !leftHandFull;
+    public DummyHand UnselectedHand => selectedHand == HandType.LeftHand ? rightHand : leftHand;
 
-    public bool IsSelectedHandEmpty => selectedHand == Hand.LeftHand ? !leftHandFull : !rightHandFull;
-
-    public bool BothHandEmpty => !leftHandFull && !rightHandFull;
+    public DummyHand GetHand(HandType hand) => hand == HandType.LeftHand ? leftHand : rightHand;
     
+    public DummyHand GetOtherHand(HandType hand) => hand == HandType.LeftHand ? rightHand : leftHand;
+    
+    public bool BothHandFull => leftHand.Full && rightHand.Full;
+    public bool BothHandEmpty => leftHand.Empty && rightHand.Empty;
+
 
     // Update is called once per frame
     private void Update()
@@ -77,26 +34,8 @@ public class DummyHands : MonoBehaviour
         if (!Input.GetKeyDown(KeyCode.X))
             return;
 
-        selectedHand = selectedHand == Hand.LeftHand ? Hand.RightHand : Hand.LeftHand;
+        selectedHand = selectedHand == HandType.LeftHand ? HandType.RightHand : HandType.LeftHand;
         
         Debug.Log($"Selected hand is {selectedHand}");
-    }
-
-    public DummyItem RemoveItemFromSelectedHand()
-    {
-        GameObject item = ItemInSelectedHand;
-        ItemInSelectedHand.transform.parent = null;
-        ItemInSelectedHand.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-        ItemInSelectedHand.gameObject.GetComponent<Collider>().enabled = true;
-        ItemInSelectedHand = null;
-
-        return item.GetComponent<DummyItem>();
-    }
-
-    public void AddItemToSelectedHand(GameObject item)
-    {
-        ItemInSelectedHand = item;
-        item.GetComponent<Rigidbody>().isKinematic = true;
-        item.GetComponent<Collider>().enabled = false;
     }
 }
