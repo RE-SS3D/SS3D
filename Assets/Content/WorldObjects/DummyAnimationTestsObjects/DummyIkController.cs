@@ -132,7 +132,7 @@ public class DummyIkController : MonoBehaviour
             hands.GetOtherHand(hand.handType).SetWorldPositionRotationOfIkTarget(TargetLockerType.ItemPosition, hold);
         }
         
-        SetOffsetOnItemPositionConstraint(withTwoHands ? item.twoHandHold : item.singleHandHold, hand.handType);
+        SetOffsetOnItemPositionConstraint(item.GetHold(withTwoHands, intents.intent), hand.handType);
         
         MoveIkTargets(item, withTwoHands, hand);
     }
