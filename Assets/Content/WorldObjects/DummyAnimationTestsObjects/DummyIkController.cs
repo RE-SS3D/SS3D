@@ -92,9 +92,9 @@ public class DummyIkController : MonoBehaviour
         holdData.Add(new(HandHoldType.Shoulder, shoulderHoldRight,
             new Vector3(0f, 0.18f, 0f), DummyHands.HandType.RightHand));
         holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmLeft,
-            new Vector3(0f, 0.18f, 0f), DummyHands.HandType.LeftHand));
+            new Vector3(0f,-0.07f,0.18f), DummyHands.HandType.LeftHand));
         holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmRight,
-            new Vector3(0f, 0.18f, 0f), DummyHands.HandType.RightHand));
+            new Vector3(0f,-0.07f,0.18f), DummyHands.HandType.RightHand));
     }
     
     public record HoldAndOffset(HandHoldType HandHoldType, Transform HoldTarget, Vector3 Offset, DummyHands.HandType PrimaryHand);

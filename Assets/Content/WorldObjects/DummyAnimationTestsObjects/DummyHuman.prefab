@@ -3483,6 +3483,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hands: {fileID: 4366303252165034965}
+  intents: {fileID: 333363580064996929}
   rightPickUpTargetLocker: {fileID: 0}
   leftPickUpTargetLocker: {fileID: 0}
   rightHoldTargetLocker: {fileID: 0}

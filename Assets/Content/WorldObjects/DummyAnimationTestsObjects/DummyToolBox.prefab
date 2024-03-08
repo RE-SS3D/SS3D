@@ -278,6 +278,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   singleHandHold: 1
   twoHandHold: 0
+  singleHandHoldHarm: 1
+  twoHandHoldHarm: 0
   primaryRightHandHold: {fileID: 5671188440365690712}
   secondaryRightHandHold: {fileID: 5671188440365690712}
   primaryLeftHandHold: {fileID: 4602652067006472687}

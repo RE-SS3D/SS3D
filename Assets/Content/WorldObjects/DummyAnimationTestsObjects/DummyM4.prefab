@@ -198,12 +198,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   singleHandHold: 2
   twoHandHold: 3
+  singleHandHoldHarm: 4
+  twoHandHoldHarm: 4
   primaryRightHandHold: {fileID: 5008804419156306236}
   secondaryRightHandHold: {fileID: 3416135191583572658}
   primaryLeftHandHold: {fileID: 5154380250611511651}
   secondaryLeftHandHold: {fileID: 397271564552974130}
   canHoldTwoHand: 1
   canHoldOneHand: 1
+  heldWithOneHand: 0
+  heldWithTwoHands: 0
 --- !u!64 &1927847066278913763
 MeshCollider:
   m_ObjectHideFlags: 0
