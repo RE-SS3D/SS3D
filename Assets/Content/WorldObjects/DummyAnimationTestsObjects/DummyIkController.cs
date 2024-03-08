@@ -11,13 +11,6 @@ public class DummyIkController : MonoBehaviour
 {
 
     public DummyHands hands;
-    
-    public enum TargetLockerType
-    {
-        Pickup,
-        Hold,
-        ItemPosition,
-    }
 
     // The transforms that moves to put itself on hold positions
     public Transform rightPickUpTargetLocker;
@@ -79,14 +72,15 @@ public class DummyIkController : MonoBehaviour
     
     public void Start()
     {
+       
         holdData.Add(new(DummyItem.HandHoldType.DoubleHandGun, gunHoldLeft,
             new Vector3(0.15f,-0.08f,0.26f), DummyHands.HandType.LeftHand));
         holdData.Add(new(DummyItem.HandHoldType.DoubleHandGun, gunHoldRight,
             new Vector3(-0.15f,-0.08f,0.26f), DummyHands.HandType.RightHand));
         holdData.Add(new(DummyItem.HandHoldType.Toolbox, toolBoxHoldLeft,
-            new Vector3(0.06f,-0.64f,0.11f), DummyHands.HandType.LeftHand));
+            new Vector3(-0.1f,-0.4f,0.1f), DummyHands.HandType.LeftHand));
         holdData.Add(new(DummyItem.HandHoldType.Toolbox, toolboxHoldRight,
-            new Vector3(-0.06f, -0.64f, 0.11f), DummyHands.HandType.RightHand));
+            new Vector3(0.1f, -0.4f, 0.1f), DummyHands.HandType.RightHand));
         holdData.Add(new(DummyItem.HandHoldType.Shoulder, shoulderHoldLeft,
             new Vector3(0f, 0.18f, 0f), DummyHands.HandType.LeftHand));
         holdData.Add(new(DummyItem.HandHoldType.Shoulder, shoulderHoldRight,
@@ -113,50 +107,7 @@ public class DummyIkController : MonoBehaviour
             itemLeftHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
     }
     
-    public void SetWorldPositionRotationOfIkTargets(TargetLockerType type, Transform toCopy)
-    {
-        SetWorldPositionRotationOfIkTarget(type, DummyHands.HandType.LeftHand, toCopy);
-        SetWorldPositionRotationOfIkTarget(type, DummyHands.HandType.RightHand, toCopy);
-    }
 
-    public void SetWorldPositionRotationOfIkTarget(TargetLockerType type, DummyHands.HandType hand, Transform toCopy)
-    {
-        Transform targetToSet = ChooseTargetIk(type, hand);
-        
-        targetToSet.position = toCopy.position;
-        targetToSet.rotation = toCopy.rotation;
-    }
-
-    public void SetParentTransformOfIkTarget(TargetLockerType type, DummyHands.HandType hand, Transform parent)
-    {
-        Transform targetToSet = ChooseTargetIk(type, hand);
-        
-        targetToSet.parent = parent;
-        targetToSet.localPosition = Vector3.zero;
-        targetToSet.localRotation = Quaternion.identity;
-    }
-
-    private Transform ChooseTargetIk(TargetLockerType type, DummyHands.HandType hand)
-    {
-        Transform targetToSet;
-        
-        switch (type)
-        {
-            case TargetLockerType.Pickup:
-                targetToSet = hand == DummyHands.HandType.RightHand ? rightPickUpTargetLocker : leftPickUpTargetLocker;
-                break;
-            case TargetLockerType.Hold:
-                targetToSet = hand == DummyHands.HandType.RightHand ? rightHoldTargetLocker : leftHoldTargetLocker;
-                break;
-            case TargetLockerType.ItemPosition:
-                targetToSet = hand == DummyHands.HandType.RightHand ? rightItemPositionTargetLocker : leftItemPositionTargetLocker;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
-        }
-
-        return targetToSet;
-    }
 
     public void UpdateItemHold(DummyItem item, bool alreadyInHand, DummyHand hand)
     {
@@ -164,28 +115,16 @@ public class DummyIkController : MonoBehaviour
 
         Transform hold = TargetFromHoldTypeAndHand(withTwoHands ? item.twoHandHold : item.singleHandHold, hand.handType);
 
+        hand.SetWorldPositionRotationOfIkTarget(TargetLockerType.ItemPosition, hold);
+        
         if (withTwoHands)
         {
-            SetWorldPositionRotationOfIkTargets(TargetLockerType.ItemPosition, hold);
-        }
-        else if(hand.handType == DummyHands.HandType.LeftHand)
-        {
-            SetWorldPositionRotationOfIkTarget(TargetLockerType.ItemPosition,
-                DummyHands.HandType.LeftHand, hold);
-        }
-        else
-        {
-            SetWorldPositionRotationOfIkTarget(TargetLockerType.ItemPosition,
-                DummyHands.HandType.RightHand, hold);
+            hands.GetOtherHand(hand.handType).SetWorldPositionRotationOfIkTarget(TargetLockerType.ItemPosition, hold);
         }
         
-
         SetOffsetOnItemPositionConstraint(withTwoHands ? item.twoHandHold : item.singleHandHold, hand.handType);
         
         MoveIkTargets(item, withTwoHands, hand);
-        
-        //if(alreadyInHand)
-         //   StartCoroutine(MoveItemToHold(item.gameObject, 0.5f, hand));
     }
 
     private bool SetConstraintsWeights(DummyItem item, DummyHands.HandType hand, bool alreadyInHand)
@@ -231,17 +170,13 @@ public class DummyIkController : MonoBehaviour
         Transform secondaryParent = hand.handType == DummyHands.HandType.RightHand ?
             item.secondaryLeftHandHold.transform : item.secondaryRightHandHold.transform;
         
-        SetParentTransformOfIkTarget(TargetLockerType.Pickup,
-            hand.handType,  primaryParent);
-        SetParentTransformOfIkTarget(TargetLockerType.Hold,
-            hand.handType,  primaryParent);
+        hand.SetParentTransformOfIkTarget(TargetLockerType.Pickup,  primaryParent);
+        hand.SetParentTransformOfIkTarget(TargetLockerType.Hold,  primaryParent);
 
         if (withTwoHands)
         {
-            SetParentTransformOfIkTarget(TargetLockerType.Pickup,
-                hands.GetOtherHand(hand.handType).handType,  secondaryParent);
-            SetParentTransformOfIkTarget(TargetLockerType.Hold,
-                hands.GetOtherHand(hand.handType).handType,  secondaryParent);
+            hands.GetOtherHand(hand.handType).SetParentTransformOfIkTarget(TargetLockerType.Pickup, secondaryParent);
+            hands.GetOtherHand(hand.handType).SetParentTransformOfIkTarget(TargetLockerType.Hold, secondaryParent);
         }
 
     }
