@@ -12,6 +12,8 @@ public class DummyIkController : MonoBehaviour
 
     public DummyHands hands;
 
+    public IntentController intents;
+
     // The transforms that moves to put itself on hold positions
     public Transform rightPickUpTargetLocker;
     
@@ -67,39 +69,47 @@ public class DummyIkController : MonoBehaviour
 
     public Transform shoulderHoldLeft;
 
+    public Transform gunHoldHarmRight;
+
+    public Transform gunHoldHarmLeft;
+
 
     private List<HoldAndOffset> holdData = new List<HoldAndOffset>();
     
     public void Start()
     {
        
-        holdData.Add(new(DummyItem.HandHoldType.DoubleHandGun, gunHoldLeft,
+        holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldLeft,
             new Vector3(0.15f,-0.08f,0.26f), DummyHands.HandType.LeftHand));
-        holdData.Add(new(DummyItem.HandHoldType.DoubleHandGun, gunHoldRight,
+        holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldRight,
             new Vector3(-0.15f,-0.08f,0.26f), DummyHands.HandType.RightHand));
-        holdData.Add(new(DummyItem.HandHoldType.Toolbox, toolBoxHoldLeft,
+        holdData.Add(new(HandHoldType.Toolbox, toolBoxHoldLeft,
             new Vector3(-0.1f,-0.4f,0.1f), DummyHands.HandType.LeftHand));
-        holdData.Add(new(DummyItem.HandHoldType.Toolbox, toolboxHoldRight,
+        holdData.Add(new(HandHoldType.Toolbox, toolboxHoldRight,
             new Vector3(0.1f, -0.4f, 0.1f), DummyHands.HandType.RightHand));
-        holdData.Add(new(DummyItem.HandHoldType.Shoulder, shoulderHoldLeft,
+        holdData.Add(new(HandHoldType.Shoulder, shoulderHoldLeft,
             new Vector3(0f, 0.18f, 0f), DummyHands.HandType.LeftHand));
-        holdData.Add(new(DummyItem.HandHoldType.Shoulder, shoulderHoldRight,
+        holdData.Add(new(HandHoldType.Shoulder, shoulderHoldRight,
+            new Vector3(0f, 0.18f, 0f), DummyHands.HandType.RightHand));
+        holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmLeft,
+            new Vector3(0f, 0.18f, 0f), DummyHands.HandType.LeftHand));
+        holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmRight,
             new Vector3(0f, 0.18f, 0f), DummyHands.HandType.RightHand));
     }
     
-    public record HoldAndOffset(DummyItem.HandHoldType HandHoldType, Transform HoldTarget, Vector3 Offset, DummyHands.HandType PrimaryHand);
+    public record HoldAndOffset(HandHoldType HandHoldType, Transform HoldTarget, Vector3 Offset, DummyHands.HandType PrimaryHand);
 
-    public Transform TargetFromHoldTypeAndHand(DummyItem.HandHoldType handHoldType, DummyHands.HandType selectedHand)
+    public Transform TargetFromHoldTypeAndHand(HandHoldType handHoldType, DummyHands.HandType selectedHand)
     {
         return holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).HoldTarget;
     }
 
-    private Vector3 OffsetFromHoldTypeAndHand(DummyItem.HandHoldType handHoldType, DummyHands.HandType selectedHand)
+    private Vector3 OffsetFromHoldTypeAndHand(HandHoldType handHoldType, DummyHands.HandType selectedHand)
     {
         return holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).Offset;
     }
 
-    public void SetOffsetOnItemPositionConstraint(DummyItem.HandHoldType holdType, DummyHands.HandType selectedHand)
+    public void SetOffsetOnItemPositionConstraint(HandHoldType holdType, DummyHands.HandType selectedHand)
     {
         if(selectedHand == DummyHands.HandType.RightHand)
             itemRightHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
@@ -113,7 +123,7 @@ public class DummyIkController : MonoBehaviour
     {
          bool withTwoHands = SetConstraintsWeights(item, hand.handType, alreadyInHand);
 
-        Transform hold = TargetFromHoldTypeAndHand(withTwoHands ? item.twoHandHold : item.singleHandHold, hand.handType);
+        Transform hold = TargetFromHoldTypeAndHand(item.GetHold(withTwoHands, intents.intent), hand.handType);
 
         hand.SetWorldPositionRotationOfIkTarget(TargetLockerType.ItemPosition, hold);
         

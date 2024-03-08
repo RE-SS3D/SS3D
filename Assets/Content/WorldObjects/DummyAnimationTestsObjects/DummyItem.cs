@@ -4,19 +4,13 @@ using UnityEngine;
 
 public class DummyItem : MonoBehaviour
 {
-
-    public enum HandHoldType
-    {
-        None,
-        Toolbox,
-        Shoulder,
-        DoubleHandGun,
-    }
-
     public HandHoldType singleHandHold;
     
     public HandHoldType twoHandHold;
 
+    public HandHoldType singleHandHoldHarm;
+
+    public HandHoldType twoHandHoldHarm;
     
     public Transform primaryRightHandHold;
     
@@ -33,5 +27,24 @@ public class DummyItem : MonoBehaviour
     public bool heldWithOneHand;
 
     public bool heldWithTwoHands;
+
+    public HandHoldType GetHold(bool withTwoHands, Intent intent)
+    {
+        switch (intent, withTwoHands)
+        {
+            case (Intent.Def, true):
+                return twoHandHold;
+            case (Intent.Def, false):
+                return singleHandHold;
+            case (Intent.Harm, true):
+                return twoHandHoldHarm;
+            case (Intent.Harm, false):
+                return singleHandHoldHarm;
+        }
+        
+        Debug.LogError("case not handled");
+
+        return singleHandHold;
+    }
 
 }
