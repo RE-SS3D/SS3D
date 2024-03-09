@@ -85,27 +85,7 @@ public class DummyPickUp : MonoBehaviour
     private void TryThrow()
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
-        // TODO put logic here in IK controller
-        /*DummyItem item = hands.SelectedHand.item;
-
-        if (hands.SelectedHand.Full && hands.UnselectedHand.Empty && item.canHoldTwoHand)
-        {
-            dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
-            dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
-            
-        }
-        else if (hands.SelectedHand.Full  && item.canHoldOneHand)
-        {
-            if (hands.SelectedHand.handType == HandType.LeftHand)
-            {
-                dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
-            }
-            else
-            {
-                dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
-            }
-        }*/
-
+ 
         hands.SelectedHand.RemoveItem();
 
         OnHoldChange?.Invoke(true);

@@ -16,15 +16,20 @@ public class DummyIkController : MonoBehaviour
     
     public Rig holdRig;
     
-    public TwoBoneIKConstraint rightHandHoldTwoBoneIkConstraint;
+    [SerializeField]
+    private TwoBoneIKConstraint rightHandHoldTwoBoneIkConstraint;
     
-    public TwoBoneIKConstraint leftHandHoldTwoBoneIkConstraint;
+    [SerializeField]
+    private TwoBoneIKConstraint leftHandHoldTwoBoneIkConstraint;
     
-    public ChainIKConstraint rightArmChainIKConstraint;
+    [SerializeField]
+    private ChainIKConstraint rightArmChainIKConstraint;
     
-    public ChainIKConstraint leftArmChainIKConstraint;
+    [SerializeField]
+    private ChainIKConstraint leftArmChainIKConstraint;
     
-    public MultiAimConstraint headIKConstraint;
+    [SerializeField]
+    private MultiAimConstraint headIKConstraint;
 
 
     private ChainIKConstraint SelectedArmChainIKConstraint =>
@@ -43,37 +48,46 @@ public class DummyIkController : MonoBehaviour
     {
         pickup.OnHoldChange += HandleItemHoldChange;
     }
-    
+
     private void HandleItemHoldChange(bool removeItem)
     {
         if (removeItem)
         {
-            if (hands.UnselectedHand.Empty)
-            {
-                UnselectedArmChainIKConstraint.weight = 0f;
-                UnselectedHandHoldTwoBoneIkConstraint.weight = 0f;
-            }
-
-            SelectedArmChainIKConstraint.weight = 0f;
-            SelectedHandHoldTwoBoneIkConstraint.weight = 0f;
-
-            if (hands.UnselectedHand.Full && hands.UnselectedHand.item.canHoldTwoHand)
-            {
-                SelectedArmChainIKConstraint.weight = 1f;
-                SelectedHandHoldTwoBoneIkConstraint.weight = 1f;
-            }
-
+            HandleRemoveItem();
         }
         else
         {
-            if (hands.SelectedHand.item.canHoldTwoHand && hands.UnselectedHand.Empty)
-            {
-                UnselectedArmChainIKConstraint.weight = 1f;
-                UnselectedHandHoldTwoBoneIkConstraint.weight = 1f;
-            }
-            
+            HandleAddItem();
+        }
+    }
+
+    private void HandleRemoveItem()
+    {
+        if (hands.UnselectedHand.Empty)
+        {
+            UnselectedArmChainIKConstraint.weight = 0f;
+            UnselectedHandHoldTwoBoneIkConstraint.weight = 0f;
+        }
+
+        SelectedArmChainIKConstraint.weight = 0f;
+        SelectedHandHoldTwoBoneIkConstraint.weight = 0f;
+
+        if (hands.UnselectedHand.Full && hands.UnselectedHand.item.canHoldTwoHand)
+        {
             SelectedArmChainIKConstraint.weight = 1f;
             SelectedHandHoldTwoBoneIkConstraint.weight = 1f;
         }
+    }
+
+    private void HandleAddItem()
+    {
+        if (hands.SelectedHand.item.canHoldTwoHand && hands.UnselectedHand.Empty)
+        {
+            UnselectedArmChainIKConstraint.weight = 1f;
+            UnselectedHandHoldTwoBoneIkConstraint.weight = 1f;
+        }
+            
+        SelectedArmChainIKConstraint.weight = 1f;
+        SelectedHandHoldTwoBoneIkConstraint.weight = 1f;
     }
 }
