@@ -67,31 +67,44 @@ public class HoldController : MonoBehaviour
     
     private void HandleItemHoldChange(bool removeItemInHand)
     {
-        DummyHand unselectedHand = hands.UnselectedHand;
-        DummyHand selectedHand = hands.SelectedHand;
-        
         if (removeItemInHand)
         {
-            if (unselectedHand.Full && unselectedHand.item.canHoldTwoHand)
-            {
-                UpdateItemPositionConstraintAndRotation(unselectedHand);
-                UpdatePickupAndHoldTargetLocker(selectedHand, true);
-            }
+           HandleRemoveItem();
         }
         else
         {
-            UpdateItemPositionConstraintAndRotation(selectedHand);
-            UpdatePickupAndHoldTargetLocker(selectedHand, false);
+           HandleAddItem();
+        }
+    }
 
-            if (unselectedHand.Empty && selectedHand.item.canHoldTwoHand)
-            {
-                UpdatePickupAndHoldTargetLocker(unselectedHand, true);
-            }
+    private void HandleRemoveItem()
+    {
+        DummyHand unselectedHand = hands.UnselectedHand;
+        DummyHand selectedHand = hands.SelectedHand;
+        
+        if (unselectedHand.Full && unselectedHand.item.canHoldTwoHand)
+        {
+            UpdateItemPositionConstraintAndRotation(unselectedHand);
+            UpdatePickupAndHoldTargetLocker(selectedHand, true);
+        }
+    }
+    
+    private void HandleAddItem()
+    {
+        DummyHand unselectedHand = hands.UnselectedHand;
+        DummyHand selectedHand = hands.SelectedHand;
+        
+        UpdateItemPositionConstraintAndRotation(selectedHand);
+        UpdatePickupAndHoldTargetLocker(selectedHand, false);
 
-            if (unselectedHand.Full && unselectedHand.item.canHoldOneHand)
-            {
-                UpdateItemPositionConstraintAndRotation(unselectedHand);
-            }
+        if (unselectedHand.Empty && selectedHand.item.canHoldTwoHand)
+        {
+            UpdatePickupAndHoldTargetLocker(unselectedHand, true);
+        }
+
+        if (unselectedHand.Full && unselectedHand.item.canHoldOneHand)
+        {
+            UpdateItemPositionConstraintAndRotation(unselectedHand);
         }
     }
 
@@ -110,7 +123,7 @@ public class HoldController : MonoBehaviour
         HandHoldType itemHoldType = item.GetHoldType(withTwoHands, intents.intent);
         Transform hold = TargetFromHoldTypeAndHand(itemHoldType, hand.handType);
 
-        hand.SetWorldPositionRotationOfIkTarget(TargetLockerType.ItemPosition, hold);
+        hand.SetWorldPositionRotationTargetLocker(TargetLockerType.ItemPosition, hold);
         SetOffsetOnItemPositionConstraint(itemHoldType, hand.handType);
     }
 
@@ -140,7 +153,7 @@ public class HoldController : MonoBehaviour
 
         Transform parent = item.GetHold(!secondary, hand.handType);
         
-        hand.SetParentTransformOfIkTarget(TargetLockerType.Pickup, parent);
-        hand.SetParentTransformOfIkTarget(TargetLockerType.Hold,  parent);
+        hand.SetParentTransformTargetLocker(TargetLockerType.Pickup, parent);
+        hand.SetParentTransformTargetLocker(TargetLockerType.Hold,  parent);
     }
 }
