@@ -8,20 +8,13 @@ public class DummyPickUp : MonoBehaviour
 
     public float itemMoveDuration;
     public float itemReachDuration;
-
-    private float _pickUpDuration;
-
+    
     public DummyIkController dummyIkController;
 
     public DummyHands hands;
 
     public event Notify OnHoldChange;
-
-
-    private void Start()
-    {
-        _pickUpDuration = itemMoveDuration + itemReachDuration;
-    }
+    
     
     private void Update()
     {
@@ -99,7 +92,7 @@ public class DummyPickUp : MonoBehaviour
 
         while (elapsedTime < itemReachDuration)
         {
-            dummyIkController.pickUpRig.weight = elapsedTime/_pickUpDuration;
+            dummyIkController.pickUpRig.weight = elapsedTime/itemReachDuration;
             elapsedTime += Time.deltaTime;
             yield return null;
         }
@@ -112,7 +105,7 @@ public class DummyPickUp : MonoBehaviour
     {
         float elapsedTime = 0f;
 
-        while (elapsedTime < itemReachDuration)
+        while (elapsedTime < itemMoveDuration)
         {
             dummyIkController.pickUpRig.weight = 1 - elapsedTime/itemMoveDuration;
             elapsedTime += Time.deltaTime;
