@@ -25,10 +25,6 @@ public class DummyItem : MonoBehaviour
 
     public bool canHoldOneHand;
 
-    public bool heldWithOneHand;
-
-    public bool heldWithTwoHands;
-
     public HandHoldType GetHoldType(bool withTwoHands, Intent intent)
     {
         switch (intent, withTwoHands)

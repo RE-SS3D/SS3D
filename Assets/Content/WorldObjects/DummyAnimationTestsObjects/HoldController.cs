@@ -40,8 +40,6 @@ public class HoldController : MonoBehaviour
     
     private readonly List<HoldAndOffset> _holdData = new List<HoldAndOffset>();
     
-    
-    
     private void Start()
     {
         Debug.Log("start hold controller");
@@ -72,10 +70,13 @@ public class HoldController : MonoBehaviour
         DummyHand unselectedHand = hands.UnselectedHand;
         DummyHand selectedHand = hands.SelectedHand;
         
-        if (removeItemInHand && unselectedHand.Full && unselectedHand.item.canHoldTwoHand)
+        if (removeItemInHand)
         {
-            UpdateItemPositionConstraintAndRotation(unselectedHand);
-            UpdatePickupAndHoldTargetLocker(selectedHand, true);
+            if (unselectedHand.Full && unselectedHand.item.canHoldTwoHand)
+            {
+                UpdateItemPositionConstraintAndRotation(unselectedHand);
+                UpdatePickupAndHoldTargetLocker(selectedHand, true);
+            }
         }
         else
         {
@@ -96,8 +97,10 @@ public class HoldController : MonoBehaviour
 
     private void HandleIntentChange(object sender, Intent intent)
     {
-        UpdateItemPositionConstraintAndRotation(hands.SelectedHand);
-        UpdateItemPositionConstraintAndRotation(hands.UnselectedHand);
+        if(hands.SelectedHand.Full)
+            UpdateItemPositionConstraintAndRotation(hands.SelectedHand);
+        if(hands.UnselectedHand.Full)
+            UpdateItemPositionConstraintAndRotation(hands.UnselectedHand);
     }
 
     private void UpdateItemPositionConstraintAndRotation(DummyHand hand)

@@ -86,10 +86,7 @@ public class DummyPickUp : MonoBehaviour
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
         // TODO put logic here in IK controller
-        DummyItem item = hands.SelectedHand.item;
-
-        item.heldWithOneHand = false;
-        item.heldWithTwoHands = false;
+        /*DummyItem item = hands.SelectedHand.item;
 
         if (hands.SelectedHand.Full && hands.UnselectedHand.Empty && item.canHoldTwoHand)
         {
@@ -107,7 +104,7 @@ public class DummyPickUp : MonoBehaviour
             {
                 dummyIkController.rightHandHoldTwoBoneIkConstraint.weight = 0;
             }
-        }
+        }*/
 
         hands.SelectedHand.RemoveItem();
 
