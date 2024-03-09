@@ -89,7 +89,7 @@ public class DummyPickUp : MonoBehaviour
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
         // TODO put logic here in IK controller
-        DummyItem item = hands.SelectedHand.itemInHand;
+        DummyItem item = hands.SelectedHand.item;
 
         item.heldWithOneHand = false;
         item.heldWithTwoHands = false;

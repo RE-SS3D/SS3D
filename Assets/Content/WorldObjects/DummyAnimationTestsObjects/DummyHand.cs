@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DummyHand : MonoBehaviour
 {
-    public DummyItem itemInHand;
+    public DummyItem item;
 
     public HandType handType;
 
@@ -17,21 +17,21 @@ public class DummyHand : MonoBehaviour
 
     public Transform upperArm;
 
-    public bool Full => itemInHand != null;
+    public bool Full => item != null;
 
-    public bool Empty => itemInHand == null;
+    public bool Empty => item == null;
 
     public void RemoveItem()
     {
-        itemInHand.transform.parent = null;
-        itemInHand.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-        itemInHand.gameObject.GetComponent<Collider>().enabled = true;
-        itemInHand = null;
+        item.transform.parent = null;
+        item.gameObject.GetComponent<Rigidbody>().isKinematic = false;
+        item.gameObject.GetComponent<Collider>().enabled = true;
+        item = null;
     }
 
-    public void AddItem(DummyItem item)
+    public void AddItem(DummyItem itemAdded)
     {
-        itemInHand = item;
+        item = itemAdded;
         item.GetComponent<Rigidbody>().isKinematic = true;
         item.GetComponent<Collider>().enabled = false;
     }

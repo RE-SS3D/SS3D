@@ -39,7 +39,7 @@ public class HoldController : MonoBehaviour
     
     public record HoldAndOffset(HandHoldType HandHoldType, Transform HoldTarget, Vector3 Offset, HandType PrimaryHand);
     
-    private List<HoldAndOffset> holdData = new List<HoldAndOffset>();
+    private List<HoldAndOffset> _holdData = new List<HoldAndOffset>();
     
     
     
@@ -48,52 +48,55 @@ public class HoldController : MonoBehaviour
         Debug.Log("start hold controller");
         pickup.OnHoldChange += HandleItemHoldChange;
        
-        holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldLeft,
+        _holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldLeft,
             new Vector3(0.15f,-0.08f,0.26f), HandType.LeftHand));
-        holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldRight,
+        _holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldRight,
             new Vector3(-0.15f,-0.08f,0.26f), HandType.RightHand));
-        holdData.Add(new(HandHoldType.Toolbox, toolBoxHoldLeft,
+        _holdData.Add(new(HandHoldType.Toolbox, toolBoxHoldLeft,
             new Vector3(-0.1f,-0.4f,0.1f), HandType.LeftHand));
-        holdData.Add(new(HandHoldType.Toolbox, toolboxHoldRight,
+        _holdData.Add(new(HandHoldType.Toolbox, toolboxHoldRight,
             new Vector3(0.1f, -0.4f, 0.1f), HandType.RightHand));
-        holdData.Add(new(HandHoldType.Shoulder, shoulderHoldLeft,
+        _holdData.Add(new(HandHoldType.Shoulder, shoulderHoldLeft,
             new Vector3(0f, 0.18f, 0f), HandType.LeftHand));
-        holdData.Add(new(HandHoldType.Shoulder, shoulderHoldRight,
+        _holdData.Add(new(HandHoldType.Shoulder, shoulderHoldRight,
             new Vector3(0f, 0.18f, 0f),HandType.RightHand));
-        holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmLeft,
+        _holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmLeft,
             new Vector3(0f,-0.07f,0.18f), HandType.LeftHand));
-        holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmRight,
+        _holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmRight,
             new Vector3(0f,-0.07f,0.18f), HandType.RightHand));
     }
 
     
     private void HandleItemHoldChange(bool removeItemInHand)
     {
-        if (removeItemInHand && hands.UnselectedHand.Full && hands.UnselectedHand.itemInHand.canHoldTwoHand)
+        DummyHand unselectedHand = hands.UnselectedHand;
+        DummyHand selectedHand = hands.SelectedHand;
+        
+        if (removeItemInHand && unselectedHand.Full && unselectedHand.item.canHoldTwoHand)
         {
-            UpdateItemPositionConstraintAndRotation(hands.UnselectedHand);
-            UpdatePickupAndHoldTargetLocker(hands.SelectedHand, true);
+            UpdateItemPositionConstraintAndRotation(unselectedHand);
+            UpdatePickupAndHoldTargetLocker(selectedHand, true);
         }
         else
         {
-            UpdateItemPositionConstraintAndRotation(hands.SelectedHand);
-            UpdatePickupAndHoldTargetLocker(hands.SelectedHand, false);
+            UpdateItemPositionConstraintAndRotation(selectedHand);
+            UpdatePickupAndHoldTargetLocker(selectedHand, false);
 
-            if (hands.UnselectedHand.Empty && hands.SelectedHand.itemInHand.canHoldTwoHand)
+            if (unselectedHand.Empty && selectedHand.item.canHoldTwoHand)
             {
-                UpdatePickupAndHoldTargetLocker(hands.UnselectedHand, true);
+                UpdatePickupAndHoldTargetLocker(unselectedHand, true);
             }
 
-            if (hands.UnselectedHand.Full && hands.UnselectedHand.itemInHand.heldWithTwoHands)
+            if (unselectedHand.Full && unselectedHand.item.canHoldOneHand)
             {
-                UpdateItemPositionConstraintAndRotation(hands.UnselectedHand);
+                UpdateItemPositionConstraintAndRotation(unselectedHand);
             }
         }
     }
 
     private void UpdateItemPositionConstraintAndRotation(DummyHand hand)
     {
-        DummyItem item = hand.itemInHand;
+        DummyItem item = hand.item;
         bool withTwoHands = hands.WithTwoHands(hand);
         HandHoldType itemHoldType = item.GetHoldType(withTwoHands, intents.intent);
         Transform hold = TargetFromHoldTypeAndHand(itemHoldType, hand.handType);
@@ -106,12 +109,12 @@ public class HoldController : MonoBehaviour
 
     public Transform TargetFromHoldTypeAndHand(HandHoldType handHoldType, HandType selectedHand)
     {
-        return holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).HoldTarget;
+        return _holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).HoldTarget;
     }
 
     private Vector3 OffsetFromHoldTypeAndHand(HandHoldType handHoldType, HandType selectedHand)
     {
-        return holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).Offset;
+        return _holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).Offset;
     }
 
     public void SetOffsetOnItemPositionConstraint(HandHoldType holdType, HandType selectedHand)
@@ -124,7 +127,7 @@ public class HoldController : MonoBehaviour
     
     private void UpdatePickupAndHoldTargetLocker(DummyHand hand, bool secondary)
     {
-        DummyItem item = secondary ? hands.GetOtherHand(hand.handType).itemInHand : hand.itemInHand;
+        DummyItem item = secondary ? hands.GetOtherHand(hand.handType).item : hand.item;
 
         Transform parent = item.GetHold(!secondary, hand.handType);
         

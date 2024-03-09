@@ -35,7 +35,7 @@ public class DummyHands : MonoBehaviour
 
     public bool WithTwoHands(DummyHand hand)
     {
-        DummyItem item = hand.itemInHand;
+        DummyItem item = hand.item;
         
         if (GetOtherHand(hand.handType).Empty && item.canHoldTwoHand)
         {

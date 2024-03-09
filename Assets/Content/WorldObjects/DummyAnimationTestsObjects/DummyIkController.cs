@@ -33,6 +33,18 @@ public class DummyIkController : MonoBehaviour
     public MultiAimConstraint headIKConstraint;
 
 
+    public ChainIKConstraint SelectedArmChainIKConstraint =>
+        hands.SelectedHand.handType == HandType.LeftHand ? leftArmChainIKConstraint : rightArmChainIKConstraint;
+    
+    public ChainIKConstraint UnselectedArmChainIKConstraint =>
+        hands.SelectedHand.handType == HandType.LeftHand ? rightArmChainIKConstraint : leftArmChainIKConstraint;
+    
+    public TwoBoneIKConstraint SelectedHandHoldTwoBoneIkConstraint =>
+        hands.SelectedHand.handType == HandType.LeftHand ? leftHandHoldTwoBoneIkConstraint : rightHandHoldTwoBoneIkConstraint;
+    
+    public TwoBoneIKConstraint UnselectedHandHoldTwoBoneIkConstraint =>
+        hands.SelectedHand.handType == HandType.LeftHand ? rightHandHoldTwoBoneIkConstraint : leftHandHoldTwoBoneIkConstraint;
+
     public void Start()
     {
         pickup.OnHoldChange += HandleItemHoldChange;
@@ -40,42 +52,34 @@ public class DummyIkController : MonoBehaviour
     
     private void HandleItemHoldChange(bool removeItem)
     {
-        SetConstraintsWeights(hands.SelectedHand);
-    }
-
-
-    private bool SetConstraintsWeights(DummyHand hand)
-    {
-        DummyItem item = hand.itemInHand;
-        bool withTwoHands = hands.WithTwoHands(hand);
-        
-        if (withTwoHands)
+        if (removeItem)
         {
-            rightArmChainIKConstraint.weight = 1;
-            leftArmChainIKConstraint.weight = 1;
-            rightHandHoldTwoBoneIkConstraint.weight = 1;
-            leftHandHoldTwoBoneIkConstraint.weight = 1;
-            item.heldWithTwoHands = true;
+            if (hands.UnselectedHand.Empty)
+            {
+                UnselectedArmChainIKConstraint.weight = 0f;
+                UnselectedHandHoldTwoBoneIkConstraint.weight = 0f;
+            }
+
+            SelectedArmChainIKConstraint.weight = 0f;
+            SelectedHandHoldTwoBoneIkConstraint.weight = 0f;
+
+            if (hands.UnselectedHand.Full && hands.UnselectedHand.item.canHoldTwoHand)
+            {
+                SelectedArmChainIKConstraint.weight = 1f;
+                SelectedHandHoldTwoBoneIkConstraint.weight = 1f;
+            }
+
         }
-        else if (item.canHoldOneHand)
+        else
         {
-            item.heldWithOneHand = true;
+            if (hands.SelectedHand.item.canHoldTwoHand && hands.UnselectedHand.Empty)
+            {
+                UnselectedArmChainIKConstraint.weight = 1f;
+                UnselectedHandHoldTwoBoneIkConstraint.weight = 1f;
+            }
             
-            if (hand.handType == HandType.LeftHand)
-            {
-                rightArmChainIKConstraint.weight = 0;
-                leftArmChainIKConstraint.weight = 1;
-                leftHandHoldTwoBoneIkConstraint.weight = 1;
-               
-            }
-            else
-            {
-                rightArmChainIKConstraint.weight = 1;
-                leftArmChainIKConstraint.weight = 0;
-                rightHandHoldTwoBoneIkConstraint.weight = 1;
-            }
+            SelectedArmChainIKConstraint.weight = 1f;
+            SelectedHandHoldTwoBoneIkConstraint.weight = 1f;
         }
-
-        return withTwoHands;
     }
 }
