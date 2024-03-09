@@ -48,11 +48,10 @@ public class DummyPickUp : MonoBehaviour
         GetComponent<DummyAnimatorController>().TriggerPickUp();
 
         StartCoroutine(StartPickUpCoroutines(item));
-        
+  
         GetComponent<DummyHands>().SelectedHand.AddItem(item);
         
         OnHoldChange?.Invoke(false);
-
     }
 
     private IEnumerator StartPickUpCoroutines(DummyItem item)
@@ -103,7 +102,7 @@ public class DummyPickUp : MonoBehaviour
         }
         else if (hands.SelectedHand.Full  && item.canHoldOneHand)
         {
-            if (hands.SelectedHand.handType == DummyHands.HandType.LeftHand)
+            if (hands.SelectedHand.handType == HandType.LeftHand)
             {
                 dummyIkController.leftHandHoldTwoBoneIkConstraint.weight = 0;
             }

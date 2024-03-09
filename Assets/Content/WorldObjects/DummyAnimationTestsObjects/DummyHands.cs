@@ -7,12 +7,6 @@ public class DummyHands : MonoBehaviour
 
     public DummyHand leftHand;
     public DummyHand rightHand;
-    
-    public enum HandType
-    {
-        LeftHand = 0,
-        RightHand = 1,
-    }
 
     public HandType selectedHand = HandType.LeftHand;
     
@@ -39,9 +33,11 @@ public class DummyHands : MonoBehaviour
         Debug.Log($"Selected hand is {selectedHand}");
     }
 
-    public bool WithTwoHands(DummyItem item, DummyHands.HandType hand, bool alreadyInHand)
+    public bool WithTwoHands(DummyHand hand)
     {
-        if ((BothHandEmpty || (GetOtherHand(hand).Empty && alreadyInHand)) && item.canHoldTwoHand)
+        DummyItem item = hand.itemInHand;
+        
+        if (GetOtherHand(hand.handType).Empty && item.canHoldTwoHand)
         {
             return true;
         }

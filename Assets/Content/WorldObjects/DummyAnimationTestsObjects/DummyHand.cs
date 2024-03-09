@@ -7,7 +7,7 @@ public class DummyHand : MonoBehaviour
 {
     public DummyItem itemInHand;
 
-    public DummyHands.HandType handType;
+    public HandType handType;
 
     public Transform handHoldTargetLocker;
 

@@ -40,16 +40,14 @@ public class DummyIkController : MonoBehaviour
     
     private void HandleItemHoldChange(bool removeItem)
     {
-        if(removeItem) return;
-        bool withTwoHands = SetConstraintsWeights(hands.SelectedHand, true);
-        MoveIkTargets(withTwoHands, hands.SelectedHand);
+        SetConstraintsWeights(hands.SelectedHand);
     }
 
 
-    private bool SetConstraintsWeights(DummyHand hand, bool alreadyInHand)
+    private bool SetConstraintsWeights(DummyHand hand)
     {
         DummyItem item = hand.itemInHand;
-        bool withTwoHands = hands.WithTwoHands(item, hand.handType, alreadyInHand);
+        bool withTwoHands = hands.WithTwoHands(hand);
         
         if (withTwoHands)
         {
@@ -63,7 +61,7 @@ public class DummyIkController : MonoBehaviour
         {
             item.heldWithOneHand = true;
             
-            if (hand.handType == DummyHands.HandType.LeftHand)
+            if (hand.handType == HandType.LeftHand)
             {
                 rightArmChainIKConstraint.weight = 0;
                 leftArmChainIKConstraint.weight = 1;
@@ -79,26 +77,5 @@ public class DummyIkController : MonoBehaviour
         }
 
         return withTwoHands;
-    }
-    
-    private void MoveIkTargets(bool withTwoHands, DummyHand hand)
-    {
-        DummyItem item = hand.itemInHand;
-        
-        Transform primaryParent = hand.handType == DummyHands.HandType.RightHand ?
-            item.primaryRightHandHold.transform : item.primaryLeftHandHold.transform;
-        
-        Transform secondaryParent = hand.handType == DummyHands.HandType.RightHand ?
-            item.secondaryLeftHandHold.transform : item.secondaryRightHandHold.transform;
-        
-        hand.SetParentTransformOfIkTarget(TargetLockerType.Pickup,  primaryParent);
-        hand.SetParentTransformOfIkTarget(TargetLockerType.Hold,  primaryParent);
-
-        if (withTwoHands)
-        {
-            hands.GetOtherHand(hand.handType).SetParentTransformOfIkTarget(TargetLockerType.Pickup, secondaryParent);
-            hands.GetOtherHand(hand.handType).SetParentTransformOfIkTarget(TargetLockerType.Hold, secondaryParent);
-        }
-
     }
 }

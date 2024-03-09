@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,7 +29,7 @@ public class DummyItem : MonoBehaviour
 
     public bool heldWithTwoHands;
 
-    public HandHoldType GetHold(bool withTwoHands, Intent intent)
+    public HandHoldType GetHoldType(bool withTwoHands, Intent intent)
     {
         switch (intent, withTwoHands)
         {
@@ -45,6 +46,23 @@ public class DummyItem : MonoBehaviour
         Debug.LogError("case not handled");
 
         return singleHandHold;
+    }
+
+    public Transform GetHold(bool primary, HandType handType)
+    {
+        switch (primary, handType)
+        {
+            case (true, HandType.LeftHand):
+                return primaryLeftHandHold;
+            case (false, HandType.LeftHand):
+                return secondaryLeftHandHold;
+            case (true, HandType.RightHand):
+                return primaryRightHandHold;
+            case (false, HandType.RightHand):
+                return secondaryRightHandHold;
+            default:
+                throw new ArgumentException();
+        }
     }
 
 }
