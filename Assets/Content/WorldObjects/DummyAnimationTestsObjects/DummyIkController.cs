@@ -1,10 +1,4 @@
-using SS3D.Systems.Inventory.Containers;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
 
 public class DummyIkController : MonoBehaviour
@@ -33,16 +27,16 @@ public class DummyIkController : MonoBehaviour
     public MultiAimConstraint headIKConstraint;
 
 
-    public ChainIKConstraint SelectedArmChainIKConstraint =>
+    private ChainIKConstraint SelectedArmChainIKConstraint =>
         hands.SelectedHand.handType == HandType.LeftHand ? leftArmChainIKConstraint : rightArmChainIKConstraint;
     
-    public ChainIKConstraint UnselectedArmChainIKConstraint =>
+    private ChainIKConstraint UnselectedArmChainIKConstraint =>
         hands.SelectedHand.handType == HandType.LeftHand ? rightArmChainIKConstraint : leftArmChainIKConstraint;
     
-    public TwoBoneIKConstraint SelectedHandHoldTwoBoneIkConstraint =>
+    private TwoBoneIKConstraint SelectedHandHoldTwoBoneIkConstraint =>
         hands.SelectedHand.handType == HandType.LeftHand ? leftHandHoldTwoBoneIkConstraint : rightHandHoldTwoBoneIkConstraint;
     
-    public TwoBoneIKConstraint UnselectedHandHoldTwoBoneIkConstraint =>
+    private TwoBoneIKConstraint UnselectedHandHoldTwoBoneIkConstraint =>
         hands.SelectedHand.handType == HandType.LeftHand ? rightHandHoldTwoBoneIkConstraint : leftHandHoldTwoBoneIkConstraint;
 
     public void Start()

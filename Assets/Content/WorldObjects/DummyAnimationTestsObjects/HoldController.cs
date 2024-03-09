@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -37,9 +36,9 @@ public class HoldController : MonoBehaviour
 
     public Transform gunHoldHarmLeft;
     
-    public record HoldAndOffset(HandHoldType HandHoldType, Transform HoldTarget, Vector3 Offset, HandType PrimaryHand);
+    private sealed record HoldAndOffset(HandHoldType HandHoldType, Transform HoldTarget, Vector3 Offset, HandType PrimaryHand);
     
-    private List<HoldAndOffset> _holdData = new List<HoldAndOffset>();
+    private readonly List<HoldAndOffset> _holdData = new List<HoldAndOffset>();
     
     
     
@@ -107,7 +106,7 @@ public class HoldController : MonoBehaviour
 
     
 
-    public Transform TargetFromHoldTypeAndHand(HandHoldType handHoldType, HandType selectedHand)
+    private Transform TargetFromHoldTypeAndHand(HandHoldType handHoldType, HandType selectedHand)
     {
         return _holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).HoldTarget;
     }
@@ -117,7 +116,7 @@ public class HoldController : MonoBehaviour
         return _holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).Offset;
     }
 
-    public void SetOffsetOnItemPositionConstraint(HandHoldType holdType, HandType selectedHand)
+    private void SetOffsetOnItemPositionConstraint(HandHoldType holdType, HandType selectedHand)
     {
         if(selectedHand == HandType.RightHand)
             itemRightHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);

@@ -1,7 +1,4 @@
-using SS3D.Systems.Inventory.Containers;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public delegate void Notify(bool removeItem);
@@ -32,7 +29,7 @@ public class DummyPickUp : MonoBehaviour
         if (!Input.GetMouseButtonDown(0))
             return;
         
-        if (GetComponent<DummyHands>().SelectedHand.Empty)
+        if (hands.SelectedHand.Empty)
         {
             TryPickUp();
         }
@@ -49,7 +46,7 @@ public class DummyPickUp : MonoBehaviour
 
         StartCoroutine(StartPickUpCoroutines(item));
   
-        GetComponent<DummyHands>().SelectedHand.AddItem(item);
+        hands.SelectedHand.AddItem(item);
         
         OnHoldChange?.Invoke(false);
     }
