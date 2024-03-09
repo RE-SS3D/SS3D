@@ -29,7 +29,7 @@ public class DummyHands : MonoBehaviour
 
 
     // Update is called once per frame
-    private void Update()
+    public void Update()
     {
         if (!Input.GetKeyDown(KeyCode.X))
             return;
@@ -37,5 +37,15 @@ public class DummyHands : MonoBehaviour
         selectedHand = selectedHand == HandType.LeftHand ? HandType.RightHand : HandType.LeftHand;
         
         Debug.Log($"Selected hand is {selectedHand}");
+    }
+
+    public bool WithTwoHands(DummyItem item, DummyHands.HandType hand, bool alreadyInHand)
+    {
+        if ((BothHandEmpty || (GetOtherHand(hand).Empty && alreadyInHand)) && item.canHoldTwoHand)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

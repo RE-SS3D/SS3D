@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public delegate void Notify(bool removeItem);
+
 public class DummyPickUp : MonoBehaviour
 {
 
@@ -15,6 +17,9 @@ public class DummyPickUp : MonoBehaviour
     public DummyIkController dummyIkController;
 
     public DummyHands hands;
+
+    public event Notify OnHoldChange;
+
 
     private void Start()
     {
@@ -44,16 +49,9 @@ public class DummyPickUp : MonoBehaviour
 
         StartCoroutine(StartPickUpCoroutines(item));
         
-        dummyIkController.UpdateItemHold(item, false, hands.SelectedHand);
-        
         GetComponent<DummyHands>().SelectedHand.AddItem(item);
-
-        if (hands.UnselectedHand.Full 
-            && hands.UnselectedHand.itemInHand.canHoldOneHand
-            && hands.UnselectedHand.itemInHand.heldWithTwoHands)
-        {
-            dummyIkController.UpdateItemHold(hands.UnselectedHand.itemInHand, true, hands.UnselectedHand);
-        }
+        
+        OnHoldChange?.Invoke(false);
 
     }
 
@@ -91,6 +89,7 @@ public class DummyPickUp : MonoBehaviour
     private void TryThrow()
     {
         GetComponent<DummyAnimatorController>().TriggerThrow();
+        // TODO put logic here in IK controller
         DummyItem item = hands.SelectedHand.itemInHand;
 
         item.heldWithOneHand = false;
@@ -115,19 +114,8 @@ public class DummyPickUp : MonoBehaviour
         }
 
         hands.SelectedHand.RemoveItem();
-        
-        DummyItem itemInUnselectedHand = hands.UnselectedHand.itemInHand;
 
-        if (itemInUnselectedHand == null)
-        {
-            return;
-        }
-
-        if (itemInUnselectedHand.canHoldTwoHand)
-        {
-            dummyIkController.UpdateItemHold(itemInUnselectedHand,
-                true, hands.UnselectedHand);
-        }
+        OnHoldChange?.Invoke(true);
     }
     
     

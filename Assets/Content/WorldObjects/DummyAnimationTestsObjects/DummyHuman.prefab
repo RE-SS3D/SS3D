@@ -3311,6 +3311,7 @@ GameObject:
   - component: {fileID: 8542638990947268518}
   - component: {fileID: 408292127236538780}
   - component: {fileID: 333363580064996929}
+  - component: {fileID: 304844770068834842}
   m_Layer: 0
   m_Name: DummyHuman
   m_TagString: Untagged
@@ -3482,33 +3483,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd29f7d9d87d179418dbd668ae045312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pickup: {fileID: 3473079973903976204}
   hands: {fileID: 4366303252165034965}
   intents: {fileID: 333363580064996929}
-  rightPickUpTargetLocker: {fileID: 0}
-  leftPickUpTargetLocker: {fileID: 0}
-  rightHoldTargetLocker: {fileID: 0}
-  leftHoldTargetLocker: {fileID: 0}
-  rightItemPositionTargetLocker: {fileID: 4363011775381521912}
-  leftItemPositionTargetLocker: {fileID: 3720527799557840007}
-  rightUpperArm: {fileID: 802911981376609306}
-  leftUpperArm: {fileID: 7446386329022654784}
   pickUpRig: {fileID: 1252846949690250700}
   holdRig: {fileID: 4843964150380460072}
   rightHandHoldTwoBoneIkConstraint: {fileID: 2142891004495607562}
   leftHandHoldTwoBoneIkConstraint: {fileID: 3450567292757048057}
-  itemRightHoldPositionIkConstraint: {fileID: 6263492953658661066}
-  itemLeftHoldPositionIkConstraint: {fileID: 3209808476875596154}
   rightArmChainIKConstraint: {fileID: 2532537050071209971}
   leftArmChainIKConstraint: {fileID: 2592208313181239853}
   headIKConstraint: {fileID: 2851688491558728783}
-  gunHoldRight: {fileID: 5850001831997321599}
-  gunHoldLeft: {fileID: 5870208139668738663}
-  toolboxHoldRight: {fileID: 682390552445027629}
-  toolBoxHoldLeft: {fileID: 4606741981008285273}
-  shoulderHoldRight: {fileID: 8867980937904334229}
-  shoulderHoldLeft: {fileID: 6048018365037233454}
-  gunHoldHarmRight: {fileID: 7089849703788316465}
-  gunHoldHarmLeft: {fileID: 9208837563226324795}
 --- !u!143 &1557544769380776910
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3640,6 +3624,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   intent: 0
+--- !u!114 &304844770068834842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e8bd2aad239e974bb1bc493f8db6eeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intents: {fileID: 333363580064996929}
+  hands: {fileID: 4366303252165034965}
+  pickup: {fileID: 3473079973903976204}
+  itemRightHoldPositionIkConstraint: {fileID: 6263492953658661066}
+  itemLeftHoldPositionIkConstraint: {fileID: 3209808476875596154}
+  gunHoldRight: {fileID: 5850001831997321599}
+  gunHoldLeft: {fileID: 5870208139668738663}
+  toolboxHoldRight: {fileID: 682390552445027629}
+  toolBoxHoldLeft: {fileID: 4606741981008285273}
+  shoulderHoldRight: {fileID: 8867980937904334229}
+  shoulderHoldLeft: {fileID: 6048018365037233454}
+  gunHoldHarmRight: {fileID: 7089849703788316465}
+  gunHoldHarmLeft: {fileID: 9208837563226324795}
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0
