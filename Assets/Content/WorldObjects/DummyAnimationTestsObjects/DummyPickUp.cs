@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public delegate void Notify(bool removeItem);
+public delegate void Notify(bool removeItem, DummyHand hand);
 
 public class DummyPickUp : MonoBehaviour
 {
@@ -41,7 +41,7 @@ public class DummyPickUp : MonoBehaviour
   
         hands.SelectedHand.AddItem(item);
         
-        OnHoldChange?.Invoke(false);
+        OnHoldChange?.Invoke(false, hands.SelectedHand);
     }
 
     private IEnumerator StartPickUpCoroutines(DummyItem item)
@@ -87,7 +87,7 @@ public class DummyPickUp : MonoBehaviour
  
         hands.SelectedHand.RemoveItem();
 
-        OnHoldChange?.Invoke(true);
+        OnHoldChange?.Invoke(true, hands.SelectedHand);
     }
 
     private IEnumerator StartDropCoroutines()

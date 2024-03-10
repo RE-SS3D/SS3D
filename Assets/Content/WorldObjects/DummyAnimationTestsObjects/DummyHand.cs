@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class DummyHand : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class DummyHand : MonoBehaviour
     public Transform pickupTargetLocker;
 
     public Transform itemPositionTargetLocker;
+
+    public TwoBoneIKConstraint holdIkConstraint;
+
+    public ChainIKConstraint pickupIkConstraint;
 
     public Transform upperArm;
 

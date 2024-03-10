@@ -65,46 +65,44 @@ public class HoldController : MonoBehaviour
     }
 
     
-    private void HandleItemHoldChange(bool removeItemInHand)
+    private void HandleItemHoldChange(bool removeItemInHand, DummyHand hand)
     {
         if (removeItemInHand)
         {
-           HandleRemoveItem();
+           HandleRemoveItem(hand);
         }
         else
         {
-           HandleAddItem();
+           HandleAddItem(hand);
         }
     }
 
-    private void HandleRemoveItem()
+    private void HandleRemoveItem(DummyHand hand)
     {
-        DummyHand unselectedHand = hands.UnselectedHand;
-        DummyHand selectedHand = hands.SelectedHand;
+        DummyHand otherHand = hands.GetOtherHand(hand.handType);
         
-        if (unselectedHand.Full && unselectedHand.item.canHoldTwoHand)
+        if (otherHand.Full && otherHand.item.canHoldTwoHand)
         {
-            UpdateItemPositionConstraintAndRotation(unselectedHand);
-            UpdatePickupAndHoldTargetLocker(selectedHand, true);
+            UpdateItemPositionConstraintAndRotation(otherHand);
+            UpdatePickupAndHoldTargetLocker(hand, true);
         }
     }
     
-    private void HandleAddItem()
+    private void HandleAddItem(DummyHand hand)
     {
-        DummyHand unselectedHand = hands.UnselectedHand;
-        DummyHand selectedHand = hands.SelectedHand;
+        DummyHand otherHand = hands.GetOtherHand(hand.handType);
         
-        UpdateItemPositionConstraintAndRotation(selectedHand);
-        UpdatePickupAndHoldTargetLocker(selectedHand, false);
+        UpdateItemPositionConstraintAndRotation(hand);
+        UpdatePickupAndHoldTargetLocker(hand, false);
 
-        if (unselectedHand.Empty && selectedHand.item.canHoldTwoHand)
+        if (otherHand.Empty && hand.item.canHoldTwoHand)
         {
-            UpdatePickupAndHoldTargetLocker(unselectedHand, true);
+            UpdatePickupAndHoldTargetLocker(otherHand, true);
         }
 
-        if (unselectedHand.Full && unselectedHand.item.canHoldOneHand)
+        if (otherHand.Full && otherHand.item.canHoldOneHand)
         {
-            UpdateItemPositionConstraintAndRotation(unselectedHand);
+            UpdateItemPositionConstraintAndRotation(otherHand);
         }
     }
 

@@ -3485,13 +3485,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickup: {fileID: 3473079973903976204}
   hands: {fileID: 4366303252165034965}
-  intents: {fileID: 333363580064996929}
   pickUpRig: {fileID: 1252846949690250700}
   holdRig: {fileID: 4843964150380460072}
-  rightHandHoldTwoBoneIkConstraint: {fileID: 2142891004495607562}
-  leftHandHoldTwoBoneIkConstraint: {fileID: 3450567292757048057}
-  rightArmChainIKConstraint: {fileID: 2532537050071209971}
-  leftArmChainIKConstraint: {fileID: 2592208313181239853}
   headIKConstraint: {fileID: 2851688491558728783}
 --- !u!143 &1557544769380776910
 CharacterController:
@@ -3587,11 +3582,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6371626722efc843ba2622b9a6d7d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemInHand: {fileID: 0}
+  item: {fileID: 0}
   handType: 0
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
   itemPositionTargetLocker: {fileID: 3720527799557840007}
+  holdIkConstraint: {fileID: 3450567292757048057}
+  pickupIkConstraint: {fileID: 2592208313181239853}
   upperArm: {fileID: 7446386329022654784}
 --- !u!114 &408292127236538780
 MonoBehaviour:
@@ -3605,11 +3602,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6371626722efc843ba2622b9a6d7d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemInHand: {fileID: 0}
+  item: {fileID: 0}
   handType: 1
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
   itemPositionTargetLocker: {fileID: 4363011775381521912}
+  holdIkConstraint: {fileID: 2142891004495607562}
+  pickupIkConstraint: {fileID: 2532537050071209971}
   upperArm: {fileID: 802911981376609306}
 --- !u!114 &333363580064996929
 MonoBehaviour:
