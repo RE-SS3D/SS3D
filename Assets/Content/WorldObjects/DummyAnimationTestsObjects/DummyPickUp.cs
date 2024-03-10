@@ -47,12 +47,18 @@ public class DummyPickUp : MonoBehaviour
     private IEnumerator StartPickUpCoroutines(DummyItem item)
     {
         OrientTargetForHandRotation(hands.SelectedHand);
+        
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, item.transform, itemReachDuration, false, true));
-        yield return ModifyPickUpIkRigWeightToReach();
+        
+        yield return CoroutineHelper.ModifyValueOverTime(x => dummyIkController.pickUpRig.weight = x,
+            0f, 1f, itemReachDuration);
+        
         StartCoroutine(DummyTransformHelper.LerpTransform(item.transform,
             hands.SelectedHand.itemPositionTargetLocker, itemMoveDuration));
-        yield return ModifyPickUpIkRigWeightToHold();
+        
+        yield return CoroutineHelper.ModifyValueOverTime(x => dummyIkController.pickUpRig.weight = x,
+            1f, 0f, itemMoveDuration);
     }
 
     private void TryPickUp()
@@ -83,38 +89,12 @@ public class DummyPickUp : MonoBehaviour
 
         OnHoldChange?.Invoke(true);
     }
-    
-    
-    
-    private IEnumerator ModifyPickUpIkRigWeightToReach()
+
+    private IEnumerator StartDropCoroutines()
     {
-        float elapsedTime = 0f;
-
-        while (elapsedTime < itemReachDuration)
-        {
-            dummyIkController.pickUpRig.weight = elapsedTime/itemReachDuration;
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure the weight reaches the target value exactly
-        dummyIkController.pickUpRig.weight = 1f;
+        yield return null;
     }
-    
-    private IEnumerator ModifyPickUpIkRigWeightToHold()
-    {
-        float elapsedTime = 0f;
-
-        while (elapsedTime < itemMoveDuration)
-        {
-            dummyIkController.pickUpRig.weight = 1 - elapsedTime/itemMoveDuration;
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure the weight reaches the target value exactly
-        dummyIkController.pickUpRig.weight = 0f;
-    }
+   
     
     /// <summary>
     /// Create a rotation of the IK target to make sure the hand reach in a natural way the item.
@@ -131,9 +111,4 @@ public class DummyPickUp : MonoBehaviour
         hand.pickupTargetLocker.rotation = targetRotation;
     }
     
-
-
-
-
-  
 }
