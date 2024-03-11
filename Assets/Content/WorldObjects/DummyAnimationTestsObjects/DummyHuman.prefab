@@ -3588,10 +3588,12 @@ MonoBehaviour:
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
   itemPositionTargetLocker: {fileID: 3720527799557840007}
+  placeTargetLocker: {fileID: 0}
   holdIkConstraint: {fileID: 3450567292757048057}
   pickupIkConstraint: {fileID: 2592208313181239853}
   itemPositionConstraint: {fileID: 3209808476875596154}
   upperArm: {fileID: 7446386329022654784}
+  handBone: {fileID: 8420821262611087137}
 --- !u!114 &408292127236538780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3609,10 +3611,12 @@ MonoBehaviour:
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
   itemPositionTargetLocker: {fileID: 4363011775381521912}
+  placeTargetLocker: {fileID: 0}
   holdIkConstraint: {fileID: 2142891004495607562}
   pickupIkConstraint: {fileID: 2532537050071209971}
   itemPositionConstraint: {fileID: 6263492953658661066}
   upperArm: {fileID: 802911981376609306}
+  handBone: {fileID: 6356800398579286298}
 --- !u!114 &333363580064996929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3674,7 +3678,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4092542307493577921}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0000014305115, y: 0.75272804, z: 0.0449726}
+  m_LocalPosition: {x: 0, y: 0.75272804, z: 0.0449726}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
