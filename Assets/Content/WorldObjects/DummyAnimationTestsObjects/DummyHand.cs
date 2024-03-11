@@ -20,6 +20,8 @@ public class DummyHand : MonoBehaviour
 
     public ChainIKConstraint pickupIkConstraint;
 
+    public MultiPositionConstraint itemPositionConstraint;
+
     public Transform upperArm;
 
     public bool Full => item != null;

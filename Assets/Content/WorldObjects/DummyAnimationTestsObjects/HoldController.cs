@@ -13,11 +13,7 @@ public class HoldController : MonoBehaviour
     public DummyHands hands;
 
     public DummyPickUp pickup;
-    
-    public MultiPositionConstraint itemRightHoldPositionIkConstraint;
-    
-    public MultiPositionConstraint itemLeftHoldPositionIkConstraint;
-    
+
     // Hold positions
     
     public Transform gunHoldRight;
@@ -43,8 +39,8 @@ public class HoldController : MonoBehaviour
     private void Start()
     {
         Debug.Log("start hold controller");
-        pickup.OnHoldChange += HandleItemHoldChange;
-        intents.OnIntentChange += HandleIntentChange;
+        //pickup.OnHoldChange += HandleItemHoldChange;
+        //intents.OnIntentChange += HandleIntentChange;
        
         _holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldLeft,
             new Vector3(0.15f,-0.08f,0.26f), HandType.LeftHand));
@@ -63,69 +59,26 @@ public class HoldController : MonoBehaviour
         _holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmRight,
             new Vector3(0f,-0.07f,0.18f), HandType.RightHand));
     }
-
     
-    private void HandleItemHoldChange(bool removeItemInHand, DummyHand hand)
-    {
-        if (removeItemInHand)
-        {
-           HandleRemoveItem(hand);
-        }
-        else
-        {
-           HandleAddItem(hand);
-        }
-    }
-
-    private void HandleRemoveItem(DummyHand hand)
-    {
-        DummyHand otherHand = hands.GetOtherHand(hand.handType);
-        
-        if (otherHand.Full && otherHand.item.canHoldTwoHand)
-        {
-            UpdateItemPositionConstraintAndRotation(otherHand);
-            UpdatePickupAndHoldTargetLocker(hand, true);
-        }
-    }
-    
-    private void HandleAddItem(DummyHand hand)
-    {
-        DummyHand otherHand = hands.GetOtherHand(hand.handType);
-        
-        UpdateItemPositionConstraintAndRotation(hand);
-        UpdatePickupAndHoldTargetLocker(hand, false);
-
-        if (otherHand.Empty && hand.item.canHoldTwoHand)
-        {
-            UpdatePickupAndHoldTargetLocker(otherHand, true);
-        }
-
-        if (otherHand.Full && otherHand.item.canHoldOneHand)
-        {
-            UpdateItemPositionConstraintAndRotation(otherHand);
-        }
-    }
-
-    private void HandleIntentChange(object sender, Intent intent)
-    {
-        if(hands.SelectedHand.Full)
-            UpdateItemPositionConstraintAndRotation(hands.SelectedHand);
-        if(hands.UnselectedHand.Full)
-            UpdateItemPositionConstraintAndRotation(hands.UnselectedHand);
-    }
-
-    private void UpdateItemPositionConstraintAndRotation(DummyHand hand)
+    public void UpdateItemPositionConstraintAndRotation(DummyHand hand, bool withTwoHands)
     {
         DummyItem item = hand.item;
-        bool withTwoHands = hands.WithTwoHands(hand);
         HandHoldType itemHoldType = item.GetHoldType(withTwoHands, intents.intent);
         Transform hold = TargetFromHoldTypeAndHand(itemHoldType, hand.handType);
 
         hand.SetWorldPositionRotationTargetLocker(TargetLockerType.ItemPosition, hold);
-        SetOffsetOnItemPositionConstraint(itemHoldType, hand.handType);
+        hand.itemPositionConstraint.data.offset = OffsetFromHoldTypeAndHand(itemHoldType, hand.handType);
     }
-
     
+    public void MovePickupAndHoldTargetLocker(DummyHand hand, bool secondary)
+    {
+        DummyItem item = secondary ? hands.GetOtherHand(hand.handType).item : hand.item;
+
+        Transform parent = item.GetHold(!secondary, hand.handType);
+        
+        hand.SetParentTransformTargetLocker(TargetLockerType.Pickup, parent);
+        hand.SetParentTransformTargetLocker(TargetLockerType.Hold,  parent);
+    }
 
     private Transform TargetFromHoldTypeAndHand(HandHoldType handHoldType, HandType selectedHand)
     {
@@ -136,22 +89,6 @@ public class HoldController : MonoBehaviour
     {
         return _holdData.First(x => x.HandHoldType == handHoldType && x.PrimaryHand == selectedHand).Offset;
     }
-
-    private void SetOffsetOnItemPositionConstraint(HandHoldType holdType, HandType selectedHand)
-    {
-        if(selectedHand == HandType.RightHand)
-            itemRightHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
-        else
-            itemLeftHoldPositionIkConstraint.data.offset = OffsetFromHoldTypeAndHand(holdType, selectedHand);
-    }
     
-    private void UpdatePickupAndHoldTargetLocker(DummyHand hand, bool secondary)
-    {
-        DummyItem item = secondary ? hands.GetOtherHand(hand.handType).item : hand.item;
 
-        Transform parent = item.GetHold(!secondary, hand.handType);
-        
-        hand.SetParentTransformTargetLocker(TargetLockerType.Pickup, parent);
-        hand.SetParentTransformTargetLocker(TargetLockerType.Hold,  parent);
-    }
 }

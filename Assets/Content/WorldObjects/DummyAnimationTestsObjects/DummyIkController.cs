@@ -22,7 +22,7 @@ public class DummyIkController : MonoBehaviour
 
     public void Start()
     {
-        pickup.OnHoldChange += HandleItemHoldChange;
+        //pickup.OnHoldChange += HandleItemHoldChange;
     }
 
     private void HandleItemHoldChange(bool removeItem, DummyHand hand)

@@ -30,16 +30,4 @@ public class DummyHands : MonoBehaviour
         
         Debug.Log($"Selected hand is {selectedHand}");
     }
-
-    public bool WithTwoHands(DummyHand hand)
-    {
-        DummyItem item = hand.item;
-        
-        if (GetOtherHand(hand.handType).Empty && item.canHoldTwoHand)
-        {
-            return true;
-        }
-
-        return false;
-    }
 }

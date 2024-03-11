@@ -2699,7 +2699,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 796b75e345bd64d47a31edd757bd2670, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_Root: {fileID: 4153415939737701389}
     m_Tip: {fileID: 8420821262611087137}
@@ -3554,6 +3554,7 @@ MonoBehaviour:
   itemMoveDuration: 0.3
   itemReachDuration: 0.3
   dummyIkController: {fileID: 7853070027302126534}
+  holdController: {fileID: 304844770068834842}
   hands: {fileID: 4366303252165034965}
 --- !u!114 &4366303252165034965
 MonoBehaviour:
@@ -3589,6 +3590,7 @@ MonoBehaviour:
   itemPositionTargetLocker: {fileID: 3720527799557840007}
   holdIkConstraint: {fileID: 3450567292757048057}
   pickupIkConstraint: {fileID: 2592208313181239853}
+  itemPositionConstraint: {fileID: 3209808476875596154}
   upperArm: {fileID: 7446386329022654784}
 --- !u!114 &408292127236538780
 MonoBehaviour:
@@ -3609,6 +3611,7 @@ MonoBehaviour:
   itemPositionTargetLocker: {fileID: 4363011775381521912}
   holdIkConstraint: {fileID: 2142891004495607562}
   pickupIkConstraint: {fileID: 2532537050071209971}
+  itemPositionConstraint: {fileID: 6263492953658661066}
   upperArm: {fileID: 802911981376609306}
 --- !u!114 &333363580064996929
 MonoBehaviour:
@@ -3638,8 +3641,6 @@ MonoBehaviour:
   intents: {fileID: 333363580064996929}
   hands: {fileID: 4366303252165034965}
   pickup: {fileID: 3473079973903976204}
-  itemRightHoldPositionIkConstraint: {fileID: 6263492953658661066}
-  itemLeftHoldPositionIkConstraint: {fileID: 3209808476875596154}
   gunHoldRight: {fileID: 5850001831997321599}
   gunHoldLeft: {fileID: 5870208139668738663}
   toolboxHoldRight: {fileID: 682390552445027629}
@@ -3695,7 +3696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b342d8ce5c2fd48b8fa3147d48d1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 0
+  m_Weight: 1
   m_Effectors: []
 --- !u!1 &4360956530809379768
 GameObject:
@@ -5043,7 +5044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 796b75e345bd64d47a31edd757bd2670, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_Root: {fileID: 4153415939737701389}
     m_Tip: {fileID: 6456791731408993078}

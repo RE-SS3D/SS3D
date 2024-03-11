@@ -11,6 +11,8 @@ public class DummyPickUp : MonoBehaviour
     
     public DummyIkController dummyIkController;
 
+    public HoldController holdController;
+
     public DummyHands hands;
 
     public event Notify OnHoldChange;
@@ -28,7 +30,7 @@ public class DummyPickUp : MonoBehaviour
         }
         else
         {
-            TryThrow();
+            TryPlace();
         }
 
     }
@@ -36,29 +38,68 @@ public class DummyPickUp : MonoBehaviour
     private void PickUp(DummyItem item)
     {
         GetComponent<DummyAnimatorController>().TriggerPickUp();
-
-        StartCoroutine(StartPickUpCoroutines(item));
-  
-        hands.SelectedHand.AddItem(item);
         
-        OnHoldChange?.Invoke(false, hands.SelectedHand);
+        DummyHand secondaryHand = hands.GetOtherHand(hands.SelectedHand.handType);
+
+        bool withTwoHands = secondaryHand.Empty && item.canHoldTwoHand;
+        
+        hands.SelectedHand.AddItem(item);
+
+        StartCoroutine(StartPickUpCoroutines(item, hands.SelectedHand, withTwoHands));
     }
 
-    private IEnumerator StartPickUpCoroutines(DummyItem item)
+    private IEnumerator StartPickUpCoroutines(DummyItem item, DummyHand mainHand, bool withTwoHands)
     {
+        holdController.UpdateItemPositionConstraintAndRotation(mainHand, withTwoHands);
+        
+        DummyHand secondaryHand = hands.GetOtherHand(mainHand.handType);
+        
         OrientTargetForHandRotation(hands.SelectedHand);
+
+        holdController.MovePickupAndHoldTargetLocker(mainHand, false);
+        if(withTwoHands)
+            holdController.MovePickupAndHoldTargetLocker(secondaryHand, true);
+        
+        // turn toward targets and reach
         
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, item.transform, itemReachDuration, false, true));
-        
-        yield return CoroutineHelper.ModifyValueOverTime(x => dummyIkController.pickUpRig.weight = x,
+
+        // increase pickup and hold constraint.
+        StartCoroutine(CoroutineHelper.ModifyValueOverTime(
+            x => mainHand.holdIkConstraint.weight = x, 0f, 1f, itemReachDuration));
+        if(withTwoHands)
+            StartCoroutine(CoroutineHelper.ModifyValueOverTime(
+                x => secondaryHand.holdIkConstraint.weight = x, 0f, 1f, itemReachDuration));
+            
+        if (withTwoHands)
+            StartCoroutine(CoroutineHelper.ModifyValueOverTime(
+                x => secondaryHand.pickupIkConstraint.weight = x, 0f, 1f, itemReachDuration));
+        yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             0f, 1f, itemReachDuration);
-        
+       
+            
+        // item reach at this point.
         StartCoroutine(DummyTransformHelper.LerpTransform(item.transform,
             hands.SelectedHand.itemPositionTargetLocker, itemMoveDuration));
+
+        if (secondaryHand.Full && secondaryHand.item.canHoldTwoHand)
+        {
+            holdController.UpdateItemPositionConstraintAndRotation(secondaryHand, false);
+        }
         
-        yield return CoroutineHelper.ModifyValueOverTime(x => dummyIkController.pickUpRig.weight = x,
+        // Get hands back at their hold position.
+        yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             1f, 0f, itemMoveDuration);
+        
+        if (withTwoHands)
+            StartCoroutine(CoroutineHelper.ModifyValueOverTime(
+                x => secondaryHand.pickupIkConstraint.weight = x, 1f, 0f, itemReachDuration));
+
+        item.transform.parent = mainHand.itemPositionTargetLocker;
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localRotation = Quaternion.identity;
+        
     }
 
     private void TryPickUp()
@@ -81,16 +122,14 @@ public class DummyPickUp : MonoBehaviour
         }
     }
 
-    private void TryThrow()
+    private void TryPlace()
     {
-        GetComponent<DummyAnimatorController>().TriggerThrow();
- 
         hands.SelectedHand.RemoveItem();
 
         OnHoldChange?.Invoke(true, hands.SelectedHand);
     }
 
-    private IEnumerator StartDropCoroutines()
+    private IEnumerator StartPlaceCoroutines()
     {
         yield return null;
     }

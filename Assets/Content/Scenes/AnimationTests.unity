@@ -2521,14 +2521,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DummyWrench
       objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: <SceneId>k__BackingField
-      value: 6674254383140465671
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: _networkBehaviours.Array.size
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1d33613236e95b84eae931dfa0e9cd81, type: 3}
 --- !u!1001 &3587392513975464036
