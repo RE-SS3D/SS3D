@@ -3302,7 +3302,6 @@ GameObject:
   - component: {fileID: 7307990926274805850}
   - component: {fileID: 3966220969826696441}
   - component: {fileID: 2614927798672868032}
-  - component: {fileID: 7853070027302126534}
   - component: {fileID: 1557544769380776910}
   - component: {fileID: 1459663542338213736}
   - component: {fileID: 2643222421258484460}
@@ -3471,23 +3470,6 @@ MonoBehaviour:
   - {fileID: 731136899907227027}
   - {fileID: 9150053376296806842}
   - {fileID: 4915810817720812794}
---- !u!114 &7853070027302126534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4089496606853742746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd29f7d9d87d179418dbd668ae045312, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pickup: {fileID: 3473079973903976204}
-  hands: {fileID: 4366303252165034965}
-  pickUpRig: {fileID: 1252846949690250700}
-  holdRig: {fileID: 4843964150380460072}
-  headIKConstraint: {fileID: 2851688491558728783}
 --- !u!143 &1557544769380776910
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3553,7 +3535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemMoveDuration: 0.3
   itemReachDuration: 0.3
-  dummyIkController: {fileID: 7853070027302126534}
+  dummyIkController: {fileID: 0}
   holdController: {fileID: 304844770068834842}
   hands: {fileID: 4366303252165034965}
 --- !u!114 &4366303252165034965
@@ -3588,7 +3570,6 @@ MonoBehaviour:
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
   itemPositionTargetLocker: {fileID: 3720527799557840007}
-  placeTargetLocker: {fileID: 0}
   holdIkConstraint: {fileID: 3450567292757048057}
   pickupIkConstraint: {fileID: 2592208313181239853}
   itemPositionConstraint: {fileID: 3209808476875596154}
@@ -3611,7 +3592,6 @@ MonoBehaviour:
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
   itemPositionTargetLocker: {fileID: 4363011775381521912}
-  placeTargetLocker: {fileID: 0}
   holdIkConstraint: {fileID: 2142891004495607562}
   pickupIkConstraint: {fileID: 2532537050071209971}
   itemPositionConstraint: {fileID: 6263492953658661066}

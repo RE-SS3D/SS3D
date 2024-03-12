@@ -8,8 +8,6 @@ public class DummyPickUp : MonoBehaviour
 
     public float itemMoveDuration;
     public float itemReachDuration;
-    
-    public DummyIkController dummyIkController;
 
     public HoldController holdController;
 
