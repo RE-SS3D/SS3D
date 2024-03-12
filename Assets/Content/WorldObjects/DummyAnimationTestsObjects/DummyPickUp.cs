@@ -141,12 +141,15 @@ public class DummyPickUp : MonoBehaviour
 
             hands.SelectedHand.pickupTargetLocker.parent = null;
             hands.SelectedHand.pickupTargetLocker.position = hit.point + 0.2f*Vector3.up;
+            
             StartCoroutine(StartPlaceCoroutines(hands.SelectedHand, withTwoHands));
         }
     }
 
     private IEnumerator StartPlaceCoroutines(DummyHand mainHand, bool withTwoHands)
     {
+        DummyHand secondaryHand = hands.GetOtherHand(mainHand.handType);
+        
         Transform dropTarget = mainHand.pickupTargetLocker;
 
         DummyItem item = mainHand.item;
@@ -157,19 +160,27 @@ public class DummyPickUp : MonoBehaviour
         
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, dropTarget, itemReachDuration, false, true));
-
-        mainHand.itemPositionConstraint.weight = 0f;
         
-        mainHand.holdIkConstraint.weight = 0f;
+        StartCoroutine(CoroutineHelper.ModifyValueOverTime(
+            x => mainHand.holdIkConstraint.weight = x, 1f, 0f, itemReachDuration));
+        
+        StartCoroutine(CoroutineHelper.ModifyValueOverTime(
+            x => mainHand.itemPositionConstraint.weight = x, 1f, 0f, itemReachDuration));
+        
+        if (withTwoHands)
+        {
+            secondaryHand.holdIkConstraint.weight = 0f;
+        }
         
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             0f, 1f, itemReachDuration);
 
+       
         
-        
-        hands.SelectedHand.RemoveItem();
+        mainHand.RemoveItem();
 
         item.transform.position = mainHand.pickupTargetLocker.position;
+        
 
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             1f, 0f, itemReachDuration);
