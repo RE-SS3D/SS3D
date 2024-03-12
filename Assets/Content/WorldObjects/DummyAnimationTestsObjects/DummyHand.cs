@@ -14,6 +14,8 @@ public class DummyHand : MonoBehaviour
 
     public Transform pickupTargetLocker;
 
+    public Transform placeTarget;
+
     public Transform itemPositionTargetLocker;
 
     public TwoBoneIKConstraint holdIkConstraint;

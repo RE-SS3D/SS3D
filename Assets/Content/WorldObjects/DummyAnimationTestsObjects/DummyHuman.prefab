@@ -3535,9 +3535,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemMoveDuration: 0.3
   itemReachDuration: 0.3
-  dummyIkController: {fileID: 0}
   holdController: {fileID: 304844770068834842}
   hands: {fileID: 4366303252165034965}
+  hips: {fileID: 5433592588855148907}
+  lookAtConstraint: {fileID: 2851688491558728783}
+  lookAtTargetLocker: {fileID: 0}
 --- !u!114 &4366303252165034965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3569,6 +3571,7 @@ MonoBehaviour:
   handType: 0
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
+  placeTarget: {fileID: 0}
   itemPositionTargetLocker: {fileID: 3720527799557840007}
   holdIkConstraint: {fileID: 3450567292757048057}
   pickupIkConstraint: {fileID: 2592208313181239853}
@@ -3591,6 +3594,7 @@ MonoBehaviour:
   handType: 1
   handHoldTargetLocker: {fileID: 0}
   pickupTargetLocker: {fileID: 0}
+  placeTarget: {fileID: 0}
   itemPositionTargetLocker: {fileID: 4363011775381521912}
   holdIkConstraint: {fileID: 2142891004495607562}
   pickupIkConstraint: {fileID: 2532537050071209971}
@@ -6292,7 +6296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_ConstrainedObject: {fileID: 8318606709481620365}
     m_SourceObjects:
