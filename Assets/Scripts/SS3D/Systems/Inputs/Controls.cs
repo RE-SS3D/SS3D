@@ -708,6 +708,15 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SendChatMessage"",
+                    ""type"": ""Button"",
+                    ""id"": ""3ec638f1-be3c-4b60-a0ec-2df8837e6eb9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -840,6 +849,28 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Toggle Selection Debug"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1cd2a937-6dc1-4ed4-b380-059921ebd7da"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SendChatMessage"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7880a338-5cc5-49f9-8f46-c033d59be607"",
+                    ""path"": ""<Keyboard>/numpadEnter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SendChatMessage"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1062,6 +1093,7 @@ namespace SS3D.Systems.Inputs
             m_Other_SeeContainerContents = m_Other.FindAction("See Container Contents", throwIfNotFound: true);
             m_Other_ShowOwner = m_Other.FindAction("Show Owner", throwIfNotFound: true);
             m_Other_ToggleSelectionDebug = m_Other.FindAction("Toggle Selection Debug", throwIfNotFound: true);
+            m_Other_SendChatMessage = m_Other.FindAction("SendChatMessage", throwIfNotFound: true);
             // Tile Creator
             m_TileCreator = asset.FindActionMap("Tile Creator", throwIfNotFound: true);
             m_TileCreator_ToggleMenu = m_TileCreator.FindAction("Toggle Menu", throwIfNotFound: true);
@@ -1373,6 +1405,7 @@ namespace SS3D.Systems.Inputs
         private readonly InputAction m_Other_SeeContainerContents;
         private readonly InputAction m_Other_ShowOwner;
         private readonly InputAction m_Other_ToggleSelectionDebug;
+        private readonly InputAction m_Other_SendChatMessage;
         public struct OtherActions
         {
             private @Controls m_Wrapper;
@@ -1389,6 +1422,7 @@ namespace SS3D.Systems.Inputs
             public InputAction @SeeContainerContents => m_Wrapper.m_Other_SeeContainerContents;
             public InputAction @ShowOwner => m_Wrapper.m_Other_ShowOwner;
             public InputAction @ToggleSelectionDebug => m_Wrapper.m_Other_ToggleSelectionDebug;
+            public InputAction @SendChatMessage => m_Wrapper.m_Other_SendChatMessage;
             public InputActionMap Get() { return m_Wrapper.m_Other; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1434,6 +1468,9 @@ namespace SS3D.Systems.Inputs
                     @ToggleSelectionDebug.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleSelectionDebug;
                     @ToggleSelectionDebug.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleSelectionDebug;
                     @ToggleSelectionDebug.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnToggleSelectionDebug;
+                    @SendChatMessage.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSendChatMessage;
+                    @SendChatMessage.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSendChatMessage;
+                    @SendChatMessage.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSendChatMessage;
                 }
                 m_Wrapper.m_OtherActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1474,6 +1511,9 @@ namespace SS3D.Systems.Inputs
                     @ToggleSelectionDebug.started += instance.OnToggleSelectionDebug;
                     @ToggleSelectionDebug.performed += instance.OnToggleSelectionDebug;
                     @ToggleSelectionDebug.canceled += instance.OnToggleSelectionDebug;
+                    @SendChatMessage.started += instance.OnSendChatMessage;
+                    @SendChatMessage.performed += instance.OnSendChatMessage;
+                    @SendChatMessage.canceled += instance.OnSendChatMessage;
                 }
             }
         }
@@ -1634,6 +1674,7 @@ namespace SS3D.Systems.Inputs
             void OnSeeContainerContents(InputAction.CallbackContext context);
             void OnShowOwner(InputAction.CallbackContext context);
             void OnToggleSelectionDebug(InputAction.CallbackContext context);
+            void OnSendChatMessage(InputAction.CallbackContext context);
         }
         public interface ITileCreatorActions
         {

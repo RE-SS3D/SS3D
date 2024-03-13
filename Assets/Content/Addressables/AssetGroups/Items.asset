@@ -369,6 +369,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalCable.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 88d1ba1edb4ce5e4fa74c6a8d53e36e1
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurityLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bc08055e4ec2e204f8f46a379b2b6603
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurityRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
