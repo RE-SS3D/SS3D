@@ -3311,6 +3311,7 @@ GameObject:
   - component: {fileID: 408292127236538780}
   - component: {fileID: 333363580064996929}
   - component: {fileID: 304844770068834842}
+  - component: {fileID: 3292637383336994458}
   m_Layer: 0
   m_Name: DummyHuman
   m_TagString: Untagged
@@ -3637,6 +3638,25 @@ MonoBehaviour:
   shoulderHoldLeft: {fileID: 6048018365037233454}
   gunHoldHarmRight: {fileID: 7089849703788316465}
   gunHoldHarmLeft: {fileID: 9208837563226324795}
+--- !u!114 &3292637383336994458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3662b4356344d1a4caaefdaaa3a462c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hands: {fileID: 4366303252165034965}
+  itemReachDuration: 0.3
+  itemMoveDuration: 0.3
+  holdController: {fileID: 304844770068834842}
+  lookAtTargetLocker: {fileID: 0}
+  lookAtConstraint: {fileID: 2851688491558728783}
+  hips: {fileID: 5433592588855148907}
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0
