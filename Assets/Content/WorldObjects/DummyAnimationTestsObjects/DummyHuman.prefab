@@ -5035,7 +5035,7 @@ MonoBehaviour:
   m_Weight: 0
   m_Data:
     m_Root: {fileID: 4153415939737701389}
-    m_Tip: {fileID: 6456791731408993078}
+    m_Tip: {fileID: 6356800398579286298}
     m_Target: {fileID: 0}
     m_ChainRotationWeight: 1
     m_TipRotationWeight: 1

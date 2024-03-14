@@ -26,6 +26,7 @@ public class DummyPickUp : MonoBehaviour
     
     private void Update()
     {
+        
         if (!Input.GetMouseButtonDown(0))
             return;
         
@@ -37,7 +38,7 @@ public class DummyPickUp : MonoBehaviour
         {
             TryPlace();
         }
-
+        
     }
     
     private void TryPickUp()
@@ -81,12 +82,36 @@ public class DummyPickUp : MonoBehaviour
     {
         holdController.UpdateItemPositionConstraintAndRotation(mainHand, withTwoHands);
 
+        // Needed to constrain item to position, in case the weight has been changed elsewhere
         mainHand.itemPositionConstraint.weight = 1f;
         
+        // Place pickup and hold target lockers on the item, at their respective position and rotation.
         holdController.MovePickupAndHoldTargetLocker(mainHand, false);
         if(withTwoHands)
             holdController.MovePickupAndHoldTargetLocker(secondaryHand, true);
 
+        // Orient hand in a natural position to reach for item.
+        OrientTargetForHandRotation(mainHand);
+
+        // If necessary, orient secondary hand in a natural position to reach for item.
+        if (withTwoHands)
+        {
+            OrientTargetForHandRotation(secondaryHand);
+        }
+        
+        // Needed if this has been changed elsewhere 
+        mainHand.pickupIkConstraint.data.tipRotationWeight = 1f;
+        
+        // Needed as the hand need to reach when picking up in an extended position, it looks unnatural
+        // if it takes directly the rotation of the hold.
+        mainHand.holdIkConstraint.data.targetRotationWeight = 0f;
+        
+        if (withTwoHands)
+        {
+            secondaryHand.holdIkConstraint.data.targetRotationWeight = 0f;
+        }
+
+        // Set up the look at target locker on the item to pick up.
         lookAtTargetLocker.transform.parent = item.transform;
         lookAtTargetLocker.localPosition = Vector3.zero;
         lookAtTargetLocker.localRotation = Quaternion.identity;
@@ -94,16 +119,17 @@ public class DummyPickUp : MonoBehaviour
 
     private IEnumerator PickupReach(DummyItem item, DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands)
     {
+        // Move player toward item
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, item.transform, itemReachDuration, false, true));
 
+        // Change hold constraint weight of the main hand from 0 to 1
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(
             x => mainHand.holdIkConstraint.weight = x, 0f, 1f, itemReachDuration));
-
+        
+        // If necessary, change hold constraint weight of the second hand from 0 to 1
         if (withTwoHands)
         {
-            StartCoroutine(CoroutineHelper.ModifyValueOverTime(
-                x => secondaryHand.pickupIkConstraint.weight = x, 0f, 1f, itemReachDuration));
             StartCoroutine(CoroutineHelper.ModifyValueOverTime(
                 x => secondaryHand.holdIkConstraint.weight = x, 0f, 1f, itemReachDuration));
         }
@@ -111,7 +137,8 @@ public class DummyPickUp : MonoBehaviour
         // Start looking at item
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             0f, 1f, itemReachDuration));
-            
+        
+        // Change pickup constraint weight of the main hand from 0 to 1    
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             0f, 1f, itemReachDuration);
     }
@@ -122,6 +149,7 @@ public class DummyPickUp : MonoBehaviour
         StartCoroutine(DummyTransformHelper.LerpTransform(item.transform,
             hands.SelectedHand.itemPositionTargetLocker, itemMoveDuration));
 
+        // if an item held with two hands, change it with a single hand hold
         if (secondaryHand.Full && secondaryHand.item.canHoldTwoHand)
         {
             holdController.UpdateItemPositionConstraintAndRotation(secondaryHand, false);
@@ -131,13 +159,17 @@ public class DummyPickUp : MonoBehaviour
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             1f, 0f, itemReachDuration));
         
-        // Get hands back at their hold position.
+        // increase hold constraint rotation
+        StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => mainHand.holdIkConstraint.data.targetRotationWeight= x,
+            0f, 1f, itemReachDuration));
+
         if (withTwoHands)
         {
-            StartCoroutine(CoroutineHelper.ModifyValueOverTime(
-                x => secondaryHand.pickupIkConstraint.weight = x, 1f, 0f, itemReachDuration));
+            StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => secondaryHand.holdIkConstraint.data.targetRotationWeight= x,
+                0f, 1f, itemReachDuration));
         }
         
+        // Get hand back at its hold position.
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             1f, 0f, itemMoveDuration);
         
@@ -171,7 +203,7 @@ public class DummyPickUp : MonoBehaviour
         
         SetupPlace(placePosition, item, mainHand, secondaryHand, withTwoHands);
 
-        yield return ItemPlaceReach(placeTarget, item);
+        yield return PlaceReach(mainHand, placeTarget, item);
 
         yield return PlaceAndPullBack(mainHand);
 
@@ -194,14 +226,13 @@ public class DummyPickUp : MonoBehaviour
         lookAtTargetLocker.position = placePosition;
     }
 
-    private IEnumerator ItemPlaceReach(Transform placeTarget, DummyItem item)
+    private IEnumerator PlaceReach(DummyHand mainHand, Transform placeTarget, DummyItem item)
     {
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, placeTarget, itemReachDuration, false, true));
         
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             0f, 1f, itemReachDuration));
-        
 
         yield return DummyTransformHelper.LerpTransform(item.transform, placeTarget,
             itemMoveDuration, true, false, false);
