@@ -80,7 +80,7 @@ public class DummyPickUp : MonoBehaviour
 
     private void SetUpPickup(DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands, DummyItem item)
     {
-        holdController.UpdateItemPositionConstraintAndRotation(mainHand, withTwoHands);
+        holdController.UpdateItemPositionConstraintAndRotation(mainHand, withTwoHands, 0f);
 
         // Needed to constrain item to position, in case the weight has been changed elsewhere
         mainHand.itemPositionConstraint.weight = 1f;
@@ -150,7 +150,7 @@ public class DummyPickUp : MonoBehaviour
         // if an item held with two hands, change it with a single hand hold
         if (secondaryHand.Full && secondaryHand.item.canHoldTwoHand)
         {
-            holdController.UpdateItemPositionConstraintAndRotation(secondaryHand, false);
+            holdController.UpdateItemPositionConstraintAndRotation(secondaryHand, false, itemMoveDuration);
         }
         
         // Stop looking at item         
@@ -227,7 +227,6 @@ public class DummyPickUp : MonoBehaviour
         if (withTwoHands)
         {
             secondaryHand.pickupIkConstraint.weight = 1f;
-            //secondaryHand.holdIkConstraint.weight = 0f;
         }
         
         // Place look at target at place item position
@@ -256,7 +255,7 @@ public class DummyPickUp : MonoBehaviour
         
         mainHand.pickupTargetLocker.parent = null;
 
-        // Slowly decrease pick up constraint so player stop reaching for pickup target
+        // Slowly decrease main hand pick up constraint so player stop reaching for pickup target
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             1f, 0f, itemReachDuration));
         
@@ -275,7 +274,15 @@ public class DummyPickUp : MonoBehaviour
         
         // Slowly stop trying to hold item
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.holdIkConstraint.weight = x,
-            1f, 0f, itemReachDuration);
+             1f, 0f, itemReachDuration);
+        
+        if (secondaryHand.Full && secondaryHand.item.canHoldTwoHand)
+        {
+            holdController.UpdateItemPositionConstraintAndRotation(secondaryHand, true, itemReachDuration);
+            holdController.MovePickupAndHoldTargetLocker(mainHand, true);
+            yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.holdIkConstraint.weight = x,
+                0f, 1f, itemReachDuration);
+        }
     }
     
     

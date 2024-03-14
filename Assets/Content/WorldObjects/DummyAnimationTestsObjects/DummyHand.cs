@@ -69,14 +69,6 @@ public class DummyHand : MonoBehaviour
         return targetToSet;
     }
 
-    public void SetWorldPositionRotationTargetLocker(TargetLockerType type, Transform toCopy)
-    {
-        Transform targetToSet = ChooseTargetLocker(type);
-        
-        targetToSet.position = toCopy.position;
-        targetToSet.rotation = toCopy.rotation;
-    }
-
     public void SetParentTransformTargetLocker(TargetLockerType type, Transform parent)
     {
         Transform targetToSet = ChooseTargetLocker(type);

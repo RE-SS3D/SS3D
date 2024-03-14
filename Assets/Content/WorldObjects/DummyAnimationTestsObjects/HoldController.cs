@@ -1,3 +1,4 @@
+using InspectorGadgets;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -60,14 +61,23 @@ public class HoldController : MonoBehaviour
             new Vector3(0f,-0.07f,0.18f), HandType.RightHand));
     }
     
-    public void UpdateItemPositionConstraintAndRotation(DummyHand hand, bool withTwoHands)
+    public void UpdateItemPositionConstraintAndRotation(DummyHand hand, bool withTwoHands, float duration)
     {
         DummyItem item = hand.item;
         HandHoldType itemHoldType = item.GetHoldType(withTwoHands, intents.intent);
         Transform hold = TargetFromHoldTypeAndHand(itemHoldType, hand.handType);
+        
+        Vector3 startingOffset = hand.itemPositionConstraint.data.offset;
+        Vector3 finalOffset = OffsetFromHoldTypeAndHand(itemHoldType, hand.handType);
 
-        hand.SetWorldPositionRotationTargetLocker(TargetLockerType.ItemPosition, hold);
-        hand.itemPositionConstraint.data.offset = OffsetFromHoldTypeAndHand(itemHoldType, hand.handType);
+        StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
+            hand.itemPositionConstraint.data.offset = x,  startingOffset, finalOffset, duration));
+
+        Vector3 startingRotation = hand.itemPositionConstraint.data.constrainedObject.eulerAngles;
+        Vector3 finalRotation = hold.rotation.eulerAngles;
+        
+        StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
+            hand.itemPositionConstraint.data.constrainedObject.eulerAngles = x,  startingRotation, finalRotation, duration));
     }
     
     public void MovePickupAndHoldTargetLocker(DummyHand hand, bool secondary)
