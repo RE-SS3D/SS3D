@@ -159,11 +159,11 @@ public class DummyPickUp : MonoBehaviour
         
         // increase hold constraint rotation
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => mainHand.holdIkConstraint.data.targetRotationWeight= x,
-            0f, 1f, itemReachDuration));
+           0f, 1f, itemReachDuration));
 
         if (withTwoHands)
         {
-            StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => secondaryHand.holdIkConstraint.data.targetRotationWeight= x,
+           StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => secondaryHand.holdIkConstraint.data.targetRotationWeight= x,
                 0f, 1f, itemReachDuration));
         }
         
@@ -208,7 +208,7 @@ public class DummyPickUp : MonoBehaviour
 
         yield return PlaceReach(mainHand, placeTarget, item);
 
-        yield return PlaceAndPullBack(mainHand);
+        yield return PlaceAndPullBack(mainHand, secondaryHand, withTwoHands);
 
     }
 
@@ -226,7 +226,8 @@ public class DummyPickUp : MonoBehaviour
         // Remove hold constraint from second hand if item held with two hands.
         if (withTwoHands)
         {
-            secondaryHand.holdIkConstraint.weight = 0f;
+            secondaryHand.pickupIkConstraint.weight = 1f;
+            //secondaryHand.holdIkConstraint.weight = 0f;
         }
         
         // Place look at target at place item position
@@ -249,11 +250,11 @@ public class DummyPickUp : MonoBehaviour
             itemMoveDuration, true, false, false);
     }
     
-    private IEnumerator PlaceAndPullBack(DummyHand mainHand)
+    private IEnumerator PlaceAndPullBack(DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands)
     {
         mainHand.RemoveItem();
         
-        hands.SelectedHand.pickupTargetLocker.parent = null;
+        mainHand.pickupTargetLocker.parent = null;
 
         // Slowly decrease pick up constraint so player stop reaching for pickup target
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
@@ -262,6 +263,15 @@ public class DummyPickUp : MonoBehaviour
         // Slowly stop looking at item place position
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             1f, 0f, itemReachDuration));
+
+        // reproduce changes on second hand
+        if (withTwoHands)
+        {
+            StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => secondaryHand.pickupIkConstraint.weight = x,
+                1f, 0f, itemReachDuration));
+            StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => secondaryHand.holdIkConstraint.weight = x,
+                1f, 0f, itemReachDuration));
+        }
         
         // Slowly stop trying to hold item
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.holdIkConstraint.weight = x,
