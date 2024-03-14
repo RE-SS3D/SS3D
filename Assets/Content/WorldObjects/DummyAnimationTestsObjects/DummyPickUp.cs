@@ -87,17 +87,9 @@ public class DummyPickUp : MonoBehaviour
         
         // Place pickup and hold target lockers on the item, at their respective position and rotation.
         holdController.MovePickupAndHoldTargetLocker(mainHand, false);
-        if(withTwoHands)
-            holdController.MovePickupAndHoldTargetLocker(secondaryHand, true);
 
         // Orient hand in a natural position to reach for item.
         OrientTargetForHandRotation(mainHand);
-
-        // If necessary, orient secondary hand in a natural position to reach for item.
-        if (withTwoHands)
-        {
-            OrientTargetForHandRotation(secondaryHand);
-        }
         
         // Needed if this has been changed elsewhere 
         mainHand.pickupIkConstraint.data.tipRotationWeight = 1f;
@@ -105,12 +97,16 @@ public class DummyPickUp : MonoBehaviour
         // Needed as the hand need to reach when picking up in an extended position, it looks unnatural
         // if it takes directly the rotation of the hold.
         mainHand.holdIkConstraint.data.targetRotationWeight = 0f;
-        
+
+        // Reproduce changes on secondary hand if necessary.
         if (withTwoHands)
         {
+            holdController.MovePickupAndHoldTargetLocker(secondaryHand, true);
+            OrientTargetForHandRotation(secondaryHand);
+            secondaryHand.pickupIkConstraint.data.tipRotationWeight = 1f;
             secondaryHand.holdIkConstraint.data.targetRotationWeight = 0f;
         }
-
+        
         // Set up the look at target locker on the item to pick up.
         lookAtTargetLocker.transform.parent = item.transform;
         lookAtTargetLocker.localPosition = Vector3.zero;
@@ -127,16 +123,18 @@ public class DummyPickUp : MonoBehaviour
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(
             x => mainHand.holdIkConstraint.weight = x, 0f, 1f, itemReachDuration));
         
-        // If necessary, change hold constraint weight of the second hand from 0 to 1
+        // Start looking at item
+        StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
+            0f, 1f, itemReachDuration));
+
+        // Reproduce changes on second hand if picking up with two hands
         if (withTwoHands)
         {
             StartCoroutine(CoroutineHelper.ModifyValueOverTime(
                 x => secondaryHand.holdIkConstraint.weight = x, 0f, 1f, itemReachDuration));
+            StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => secondaryHand.pickupIkConstraint.weight = x,
+                0f, 1f, itemReachDuration));
         }
-        
-        // Start looking at item
-        StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
-            0f, 1f, itemReachDuration));
         
         // Change pickup constraint weight of the main hand from 0 to 1    
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
@@ -170,6 +168,11 @@ public class DummyPickUp : MonoBehaviour
         }
         
         // Get hand back at its hold position.
+        if (withTwoHands)
+        {
+            StartCoroutine( CoroutineHelper.ModifyValueOverTime(x => secondaryHand.pickupIkConstraint.weight = x,
+                1f, 0f, itemMoveDuration));
+        }
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             1f, 0f, itemMoveDuration);
         
@@ -211,29 +214,37 @@ public class DummyPickUp : MonoBehaviour
 
     private void SetupPlace(Vector3 placePosition, DummyItem item, DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands)
     {
+        // Set up the position the item should be placed on
         hands.SelectedHand.placeTarget.position = placePosition + 0.2f*Vector3.up;
 
+        // Unparent item so its not constrained by the multi-position constrain anymore.
         item.transform.parent = null;
 
+        // set pickup constraint to 1 so that the player can bend to reach at its feet or further in front.
         mainHand.pickupIkConstraint.weight = 1f;
         
+        // Remove hold constraint from second hand if item held with two hands.
         if (withTwoHands)
         {
             secondaryHand.holdIkConstraint.weight = 0f;
         }
         
+        // Place look at target at place item position
         lookAtTargetLocker.transform.parent = null;
         lookAtTargetLocker.position = placePosition;
     }
 
     private IEnumerator PlaceReach(DummyHand mainHand, Transform placeTarget, DummyItem item)
     {
+        // Turn character toward the position to place the item.
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, placeTarget, itemReachDuration, false, true));
         
+        // Slowly increase looking at place item position
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             0f, 1f, itemReachDuration));
 
+        // Slowly move item toward the position it should be placed.
         yield return DummyTransformHelper.LerpTransform(item.transform, placeTarget,
             itemMoveDuration, true, false, false);
     }
@@ -244,12 +255,15 @@ public class DummyPickUp : MonoBehaviour
         
         hands.SelectedHand.pickupTargetLocker.parent = null;
 
+        // Slowly decrease pick up constraint so player stop reaching for pickup target
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => mainHand.pickupIkConstraint.weight = x,
             1f, 0f, itemReachDuration));
         
+        // Slowly stop looking at item place position
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             1f, 0f, itemReachDuration));
         
+        // Slowly stop trying to hold item
         yield return CoroutineHelper.ModifyValueOverTime(x => mainHand.holdIkConstraint.weight = x,
             1f, 0f, itemReachDuration);
     }
