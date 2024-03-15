@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: APC
   m_EditorClassIdentifier: 
-  nameString: apc
   prefab: {fileID: 5287103069661579500, guid: 4c966398d6624164c910cd29c1faa980, type: 3}
   icon: {fileID: 0}
   layer: 6
@@ -20,3 +19,4 @@ MonoBehaviour:
   specificType: 0
   width: 1
   height: 1
+  isLarge: 1

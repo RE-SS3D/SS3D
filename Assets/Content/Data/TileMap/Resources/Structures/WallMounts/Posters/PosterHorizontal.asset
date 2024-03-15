@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: PosterHorizontal
   m_EditorClassIdentifier: 
-  nameString: poster_horizontal
   prefab: {fileID: 5161561551087789900, guid: fdaaabc96a55d824a86a3636906240c1, type: 3}
   icon: {fileID: 0}
   layer: 6
@@ -20,3 +19,4 @@ MonoBehaviour:
   specificType: 0
   width: 1
   height: 1
+  isLarge: 1
