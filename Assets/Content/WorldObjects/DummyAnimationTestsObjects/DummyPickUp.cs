@@ -179,11 +179,6 @@ public class DummyPickUp : MonoBehaviour
         
         lookAtConstraint.weight = 0f;
     }
-
-  
-    
-    
-   
     
     /// <summary>
     /// Create a rotation of the IK target to make sure the hand reach in a natural way the item.

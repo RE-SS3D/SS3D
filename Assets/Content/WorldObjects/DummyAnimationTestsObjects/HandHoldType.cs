@@ -9,4 +9,5 @@ public enum HandHoldType
     Shoulder,
     DoubleHandGun,
     DoubleHandGunHarm,
+    SmallItem,
 }

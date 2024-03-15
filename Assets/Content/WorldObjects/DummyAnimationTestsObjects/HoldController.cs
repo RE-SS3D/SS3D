@@ -32,6 +32,10 @@ public class HoldController : MonoBehaviour
     public Transform gunHoldHarmRight;
 
     public Transform gunHoldHarmLeft;
+
+    public Transform smallItemRight;
+
+    public Transform smallItemLeft;
     
     private sealed record HoldAndOffset(HandHoldType HandHoldType, Transform HoldTarget, Vector3 Offset, HandType PrimaryHand);
     
@@ -40,8 +44,6 @@ public class HoldController : MonoBehaviour
     private void Start()
     {
         Debug.Log("start hold controller");
-        //pickup.OnHoldChange += HandleItemHoldChange;
-        //intents.OnIntentChange += HandleIntentChange;
        
         _holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldLeft,
             new Vector3(0.15f,-0.08f,0.26f), HandType.LeftHand));
@@ -59,6 +61,10 @@ public class HoldController : MonoBehaviour
             new Vector3(0f,-0.07f,0.18f), HandType.LeftHand));
         _holdData.Add(new(HandHoldType.DoubleHandGunHarm, gunHoldHarmRight,
             new Vector3(0f,-0.07f,0.18f), HandType.RightHand));
+        _holdData.Add(new(HandHoldType.SmallItem, smallItemLeft,
+            new Vector3(0f,-0.35f,0.25f), HandType.LeftHand));
+        _holdData.Add(new(HandHoldType.SmallItem, smallItemRight,
+            new Vector3(0f,-0.35f,0.25f), HandType.RightHand));
     }
     
     public void UpdateItemPositionConstraintAndRotation(DummyHand hand, bool withTwoHands, float duration)
