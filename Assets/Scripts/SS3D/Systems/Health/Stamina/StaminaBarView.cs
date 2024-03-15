@@ -1,7 +1,10 @@
+using System.Linq;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Attributes;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.UI.Settings;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,8 +26,10 @@ namespace SS3D.Systems.Health
         protected override void OnStart()
         {
             base.OnStart();
-
+            
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            var uiVisibilityView = ViewLocator.Get<GlobalUiVisibilityControllerView>().First();
+            uiVisibilityView.RegisterToggle(GameObject);
         }
 
         /// <summary>
