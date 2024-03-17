@@ -47,12 +47,18 @@ public class DummyInteract : MonoBehaviour
     private IEnumerator Interact(Transform interactionTarget, DummyHand mainHand)
     {
         DummyItem tool = hands.SelectedHand.item;
+
+        mainHand.itemPositionConstraint.weight = 0f;
+
+        mainHand.pickupIkConstraint.weight = 1f;
         
         // Start looking at item
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             0f, 1f, interactionMoveDuration));
         
-        // invisibly turn the p
+        // turn the player toward its target so all subsequent computations
+        // are correctly done with player oriented toward target. Then, in the same frame,
+        // put player at its initial rotation.
         Vector3 directionFromTransformToTarget = interactionTarget.position - transform.position;
         directionFromTransformToTarget.y = 0f;
         Quaternion initialPlayerRotation = transform.rotation;
@@ -77,6 +83,8 @@ public class DummyInteract : MonoBehaviour
         // Compute the desired position for the tool
         Vector3 endPosition = interactionTarget.position - difference;
 
+        // take back initial rotation after insuring all computations above are done
+        // with the right orientation.
         transform.rotation = initialPlayerRotation;
         
         // Rotate player toward item
@@ -104,6 +112,9 @@ public class DummyInteract : MonoBehaviour
             Vector3.zero, 2*interactionMoveDuration);
 
         tool.transform.localRotation = Quaternion.identity;
+        mainHand.itemPositionConstraint.weight = 1f;
+        mainHand.pickupIkConstraint.weight = 0f;
+        
 
     }
 }
