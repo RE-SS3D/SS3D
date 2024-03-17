@@ -45,10 +45,11 @@ public class DummyInteract : MonoBehaviour
     {
         DummyItem tool = hands.SelectedHand.item;
         
-      //  Vector3 directionFromTransformToTarget = interactionTarget.position - transform.position;
-
-       // Quaternion initialPlayerRotation = transform.rotation;
-       // transform.rotation = Quaternion.LookRotation(directionFromTransformToTarget);
+        // invisibly turn the p
+        Vector3 directionFromTransformToTarget = interactionTarget.position - transform.position;
+        directionFromTransformToTarget.y = 0f;
+        Quaternion initialPlayerRotation = transform.rotation;
+        transform.rotation = Quaternion.LookRotation(directionFromTransformToTarget);
         
         Vector3 startPosition = tool.transform.position;
 
@@ -71,21 +72,24 @@ public class DummyInteract : MonoBehaviour
         // Compute the desired position for the tool
         Vector3 endPosition = interactionTarget.position - difference;
 
-       // transform.rotation = initialPlayerRotation;
+        transform.rotation = initialPlayerRotation;
         
         // Rotate player toward item
-        //StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
-       //     transform, interactionTarget, interactionMoveDuration, false, true));
+        StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
+            transform, interactionTarget, interactionMoveDuration, false, true));
 
         yield return CoroutineHelper.ModifyVector3OverTime(x => 
             tool.transform.position = x,  startPosition, endPosition, interactionMoveDuration);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
+        
+        tool.transform.parent = initialParent;
         
         yield return CoroutineHelper.ModifyVector3OverTime(x => 
-            tool.transform.position = x,  endPosition, startPosition, interactionMoveDuration);
+            tool.transform.localPosition = x,initialParent.InverseTransformPoint(endPosition),
+            Vector3.zero, interactionMoveDuration);
 
-        tool.transform.rotation = initialRotation;
-        tool.transform.parent = initialParent;
+        tool.transform.localRotation = Quaternion.identity;
+
     }
 }
