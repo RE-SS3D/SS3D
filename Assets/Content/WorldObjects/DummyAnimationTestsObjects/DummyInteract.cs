@@ -48,8 +48,9 @@ public class DummyInteract : MonoBehaviour
     {
         DummyItem tool = hands.SelectedHand.item;
 
+        // disable position constraint the time of the interaction
         mainHand.itemPositionConstraint.weight = 0f;
-
+        
         mainHand.pickupIkConstraint.weight = 1f;
         
         // Start looking at item
@@ -106,7 +107,7 @@ public class DummyInteract : MonoBehaviour
                 tool.transform.localEulerAngles = x,tool.transform.localRotation.eulerAngles,
             Vector3.zero, 2*interactionMoveDuration));
         
-        Debug.Log("start changing position");
+        
         yield return CoroutineHelper.ModifyVector3OverTime(x => 
             tool.transform.localPosition = x, tool.transform.localPosition,
             Vector3.zero, 2*interactionMoveDuration);

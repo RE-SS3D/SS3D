@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2561298317608172063
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7393250799867762754}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7393250799867762754
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2561298317608172063}
+  m_LocalRotation: {x: -0.008021661, y: -0.008021661, z: -0.7070613, w: 0.7070613}
+  m_LocalPosition: {x: 0, y: 0.045, z: 0.638}
+  m_LocalScale: {x: 1.1494253, y: 1.1494253, z: 1.1494253}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6352803376296011595}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: -19.664, y: 0, z: -90}
 --- !u!1 &3657686483164383253
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,6 +138,7 @@ GameObject:
   - component: {fileID: 2299850811598968443}
   - component: {fileID: 1927847066278913763}
   - component: {fileID: 7711092023118939269}
+  - component: {fileID: 776877671744538043}
   m_Layer: 0
   m_Name: DummyM4
   m_TagString: Untagged
@@ -131,6 +163,7 @@ Transform:
   - {fileID: 5154380250611511651}
   - {fileID: 3416135191583572658}
   - {fileID: 397271564552974130}
+  - {fileID: 7393250799867762754}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -204,10 +237,9 @@ MonoBehaviour:
   secondaryRightHandHold: {fileID: 3416135191583572658}
   primaryLeftHandHold: {fileID: 5154380250611511651}
   secondaryLeftHandHold: {fileID: 397271564552974130}
+  interactionPoint: {fileID: 0}
   canHoldTwoHand: 1
   canHoldOneHand: 1
-  heldWithOneHand: 0
-  heldWithTwoHands: 0
 --- !u!64 &1927847066278913763
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -238,6 +270,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &776877671744538043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6008472259372973553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81251b36625bc4b459b55638008f9fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 8048644634823827442, guid: 6689365f34e3b994295af9f68b26360b, type: 3}
+  spawnPoint: {fileID: 7393250799867762754}
+  fireRate: 3
+  bulletSpeed: 20
 --- !u!1 &6508875988268761688
 GameObject:
   m_ObjectHideFlags: 0
