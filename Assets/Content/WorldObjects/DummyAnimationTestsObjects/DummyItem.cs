@@ -63,5 +63,4 @@ public class DummyItem : MonoBehaviour
                 throw new ArgumentException();
         }
     }
-
 }

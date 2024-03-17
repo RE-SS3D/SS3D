@@ -15,7 +15,7 @@ public class DummyInteract : MonoBehaviour
 
     public float interactionMoveDuration;
     
-    public bool UnderMaxDistanceFromHips(Vector3 position) => Vector3.Distance(hips.position, position) < 1.3f;
+    public bool UnderMaxDistanceFromHips(Vector3 position) => Vector3.Distance(hips.position, position) < 1.1f;
     
 
     // Update is called once per frame
