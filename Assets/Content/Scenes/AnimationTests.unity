@@ -1448,10 +1448,6 @@ PrefabInstance:
       propertyPath: _networkObjectCache
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 1557544769380776910, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
-      propertyPath: m_Center.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2142891004495607562, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_Weight
       value: 0
@@ -1668,6 +1664,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 6106348523763162772, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: lookAtTargetLocker
+      value: 
+      objectReference: {fileID: 903724399}
     - target: {fileID: 7146957390677450715, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_Enabled
       value: 0

@@ -21,6 +21,9 @@ public class DummyItem : MonoBehaviour
 
     public Transform secondaryLeftHandHold;
 
+    // need to define rotation too so 
+    public Transform interactionPoint;
+
     public bool canHoldTwoHand;
 
     public bool canHoldOneHand;

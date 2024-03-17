@@ -3596,6 +3596,7 @@ GameObject:
   - component: {fileID: 333363580064996929}
   - component: {fileID: 304844770068834842}
   - component: {fileID: 3292637383336994458}
+  - component: {fileID: 6106348523763162772}
   m_Layer: 0
   m_Name: DummyHuman
   m_TagString: Untagged
@@ -3747,13 +3748,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2.02
-  m_Radius: 0.4
+  m_Height: 1.8
+  m_Radius: 0.22
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &1459663542338213736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3924,6 +3925,22 @@ MonoBehaviour:
   lookAtTargetLocker: {fileID: 0}
   lookAtConstraint: {fileID: 2851688491558728783}
   hips: {fileID: 5433592588855148907}
+--- !u!114 &6106348523763162772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11e5034d24094ec4f968bba98ab85387, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hands: {fileID: 4366303252165034965}
+  lookAtTargetLocker: {fileID: 0}
+  hips: {fileID: 5433592588855148907}
+  interactionMoveDuration: 0.3
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0
