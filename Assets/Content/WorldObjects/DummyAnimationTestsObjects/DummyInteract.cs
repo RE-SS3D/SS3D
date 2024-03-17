@@ -2,6 +2,7 @@ using InspectorGadgets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class DummyInteract : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class DummyInteract : MonoBehaviour
     public DummyHands hands;
     public Transform lookAtTargetLocker;
     public Transform hips;
+    
+    public MultiAimConstraint lookAtConstraint;
 
     public float interactionMoveDuration;
     
@@ -45,6 +48,10 @@ public class DummyInteract : MonoBehaviour
     {
         DummyItem tool = hands.SelectedHand.item;
         
+        // Start looking at item
+        StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
+            0f, 1f, interactionMoveDuration));
+        
         // invisibly turn the p
         Vector3 directionFromTransformToTarget = interactionTarget.position - transform.position;
         directionFromTransformToTarget.y = 0f;
@@ -54,8 +61,6 @@ public class DummyInteract : MonoBehaviour
         Vector3 startPosition = tool.transform.position;
 
         Transform initialParent = tool.transform.parent;
-
-        Quaternion initialRotation = tool.transform.rotation;
 
         Vector3 fromShoulderToTarget = (interactionTarget.transform.position - mainHand.upperArm.transform.position).normalized;
         
@@ -81,13 +86,22 @@ public class DummyInteract : MonoBehaviour
         yield return CoroutineHelper.ModifyVector3OverTime(x => 
             tool.transform.position = x,  startPosition, endPosition, interactionMoveDuration);
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.6f);
         
         tool.transform.parent = initialParent;
         
+        // Stop looking at item         
+        StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
+            1f, 0f, interactionMoveDuration));
+        
+        StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
+                tool.transform.localEulerAngles = x,tool.transform.localRotation.eulerAngles,
+            Vector3.zero, 2*interactionMoveDuration));
+        
+        Debug.Log("start changing position");
         yield return CoroutineHelper.ModifyVector3OverTime(x => 
-            tool.transform.localPosition = x,initialParent.InverseTransformPoint(endPosition),
-            Vector3.zero, interactionMoveDuration);
+            tool.transform.localPosition = x, tool.transform.localPosition,
+            Vector3.zero, 2*interactionMoveDuration);
 
         tool.transform.localRotation = Quaternion.identity;
 

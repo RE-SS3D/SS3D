@@ -3940,6 +3940,7 @@ MonoBehaviour:
   hands: {fileID: 4366303252165034965}
   lookAtTargetLocker: {fileID: 0}
   hips: {fileID: 5433592588855148907}
+  lookAtConstraint: {fileID: 2851688491558728783}
   interactionMoveDuration: 0.3
 --- !u!1 &4092542307493577921
 GameObject:
