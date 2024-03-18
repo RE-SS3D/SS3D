@@ -1660,6 +1660,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6020047469190799339, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Weight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6095407646413577592, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_Mesh
       value: 

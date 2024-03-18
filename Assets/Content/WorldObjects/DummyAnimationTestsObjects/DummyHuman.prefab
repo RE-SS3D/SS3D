@@ -1071,7 +1071,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b342d8ce5c2fd48b8fa3147d48d1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0.3
   m_Effectors: []
 --- !u!1 &724984523963704304
 GameObject:
@@ -4402,6 +4402,7 @@ MonoBehaviour:
   aimTarget: {fileID: 4635930795108269257}
   hands: {fileID: 4366303252165034965}
   intents: {fileID: 333363580064996929}
+  bodyAimRig: {fileID: 4182499762659887119}
   rotationSpeed: 5
 --- !u!1 &4092542307493577921
 GameObject:
@@ -5884,7 +5885,7 @@ MonoBehaviour:
     m_Root: {fileID: 4153415939737701389}
     m_Tip: {fileID: 6356800398579286298}
     m_Target: {fileID: 0}
-    m_ChainRotationWeight: 0.806
+    m_ChainRotationWeight: 1
     m_TipRotationWeight: 1
     m_MaxIterations: 15
     m_Tolerance: 0.0001

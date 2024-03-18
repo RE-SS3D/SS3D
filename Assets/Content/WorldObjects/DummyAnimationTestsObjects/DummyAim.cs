@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class DummyAim : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class DummyAim : MonoBehaviour
     public DummyHands hands;
 
     public IntentController intents;
+
+    public Rig bodyAimRig;
 
     public float rotationSpeed = 5f;
     
@@ -32,6 +35,7 @@ public class DummyAim : MonoBehaviour
 
         if (intents.intent == Intent.Harm && hands.SelectedHand.Full)
         {
+            bodyAimRig.weight = 0.3f;
             DummyItem item = hands.SelectedHand.item;
             item.transform.parent = hands.SelectedHand.shoulderWeaponPivot;
             item.transform.localPosition = Vector3.zero;
@@ -47,6 +51,10 @@ public class DummyAim : MonoBehaviour
                 Quaternion targetRotation = Quaternion.LookRotation(direction);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
+        }
+        else
+        {
+            bodyAimRig.weight = 0f;
         }
     }
 }
