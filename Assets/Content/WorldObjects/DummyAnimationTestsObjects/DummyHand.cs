@@ -18,12 +18,14 @@ public class DummyHand : MonoBehaviour
 
     public Transform itemPositionTargetLocker;
 
+    public Transform shoulderWeaponPivot;
+
     public TwoBoneIKConstraint holdIkConstraint;
 
     public ChainIKConstraint pickupIkConstraint;
 
     public MultiPositionConstraint itemPositionConstraint;
-
+    
     public Transform upperArm;
 
     public Transform handBone;
