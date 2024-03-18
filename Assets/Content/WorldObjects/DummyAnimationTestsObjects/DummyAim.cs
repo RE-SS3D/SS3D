@@ -1,3 +1,4 @@
+using InspectorGadgets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,12 +34,15 @@ public class DummyAim : MonoBehaviour
             aimTarget.position = hit.point;
         }
 
-        if (intents.intent == Intent.Harm && hands.SelectedHand.Full)
+        if (intents.intent == Intent.Harm && hands.SelectedHand.Full 
+            && hands.SelectedHand.item.TryGetComponent(out DummyGun gun))
         {
             bodyAimRig.weight = 0.3f;
             DummyItem item = hands.SelectedHand.item;
             item.transform.parent = hands.SelectedHand.shoulderWeaponPivot;
-            item.transform.localPosition = Vector3.zero;
+            
+            // position correctly the gun on the shoulder, assuming the rifle butt transform is defined correctly
+            item.transform.localPosition = -gun.rifleButt.localPosition ;
             item.transform.localRotation = Quaternion.identity;
             
             // Get the direction to the target

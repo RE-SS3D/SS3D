@@ -1500,6 +1500,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3087691752500883368, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3292637383336994458, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: lookAtTargetLocker
       value: 

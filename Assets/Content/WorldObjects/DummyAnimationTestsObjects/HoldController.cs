@@ -44,6 +44,8 @@ public class HoldController : MonoBehaviour
     private void Start()
     {
         Debug.Log("start hold controller");
+
+        intents.OnIntentChange += HandleIntentChange;
        
         _holdData.Add(new(HandHoldType.DoubleHandGun, gunHoldLeft,
             new Vector3(0.15f,-0.08f,0.26f), HandType.LeftHand));
@@ -65,6 +67,23 @@ public class HoldController : MonoBehaviour
             new Vector3(0f,-0.35f,0.25f), HandType.LeftHand));
         _holdData.Add(new(HandHoldType.SmallItem, smallItemRight,
             new Vector3(0f,-0.35f,0.25f), HandType.RightHand));
+    }
+
+    private void HandleIntentChange(object sender, Intent e)
+    {
+        DummyHand mainHand = hands.SelectedHand;
+        DummyHand secondaryHand = hands.GetOtherHand(hands.SelectedHand.handType);
+
+        if (mainHand.Full && secondaryHand.Empty && mainHand.item.canHoldTwoHand)
+            UpdateItemPositionConstraintAndRotation(mainHand, true, 0.5f);
+        else if(mainHand.Full)
+            UpdateItemPositionConstraintAndRotation(mainHand, false, 0.5f);
+        
+        if (secondaryHand.Full && mainHand.Empty && secondaryHand.item.canHoldTwoHand)
+            UpdateItemPositionConstraintAndRotation(secondaryHand, true, 0.5f);
+        else if(secondaryHand.Full)
+            UpdateItemPositionConstraintAndRotation(secondaryHand, false, 0.5f);
+
     }
     
     public void UpdateItemPositionConstraintAndRotation(DummyHand hand, bool withTwoHands, float duration)
