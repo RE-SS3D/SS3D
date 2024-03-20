@@ -34,7 +34,7 @@ public class DummyInteract : MonoBehaviour
 
         // Check if the ray hits any collider
         if (Physics.Raycast(ray, out RaycastHit hit) && hands.SelectedHand.Full &&
-            UnderMaxDistanceFromHips(hit.point))
+            UnderMaxDistanceFromHips(hit.point) && hands.SelectedHand.item.TryGetComponent(out DummyTool tool))
         {
             // Check if the collider belongs to a GameObject
             GameObject obj = hit.collider.gameObject;
