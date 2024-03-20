@@ -4402,8 +4402,11 @@ MonoBehaviour:
   aimTarget: {fileID: 4635930795108269257}
   hands: {fileID: 4366303252165034965}
   intents: {fileID: 333363580064996929}
+  holdController: {fileID: 304844770068834842}
   bodyAimRig: {fileID: 4182499762659887119}
   rotationSpeed: 5
+  canAim: 0
+  isAiming: 0
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class DummyHands : MonoBehaviour
@@ -18,6 +19,8 @@ public class DummyHands : MonoBehaviour
     
     public bool BothHandFull => leftHand.Full && rightHand.Full;
     public bool BothHandEmpty => leftHand.Empty && rightHand.Empty;
+    
+    public event EventHandler<DummyHand> OnSelectedHandChange;
 
 
     // Update is called once per frame
@@ -25,8 +28,12 @@ public class DummyHands : MonoBehaviour
     {
         if (!Input.GetKeyDown(KeyCode.X))
             return;
+        
+       
 
         selectedHand = selectedHand == HandType.LeftHand ? HandType.RightHand : HandType.LeftHand;
+        
+        OnSelectedHandChange?.Invoke(this, SelectedHand );
         
         Debug.Log($"Selected hand is {selectedHand}");
     }

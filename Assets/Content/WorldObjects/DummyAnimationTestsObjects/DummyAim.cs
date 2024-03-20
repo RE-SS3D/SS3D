@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.UIElements;
 
 public class DummyAim : MonoBehaviour
 {
@@ -13,18 +14,72 @@ public class DummyAim : MonoBehaviour
 
     public IntentController intents;
 
+    public HoldController holdController;
+
     public Rig bodyAimRig;
 
     public float rotationSpeed = 5f;
-    
-    // Start is called before the first frame update
-    void Start()
+
+    public bool canAim;
+
+    public bool isAiming;
+  
+
+    private void Update()
     {
-        
+        UpdateAimAbility(hands.SelectedHand);
+        UpdateAimTargetPosition();
+
+        if (canAim && Input.GetMouseButton(1))
+        {
+            if (!isAiming)
+            {
+                Aim(hands.SelectedHand, hands.SelectedHand.item.GetComponent<DummyGun>());
+                isAiming = true;
+            }
+            
+            RotatePlayerTowardTarget();
+        }
+        else if(isAiming && (!canAim || !Input.GetMouseButton(1)))
+        {
+            StopAiming(hands.SelectedHand);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Aim(DummyHand hand, DummyGun gun)
+    {
+        bodyAimRig.weight = 0.3f;
+        gun.transform.parent = hands.SelectedHand.shoulderWeaponPivot;
+            
+        // position correctly the gun on the shoulder, assuming the rifle butt transform is defined correctly
+        gun.transform.localPosition = -gun.rifleButt.localPosition ;
+        gun.transform.localRotation = Quaternion.identity;
+    }
+
+    private void StopAiming(DummyHand hand)
+    {
+        isAiming = false;
+        bodyAimRig.weight = 0f;
+        if(!hand.Full) return;
+
+        hand.item.transform.parent = hand.itemPositionTargetLocker;
+        holdController.UpdateItemPositionConstraintAndRotation(hand, true, 0.5f);
+    }
+    
+    private void UpdateAimAbility(DummyHand selectedHand)
+    {
+        if (intents.intent == Intent.Harm && selectedHand.Full 
+            && selectedHand.item.TryGetComponent(out DummyGun gun))
+        {
+            canAim = true;
+        }
+        else
+        {
+            canAim = false;
+        }
+    }
+
+    private void UpdateAimTargetPosition()
     {
         // Cast a ray from the mouse position into the scene
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -33,32 +88,21 @@ public class DummyAim : MonoBehaviour
         {
             aimTarget.position = hit.point;
         }
+    }
 
-        if (intents.intent == Intent.Harm && hands.SelectedHand.Full 
-            && hands.SelectedHand.item.TryGetComponent(out DummyGun gun))
-        {
-            bodyAimRig.weight = 0.3f;
-            DummyItem item = hands.SelectedHand.item;
-            item.transform.parent = hands.SelectedHand.shoulderWeaponPivot;
-            
-            // position correctly the gun on the shoulder, assuming the rifle butt transform is defined correctly
-            item.transform.localPosition = -gun.rifleButt.localPosition ;
-            item.transform.localRotation = Quaternion.identity;
-            
-            // Get the direction to the target
-            Vector3 direction = aimTarget.position - transform.position;
-            direction.y = 0f; // Ignore Y-axis rotation
+    private void RotatePlayerTowardTarget()
+    {
+        // Get the direction to the target
+        Vector3 direction = aimTarget.position - transform.position;
+        direction.y = 0f; // Ignore Y-axis rotation
 
-            // Rotate towards the target
-            if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
-        }
-        else
+        // Rotate towards the target
+        if (direction != Vector3.zero)
         {
-            bodyAimRig.weight = 0f;
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
+    
+    
 }
