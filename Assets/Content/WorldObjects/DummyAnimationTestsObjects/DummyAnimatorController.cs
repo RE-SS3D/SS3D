@@ -52,4 +52,9 @@ public class DummyAnimatorController : Actor
     {
         _animator.SetTrigger("ThrowRight");
     }
+
+    public void Sit(bool sitState)
+    {
+        _animator.SetBool("Sit", sitState);
+    }
 }
