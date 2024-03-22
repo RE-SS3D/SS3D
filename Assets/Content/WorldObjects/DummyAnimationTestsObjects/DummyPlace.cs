@@ -86,6 +86,11 @@ public class DummyPlace : MonoBehaviour
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, placeTarget, itemReachDuration, false, true));
         
+        if (mainHand.handBone.transform.position.y - placeTarget.position.y > 0.3)
+        {
+            GetComponent<DummyAnimatorController>().Crouch(true);
+        }
+        
         // Slowly increase looking at place item position
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             0f, 1f, itemReachDuration));
@@ -97,6 +102,8 @@ public class DummyPlace : MonoBehaviour
     
     private IEnumerator PlaceAndPullBack(DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands)
     {
+        GetComponent<DummyAnimatorController>().Crouch(false);
+        
         mainHand.RemoveItem();
         
         mainHand.pickupTargetLocker.parent = null;
