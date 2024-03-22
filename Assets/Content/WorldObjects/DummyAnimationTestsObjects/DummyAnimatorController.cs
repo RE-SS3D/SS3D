@@ -57,4 +57,9 @@ public class DummyAnimatorController : Actor
     {
         _animator.SetBool("Sit", sitState);
     }
+    
+    public void Crouch(bool crouchState)
+    {
+        _animator.SetBool("Crouch", crouchState);
+    }
 }

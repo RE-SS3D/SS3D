@@ -114,6 +114,13 @@ public class DummyPickUp : MonoBehaviour
         // Move player toward item
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
             transform, item.transform, itemReachDuration, false, true));
+        
+        if (mainHand.handBone.transform.position.y - item.transform.position.y > 0.3)
+        {
+            GetComponent<DummyAnimatorController>().Crouch(true);
+
+            yield return new WaitForSeconds(0.25f);
+        }
 
         // Change hold constraint weight of the main hand from 0 to 1
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(
@@ -139,6 +146,8 @@ public class DummyPickUp : MonoBehaviour
 
     private IEnumerator PickupPullBack(DummyItem item, DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands)
     {
+        GetComponent<DummyAnimatorController>().Crouch(false);
+        
         // Move item toward its constrained position.
         StartCoroutine(DummyTransformHelper.LerpTransform(item.transform,
             hands.SelectedHand.itemPositionTargetLocker, itemMoveDuration));

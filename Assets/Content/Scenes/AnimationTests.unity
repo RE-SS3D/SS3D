@@ -1640,6 +1640,10 @@ PrefabInstance:
       propertyPath: m_Data.m_ConstrainedObject
       value: 
       objectReference: {fileID: 1121922057}
+    - target: {fileID: 5358865169695592514, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5385512996159182363, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: _scenePathHash
       value: 1553970943

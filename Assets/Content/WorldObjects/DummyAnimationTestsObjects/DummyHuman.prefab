@@ -4032,6 +4032,7 @@ GameObject:
   - component: {fileID: 6106348523763162772}
   - component: {fileID: 3087691752500883368}
   - component: {fileID: 534476557379109011}
+  - component: {fileID: 5358865169695592514}
   m_Layer: 0
   m_Name: DummyHuman
   m_TagString: Untagged
@@ -4423,6 +4424,23 @@ MonoBehaviour:
   animatorController: {fileID: 2643222421258484460}
   characterController: {fileID: 1557544769380776910}
   movement: {fileID: 1459663542338213736}
+  isSitting: 0
+--- !u!114 &5358865169695592514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71016f762ca0ac942a41032b0f61c65a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hipBone: {fileID: 5433592588855148907}
+  kneeBone: {fileID: 5405862168723262933}
+  root: {fileID: 3714097311666575904}
+  crouchHeight: 0.5
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0
