@@ -10,4 +10,5 @@ public enum HandHoldType
     DoubleHandGun,
     DoubleHandGunHarm,
     SmallItem,
+    ThrowToolBox,
 }

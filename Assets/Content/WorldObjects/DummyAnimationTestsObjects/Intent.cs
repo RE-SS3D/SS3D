@@ -6,4 +6,5 @@ public enum Intent
 {
     Def,
     Harm,
+    Throw,
 }

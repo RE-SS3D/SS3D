@@ -12,6 +12,10 @@ public class DummyItem : MonoBehaviour
     public HandHoldType singleHandHoldHarm;
 
     public HandHoldType twoHandHoldHarm;
+
+    public HandHoldType singleHandHoldThrow;
+    
+    public HandHoldType twoHandHoldThrow;
     
     public Transform primaryRightHandHold;
     
@@ -40,6 +44,10 @@ public class DummyItem : MonoBehaviour
                 return twoHandHoldHarm;
             case (Intent.Harm, false):
                 return singleHandHoldHarm;
+            case (Intent.Throw, true):
+                return twoHandHoldThrow;
+            case (Intent.Throw, false):
+                return singleHandHoldThrow;
         }
         
         Debug.LogError("case not handled");

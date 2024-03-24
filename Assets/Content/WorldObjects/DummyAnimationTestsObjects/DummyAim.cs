@@ -28,10 +28,11 @@ public class DummyAim : MonoBehaviour
     private void Update()
     {
         UpdateAimAbility(hands.SelectedHand);
-        UpdateAimTargetPosition();
 
         if (canAim && Input.GetMouseButton(1))
         {
+            UpdateAimTargetPosition();
+            
             if (!isAiming)
             {
                 Aim(hands.SelectedHand, hands.SelectedHand.item.GetComponent<DummyGun>());

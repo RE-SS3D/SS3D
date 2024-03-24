@@ -46,7 +46,7 @@ ModelImporter:
       name: Throw
       takeName: DEF_ThrowItem
       internalID: -7538654608850558957
-      firstFrame: 0
+      firstFrame: 5
       lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0

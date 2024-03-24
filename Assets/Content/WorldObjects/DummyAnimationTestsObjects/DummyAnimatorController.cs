@@ -3,6 +3,7 @@ using SS3D.Systems.Entities.Data;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class DummyAnimatorController : Actor
 {
@@ -48,9 +49,12 @@ public class DummyAnimatorController : Actor
         _animator.SetTrigger("PickUpRight");
     }
     
-    public void TriggerThrow()
+    public void Throw(HandType handtype)
     {
-        _animator.SetTrigger("ThrowRight");
+        if(handtype == HandType.RightHand)
+            _animator.SetTrigger("ThrowRight");
+        else
+            _animator.SetTrigger("ThrowLeft");
     }
 
     public void Sit(bool sitState)
@@ -62,4 +66,5 @@ public class DummyAnimatorController : Actor
     {
         _animator.SetBool("Crouch", crouchState);
     }
+    
 }

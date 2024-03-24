@@ -32,6 +32,10 @@ public class HoldController : MonoBehaviour
     public Transform gunHoldHarmRight;
 
     public Transform gunHoldHarmLeft;
+    
+    public Transform throwToolboxLeft;
+
+    public Transform throwToolboxRight;
 
     public Transform smallItemRight;
 
@@ -67,8 +71,13 @@ public class HoldController : MonoBehaviour
             new Vector3(0f,-0.35f,0.25f), HandType.LeftHand));
         _holdData.Add(new(HandHoldType.SmallItem, smallItemRight,
             new Vector3(0f,-0.35f,0.25f), HandType.RightHand));
+        _holdData.Add(new(HandHoldType.ThrowToolBox, throwToolboxLeft,
+            new Vector3(-0.23f,0.3f,-0.03f), HandType.LeftHand));
+        _holdData.Add(new(HandHoldType.ThrowToolBox, throwToolboxRight,
+            new Vector3(0.23f,0.3f,-0.03f), HandType.RightHand));
     }
 
+    // TODO : add a handle for selected hand change, and update only visually the intent for selected hand
     private void HandleIntentChange(object sender, Intent e)
     {
         DummyHand mainHand = hands.SelectedHand;
