@@ -154,7 +154,9 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  _productToDispense: 5
+  _productsToDispense:
+  - Product: {fileID: 11400000, guid: edcff839a189118479387da05ec07d49, type: 2}
+    Stock: 5
   _dispensingTransform: {fileID: 5160227759105755511}
 --- !u!114 &-8220440043154804263
 MonoBehaviour:

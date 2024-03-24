@@ -238,7 +238,15 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  _productToDispense: 11
+  _productsToDispense:
+  - Product: {fileID: 11400000, guid: ecb1cb0479842954a925e9013baf95f6, type: 2}
+    Stock: 5
+  - Product: {fileID: 11400000, guid: 3e3beac0c217b7c4492869d62e50a5b8, type: 2}
+    Stock: 5
+  - Product: {fileID: 11400000, guid: 2d3da1772e540e644a1b7cb548477c0c, type: 2}
+    Stock: 5
+  - Product: {fileID: 11400000, guid: 0628fd4af4e63fe4c884827fcb3ced1a, type: 2}
+    Stock: 5
   _dispensingTransform: {fileID: 5160227759105755511}
 --- !u!114 &-8922800647233213677
 MonoBehaviour:
