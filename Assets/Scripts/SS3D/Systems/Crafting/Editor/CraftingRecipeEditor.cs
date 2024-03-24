@@ -31,16 +31,14 @@ namespace SS3D.Systems.Crafting
             bool hasInitialStep = HasInitialStep();
 
             // Draw each RecipeStep individually
-            if (stepsProperty.isExpanded)
+            for (int i = 0; i < stepsProperty.arraySize; i++)
             {
-                for (int i = 0; i < stepsProperty.arraySize; i++)
-                {
-                    SerializedProperty stepProperty = stepsProperty.GetArrayElementAtIndex(i);
-                    DrawRecipeStep(stepProperty, hasInitialStep);
+                SerializedProperty stepProperty = stepsProperty.GetArrayElementAtIndex(i);
+                DrawRecipeStep(stepProperty, hasInitialStep);
 
-                    EditorGUILayout.Space();
-                }
+                EditorGUILayout.Space();
             }
+            
 
             // Add a button to add a new step
             if (GUILayout.Button("Add Step"))
@@ -93,19 +91,17 @@ namespace SS3D.Systems.Crafting
         }
 
         private bool HasInitialStep()
-        {
-            if (stepsProperty.isExpanded)
+        { 
+            for (int i = 0; i < stepsProperty.arraySize; i++)
             {
-                for (int i = 0; i < stepsProperty.arraySize; i++)
+                SerializedProperty stepProperty = stepsProperty.GetArrayElementAtIndex(i);
+                SerializedProperty isInitialProperty = stepProperty.FindPropertyRelative("_isInitialState");
+                if (isInitialProperty != null && isInitialProperty.boolValue)
                 {
-                    SerializedProperty stepProperty = stepsProperty.GetArrayElementAtIndex(i);
-                    SerializedProperty isInitialProperty = stepProperty.FindPropertyRelative("_isInitialState");
-                    if (isInitialProperty != null && isInitialProperty.boolValue)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
+            
             return false;
         }
     }
