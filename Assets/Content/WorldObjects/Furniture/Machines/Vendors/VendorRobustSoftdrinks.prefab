@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3665146264900623842}
   - component: {fileID: 8086907785789700544}
   m_Layer: 0
-  m_Name: VendorRobustSoftDrinks
+  m_Name: VendorRobustSoftdrinks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,7 +153,21 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  _productToDispense: 3
+  _productsToDispense:
+  - Product: {fileID: 11400000, guid: dd302b5636b41bb48ba3a2cdc72cc64c, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: a49cca9d10e0a3146aae1906542ea50a, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: e450161ce63de9045b97061a364533b1, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: 5c76cb2799458404db16e87cc1606975, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: 6ccd0b8aea90f5a489d73c02ccab3a98, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: be837baab1848a14d944ab050bfebc15, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: f5c190c5bf049bc429ca90309c334105, type: 2}
+    Stock: 10
   _dispensingTransform: {fileID: 5160227759105755511}
 --- !u!114 &3665146264900623842
 MonoBehaviour:

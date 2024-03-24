@@ -2,6 +2,7 @@
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Tile;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -11,10 +12,14 @@ namespace SS3D.Systems.Furniture
     /// </summary>
     public class DispenseProductInteraction : Interaction
     {
+        public string ProductName;
+        public int ProductStock;
+        public int ProductIndex;
+        
         /// <inheritdoc />
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return "Dispense";
+            return $"Dispense {ProductName} (x{ProductStock})";
         }
 
         /// <inheritdoc />
@@ -44,7 +49,7 @@ namespace SS3D.Systems.Furniture
 
             if (target is VendingMachine vendingMachine)
             {
-                vendingMachine.DispenseProduct();
+                vendingMachine.DispenseProduct(ProductIndex);
             }
             return false;
         }
