@@ -611,6 +611,37 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: efb33bc648a1e614eb0af7d290a10461, type: 3}
+--- !u!1 &626415436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 626415437}
+  m_Layer: 0
+  m_Name: ThrowTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &626415437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 626415436}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 20.14476, y: -2633.236, z: 26.064037}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &657500997 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6226623702120799867, guid: efb33bc648a1e614eb0af7d290a10461, type: 3}
@@ -1520,6 +1551,10 @@ PrefabInstance:
       propertyPath: lookAtTargetLocker
       value: 
       objectReference: {fileID: 903724399}
+    - target: {fileID: 3711543053657384972, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
+      propertyPath: aimTarget
+      value: 
+      objectReference: {fileID: 626415437}
     - target: {fileID: 3714097311666575904, guid: 808d5d9aee52e894d8343dc57568a2fe, type: 3}
       propertyPath: m_RootOrder
       value: 12
