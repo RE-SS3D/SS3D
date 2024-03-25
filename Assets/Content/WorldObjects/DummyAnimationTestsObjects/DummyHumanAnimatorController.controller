@@ -319,6 +319,12 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
+  - m_Name: ThrowLeft
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -623,9 +629,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.5769121
-  m_TransitionOffset: 0.10277513
-  m_ExitTime: 0.023709208
+  m_TransitionDuration: 0.091891944
+  m_TransitionOffset: 0.004182703
+  m_ExitTime: 0.04196709
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
