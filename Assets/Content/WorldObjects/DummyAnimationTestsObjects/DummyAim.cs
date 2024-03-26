@@ -38,12 +38,27 @@ public class DummyAim : MonoBehaviour
                 Aim(hands.SelectedHand, hands.SelectedHand.item.GetComponent<DummyGun>());
                 isAiming = true;
             }
+
+            if (GetComponent<DummyPositionController>().Position != PositionType.Sitting)
+            {
+                RotatePlayerTowardTarget();
+            }
+
             
-            RotatePlayerTowardTarget();
         }
         else if(isAiming && (!canAim || !Input.GetMouseButton(1)))
         {
             StopAiming(hands.SelectedHand);
+        }
+        
+        Debug.Log( "Has gun : "+ hands.SelectedHand.item.TryGetComponent(out DummyGun gun));
+        Debug.Log("is aiming");
+        Debug.Log("hands full");
+
+        if (Input.GetKey(KeyCode.E) && hands.SelectedHand.Full 
+            && gun != null && isAiming)
+        {
+            gun.GetComponent<DummyFire>().Fire();
         }
     }
 

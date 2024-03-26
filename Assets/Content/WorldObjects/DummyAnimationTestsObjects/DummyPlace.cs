@@ -83,9 +83,12 @@ public class DummyPlace : MonoBehaviour
     private IEnumerator PlaceReach(DummyHand mainHand, Transform placeTarget, DummyItem item)
     {
         // Turn character toward the position to place the item.
-        StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
-            transform, placeTarget, itemReachDuration, false, true));
-        
+        if (GetComponent<DummyPositionController>().Position != PositionType.Sitting)
+        {
+            StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(transform,
+                placeTarget, itemReachDuration, false, true));
+        }
+
         if (mainHand.handBone.transform.position.y - placeTarget.position.y > 0.3)
         {
             GetComponent<DummyAnimatorController>().Crouch(true);

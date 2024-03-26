@@ -10,8 +10,6 @@ public class DummySit : MonoBehaviour
     public CharacterController characterController;
 
     public DummyMovement movement;
-
-    public bool isSitting;
     
     // Start is called before the first frame update
     void Start()
@@ -25,11 +23,11 @@ public class DummySit : MonoBehaviour
         if (!Input.GetKeyDown(KeyCode.J))
             return;
 
-        if (!isSitting)
+        if (GetComponent<DummyPositionController>().Position == PositionType.Standing)
         {
             TrySit();
         }
-        else
+        else if(GetComponent<DummyPositionController>().Position == PositionType.Sitting)
         {
             StopSitting();
         }
@@ -57,7 +55,6 @@ public class DummySit : MonoBehaviour
 
     private IEnumerator Sit(Transform sitOrientation)
     {
-        isSitting = true;
         movement.enabled = false;
         characterController.enabled = false;
         
@@ -72,14 +69,16 @@ public class DummySit : MonoBehaviour
         
         yield return (CoroutineHelper.ModifyVector3OverTime(x => transform.position = x,
             initialPosition, sitOrientation.position,0.5f));
+        
+        GetComponent<DummyPositionController>().Position = PositionType.Sitting;
     }
 
     private void StopSitting()
     {
-        isSitting = false;
         movement.enabled = true;
         characterController.enabled = true;
         animatorController.Sit(false);
+        GetComponent<DummyPositionController>().Position = PositionType.Standing;
     }
 
     private bool GoodDistanceFromRootToSit(Transform sit)

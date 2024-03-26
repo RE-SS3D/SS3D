@@ -36,7 +36,7 @@ public class DummyInteract : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit) && hands.SelectedHand.Full &&
             UnderMaxDistanceFromHips(hit.point) && hands.SelectedHand.item.TryGetComponent(out DummyTool tool))
         {
-            // Check if the collider belongs to a GameObject
+            
             GameObject obj = hit.collider.gameObject;
             StartCoroutine(Interact(obj.transform, hands.SelectedHand));
         }
@@ -89,8 +89,12 @@ public class DummyInteract : MonoBehaviour
         transform.rotation = initialPlayerRotation;
         
         // Rotate player toward item
-        StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
-            transform, interactionTarget, interactionMoveDuration, false, true));
+        if (GetComponent<DummyPositionController>().Position != PositionType.Sitting)
+        {
+            StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
+                transform, interactionTarget, interactionMoveDuration, false, true));
+        }
+        
 
         yield return CoroutineHelper.ModifyVector3OverTime(x => 
             tool.transform.position = x,  startPosition, endPosition, interactionMoveDuration);

@@ -112,9 +112,12 @@ public class DummyPickUp : MonoBehaviour
     private IEnumerator PickupReach(DummyItem item, DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands)
     {
         // Move player toward item
-        StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
-            transform, item.transform, itemReachDuration, false, true));
-        
+        if (GetComponent<DummyPositionController>().Position != PositionType.Sitting)
+        {
+            StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(transform,
+                item.transform, itemReachDuration, false, true));
+        }
+
         if (mainHand.handBone.transform.position.y - item.transform.position.y > 0.3)
         {
             GetComponent<DummyAnimatorController>().Crouch(true);

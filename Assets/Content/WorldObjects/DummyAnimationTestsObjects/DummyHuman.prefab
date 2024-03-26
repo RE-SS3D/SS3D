@@ -4036,6 +4036,7 @@ GameObject:
   - component: {fileID: 534476557379109011}
   - component: {fileID: 5358865169695592514}
   - component: {fileID: 3711543053657384972}
+  - component: {fileID: 1045397264392006938}
   m_Layer: 0
   m_Name: DummyHuman
   m_TagString: Untagged
@@ -4429,7 +4430,6 @@ MonoBehaviour:
   animatorController: {fileID: 2643222421258484460}
   characterController: {fileID: 1557544769380776910}
   movement: {fileID: 1459663542338213736}
-  isSitting: 0
 --- !u!114 &5358865169695592514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4461,7 +4461,21 @@ MonoBehaviour:
   hands: {fileID: 4366303252165034965}
   intents: {fileID: 333363580064996929}
   animatorController: {fileID: 2643222421258484460}
+  timeToTarget: 1
   aimTarget: {fileID: 4635930795108269257}
+  rotationSpeed: 5
+--- !u!114 &1045397264392006938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089496606853742746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bc5569f73db48243adceda97ed5adcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4092542307493577921
 GameObject:
   m_ObjectHideFlags: 0

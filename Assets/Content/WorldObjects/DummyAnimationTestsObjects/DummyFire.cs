@@ -8,27 +8,27 @@ public class DummyFire : MonoBehaviour
     public Transform spawnPoint;
     public float fireRate = 10f;    // Bullets fired per second
     public float bulletSpeed = 10f; // Speed of the bullets
-    private bool isFiring = false;
-    private float _time = 0f;
+    private bool _readyToFire = true;
 
-    void Update()
+    public void Fire()
     {
-        _time +=  Time.deltaTime;
-       
-        if (Input.GetKey(KeyCode.T) && _time > 1f/fireRate)
-        {
-            Fire();
-            _time = 0f;
-        }
-    }
+        if (!_readyToFire)
+            return;
 
-    private void Fire()
-    {
+        _readyToFire = false;
+
+        StartCoroutine(ReadyToFire());
         GameObject bullet = Instantiate(bulletPrefab, spawnPoint.position, spawnPoint.rotation);
         Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
         if (bulletRigidbody != null)
         {
             bulletRigidbody.velocity = spawnPoint.forward * bulletSpeed;
         }
+    }
+
+    private IEnumerator ReadyToFire()
+    {
+        yield return new WaitForSeconds(1f / fireRate);
+        _readyToFire = true;
     }
 }
