@@ -49,9 +49,9 @@ public class DummyThrow : MonoBehaviour
         animatorController.Throw(hands.SelectedHand.handType);
         
         StartCoroutine(DummyTransformHelper.OrientTransformTowardTarget(
-            transform, aimTarget.transform, 0.25f, false, true));
+            transform, aimTarget.transform, 0.18f, false, true));
 
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.18f);
 
         Vector2 targetCoordinates = ComputeTargetCoordinates(aimTarget.position, transform);
 

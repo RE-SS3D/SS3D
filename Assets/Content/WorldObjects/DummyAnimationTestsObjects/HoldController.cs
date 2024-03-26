@@ -107,11 +107,11 @@ public class HoldController : MonoBehaviour
         StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
             hand.itemPositionConstraint.data.offset = x,  startingOffset, finalOffset, duration));
 
-        Vector3 startingRotation = hand.itemPositionConstraint.data.constrainedObject.eulerAngles;
-        Vector3 finalRotation = hold.rotation.eulerAngles;
+        Quaternion startingRotation = hand.itemPositionConstraint.data.constrainedObject.rotation;
+        Quaternion finalRotation = hold.rotation;
         
-        StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
-            hand.itemPositionConstraint.data.constrainedObject.eulerAngles = x,  startingRotation, finalRotation, duration));
+        StartCoroutine(CoroutineHelper.ModifyQuaternionOverTime(x => 
+            hand.itemPositionConstraint.data.constrainedObject.rotation = x,  startingRotation, finalRotation, duration));
     }
     
     public void MovePickupAndHoldTargetLocker(DummyHand hand, bool secondary)

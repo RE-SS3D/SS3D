@@ -103,9 +103,9 @@ public class DummyInteract : MonoBehaviour
         StartCoroutine(CoroutineHelper.ModifyValueOverTime(x => lookAtConstraint.weight= x,
             1f, 0f, interactionMoveDuration));
         
-        StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
-                tool.transform.localEulerAngles = x,tool.transform.localRotation.eulerAngles,
-            Vector3.zero, 2*interactionMoveDuration));
+        StartCoroutine(CoroutineHelper.ModifyQuaternionOverTime(x => 
+                tool.transform.localRotation = x,tool.transform.localRotation,
+            Quaternion.identity, 2*interactionMoveDuration));
         
         
         yield return CoroutineHelper.ModifyVector3OverTime(x => 

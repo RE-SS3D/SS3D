@@ -38,4 +38,20 @@ public static class CoroutineHelper
         // Ensure the value reaches the target value exactly
         value(endValue);
     }
+    
+    public static IEnumerator ModifyQuaternionOverTime(Action<Quaternion> value,
+        Quaternion startValue, Quaternion endValue, float time)
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < time)
+        {
+            value(Quaternion.Slerp(startValue, endValue, elapsedTime/time));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the value reaches the target value exactly
+        value(endValue);
+    }
 }
