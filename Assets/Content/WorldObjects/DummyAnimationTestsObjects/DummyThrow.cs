@@ -33,27 +33,28 @@ public class DummyThrow : MonoBehaviour
     {
         UpdateAimAbility(hands.SelectedHand);
 
-        if (canAim && Input.GetMouseButton(1))
+        if (canAim && Input.GetKeyDown(KeyCode.R))
         {
-            UpdateAimTargetPosition();
-            
             if (!isAiming)
             {
                 Aim();
-                isAiming = true;
             }
+            else
+            {
+                StopAiming(hands.SelectedHand);
+            }
+        }
+        
+        if (isAiming)
+        {
+            UpdateAimTargetPosition();
 
             if (GetComponent<DummyPositionController>().Position != PositionType.Sitting)
             {
                 RotatePlayerTowardTarget();
             }
+        }
 
-            
-        }
-        else if(isAiming && (!canAim || !Input.GetMouseButton(1)))
-        {
-            StopAiming(hands.SelectedHand);
-        }
 
         if (Input.GetKeyDown(KeyCode.Y) && hands.SelectedHand.Full && isAiming)
         {
@@ -163,6 +164,7 @@ public class DummyThrow : MonoBehaviour
     
     private void Aim()
     {
+        isAiming = true;
         bodyAimRig.weight = 0.3f;
         holdController.UpdateItemPositionConstraintAndRotation(hands.SelectedHand, 
             false, 0.2f, true);
