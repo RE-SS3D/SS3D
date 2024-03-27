@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 587959644228320536}
   - component: {fileID: 5918207052065307811}
   - component: {fileID: 6653232152737378620}
+  - component: {fileID: -573867884372606775}
   m_Layer: 10
   m_Name: DummyWelder
   m_TagString: Untagged
@@ -135,6 +136,8 @@ MonoBehaviour:
   twoHandHold: 0
   singleHandHoldHarm: 5
   twoHandHoldHarm: 0
+  singleHandHoldThrow: 0
+  twoHandHoldThrow: 0
   primaryRightHandHold: {fileID: 1845819167083146520}
   secondaryRightHandHold: {fileID: 0}
   primaryLeftHandHold: {fileID: 6061226514504239541}
@@ -142,6 +145,18 @@ MonoBehaviour:
   interactionPoint: {fileID: 1069146344874451862}
   canHoldTwoHand: 0
   canHoldOneHand: 0
+--- !u!114 &-573867884372606775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5284411384313626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85e2402d4e97e674f8b10465445380ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &247595367122041715
 GameObject:
   m_ObjectHideFlags: 0

@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 4227944060426733218}
   - component: {fileID: 126800847365310216}
   - component: {fileID: 8151888909205555184}
+  - component: {fileID: 8406273259132062593}
   m_Layer: 10
   m_Name: DummyWrench
   m_TagString: Untagged
@@ -228,6 +229,8 @@ MonoBehaviour:
   twoHandHold: 0
   singleHandHoldHarm: 5
   twoHandHoldHarm: 0
+  singleHandHoldThrow: 0
+  twoHandHoldThrow: 0
   primaryRightHandHold: {fileID: 710180646302904240}
   secondaryRightHandHold: {fileID: 0}
   primaryLeftHandHold: {fileID: 6218400955019612656}
@@ -235,6 +238,18 @@ MonoBehaviour:
   interactionPoint: {fileID: 5420361769342515430}
   canHoldTwoHand: 0
   canHoldOneHand: 0
+--- !u!114 &8406273259132062593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7083580946541077412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85e2402d4e97e674f8b10465445380ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7657702119968330138
 GameObject:
   m_ObjectHideFlags: 0
