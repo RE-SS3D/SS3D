@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class DummyThrow : MonoBehaviour
 {
@@ -17,24 +18,48 @@ public class DummyThrow : MonoBehaviour
     private float _maxForce = 10;
     
     public float rotationSpeed = 5f;
-    
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
+    private bool canAim;
+
+    private bool isAiming;
+
+    public HoldController holdController;
+    
+    public Rig bodyAimRig;
+    
+    
     // Update is called once per frame
     void Update()
     {
-        
-        if (intents.intent != Intent.Throw || !Input.GetKeyDown(KeyCode.Y))
-            return;
-        
-        UpdateAimTargetPosition();
+        UpdateAimAbility(hands.SelectedHand);
 
-        StartCoroutine(Throw());
+        if (canAim && Input.GetMouseButton(1))
+        {
+            UpdateAimTargetPosition();
+            
+            if (!isAiming)
+            {
+                Aim();
+                isAiming = true;
+            }
+
+            if (GetComponent<DummyPositionController>().Position != PositionType.Sitting)
+            {
+                RotatePlayerTowardTarget();
+            }
+
+            
+        }
+        else if(isAiming && (!canAim || !Input.GetMouseButton(1)))
+        {
+            StopAiming(hands.SelectedHand);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Y) && hands.SelectedHand.Full && isAiming)
+        {
+            StartCoroutine(Throw());
+        }
+
     }
 
     private IEnumerator Throw()
@@ -56,22 +81,16 @@ public class DummyThrow : MonoBehaviour
         Vector2 targetCoordinates = ComputeTargetCoordinates(aimTarget.position, transform);
 
         Vector2 initialItemCoordinates = ComputeItemInitialCoordinates(item.transform.position, transform);
-        
-        Debug.Log("target local coordinates are" + targetCoordinates);
 
         Vector2 initialVelocity = ComputeInitialVelocity(timeToTarget, targetCoordinates, 
             initialItemCoordinates.y, initialItemCoordinates.x);
-        
-        Debug.Log("initial velocity is" + initialVelocity);
 
         Vector3 initialVelocityInRootCoordinate = new Vector3(0, initialVelocity.y, initialVelocity.x);
 
         Vector3 initialVelocityInWorldCoordinate = transform.TransformDirection(initialVelocityInRootCoordinate);
 
         hands.SelectedHand.RemoveItem();
-        //item.GetComponent<Collider>().enabled = false;
         
-        Debug.Log("velocity is " + initialVelocityInWorldCoordinate);
         item.GetComponent<Rigidbody>().AddForce(initialVelocityInWorldCoordinate, ForceMode.VelocityChange);
     }
 
@@ -139,6 +158,33 @@ public class DummyThrow : MonoBehaviour
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+    }
+    
+    private void Aim()
+    {
+        bodyAimRig.weight = 0.3f;
+        holdController.UpdateItemPositionConstraintAndRotation(hands.SelectedHand, 
+            false, 0.2f, true);
+    }
+
+    private void StopAiming(DummyHand hand)
+    {
+        isAiming = false;
+        bodyAimRig.weight = 0f;
+        holdController.UpdateItemPositionConstraintAndRotation(hands.SelectedHand, 
+            false, 0.2f, false);
+    }
+    
+    private void UpdateAimAbility(DummyHand selectedHand)
+    {
+        if (selectedHand.Full)
+        {
+            canAim = true;
+        }
+        else
+        {
+            canAim = false;
         }
     }
 }

@@ -4073,6 +4073,7 @@ Transform:
   - {fileID: 4855327836977815790}
   - {fileID: 4647776898251892701}
   - {fileID: 4635930795108269257}
+  - {fileID: 9099685994337818100}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4464,6 +4465,8 @@ MonoBehaviour:
   timeToTarget: 1
   aimTarget: {fileID: 4635930795108269257}
   rotationSpeed: 5
+  holdController: {fileID: 304844770068834842}
+  bodyAimRig: {fileID: 4182499762659887119}
 --- !u!114 &1045397264392006938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5314,7 +5317,6 @@ Transform:
   m_Children:
   - {fileID: 2795595668910133667}
   - {fileID: 8420821262611087137}
-  - {fileID: 9099685994337818100}
   m_Father: {fileID: 7446386329022654784}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5731,13 +5733,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6051647588693044959}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: -0, z: -0.401}
+  m_LocalRotation: {x: 0.03817257, y: 0.021573273, z: 0.7146049, w: 0.69815284}
+  m_LocalPosition: {x: -0.3731146, y: 1.2001679, z: -0.4008863}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8425781932946354035}
-  m_RootOrder: 2
+  m_Father: {fileID: 3714097311666575904}
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6105222684414742159
 GameObject:
