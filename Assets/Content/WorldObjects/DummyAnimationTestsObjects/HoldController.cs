@@ -117,32 +117,12 @@ public class HoldController : MonoBehaviour
         StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
             hand.itemPositionConstraint.data.offset = x,  startingOffset, finalOffset, duration));
 
-        Quaternion startingRotation = hand.itemPositionConstraint.data.constrainedObject.rotation;
-        Quaternion finalRotation = hold.rotation;
+        Quaternion startingRotation = hand.itemPositionConstraint.data.constrainedObject.localRotation;
+        Quaternion finalRotation = hold.localRotation;
         
         StartCoroutine(CoroutineHelper.ModifyQuaternionOverTime(x => 
-            hand.itemPositionConstraint.data.constrainedObject.rotation = x,  startingRotation, finalRotation, duration));
+            hand.itemPositionConstraint.data.constrainedObject.localRotation = x,  startingRotation, finalRotation, duration));
     }
-    
-    public void UpdateItemPositionConstraintAndRotationToThrow(DummyHand hand, bool withTwoHands, float duration)
-    {
-        DummyItem item = hand.item;
-        HandHoldType itemHoldType = item.GetHoldThrowType(withTwoHands);
-        Transform hold = TargetFromHoldTypeAndHand(itemHoldType, hand.handType);
-        
-        Vector3 startingOffset = hand.itemPositionConstraint.data.offset;
-        Vector3 finalOffset = OffsetFromHoldTypeAndHand(itemHoldType, hand.handType);
-
-        StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
-            hand.itemPositionConstraint.data.offset = x,  startingOffset, finalOffset, duration));
-
-        Quaternion startingRotation = hand.itemPositionConstraint.data.constrainedObject.rotation;
-        Quaternion finalRotation = hold.rotation;
-        
-        StartCoroutine(CoroutineHelper.ModifyQuaternionOverTime(x => 
-            hand.itemPositionConstraint.data.constrainedObject.rotation = x,  startingRotation, finalRotation, duration));
-    }
-    
     
     
     public void MovePickupAndHoldTargetLocker(DummyHand hand, bool secondary)

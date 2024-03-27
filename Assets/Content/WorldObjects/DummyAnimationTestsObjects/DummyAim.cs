@@ -77,6 +77,8 @@ public class DummyAim : MonoBehaviour
 
         hand.item.transform.parent = hand.itemPositionTargetLocker;
         holdController.UpdateItemPositionConstraintAndRotation(hand, true, 0.5f, false);
+        hand.item.transform.localPosition = Vector3.zero;
+        hand.item.transform.localRotation = Quaternion.identity;
     }
     
     private void UpdateAimAbility(DummyHand selectedHand)
