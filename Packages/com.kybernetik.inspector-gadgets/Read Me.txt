@@ -1,0 +1,19 @@
+The online documentation explains how to use Inspector Gadgets in detail:
+https://kybernetik.com.au/inspector-gadgets
+
+- The enhanced Transform Inspector is automatically applied and has tooltips to explain what each of the buttons do.
+- Selecting an object on the UI layer will automatically ask if you want to enable the Auto Hide UI system.
+- Many Context Menu Functions are available by Right Clicking on fields in the Inspector.
+- If a script is missing, its Inspector will show a button to open a utility that can help you Find and Fix Missing Scripts.
+- The InspectorGadgets.AutoPrefs class contains a group of nested classes which simplify the way you can store and retrieve values in PlayerPrefs and EditorPrefs.
+
+Pro-Only Features:
+- You can customize the settings via the Edit/Preferences... window.
+- If you Drag and Drop files into the Project window while holding Ctrl and Alt, it will show a window to let you choose advanced options for how to handle those files.
+- If you Drag and Drop an asset onto another asset while holding Alt, it will make the dropped asset into a sub-asset of the target.
+- The MonoBehaviour Inspector and Object Reference fields are improved.
+- The InspectorGadgets.Attributes namespace has various attributes that can be used to customize Inspector fields.
+
+Contact:
+- Email: mail@kybernetik.com.au
+- Forum: https://forum.unity.com/threads/691546

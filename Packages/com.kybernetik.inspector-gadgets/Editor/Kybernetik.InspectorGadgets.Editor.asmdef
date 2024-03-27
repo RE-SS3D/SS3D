@@ -1,0 +1,17 @@
+{
+    "name": "Kybernetik.InspectorGadgets.Editor",
+    "references": [
+        "GUID:4516fe32c11b32b4c8eb0d5ed6f6d7bc"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

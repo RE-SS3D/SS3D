@@ -4,6 +4,7 @@
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.johannesmp.unityscenereference": "1.1.1",
     "com.unity.2d.sprite": "1.0.0",
+    "com.unity.animation.rigging": "1.1.1",
     "com.unity.collab-proxy": "1.17.7",
     "com.unity.ide.rider": "3.0.16",
     "com.unity.ide.visualstudio": "2.0.22",
