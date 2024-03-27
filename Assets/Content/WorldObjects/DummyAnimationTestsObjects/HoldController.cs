@@ -84,21 +84,31 @@ public class HoldController : MonoBehaviour
         DummyHand secondaryHand = hands.GetOtherHand(hands.SelectedHand.handType);
 
         if (mainHand.Full && secondaryHand.Empty && mainHand.item.canHoldTwoHand)
-            UpdateItemPositionConstraintAndRotation(mainHand, true, 0.5f);
+            UpdateItemPositionConstraintAndRotation(mainHand, true, 0.5f, false);
         else if(mainHand.Full)
-            UpdateItemPositionConstraintAndRotation(mainHand, false, 0.5f);
+            UpdateItemPositionConstraintAndRotation(mainHand, false, 0.5f, false);
         
         if (secondaryHand.Full && mainHand.Empty && secondaryHand.item.canHoldTwoHand)
-            UpdateItemPositionConstraintAndRotation(secondaryHand, true, 0.5f);
+            UpdateItemPositionConstraintAndRotation(secondaryHand, true, 0.5f, false);
         else if(secondaryHand.Full)
-            UpdateItemPositionConstraintAndRotation(secondaryHand, false, 0.5f);
+            UpdateItemPositionConstraintAndRotation(secondaryHand, false, 0.5f,false);
 
     }
     
-    public void UpdateItemPositionConstraintAndRotation(DummyHand hand, bool withTwoHands, float duration)
+    public void UpdateItemPositionConstraintAndRotation(DummyHand hand, bool withTwoHands, float duration, bool toThrow)
     {
         DummyItem item = hand.item;
-        HandHoldType itemHoldType = item.GetHoldType(withTwoHands, intents.intent);
+
+        if (item == null)
+            return;
+        
+        HandHoldType itemHoldType;
+
+        if (!toThrow)
+            itemHoldType = item.GetHoldType(withTwoHands, intents.intent);
+        else
+            itemHoldType = item.GetHoldThrowType(withTwoHands);
+        
         Transform hold = TargetFromHoldTypeAndHand(itemHoldType, hand.handType);
         
         Vector3 startingOffset = hand.itemPositionConstraint.data.offset;
@@ -113,6 +123,27 @@ public class HoldController : MonoBehaviour
         StartCoroutine(CoroutineHelper.ModifyQuaternionOverTime(x => 
             hand.itemPositionConstraint.data.constrainedObject.rotation = x,  startingRotation, finalRotation, duration));
     }
+    
+    public void UpdateItemPositionConstraintAndRotationToThrow(DummyHand hand, bool withTwoHands, float duration)
+    {
+        DummyItem item = hand.item;
+        HandHoldType itemHoldType = item.GetHoldThrowType(withTwoHands);
+        Transform hold = TargetFromHoldTypeAndHand(itemHoldType, hand.handType);
+        
+        Vector3 startingOffset = hand.itemPositionConstraint.data.offset;
+        Vector3 finalOffset = OffsetFromHoldTypeAndHand(itemHoldType, hand.handType);
+
+        StartCoroutine(CoroutineHelper.ModifyVector3OverTime(x => 
+            hand.itemPositionConstraint.data.offset = x,  startingOffset, finalOffset, duration));
+
+        Quaternion startingRotation = hand.itemPositionConstraint.data.constrainedObject.rotation;
+        Quaternion finalRotation = hold.rotation;
+        
+        StartCoroutine(CoroutineHelper.ModifyQuaternionOverTime(x => 
+            hand.itemPositionConstraint.data.constrainedObject.rotation = x,  startingRotation, finalRotation, duration));
+    }
+    
+    
     
     public void MovePickupAndHoldTargetLocker(DummyHand hand, bool secondary)
     {

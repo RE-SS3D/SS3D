@@ -76,7 +76,7 @@ public class DummyAim : MonoBehaviour
         if(!hand.Full) return;
 
         hand.item.transform.parent = hand.itemPositionTargetLocker;
-        holdController.UpdateItemPositionConstraintAndRotation(hand, true, 0.5f);
+        holdController.UpdateItemPositionConstraintAndRotation(hand, true, 0.5f, false);
     }
     
     private void UpdateAimAbility(DummyHand selectedHand)

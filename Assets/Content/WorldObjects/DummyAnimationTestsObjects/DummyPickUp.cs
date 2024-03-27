@@ -76,7 +76,7 @@ public class DummyPickUp : MonoBehaviour
 
     private void SetUpPickup(DummyHand mainHand, DummyHand secondaryHand, bool withTwoHands, DummyItem item)
     {
-        holdController.UpdateItemPositionConstraintAndRotation(mainHand, withTwoHands, 0f);
+        holdController.UpdateItemPositionConstraintAndRotation(mainHand, withTwoHands, 0f, false);
 
         // Needed to constrain item to position, in case the weight has been changed elsewhere
         mainHand.itemPositionConstraint.weight = 1f;
@@ -158,7 +158,7 @@ public class DummyPickUp : MonoBehaviour
         // if an item held with two hands, change it with a single hand hold
         if (secondaryHand.Full && secondaryHand.item.canHoldTwoHand)
         {
-            holdController.UpdateItemPositionConstraintAndRotation(secondaryHand, false, itemMoveDuration);
+            holdController.UpdateItemPositionConstraintAndRotation(secondaryHand, false, itemMoveDuration, false);
         }
         
         // Stop looking at item         

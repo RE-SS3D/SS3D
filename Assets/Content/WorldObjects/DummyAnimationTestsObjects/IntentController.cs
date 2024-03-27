@@ -12,13 +12,6 @@ public class IntentController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            intent = intent == Intent.Throw ? Intent.Def : Intent.Throw; 
-            OnIntentChange?.Invoke(this, intent);
-            return;
-        }
-        
         if (!Input.GetKeyDown(KeyCode.I))
             return;
 
