@@ -50,16 +50,13 @@ public class DummyAim : MonoBehaviour
         {
             StopAiming(hands.SelectedHand);
         }
-        
-        Debug.Log( "Has gun : "+ hands.SelectedHand.item.TryGetComponent(out DummyGun gun));
-        Debug.Log("is aiming");
-        Debug.Log("hands full");
 
         if (Input.GetKey(KeyCode.E) && hands.SelectedHand.Full 
-            && gun != null && isAiming)
+            && TryGetComponent(out DummyGun gun) && isAiming)
         {
             gun.GetComponent<DummyFire>().Fire();
         }
+        
     }
 
     private void Aim(DummyHand hand, DummyGun gun)
