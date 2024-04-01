@@ -684,6 +684,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SendChatMessage",
+                    "type": "Button",
+                    "id": "3ec638f1-be3c-4b60-a0ec-2df8837e6eb9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -816,6 +825,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Selection Debug",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1cd2a937-6dc1-4ed4-b380-059921ebd7da",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SendChatMessage",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7880a338-5cc5-49f9-8f46-c033d59be607",
+                    "path": "<Keyboard>/numpadEnter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SendChatMessage",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

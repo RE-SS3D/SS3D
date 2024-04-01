@@ -192,4 +192,8 @@ MonoBehaviour:
       _value: {fileID: 7125681683583715523, guid: cc71128d4bcc0c548ac11481000ac424, type: 3}
     - _key: ElectricalCable
       _value: {fileID: 7125681683583715523, guid: 0e69918696f58e04f846e985ec7405fe, type: 3}
+    - _key: HeadsetSecurityLeft
+      _value: {fileID: 1529136833643899573, guid: 88d1ba1edb4ce5e4fa74c6a8d53e36e1, type: 3}
+    - _key: HeadsetSecurityRight
+      _value: {fileID: 2114292304283180005, guid: bc08055e4ec2e204f8f46a379b2b6603, type: 3}
     _new: 

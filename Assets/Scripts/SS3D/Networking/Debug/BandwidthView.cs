@@ -7,7 +7,7 @@ namespace SS3D.Networking.Debug
     /// <summary>
     /// Overrides FishNets BandwidthDisplay class to implement a way to disable it using ScriptableSettings.
     /// </summary>
-	public class BandwitdhView : BandwidthDisplay
+	public class BandwidthView : BandwidthDisplay
 	{
 		private void Awake()
 		{

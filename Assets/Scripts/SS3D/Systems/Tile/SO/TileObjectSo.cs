@@ -21,6 +21,9 @@ namespace SS3D.Systems.Tile
         public int width = 1;
         public int height = 1;
 
+        // Whether or not a wall mount is large
+        public bool isLarge;
+
         /// <summary>
         /// TODO : document and understand properly this method. Why the diagonal directions are not treated ?
         /// </summary>
