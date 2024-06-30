@@ -1,11 +1,8 @@
 ﻿using NUnit.Framework;
-using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Tile;
-using System.Collections;
 using System.Collections.Generic;
 using System.Electricity;
 using System.Linq;
-using System.Reflection.Emit;
 using UnityEngine;
 
 namespace EditorTests
@@ -13,9 +10,9 @@ namespace EditorTests
     public class CircuitTests
     {
         private const float Tolerance = 0.0000001f;
-        
+
         /// <summary>
-        /// Check if batteries charge at equal rate, given they're not full. If they're close to be full, 
+        /// Check if batteries charge at equal rate, given they're not full. If they're close to be full,
         /// check that they're provided with the amount needed to fill them fully, instead of the equal rate.
         /// </summary>
         [Test]
