@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df12eddc03ad45cd9a7628f3caf4b5ce, type: 3}
-  m_Name: ChatChannels
+  m_Name: ChatChannelsSettings
   m_EditorClassIdentifier: 
   _preload: 1
-  _type: 0
+  _type: 2
   allChannels:
   - {fileID: 11400000, guid: f1d8f919b4075c24f8be32586f73abbb, type: 2}
   - {fileID: 11400000, guid: 28d5250e40955354bbc14aec69cc6f38, type: 2}
