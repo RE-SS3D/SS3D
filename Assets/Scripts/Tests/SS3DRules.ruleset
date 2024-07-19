@@ -253,6 +253,7 @@
       <Rule Id="RCS1214" Action="Hidden" />
       <Rule Id="RCS1218" Action="Hidden" />
       <Rule Id="RCS1221" Action="Hidden" />
+      <Rule Id="RCS1228" Action="Hidden" />
       <Rule Id="RCS1238" Action="Hidden" />
       <Rule Id="RCS1240" Action="Hidden" />
       <Rule Id="RCS1244" Action="Hidden" />
