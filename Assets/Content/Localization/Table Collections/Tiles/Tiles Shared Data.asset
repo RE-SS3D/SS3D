@@ -31,6 +31,74 @@ MonoBehaviour:
     m_Key: steel_wall_desc
     m_Metadata:
       m_Items: []
+  - m_Id: 57101507268608
+    m_Key: cables
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57126589206528
+    m_Key: cables_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57759010557952
+    m_Key: plenum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57761925599232
+    m_Key: plenum_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58474869198848
+    m_Key: atmos_pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58480611201024
+    m_Key: atmos_pipe_1_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59135090397184
+    m_Key: atmos_pipe_2_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59146196914176
+    m_Key: atmos_pipe_3_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59219144249344
+    m_Key: atmos_pipe_4_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60957800697856
+    m_Key: smes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60960057233408
+    m_Key: smes_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61427235590144
+    m_Key: floor_tile_grey
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61429332742144
+    m_Key: floor_tile_grey_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62172483719168
+    m_Key: disposal_pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62175742693376
+    m_Key: disposal_pipe_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62674856480768
+    m_Key: disposal_bin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62676416761856
+    m_Key: disposal_bin_desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

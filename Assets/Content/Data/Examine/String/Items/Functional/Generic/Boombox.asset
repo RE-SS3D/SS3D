@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:679d905fa8ed8324e9b852762c337b0d
-  NameKey: Boombox
-  DescriptionKey: Bumps sick beats.
+  NameKey: boombox
+  DescriptionKey: boombox_desc

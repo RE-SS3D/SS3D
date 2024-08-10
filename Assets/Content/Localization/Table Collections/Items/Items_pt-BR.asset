@@ -17,7 +17,15 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 679d905fa8ed8324e9b852762c337b0d, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 15167002677248
+    m_Localized: Bate batidas doentias.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15157871677440
+    m_Localized: "Caixa de som\r"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

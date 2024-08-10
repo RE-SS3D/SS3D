@@ -34,6 +34,74 @@ MonoBehaviour:
     m_Localized: A solid steel wall.
     m_Metadata:
       m_Items: []
+  - m_Id: 57101507268608
+    m_Localized: Cables
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57126589206528
+    m_Localized: High powered electrical cables.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57759010557952
+    m_Localized: Plenum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57761925599232
+    m_Localized: The structural base of the floor which also houses pipes and wires.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58474869198848
+    m_Localized: Atmospheric Pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58480611201024
+    m_Localized: An atmospheric pipe positioned on the 1st layer.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59135090397184
+    m_Localized: An atmospheric pipe positioned on the 2nd layer.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59146196914176
+    m_Localized: An atmospheric pipe positioned on the 3rd layer.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59219144249344
+    m_Localized: An atmospheric pipe positioned on the 4th layer.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60957800697856
+    m_Localized: SMES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60960057233408
+    m_Localized: A large power storage unit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61429332742144
+    m_Localized: A generic grey floortile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61427235590144
+    m_Localized: Grey Floortile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62172483719168
+    m_Localized: Disposal Pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62175742693376
+    m_Localized: A disposal pipe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62674856480768
+    m_Localized: Disposal Bin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62676416761856
+    m_Localized: Basically an automated trash can.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

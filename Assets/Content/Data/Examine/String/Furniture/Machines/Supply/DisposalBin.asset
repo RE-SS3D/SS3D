@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: Disposal Bin
-  DescriptionKey: Basically an automated trash can.
+  NameKey: disposal_bin
+  DescriptionKey: disposal_bin_desc

@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: SMES
-  DescriptionKey: A large power storage unit.
+  NameKey: smes
+  DescriptionKey: smes_desc

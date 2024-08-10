@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:5efc696289c14204ea5472b3e853eea2
-  NameKey: Some guy
-  DescriptionKey: Yup. Thats some guy.
+  NameKey: human
+  DescriptionKey: human_desc

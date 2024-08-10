@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: Plenum
-  DescriptionKey: The structural base of the floor which also houses pipes and wires.
+  NameKey: plenum
+  DescriptionKey: plenum_desc

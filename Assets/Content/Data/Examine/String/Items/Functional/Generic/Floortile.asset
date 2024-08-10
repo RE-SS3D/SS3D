@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: Grey Floortile
-  DescriptionKey: A generic grey floortile.
+  NameKey: floor_tile_grey
+  DescriptionKey: floor_tile_grey_desc

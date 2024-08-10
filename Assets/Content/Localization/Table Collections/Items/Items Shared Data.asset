@@ -14,7 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TableCollectionName: Items
   m_TableCollectionNameGuidString: 679d905fa8ed8324e9b852762c337b0d
-  m_Entries: []
+  m_Entries:
+  - m_Id: 15157871677440
+    m_Key: boombox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15167002677248
+    m_Key: boombox_desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

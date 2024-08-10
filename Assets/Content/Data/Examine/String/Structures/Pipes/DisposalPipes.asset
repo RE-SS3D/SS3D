@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: Disposal Pipe
-  DescriptionKey: A disposal pipe.
+  NameKey: disposal_pipe
+  DescriptionKey: disposal_pipe_desc

@@ -15,5 +15,5 @@ MonoBehaviour:
   LocalizationTable:
     m_TableReference:
       m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: Atmospheric Pipe
-  DescriptionKey: An atmospheric pipe positioned on the 2nd layer.
+  NameKey: atmos_pipe
+  DescriptionKey: atmos_pipe_2_desc
