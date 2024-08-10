@@ -14,7 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TableCollectionName: Tiles
   m_TableCollectionNameGuidString: c2d3dd9ea24a44444a91fe8467ebb1c1
-  m_Entries: []
+  m_Entries:
+  - m_Id: 22363711115264
+    m_Key: civilian_airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22567189385216
+    m_Key: civilian_airlock_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23008853790720
+    m_Key: steel_wall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23069444706304
+    m_Key: steel_wall_desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

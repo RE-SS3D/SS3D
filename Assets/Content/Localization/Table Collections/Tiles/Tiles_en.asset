@@ -17,7 +17,23 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: c2d3dd9ea24a44444a91fe8467ebb1c1, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 22363711115264
+    m_Localized: Civilian Airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22567189385216
+    m_Localized: A common airlock for all.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23008853790720
+    m_Localized: Steel Wall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23069444706304
+    m_Localized: A solid steel wall.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

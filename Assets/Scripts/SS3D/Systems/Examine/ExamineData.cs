@@ -1,5 +1,4 @@
-﻿using SS3D.Attributes;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Localization;
 
 namespace SS3D.Systems.Examine
