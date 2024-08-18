@@ -20,11 +20,9 @@ namespace SS3D.Systems.Examine
         public event ExaminableChangedHandler OnExaminableChanged;
 
         public delegate void ExaminableChangedHandler(IExaminable examinable);
-
+        
         private SelectionSystem _selectionSystem;
-
-
-
+        
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -34,20 +32,28 @@ namespace SS3D.Systems.Examine
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            if(_selectionSystem) _selectionSystem.OnSelectableChanged += UpdateExaminable;
+            
+            if (_selectionSystem)
+            {
+                _selectionSystem.OnSelectableChanged += UpdateExaminable;
+            }
         }
 
         protected override void OnDisabled()
         {
             base.OnDisabled();
-            if (_selectionSystem) _selectionSystem.OnSelectableChanged -= UpdateExaminable;
+            
+            if (_selectionSystem)
+            {
+                _selectionSystem.OnSelectableChanged -= UpdateExaminable;
+            }
         }
 
         private void UpdateExaminable()
         {
             // Get the examinable under the cursor
-            IExaminable _current = _selectionSystem.GetCurrentSelectable<IExaminable>();
-            OnExaminableChanged?.Invoke(_current);
+            IExaminable current = _selectionSystem.GetCurrentSelectable<IExaminable>();
+            OnExaminableChanged?.Invoke(current);
         }
     }
 }

@@ -32,9 +32,9 @@ namespace SS3D.Systems.Examine
         /// <param name="examinable">The object that is being examined</param>
         private void UpdateHoverText(IExaminable examinable)
         {
-            string _hoverTextToDisplay = string.Empty;
+            string hoverTextToDisplay = string.Empty;
 
-            if (examinable?.GetData() != null)
+            if (examinable?.GetData())
             {
                 ExamineData data = examinable.GetData();
 
@@ -43,16 +43,16 @@ namespace SS3D.Systems.Examine
                     _currentStringTable = data.LocalizationTable?.GetTable();
                     if (_currentStringTable[data.NameKey]?.LocalizedValue is null)
                     {
-                        _hoverTextToDisplay = data.NameKey + " *[to be localized]*";
+                        hoverTextToDisplay = data.NameKey + " *[to be localized]*";
                     }
                     else
                     {
-                        _hoverTextToDisplay = _currentStringTable[data.NameKey]?.LocalizedValue;
+                        hoverTextToDisplay = _currentStringTable[data.NameKey]?.LocalizedValue;
                     }
                 }
             }
 
-            HoverName.text = _hoverTextToDisplay;
+            HoverName.text = hoverTextToDisplay;
         }
     }
 }
