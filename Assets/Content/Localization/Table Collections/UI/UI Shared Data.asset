@@ -14,7 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TableCollectionName: UI
   m_TableCollectionNameGuidString: d2a66e9e1fb4a534da0ec381c31605b4
-  m_Entries: []
+  m_Entries:
+  - m_Id: 118901084160
+    m_Key: tab_server_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123401572352
+    m_Key: tab_chat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 127222583296
+    m_Key: tab_players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 131584659456
+    m_Key: tab_server_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134877188096
+    m_Key: tab_game_settings
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

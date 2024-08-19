@@ -17,7 +17,27 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: d2a66e9e1fb4a534da0ec381c31605b4, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 118901084160
+    m_Localized: Informations sur le serveur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123401572352
+    m_Localized: Chatte
+    m_Metadata:
+      m_Items: []
+  - m_Id: 127222583296
+    m_Localized: Joueuses
+    m_Metadata:
+      m_Items: []
+  - m_Id: 131584659456
+    m_Localized: "Param\xE8tres du serveur"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134877188096
+    m_Localized: "Param\xE8tres du jeu"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

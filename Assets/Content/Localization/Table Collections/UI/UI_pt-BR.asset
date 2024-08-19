@@ -17,7 +17,27 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: d2a66e9e1fb4a534da0ec381c31605b4, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 118901084160
+    m_Localized: "Informa\xE7\xF5es do servidor\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123401572352
+    m_Localized: Bater papo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 127222583296
+    m_Localized: Jogadoras
+    m_Metadata:
+      m_Items: []
+  - m_Id: 131584659456
+    m_Localized: "\rConfigura\xE7\xF5es do servidor"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134877188096
+    m_Localized: "Configura\xE7\xF5es do jogo"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
