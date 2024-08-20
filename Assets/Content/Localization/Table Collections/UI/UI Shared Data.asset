@@ -35,6 +35,26 @@ MonoBehaviour:
     m_Key: tab_game_settings
     m_Metadata:
       m_Items: []
+  - m_Id: 40840714948608
+    m_Key: insert_server_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401212651245568
+    m_Key: button_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401253960945664
+    m_Key: button_observe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401291999088640
+    m_Key: button_admin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401583121534976
+    m_Key: button_embark
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

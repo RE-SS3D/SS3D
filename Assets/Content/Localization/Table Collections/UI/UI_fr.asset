@@ -38,6 +38,26 @@ MonoBehaviour:
     m_Localized: "Param\xE8tres du jeu"
     m_Metadata:
       m_Items: []
+  - m_Id: 40840714948608
+    m_Localized: "<sprite name=\"banana\"> Ins\xE9rer le nom du serveur <sprite name=\"banana\">"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401212651245568
+    m_Localized: "<sprite name=\"approve\"> Pr\xEAt"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401583121534976
+    m_Localized: <sprite name="embark"> Embarquer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401253960945664
+    m_Localized: Observer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401291999088640
+    m_Localized: Administratrice
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -38,6 +38,26 @@ MonoBehaviour:
     m_Localized: Game Settings
     m_Metadata:
       m_Items: []
+  - m_Id: 40840714948608
+    m_Localized: <sprite name="banana"> Insert server name <sprite name="banana">
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401212651245568
+    m_Localized: <sprite name="approve"> ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401253960945664
+    m_Localized: Observe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401291999088640
+    m_Localized: Admin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401583121534976
+    m_Localized: <sprite name="embark"> embark
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
