@@ -58,6 +58,10 @@ MonoBehaviour:
     m_Localized: Administratrice
     m_Metadata:
       m_Items: []
+  - m_Id: 404904863502336
+    m_Localized: "<sprite name=\"deny\"> Pas pr\xEA"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

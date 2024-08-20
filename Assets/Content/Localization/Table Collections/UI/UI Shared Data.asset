@@ -55,6 +55,10 @@ MonoBehaviour:
     m_Key: button_embark
     m_Metadata:
       m_Items: []
+  - m_Id: 404904863502336
+    m_Key: button_not_ready
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
