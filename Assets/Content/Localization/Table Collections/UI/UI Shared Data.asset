@@ -59,6 +59,30 @@ MonoBehaviour:
     m_Key: button_not_ready
     m_Metadata:
       m_Items: []
+  - m_Id: 410219415769088
+    m_Key: text_round_state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410593673515008
+    m_Key: button_start_round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410645397671936
+    m_Key: button_stop_round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410727601836032
+    m_Key: text_character_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410784623398912
+    m_Key: text_user_interface
+    m_Metadata:
+      m_Items: []
+  - m_Id: 725627855343616
+    m_Key: text_show_ui
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

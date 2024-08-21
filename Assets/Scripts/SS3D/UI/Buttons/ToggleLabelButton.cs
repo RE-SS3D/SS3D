@@ -20,9 +20,16 @@ namespace SS3D.UI.Buttons
             _pressedText = text;
         }
 
-        public void CallUpdateVisuals()
+        public void RefreshVisuals()
         {
-            UpdateVisuals();
+            if (_pressed)
+            {
+                _label.SetText(_pressedText);
+            }
+            else
+            {
+                _label.SetText(_normalText);
+            }
         }
 
         public override void OnPointerDown(PointerEventData eventData)

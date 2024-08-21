@@ -62,6 +62,30 @@ MonoBehaviour:
     m_Localized: "<sprite name=\"deny\"> N\xE3o est\xE1 pronto"
     m_Metadata:
       m_Items: []
+  - m_Id: 410593673515008
+    m_Localized: "<sprite name=\"approve\"> come\xE7ar a rodada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410645397671936
+    m_Localized: "<sprite name=\"deny\"> pare por a\xED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410219415769088
+    m_Localized: "Estado redondo\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410727601836032
+    m_Localized: Nome do personagem
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410784623398912
+    m_Localized: "interface do usu\xE1rio"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 725627855343616
+    m_Localized: "mostrar interface do usu\xE1rio\r"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

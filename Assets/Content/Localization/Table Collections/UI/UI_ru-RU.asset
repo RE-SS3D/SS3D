@@ -64,6 +64,32 @@ MonoBehaviour:
     m_Localized: "<sprite name=\"deny\"> \u041D\u0435 \u0433\u043E\u0442\u043E\u0432"
     m_Metadata:
       m_Items: []
+  - m_Id: 410593673515008
+    m_Localized: "<sprite name=\"approve\"> \u043D\u0430\u0447\u0430\u0442\u044C
+      \u0440\u0430\u0443\u043D\u0434\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410645397671936
+    m_Localized: "<sprite name=\"deny\"> \u043E\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C\u0441\u044F"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410219415769088
+    m_Localized: "\u041A\u0440\u0443\u0433\u043B\u044B\u0439 \u0448\u0442\u0430\u0442"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410727601836032
+    m_Localized: "\u0418\u043C\u044F \u043F\u0435\u0440\u0441\u043E\u043D\u0430\u0436\u0430"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410784623398912
+    m_Localized: "\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0439
+      \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 725627855343616
+    m_Localized: "\u043F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441\r"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

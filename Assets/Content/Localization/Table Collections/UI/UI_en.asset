@@ -62,6 +62,30 @@ MonoBehaviour:
     m_Localized: <sprite name="deny"> not ready
     m_Metadata:
       m_Items: []
+  - m_Id: 410219415769088
+    m_Localized: Round State
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410593673515008
+    m_Localized: <sprite name="approve"> start round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410645397671936
+    m_Localized: <sprite name="deny"> stop round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410727601836032
+    m_Localized: Character name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410784623398912
+    m_Localized: user interface
+    m_Metadata:
+      m_Items: []
+  - m_Id: 725627855343616
+    m_Localized: show ui
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

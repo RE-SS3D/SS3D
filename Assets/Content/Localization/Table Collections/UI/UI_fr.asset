@@ -62,6 +62,30 @@ MonoBehaviour:
     m_Localized: "<sprite name=\"deny\"> Pas pr\xEA"
     m_Metadata:
       m_Items: []
+  - m_Id: 410593673515008
+    m_Localized: "<sprite name=\"approve\"> commencer le tour\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410645397671936
+    m_Localized: "<sprite name=\"deny\"> arr\xEAter la ronde"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410219415769088
+    m_Localized: "\xC9tat rond\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410727601836032
+    m_Localized: Nom du personnage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410784623398912
+    m_Localized: interface utilisateur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 725627855343616
+    m_Localized: "afficher l'interface utilisateur\r"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
