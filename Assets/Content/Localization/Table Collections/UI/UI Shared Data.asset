@@ -83,6 +83,10 @@ MonoBehaviour:
     m_Key: text_show_ui
     m_Metadata:
       m_Items: []
+  - m_Id: 734609462431744
+    m_Key: text_admin
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

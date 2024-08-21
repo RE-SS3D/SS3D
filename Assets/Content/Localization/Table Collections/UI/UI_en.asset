@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 410219415769088
-    m_Localized: Round State
+    m_Localized: <sprite name="pc"> round state
     m_Metadata:
       m_Items: []
   - m_Id: 410593673515008
@@ -84,6 +84,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 725627855343616
     m_Localized: show ui
+    m_Metadata:
+      m_Items: []
+  - m_Id: 734609462431744
+    m_Localized: <sprite name="banana"> admin
     m_Metadata:
       m_Items: []
   references:

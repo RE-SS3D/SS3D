@@ -71,7 +71,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 410219415769088
-    m_Localized: "Estado redondo\r"
+    m_Localized: "<sprite name=\"pc\"> Estado redondo\r"
     m_Metadata:
       m_Items: []
   - m_Id: 410727601836032
@@ -84,6 +84,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 725627855343616
     m_Localized: "mostrar interface do usu\xE1rio\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 734609462431744
+    m_Localized: <sprite name="banana"> Administrador
     m_Metadata:
       m_Items: []
   references:

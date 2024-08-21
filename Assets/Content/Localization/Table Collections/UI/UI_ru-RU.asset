@@ -74,7 +74,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 410219415769088
-    m_Localized: "\u041A\u0440\u0443\u0433\u043B\u044B\u0439 \u0448\u0442\u0430\u0442"
+    m_Localized: "<sprite name=\"pc\"> \u041A\u0440\u0443\u0433\u043B\u044B\u0439
+      \u0448\u0442\u0430\u0442"
     m_Metadata:
       m_Items: []
   - m_Id: 410727601836032
@@ -88,6 +89,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 725627855343616
     m_Localized: "\u043F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 734609462431744
+    m_Localized: "<sprite name=\"banana\"> \u0410\u0434\u043C\u0438\u043D"
     m_Metadata:
       m_Items: []
   references:
