@@ -76,8 +76,8 @@ namespace SS3D.Systems.Lobby.UI
         private void UpdateRoundCountDownText()
         {
             Debug.Log(_roundState.ToString());
-            Debug.Log(_currentStringTable[_roundState.ToString()].LocalizedValue);
-            _roundCountdownText.text = $"{_currentStringTable[_roundState.ToString()].LocalizedValue} - {_seconds}";
+            string localized = _currentStringTable[_roundState.ToString()].LocalizedValue.Trim();
+            _roundCountdownText.text = localized + " - " + _seconds;
         }
     }
 }

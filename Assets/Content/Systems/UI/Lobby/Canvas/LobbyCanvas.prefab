@@ -35,9 +35,9 @@ RectTransform:
   m_Father: {fileID: 1359148434}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 66, y: -18.93605}
   m_SizeDelta: {x: 132, y: 27.8721}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &55875277
@@ -138,10 +138,10 @@ RectTransform:
   m_Father: {fileID: 1784472768}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -45.7238}
+  m_SizeDelta: {x: 332, y: 91.4476}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &67016290
 CanvasRenderer:
@@ -370,10 +370,10 @@ RectTransform:
   m_Father: {fileID: 387771207}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 171, y: -17.055767}
+  m_SizeDelta: {x: 332, y: 24.111534}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &561880033
 CanvasRenderer:
@@ -507,9 +507,9 @@ RectTransform:
   m_Father: {fileID: 67016288}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -30.651}
   m_SizeDelta: {x: 332, y: 61.302}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &654811579
@@ -684,7 +684,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &6314462747545687041
@@ -716,6 +716,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
         m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7848095560279586648}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -874,7 +886,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &8254361085683359326
@@ -914,6 +926,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2650967272445454317}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   references:
     version: 2
     RefIds: []
@@ -941,6 +965,7 @@ GameObject:
   - component: {fileID: 996747444}
   - component: {fileID: 996747446}
   - component: {fileID: 996747445}
+  - component: {fileID: 3150050563010274363}
   m_Layer: 5
   m_Name: Text (TMP) (001)
   m_TagString: Untagged
@@ -963,9 +988,9 @@ RectTransform:
   m_Father: {fileID: 67016288}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -76.3748}
   m_SizeDelta: {x: 234.88, y: 19.953}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &996747446
@@ -1062,9 +1087,22 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3150050563010274363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996747443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2983e55d57e0f14dbda7b8b890aedef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fontKey: font_lobby_tabs
 --- !u!1 &1359148433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1100,10 +1138,10 @@ RectTransform:
   m_Father: {fileID: 1547124749}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -161.34666}
+  m_SizeDelta: {x: 332, y: 139.79813}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1359148435
 CanvasRenderer:
@@ -1193,10 +1231,10 @@ RectTransform:
   m_Father: {fileID: 387771207}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 171, y: -35.9199}
+  m_SizeDelta: {x: 332, y: 3.61673}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1516433592
 CanvasRenderer:
@@ -1293,10 +1331,10 @@ RectTransform:
   m_Father: {fileID: 387771207}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 171, y: -158.35114}
+  m_SizeDelta: {x: 332, y: 231.24573}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1547124753
 CanvasRenderer:
@@ -1418,10 +1456,10 @@ RectTransform:
   m_Father: {fileID: 561880029}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -12.055767}
+  m_SizeDelta: {x: 332, y: 24.111534}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1669090665
 CanvasRenderer:
@@ -1555,10 +1593,10 @@ RectTransform:
   m_Father: {fileID: 1547124749}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -45.7238}
+  m_SizeDelta: {x: 332, y: 91.4476}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1784472770
 CanvasRenderer:
@@ -1749,7 +1787,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7512686134403990578
@@ -1844,6 +1882,18 @@ MonoBehaviour:
       - m_Target: {fileID: 55875278}
         m_TargetAssemblyTypeName: SS3D.UI.Buttons.ToggleLabelButton, SS3D.UI
         m_MethodName: RefreshVisuals
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 359925779305839613}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2119,6 +2169,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6724539407105111330}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   references:
     version: 2
     RefIds: []
@@ -2203,7 +2265,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Server Info
+  m_text: Informations sur le serveur
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -2297,6 +2359,18 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 4078764130377866233}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 3736358311125738235}
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
@@ -2669,7 +2743,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3736358311482321780
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3012,7 +3086,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Players
+  m_text: Joueuses
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -3106,6 +3180,18 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 313146000900533465}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 3736358311545579449}
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
@@ -3519,7 +3605,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <sprite name="banana"> Insert server name <sprite name="banana">
+  m_text: "<sprite name=\"banana\"> \u0412\u0441\u0442\u0430\u0432\u044C\u0442\u0435
+    \u0438\u043C\u044F \u0441\u0435\u0440\u0432\u0435\u0440\u0430 <sprite name=\"banana\">"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -3626,6 +3713,18 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 5928138491329161758}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 3736358312076630166}
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
@@ -3786,7 +3885,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Server Settings
+  m_text: "Param\xE8tres du serveur"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -3880,6 +3979,18 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 2293443270306666742}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 3736358312350974449}
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
@@ -4252,7 +4363,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Game Settings
+  m_text: "Param\xE8tres du jeu"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -4346,6 +4457,18 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 2877136314216467394}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 3736358312469293972}
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
@@ -4545,10 +4668,10 @@ RectTransform:
   m_Father: {fileID: 3736358313256879202}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 171, y: -63.217697}
-  m_SizeDelta: {x: 322, y: 18.589}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 18.589}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3736358312909261960
 CanvasRenderer:
@@ -4578,7 +4701,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Round seconds to start
+  m_text: "\u041E\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u043E - 0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ffc81b96d71d7544580ef63e2d508f02, type: 2}
   m_sharedMaterial: {fileID: 8572051279392437555, guid: ffc81b96d71d7544580ef63e2d508f02, type: 2}
@@ -4692,7 +4815,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:d2a66e9e1fb4a534da0ec381c31605b4
     m_TableEntryReference:
-      m_KeyId: 0
+      m_KeyId: 740893582594048
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -4701,6 +4824,18 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 2932512224268618320}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1113205651454122612}
         m_TargetAssemblyTypeName: SS3D.Systems.Lobby.UI.RoundStateView, SS3D.Systems
         m_MethodName: UpdateLocalization
@@ -4861,7 +4996,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Chat
+  m_text: "\u0427\u0430\u0442"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -4967,6 +5102,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 3504821779944101552}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   references:
     version: 2
     RefIds: []
@@ -5001,7 +5148,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3736358313256879202
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5513,7 +5660,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Admin
+  m_text: "\u0410\u0434\u043C\u0438\u043D"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -5607,6 +5754,18 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 808101959583096924}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 4370972904820581497}
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
@@ -5856,8 +6015,8 @@ MonoBehaviour:
   _baseTextColor: {r: 1, g: 1, b: 1, a: 1}
   _label: {fileID: 4370972905072723771}
   _image: {fileID: 4370972904889678302}
-  _normalText: <sprite name="approve"> ready
-  _pressedText: <sprite name="deny"> not ready
+  _normalText: "<sprite name=\"approve\"> \u0413\u043E\u0442\u043E\u0432\u044B\u0439"
+  _pressedText: "<sprite name=\"deny\"> \u041D\u0435 \u0433\u043E\u0442\u043E\u0432"
 --- !u!1 &4370972904894213158
 GameObject:
   m_ObjectHideFlags: 0
@@ -6104,7 +6263,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <sprite name="approve"> ready
+  m_text: "<sprite name=\"approve\"> \u0413\u043E\u0442\u043E\u0432\u044B\u0439"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -6287,6 +6446,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 4599354216634772631}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   references:
     version: 2
     RefIds: []
@@ -6459,7 +6630,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 182
+  <PrefabId>k__BackingField: 183
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -6675,7 +6846,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Observe
+  m_text: "\u041D\u0430\u0431\u043B\u044E\u0434\u0430\u0442"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
   m_sharedMaterial: {fileID: 2037802611163035171, guid: 871f8e8aac0529a4d833c4732d5efd95, type: 2}
@@ -6773,6 +6944,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
         m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2741947662309886307}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7052,10 +7235,10 @@ RectTransform:
   m_Father: {fileID: 3736358313256879202}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 171, y: -29.4616}
-  m_SizeDelta: {x: 322, y: 38.9232}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 38.9232}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &96899576390578623
 CanvasRenderer:

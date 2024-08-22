@@ -5461,6 +5461,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 981233763, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: m_text
+      value: ----<sprite name="pc">round state
+      objectReference: {fileID: 0}
+    - target: {fileID: 981233763, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
@@ -5919,7 +5923,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a40bdfa0e0b45bab2dc3217269a6c6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4370972904279086846
+--- !u!114 &4370972904279086850 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3150050563010274363, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+  m_PrefabInstance: {fileID: 4370972904279086840}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 192433059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2983e55d57e0f14dbda7b8b890aedef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4370972904279086851
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5928,10 +5943,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 192433059}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2983e55d57e0f14dbda7b8b890aedef, type: 3}
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fontKey: font_lobby_tabs
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:d2a66e9e1fb4a534da0ec381c31605b4
+    m_TableEntryReference:
+      m_KeyId: 740893582594048
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4370972904279086850}
+        m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
+        m_MethodName: UpdateFont
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &4559952173117635203
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -15,6 +15,11 @@ namespace SS3D.UI
 
         public void Start()
         {
+            UpdateFont();
+        }
+
+        public void UpdateFont()
+        {
             ChangeHandler(LocalizationSettings.SelectedLocale);
         }
 
