@@ -87,6 +87,30 @@ MonoBehaviour:
     m_Key: text_admin
     m_Metadata:
       m_Items: []
+  - m_Id: 740893582594048
+    m_Key: Stopped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740976793391104
+    m_Key: Preparing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740978609524736
+    m_Key: WarmingUp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740980304023552
+    m_Key: Ongoing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740982044659712
+    m_Key: Ending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741247078535168
+    m_Key: Ended
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

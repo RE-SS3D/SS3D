@@ -90,6 +90,30 @@ MonoBehaviour:
     m_Localized: <sprite name="banana"> Administrador
     m_Metadata:
       m_Items: []
+  - m_Id: 740893582594048
+    m_Localized: Parou
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740976793391104
+    m_Localized: Preparando
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740978609524736
+    m_Localized: Aquecendo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740980304023552
+    m_Localized: "Em andamento\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740982044659712
+    m_Localized: Final
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741247078535168
+    m_Localized: Terminou
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
