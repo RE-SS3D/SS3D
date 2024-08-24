@@ -32,7 +32,7 @@ namespace SS3D.UI
 
         private IEnumerator LoadAssetTable()
         {
-            if (LocalizationSettings.SelectedLocale == _currentLocale)
+            if (LocalizationSettings.SelectedLocale?.Identifier == _currentLocale?.Identifier)
             {
                 _text.font = _fontAsset;
                 yield break;
