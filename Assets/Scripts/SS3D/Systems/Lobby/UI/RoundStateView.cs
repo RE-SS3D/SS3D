@@ -75,7 +75,6 @@ namespace SS3D.Systems.Lobby.UI
 
         private void UpdateRoundCountDownText()
         {
-            Debug.Log(_roundState.ToString());
             string localized = _currentStringTable[_roundState.ToString()].LocalizedValue.Trim();
             _roundCountdownText.text = localized + " - " + _seconds;
         }
