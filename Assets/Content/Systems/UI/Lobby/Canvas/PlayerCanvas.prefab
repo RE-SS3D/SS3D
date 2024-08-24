@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 4698344302770053114}
   - component: {fileID: 5160749121257399851}
   - component: {fileID: 8999006631830363571}
+  - component: {fileID: 8672224192141388361}
   m_Layer: 5
   m_Name: Examinable Name View
   m_TagString: Untagged
@@ -238,6 +239,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8672224192141388361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2953822347573922298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2983e55d57e0f14dbda7b8b890aedef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fontKey: font_examine_name
 --- !u!1 &3810371244597919613
 GameObject:
   m_ObjectHideFlags: 0
@@ -910,7 +924,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3785844209189093823, guid: af039f84b4a245049b5b62799af01384, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3869199081985676184, guid: af039f84b4a245049b5b62799af01384, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2055,6 +2069,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5301409269850280388, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
+      propertyPath: m_Value
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5578169003587566748, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -2093,7 +2111,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7585491229902965028, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
       propertyPath: defaultChat
@@ -2114,6 +2132,14 @@ PrefabInstance:
     - target: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
       propertyPath: requiresChatController
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532464770603051669, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8532464770603051669, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8840687691973994805, guid: f4708dd3e86544c4bbf03b0157bb21c7, type: 3}
       propertyPath: m_AnchorMax.x

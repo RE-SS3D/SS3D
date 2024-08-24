@@ -19,6 +19,10 @@ MonoBehaviour:
     m_Key: font_lobby_tabs
     m_Metadata:
       m_Items: []
+  - m_Id: 1670236852883456
+    m_Key: font_examine_name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items:
     - rid: 1882488591224143880
@@ -36,6 +40,12 @@ MonoBehaviour:
       data:
         m_Entries:
         - m_KeyId: 51825774592
+          m_TableCodes:
+          - en
+          - fr
+          - pt-BR
+          - ru-RU
+        - m_KeyId: 1670236852883456
           m_TableCodes:
           - en
           - fr
