@@ -38,12 +38,6 @@ namespace SS3D.UI
 
         private IEnumerator LoadAssetTable()
         {
-            if (LocalizationSettings.SelectedLocale?.Identifier == _currentLocale?.Identifier)
-            {
-                _text.font = _fontAsset;
-                yield break;
-            }
-
             _currentLocale = LocalizationSettings.SelectedLocale;
 
             AsyncOperationHandle<TMP_FontAsset> assetLoading = LocalizationSettings.AssetDatabase.GetLocalizedAssetAsync<TMP_FontAsset>("Font", _fontKey);
