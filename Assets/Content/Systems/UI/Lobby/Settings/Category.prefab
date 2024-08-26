@@ -349,7 +349,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
       - m_Target: {fileID: 403264385986205737}
         m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
         m_MethodName: UpdateFont
@@ -361,7 +361,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
   references:
     version: 2
     RefIds: []

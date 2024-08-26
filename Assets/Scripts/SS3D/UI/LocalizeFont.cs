@@ -30,6 +30,12 @@ namespace SS3D.UI
             ChangeHandler(LocalizationSettings.SelectedLocale);
         }
 
+        protected void OnEnable()
+        {
+            GetTextFieldIfRequired();
+            LocalizationSettings.SelectedLocaleChanged += ChangeHandler;
+        }
+
         private IEnumerator LoadAssetTable()
         {
             if (LocalizationSettings.SelectedLocale?.Identifier == _currentLocale?.Identifier)
@@ -49,12 +55,6 @@ namespace SS3D.UI
             _fontAsset = assetLoading.Result;
             GetTextFieldIfRequired();
             _text.font = _fontAsset;
-        }
-
-        protected void OnEnable()
-        {
-            GetTextFieldIfRequired();
-            LocalizationSettings.SelectedLocaleChanged += ChangeHandler;
         }
 
         protected void OnDisable()
