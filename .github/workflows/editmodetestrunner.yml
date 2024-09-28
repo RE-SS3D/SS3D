@@ -19,7 +19,7 @@ jobs:
       - run: npm install jsdom
       - run: npm install fs
       - name: Run tests
-        uses: game-ci/unity-test-runner@v4
+        uses: game-ci/unity-test-runner@v2
         with:
           testMode: editmode
         env:
