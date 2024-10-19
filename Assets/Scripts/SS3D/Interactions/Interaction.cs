@@ -9,6 +9,7 @@ namespace SS3D.Interactions
     /// </summary>
     public class Interaction : IInteraction
     {
+        public string Name;
         public Sprite Icon;
 
         /// <summary>

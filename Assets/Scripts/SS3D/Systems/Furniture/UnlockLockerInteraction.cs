@@ -12,15 +12,15 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public sealed class UnlockLockerInteraction : Interaction
     {
-        private IDPermission permissionToUnlock;
+        private readonly IDPermission _permissionToUnlock;
+        private readonly Locker _locker;
 
         public event EventHandler<bool> OnOpenStateChanged;
-        Locker locker;
 
         public UnlockLockerInteraction(Locker locker, IDPermission permission)
         {
-            this.locker = locker;
-            this.permissionToUnlock = permission;
+            _locker = locker;
+            _permissionToUnlock = permission;
         }
         public override string GetName(InteractionEvent interactionEvent)
         {
@@ -39,7 +39,12 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            return locker.Locked;
+            if (!_locker.Lockable)
+            {
+                return false;
+            }
+            
+            return _locker.IsLocked && !_locker.IsOpen;
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
@@ -51,10 +56,10 @@ namespace SS3D.Systems.Inventory.Interactions
                 
                 if (hands != null)
                 {
-                    if (hands.Inventory.HasPermission(permissionToUnlock))
+                    if (hands.Inventory.HasPermission(_permissionToUnlock))
                     {
                         Log.Information(this, "Locker has been unlocked!");
-                        locker.Locked = false;
+                        _locker.IsLocked = false;
                     } else
                     {
                         Log.Information(this, "No permission to unlock Locker!");
