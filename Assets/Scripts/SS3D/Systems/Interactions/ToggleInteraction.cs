@@ -1,9 +1,11 @@
-﻿using SS3D.Interactions;
+﻿using FishNet.Object;
+using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 // using SS3D.Systems.Animations;
 // using SS3D.Systems.Inventory.Containers;
 using System;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace SS3D.Systems.Interactions
 {
@@ -96,28 +98,23 @@ namespace SS3D.Systems.Interactions
             {
                 toggle.Toggle();
             }
-
         }
 
         protected override bool StartImmediately(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            return true;
-
-            /* Hand hand = interactionEvent.Source as Hand;
-
             Vector3 point = interactionEvent.Point;
 
             if (interactionEvent.Target.TryGetInteractionPoint(interactionEvent.Source, out Vector3 customPoint))
             {
                 point = customPoint;
             }
-
-            if (hand != null)
+            
+            if (interactionEvent.Source.GetRootSource() is IInteractionSourceAnimate animatedSource)
             {
-                interactionEvent.Source.GameObject.GetComponentInParent<ProceduralAnimationController>().PlayAnimation(InteractionType, hand, null, point, Delay);
+                animatedSource.PlaySourceAnimation(InteractionType.Press, interactionEvent.Target.GetComponent<NetworkObject>(), point, Delay);
             }
 
-            return true;*/
+            return true;
         }
     }
 }

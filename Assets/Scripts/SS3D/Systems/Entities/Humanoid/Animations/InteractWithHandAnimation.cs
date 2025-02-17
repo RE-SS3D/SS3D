@@ -49,9 +49,7 @@ namespace SS3D.Systems.Animations
         private void SetupInteract()
         {
             // disable position constraint the time of the interaction
-            _hand.Hold.ItemPositionConstraint.weight = 0f;
             _hand.Hold.PickupIkConstraint.weight = 1f;
-            _hand.Hold.HandTargetFollowTransform(null);
             _hand.Hold.HandIkTarget.position = _hand.HandBone.position;
             Controller.LookAtTargetLocker.transform.position = _targetPosition;
         }
