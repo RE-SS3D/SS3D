@@ -61,6 +61,13 @@ namespace SS3D.Systems.Combat.Interactions
                 return;
             }
 
+            if (!source.GameObject.TryGetComponent(out IHittingItem hittingItem) || !target.GameObject.TryGetComponent(out IHittable hittable))
+            {
+                return;
+            }
+
+            hittable.TakeHit(hittingItem);
+
             Entity entity = targetBehaviour.GameObject.GetComponentInParent<Entity>();
 
             if (entity is IRagdollable ragdoll)

@@ -45,9 +45,6 @@ namespace SS3D.Systems.Animations
             Quaternion finalRotationPlayer = Quaternion.LookRotation(directionFromTransformToTarget);
             float timeToRotate = (Quaternion.Angle(_rootTransform.rotation, finalRotationPlayer) / 180f) * InteractionTime;
 
-            // Set up the look at target locker on the item to pick up.
-            Controller.LookAtTargetLocker.transform.position = _targetHitPosition;
-
             // In sequence, we first rotate toward the target
             TryRotateTowardTargetPosition(Controller.transform, timeToRotate, _targetHitPosition);
 
@@ -66,6 +63,12 @@ namespace SS3D.Systems.Animations
             InteractionSequence.OnComplete(() =>
             {
                 RestorePosition(Controller.PositionController);
+            });
+
+            InteractionSequence.OnUpdate(() =>
+            {
+                // Set up the look at target locker on the item to pick up.
+                Controller.LookAtTargetLocker.transform.position = _targetHitPosition;
             });
         }
     }
