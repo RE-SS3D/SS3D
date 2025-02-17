@@ -1,9 +1,12 @@
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data.Generated;
+using SS3D.Systems.Audio;
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using AudioType = UnityEngine.AudioType;
 using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Combat.Interactions
@@ -20,7 +23,7 @@ namespace SS3D.Systems.Combat.Interactions
         private Transform _spawnPoint;
 
         [SerializeField]
-        private float _fireRate = 10f; // Bullets fired per second
+        private float _fireRate = 5f; // Bullets fired per second
 
         [SerializeField]
         private float _bulletSpeed = 10f; // Speed of the bullets
@@ -56,6 +59,8 @@ namespace SS3D.Systems.Combat.Interactions
                 return;
             }
 
+            Subsystems.Get<AudioSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.MachineGun, GetComponent<NetworkObject>());
+
             _readyToFire = false;
 
             StartCoroutine(ReadyToFire());
@@ -77,7 +82,7 @@ namespace SS3D.Systems.Combat.Interactions
 
         private IEnumerator ReadyToFire()
         {
-            yield return new WaitForSeconds(1f / (_fireRate * 2));
+            yield return new WaitForSeconds(1f / _fireRate);
             _readyToFire = true;
         }
     }
