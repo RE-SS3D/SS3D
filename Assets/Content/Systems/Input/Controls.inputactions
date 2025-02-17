@@ -636,24 +636,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Primary Click",
-                    "type": "Button",
-                    "id": "4e6a890a-3610-4e1e-ba50-7337426e7a9c",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Secondary Click",
-                    "type": "Button",
-                    "id": "329397df-813c-463f-9fa3-3cfae3e761bc",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Toggle Menu",
                     "type": "Button",
                     "id": "3425a866-8013-4556-bd14-6f493998eb0c",
@@ -755,28 +737,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Swap Minds",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0adc5e3e-d6e9-4b28-8bda-8a8f58157d90",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Primary Click",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "63cbb85f-4adc-474a-aba1-26a9c11d983c",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Secondary Click",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1054,7 +1014,7 @@
                 {
                     "name": "AimGun",
                     "type": "Button",
-                    "id": "ef9edcc5-d3be-4f6f-9d69-9891176ec460",
+                    "id": "df7c41e9-c886-4991-b0c8-f6f03c41e0de",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -1097,12 +1057,40 @@
                 },
                 {
                     "name": "",
-                    "id": "bb00306e-3375-402b-ad69-a6c2387a7e5f",
+                    "id": "5f028c20-b6b1-47d0-8b4f-f7ceb40f85e7",
                     "path": "<Keyboard>/t",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "AimGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GunFire",
+            "id": "40d1e174-0fc4-45aa-a1a5-ccb8d5ac03c1",
+            "actions": [
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "a75d4f3a-9b77-459a-b414-b31b9fb2822c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4292cf28-5db8-4837-aefc-20a9133e9b10",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

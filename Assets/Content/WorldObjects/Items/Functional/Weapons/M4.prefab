@@ -304,7 +304,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 21
+  <PrefabId>k__BackingField: 20
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -338,7 +338,6 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1072406932805509441}
   _asset: {fileID: 11400000, guid: 5d2a070d416c66d46a29c59ae17d4e92, type: 2}
   _name: M4
-  _weight: 0
   _startingTraits: []
   _rigidbody: {fileID: 1072406932805509455}
   _container: {fileID: 0}
@@ -372,7 +371,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1072406932805509441}
   _networkObjectCache: {fileID: 1072406932805509441}
   _rifleButt: {fileID: 8570660247534318541}
-  _bulletPrefab: {fileID: 8048644634823827442, guid: 6689365f34e3b994295af9f68b26360b, type: 3}
+  _bulletPrefab: {fileID: 6534900513675647824, guid: c68fb03571aaca141a5a893ab0bc26b3, type: 3}
   _spawnPoint: {fileID: 3453859344669879131}
   _fireRate: 10
   _bulletSpeed: 10

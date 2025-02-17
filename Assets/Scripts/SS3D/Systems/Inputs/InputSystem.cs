@@ -143,20 +143,18 @@ namespace SS3D.Systems.Inputs
                     _actionDisables[action] += 1;
                 }
 
-                if (_actionDisables[action] == 0)
+                if (_actionDisables[action] <= 0)
                 {
-                    if (!action.enabled)
-                    {
-                        action.Enable();
-                    }
+                    action.Enable();
                 }
-                else if (action.enabled)
+                else
                 {
                     action.Disable();
                 }
             }
         }
 
+        
         /// <summary>
         /// Toggle all actions, that use same key paths as given actions. Doesn't toggle actions in actions parameter.
         /// </summary>

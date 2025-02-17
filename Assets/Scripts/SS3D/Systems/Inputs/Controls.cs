@@ -660,24 +660,6 @@ namespace SS3D.Systems.Inputs
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Primary Click"",
-                    ""type"": ""Button"",
-                    ""id"": ""4e6a890a-3610-4e1e-ba50-7337426e7a9c"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Secondary Click"",
-                    ""type"": ""Button"",
-                    ""id"": ""329397df-813c-463f-9fa3-3cfae3e761bc"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Toggle Menu"",
                     ""type"": ""Button"",
                     ""id"": ""3425a866-8013-4556-bd14-6f493998eb0c"",
@@ -779,28 +761,6 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Swap Minds"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0adc5e3e-d6e9-4b28-8bda-8a8f58157d90"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Primary Click"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""63cbb85f-4adc-474a-aba1-26a9c11d983c"",
-                    ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Secondary Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1078,7 +1038,7 @@ namespace SS3D.Systems.Inputs
                 {
                     ""name"": ""AimGun"",
                     ""type"": ""Button"",
-                    ""id"": ""ef9edcc5-d3be-4f6f-9d69-9891176ec460"",
+                    ""id"": ""df7c41e9-c886-4991-b0c8-f6f03c41e0de"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1121,12 +1081,40 @@ namespace SS3D.Systems.Inputs
                 },
                 {
                     ""name"": """",
-                    ""id"": ""bb00306e-3375-402b-ad69-a6c2387a7e5f"",
+                    ""id"": ""5f028c20-b6b1-47d0-8b4f-f7ceb40f85e7"",
                     ""path"": ""<Keyboard>/t"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""AimGun"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""GunFire"",
+            ""id"": ""40d1e174-0fc4-45aa-a1a5-ccb8d5ac03c1"",
+            ""actions"": [
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""a75d4f3a-9b77-459a-b414-b31b9fb2822c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4292cf28-5db8-4837-aefc-20a9133e9b10"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1165,8 +1153,6 @@ namespace SS3D.Systems.Inputs
             m_Other = asset.FindActionMap("Other", throwIfNotFound: true);
             m_Other_Fade = m_Other.FindAction("Fade", throwIfNotFound: true);
             m_Other_SwapMinds = m_Other.FindAction("Swap Minds", throwIfNotFound: true);
-            m_Other_PrimaryClick = m_Other.FindAction("Primary Click", throwIfNotFound: true);
-            m_Other_SecondaryClick = m_Other.FindAction("Secondary Click", throwIfNotFound: true);
             m_Other_ToggleMenu = m_Other.FindAction("Toggle Menu", throwIfNotFound: true);
             m_Other_SpawnCans = m_Other.FindAction("Spawn Cans", throwIfNotFound: true);
             m_Other_ToggleRuntimeEditor = m_Other.FindAction("Toggle Runtime Editor", throwIfNotFound: true);
@@ -1190,6 +1176,9 @@ namespace SS3D.Systems.Inputs
             m_Interactions_ViewInteractions = m_Interactions.FindAction("View Interactions", throwIfNotFound: true);
             m_Interactions_AimThrow = m_Interactions.FindAction("AimThrow", throwIfNotFound: true);
             m_Interactions_AimGun = m_Interactions.FindAction("AimGun", throwIfNotFound: true);
+            // GunFire
+            m_GunFire = asset.FindActionMap("GunFire", throwIfNotFound: true);
+            m_GunFire_Fire = m_GunFire.FindAction("Fire", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -1549,8 +1538,6 @@ namespace SS3D.Systems.Inputs
         private List<IOtherActions> m_OtherActionsCallbackInterfaces = new List<IOtherActions>();
         private readonly InputAction m_Other_Fade;
         private readonly InputAction m_Other_SwapMinds;
-        private readonly InputAction m_Other_PrimaryClick;
-        private readonly InputAction m_Other_SecondaryClick;
         private readonly InputAction m_Other_ToggleMenu;
         private readonly InputAction m_Other_SpawnCans;
         private readonly InputAction m_Other_ToggleRuntimeEditor;
@@ -1566,8 +1553,6 @@ namespace SS3D.Systems.Inputs
             public OtherActions(@Controls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Fade => m_Wrapper.m_Other_Fade;
             public InputAction @SwapMinds => m_Wrapper.m_Other_SwapMinds;
-            public InputAction @PrimaryClick => m_Wrapper.m_Other_PrimaryClick;
-            public InputAction @SecondaryClick => m_Wrapper.m_Other_SecondaryClick;
             public InputAction @ToggleMenu => m_Wrapper.m_Other_ToggleMenu;
             public InputAction @SpawnCans => m_Wrapper.m_Other_SpawnCans;
             public InputAction @ToggleRuntimeEditor => m_Wrapper.m_Other_ToggleRuntimeEditor;
@@ -1592,12 +1577,6 @@ namespace SS3D.Systems.Inputs
                 @SwapMinds.started += instance.OnSwapMinds;
                 @SwapMinds.performed += instance.OnSwapMinds;
                 @SwapMinds.canceled += instance.OnSwapMinds;
-                @PrimaryClick.started += instance.OnPrimaryClick;
-                @PrimaryClick.performed += instance.OnPrimaryClick;
-                @PrimaryClick.canceled += instance.OnPrimaryClick;
-                @SecondaryClick.started += instance.OnSecondaryClick;
-                @SecondaryClick.performed += instance.OnSecondaryClick;
-                @SecondaryClick.canceled += instance.OnSecondaryClick;
                 @ToggleMenu.started += instance.OnToggleMenu;
                 @ToggleMenu.performed += instance.OnToggleMenu;
                 @ToggleMenu.canceled += instance.OnToggleMenu;
@@ -1635,12 +1614,6 @@ namespace SS3D.Systems.Inputs
                 @SwapMinds.started -= instance.OnSwapMinds;
                 @SwapMinds.performed -= instance.OnSwapMinds;
                 @SwapMinds.canceled -= instance.OnSwapMinds;
-                @PrimaryClick.started -= instance.OnPrimaryClick;
-                @PrimaryClick.performed -= instance.OnPrimaryClick;
-                @PrimaryClick.canceled -= instance.OnPrimaryClick;
-                @SecondaryClick.started -= instance.OnSecondaryClick;
-                @SecondaryClick.performed -= instance.OnSecondaryClick;
-                @SecondaryClick.canceled -= instance.OnSecondaryClick;
                 @ToggleMenu.started -= instance.OnToggleMenu;
                 @ToggleMenu.performed -= instance.OnToggleMenu;
                 @ToggleMenu.canceled -= instance.OnToggleMenu;
@@ -1841,6 +1814,52 @@ namespace SS3D.Systems.Inputs
             }
         }
         public InteractionsActions @Interactions => new InteractionsActions(this);
+
+        // GunFire
+        private readonly InputActionMap m_GunFire;
+        private List<IGunFireActions> m_GunFireActionsCallbackInterfaces = new List<IGunFireActions>();
+        private readonly InputAction m_GunFire_Fire;
+        public struct GunFireActions
+        {
+            private @Controls m_Wrapper;
+            public GunFireActions(@Controls wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Fire => m_Wrapper.m_GunFire_Fire;
+            public InputActionMap Get() { return m_Wrapper.m_GunFire; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(GunFireActions set) { return set.Get(); }
+            public void AddCallbacks(IGunFireActions instance)
+            {
+                if (instance == null || m_Wrapper.m_GunFireActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_GunFireActionsCallbackInterfaces.Add(instance);
+                @Fire.started += instance.OnFire;
+                @Fire.performed += instance.OnFire;
+                @Fire.canceled += instance.OnFire;
+            }
+
+            private void UnregisterCallbacks(IGunFireActions instance)
+            {
+                @Fire.started -= instance.OnFire;
+                @Fire.performed -= instance.OnFire;
+                @Fire.canceled -= instance.OnFire;
+            }
+
+            public void RemoveCallbacks(IGunFireActions instance)
+            {
+                if (m_Wrapper.m_GunFireActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            public void SetCallbacks(IGunFireActions instance)
+            {
+                foreach (var item in m_Wrapper.m_GunFireActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_GunFireActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        public GunFireActions @GunFire => new GunFireActions(this);
         public interface ICameraActions
         {
             void OnZoom(InputAction.CallbackContext context);
@@ -1875,8 +1894,6 @@ namespace SS3D.Systems.Inputs
         {
             void OnFade(InputAction.CallbackContext context);
             void OnSwapMinds(InputAction.CallbackContext context);
-            void OnPrimaryClick(InputAction.CallbackContext context);
-            void OnSecondaryClick(InputAction.CallbackContext context);
             void OnToggleMenu(InputAction.CallbackContext context);
             void OnSpawnCans(InputAction.CallbackContext context);
             void OnToggleRuntimeEditor(InputAction.CallbackContext context);
@@ -1902,6 +1919,10 @@ namespace SS3D.Systems.Inputs
             void OnViewInteractions(InputAction.CallbackContext context);
             void OnAimThrow(InputAction.CallbackContext context);
             void OnAimGun(InputAction.CallbackContext context);
+        }
+        public interface IGunFireActions
+        {
+            void OnFire(InputAction.CallbackContext context);
         }
     }
 }

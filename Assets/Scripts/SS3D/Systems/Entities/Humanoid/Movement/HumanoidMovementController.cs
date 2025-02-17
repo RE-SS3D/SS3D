@@ -116,7 +116,6 @@ namespace SS3D.Systems.Entities.Humanoid
             if (_positionController.Movement == MovementType.Aiming)
             {
                 ComputeAngleBetweenAimAndInput();
-                UpdateAimTargetPosition();
             }
         }
 
@@ -239,19 +238,6 @@ namespace SS3D.Systems.Entities.Humanoid
             Vector2 targetMove = new Vector2(TargetMovement.x, TargetMovement.z);
 
             InputAimAngle = Vector2.SignedAngle(targetMove, forward);
-        }
-
-        [Client]
-        private void UpdateAimTargetPosition()
-        {
-            // Cast a ray from the mouse position into the scene
-            Ray ray = _camera.Camera.ScreenPointToRay(Input.mousePosition);
-
-            // Check if the ray hits any collider
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                AimTarget.position = hit.point;
-            }
         }
 
         [Client]

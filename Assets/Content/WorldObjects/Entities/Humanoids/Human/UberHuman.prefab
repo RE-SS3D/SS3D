@@ -6943,6 +6943,9 @@ MonoBehaviour:
   _hands: {fileID: 3222345056416986628}
   _movementController: {fileID: 1215874948772008144}
   _bodyAimRig: {fileID: 4182499762659887119}
+  _positionController: {fileID: 7568747683536695618}
+  _aimTarget: {fileID: 2856800849451305125}
+  _camera: {fileID: 0}
   _isAimingToThrow: 0
   _isAimingToShoot: 0
 --- !u!114 &3215593588628414307
@@ -7171,7 +7174,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4143347047393803727}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.9273558, y: 1.3891778, z: 1.8002006}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11640,7 +11643,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8105151679370853076}
   m_LocalRotation: {x: 0.70356977, y: 0.006053881, z: 2.910383e-11, w: 0.7106004}
-  m_LocalPosition: {x: 2.0061848, y: -1.0835687, z: -1.862}
+  m_LocalPosition: {x: 0.145, y: 0.283, z: -0.004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12710,7 +12713,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8937338257042491703}
   m_LocalRotation: {x: 0.7035764, y: 0.006096695, z: -2.910383e-10, w: 0.7105935}
-  m_LocalPosition: {x: 1.8461, y: -1.0835686, z: -1.826}
+  m_LocalPosition: {x: -0.128, y: 0.294, z: -0.002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
