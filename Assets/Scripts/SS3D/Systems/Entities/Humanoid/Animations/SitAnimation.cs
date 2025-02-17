@@ -19,7 +19,7 @@ namespace SS3D.Systems.Animations
         public SitAnimation(float interactionTime, ProceduralAnimationController controller, NetworkObject sit)
             : base(interactionTime, controller)
         {
-            _sit = sit.GetComponent<Sittable>();
+            _sit = sit.GetComponentInChildren<Sittable>();
         }
 
         public override void ClientPlay()

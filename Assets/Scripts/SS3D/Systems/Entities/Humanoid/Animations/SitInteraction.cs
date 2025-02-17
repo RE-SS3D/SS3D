@@ -56,7 +56,7 @@ namespace SS3D.Systems.Animations
                 return false;
             }
 
-            hand.GetComponentInParent<ProceduralAnimationController>().PlayAnimation(InteractionType.Sit, hand, sit.GetComponent<NetworkObject>(), interactionEvent.Point, TimeToSit);
+            hand.GetComponentInParent<ProceduralAnimationController>().PlayAnimation(InteractionType.Sit, hand, sit.NetworkObject, interactionEvent.Point, TimeToSit);
             return false;
         }
 
