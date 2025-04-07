@@ -17,5 +17,5 @@ MonoBehaviour:
   NetworkType: 2
   _ckey: unknown
   ServerAddress: 127.0.0.1
-  ServerPort: 8616
+  ServerPort: 7412
   EnableNetworkBandwidthUsageStats: 1
