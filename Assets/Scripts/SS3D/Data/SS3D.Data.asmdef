@@ -14,7 +14,8 @@
         "Unity.ResourceManager",
         "UniTask",
         "Unity.InputSystem",
-        "Unity.Addressables.Editor"
+        "Unity.Addressables.Editor",
+        "ParrelSync"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

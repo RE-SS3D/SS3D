@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 1629795439574854430}
   - component: {fileID: 5067584742411346480}
   - component: {fileID: -8219830496143806192}
+  - component: {fileID: 7778212894035129079}
   m_Layer: 10
   m_Name: TruckerCap
   m_TagString: Untagged
@@ -294,3 +295,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 45802588ca951fc428487d7ad458a959, type: 2}
+--- !u!114 &7778212894035129079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601952054522247362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -1921154974467191097}
+  _networkObjectCache: {fileID: 0}

@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: IDCard
   m_EditorClassIdentifier: 
+  LocalizationTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:679d905fa8ed8324e9b852762c337b0d
   NameKey: ID Card
   DescriptionKey: A standard issue ID card.

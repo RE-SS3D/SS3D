@@ -1,4 +1,4 @@
-using SS3D.Attributes;
+﻿using SS3D.Attributes;
 using SS3D.Systems.Tile;
 using System;
 using System.Collections;
@@ -19,7 +19,6 @@ namespace AssetAudit
         private const string SceneSearchTerm = "t:scene";
         private const string TileObjectSoSearchTerm = "t:TileObjectSo";
         private const string ItemObjectSoSearchTerm = "t:ItemObjectSo";
-
 
         public static GameObject[] AllPrefabs()
         {
@@ -48,7 +47,7 @@ namespace AssetAudit
         /// <param name="searchCriteria">Search criteria for the AssetDatabase.FindAssets() method.</param>
         /// <param name="searchPath">Root path to search in. Will default to assets.</param>
         /// <returns>An array of type T containing all instances within the desired search path.</returns>
-        private static T[] GetAssets<T>(string searchCriteria, string searchPath = GenericRootPath) where T : UnityEngine.Object
+        public static T[] GetAssets<T>(string searchCriteria, string searchPath = GenericRootPath) where T : UnityEngine.Object
         {
             // Find all the assets in the project hierarchy (i.e. NOT in a scene)
             string[] guids = AssetDatabase.FindAssets(searchCriteria, new[] { searchPath });

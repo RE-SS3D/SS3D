@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: d2a66e9e1fb4a534da0ec381c31605b4, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 118901084160
+    m_Localized: Server Info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123401572352
+    m_Localized: Chat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 127222583296
+    m_Localized: Players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 131584659456
+    m_Localized: Server Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134877188096
+    m_Localized: Game Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40840714948608
+    m_Localized: <sprite name="banana"> Insert server name <sprite name="banana">
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401212651245568
+    m_Localized: <sprite name="approve"> ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401253960945664
+    m_Localized: Observe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401291999088640
+    m_Localized: Admin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401583121534976
+    m_Localized: <sprite name="embark"> embark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404904863502336
+    m_Localized: <sprite name="deny"> not ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410219415769088
+    m_Localized: <sprite name="pc"> round state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410593673515008
+    m_Localized: <sprite name="approve"> start round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410645397671936
+    m_Localized: <sprite name="deny"> stop round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410727601836032
+    m_Localized: Character name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410784623398912
+    m_Localized: user interface
+    m_Metadata:
+      m_Items: []
+  - m_Id: 725627855343616
+    m_Localized: show ui
+    m_Metadata:
+      m_Items: []
+  - m_Id: 734609462431744
+    m_Localized: <sprite name="banana"> admin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740893582594048
+    m_Localized: Stopped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740976793391104
+    m_Localized: Preparing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740978609524736
+    m_Localized: Warming Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740980304023552
+    m_Localized: Ongoing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740982044659712
+    m_Localized: Ending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741247078535168
+    m_Localized: Ended
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

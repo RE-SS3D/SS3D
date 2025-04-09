@@ -197,9 +197,10 @@ namespace SS3D.Systems.Tile
         }
 
         public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
-            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency)
+            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo)
         {
             bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            placedObjectGo = null;
 
             if (canBuild || skipBuildCheck)
             {
@@ -225,7 +226,8 @@ namespace SS3D.Systems.Tile
                 if (!skipAdjacency){
                     placedObject.UpdateAdjacencies();
                 }
-               
+
+                placedObjectGo = placedObject.gameObject;
             }
 
             return canBuild;
@@ -387,7 +389,7 @@ namespace SS3D.Systems.Tile
                         Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
 
                         // Skipping build check here to allow loading tile objects in a non-valid order
-                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true);
+                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true, out GameObject placedObject);
                     }
                 }
             }

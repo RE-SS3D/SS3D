@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Tiles Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Tiles
+  m_TableCollectionNameGuidString: c2d3dd9ea24a44444a91fe8467ebb1c1
+  m_Entries:
+  - m_Id: 22363711115264
+    m_Key: civilian_airlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22567189385216
+    m_Key: civilian_airlock_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23008853790720
+    m_Key: steel_wall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23069444706304
+    m_Key: steel_wall_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57101507268608
+    m_Key: cables
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57126589206528
+    m_Key: cables_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57759010557952
+    m_Key: plenum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57761925599232
+    m_Key: plenum_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58474869198848
+    m_Key: atmos_pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58480611201024
+    m_Key: atmos_pipe_1_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59135090397184
+    m_Key: atmos_pipe_2_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59146196914176
+    m_Key: atmos_pipe_3_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59219144249344
+    m_Key: atmos_pipe_4_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60957800697856
+    m_Key: smes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60960057233408
+    m_Key: smes_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61427235590144
+    m_Key: floor_tile_grey
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61429332742144
+    m_Key: floor_tile_grey_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62172483719168
+    m_Key: disposal_pipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62175742693376
+    m_Key: disposal_pipe_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62674856480768
+    m_Key: disposal_bin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62676416761856
+    m_Key: disposal_bin_desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1882488387670638616
+  references:
+    version: 2
+    RefIds:
+    - rid: 1882488387670638616
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1723285265175

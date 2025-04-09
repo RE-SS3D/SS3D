@@ -24,7 +24,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Verbose(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[]{infoLog}.Concat(propertyValues).ToArray();
+            object[] properties = new object[]{infoLog}.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Verbose("{InfoLog}" + messageTemplate, properties);
         }
 
@@ -40,7 +40,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Verbose(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Verbose(exception,"{InfoLog}" + messageTemplate, properties);
         }
 
@@ -55,7 +55,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Debug(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Debug("{InfoLog}" + messageTemplate, properties);
         }
 
@@ -70,7 +70,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Debug(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Debug(exception, "{InfoLog}" + messageTemplate, properties);
         }
 
@@ -85,7 +85,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Information(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Information("{InfoLog}" + messageTemplate, properties);
         }
 
@@ -100,7 +100,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Information(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Debug(exception, "{InfoLog}" + messageTemplate, properties);
         }
 
@@ -115,7 +115,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Warning(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Warning("{InfoLog}" + messageTemplate, properties);
         }
 
@@ -130,7 +130,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Warning(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Debug(exception, "{InfoLog}" + messageTemplate, properties);
         }
 
@@ -145,7 +145,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Error(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Error("{InfoLog}" + messageTemplate, properties);
         }
 
@@ -160,7 +160,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Error(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Error(exception, "{InfoLog}" + messageTemplate, properties);
         }
 
@@ -175,7 +175,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Fatal(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Fatal("{InfoLog}" + messageTemplate, properties);
         }
 
@@ -190,7 +190,7 @@ namespace SS3D.Logging
         /// </example>
         public static void Fatal(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name).Fatal(exception, "{InfoLog}" + messageTemplate, properties);
         }
         

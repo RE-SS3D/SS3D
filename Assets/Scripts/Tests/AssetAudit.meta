@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: fd1416804fd837343b21146f242fb105
+<<<<<<<< HEAD:Assets/Scripts/External/QuickGraph.meta
+guid: ed1436d749d4ba04ea0feabc81b644f5
+========
+guid: 3ee16513138959b40857a827e11dd4a8
+>>>>>>>> 38d64305 (Revert code changes and add code linting back):Assets/Scripts/Tests/AssetAudit.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

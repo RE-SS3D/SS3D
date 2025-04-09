@@ -20,7 +20,7 @@ namespace SS3D.Systems.Inventory.Items
             float distance = Vector3.Distance(item.transform.position, position);
             position = distance > 0 ? position + new Vector3(0, itemSize * 0.5f, 0) : position;
 
-            if (distance > 0)
+            if (lookTarget && distance > 0)
             {
                 item.transform.LookAt(lookTarget);
             }

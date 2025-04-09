@@ -7,6 +7,7 @@ namespace SS3D.Data.Generated
     {
         public static DatabaseAsset AttackParticles = new DatabaseAsset("AttackParticles", "ParticlesEffects");
         public static DatabaseAsset BleedingParticle = new DatabaseAsset("BleedingParticle", "ParticlesEffects");
+        public static DatabaseAsset ConstructionParticle = new DatabaseAsset("ConstructionParticle", "ParticlesEffects");
     }
 }
 

@@ -1,11 +1,15 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Tables;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 using RoundTickUpdated = SS3D.Systems.Rounds.Events.RoundTickUpdated;
 
@@ -22,12 +26,30 @@ namespace SS3D.Systems.Lobby.UI
 
         private int _seconds;
         private RoundState _roundState;
+        [SerializeField] private LocalizedStringTable _localizedStringTable;
+        private StringTable _currentStringTable;
+
+        public void UpdateLocalization()
+        {
+            StartCoroutine(LoadStringTable());
+        }
 
         protected override void OnAwake()
         {
             base.OnAwake();
-
             AddEventListeners();
+            StartCoroutine(LoadStringTable());
+        }
+
+        private IEnumerator LoadStringTable()
+        {
+            AsyncOperationHandle<StringTable> tableLoading = _localizedStringTable.GetTableAsync();
+            while (!tableLoading.IsDone)
+            {
+                yield return null;
+            }
+
+            _currentStringTable = tableLoading.Result;
             UpdateRoundCountDownText();
         }
 
@@ -53,7 +75,8 @@ namespace SS3D.Systems.Lobby.UI
 
         private void UpdateRoundCountDownText()
         {
-            _roundCountdownText.text = $"{_roundState} - {_seconds}";
+            string localized = _currentStringTable[_roundState.ToString()].LocalizedValue.Trim();
+            _roundCountdownText.text = localized + " - " + _seconds;
         }
     }
 }

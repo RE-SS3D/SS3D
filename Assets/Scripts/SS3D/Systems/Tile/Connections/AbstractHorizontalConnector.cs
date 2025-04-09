@@ -5,6 +5,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,8 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         public abstract bool IsConnected(PlacedTileObject neighbourObject);
 
+        public EventHandler<MeshDirectionInfo> OnMeshUpdate;
+
 
         public override void OnStartClient()
         {
@@ -92,7 +95,7 @@ namespace SS3D.Systems.Tile.Connections
                 _adjacencyMap = new AdjacencyMap();
                 _filter = GetComponent<MeshFilter>();
 
-                _placedObject = GetComponent<PlacedTileObject>();
+                _placedObject = GetComponentInParent<PlacedTileObject>();
                 if (_placedObject == null)
                 {
                     _genericType = TileObjectGenericType.None;
@@ -187,6 +190,8 @@ namespace SS3D.Systems.Tile.Connections
             localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
 
             transform.localRotation = localRotation;
+
+            OnMeshUpdate?.Invoke(this, info);
         }
 
         /// <summary>

@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: -1808419688812875912}
   - component: {fileID: 8613419490928921116}
   - component: {fileID: 2689380027240677461}
+  - component: {fileID: 7692858249744895666}
   m_Layer: 10
   m_Name: BikeHorn
   m_TagString: Untagged
@@ -401,3 +402,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 71368b829dabc4042bc1ed56eb8afecf, type: 2}
+--- !u!114 &7692858249744895666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 4819234911439508660}
+  _networkObjectCache: {fileID: 0}

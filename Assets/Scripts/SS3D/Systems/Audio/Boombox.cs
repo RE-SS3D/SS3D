@@ -4,6 +4,7 @@ using SS3D.Interactions;
 using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Core;
+using System.Electricity;
 using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio
@@ -14,11 +15,13 @@ namespace SS3D.Systems.Audio
     public class Boombox : InteractionTargetNetworkBehaviour, IToggleable
     {
         [SerializeField]
+        private MachinePowerConsumer _powerConsumer;
+        
+        [SerializeField]
         private List<AudioClip> _songs;
 
-        // is it playing music
         [SyncVar]
-        public bool RadioOn;
+        public bool AudioOn;
 
         [SyncVar]
         public int CurrentMusic;
@@ -27,33 +30,65 @@ namespace SS3D.Systems.Audio
         public Sprite InteractionIcon;
         public Sprite InteractionIconOn;
 
+        public bool GetState()
+        {
+            return AudioOn;
+        }
+        
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            
+            _powerConsumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
+        }
+
         public void Toggle()
         {
-            RadioOn = !RadioOn;
-            if (!RadioOn)
+            if (_powerConsumer.PowerStatus != PowerStatus.Powered)
             {
-
-                Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
+                return;
             }
-            else
+            
+            AudioOn = !AudioOn;
+            _powerConsumer.isIdle = !AudioOn;
+            
+            if (AudioOn)
             {
                 Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject,
                     false, 0.7f, 1, 1, 5);
+            }
+            else
+            {
+                Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
+            }
+        }
+
+        private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)
+        {
+            UpdateMusic(newStatus);
+        }
+
+        private void UpdateMusic(PowerStatus powerStatus)
+        {
+            if (AudioOn && powerStatus != PowerStatus.Powered)
+            {
+                AudioOn = false;
+                Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
             }
         }
 
         public void ChangeCurrentMusic()
         {
+            if (!AudioOn)
+            {
+                return;
+            }
+            
             Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
             Subsystems.Get<AudioSystem>().SetTimeAudioSource(NetworkObject, 0f);
             CurrentMusic = (CurrentMusic + 1) % (_songs.Count);
             Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject,
                 false, 0.7f, 1, 1, 5);
-        }
-
-        public bool GetState()
-        {
-            return RadioOn;
         }
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)

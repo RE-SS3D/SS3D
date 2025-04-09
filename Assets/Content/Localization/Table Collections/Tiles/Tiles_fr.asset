@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Tiles_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: c2d3dd9ea24a44444a91fe8467ebb1c1, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 23008853790720
+    m_Localized: Mur en acier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23069444706304
+    m_Localized: Un mur en acier solide.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57101507268608
+    m_Localized: "\rC\xE2bles"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57126589206528
+    m_Localized: "C\xE2bles \xE9lectriques de grande puissance."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57761925599232
+    m_Localized: "La base structurelle du plancher qui abrite \xE9galement des tuyaux
+      et des fils."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57759010557952
+    m_Localized: Plenum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58474869198848
+    m_Localized: "Tuyau atmosph\xE9rique"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58480611201024
+    m_Localized: "\rUn tuyau atmosph\xE9rique positionn\xE9 sur la 1\xE8re couche."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59135090397184
+    m_Localized: "Un tuyau atmosph\xE9rique positionn\xE9 sur la 2\xE8me couche.\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59146196914176
+    m_Localized: "Un tuyau atmosph\xE9rique positionn\xE9 sur la 3\xE8me couche.\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59219144249344
+    m_Localized: "Un tuyau atmosph\xE9rique positionn\xE9 sur la 4\xE8me couche."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60957800697856
+    m_Localized: SMES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60960057233408
+    m_Localized: "Une grande unit\xE9 de stockage d\u2019\xE9nergie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61427235590144
+    m_Localized: "Carrelage Gris\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61429332742144
+    m_Localized: "Un carrelage gris g\xE9n\xE9rique.\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62172483719168
+    m_Localized: "Tuyau d'\xE9limination\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62175742693376
+    m_Localized: "Un tuyau d'\xE9vacuation.\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62674856480768
+    m_Localized: "Poubelle d'\xE9limination"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62676416761856
+    m_Localized: "En gros, une poubelle automatis\xE9e."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -45,7 +45,7 @@ jobs:
           details: ${{ steps.interpret-test-results.outputs.DISPLAY_STRING }}
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_TEST_RESULTS }}
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Test results

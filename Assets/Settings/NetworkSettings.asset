@@ -15,7 +15,7 @@ MonoBehaviour:
   _preload: 1
   _type: 2
   NetworkType: 2
-  Ckey: editorUser
+  _ckey: unknown
   ServerAddress: 127.0.0.1
-  ServerPort: 1151
+  ServerPort: 8616
   EnableNetworkBandwidthUsageStats: 1

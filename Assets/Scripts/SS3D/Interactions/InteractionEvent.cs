@@ -17,12 +17,17 @@ namespace SS3D.Interactions
         /// The point at which the interaction took place
         /// </summary>
         public Vector3 Point { get; }
+        /// <summary>
+        /// The normal angle at which the interacted surface is facing
+        /// </summary>
+        public Vector3 Normal { get; }
 
-        public InteractionEvent(IInteractionSource source, IInteractionTarget target, Vector3 point = new())
+        public InteractionEvent(IInteractionSource source, IInteractionTarget target, Vector3 point = new(), Vector3 normal = new())
         {
             Source = source;
             Target = target;
             Point = point;
+            Normal = normal;
         }
     }
 }

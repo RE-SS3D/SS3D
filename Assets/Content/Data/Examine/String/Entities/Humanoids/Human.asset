@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: Human
   m_EditorClassIdentifier: 
-  NameKey: Some guy
-  DescriptionKey: Yup. Thats some guy.
+  LocalizationTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:5efc696289c14204ea5472b3e853eea2
+  NameKey: human
+  DescriptionKey: human_desc

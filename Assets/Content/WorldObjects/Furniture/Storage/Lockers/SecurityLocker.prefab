@@ -181,6 +181,8 @@ GameObject:
   - component: {fileID: 3298710121668139635}
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7727612398117917681}
+  - component: {fileID: -802098285113866164}
+  - component: {fileID: 5133152519004721145}
   m_Layer: 0
   m_Name: SecurityLocker
   m_TagString: Untagged
@@ -236,8 +238,12 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  Locked: 0
+  IsLocked: 0
+  IsOpen: 0
+  _lockable: 1
   permissionToUnlock: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  _door: {fileID: 4547560682629165049}
+  _doorChangePunch: {x: -0.1, y: -0.05, z: 0}
   LockLight: {fileID: 4459199731998976186}
 --- !u!114 &3298710121668139635
 MonoBehaviour:

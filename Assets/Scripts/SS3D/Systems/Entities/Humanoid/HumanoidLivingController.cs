@@ -25,6 +25,10 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private StaminaController _staminaController;
 		[SerializeField] private FeetController _feetController;
 
+        public bool IsDragging { get; set; }
+
+
+
 		public override void OnStartClient()
         {
             base.OnStartClient();
@@ -46,7 +50,7 @@ namespace SS3D.Systems.Entities.Humanoid
             if (Input.magnitude != 0)
             {
                 MoveMovementTarget(Input);
-                RotatePlayerToMovement();
+                if(!IsDragging) RotatePlayerToMovement();
                 MovePlayer();
             }
             else

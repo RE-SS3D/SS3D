@@ -9,7 +9,8 @@
         "SS3D.Systems",
         "SS3D.Data",
         "Coimbra",
-        "SS3D.Logging"
+        "SS3D.Logging",
+        "Unity.Localization"
     ],
     "includePlatforms": [
         "Editor"

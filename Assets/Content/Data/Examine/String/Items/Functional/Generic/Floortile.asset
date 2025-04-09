@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: Floortile
   m_EditorClassIdentifier: 
-  NameKey: Grey Floortile
-  DescriptionKey: A generic grey floortile.
+  LocalizationTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
+  NameKey: floor_tile_grey
+  DescriptionKey: floor_tile_grey_desc

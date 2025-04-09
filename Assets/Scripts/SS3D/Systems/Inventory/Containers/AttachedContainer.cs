@@ -1,4 +1,5 @@
-﻿using SS3D.Core.Behaviours;
+﻿using FishNet.Component.Transforming;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
 using System;
@@ -269,8 +270,16 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            if(changeType == ContainerChangeType.Remove)
+            if (changeType == ContainerChangeType.Add && newItem.Item.TryGetComponent(out NetworkTransform networkTransform))
             {
+                 networkTransform.SetSynchronizePosition(false);
+                 networkTransform.SetSynchronizeRotation(false);
+            }
+
+            if (changeType == ContainerChangeType.Remove && oldItem.Item.TryGetComponent(out NetworkTransform networkTransform2))
+            {
+                networkTransform2.SetSynchronizePosition(true);
+                networkTransform2.SetSynchronizeRotation(true);
                 //Punpun.Information(this, "from container " + this.gameObject + ", removing item" + oldItem.Item?.name);
             }
 
@@ -336,9 +345,9 @@ namespace SS3D.Systems.Inventory.Containers
 		public bool AddItem(Item item)
 		{
 			// TODO: Use a more efficient algorithm
-			for (int y = 0; y <= Size.y; y++)
+			for (int y = 0; y < Size.y; y++)
 			{
-				for (int x = 0; x <= Size.x; x++)
+				for (int x = 0; x < Size.x; x++)
 				{
 					Vector2Int itemPosition = new Vector2Int(x, y);
 					if (AddItemPosition(item, itemPosition))
@@ -377,8 +386,33 @@ namespace SS3D.Systems.Inventory.Containers
 		/// <param name="newItem"> the item to store.</param>
 		private bool AddStoredItem(StoredItem newItem)
 		{
-            if (!CanContainItem(newItem.Item)) return false;
-            if (newItem.Item.Container != null && newItem.Item.Container != this) return false;
+            // Fail if attempted storage position is out of bounds
+            if (newItem.Position.x >= Size.x || newItem.Position.y >= Size.y)
+            {
+                return false;
+            }
+            
+            if (newItem.Position.x < 0 || newItem.Position.y < 0)
+            {
+                return false;
+            }
+
+            // Fail if item is at this postion
+            if (ItemAt(newItem.Position))
+            {
+                return false;
+            }
+
+            if (!CanContainItem(newItem.Item))
+            {
+                return false;
+            }
+
+            // Fail if it is the same container
+            if (ReferenceEquals(newItem.Item.Container, this))
+            {
+                return false;
+            }
 
             if (FindItem(newItem.Item, out int itemIndex))
             {

@@ -70,7 +70,7 @@ public class AssetGrid : Actor
         foreach (GenericObjectSo asset in _objectDatabase)
         {
             if (!asset.name.Contains(text, StringComparison.OrdinalIgnoreCase)) continue;
-            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<AssetSlot>().Setup(asset);
+            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<ConstructionSlot>().Setup(asset);
         }
     }
 
@@ -90,7 +90,7 @@ public class AssetGrid : Actor
                 case false when asset is TileObjectSo so && !allowedLayers.Contains(so.layer):
                     continue;
             }
-            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<AssetSlot>().Setup(asset);
+            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<ConstructionSlot>().Setup(asset);
         }
     }
 

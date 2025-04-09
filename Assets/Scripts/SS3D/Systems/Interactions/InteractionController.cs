@@ -177,7 +177,7 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            InteractionEvent interactionEvent = new(source, null);
+            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
 
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
@@ -277,15 +277,17 @@ namespace SS3D.Systems.Interactions
 
             // Raycast to find target game object
             Vector3 point = Vector3.zero;
+            Vector3 normal = Vector3.zero;
             bool raycast = Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, _selectionMask, QueryTriggerInteraction.Ignore);
             if (raycast)
             {
                 point = hit.point;
+                normal = hit.normal;
                 GameObject target = hit.transform.gameObject;
                 targets = GetTargetsFromGameObject(source, target);
             }
 
-            interactionEvent = new InteractionEvent(source, targets[0], point);
+            interactionEvent = new InteractionEvent(source, targets[0], point, normal);
 
             return GetInteractionsFromTargets(source, targets, interactionEvent);
         }
@@ -365,11 +367,12 @@ namespace SS3D.Systems.Interactions
         }
 
         [ServerRpc]
-        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string interactionName)
+        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject,  int index, string interactionName)
         {
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, null);
+            InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
+
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
 
             // TODO: Validate access to inventory

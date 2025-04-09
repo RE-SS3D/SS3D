@@ -1,8 +1,11 @@
 ﻿using Coimbra;
-using SS3D.Core.Settings;
 using SS3D.Data;
 using SS3D.Logging;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
 
 namespace SS3D.Networking.Settings
 {
@@ -26,7 +29,8 @@ namespace SS3D.Networking.Settings
 		/// TODO: Update this when we have an API.
 		/// Defined via command line args when in a built executable or the EditorServerCkey when in the Editor.
 		/// </summary>
-		public string Ckey = "unknown";
+		[SerializeField]
+		private string _ckey = "unknown";
 
 		/// <summary>
 		/// The server address used when we start connecting to a server.
@@ -46,6 +50,17 @@ namespace SS3D.Networking.Settings
 		[Header("Debug Settings")]
 		public bool EnableNetworkBandwidthUsageStats;
 
+        public string Ckey
+        {
+            get =>
+                #if UNITY_EDITOR
+                ClonesManager.IsClone() ? _ckey + ClonesManager.CloneNameSuffix : _ckey;
+                #else 
+                _ckey;
+                #endif
+            set => _ckey = value;
+        }
+
 		/// <summary>
 		/// Resets the configurations to what a Client should initially be like, then we load it from the JSON file, followed by the overrides from the command line args.
 		/// </summary>
@@ -57,8 +72,8 @@ namespace SS3D.Networking.Settings
 
 			networkSettings.NetworkType = NetworkType.Client;
 			networkSettings.ServerAddress = string.Empty;
-			networkSettings.Ckey = string.Empty;
+			networkSettings._ckey = string.Empty;
 			networkSettings.ServerPort = ushort.MinValue;
 		}
-	}
+    }
 }

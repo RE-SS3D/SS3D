@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Shared
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-Assets-Shared
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 0845bc1364d2a5c48879b30d64694686
+  m_SerializeEntries:
+  - m_GUID: c2d3dd9ea24a44444a91fe8467ebb1c1
+    m_Address: Assets/Content/Localization/Table Collections/Tiles/Tiles Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+  - m_GUID: 679d905fa8ed8324e9b852762c337b0d
+    m_Address: Assets/Content/Localization/Table Collections/Items/Items Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+  - m_GUID: 5efc696289c14204ea5472b3e853eea2
+    m_Address: Assets/Content/Localization/Table Collections/Misc/Misc Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+  - m_GUID: d2a66e9e1fb4a534da0ec381c31605b4
+    m_Address: Assets/Content/Localization/Table Collections/UI/UI Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+  - m_GUID: f48ea5726d8e4fb49ac2227f47706a46
+    m_Address: Assets/Content/Localization/Table Collections/Font/Font Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+  - m_GUID: 8f586378b4e144a9851e7b34d9b748ee
+    m_Address: LiberationSans SDF
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    - Locale-pt-BR
+    - Locale-ru-RU
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 8d49ebce0846abf4d8af4240ddaf8d78, type: 2}
+    - {fileID: 11400000, guid: 858e79ad49c95f8448510f3d422c8d56, type: 2}

@@ -1,11 +1,14 @@
 ﻿using FishNet;
 using FishNet.Object;
+using SS3D.Attributes;
 using SS3D.Core;
+using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using math = SS3D.Utils.MathUtility;
 
@@ -14,7 +17,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Component that is added to every tile object that is part of the tilemap. Tiles are more restrictive and need to have an origin, fixed grid position and direction to face.
     /// </summary>
-    public class PlacedTileObject: NetworkBehaviour
+    public class PlacedTileObject: NetworkBehaviour, IWorldObjectAsset
     {
         /// <summary>
         /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. 
@@ -52,15 +55,18 @@ namespace SS3D.Systems.Tile
             return placedObject;
         }
 
-        /// <summary>
-        /// Returns a new SaveObject for use in saving/loading.
-        /// </summary>
-        /// <returns></returns>
-        
+        [SerializeField]
+#if UNITY_EDITOR
+        [ReadOnly]
+        [Header("This field is filled automatically by the AssetData system.")]
+#endif
+        private WorldObjectAssetReference _asset;
 
+        [SerializeField]
         private TileObjectSo _tileObjectSo;
         private Vector2Int _origin;
         private Direction _dir;
+
         private IAdjacencyConnector _connector;
         private Vector2Int _worldOrigin;
 
@@ -84,8 +90,22 @@ namespace SS3D.Systems.Tile
 
         public string NameString => _tileObjectSo.NameString;
 
+        public TileObjectSo tileObjectSO => _tileObjectSo;
+
         public bool HasAdjacencyConnector => _connector != null;
 
+        public WorldObjectAssetReference Asset
+        {
+            get => _asset;
+            set
+            {
+                if (UnityEngine.Application.isPlaying)
+                {
+                    Serilog.Log.Warning($"Field {nameof(Asset)} is being modified in runtime. This should not happen in normal conditions.");
+                }
+                _asset = value;
+            }
+        }
         public IAdjacencyConnector Connector => _connector;
 
         /// <summary>

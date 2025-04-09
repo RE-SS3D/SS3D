@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: AtmosPipesL2
   m_EditorClassIdentifier: 
-  NameKey: Atmospheric Pipe
-  DescriptionKey: An atmospheric pipe positioned on the 2nd layer.
+  LocalizationTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
+  NameKey: atmos_pipe
+  DescriptionKey: atmos_pipe_2_desc

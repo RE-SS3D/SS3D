@@ -238,8 +238,12 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  Locked: 0
+  IsLocked: 0
+  IsOpen: 0
+  _lockable: 1
   permissionToUnlock: {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
+  _door: {fileID: 4547560682629165049}
+  _doorChangePunch: {x: -0.1, y: -0.05, z: 0}
   LockLight: {fileID: 4199049305641312543}
 --- !u!114 &3298710121668139635
 MonoBehaviour:

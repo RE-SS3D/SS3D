@@ -9,6 +9,7 @@ using SS3D.Systems.Tile;
 using SS3D.Core;
 using System.Linq;
 using FishNet.Object;
+using SS3D.Systems.Tile.Connections;
 
 namespace System.Electricity
 {
@@ -111,7 +112,7 @@ namespace System.Electricity
             VerticeCoordinates deviceCoordinates = new ((short)tileObject.WorldOrigin.x, (short)tileObject.WorldOrigin.y,
                     (byte)tileObject.Layer, (byte)tileObject.Direction);
             _electricityGraph.AddVertex(deviceCoordinates);
-            List<PlacedTileObject> neighbours = tileObject.Connector.GetNeighbours();
+            List<PlacedTileObject> neighbours = tileObject.Connector?.GetNeighbours();
             foreach(PlacedTileObject neighbour in neighbours)
             {
                 VerticeCoordinates neighbourCoordinates = new ((short)neighbour.WorldOrigin.x, (short)neighbour.WorldOrigin.y,

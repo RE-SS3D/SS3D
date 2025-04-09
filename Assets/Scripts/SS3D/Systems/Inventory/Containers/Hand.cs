@@ -130,7 +130,7 @@ namespace SS3D.Systems.Inventory.Containers
             ItemInHand.GiveOwnership(null);
             Item item = ItemInHand;
             item.Container.RemoveItem(item);
-            ItemUtility.Place(item, position, rotation, transform);
+            ItemUtility.Place(item, position, rotation);
         }
 
         /// <summary>

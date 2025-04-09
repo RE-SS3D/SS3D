@@ -16,8 +16,10 @@ GameObject:
   - component: {fileID: 8905492951320375787}
   - component: {fileID: 3665146264900623842}
   - component: {fileID: 8086907785789700544}
+  - component: {fileID: 2921440247678111929}
+  - component: {fileID: -119891910764691591}
   m_Layer: 0
-  m_Name: VendorRobustSoftDrinks
+  m_Name: VendorRobustSoftdrinks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,6 +124,8 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 8905492951320375787}
+  - {fileID: 2921440247678111929}
+  - {fileID: -119891910764691591}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -133,7 +137,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 201
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -153,7 +157,22 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  _productToDispense: 3
+  _powerConsumer: {fileID: 2921440247678111929}
+  _productsToDispense:
+  - Product: {fileID: 11400000, guid: dd302b5636b41bb48ba3a2cdc72cc64c, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: a49cca9d10e0a3146aae1906542ea50a, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: e450161ce63de9045b97061a364533b1, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: 5c76cb2799458404db16e87cc1606975, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: 6ccd0b8aea90f5a489d73c02ccab3a98, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: be837baab1848a14d944ab050bfebc15, type: 2}
+    Stock: 10
+  - Product: {fileID: 11400000, guid: f5c190c5bf049bc429ca90309c334105, type: 2}
+    Stock: 10
   _dispensingTransform: {fileID: 5160227759105755511}
 --- !u!114 &3665146264900623842
 MonoBehaviour:
@@ -180,6 +199,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 47931fe5cd4465941b01da33ac091ef7, type: 2}
+--- !u!114 &2921440247678111929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea15f8a26dac4e4193bb75335cb9e9cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 1871071288925904272}
+  _networkObjectCache: {fileID: 1871071288925904272}
+  _powerConsumptionIdle: 0.5
+  _powerConsumptionInUse: 10
+  isIdle: 1
+  _powerStatus: 0
+--- !u!114 &-119891910764691591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 1871071288925904272}
+  _networkObjectCache: {fileID: 1871071288925904272}
 --- !u!1 &3671711954327816294
 GameObject:
   m_ObjectHideFlags: 0

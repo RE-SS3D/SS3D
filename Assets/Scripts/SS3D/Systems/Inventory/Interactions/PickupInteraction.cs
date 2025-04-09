@@ -33,13 +33,19 @@ namespace SS3D.Systems.Inventory.Interactions
             // and the part that matters, if the interaction source is a hand
             if (target is IGameObjectProvider targetBehaviour && source is Hand hand)
             {
-                // if the selected hand is not empty we return false
-                if (hand.IsEmpty())
-                {
-                    return true;
+                // check that the item is within range
+                bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
+                if (!isInRange) {
+                    return false;
                 }
 
-                // we try to get the Item component from the GameObject we just interacted with
+                // check that our hand is empty
+                if (!hand.IsEmpty())
+                {
+                    return false;
+                }
+
+                // try to get the Item component from the GameObject we just interacted with
                 // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
                 Item item = targetBehaviour.GameObject.GetComponent<Item>();
                 if (item == null)
@@ -47,11 +53,13 @@ namespace SS3D.Systems.Inventory.Interactions
                     return false;
                 }
 
-                bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
-                bool notInAContainer = !item.IsInContainer();
-                // then we just do a range check, to make sure we can interact
-                // and we check if the item is not in a container, you can only pick things that are not in a container
-                return isInRange && notInAContainer;
+                // check the item is not in a container
+                if (item.IsInContainer())
+                {
+                    return false;
+                }
+
+                return true;
             }
 
             return false;

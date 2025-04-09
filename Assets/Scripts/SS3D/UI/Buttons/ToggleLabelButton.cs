@@ -10,6 +10,28 @@ namespace SS3D.UI.Buttons
         [SerializeField] private string _normalText;
         [SerializeField] private string _pressedText;
 
+        public void NormalText(string text)
+        {
+            _normalText = text;
+        }
+
+        public void PressedText (string text)
+        {
+            _pressedText = text;
+        }
+
+        public void RefreshVisuals()
+        {
+            if (_pressed)
+            {
+                _label.SetText(_pressedText);
+            }
+            else
+            {
+                _label.SetText(_normalText);
+            }
+        }
+
         public override void OnPointerDown(PointerEventData eventData)
         {
             if (Disabled)

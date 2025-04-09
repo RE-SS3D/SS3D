@@ -9,5 +9,6 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
     {
         public Mesh Mesh;
         public float Rotation;
+        public AdjacencyShape Shape;
     }
 }

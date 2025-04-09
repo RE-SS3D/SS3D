@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: DisposalPipes
   m_EditorClassIdentifier: 
-  NameKey: Disposal Pipe
-  DescriptionKey: A disposal pipe.
+  LocalizationTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
+  NameKey: disposal_pipe
+  DescriptionKey: disposal_pipe_desc

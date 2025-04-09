@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI
+  m_TableCollectionNameGuidString: d2a66e9e1fb4a534da0ec381c31605b4
+  m_Entries:
+  - m_Id: 118901084160
+    m_Key: tab_server_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123401572352
+    m_Key: tab_chat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 127222583296
+    m_Key: tab_players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 131584659456
+    m_Key: tab_server_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134877188096
+    m_Key: tab_game_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40840714948608
+    m_Key: insert_server_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401212651245568
+    m_Key: button_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401253960945664
+    m_Key: button_observe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401291999088640
+    m_Key: button_admin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401583121534976
+    m_Key: button_embark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404904863502336
+    m_Key: button_not_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410219415769088
+    m_Key: text_round_state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410593673515008
+    m_Key: button_start_round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410645397671936
+    m_Key: button_stop_round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410727601836032
+    m_Key: text_character_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410784623398912
+    m_Key: text_user_interface
+    m_Metadata:
+      m_Items: []
+  - m_Id: 725627855343616
+    m_Key: text_show_ui
+    m_Metadata:
+      m_Items: []
+  - m_Id: 734609462431744
+    m_Key: text_admin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740893582594048
+    m_Key: Stopped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740976793391104
+    m_Key: Preparing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740978609524736
+    m_Key: WarmingUp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740980304023552
+    m_Key: Ongoing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740982044659712
+    m_Key: Ending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741247078535168
+    m_Key: Ended
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1882488591224143872
+  references:
+    version: 2
+    RefIds:
+    - rid: 1882488591224143872
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1724061161103

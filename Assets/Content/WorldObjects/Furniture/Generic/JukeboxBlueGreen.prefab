@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 4294524822034227355}
   - component: {fileID: 1326650896113229434}
   - component: {fileID: 8174704186285038031}
+  - component: {fileID: 8272970134100573020}
+  - component: {fileID: 5978761350964980520}
   m_Layer: 0
   m_Name: JukeboxBlueGreen
   m_TagString: Untagged
@@ -104,6 +106,8 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 8174704186285038031}
+  - {fileID: 8272970134100573020}
+  - {fileID: 5978761350964980520}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -115,7 +119,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 123
+  <PrefabId>k__BackingField: 155
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -149,11 +153,46 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4294524822034227355}
   _networkObjectCache: {fileID: 4294524822034227355}
+  _powerConsumer: {fileID: 8272970134100573020}
   _songs:
   - {fileID: 8300000, guid: ec8b849764a7e9147b2a565f81a1ca42, type: 3}
   - {fileID: 8300000, guid: fd331e360db5fbb448e66367e41d1893, type: 3}
   - {fileID: 8300000, guid: 3f51862f0b88a5243a8cceb97147489d, type: 3}
   RadioOn: 0
   CurrentMusic: 0
-  InteractionIcon: {fileID: 0}
+  InteractionIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   InteractionIconOn: {fileID: 0}
+--- !u!114 &8272970134100573020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118765911134750290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea15f8a26dac4e4193bb75335cb9e9cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 4294524822034227355}
+  _networkObjectCache: {fileID: 4294524822034227355}
+  _powerConsumptionIdle: 0.5
+  _powerConsumptionInUse: 5
+  isIdle: 1
+  _powerStatus: 0
+--- !u!114 &5978761350964980520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118765911134750290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 4294524822034227355}
+  _networkObjectCache: {fileID: 4294524822034227355}

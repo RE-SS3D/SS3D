@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -3504974528244723279}
   - component: {fileID: -3146616955965142812}
   - component: {fileID: 5974748117383969709}
+  - component: {fileID: 5385272248723591395}
   m_Layer: 0
   m_Name: SteelWindow
   m_TagString: Untagged
@@ -121,6 +122,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 1177000688717996335}
+  - {fileID: 5385272248723591395}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -132,7 +134,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 160
+  <PrefabId>k__BackingField: 190
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -149,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3995769f8fecf9469d1783a30e75625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -2900075557854325373}
   _networkObjectCache: {fileID: -2900075557854325373}
   _syncedConnections: 0
@@ -210,3 +212,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 84e559fc6ad816f4bb3c334a3c3e946e, type: 2}
+--- !u!114 &5385272248723591395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -2900075557854325373}
+  _networkObjectCache: {fileID: -2900075557854325373}
+  _asset: {fileID: 11400000, guid: 72ff3e5319a440c448928af8af541920, type: 2}
+  _tileObjectSo: {fileID: 11400000, guid: b46f02d975d975b4abe91f4bb650e04f, type: 2}

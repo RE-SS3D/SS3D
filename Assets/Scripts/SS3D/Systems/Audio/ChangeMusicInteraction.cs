@@ -37,7 +37,7 @@ namespace SS3D.Systems.Audio
                 {
                     return false;
                 }
-                return boom.RadioOn;
+                return boom.AudioOn;
             }
 
             return false;
