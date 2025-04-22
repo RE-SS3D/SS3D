@@ -78,7 +78,7 @@ namespace SS3D.Logging
 
             // The path of the log file depends if connection is host, server only, or client.
             // Write in a different file depending on client's connection id.
-            string path = "Log.log";
+            string path = "Log.json";
 
             if (!string.IsNullOrEmpty(overrideLogPath))
             {
@@ -86,26 +86,26 @@ namespace SS3D.Logging
             }
             else if (InstanceFinder.IsHost)
             {
-                path = "LogHost.log";
+                path = "LogHost.json";
             }
             else if (InstanceFinder.IsClientOnly)
             {
-                path = $"LogClient_{InstanceFinder.NetworkManager.ClientManager.Connection.ClientId}.log";
+                path = $"LogClient_{InstanceFinder.NetworkManager.ClientManager.Connection.ClientId}.json";
             }
             else if (InstanceFinder.IsServerOnly)
             {
-                path = "LogServer.log";
+                path = "LogServer.json";
             }
 
             path = Path.Combine(LogFolderPath, path);
 
             if (Settings.UseCompactJsonFormatter)
 			{
-                path = Path.ChangeExtension(path, "json");
 				configuration.WriteTo.File(new CompactJsonFormatter(), path);
 			}
             else
 			{
+				path = Path.ChangeExtension(path, "log");
 				configuration.WriteTo.File(path);
 			}
 
