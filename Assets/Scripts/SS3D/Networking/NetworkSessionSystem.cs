@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using Coimbra.Services.Events;
 using FishNet;
 using FishNet.Managing;
@@ -32,18 +32,17 @@ namespace SS3D.Networking
         {
             NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
 
-            string path = String.Empty;
-
+            string path;
             switch (networkSettings.NetworkType)
             {
                 case NetworkType.DedicatedServer:
-                    path = "LogServer.json"; 
+                    path = "LogServer.log"; 
                     break;
                 case NetworkType.Client:
-                    path = "LogClient" + networkSettings.Ckey + ".json";
+                    path = $"LogClient_{networkSettings.Ckey}.log";
                     break;
                 case NetworkType.Host:
-                    path = "LogHost.json";
+                    path = "LogHost.log";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

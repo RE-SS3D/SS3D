@@ -5,9 +5,8 @@ using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.Unity3D;
 using SS3D.Logging.LogSettings;
-using System;
+using System.IO;
 using UnityEngine;
-
 
 namespace SS3D.Logging
 {
@@ -21,20 +20,18 @@ namespace SS3D.Logging
     {
         private static readonly string DefaultUnityLogTemplate;
         private static readonly string LogFolderPath;
-        private static bool IsInitialized;
-
         private static readonly LogSettings.LogSettings Settings;
+        private static bool IsInitialized;
 
         static LogManager()
         {
             DefaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
-            LogFolderPath = Application.dataPath + "/../Logs/";
+            LogFolderPath = Path.Combine(Application.dataPath, "../Logs");
 
             if (Application.isPlaying)
             {
                 Settings = ScriptableSettings.GetOrFind<LogSettings.LogSettings>();
             }
-            
         }
 
         public static void Initialize(string logPath = null)
@@ -43,8 +40,6 @@ namespace SS3D.Logging
             {
                 return;
             }
-
-            IsInitialized = true;
 
             LoggerConfiguration configuration = new LoggerConfiguration();
 
@@ -60,6 +55,8 @@ namespace SS3D.Logging
             Serilog.Log.Logger = configuration.CreateLogger();
 
             Log.Information(typeof(LogManager), "Logging settings loaded and initialized", Logs.Important);
+
+            IsInitialized = true;
         }
 
         private static LoggerConfiguration ConfigureForPlayMode(LoggerConfiguration configuration, string overrideLogPath = null)
@@ -71,15 +68,17 @@ namespace SS3D.Logging
             // Does not apply override if the logging level corresponds to the global minimum level.
             foreach (NamespaceLogLevel levelForNameSpace in Settings.SS3DNameSpaces)
             {
-                if (levelForNameSpace.Level == Settings.DefaultLogLevel) continue;
+                if (levelForNameSpace.Level == Settings.DefaultLogLevel)
+                {
+                    continue;
+                }
 
                 configuration = configuration.MinimumLevel.Override(levelForNameSpace.Name, levelForNameSpace.Level);
             }
 
-            // Configure writing to log files using a CompactJsonFormatter.
             // The path of the log file depends if connection is host, server only, or client.
             // Write in a different file depending on client's connection id.
-            string path = string.Empty;
+            string path = "Log.log";
 
             if (!string.IsNullOrEmpty(overrideLogPath))
             {
@@ -87,20 +86,28 @@ namespace SS3D.Logging
             }
             else if (InstanceFinder.IsHost)
             {
-                path = "LogHost.json";
+                path = "LogHost.log";
             }
             else if (InstanceFinder.IsClientOnly)
             {
-                path = "LogClient" + InstanceFinder.NetworkManager.ClientManager.Connection.ClientId + ".json";
+                path = $"LogClient_{InstanceFinder.NetworkManager.ClientManager.Connection.ClientId}.log";
             }
             else if (InstanceFinder.IsServerOnly)
             {
-                path = "LogServer.json";
+                path = "LogServer.log";
             }
 
-            path = LogFolderPath + path;
+            path = Path.Combine(LogFolderPath, path);
 
-            configuration.WriteTo.File(new CompactJsonFormatter(), LogFolderPath + path);
+            if (Settings.UseCompactJsonFormatter)
+			{
+                path = Path.ChangeExtension(path, "json");
+				configuration.WriteTo.File(new CompactJsonFormatter(), path);
+			}
+            else
+			{
+				configuration.WriteTo.File(path);
+			}
 
             return configuration;
         }
@@ -122,6 +129,4 @@ namespace SS3D.Logging
              }
         }
     }
-
 }
-
