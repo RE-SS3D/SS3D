@@ -32,17 +32,18 @@ namespace SS3D.Networking
         {
             NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
 
-            string path;
+            string path = String.Empty;
+
             switch (networkSettings.NetworkType)
             {
                 case NetworkType.DedicatedServer:
-                    path = "LogServer.log"; 
+                    path = "LogServer.json"; 
                     break;
                 case NetworkType.Client:
-                    path = $"LogClient_{networkSettings.Ckey}.log";
+                    path = "LogClient" + networkSettings.Ckey + ".json";
                     break;
                 case NetworkType.Host:
-                    path = "LogHost.log";
+                    path = "LogHost.json";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
