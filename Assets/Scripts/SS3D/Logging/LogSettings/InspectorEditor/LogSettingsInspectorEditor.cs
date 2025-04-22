@@ -17,7 +17,10 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
         {
             serializedObject.Update();
 
-            SerializedProperty spDefaultLevel = serializedObject.FindProperty(nameof(LogSettings.DefaultLogLevel));
+			SerializedProperty useCompactJsonFormatter = serializedObject.FindProperty(nameof(LogSettings.UseCompactJsonFormatter));
+            EditorGUILayout.PropertyField(useCompactJsonFormatter);
+
+			SerializedProperty spDefaultLevel = serializedObject.FindProperty(nameof(LogSettings.DefaultLogLevel));
 
             // default log level, the log level at which all namespace will be by default.
             LogEventLevel defaultLevel = (LogEventLevel)EditorGUILayout.EnumPopup(new GUIContent("Default log level"), (LogEventLevel)spDefaultLevel.enumValueIndex);
