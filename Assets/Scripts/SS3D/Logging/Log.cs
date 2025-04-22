@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Serilog.Core;
 using Serilog.Events;
@@ -105,9 +106,9 @@ namespace SS3D.Logging
 
 		private static void InnerLog(object sender, Exception exception, string messageTemplate, LogEventLevel level, Logs infoLog = Logs.Generic, params object[] propertyValues)
 		{
-			var properties = new object[] { infoLog }.Concat(propertyValues);
+            IEnumerable<object> properties = new object[] { infoLog }.Concat(propertyValues);
+            Serilog.ILogger logger = Serilog.Log.Logger;
 
-			var logger = Serilog.Log.Logger;
 			if (sender != null)
 			{
 				logger = Serilog.Log.ForContext(Constants.SourceContextPropertyName, sender.GetType().Name);
