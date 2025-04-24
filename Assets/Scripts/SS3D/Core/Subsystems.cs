@@ -7,7 +7,7 @@ using SS3D.Core.Behaviours;
 namespace SS3D.Core
 {
     /// <summary>
-    /// Service locator class used to get game subsystems.
+    /// System locator class used to get game subsystems.
     /// Uses generics and then making cache of said subsystems.
     /// </summary>
     public static class Subsystems
