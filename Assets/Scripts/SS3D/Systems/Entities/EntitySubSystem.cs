@@ -24,7 +24,7 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Controls player spawning.
     /// </summary>
-    public class EntitySystem : NetworkSystem
+    public class EntitySubSystem : NetworkSubSystem
     {
         /// <summary>
         /// Event that should be evoked only on client, when the client spawns in the station.
@@ -182,7 +182,7 @@ namespace SS3D.Systems.Entities
             if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
                 SpawnPlayer(player);
-                ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+                ChatSubSystem chatSystem = Subsystems.Get<ChatSubSystem>();
                 ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
                 
                 // TODO: replace with character name and role
@@ -197,7 +197,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnPlayer(Player player)
         {
-            MindSystem mindSystem = Subsystems.Get<MindSystem>();
+            MindSubSystem mindSystem = Subsystems.Get<MindSubSystem>();
             mindSystem.TryCreateMind(player, out Mind createdMind);
 
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
@@ -206,7 +206,7 @@ namespace SS3D.Systems.Entities
             createdMind.SetPlayer(player);
             entity.SetMind(createdMind);
 
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(entity);
+            Subsystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
 
             _spawnedPlayers.Add(entity);
 

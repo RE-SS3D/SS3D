@@ -39,7 +39,7 @@ public class AssetGrid : Actor
     /// Script orchestrating the menu UI.
     /// </summary>
     [SerializeField]
-    private TileMapMenu _menu;
+    private TileMapMenuSubSystem _menu;
 
     /// <summary>
     /// Game object parent of the area in the tile map menu where the tile object slots will display.
@@ -47,12 +47,12 @@ public class AssetGrid : Actor
     [SerializeField]
     private GameObject _contentRoot;
     
-    private TileSystem _tileSystem;
+    private TileSubSystem _tileSystem;
 
     public void Setup()
     {
         AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        _tileSystem= Subsystems.Get<TileSystem>();
+        _tileSystem= Subsystems.Get<TileSubSystem>();
         LoadObjectGrid(new[] { TileLayer.Plenum }, false);
     }
 

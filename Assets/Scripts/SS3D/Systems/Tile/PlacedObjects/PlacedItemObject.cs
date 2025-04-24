@@ -1,4 +1,4 @@
-using FishNet;
+﻿using FishNet;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Logging;
@@ -39,7 +39,7 @@ namespace SS3D.Systems.Tile
             if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
             {
                 if (placedObject.GetComponent<NetworkObject>() == null)
-                    Log.Warning(Subsystems.Get<TileSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
+                    Log.Warning(Subsystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
                         Logs.Generic, placedObject.NameString);
                 else
                     InstanceFinder.ServerManager.Spawn(placedGameObject);

@@ -30,7 +30,7 @@ namespace SS3D.Systems.Crafting
     /// <summary>
     /// Core of the crafting, store and organize recipes, check what can be crafted, hold the actual craft logic.
     /// </summary>
-    public sealed class CraftingSystem : NetworkSystem
+    public sealed class CraftingSubSystem : NetworkSubSystem
     {
         /// <summary>
         /// First string is the id of the target object of the recipe (as the WorldObjectAssetReference's id).
@@ -521,7 +521,7 @@ namespace SS3D.Systems.Crafting
                 replace = true;
             }
 
-            Subsystems.Get<TileSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
+            Subsystems.Get<TileSubSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
                 TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position),
                 direction, false, replace, false, out GameObject instance);
 
@@ -572,7 +572,7 @@ namespace SS3D.Systems.Crafting
                 replace = true;
             }
 
-            return Subsystems.Get<TileSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
+            return Subsystems.Get<TileSubSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
         }
 
         /// <summary>

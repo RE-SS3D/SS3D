@@ -12,7 +12,7 @@ namespace SS3D.Systems.Inventory.Items
     /// <summary>
     /// System used to spawn items.
     /// </summary>
-    public sealed class ItemSystem : NetworkSystem
+    public sealed class ItemSubSystem : NetworkSubSystem
     {
         /// <summary>
         /// Requests to spawn an item.

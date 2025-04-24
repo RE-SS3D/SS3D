@@ -16,7 +16,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     public class TileMapBuildTab : NetworkActor, ITileMenuTab
     {
         [SerializeField]
-        private TileMapMenu _menu;
+        private TileMapMenuSubSystem _menu;
 
         /// <summary>
         /// Game object for the root of slots of the build tab.

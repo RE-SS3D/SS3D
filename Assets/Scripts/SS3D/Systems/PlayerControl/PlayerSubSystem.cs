@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
@@ -18,7 +18,7 @@ namespace SS3D.Systems.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerSystem : NetworkSystem
+    public sealed class PlayerSubSystem : NetworkSubSystem
     {
         [Header("Settings")]
         [SerializeField]
@@ -180,7 +180,7 @@ namespace SS3D.Systems.PlayerControl
                 {
                     Log.Information(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
 
-                    Subsystems.Get<PermissionSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
+                    Subsystems.Get<PermissionSubSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
                 }
 
                 _serverPlayers.Add(ckey, player);

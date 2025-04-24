@@ -49,7 +49,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private List<ConstructionHologram> _holograms = new();
         [SerializeField]
-        private TileMapMenu _menu;
+        private TileMapMenuSubSystem _menu;
 
         public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
@@ -245,7 +245,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (ConstructionHologram buildGhost in _holograms)
             {
-                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
+                Subsystems.Get<TileSubSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
             }
         }
 
@@ -262,7 +262,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
+                    Subsystems.Get<TileSubSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
                 }
             }
         }
@@ -341,7 +341,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
 
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            TileSubSystem tileSystem = Subsystems.Get<TileSubSystem>();
 
             TileObjectSo tileObjectSo = (TileObjectSo)tileSystem.GetAsset(tileObjectSoName);
 
@@ -388,7 +388,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
                 if (placedItem != null)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
+                    Subsystems.Get<TileSubSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
                 }
             }
         }

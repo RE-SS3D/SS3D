@@ -47,7 +47,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed += HandleSendMessage;
-            Subsystems.Get<ChatSystem>().OnMessageReceived += OnClientReceiveChatMessage;
+            Subsystems.Get<ChatSubSystem>().OnMessageReceived += OnClientReceiveChatMessage;
         }
 
         protected override void OnDisabled()
@@ -55,7 +55,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed -= HandleSendMessage;
-            Subsystems.Get<ChatSystem>().OnMessageReceived -= OnClientReceiveChatMessage;
+            Subsystems.Get<ChatSubSystem>().OnMessageReceived -= OnClientReceiveChatMessage;
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -83,8 +83,8 @@ namespace SS3D.Engine.Chat
             
             _inputField.text = "";
             
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
+            ChatSubSystem chatSystem = Subsystems.Get<ChatSubSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             Player player = playerSystem.GetPlayer(playerCkey);
             ChatChannel chatChannel = GetCurrentChatChannel();
@@ -120,14 +120,14 @@ namespace SS3D.Engine.Chat
                 return;
             }
             
-            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+            ChatSubSystem chatSystem = Subsystems.Get<ChatSubSystem>();
             ChatChannel channel = chatSystem.RegisteredChatChannels[message.Channel];
             if (channel.DistanceBased)
             {
-                PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+                PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
                 string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
                 Player player = playerSystem.GetPlayer(playerCkey);
-                Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+                Entity entity = Subsystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
                 if (Vector3.Distance(entity.Position, message.Origin) > channel.MaxDistance)
                 {
                     return;

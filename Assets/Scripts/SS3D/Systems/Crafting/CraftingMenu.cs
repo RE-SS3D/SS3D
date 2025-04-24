@@ -230,7 +230,7 @@ namespace SS3D.Systems.Crafting
 
             foreach (SecondaryResult result in results)
             {
-                GenericObjectSo asset = Subsystems.Get<TileSystem>().GetAsset(result.Asset.Id);
+                GenericObjectSo asset = Subsystems.Get<TileSubSystem>().GetAsset(result.Asset.Id);
                 GameObject pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
                 pictureSlot.GetComponent<CraftingSlot>().Setup(asset, result.Amount);
             }
@@ -276,7 +276,7 @@ namespace SS3D.Systems.Crafting
         [TargetRpc]
         private void RpcClientInteract(NetworkConnection conn, GameObject target, GameObject sourceObject, int referenceId, int index, CraftingInteractionType type)
         {
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
+            Subsystems.TryGet(out CraftingSubSystem craftingSystem);
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
             List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, type);

@@ -36,7 +36,7 @@ namespace SS3D.Systems.Entities.Debug
                 return;
             }
 
-            MindSystem mindSystem = Subsystems.Get<MindSystem>();
+            MindSubSystem mindSystem = Subsystems.Get<MindSubSystem>();
             mindSystem.CmdSwapMinds(Origin, Target);
 
             Origin = Target;

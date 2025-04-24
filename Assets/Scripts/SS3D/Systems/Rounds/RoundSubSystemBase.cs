@@ -22,7 +22,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Base for the round system, done here to avoid too much code in the round system
     /// </summary>
-    public class RoundSystemBase : NetworkSystem
+    public class RoundSubSystemBase : NetworkSubSystem
     {
         /// <summary>
         /// The current round state.
@@ -107,8 +107,8 @@ namespace SS3D.Systems.Rounds
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
+            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
+            PermissionSubSystem permissionSystem = Subsystems.Get<PermissionSubSystem>();
 
             // Gets the player that matches the connection, uses the ckey as the user id
             string userCkey = playerSystem.GetCkey(conn);

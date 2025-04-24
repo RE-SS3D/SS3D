@@ -13,7 +13,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Round system base implementation for basic round functionality
     /// </summary>
-    public sealed class RoundSystem : RoundSystemBase
+    public sealed class RoundSubSystem : RoundSubSystemBase
     {
         /// <summary>
         /// Round loop runner
@@ -74,7 +74,7 @@ namespace SS3D.Systems.Rounds
 
             RoundState = RoundState.Ongoing;
             Log.Information(this, "Starting round tick", Logs.ServerOnly);
-            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+            ChatSubSystem chatSystem = Subsystems.Get<ChatSubSystem>();
             ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
             // TODO: use captain character name here
             chatSystem.SendServerMessage(chatChannels.stationAlertsChannel, "Welcome aboard crew, you're under no captain. Enjoy!");

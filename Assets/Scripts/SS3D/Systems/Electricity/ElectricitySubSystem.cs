@@ -20,7 +20,7 @@ namespace System.Electricity
     /// When removing electrical elements or adding new ones, it doesn't immediately update, instead,
     /// it marks the graph dirty and rebuilds the graph on the next tick.
     /// </remarks>
-    public class ElectricitySystem : NetworkSystem
+    public class ElectricitySubSystem : NetworkSubSystem
     {
         public event Action OnSystemSetUp;
 
@@ -173,7 +173,7 @@ namespace System.Electricity
                 _circuits.Add(new());
                 foreach (VerticeCoordinates coord in component)
                 {
-                    TileSystem tileSystem = Subsystems.Get<TileSystem>();
+                    TileSubSystem tileSystem = Subsystems.Get<TileSubSystem>();
                     ITileLocation location = tileSystem.CurrentMap.GetTileLocation((TileLayer)coord.Layer, new(coord.X, 0f, coord.Y));
 
                     if (!location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction)coord.Direction)) continue;

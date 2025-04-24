@@ -15,7 +15,7 @@ namespace SS3D.Systems.Examine
     /// the cursor hovers over them. The particular information displayed is item
     /// and requirement dependant, and may take different formats.
     /// </summary>
-    public class ExamineSystem : NetworkSystem
+    public class ExamineSubSystem : NetworkSubSystem
     {
         public event ExaminableChangedHandler OnExaminableChanged;
 

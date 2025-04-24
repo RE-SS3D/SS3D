@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SS3D.Core.Behaviours;
 using Coimbra.Services.Events;
 using FishNet.Connection;
@@ -20,7 +20,7 @@ namespace SS3D.Systems.Gamemodes
     /// <summary>
     /// Controls the gamemode that the round will use. Does all the networking magic.
     /// </summary>
-    public sealed class GamemodeSystem : NetworkSystem
+    public sealed class GamemodeSubSystem : NetworkSubSystem
     {
         /// <summary>
         /// The gamemode that is being used.
@@ -72,8 +72,8 @@ namespace SS3D.Systems.Gamemodes
             _gamemode.OnFinished += HandleGamemodeFinalized;
 
             // Get systems we need to load player data
-            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            EntitySubSystem entitySystem = Subsystems.Get<EntitySubSystem>();
+            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
 
             // Get list of players ready to spawn (by Ckey).
             List<Entity> playersToAssign = entitySystem.SpawnedPlayers;
@@ -142,7 +142,7 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void SendObjectiveToClients(GamemodeObjective objective)
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
 
             NetworkConnection author = playerSystem.GetPlayer(objective.AssigneeCkey).Owner;
             GamemodeObjectiveUpdatedMessage message = new(objective);
@@ -169,7 +169,7 @@ namespace SS3D.Systems.Gamemodes
                 return;
             }
 
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
 
             List<GamemodeObjective> gamemodeObjectives = _gamemode.GetPlayerObjectives(playerSystem.GetCkey(sender));
 
@@ -206,8 +206,8 @@ namespace SS3D.Systems.Gamemodes
             }
 
             // Retrieve the Ckey of the newly spawned player.
-            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
-            string newPlayerCkey = Subsystems.Get<PlayerSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
+            EntitySubSystem entitySystem = Subsystems.Get<EntitySubSystem>();
+            string newPlayerCkey = Subsystems.Get<PlayerSubSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
 
             // Assign late join objectives to the new player
             if (newPlayerCkey != null)

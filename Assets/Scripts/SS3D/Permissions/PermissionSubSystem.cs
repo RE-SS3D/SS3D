@@ -15,7 +15,7 @@ namespace SS3D.Permissions
     /// <summary>
     /// Handles user permission on what he can do and can't.
     /// </summary>
-    public sealed class PermissionSystem : NetworkSystem
+    public sealed class PermissionSubSystem : NetworkSubSystem
     {
         /// <summary>
         /// Dictionary of users and permissions.

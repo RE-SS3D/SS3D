@@ -1,10 +1,10 @@
-using SS3D.Core.Behaviours;
+﻿using SS3D.Core.Behaviours;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Substances
 {
-    public sealed class SubstancesSystem : NetworkSystem
+    public sealed class SubstancesSubSystem : NetworkSubSystem
     {
         public Dictionary<SubstanceType, Substance> Substances => substances;
         public Recipe[] Recipes => recipes;

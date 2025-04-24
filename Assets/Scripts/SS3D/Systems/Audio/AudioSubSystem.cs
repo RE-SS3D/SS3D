@@ -4,6 +4,7 @@ using System.Linq;
 using Coimbra;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Audio
     /// Audio system handle creating and destroying audio sources, whether for SFX or music. It handle placing them at the right place, playing and stopping them.
     /// In the vast majority of cases you should use this to play sounds. 
     /// </summary>
-    public class AudioSystem : Core.Behaviours.NetworkSystem
+    public class AudioSubSystem : NetworkSubSystem
     {
         [Tooltip("The SFX audio source to be spawned.")]
         public GameObject SfxAudioSourcePrefab;

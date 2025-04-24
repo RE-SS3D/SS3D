@@ -19,7 +19,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// and saving tilemaps.
     /// This scripts orchestrate a bunch of other scripts related to making the menu work. 
     /// </summary>
-    public class TileMapMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
+    public class TileMapMenuSubSystem : NetworkSubSystem, IPointerEnterHandler, IPointerExitHandler
     {
         /// <summary>
         /// Is the mouse over the menu UI

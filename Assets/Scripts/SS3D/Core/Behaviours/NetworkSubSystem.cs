@@ -1,9 +1,10 @@
 ﻿namespace SS3D.Core.Behaviours
 {
+    /// <summary>
     /// Used on networked objects that won't have two of them at the same time.
     /// Should not be instantiated at runtime.
     /// </summary>
-    public class NetworkSystem : NetworkActor, ISubSystem
+    public class NetworkSubSystem : NetworkActor, ISubSystem
     {
         /// <summary>
         /// Registers the system on awake.

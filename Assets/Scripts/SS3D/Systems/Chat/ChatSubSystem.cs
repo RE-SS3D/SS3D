@@ -13,7 +13,7 @@ using System.IO;
 
 namespace SS3D.Engine.Chat
 {
-    public class ChatSystem : NetworkSystem
+    public class ChatSubSystem : NetworkSubSystem
     {
         public readonly Dictionary<string, ChatChannel> RegisteredChatChannels = new Dictionary<string, ChatChannel>();
         public Action<ChatMessage> OnMessageReceived; 
@@ -49,7 +49,7 @@ namespace SS3D.Engine.Chat
             }
             catch (Exception e)
             {
-                Log.Information(typeof(ChatSystem), "Error when writing chat message into log: {error}", Logs.ServerOnly, e.Message);
+                Log.Information(typeof(ChatSubSystem), "Error when writing chat message into log: {error}", Logs.ServerOnly, e.Message);
             }
         }
 
@@ -72,7 +72,7 @@ namespace SS3D.Engine.Chat
 
             if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None)
             {
-                PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
+                PermissionSubSystem permissionSystem = Subsystems.Get<PermissionSubSystem>();
                 if (!permissionSystem.IsAtLeast(player.Ckey, chatChannel.RoleRequiredToUse))
                 {
                     return;

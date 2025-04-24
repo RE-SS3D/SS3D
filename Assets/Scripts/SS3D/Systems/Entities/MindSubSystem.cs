@@ -11,7 +11,7 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Manages all minds in the game.
     /// </summary>
-    public class MindSystem : NetworkSystem
+    public class MindSubSystem : NetworkSubSystem
     {
         [SerializeField]
         private GameObject _mindPrefab;
@@ -32,7 +32,7 @@ namespace SS3D.Systems.Entities
         /// <returns></returns>
         public bool TryGetMind(Player player, out Mind mind)
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
             // todo inspect do we really need to GetPlayer when we pass a player already?
             Player actualPlayer = playerSystem.GetPlayer(player.Owner);
 

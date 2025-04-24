@@ -15,7 +15,7 @@ using SS3D.Systems.Inventory.Items.Generic;
 
 namespace SS3D.Systems.Roles
 {
-    public class RoleSystem : NetworkSystem
+    public class RoleSubSystem : NetworkSubSystem
     {
         [SerializeField] private RolesAvailable _rolesAvailable;
         private List<RoleCounter> _roleCounters = new List<RoleCounter>();
@@ -161,7 +161,7 @@ namespace SS3D.Systems.Roles
         /// <param name="role"></param>
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
-            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
+            ItemSubSystem itemSystem = Subsystems.Get<ItemSubSystem>();
             HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
@@ -247,7 +247,7 @@ namespace SS3D.Systems.Roles
                 return;
             }
 
-            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
+            ItemSubSystem itemSystem = Subsystems.Get<ItemSubSystem>();
             itemSystem.SpawnItemInContainer(itemId, container);
         }
     }

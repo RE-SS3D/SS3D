@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health
 {
-    public class OxygenConsumerSystem : NetworkSystem
+    public class OxygenConsumerSubSystem : NetworkSubSystem
     {
         private readonly List<IOxygenConsumer> consumerList = new List<IOxygenConsumer>();
         private float _timer = 0f;
