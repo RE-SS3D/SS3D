@@ -25,7 +25,7 @@ namespace EditorTests
         public void RegisterSelectableAllocatesDistinctColors()
         {
             // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            SelectionSubSystem _system = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
             CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
@@ -52,7 +52,7 @@ namespace EditorTests
         public void GetCurrentSelectableReturnsImmediateObjectWhenItHasCorrectComponent()
         {
             // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            SelectionSubSystem _system = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
             CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
@@ -87,7 +87,7 @@ namespace EditorTests
         public void GetCurrentSelectableReturnsAncestorWhenOnlyAncestorHasCorrectComponent()
         {
             // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            SelectionSubSystem _system = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
             CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
@@ -111,7 +111,7 @@ namespace EditorTests
         public void GetCurrentSelectableReturnsNullWhenNoAncestorsHaveCorrectComponent()
         {
             // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            SelectionSubSystem _system = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
             CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
@@ -138,7 +138,7 @@ namespace EditorTests
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="child"></param>
-        private void CreateSelectableHierarchy(SelectionSystem system, out Selectable parent, out Selectable child)
+        private void CreateSelectableHierarchy(SelectionSubSystem system, out Selectable parent, out Selectable child)
         {
             GameObject _parentGo;
             GameObject _childGo;

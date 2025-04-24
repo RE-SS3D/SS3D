@@ -13,7 +13,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Engine.Chat
 {
@@ -29,7 +29,7 @@ namespace SS3D.Engine.Chat
         
         private readonly List<ChatMessage> _chatMessages = new List<ChatMessage>();
         
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         private Controls.OtherActions _controls;
 
         protected virtual ChatChannel GetCurrentChatChannel() => throw new NotImplementedException();
@@ -38,7 +38,7 @@ namespace SS3D.Engine.Chat
         {
             base.OnAwake();
             
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Other;
         }
 
@@ -147,12 +147,12 @@ namespace SS3D.Engine.Chat
         
         public void OnInputFieldSelect()
         {
-            Subsystems.Get<InputSystem>().ToggleAllActions(false, new [] { _controls.SendChatMessage });
+            Subsystems.Get<InputSubSystem>().ToggleAllActions(false, new [] { _controls.SendChatMessage });
         }
 
         public void OnInputFieldDeselect()
         {
-            Subsystems.Get<InputSystem>().ToggleAllActions(true, new [] { _controls.SendChatMessage });
+            Subsystems.Get<InputSubSystem>().ToggleAllActions(true, new [] { _controls.SendChatMessage });
         }
     }
 }

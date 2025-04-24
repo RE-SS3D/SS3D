@@ -21,12 +21,12 @@ namespace SS3D.Systems.Examine
 
         public delegate void ExaminableChangedHandler(IExaminable examinable);
         
-        private SelectionSystem _selectionSystem;
+        private SelectionSubSystem _selectionSystem;
         
         protected override void OnAwake()
         {
             base.OnAwake();
-            _selectionSystem = Subsystems.Get<SelectionSystem>();
+            _selectionSystem = Subsystems.Get<SelectionSubSystem>();
         }
 
         protected override void OnEnabled()

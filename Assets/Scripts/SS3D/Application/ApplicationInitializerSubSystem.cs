@@ -1,5 +1,6 @@
-using Coimbra;
+﻿using Coimbra;
 using SS3D.Application.Events;
+using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using UDiscord;
 
@@ -10,7 +11,7 @@ namespace SS3D.Application
     /// <summary>
     /// Server as a way to control initialization flux.
     /// </summary>
-    public sealed class ApplicationInitializerSystem : Core.Behaviours.System
+    public sealed class ApplicationInitializerSubSystem : SubSystem
     {
         protected override void OnStart()
         {

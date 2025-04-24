@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
 using Actor = SS3D.Core.Behaviours.Actor;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
@@ -45,13 +45,13 @@ namespace SS3D.Systems.IngameConsoleSystem
         private int _chosenPrevCommand;
         private Controls _controls;
         private Controls.ConsoleActions _consoleControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
 
         protected override void OnStart()
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;

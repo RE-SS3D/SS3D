@@ -7,7 +7,7 @@ using System.Collections;
 using SS3D.Core;
 using SS3D.Systems.Inputs;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -63,7 +63,7 @@ namespace SS3D.Systems.Screens
         private Vector3 _playerOffset;
         
         private Controls.CameraActions _controls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         
         // Sensitivities and Accelerations
         private const float DistanceAcceleration = 10.0f;
@@ -94,7 +94,7 @@ namespace SS3D.Systems.Screens
         protected override void OnStart()
         {
             base.OnStart();
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;

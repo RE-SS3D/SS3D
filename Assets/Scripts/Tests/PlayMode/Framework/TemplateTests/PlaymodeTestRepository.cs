@@ -123,7 +123,7 @@ namespace SS3D.Tests
 
             // Drop item at a close position from local player
             var itemPosition = playerPosition;
-            var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            var camera = Subsystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
             var target = camera.WorldToScreenPoint(itemPosition);
 
             var target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);

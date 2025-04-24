@@ -11,7 +11,7 @@ namespace SS3D.Systems.Screens
     /// <summary>
     /// Sets the camera follow for the local player.
     /// </summary>
-    public class PlayerCameraSystem  : Core.Behaviours.System
+    public class PlayerCameraSubSystem : SubSystem
     {
         [SerializeField] private Camera _camera;
         [SerializeField] private CameraFollow _cameraFollow;

@@ -3,6 +3,7 @@ using Coimbra.Services.Events;
 using FishNet;
 using FishNet.Managing;
 using SS3D.Application.Events;
+using SS3D.Core.Behaviours;
 using SS3D.Core.Settings;
 using SS3D.Logging;
 using SS3D.Networking.Settings;
@@ -14,7 +15,7 @@ namespace SS3D.Networking
     /// Helps the NetworkManager to understand what we should do in this instance,
     /// if we are a server, or a client, and process respective data.
     /// </summary>
-    public sealed class NetworkSessionSystem : Core.Behaviours.System
+    public sealed class NetworkSessionSubSystem : SubSystem
     {
         public NetworkType NetworkType;
 

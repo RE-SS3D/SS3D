@@ -1,4 +1,5 @@
-using Serilog;
+﻿using Serilog;
+using SS3D.Core.Behaviours;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace SS3D.Systems.Inputs
     /// <summary>
     /// Contains player's controls in Inputs
     /// </summary>
-    public sealed class InputSystem : SS3D.Core.Behaviours.System
+    public sealed class InputSubSystem : SubSystem
     {
         public Controls Inputs { get; private set; }
 

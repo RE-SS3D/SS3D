@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// The last direction registered by a build ghost.
         /// </summary>
         private Direction _lastRegisteredDirection;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         private Controls.TileCreatorActions _controls;
         private bool _isPlacingItem = false;
         /// <summary>
@@ -69,7 +69,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             base.OnStart();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
             _controls.Place.started += HandlePlaceStarted;
             _controls.Place.performed += HandlePlacePerformed;

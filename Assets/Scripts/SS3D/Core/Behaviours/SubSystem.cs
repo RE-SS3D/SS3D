@@ -4,7 +4,7 @@
     /// Used on objects that won't have two of them at the same time.
     /// Should not be instantiated at runtime.
     /// </summary>
-    public class System : Actor, ISubSystem
+    public class SubSystem : Actor, ISubSystem
     {
         /// <summary>
         /// Registers the system on awake.

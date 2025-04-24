@@ -15,7 +15,7 @@ namespace SS3D.Systems.Selection
     /// the cursor; however, other Systems (e.g. Examine, Interaction) may make
     /// use of the results.
     /// </summary>
-    public class SelectionSystem : SS3D.Core.Behaviours.System
+    public class SelectionSubSystem : SubSystem
     {
         private SelectionController _controller;
 

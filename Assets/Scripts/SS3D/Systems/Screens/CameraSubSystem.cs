@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Screens
 {
-    public class CameraSystem : Core.Behaviours.System
+    public class CameraSubSystem : SubSystem
     {
         [SerializeField] private Actor _playerCamera;
 

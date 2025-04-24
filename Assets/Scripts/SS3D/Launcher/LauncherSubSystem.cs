@@ -1,4 +1,5 @@
 ﻿using Coimbra;
+using SS3D.Core.Behaviours;
 using SS3D.Data.Generated;
 using SS3D.Logging;
 using SS3D.Networking;
@@ -11,7 +12,7 @@ namespace SS3D.Launcher
     /// <summary>
     /// System used to control launcher functions.
     /// </summary>
-    public sealed class LauncherSystem : Core.Behaviours.System
+    public sealed class LauncherSubSystem : SubSystem
     {
         /// <summary>
         /// Launches the game.

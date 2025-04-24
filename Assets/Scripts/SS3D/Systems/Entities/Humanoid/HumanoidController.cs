@@ -1,4 +1,4 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
@@ -8,7 +8,7 @@ using SS3D.Systems.Screens;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
@@ -47,7 +47,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private Actor _camera;
         protected Controls.MovementActions MovementControls;
         protected Controls.HotkeysActions HotkeysControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -67,10 +67,10 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void Setup()
         {
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
 
             Controls controls = _inputSystem.Inputs;
 

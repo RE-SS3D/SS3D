@@ -15,7 +15,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
 namespace SS3D.Systems.Crafting
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Crafting
     /// </summary>
     public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandler
     {
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
 
         /// <summary>
         ///  The model for a single slot, to display recipe step names in the crafting menu.
@@ -83,7 +83,7 @@ namespace SS3D.Systems.Crafting
         {
             base.OnStartNetwork();
             ShowUI(false);
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = Subsystems.Get<InputSubSystem>();
         }
 
         /// <summary>

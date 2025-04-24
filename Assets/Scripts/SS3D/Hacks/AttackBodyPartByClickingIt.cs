@@ -6,7 +6,7 @@ using SS3D.Systems.Health;
 using System;
 using System.Collections;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Hacks
 {
@@ -36,12 +36,12 @@ namespace SS3D.Hacks
 
         private void Start()
         {
-            Subsystems.Get<InputSystem>().Inputs.Other.Attack.performed += CheckForAttack;
+            Subsystems.Get<InputSubSystem>().Inputs.Other.Attack.performed += CheckForAttack;
         }
 
         private void OnDestroy()
         {
-            Subsystems.Get<InputSystem>().Inputs.Other.Attack.performed -= CheckForAttack;
+            Subsystems.Get<InputSubSystem>().Inputs.Other.Attack.performed -= CheckForAttack;
         }
 
         private void CheckForAttack(InputAction.CallbackContext callbackContext)
