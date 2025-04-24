@@ -72,7 +72,7 @@ namespace SS3D.Engine.Chat
 
             if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None)
             {
-                PermissionSubSystem permissionSystem = Subsystems.Get<PermissionSubSystem>();
+                PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
                 if (!permissionSystem.IsAtLeast(player.Ckey, chatChannel.RoleRequiredToUse))
                 {
                     return;

@@ -94,7 +94,7 @@ namespace SS3D.Systems.Screens
         protected override void OnStart()
         {
             base.OnStart();
-            _inputSystem = Subsystems.Get<InputSubSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;

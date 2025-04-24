@@ -63,7 +63,7 @@ namespace SS3D.Core
 
             string message = $"No views of type {typeof(T).Name} found.";
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Log.Error(typeof(Subsystems), "No views of type {typeName} found", Logs.Important, typeof(T).Name);
+            Log.Error(typeof(SubSystems), "No views of type {typeName} found", Logs.Important, typeof(T).Name);
 
             return null;
         }

@@ -40,14 +40,14 @@ namespace SS3D.Systems.Interactions
             base.OnStartClient();
             if (!Owner.IsLocalClient) return;
 
-            _radialView = Subsystems.Get<RadialInteractionSubSystem>();
-            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
-            _inputSystem = Subsystems.Get<InputSubSystem>();
+            _radialView = SubSystems.Get<RadialInteractionSubSystem>();
+            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             Controls controls = _inputSystem.Inputs;
             _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
-            _radialView = Subsystems.Get<RadialInteractionSubSystem>();
-            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
+            _radialView = SubSystems.Get<RadialInteractionSubSystem>();
+            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
             _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
             _hotkeysControls.Use.performed += HandleUse;

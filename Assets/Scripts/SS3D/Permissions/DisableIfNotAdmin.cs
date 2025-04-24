@@ -37,7 +37,7 @@ namespace SS3D.Permissions
                 return;
             }
 
-            PermissionSubSystem permissionSystem = Subsystems.Get<PermissionSubSystem>();
+            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
 
             if (!permissionSystem.HasLoadedPermissions)
             {

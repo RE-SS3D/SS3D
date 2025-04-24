@@ -31,7 +31,7 @@ namespace SS3D.Systems.Screens
             AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
 
-            _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
+            _controls = SubSystems.Get<InputSubSystem>().Inputs.Other;
             _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 

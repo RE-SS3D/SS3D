@@ -117,7 +117,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             base.OnStart();
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
             ShowUI(false);
-            _inputSystem = Subsystems.Get<InputSubSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
             _inputSystem.ToggleAction(_controls.ToggleMenu, true);
             _controls.ToggleMenu.performed += HandleToggleMenu;

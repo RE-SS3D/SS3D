@@ -18,12 +18,12 @@ namespace SS3D.Hacks
 
         private void Start()
         {
-            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
         }
 
         private void OnDestroy()
         {
-            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= ShowOwner;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= ShowOwner;
         }
 
         private void ShowOwner(InputAction.CallbackContext callbackContext)

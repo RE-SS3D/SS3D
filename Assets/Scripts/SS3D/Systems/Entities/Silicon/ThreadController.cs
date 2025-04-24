@@ -54,8 +54,8 @@ namespace SS3D.Systems.Entities.Silicon
 
         private void Setup()
         {
-            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
-            _controls = Subsystems.Get<InputSubSystem>().Inputs.Movement;
+            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
+            _controls = SubSystems.Get<InputSubSystem>().Inputs.Movement;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));

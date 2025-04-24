@@ -26,7 +26,7 @@ namespace SS3D.Hacks
             base.OnStartClient();
             if (!IsOwner) return;
 
-            _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
+            _controls = SubSystems.Get<InputSubSystem>().Inputs.Other;
             _controls.Ragdoll.performed += HandleKnockdown;
         }
 

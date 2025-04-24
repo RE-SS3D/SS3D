@@ -52,7 +52,7 @@ public class AssetGrid : Actor
     public void Setup()
     {
         AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        _tileSystem= Subsystems.Get<TileSubSystem>();
+        _tileSystem= SubSystems.Get<TileSubSystem>();
         LoadObjectGrid(new[] { TileLayer.Plenum }, false);
     }
 

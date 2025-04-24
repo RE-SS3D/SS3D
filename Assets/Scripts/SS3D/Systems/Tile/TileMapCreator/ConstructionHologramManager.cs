@@ -69,7 +69,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             base.OnStart();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            _inputSystem = Subsystems.Get<InputSubSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
             _controls.Place.started += HandlePlaceStarted;
             _controls.Place.performed += HandlePlacePerformed;
@@ -245,7 +245,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (ConstructionHologram buildGhost in _holograms)
             {
-                Subsystems.Get<TileSubSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
+                SubSystems.Get<TileSubSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
             }
         }
 
@@ -262,7 +262,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSubSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
+                    SubSystems.Get<TileSubSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
                 }
             }
         }
@@ -341,7 +341,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
 
-            TileSubSystem tileSystem = Subsystems.Get<TileSubSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
             TileObjectSo tileObjectSo = (TileObjectSo)tileSystem.GetAsset(tileObjectSoName);
 
@@ -388,7 +388,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
                 if (placedItem != null)
                 {
-                    Subsystems.Get<TileSubSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
+                    SubSystems.Get<TileSubSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
                 }
             }
         }

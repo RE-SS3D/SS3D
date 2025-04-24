@@ -32,7 +32,7 @@ namespace SS3D.Systems.Entities
         /// <returns></returns>
         public bool TryGetMind(Player player, out Mind mind)
         {
-            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
             // todo inspect do we really need to GetPlayer when we pass a player already?
             Player actualPlayer = playerSystem.GetPlayer(player.Owner);
 

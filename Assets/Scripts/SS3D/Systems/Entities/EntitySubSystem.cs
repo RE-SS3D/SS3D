@@ -182,7 +182,7 @@ namespace SS3D.Systems.Entities
             if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
                 SpawnPlayer(player);
-                ChatSubSystem chatSystem = Subsystems.Get<ChatSubSystem>();
+                ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
                 ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
                 
                 // TODO: replace with character name and role
@@ -197,7 +197,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnPlayer(Player player)
         {
-            MindSubSystem mindSystem = Subsystems.Get<MindSubSystem>();
+            MindSubSystem mindSystem = SubSystems.Get<MindSubSystem>();
             mindSystem.TryCreateMind(player, out Mind createdMind);
 
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
@@ -206,7 +206,7 @@ namespace SS3D.Systems.Entities
             createdMind.SetPlayer(player);
             entity.SetMind(createdMind);
 
-            Subsystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
+            SubSystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
 
             _spawnedPlayers.Add(entity);
 

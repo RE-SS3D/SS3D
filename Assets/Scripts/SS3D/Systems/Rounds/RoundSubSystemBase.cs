@@ -107,8 +107,8 @@ namespace SS3D.Systems.Rounds
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
-            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
-            PermissionSubSystem permissionSystem = Subsystems.Get<PermissionSubSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
+            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
 
             // Gets the player that matches the connection, uses the ckey as the user id
             string userCkey = playerSystem.GetCkey(conn);

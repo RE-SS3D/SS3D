@@ -54,14 +54,14 @@ namespace SS3D.Systems.Selection
 
         protected override void OnStart()
         {
-            _system = Subsystems.Get<SelectionSubSystem>();
+            _system = SubSystems.Get<SelectionSubSystem>();
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
             _camera.SetReplacementShader(_shader, "");
 
             GenerateRenderTexture();
             GenerateReadbackTexture();
-            Subsystems.Get<InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
         }
 
         private void GenerateReadbackTexture()
@@ -112,7 +112,7 @@ namespace SS3D.Systems.Selection
         protected override void OnDestroyed()
         {
             _renderTexture.Release();
-            Subsystems.Get<InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
         }
 
         /// <summary>

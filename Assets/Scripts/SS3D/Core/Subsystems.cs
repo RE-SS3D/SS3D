@@ -10,7 +10,7 @@ namespace SS3D.Core
     /// System locator class used to get game subsystems.
     /// Uses generics and then making cache of said subsystems.
     /// </summary>
-    public static class Subsystems
+    public static class SubSystems
     {
         /// <summary>
         /// A dictionary containing all the objects that registered themselves.
@@ -53,7 +53,7 @@ namespace SS3D.Core
             string message = $"Couldn't find subsystem of {typeof(T).Name} in the scene";
 
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Log.Error(typeof(Subsystems), message, Logs.Important);
+            Log.Error(typeof(SubSystems), message, Logs.Important);
 
             return null;
         }
@@ -68,7 +68,7 @@ namespace SS3D.Core
 
             if (!RegisteredSubsystems.TryGetValue(type, out ISubSystem _))
             {
-                Serilog.Log.Information($"{nameof(Subsystems)} - Registering {subSystem.GetType().Name}");
+                Serilog.Log.Information($"{nameof(SubSystems)} - Registering {subSystem.GetType().Name}");
                 RegisteredSubsystems.Add(type, subSystem);
             }
         }
@@ -79,7 +79,7 @@ namespace SS3D.Core
         /// <param name="subSystem">The subsystem to unregister.</param>
         public static void Unregister([NotNull] ISubSystem subSystem)
         {
-            Serilog.Log.Information($"{nameof(Subsystems)} - Unregistering {subSystem.GetType().Name}");
+            Serilog.Log.Information($"{nameof(SubSystems)} - Unregistering {subSystem.GetType().Name}");
             RegisteredSubsystems.Remove(subSystem.GetType());
         }
     }

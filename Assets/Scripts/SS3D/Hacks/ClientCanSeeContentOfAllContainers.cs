@@ -13,12 +13,12 @@ namespace SS3D.Hacks
     {
         public void Start()
         {
-            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += SeeContents;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += SeeContents;
         }
 
         private void OnDestroy()
         {
-            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= SeeContents;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= SeeContents;
         }
 
         private void SeeContents(InputAction.CallbackContext callbackContext)

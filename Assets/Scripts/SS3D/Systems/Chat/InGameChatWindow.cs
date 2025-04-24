@@ -35,7 +35,7 @@ namespace SS3D.Engine.Chat
         public int GetTabCount() => _tabRow.childCount;
 
         protected override ChatChannel GetCurrentChatChannel() => 
-            Subsystems.Get<ChatSubSystem>().RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
+            SubSystems.Get<ChatSubSystem>().RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
 
         public void InitializeWithAllAvailableChannels()
         {
@@ -63,10 +63,10 @@ namespace SS3D.Engine.Chat
             _channelDropDown.options.Clear();
             _channelDropdownOptions.Clear();
             
-            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
-            PermissionSubSystem permissionSystem = Subsystems.Get<PermissionSubSystem>();
-            ChatSubSystem chatSystem = Subsystems.Get<ChatSubSystem>();
+            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
+            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
             
             foreach (string channelName in tabData.Channels)
             {

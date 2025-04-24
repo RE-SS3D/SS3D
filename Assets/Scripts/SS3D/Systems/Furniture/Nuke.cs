@@ -14,7 +14,7 @@ namespace SS3D.Systems.Furniture
         public void Detonate()
         {
             // Ends the round, regardless of how many objectives were completed
-            Subsystems.Get<GamemodeSubSystem>().EndRound();
+            SubSystems.Get<GamemodeSubSystem>().EndRound();
         }
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)

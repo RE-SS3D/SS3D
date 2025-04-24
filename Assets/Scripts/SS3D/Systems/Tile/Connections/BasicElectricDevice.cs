@@ -16,7 +16,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             base.OnStartServer();
 
-            ElectricitySubSystem electricitySystem = Subsystems.Get<ElectricitySubSystem>();
+            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
             if (electricitySystem.IsSetUp)
                 electricitySystem.AddElectricalElement(this);
             else
@@ -26,13 +26,13 @@ namespace SS3D.Systems.Tile.Connections
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            ElectricitySubSystem electricitySystem = Subsystems.Get<ElectricitySubSystem>();
+            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
             electricitySystem.RemoveElectricalElement(this);
         }
 
         private void OnElectricitySystemSetup()
         {
-            ElectricitySubSystem electricitySystem = Subsystems.Get<ElectricitySubSystem>();
+            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
             electricitySystem.AddElectricalElement(this);
         }
     }

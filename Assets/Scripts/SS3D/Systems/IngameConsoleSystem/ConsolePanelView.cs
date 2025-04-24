@@ -51,7 +51,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _inputSystem = Subsystems.Get<InputSubSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;

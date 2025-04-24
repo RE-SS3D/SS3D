@@ -173,7 +173,7 @@ namespace System.Electricity
                 _circuits.Add(new());
                 foreach (VerticeCoordinates coord in component)
                 {
-                    TileSubSystem tileSystem = Subsystems.Get<TileSubSystem>();
+                    TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
                     ITileLocation location = tileSystem.CurrentMap.GetTileLocation((TileLayer)coord.Layer, new(coord.X, 0f, coord.Y));
 
                     if (!location.TryGetPlacedObject(out PlacedTileObject placedObject, (Direction)coord.Direction)) continue;

@@ -37,7 +37,7 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-            _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
+            _controls = SubSystems.Get<InputSubSystem>().Inputs.Other;
             _controls.Fade.performed += HandleFadePerformed;
             _controls.Fade.canceled += HandleFadeCanceled;
         }

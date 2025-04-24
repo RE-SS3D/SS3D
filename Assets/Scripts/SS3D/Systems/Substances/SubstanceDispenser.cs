@@ -35,7 +35,7 @@ namespace SS3D.Content.Furniture.Generic
         protected override void OnStart()
         {
             base.OnStart();
-            registry = Subsystems.Get<SubstancesSubSystem>();
+            registry = SubSystems.Get<SubstancesSubSystem>();
             if (registry == null)
             {
                 Debug.LogError("SubstanceRegistry not found. Substances will be disabled.");

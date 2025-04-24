@@ -74,7 +74,7 @@ namespace SS3D.Systems.Rounds
 
             RoundState = RoundState.Ongoing;
             Log.Information(this, "Starting round tick", Logs.ServerOnly);
-            ChatSubSystem chatSystem = Subsystems.Get<ChatSubSystem>();
+            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
             ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
             // TODO: use captain character name here
             chatSystem.SendServerMessage(chatChannels.stationAlertsChannel, "Welcome aboard crew, you're under no captain. Enjoy!");

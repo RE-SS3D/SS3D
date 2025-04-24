@@ -374,7 +374,7 @@ namespace SS3D.Systems.Tile
 
             Clear();
 
-            TileSubSystem tileSystem = Subsystems.Get<TileSubSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
             foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
             {

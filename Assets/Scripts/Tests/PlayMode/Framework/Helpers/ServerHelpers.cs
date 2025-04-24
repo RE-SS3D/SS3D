@@ -60,7 +60,7 @@ namespace SS3D.Tests
 
         public static IEnumerator WaitUntilClientsLoaded(int amountOfClients, float timeout = 60f)
         {
-            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
             int currentOnlineSouls = 0;
             float startTime = Time.time;
 
@@ -89,8 +89,8 @@ namespace SS3D.Tests
         /// </summary>
         public static void SetAllPlayersReady()
         {
-            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
-            ReadyPlayersSubSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSubSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
+            ReadyPlayersSubSystem readyPlayersSystem = SubSystems.Get<ReadyPlayersSubSystem>();
             ChangePlayerReadyMessage msg;
                 
             foreach (Player player in playerSystem.OnlinePlayers)
@@ -102,8 +102,8 @@ namespace SS3D.Tests
 
         public static void SetPlayerReadiness(string Ckey, bool readiness)
         {
-            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
-            ReadyPlayersSubSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSubSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
+            ReadyPlayersSubSystem readyPlayersSystem = SubSystems.Get<ReadyPlayersSubSystem>();
             Player player = playerSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == Ckey);
             ChangePlayerReadyMessage msg = new ChangePlayerReadyMessage(Ckey, readiness);
             readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(player.LocalConnection, msg);
@@ -114,15 +114,15 @@ namespace SS3D.Tests
         /// </summary>
         public static void ChangeRoundState(bool running)
         {
-            RoundSubSystem roundSystem = Subsystems.Get<RoundSubSystem>();
+            RoundSubSystem roundSystem = SubSystems.Get<RoundSubSystem>();
             ChangeRoundStateMessage msg = new ChangeRoundStateMessage(running);
             roundSystem.ChangeRoundStateMessageStubBroadcast(msg);
         }
 
         public static void SpawnLatePlayer(string Ckey)
         {
-            PlayerSubSystem playerSystem = Subsystems.Get<PlayerSubSystem>();
-            EntitySubSystem entitySystem = Subsystems.Get<EntitySubSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
+            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
 
             Player player = playerSystem.GetPlayer(Ckey);
             entitySystem.CmdSpawnLatePlayer(player);

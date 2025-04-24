@@ -110,7 +110,7 @@ namespace SS3D.Systems.Inventory.Containers
             SetHandHighlight(PlayerHands.First(), true);
 
             // Set up hand related controls.
-            _controls = Subsystems.Get<InputSubSystem>().Inputs.Hotkeys;
+            _controls = SubSystems.Get<InputSubSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
 

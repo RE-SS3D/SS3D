@@ -67,10 +67,10 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void Setup()
         {
-            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
+            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
-            _inputSystem = Subsystems.Get<InputSubSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
 
             Controls controls = _inputSystem.Inputs;
 

@@ -156,7 +156,7 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool TryGetDisposalElementAbovePipe(out IDisposalElement disposalFurniture)
         {
-            TileSubSystem tileSystem = Subsystems.Get<TileSubSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             var map = tileSystem.CurrentMap;
 
             TileChunk currentChunk = map.GetChunk(_placedObject.gameObject.transform.position);
@@ -319,7 +319,7 @@ namespace SS3D.Systems.Tile.Connections
             if (placedDisposal != null)
                 neighbours.Add(placedDisposal);
 
-            TileSubSystem tileSystem = Subsystems.Get<TileSubSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             var map = tileSystem.CurrentMap;
             neighbours.AddRange(map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position));
             neighbours.RemoveAll(x => x == null);

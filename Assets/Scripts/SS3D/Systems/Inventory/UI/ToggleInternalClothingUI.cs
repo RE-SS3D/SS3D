@@ -20,7 +20,7 @@ namespace SS3D.Systems.Inventory.UI
             _internalClothingCanvas = GameObject.Find("InternalClothing").GetComponent<CanvasGroup>();
             _expandButton = GetComponent<Button>();
             _expandButton.onClick.AddListener(TaskOnClick);
-            Subsystems.Get<InputSubSystem>().Inputs.Hotkeys.ToggleInternalClothing.performed += HandleToggleClothing;
+            SubSystems.Get<InputSubSystem>().Inputs.Hotkeys.ToggleInternalClothing.performed += HandleToggleClothing;
         }
 
         private void TaskOnClick()

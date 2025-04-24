@@ -161,7 +161,7 @@ namespace SS3D.Systems.Roles
         /// <param name="role"></param>
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
-            ItemSubSystem itemSystem = Subsystems.Get<ItemSubSystem>();
+            ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             HumanInventory inventory = entity.GetComponent<HumanInventory>();
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
@@ -247,7 +247,7 @@ namespace SS3D.Systems.Roles
                 return;
             }
 
-            ItemSubSystem itemSystem = Subsystems.Get<ItemSubSystem>();
+            ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             itemSystem.SpawnItemInContainer(itemId, container);
         }
     }

@@ -13,7 +13,7 @@
         {
             base.OnAwake();
 
-            Subsystems.Register(this);
+            SubSystems.Register(this);
         }
 
         /// <summary>
@@ -23,7 +23,7 @@
         {
             base.OnDestroyed();
 
-            Subsystems.Unregister(this);
+            SubSystems.Unregister(this);
         }
     }
 }

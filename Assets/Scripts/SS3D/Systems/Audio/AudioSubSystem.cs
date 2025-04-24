@@ -44,13 +44,13 @@ namespace SS3D.Systems.Audio
         protected override void OnAwake()
         {
             base.OnAwake();
-            Subsystems.Register(this);
+            SubSystems.Register(this);
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            Subsystems.Unregister(this);
+            SubSystems.Unregister(this);
         }
 
         private void Start()

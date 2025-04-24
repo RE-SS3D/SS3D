@@ -39,7 +39,7 @@ namespace SS3D.Systems.Intro
              {
                  Destroy(_temporaryAudioSource);
             
-                Subsystems.Get<NetworkSessionSubSystem>().StartNetworkSession();
+                SubSystems.Get<NetworkSessionSubSystem>().StartNetworkSession();
             
                  _introUiCanvasGroup.alpha = 0;
                  _connectionUiCanvasGroup.alpha = 1;
@@ -59,7 +59,7 @@ namespace SS3D.Systems.Intro
             {
                 _introUiCanvasGroup.DOFade(0, _fadeOutDuration).SetDelay(_splashScreenFreezeDuration).OnComplete(() =>
                 {
-                    Subsystems.Get<NetworkSessionSubSystem>().StartNetworkSession();
+                    SubSystems.Get<NetworkSessionSubSystem>().StartNetworkSession();
 
                     _connectionUiCanvasGroup.DOFade(1, _fadeInDuration).SetDelay(2);
                 });

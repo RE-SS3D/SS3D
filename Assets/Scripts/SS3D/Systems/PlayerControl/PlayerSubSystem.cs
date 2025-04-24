@@ -180,7 +180,7 @@ namespace SS3D.Systems.PlayerControl
                 {
                     Log.Information(this, $"Adding ServerOwner permission to server owner: {ckey}", Logs.ServerOnly, ckey);
 
-                    Subsystems.Get<PermissionSubSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
+                    SubSystems.Get<PermissionSubSystem>().ChangeUserPermission(ckey, ServerRoleTypes.ServerOwner);
                 }
 
                 _serverPlayers.Add(ckey, player);
