@@ -1,9 +1,9 @@
 ﻿namespace SS3D.Core.Behaviours
 {
-    /// <summary>
-    /// Used on networked objects that wont have two of the same time. Should not be instantiated at runtime.
+    /// Used on networked objects that won't have two of them at the same time.
+    /// Should not be instantiated at runtime.
     /// </summary>
-    public class NetworkSystem : NetworkActor
+    public class NetworkSystem : NetworkActor, ISubSystem
     {
         /// <summary>
         /// Registers the system on awake.
@@ -11,12 +11,17 @@
         protected override void OnAwake()
         {
             base.OnAwake();
+
             Subsystems.Register(this);
         }
 
+        /// <summary>
+        /// Unregisters the system on destroyed.
+        /// </summary>
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
+
             Subsystems.Unregister(this);
         }
     }
