@@ -106,7 +106,7 @@ namespace SS3D.Logging
 
 		private static void InnerLog(object sender, Exception exception, string messageTemplate, LogEventLevel level, Logs infoLog = Logs.Generic, params object[] propertyValues)
 		{
-            IEnumerable<object> properties = new object[] { infoLog }.Concat(propertyValues);
+            object[] properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
             Serilog.ILogger logger = Serilog.Log.Logger;
 
 			if (sender != null)
@@ -117,22 +117,22 @@ namespace SS3D.Logging
 			switch (level)
 			{
 				case LogEventLevel.Verbose:
-					logger.Verbose(exception, messageTemplate, properties);
+					logger.Verbose(exception, "{InfoLog}" + messageTemplate, properties);
 					break;
 				case LogEventLevel.Debug:
-					logger.Debug(exception, messageTemplate, properties);
+					logger.Debug(exception, "{InfoLog}" + messageTemplate, properties);
 					break;
 				case LogEventLevel.Information:
-					logger.Information(exception, messageTemplate, properties);
+					logger.Information(exception, "{InfoLog}" + messageTemplate, properties);
 					break;
 				case LogEventLevel.Warning:
-					logger.Warning(exception, messageTemplate, properties);
+					logger.Warning(exception, "{InfoLog}" + messageTemplate, properties);
 					break;
 				case LogEventLevel.Error:
-					logger.Error(exception, messageTemplate, properties);
+					logger.Error(exception, "{InfoLog}" + messageTemplate, properties);
 					break;
 				case LogEventLevel.Fatal:
-					logger.Fatal(exception, messageTemplate, properties);
+					logger.Fatal(exception, "{InfoLog}" + messageTemplate, properties);
 					break;
 			}
 		}
