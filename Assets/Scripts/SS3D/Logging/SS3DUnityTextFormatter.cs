@@ -1,4 +1,4 @@
-using Serilog.Events;
+﻿using Serilog.Events;
 using Serilog.Formatting.Display;
 using Serilog.Parsing;
 using System;
@@ -10,21 +10,25 @@ using Serilog.Formatting.Json;
 
 namespace SS3D.Logging
 {
-/// <summary>
-/// Text formatter for Log message going to Unity console. Adds colors, properly renders Serializable class and structures.
-/// Heavily inspired by MessageTemplateTextFormatter.
-/// Sadly, since many static methods are internal to Serilog, it was necessary to write an equivalent of some of them in here.
-/// </summary>
+    /// <summary>
+    /// Text formatter for Log message going to Unity console.
+    /// Adds colors, properly renders Serializable class and structures.
+    /// Heavily inspired by MessageTemplateTextFormatter.
+    /// Sadly, since many static methods are internal to Serilog, it was necessary to write an equivalent of some of them in here.
+    /// </summary>
     public class SS3DUnityTextFormatter : ITextFormatter
     {
+        private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
+
         private readonly MessageTemplate _outputTemplate;
         private readonly IFormatProvider _formatProvider;
-        private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
+
         public SS3DUnityTextFormatter(string outputTemplate, IFormatProvider formatProvider = null)
         {
             _outputTemplate = new MessageTemplateParser().Parse(outputTemplate);
             _formatProvider = formatProvider;
         }
+
         /// <summary>
         /// Format the logEvent to look nice in Unity console. 
         /// </summary>
@@ -32,7 +36,6 @@ namespace SS3D.Logging
         /// <param name="output"></param>
         public void Format(LogEvent logEvent, TextWriter output)
         {
-
             foreach (MessageTemplateToken token in _outputTemplate.Tokens)
             {
                 if (token is TextToken tt)
@@ -47,23 +50,27 @@ namespace SS3D.Logging
                 {
                     continue;
                 }
+
                 if (pt.PropertyName == OutputProperties.ExceptionPropertyName)
                 {
                     output.Write(logEvent.Exception == null ? "" : logEvent.Exception + Environment.NewLine);
                     continue;
                 }
+
                 if (pt.PropertyName == OutputProperties.MessagePropertyName)
                 {
                     RenderMessageTemplate(logEvent.MessageTemplate, logEvent.Properties, output);
                     continue;
                 }
+
                 if (pt.PropertyName == OutputProperties.TimestampPropertyName)
                 {
                     ScalarValue scalarValue = new ScalarValue(logEvent.Timestamp);
                     scalarValue.Render(output, pt.Format, _formatProvider);
                     continue;
                 }
-                if(pt.PropertyName == "SourceContext")
+
+                if (pt.PropertyName == "SourceContext")
                 {
                     RenderSourceContext(logEvent, output);
                 }
@@ -86,9 +93,7 @@ namespace SS3D.Logging
         /// <param name="messageTemplate">The template to use to render the message</param>
         /// <param name="properties"> The properties in the message.</param>
         /// <param name="output"> The output.</param>
-        /// <param name="format"></param>
-        /// <param name="formatProvider"></param>
-        private void RenderMessageTemplate(MessageTemplate messageTemplate, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output, string format = null)
+        private void RenderMessageTemplate(MessageTemplate messageTemplate, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output)
         {
             foreach (MessageTemplateToken token in messageTemplate.Tokens)
             {
@@ -100,8 +105,11 @@ namespace SS3D.Logging
 
                 PropertyToken pt = (PropertyToken)token;
 
-                //InfoLog property is only used to color SourceContext, see RenderSourceContext method.
-                if (pt.PropertyName == "InfoLog") continue;
+                // InfoLog property is only used to color SourceContext, see RenderSourceContext method.
+                if (pt.PropertyName == "InfoLog")
+                {
+                    continue;
+                }
 
                 RenderPropertyToken(pt, properties, output);
             }
@@ -113,6 +121,7 @@ namespace SS3D.Logging
             {
                 return;
             }
+
             // Render a property value using the JsonValueFormatter, which include scalar values(int, string, ..), or structures.
             JsonValueFormatter.Format(propertyValue, output);
         }
@@ -137,9 +146,13 @@ namespace SS3D.Logging
             if (ScalarSourceContextPropertyValue?.Value is string sourceContext)
             {
                 if (ScalarInfoLogPropertyValue?.Value is Logs InfoLogs)
+                {
                     sourceContext = $"[{Colorize(sourceContext, InfoLogs)}]";
+                }
                 else
+                {
                     sourceContext = $"[{Colorize(sourceContext)}]";
+                }
 
                 output.Write(sourceContext);
             }

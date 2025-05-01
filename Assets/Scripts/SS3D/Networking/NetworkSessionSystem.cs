@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using Coimbra.Services.Events;
 using FishNet;
 using FishNet.Managing;
