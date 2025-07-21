@@ -457,7 +457,7 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Clear all items in the scene, including those not tracked by TileMap
+        /// Clear items in the scene that could conflict with loaded items
         /// </summary>
         private void ClearAllItemsInScene()
         {
@@ -472,7 +472,13 @@ namespace SS3D.Systems.Tile
                     continue;
                 }
                 
-                // Destroy items that are in the world (not in containers)
+                // Skip items that already have PlacedItemObject (they're already tracked)
+                if (item.GetComponent<PlacedItemObject>() != null)
+                {
+                    continue;
+                }
+                
+                // Destroy items that are in the world but not tracked by TileMap
                 if (item.gameObject != null)
                 {
                     DestroyImmediate(item.gameObject);

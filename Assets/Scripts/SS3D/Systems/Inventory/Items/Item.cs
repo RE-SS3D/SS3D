@@ -7,6 +7,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
@@ -20,7 +21,6 @@ using UnityEngine.Serialization;
 using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 #endif
-using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Inventory.Items
 {
@@ -55,10 +55,6 @@ namespace SS3D.Systems.Inventory.Items
         [SerializeField] private Rigidbody _rigidbody;
 
         private Sprite _sprite;
-
-        [SerializeField]
-        private ItemObjectSo _itemObjectSo;
-        public ItemObjectSo ItemObjectSo => _itemObjectSo;
 
         [Header("Attachment settings")]
 
