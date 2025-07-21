@@ -15,17 +15,30 @@ namespace SS3D.Systems.Tile
     public class PlacedItemObject : NetworkBehaviour
     {
         /// <summary>
-        /// Creates a new PlacedItemObject from a prefab at a given position and rotation. Uses NetworkServer.Spawn() if a server is running.
+        /// Creates a new PlacedItemObject from an existing item GameObject at a given position and rotation.
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <param name="origin"></param>
         /// <param name="rotation"></param>
         /// <param name="itemSo"></param>
+        /// <param name="existingItem">The existing Item GameObject to add the PlacedItemObject component to</param>
         /// <returns></returns>
-        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo)
+        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
         {
-            GameObject placedGameObject = Instantiate(itemSo.prefab);
-            placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
+            GameObject placedGameObject;
+            
+            if (existingItem != null)
+            {
+                // Use the existing item GameObject
+                placedGameObject = existingItem;
+                placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
+            }
+            else
+            {
+                // Create a new GameObject (for loading from save files)
+                placedGameObject = Instantiate(itemSo.prefab);
+                placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
+            }
 
             PlacedItemObject placedObject = placedGameObject.GetComponent<PlacedItemObject>();
             if (placedObject == null)
@@ -65,6 +78,18 @@ namespace SS3D.Systems.Tile
             _worldPosition = worldPosition;
             _rotation = rotation;
             _itemSo = itemSo;
+        }
+
+        /// <summary>
+        /// Updates the position and rotation of this placed item object.
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <param name="rotation"></param>
+        public void UpdatePosition(Vector3 worldPosition, Quaternion rotation)
+        {
+            _worldPosition = worldPosition;
+            _rotation = rotation;
+            transform.SetPositionAndRotation(worldPosition, rotation);
         }
 
         /// <summary>

@@ -20,6 +20,7 @@ using UnityEngine.Serialization;
 using AssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 #endif
+using SS3D.Systems.Tile;
 
 namespace SS3D.Systems.Inventory.Items
 {
@@ -54,6 +55,10 @@ namespace SS3D.Systems.Inventory.Items
         [SerializeField] private Rigidbody _rigidbody;
 
         private Sprite _sprite;
+
+        [SerializeField]
+        private ItemObjectSo _itemObjectSo;
+        public ItemObjectSo ItemObjectSo => _itemObjectSo;
 
         [Header("Attachment settings")]
 

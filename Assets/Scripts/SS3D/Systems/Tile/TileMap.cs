@@ -296,9 +296,30 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo)
+        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null)
         {
-            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo);
+            // Handle existing items that already have a PlacedItemObject component
+            if (existingItem != null)
+            {
+                var existingPlacedItem = existingItem.GetComponent<PlacedItemObject>();
+                if (existingPlacedItem != null)
+                {
+                    if (_items.Contains(existingPlacedItem))
+                    {
+                        // Item is already tracked, just update its position
+                        existingPlacedItem.UpdatePosition(worldPosition, rotation);
+                        return;
+                    }
+                    else
+                    {
+                        // Item has PlacedItemObject but not tracked, remove the old component
+                        DestroyImmediate(existingPlacedItem);
+                    }
+                }
+            }
+            
+            // Create new PlacedItemObject and add to tracking
+            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem);
             placedItem.transform.SetParent(transform);
             _items.Add(placedItem);
         }
@@ -329,12 +350,21 @@ namespace SS3D.Systems.Tile
 
             _chunks.Clear();
 
+            // Clear items list safely, checking for null references
+            var itemsToRemove = new List<PlacedItemObject>();
             foreach (PlacedItemObject item in _items)
             {
-                item.DestroySelf();
+                if (item != null && item.gameObject != null)
+                {
+                    item.DestroySelf();
+                }
+                itemsToRemove.Add(item);
             }
-
-            _items.Clear();
+            
+            foreach (var item in itemsToRemove)
+            {
+                _items.Remove(item);
+            }
         }
 
         /// <summary>
@@ -372,7 +402,11 @@ namespace SS3D.Systems.Tile
                 return;
             }
 
+            // Clear TileMap data first (this clears the _items list)
             Clear();
+            
+            // Then clear all items in the scene, not just those tracked by TileMap
+            ClearAllItemsInScene();
 
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
@@ -418,6 +452,30 @@ namespace SS3D.Systems.Tile
                         var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
                         obj.UpdateAdjacencies();
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clear all items in the scene, including those not tracked by TileMap
+        /// </summary>
+        private void ClearAllItemsInScene()
+        {
+            // Find all Item components in the scene
+            var allItems = GameObject.FindObjectsOfType<SS3D.Systems.Inventory.Items.Item>();
+            
+            foreach (var item in allItems)
+            {
+                // Skip items that are in containers (player inventory, etc.)
+                if (item.Container != null)
+                {
+                    continue;
+                }
+                
+                // Destroy items that are in the world (not in containers)
+                if (item.gameObject != null)
+                {
+                    DestroyImmediate(item.gameObject);
                 }
             }
         }
