@@ -137,7 +137,7 @@ namespace SS3D.Systems.Inventory.Containers
             TileMap tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
             if (tileMap != null)
             {
-                var itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset.Id) as ItemObjectSo;
+                ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset.Id) as ItemObjectSo;
                 if (itemObjectSo != null)
                 {
                     tileMap.PlaceItemObject(position, rotation, itemObjectSo, item.gameObject);
