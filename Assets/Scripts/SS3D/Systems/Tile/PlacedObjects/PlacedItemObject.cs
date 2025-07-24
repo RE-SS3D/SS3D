@@ -31,14 +31,12 @@ namespace SS3D.Systems.Tile
             {
                 // Use the existing item GameObject
                 placedGameObject = existingItem;
-                placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
             }
             else
             {
-                // Create a new GameObject (for loading from save files)
                 placedGameObject = Instantiate(itemSo.prefab);
-                placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
             }
+            placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
 
             PlacedItemObject placedObject = placedGameObject.GetComponent<PlacedItemObject>();
             if (placedObject == null)
