@@ -134,7 +134,7 @@ namespace SS3D.Systems.Inventory.Containers
             ItemUtility.Place(item, position, rotation);
 
             // Register with TileMap for saving
-            var tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
+            TileMap tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
             if (tileMap != null)
             {
                 var itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset.Id) as ItemObjectSo;
