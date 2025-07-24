@@ -15,7 +15,7 @@ namespace SS3D.Systems.Tile
     public class PlacedItemObject : NetworkBehaviour
     {
         /// <summary>
-        /// Creates a new PlacedItemObject from an existing item GameObject at a given position and rotation.
+        ///  Places an item on the tilemap at a given position and rotation
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <param name="origin"></param>
