@@ -301,7 +301,7 @@ namespace SS3D.Systems.Tile
             // Handle existing items that already have a PlacedItemObject component
             if (existingItem != null)
             {
-                var existingPlacedItem = existingItem.GetComponent<PlacedItemObject>();
+                PlacedItemObject existingPlacedItem = existingItem.GetComponent<PlacedItemObject>();
                 if (existingPlacedItem != null)
                 {
                     if (_items.Contains(existingPlacedItem))
