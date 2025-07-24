@@ -7,7 +7,6 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Data.AssetDatabases;
-using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
