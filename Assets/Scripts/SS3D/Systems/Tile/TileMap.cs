@@ -462,18 +462,13 @@ namespace SS3D.Systems.Tile
         private void ClearAllItemsInScene()
         {
             // Find all Item components in the scene
-            var allItems = GameObject.FindObjectsOfType<SS3D.Systems.Inventory.Items.Item>();
+            Item[] allItems = FindObjectsOfType<Item>();
             
-            foreach (var item in allItems)
+            foreach (Item item in allItems)
             {
                 // Skip items that are in containers (player inventory, etc.)
-                if (item.Container != null)
-                {
-                    continue;
-                }
-                
-                // Skip items that already have PlacedItemObject (they're already tracked)
-                if (item.GetComponent<PlacedItemObject>() != null)
+                // and items that already have PlacedItemObject (they're already tracked)
+                if (item.Container != null || item.GetComponent<PlacedItemObject>() != null)
                 {
                     continue;
                 }
