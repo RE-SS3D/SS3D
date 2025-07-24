@@ -354,16 +354,16 @@ namespace SS3D.Systems.Tile
             var itemsToRemove = new List<PlacedItemObject>();
             foreach (PlacedItemObject item in _items)
             {
+                while (_items.Count > 0)
+            {
+                PlacedItemObject item = _items.First();
                 if (item != null && item.gameObject != null)
                 {
                     item.DestroySelf();
                 }
-                itemsToRemove.Add(item);
+                
+                _items.RemoveAt(0);
             }
-            
-            foreach (var item in itemsToRemove)
-            {
-                _items.Remove(item);
             }
         }
 
