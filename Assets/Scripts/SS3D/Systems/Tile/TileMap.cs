@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Inventory.Items;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -341,6 +342,19 @@ namespace SS3D.Systems.Tile
             _items.Remove(toRemove);
         }
 
+        /// <summary>
+        /// Remove a specific PlacedItemObject from TileMap tracking without destroying the GameObject.
+        /// This is used when items are picked up and placed in containers.
+        /// </summary>
+        /// <param name="placedItemObject">The PlacedItemObject to remove from tracking</param>
+        public void RemovePlacedItemFromTracking(PlacedItemObject placedItemObject)
+        {
+            if (placedItemObject != null && _items.Contains(placedItemObject))
+            {
+                _items.Remove(placedItemObject);
+            }
+        }
+
         public void Clear()
         {
             foreach (TileChunk chunk in _chunks.Values)
@@ -351,10 +365,7 @@ namespace SS3D.Systems.Tile
             _chunks.Clear();
 
             // Clear items list safely, checking for null references
-            var itemsToRemove = new List<PlacedItemObject>();
-            foreach (PlacedItemObject item in _items)
-            {
-                while (_items.Count > 0)
+            while (_items.Count > 0)
             {
                 PlacedItemObject item = _items.First();
                 if (item != null && item.gameObject != null)
@@ -364,11 +375,12 @@ namespace SS3D.Systems.Tile
                 
                 _items.RemoveAt(0);
             }
-            }
         }
 
         /// <summary>
         /// Returns a new SaveObject for storing the entire map.
+        /// Note: Items in player inventory (containers) are not saved as they have their PlacedItemObject
+        /// component removed when picked up. Only items placed in the world are saved.
         /// </summary>
         /// <returns></returns>
         public SavedTileMap Save()
@@ -406,7 +418,7 @@ namespace SS3D.Systems.Tile
             Clear();
             
             // Then clear all items in the scene, not just those tracked by TileMap
-            ClearAllItemsInScene();
+            ClearUntrackedItems();
 
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
@@ -457,9 +469,9 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
-        /// Clear items in the scene that could conflict with loaded items
+        /// Clear untracked items in the scene that are not in containers and don't have a PlacedItemObject component
         /// </summary>
-        private void ClearAllItemsInScene()
+        private void ClearUntrackedItems()
         {
             // Find all Item components in the scene
             Item[] allItems = FindObjectsOfType<Item>();
@@ -476,6 +488,7 @@ namespace SS3D.Systems.Tile
                 // Destroy items that are in the world but not tracked by TileMap
                 if (item.gameObject != null)
                 {
+                    Debug.LogWarning($"Destroying untracked item: {item.gameObject.name} at position {item.gameObject.transform.position}");
                     DestroyImmediate(item.gameObject);
                 }
             }

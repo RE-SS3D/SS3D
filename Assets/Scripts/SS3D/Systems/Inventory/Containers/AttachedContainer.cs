@@ -1,5 +1,6 @@
 ﻿using FishNet.Component.Transforming;
 using SS3D.Core.Behaviours;
+using SS3D.Core;
 using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
 using System;
@@ -9,6 +10,7 @@ using FishNet.Object.Synchronizing;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Logging;
+using SS3D.Systems.Tile;
 using UnityEditor;
 
 namespace SS3D.Systems.Inventory.Containers
@@ -318,6 +320,21 @@ namespace SS3D.Systems.Inventory.Containers
 			if (item == null) return;
 
 			item.Freeze();
+
+            // Remove PlacedItemObject component if it exists to prevent saving items in containers
+            PlacedItemObject placedItemObject = item.GetComponent<PlacedItemObject>();
+            if (placedItemObject != null)
+            {
+                // Remove from TileMap tracking
+                TileMap tileMap = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+                if (tileMap != null)
+                {
+                    tileMap.RemovePlacedItemFromTracking(placedItemObject);
+                }
+                
+                // Destroy the PlacedItemObject component
+                DestroyImmediate(placedItemObject);
+            }
 
             // Make invisible
             if (HideItems)
