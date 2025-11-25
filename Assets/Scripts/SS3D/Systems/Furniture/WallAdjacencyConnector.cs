@@ -45,8 +45,8 @@ namespace SS3D.Systems.Tile.Connections
                 isConnected &= IsConnectedToDoor(neighbourObject);
             }
 
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
 
             // Needed for a weird edge case when you put walls all around a door. Will avoid connecting
             // to a wall in front or behind the door, if this wall is itself connected to door.
@@ -87,8 +87,8 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool TryGetOnLeftOrRightDoor(out PlacedTileObject door)
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
             PlacedTileObject[] neighbours = map.GetNeighbourPlacedObjects(PlacedObject.Layer, PlacedObject.transform.position);
 
             foreach (PlacedTileObject neighbour in neighbours)

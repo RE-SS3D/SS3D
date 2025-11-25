@@ -79,11 +79,11 @@ namespace System.Electricity
         {
             if (!isEnabled)
             {
-                Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
+                Subsystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
             }
             else
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject, true, 0.7f, 1, 1, 10);
+                Subsystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject, true, 0.7f, 1, 1, 10);
             }
         }
 

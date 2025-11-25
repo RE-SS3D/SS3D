@@ -53,11 +53,11 @@ namespace SS3D.Systems.Audio
 
             if (_audioOn)
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[_currentMusic], GameObject.transform.position, NetworkObject, false, 0.7f, 1, 1, 5);
+                Subsystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, _songs[_currentMusic], GameObject.transform.position, NetworkObject, false, 0.7f, 1, 1, 5);
             }
             else
             {
-                Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
+                Subsystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
             }
         }
 
@@ -68,10 +68,10 @@ namespace SS3D.Systems.Audio
                 return;
             }
 
-            Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
-            Subsystems.Get<AudioSystem>().SetTimeAudioSource(NetworkObject, 0f);
+            Subsystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
+            Subsystems.Get<AudioSubSystem>().SetTimeAudioSource(NetworkObject, 0f);
             _currentMusic = (_currentMusic + 1) % _songs.Count;
-            Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, _songs[_currentMusic], GameObject.transform.position, NetworkObject, false, 0.7f, 1, 1, 5);
+            Subsystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, _songs[_currentMusic], GameObject.transform.position, NetworkObject, false, 0.7f, 1, 1, 5);
         }
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -109,7 +109,7 @@ namespace SS3D.Systems.Audio
             if (_audioOn && powerStatus != PowerStatus.Powered)
             {
                 _audioOn = false;
-                Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
+                Subsystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
             }
         }
     }

@@ -96,8 +96,8 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool TryGetPipeBelow(out PlacedTileObject pipe)
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
 
             TileChunk currentChunk = map.GetChunk(_placedObject.gameObject.transform.position);
             SingleTileLocation pipeLocation = (SingleTileLocation)currentChunk.GetTileLocation(TileLayer.Disposal, _placedObject.Origin.x, _placedObject.Origin.y);

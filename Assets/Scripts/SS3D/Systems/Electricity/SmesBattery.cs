@@ -42,13 +42,13 @@ namespace System.Electricity
             GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleBatteryToggle;
             HandleBatteryToggle(IsOn);
 
-            Subsystems.Get<ElectricitySystem>().OnTick += HandleTick;
+            Subsystems.Get<ElectricitySubSystem>().OnTick += HandleTick;
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            Subsystems.Get<ElectricitySystem>().OnTick -= HandleTick;
+            Subsystems.Get<ElectricitySubSystem>().OnTick -= HandleTick;
         }
 
         protected override void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer)

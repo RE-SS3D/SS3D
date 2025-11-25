@@ -7,7 +7,6 @@ using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Hacks
 {
@@ -32,7 +31,7 @@ namespace SS3D.Hacks
             base.OnStartClient();
             if (!IsOwner) return;
 
-            _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
             _controls.Ragdoll.performed += HandleKnockdown;
         }
 

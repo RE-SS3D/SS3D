@@ -26,7 +26,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             }
 
             string ret = string.Empty;
-            List<Player> players = Subsystems.Get<PlayerSystem>().OnlinePlayers.ToList();
+            List<Player> players = Subsystems.Get<PlayerSubSystem>().OnlinePlayers.ToList();
             foreach (Player i in players)
             {
                 ret += i.Ckey + "\t";

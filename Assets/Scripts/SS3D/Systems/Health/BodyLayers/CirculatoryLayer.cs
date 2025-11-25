@@ -101,7 +101,7 @@ namespace SS3D.Systems.Health
         [Server]
         public void Bleed()
         {
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            SubstancesSubSystem registry = Subsystems.Get<SubstancesSubSystem>();
             Substance blood = registry.FromType(SubstanceType.Blood);
             BodyPart.HealthController.Circulatory.Container.RemoveSubstance(blood, HealthConstants.MaxBloodLost * RelativeDamage);
 
@@ -121,7 +121,7 @@ namespace SS3D.Systems.Health
         [Server]
         public void RegisterToOxygenConsumerSystem()
         {
-            OxygenConsumerSystem registry = Subsystems.Get<OxygenConsumerSystem>();
+            OxygenConsumerSubSystem registry = Subsystems.Get<OxygenConsumerSubSystem>();
             registry.RegisterConsumer(this);
         }
 
@@ -131,7 +131,7 @@ namespace SS3D.Systems.Health
         [Server]
         public override void Cleanlayer()
         {
-            OxygenConsumerSystem registry = Subsystems.Get<OxygenConsumerSystem>();
+            OxygenConsumerSubSystem registry = Subsystems.Get<OxygenConsumerSubSystem>();
             registry.UnregisterConsumer(this);
         }
 

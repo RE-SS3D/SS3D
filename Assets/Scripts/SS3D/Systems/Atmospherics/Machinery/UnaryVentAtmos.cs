@@ -61,12 +61,12 @@ namespace SS3D.Systems.Atmospherics
                 return;
             }
 
-            if (!Subsystems.Get<PipeSystem>().TryGetAtmosPipe(transform.position, _pipeLayer, out IAtmosPipe pipe))
+            if (!Subsystems.Get<PipeSubSystem>().TryGetAtmosPipe(transform.position, _pipeLayer, out IAtmosPipe pipe))
             {
                 return;
             }
 
-            AtmosObject atmosEnv = Subsystems.Get<AtmosEnvironmentSystem>().GetAtmosContainer(transform.position).AtmosObject;
+            AtmosObject atmosEnv = Subsystems.Get<AtmosEnvironmentSubSystem>().GetAtmosContainer(transform.position).AtmosObject;
             AtmosObject atmosPipe = pipe.AtmosObject;
 
             if ((_pressureMode == PressureEqualizingMode.External && atmosEnv.Pressure > _targetPressure) || (_pressureMode == PressureEqualizingMode.Internal && atmosPipe.Pressure > _targetPressure))
@@ -86,13 +86,13 @@ namespace SS3D.Systems.Atmospherics
 
             if (_operatingMode == OperatingMode.Pump)
             {
-                Subsystems.Get<AtmosEnvironmentSystem>().AddGasses(transform.position, toTransfer);
-                Subsystems.Get<PipeSystem>().RemoveCoreGasses(transform.position, toTransfer, _pipeLayer);
+                Subsystems.Get<AtmosEnvironmentSubSystem>().AddGasses(transform.position, toTransfer);
+                Subsystems.Get<PipeSubSystem>().RemoveCoreGasses(transform.position, toTransfer, _pipeLayer);
             }
             else
             {
-                Subsystems.Get<AtmosEnvironmentSystem>().RemoveGasses(transform.position, toTransfer);
-                Subsystems.Get<PipeSystem>().AddCoreGasses(transform.position, toTransfer, _pipeLayer);
+                Subsystems.Get<AtmosEnvironmentSubSystem>().RemoveGasses(transform.position, toTransfer);
+                Subsystems.Get<PipeSubSystem>().AddCoreGasses(transform.position, toTransfer, _pipeLayer);
             }
         }
 

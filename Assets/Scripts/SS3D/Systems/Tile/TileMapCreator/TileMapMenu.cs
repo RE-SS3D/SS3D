@@ -10,7 +10,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -19,7 +18,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// and saving tilemaps.
     /// This scripts orchestrate a bunch of other scripts related to making the menu work.
     /// </summary>
-    public class TileMapMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
+    public class TileMapMenu : NetworkSubSystem, IPointerEnterHandler, IPointerExitHandler
     {
         /// <summary>
         /// Enum to switch between tabs.
@@ -38,7 +37,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private Controls.TileCreatorActions _controls;
 
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         private PanelTab _tab;
 
@@ -90,10 +89,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void OnPointerEnter(PointerEventData eventData)
         {
             MouseOverUI = true;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            _inputSubSystem.ToggleBinding("<Mouse>/scroll/y", false);
             if (!_hologramManager.IsDragging)
             {
-                _inputSystem.ToggleAction(_controls.Place, false);
+                _inputSubSystem.ToggleAction(_controls.Place, false);
             }
         }
 
@@ -103,10 +102,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void OnPointerExit(PointerEventData eventData)
         {
             MouseOverUI = false;
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+            _inputSubSystem.ToggleBinding("<Mouse>/scroll/y", true);
             if (!_hologramManager.IsDragging)
             {
-                _inputSystem.ToggleAction(_controls.Place, true);
+                _inputSubSystem.ToggleAction(_controls.Place, true);
             }
         }
 
@@ -145,7 +144,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleInputFieldSelect()
         {
-            _inputSystem.ToggleAllActions(false);
+            _inputSubSystem.ToggleAllActions(false);
         }
 
         /// <summary>
@@ -153,7 +152,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleInputFieldDeselect()
         {
-            _inputSystem.ToggleAllActions(true);
+            _inputSubSystem.ToggleAllActions(true);
         }
 
         protected override void OnStart()
@@ -161,9 +160,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             base.OnStart();
             _tab = PanelUtils.GetAssociatedTab(GetComponent<RectTransform>());
             ShowUI(false);
-            _inputSystem = Subsystems.Get<InputSystem>();
-            _controls = _inputSystem.Inputs.TileCreator;
-            _inputSystem.ToggleAction(_controls.ToggleMenu, true);
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
+            _controls = _inputSubSystem.Inputs.TileCreator;
+            _inputSubSystem.ToggleAction(_controls.ToggleMenu, true);
             _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 
@@ -174,13 +173,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (_enabled)
             {
-                _inputSystem.ToggleActionMap(_controls, false, new InputAction[] { _controls.ToggleMenu });
-                _inputSystem.ToggleCollisions(_controls, true);
+                _inputSubSystem.ToggleActionMap(_controls, false, new InputAction[] { _controls.ToggleMenu });
+                _inputSubSystem.ToggleCollisions(_controls, true);
             }
             else
             {
-                _inputSystem.ToggleActionMap(_controls, true, new InputAction[] { _controls.ToggleMenu });
-                _inputSystem.ToggleCollisions(_controls, false);
+                _inputSubSystem.ToggleActionMap(_controls, true, new InputAction[] { _controls.ToggleMenu });
+                _inputSubSystem.ToggleCollisions(_controls, false);
             }
 
             _enabled = !_enabled;

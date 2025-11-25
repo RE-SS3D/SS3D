@@ -105,7 +105,7 @@ namespace SS3D.Systems.Audio
 
         protected override void OnStart()
         {
-            Subsystems.Get<EntitySystem>().ClientSpawn += HandleClientSpawn;
+            Subsystems.Get<EntitySubSystem>().ClientSpawn += HandleClientSpawn;
             SetVolumeOfAll(0f);
         }
 

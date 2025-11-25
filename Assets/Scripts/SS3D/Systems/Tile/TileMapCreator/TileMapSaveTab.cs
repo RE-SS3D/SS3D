@@ -76,7 +76,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleSaveMapButton()
         {
-            if (Subsystems.Get<TileSystem>().MapNameAlreadyExist(_saveInputField.text))
+            if (Subsystems.Get<TileSubSystem>().MapNameAlreadyExist(_saveInputField.text))
             {
                 _confirmOverWriteButton.SetActive(true);
             }
@@ -94,7 +94,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                Subsystems.Get<TileSystem>().Save(mapName, true);
+                Subsystems.Get<TileSubSystem>().Save(mapName, true);
                 DisplaySaveText(mapName);
             }
             else

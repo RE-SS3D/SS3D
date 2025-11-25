@@ -2,12 +2,12 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data.Generated;
 using SS3D.Systems.Audio;
+using SS3D.Systems.Inputs;
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using AudioType = UnityEngine.AudioType;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Combat.Interactions
 {
@@ -38,8 +38,8 @@ namespace SS3D.Systems.Combat.Interactions
         public override void OnStartClient()
         {
             base.OnStartClient();
-            Subsystems.Get<InputSystem>().Inputs.GunFire.Fire.started += ctx => _isHolding = true;
-            Subsystems.Get<InputSystem>().Inputs.GunFire.Fire.canceled += ctx => _isHolding = false;
+            Subsystems.Get<InputSubSystem>().Inputs.GunFire.Fire.started += ctx => _isHolding = true;
+            Subsystems.Get<InputSubSystem>().Inputs.GunFire.Fire.canceled += ctx => _isHolding = false;
         }
 
         protected void Update()
@@ -59,7 +59,7 @@ namespace SS3D.Systems.Combat.Interactions
                 return;
             }
 
-            Subsystems.Get<AudioSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.MachineGun, GetComponent<NetworkObject>());
+            Subsystems.Get<AudioSubSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.MachineGun, GetComponent<NetworkObject>());
 
             _readyToFire = false;
 

@@ -168,8 +168,8 @@ namespace SS3D.Systems.Atmospherics
         public List<PlacedTileObject> GetNeighbours()
         {
             Setup();
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
             List<PlacedTileObject> neighboursPipe = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position).ToList();
             List<PlacedTileObject> neighboursMachinery = map.GetCardinalNeighbourPlacedObjects(TileLayer.Turf, _placedObject.transform.position).ToList();
             neighboursPipe.RemoveAll(x => !x);

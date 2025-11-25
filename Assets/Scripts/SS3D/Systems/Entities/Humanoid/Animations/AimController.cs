@@ -10,13 +10,13 @@ using SS3D.Systems.Combat;
 using SS3D.Systems.Combat.Interactions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Animations
 {
@@ -83,7 +83,7 @@ namespace SS3D.Systems.Animations
         {
             base.OnStartClient();
 
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
             _intentController = GetComponent<IntentController>();
 
             if (!GetComponent<NetworkObject>().IsOwner)
@@ -91,11 +91,11 @@ namespace SS3D.Systems.Animations
                 enabled = false;
             }
 
-            _primaryInteractionAction = Subsystems.Get<InputSystem>().Inputs.Interactions.RunPrimary;
-            _shootingAction = Subsystems.Get<InputSystem>().Inputs.GunFire.Fire;
+            _primaryInteractionAction = Subsystems.Get<InputSubSystem>().Inputs.Interactions.RunPrimary;
+            _shootingAction = Subsystems.Get<InputSubSystem>().Inputs.GunFire.Fire;
 
-            Subsystems.Get<InputSystem>().Inputs.Interactions.AimThrow.performed += AimThrowOnPerformed;
-            Subsystems.Get<InputSystem>().Inputs.Interactions.AimGun.performed += AimGunOnPerformed;
+            Subsystems.Get<InputSubSystem>().Inputs.Interactions.AimThrow.performed += AimThrowOnPerformed;
+            Subsystems.Get<InputSubSystem>().Inputs.Interactions.AimGun.performed += AimGunOnPerformed;
         }
 
         public override void OnStartServer()
@@ -152,8 +152,8 @@ namespace SS3D.Systems.Animations
             OnAim?.Invoke(isAiming, false);
 
             Debug.Log($"Aiming to shoot : {isAiming}");
-            Subsystems.Get<InputSystem>().ToggleAction(_primaryInteractionAction, !isAiming);
-            Subsystems.Get<InputSystem>().ToggleAction(_shootingAction, isAiming);
+            Subsystems.Get<InputSubSystem>().ToggleAction(_primaryInteractionAction, !isAiming);
+            Subsystems.Get<InputSubSystem>().ToggleAction(_shootingAction, isAiming);
         }
 
         [Client]

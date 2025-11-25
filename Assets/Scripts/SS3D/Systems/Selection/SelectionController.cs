@@ -6,9 +6,9 @@ using UnityEngine;
 namespace SS3D.Systems.Selection
 {
     /// <summary>
-    /// The Selection System allows specific items to be selected or identified
+    /// The Selection SubSystem allows specific items to be selected or identified
     /// when the cursor hovers over them. It uses a shader based mesh selection
-    /// methodology. The Selection System itself only identifies the object under
+    /// methodology. The Selection SubSystem itself only identifies the object under
     /// the cursor; however, other Systems (e.g. Examine, Interaction) may make
     /// use of the results.
     /// </summary>
@@ -59,11 +59,11 @@ namespace SS3D.Systems.Selection
         }
 
         /// <summary>
-        /// Called by systems that use the Selection System to get the selectable object
+        /// Called by systems that use the Selection SubSystem to get the selectable object
         /// in their desired type. In most instances, the selectable object will be the
         /// one stored in the _current variable.
         /// </summary>
-        /// <typeparam name="T">The component type sought by the external system (e.g. IExaminable for Examine System)</typeparam>
+        /// <typeparam name="T">The component type sought by the external system (e.g. IExaminable for Examine SubSystem)</typeparam>
         /// <returns>A component of type T attached to the currently hovered selectable or their nearest ancestor.</returns>
         [CanBeNull]
         public T GetCurrentSelectable<T>()
@@ -104,7 +104,7 @@ namespace SS3D.Systems.Selection
             Color32 col = new Color32(intBytes[0], intBytes[1], intBytes[2], 255);
             if (intBytes[3] > 0)
             {
-                throw new Exception("Selection System has registered too many selectables. Misreads may occur!");
+                throw new Exception("Selection SubSystem has registered too many selectables. Misreads may occur!");
             }
 
             return col;

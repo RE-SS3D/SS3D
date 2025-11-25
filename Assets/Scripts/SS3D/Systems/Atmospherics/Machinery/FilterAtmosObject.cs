@@ -82,9 +82,9 @@ namespace SS3D.Systems.Atmospherics
             }
 
             bool4 filterCoreGasses = new bool4(_filterOxygen, _filterNitrogen, _filterCarbonDioxyde, _filterPlasma);
-            Subsystems.Get<PipeSystem>().AddCoreGasses(SidePipePosition, molesToTransfer * (int4)filterCoreGasses, _pipeLayer);
-            Subsystems.Get<PipeSystem>().AddCoreGasses(FrontPipePosition, molesToTransfer * (int4)!filterCoreGasses, _pipeLayer);
-            Subsystems.Get<PipeSystem>().RemoveCoreGasses(BackPipePosition, molesToTransfer, _pipeLayer);
+            Subsystems.Get<PipeSubSystem>().AddCoreGasses(SidePipePosition, molesToTransfer * (int4)filterCoreGasses, _pipeLayer);
+            Subsystems.Get<PipeSubSystem>().AddCoreGasses(FrontPipePosition, molesToTransfer * (int4)!filterCoreGasses, _pipeLayer);
+            Subsystems.Get<PipeSubSystem>().RemoveCoreGasses(BackPipePosition, molesToTransfer, _pipeLayer);
         }
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)

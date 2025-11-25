@@ -5,10 +5,10 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Animations;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Health;
+using SS3D.Systems.Inputs;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Entities
 {
@@ -95,8 +95,8 @@ namespace SS3D.Systems.Entities
                 return;
             }
 
-            Subsystems.Get<InputSystem>().Inputs.Movement.ChangePosition.performed += HandleChangePosition;
-            Subsystems.Get<InputSystem>().Inputs.Movement.Dance.performed += HandleDance;
+            Subsystems.Get<InputSubSystem>().Inputs.Movement.ChangePosition.performed += HandleChangePosition;
+            Subsystems.Get<InputSubSystem>().Inputs.Movement.Dance.performed += HandleDance;
             GetComponent<AimController>().OnAim += HandleAimChange;
         }
 

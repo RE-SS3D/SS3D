@@ -16,29 +16,29 @@ namespace SS3D.Systems.Tile.Connections
         {
             base.OnStartServer();
 
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
+            ElectricitySubSystem electricitySubSystem = Subsystems.Get<ElectricitySubSystem>();
 
-            if (electricitySystem.IsSetUp)
+            if (electricitySubSystem.IsSetUp)
             {
-                electricitySystem.AddElectricalElement(this);
+                electricitySubSystem.AddElectricalElement(this);
             }
             else
             {
-                electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
+                electricitySubSystem.OnSystemSetUp += OnElectricitySystemSetup;
             }
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.RemoveElectricalElement(this);
+            ElectricitySubSystem electricitySubSystem = Subsystems.Get<ElectricitySubSystem>();
+            electricitySubSystem.RemoveElectricalElement(this);
         }
 
         private void OnElectricitySystemSetup()
         {
-            ElectricitySystem electricitySystem = Subsystems.Get<ElectricitySystem>();
-            electricitySystem.AddElectricalElement(this);
+            ElectricitySubSystem electricitySubSystem = Subsystems.Get<ElectricitySubSystem>();
+            electricitySubSystem.AddElectricalElement(this);
         }
     }
 }

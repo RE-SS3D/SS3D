@@ -84,8 +84,8 @@ namespace SS3D.Tests
         {
             // ARRANGE
             // Check the number of players currently ready in the game
-            ReadyPlayersSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSystem>();
-            int originalReadyPlayers = readyPlayersSystem.Count;
+            ReadyPlayersSubSystem readyPlayersSubSystem = Subsystems.Get<ReadyPlayersSubSystem>();
+            int originalReadyPlayers = readyPlayersSubSystem.Count;
 
             // Check the colour of the ready button
             LabelButton button = TestHelpers.GetButton(ReadyButtonName);
@@ -97,7 +97,7 @@ namespace SS3D.Tests
 
             // ASSERT #1: Player should now be Ready.
             // Check: The ready player count should have incremented.
-            Assert.IsTrue(readyPlayersSystem.Count == originalReadyPlayers + 1, $"Number of ready players was not incremented when this player became ready.");
+            Assert.IsTrue(readyPlayersSubSystem.Count == originalReadyPlayers + 1, $"Number of ready players was not incremented when this player became ready.");
             // Check: The ready button color should have changed.
             Assert.IsTrue(originalButtonColor != button.GetComponent<Image>().color, $"The button colour did not change when the button was clicked");
 
@@ -108,7 +108,7 @@ namespace SS3D.Tests
 
             // ASSERT #2: Player should now be Not Ready
             // Check: The ready player count should be back to having the original number of ready players.
-            Assert.IsTrue(readyPlayersSystem.Count == originalReadyPlayers, $"Number of ready players was not decremented when this player became not ready.");
+            Assert.IsTrue(readyPlayersSubSystem.Count == originalReadyPlayers, $"Number of ready players was not decremented when this player became not ready.");
             // Check: The ready button color should have changed back to the original.
             Assert.IsTrue(originalButtonColor == button.GetComponent<Image>().color, $"The button colour did not change when the button was clicked");
         }
@@ -123,7 +123,7 @@ namespace SS3D.Tests
 
             // Drop item at a close position from local player
             Vector3 itemPosition = playerPosition;
-            Camera camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            Camera camera = Subsystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
             Vector3 target = camera.WorldToScreenPoint(itemPosition);
 
             Vector2 target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);

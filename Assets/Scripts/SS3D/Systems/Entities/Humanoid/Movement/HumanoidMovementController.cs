@@ -9,7 +9,6 @@ using SS3D.Systems.Inputs;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
@@ -56,7 +55,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private CameraActor _camera;
         private Controls.MovementActions _movementControls;
         private Controls.HotkeysActions _hotkeysControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         [SerializeField]
         private float _aimRotationSpeed = 5f;
@@ -99,8 +98,8 @@ namespace SS3D.Systems.Entities.Humanoid
             base.OnDestroyed();
             _movementControls.ToggleRun.performed -= HandleToggleRun;
             InstanceFinder.TimeManager.OnTick -= HandleNetworkTick;
-            _inputSystem.ToggleActionMap(_movementControls, false);
-            _inputSystem.ToggleActionMap(_hotkeysControls, false);
+            _inputSubSystem.ToggleActionMap(_movementControls, false);
+            _inputSubSystem.ToggleActionMap(_hotkeysControls, false);
         }
 
         [Client]
@@ -210,17 +209,17 @@ namespace SS3D.Systems.Entities.Humanoid
         [Client]
         private void Setup()
         {
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
 
-            Controls controls = _inputSystem.Inputs;
+            Controls controls = _inputSubSystem.Inputs;
 
             _movementControls = controls.Movement;
             _hotkeysControls = controls.Hotkeys;
             _movementControls.ToggleRun.performed += HandleToggleRun;
 
-            _inputSystem.ToggleActionMap(_movementControls, true);
-            _inputSystem.ToggleActionMap(_hotkeysControls, true);
+            _inputSubSystem.ToggleActionMap(_movementControls, true);
+            _inputSubSystem.ToggleActionMap(_hotkeysControls, true);
             InstanceFinder.TimeManager.OnTick += HandleNetworkTick;
             _positionController.OnChangedPosition += HandleChangedPosition;
         }

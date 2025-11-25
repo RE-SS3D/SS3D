@@ -12,8 +12,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-using UnityEngine.InputSystem;
-using Pointer = UnityEngine.InputSystem.Pointer;
+using UnityEngine.InputSubSystem;
+using Pointer = UnityEngine.InputSubSystem.Pointer;
 #endif
 using Object = UnityEngine.Object;
 
@@ -232,7 +232,7 @@ namespace RuntimeInspectorNamespace
 				return null;
 
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-			// On new Input System, DraggedReferenceItem is tracked by a custom PointerEventData that is tracked by Pointer.current. Make sure that that pointer exists and is pressed
+			// On new Input SubSystem, DraggedReferenceItem is tracked by a custom PointerEventData that is tracked by Pointer.current. Make sure that that pointer exists and is pressed
 			if( Pointer.current == null || !Pointer.current.press.isPressed )
 				return null;
 #endif
@@ -299,7 +299,7 @@ namespace RuntimeInspectorNamespace
 		private static object GetAssignableObjectsFromDraggedReferenceItemInternal( PointerEventData draggingPointer, Type assignableType, bool returnFirstObject )
 		{
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-			// In new Input System, DraggedReferenceItems aren't tracked by the PointerEventData that initiated them. They are tracked manually by DraggedReferenceItem itself
+			// In new Input SubSystem, DraggedReferenceItems aren't tracked by the PointerEventData that initiated them. They are tracked manually by DraggedReferenceItem itself
 			DraggedReferenceItem draggedReference = DraggedReferenceItem.InstanceItem;
 #else
 			if( !draggingPointer.pointerDrag )
@@ -525,7 +525,7 @@ namespace RuntimeInspectorNamespace
 			validVariablesList.Clear();
 			typesToSearchForVariablesList.Clear();
 
-			// Follow the class hiearchy for this Type up to System.Object until some cached variables are found
+			// Follow the class hiearchy for this Type up to SubSystem.Object until some cached variables are found
 			Type currType = type;
 			while( currType != typeof( object ) )
 			{
@@ -902,7 +902,7 @@ namespace RuntimeInspectorNamespace
 				string[] ignoredAssemblies = new string[]
 				{
 					"Unity",
-					"System",
+					"SubSystem",
 					"Mono.",
 					"mscorlib",
 					"netstandard",

@@ -141,7 +141,7 @@ namespace EditorTests
         /// <summary>
         /// Test to confirm that every player in the game gets at least one objective when the Gamemode is initialized.
         /// </summary>
-        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
+        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the SubSystem Under Test</param>
         [Test]
         [TestCaseSource(nameof(AllGamemodes))]
         public void InitializeGamemodeCreatesObjectivesForEachPlayer(Gamemode sut)
@@ -316,7 +316,7 @@ namespace EditorTests
         /// <summary>
         /// Test to confirm that individual objectives all initialize without error.
         /// </summary>
-        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
+        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the SubSystem Under Test</param>
         [Test]
         [TestCaseSource(nameof(AllObjectives))]
         public void GamemodeObjectiveInitializesWithoutError(GamemodeObjective sut)

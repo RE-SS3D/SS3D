@@ -50,8 +50,8 @@ namespace System.Electricity
 
         private List<PlacedTileObject> GetElectricDevicesOnSameTile()
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
 
             List<PlacedTileObject> devicesOnSameTile = new();
 
@@ -76,8 +76,8 @@ namespace System.Electricity
 
         private List<PlacedTileObject> GetNeighbourElectricDevicesOnSameLayer()
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
             IEnumerable<PlacedTileObject> electricNeighbours = map.GetCardinalNeighbourPlacedObjects(
                 PlacedObject.Layer,
                 PlacedObject.gameObject.transform.position).Where(x => x != null && x.gameObject.TryGetComponent(out IElectricDevice device));

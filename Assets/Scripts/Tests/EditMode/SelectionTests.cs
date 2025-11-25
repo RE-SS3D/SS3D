@@ -24,11 +24,11 @@ namespace EditorTests
         [Test]
         public void RegisterSelectableAllocatesDistinctColors()
         {
-            // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            // Create Selection subSystem, and basic hierarchy (parent/child gameobjects) to test.
+            SelectionSubSystem subSystem = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
-            CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
+            CreateSelectableHierarchy(subSystem, out _parentSelectable, out _childSelectable);
 
             // Confirm what colours they have been allocated.
             Color32 parentColor = _parentSelectable.SelectionColor;
@@ -43,7 +43,7 @@ namespace EditorTests
         }
 
         /// <summary>
-        /// This test confirms that selectables are correctly returned by the Selection System
+        /// This test confirms that selectables are correctly returned by the Selection SubSystem
         /// when they have the component that is being queried. I.e. If the Selectable's selection
         /// colour matches the colour returned by the camera, and the Selectable has component X,
         /// then GetCurrentSelectable<X>() should return that Selectable.
@@ -51,11 +51,11 @@ namespace EditorTests
         [Test]
         public void GetCurrentSelectableReturnsImmediateObjectWhenItHasCorrectComponent()
         {
-            // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            // Create Selection subSystem, and basic hierarchy (parent/child gameobjects) to test.
+            SelectionSubSystem subSystem = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
-            CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
+            CreateSelectableHierarchy(subSystem, out _parentSelectable, out _childSelectable);
 
             // Confirm what colours they have been allocated.
             Color32 parentColor = _parentSelectable.SelectionColor;
@@ -66,19 +66,19 @@ namespace EditorTests
             SelectableTypeA returned;
             
             // Check the parent object.
-            _system.UpdateColourFromCamera(parentColor);
-            returned = _system.GetCurrentSelectable<SelectableTypeA>();
+            subSystem.UpdateColourFromCamera(parentColor);
+            returned = subSystem.GetCurrentSelectable<SelectableTypeA>();
             Assert.IsTrue(returned?.gameObject.name == ParentName);
 
             // Check the child object
-            _system.UpdateColourFromCamera(childColor);
-            returned = _system.GetCurrentSelectable<SelectableTypeA>();
+            subSystem.UpdateColourFromCamera(childColor);
+            returned = subSystem.GetCurrentSelectable<SelectableTypeA>();
             Assert.IsTrue(returned?.gameObject.name == ChildName);
         }
 
         /// <summary>
         /// This test confirms that the appropriate ancestor Selectable is returned by the Selection 
-        /// System, when the original Selectable does not have the component that is being queried.
+        /// SubSystem, when the original Selectable does not have the component that is being queried.
         /// I.e. If the Selectable's selection colour matches the colour returned by the camera, but
         /// the Selectable does not have component X, then GetCurrentSelectable<X>() should return 
         /// the nearest ancestor of that Selectable that does have component X.
@@ -86,11 +86,11 @@ namespace EditorTests
         [Test]
         public void GetCurrentSelectableReturnsAncestorWhenOnlyAncestorHasCorrectComponent()
         {
-            // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            // Create Selection subSystem, and basic hierarchy (parent/child gameobjects) to test.
+            SelectionSubSystem subSystem = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
-            CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
+            CreateSelectableHierarchy(subSystem, out _parentSelectable, out _childSelectable);
 
             // Confirm what colours they have been allocated.
             Color32 parentColor = _parentSelectable.SelectionColor;
@@ -98,31 +98,31 @@ namespace EditorTests
 
             // Only the parent game object has a Type B selectable. The parent should be returned
             // even though it is the child game object's selection colour being passed from the camera.
-            _system.UpdateColourFromCamera(childColor);
-            SelectableTypeB returned = _system.GetCurrentSelectable<SelectableTypeB>();
+            subSystem.UpdateColourFromCamera(childColor);
+            SelectableTypeB returned = subSystem.GetCurrentSelectable<SelectableTypeB>();
             Assert.IsTrue(returned?.gameObject.name == ParentName);
         }
 
         /// <summary>
         /// This test confirms that when neither the target Selectable nor any ancestors have the
-        /// particular component being queried, the Selection System returns null.
+        /// particular component being queried, the Selection SubSystem returns null.
         /// </summary>
         [Test]
         public void GetCurrentSelectableReturnsNullWhenNoAncestorsHaveCorrectComponent()
         {
-            // Create Selection system, and basic hierarchy (parent/child gameobjects) to test.
-            SelectionSystem _system = new SelectionSystem();
+            // Create Selection subSystem, and basic hierarchy (parent/child gameobjects) to test.
+            SelectionSubSystem subSystem = new SelectionSubSystem();
             Selectable _parentSelectable;
             Selectable _childSelectable;
-            CreateSelectableHierarchy(_system, out _parentSelectable, out _childSelectable);
+            CreateSelectableHierarchy(subSystem, out _parentSelectable, out _childSelectable);
 
             // Confirm what colours they have been allocated.
             Color32 parentColor = _parentSelectable.SelectionColor;
             Color32 childColor = _childSelectable.SelectionColor;
 
             // Neither the parent game object nor child game object has a Type C selectable.
-            _system.UpdateColourFromCamera(childColor);
-            SelectableTypeC returned = _system.GetCurrentSelectable<SelectableTypeC>();
+            subSystem.UpdateColourFromCamera(childColor);
+            SelectableTypeC returned = subSystem.GetCurrentSelectable<SelectableTypeC>();
             Assert.IsNull(returned);
         }
         #endregion
@@ -138,7 +138,7 @@ namespace EditorTests
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="child"></param>
-        private void CreateSelectableHierarchy(SelectionSystem system, out Selectable parent, out Selectable child)
+        private void CreateSelectableHierarchy(SelectionSubSystem subSystem, out Selectable parent, out Selectable child)
         {
             GameObject _parentGo;
             GameObject _childGo;
@@ -156,10 +156,10 @@ namespace EditorTests
             _parentGo.AddComponent<SelectableTypeB>();
             _childGo.AddComponent<SelectableTypeA>();
 
-            // Manually register Selectables with the Selection System.
+            // Manually register Selectables with the Selection SubSystem.
             // (This would normally occur in OnStart method to the SelectionSystemController)
-            parent.SelectionColor = system.RegisterSelectable(parent);
-            child.SelectionColor = system.RegisterSelectable(child);
+            parent.SelectionColor = subSystem.RegisterSelectable(parent);
+            child.SelectionColor = subSystem.RegisterSelectable(child);
         }
         #endregion
 

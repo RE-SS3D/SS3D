@@ -11,7 +11,7 @@ namespace SS3D.Systems.Selection
     /// invisible RenderTexture. Each selectable (i.e. Examinable, Interactable)
     /// object is rendered in a different colour. Once rendered, the camera then
     /// reads back the colour of the pixel under the mouse, and sends that colour
-    /// to the Selection System for further action.
+    /// to the Selection SubSystem for further action.
     /// </summary>
     [RequireComponent(typeof(Camera))]
     public class SelectionCamera : Actor
@@ -38,9 +38,9 @@ namespace SS3D.Systems.Selection
         private Texture2D _readBackTexture;
 
         /// <summary>
-        /// Overarching System that performs all Selection-related processing.
+        /// Overarching SubSystem that performs all Selection-related processing.
         /// </summary>
-        private SelectionSystem _system;
+        private SelectionSubSystem _subSystem;
 
         /// <summary>
         /// Debug Mode allows the user to see the RenderTexture on screen, to facilitate debugging.
@@ -54,20 +54,20 @@ namespace SS3D.Systems.Selection
 
         protected override void OnStart()
         {
-            _system = Subsystems.Get<SelectionSystem>();
+            _subSystem = Subsystems.Get<SelectionSubSystem>();
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
             _camera.SetReplacementShader(_shader, string.Empty);
 
             GenerateRenderTexture();
             GenerateReadbackTexture();
-            Subsystems.Get<Inputs.InputSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            Subsystems.Get<Inputs.InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
         }
 
         protected override void OnDestroyed()
         {
             _renderTexture.Release();
-            Subsystems.Get<Inputs.InputSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
+            Subsystems.Get<Inputs.InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
         }
 
         protected void OnPreRender()
@@ -94,7 +94,7 @@ namespace SS3D.Systems.Selection
                 col = _readBackTexture.GetPixel(0, 0);
             }
 
-            _system.UpdateColourFromCamera(col);
+            _subSystem.UpdateColourFromCamera(col);
         }
 
         private void GenerateReadbackTexture()

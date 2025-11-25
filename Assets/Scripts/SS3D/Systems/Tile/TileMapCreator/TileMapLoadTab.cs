@@ -51,7 +51,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Display()
         {
             _loadMapContentRoot.SetActive(true);
-            List<string> mapNames = LocalStorage.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
+            List<string> mapNames = LocalStorage.GetAllObjectsNameInFolder(Subsystems.Get<TileSubSystem>().SavePath);
 
             foreach (string mapName in mapNames)
             {
@@ -89,7 +89,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                LocalStorage.DeleteFile(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
+                LocalStorage.DeleteFile(Subsystems.Get<TileSubSystem>().SavePath + "/" + mapName);
             }
             else
             {
@@ -107,7 +107,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                Subsystems.Get<TileSystem>().Load(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
+                Subsystems.Get<TileSubSystem>().Load(Subsystems.Get<TileSubSystem>().SavePath + "/" + mapName);
             }
             else
             {
@@ -142,13 +142,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
             mapNameField.onSelect.RemoveAllListeners();
             mapNameField.readOnly = true;
 
-            if (Subsystems.Get<TileSystem>().MapNameAlreadyExist(mapNameField.text))
+            if (Subsystems.Get<TileSubSystem>().MapNameAlreadyExist(mapNameField.text))
             {
                 mapNameField.text = oldName;
             }
             else
             {
-                string savePath = Subsystems.Get<TileSystem>().SavePath;
+                string savePath = Subsystems.Get<TileSubSystem>().SavePath;
                 LocalStorage.RenameFile(savePath + "/" + oldName, savePath + "/" + mapNameField.text);
             }
 

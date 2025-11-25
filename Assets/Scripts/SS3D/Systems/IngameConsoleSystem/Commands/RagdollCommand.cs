@@ -60,14 +60,14 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             }
 
             string ckey = args[0];
-            Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
+            Player player = Subsystems.Get<PlayerSubSystem>().GetPlayer(ckey);
 
             if (player == null)
             {
                 return response.MakeInvalid("This player doesn't exist");
             }
 
-            Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+            Entity entity = Subsystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
 
             if (entity == null)
             {

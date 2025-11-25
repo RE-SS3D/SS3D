@@ -166,8 +166,8 @@ namespace SS3D.Systems.Tile
         /// <param name="gridPosition">The position of the tile we want to check.</param>
         private static bool NoNeighbouringWallMount(Vector3 gridPosition)
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
             PlacedTileObject[] neighboursHigh = map.GetNeighbourPlacedObjects(TileLayer.WallMountHigh, gridPosition);
             PlacedTileObject[] neighboursLow = map.GetNeighbourPlacedObjects(TileLayer.WallMountLow, gridPosition);
             return neighboursHigh.All(x => x == null) && neighboursLow.All(x => x == null);

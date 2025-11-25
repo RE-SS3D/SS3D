@@ -158,8 +158,8 @@ namespace SS3D.Systems.Tile.Connections
                 Setup();
             }
 
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
             List<PlacedTileObject> neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
             neighbours.RemoveAll(x => x == null);
             return neighbours;

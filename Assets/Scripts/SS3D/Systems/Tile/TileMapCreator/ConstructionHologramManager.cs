@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -28,7 +27,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private Direction _lastRegisteredDirection;
 
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         private Controls.TileCreatorActions _controls;
 
@@ -117,8 +116,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             base.OnStart();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            _inputSystem = Subsystems.Get<InputSystem>();
-            _controls = _inputSystem.Inputs.TileCreator;
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
+            _controls = _inputSubSystem.Inputs.TileCreator;
             _controls.Place.started += HandlePlaceStarted;
             _controls.Place.performed += HandlePlacePerformed;
             _controls.Replace.performed += HandleReplace;
@@ -219,7 +218,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (_menu.MouseOverUI)
             {
-                _inputSystem.ToggleAction(_controls.Place, false);
+                _inputSubSystem.ToggleAction(_controls.Place, false);
             }
 
             if (!_menu.IsDeleting)
@@ -262,7 +261,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (ConstructionHologram buildGhost in _holograms)
             {
-                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
+                Subsystems.Get<TileSubSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
             }
         }
 
@@ -279,7 +278,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
+                    Subsystems.Get<TileSubSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
                 }
             }
         }
@@ -358,9 +357,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [ServerRpc(RequireOwnership = false)]
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
 
-            TileObjectSo tileObjectSo = (TileObjectSo)tileSystem.GetAsset(tileObjectSoName);
+            TileObjectSo tileObjectSo = (TileObjectSo)tileSubSystem.GetAsset(tileObjectSoName);
 
             if (tileObjectSo == null)
             {
@@ -368,7 +367,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             }
 
-            bool canBuild = tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            bool canBuild = tileSubSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
             RpcReceiveCanBuild(conn, placePosition, canBuild);
         }
 
@@ -394,7 +393,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 if (hitInfo.collider.gameObject.TryGetComponent(out PlacedItemObject placedItem))
                 {
-                    Subsystems.Get<TileSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
+                    Subsystems.Get<TileSubSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
                 }
             }
         }

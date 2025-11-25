@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-using UnityEngine.InputSystem;
+using UnityEngine.InputSubSystem;
 #endif
 
 namespace RuntimeInspectorNamespace
@@ -490,7 +490,7 @@ namespace RuntimeInspectorNamespace
 			RuntimeInspectorUtils.IgnoredTransformsInHierarchy.Add( drawArea );
 
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-			// On new Input System, scroll sensitivity is much higher than legacy Input system
+			// On new Input SubSystem, scroll sensitivity is much higher than legacy Input system
 			scrollView.scrollSensitivity *= 0.25f;
 #endif
 		}
@@ -1100,7 +1100,7 @@ namespace RuntimeInspectorNamespace
 				}
 
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-				// On new Input System, DraggedReferenceItems aren't tracked by the PointerEventDatas that initiated them. However, when a DraggedReferenceItem is
+				// On new Input SubSystem, DraggedReferenceItems aren't tracked by the PointerEventDatas that initiated them. However, when a DraggedReferenceItem is
 				// created by holding a HierarchyField, the PointerEventData's dragged object will be set as the RuntimeHierarchy's ScrollRect. When it happens,
 				// trying to scroll the RuntimeHierarchy by holding the DraggedReferenceItem at top/bottom edge of the ScrollRect doesn't work because scrollbar's
 				// value is overwritten by the original PointerEventData. We can prevent this issue by stopping original PointerEventData's drag operation here

@@ -51,7 +51,7 @@ namespace SS3D.Systems.Tile
             if (placedObject.GetComponent<NetworkObject>() == null)
             {
                 Log.Warning(
-                    Subsystems.Get<TileSystem>(),
+                    Subsystems.Get<TileSubSystem>(),
                     "{placedObject} does not have a Network Component and will not be spawned",
                     Logs.Generic,
                     placedObject.NameString);

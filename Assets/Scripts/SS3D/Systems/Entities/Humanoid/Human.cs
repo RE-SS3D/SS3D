@@ -30,9 +30,9 @@ namespace SS3D.Systems.Entities
         public override void Kill()
         {
             _spawnedGhost = Instantiate(_ghost);
-            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            EntitySubSystem entitySubSystem = Subsystems.Get<EntitySubSystem>();
 
-            if (entitySystem.TryTransferEntity(GetComponentInParent<Entity>(), _spawnedGhost.GetComponent<Entity>()))
+            if (entitySubSystem.TryTransferEntity(GetComponentInParent<Entity>(), _spawnedGhost.GetComponent<Entity>()))
             {
                 ServerManager.Spawn(_spawnedGhost);
                 BecomeGhost(gameObject, _spawnedGhost);
@@ -65,8 +65,8 @@ namespace SS3D.Systems.Entities
             Entity originEntity = player.GetComponent<Entity>();
             Entity ghostEntity = ghost.GetComponent<Entity>();
 
-            MindSystem mindSystem = Subsystems.Get<MindSystem>();
-            mindSystem.SwapMinds(originEntity, ghostEntity);
+            MindSubSystem mindSubSystem = Subsystems.Get<MindSubSystem>();
+            mindSubSystem.SwapMinds(originEntity, ghostEntity);
 
             RpcUpdateGhostPosition(originEntity, ghostEntity);
 

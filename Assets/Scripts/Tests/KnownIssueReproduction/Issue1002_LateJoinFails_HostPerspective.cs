@@ -130,10 +130,10 @@ namespace SS3D.Tests
 
         protected IEnumerator WaitForClientSoulToAppearInLobby(string ckey, float timeout = 15f)
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
             float startTime = Time.time;
 
-            while (playerSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == ckey) == null)
+            while (playerSubSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == ckey) == null)
             {
                 yield return new WaitForSeconds(1f);
                 Assert.IsTrue(Time.time < startTime + timeout, $"Client '{ckey}' not loaded after timeout of {timeout} seconds.");

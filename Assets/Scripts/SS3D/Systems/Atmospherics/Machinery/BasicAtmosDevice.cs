@@ -8,13 +8,13 @@ namespace SS3D.Systems.Atmospherics.AtmosRework.Machinery
         public override void OnStartServer()
         {
             base.OnStartServer();
-            if (Subsystems.Get<PipeSystem>().IsSetUp)
+            if (Subsystems.Get<PipeSubSystem>().IsSetUp)
             {
-                Subsystems.Get<PipeSystem>().RegisterAtmosDevice(this);
+                Subsystems.Get<PipeSubSystem>().RegisterAtmosDevice(this);
             }
             else
             {
-                Subsystems.Get<PipeSystem>().OnSystemSetUp += () => Subsystems.Get<PipeSystem>().RegisterAtmosDevice(this);
+                Subsystems.Get<PipeSubSystem>().OnSystemSetUp += () => Subsystems.Get<PipeSubSystem>().RegisterAtmosDevice(this);
             }
         }
 
@@ -22,7 +22,7 @@ namespace SS3D.Systems.Atmospherics.AtmosRework.Machinery
 
         protected void OnDestroy()
         {
-            Subsystems.Get<PipeSystem>().RemoveAtmosDevice(this);
+            Subsystems.Get<PipeSubSystem>().RemoveAtmosDevice(this);
         }
     }
 }

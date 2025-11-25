@@ -8,7 +8,7 @@ namespace SS3D.Systems.Atmospherics
         public override void OnStartServer()
         {
             base.OnStartServer();
-            Subsystems.Get<AtmosEnvironmentSystem>().ChangeState(Position, AtmosState.Blocked);
+            Subsystems.Get<AtmosEnvironmentSubSystem>().ChangeState(Position, AtmosState.Blocked);
         }
     }
 }

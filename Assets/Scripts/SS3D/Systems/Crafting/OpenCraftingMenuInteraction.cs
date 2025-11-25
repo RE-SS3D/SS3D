@@ -49,7 +49,7 @@ namespace SS3D.Systems.Crafting
         /// <returns>If the interaction can be executed</returns>
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (!Subsystems.TryGet(out CraftingSystem craftingSystem))
+            if (!Subsystems.TryGet(out CraftingSubSystem craftingSystem))
             {
                 return false;
             }
@@ -68,7 +68,7 @@ namespace SS3D.Systems.Crafting
         /// <returns>If the interaction should continue running</returns>
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
+            Subsystems.TryGet(out CraftingSubSystem craftingSystem);
             List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, _interactionType);
             ViewLocator.Get<CraftingMenu>()[0].DisplayMenu(craftingInteractions, interactionEvent, reference, _interactionType);
 

@@ -22,12 +22,12 @@ namespace SS3D.Systems.Atmospherics
 
         private float _lastCheck;
 
-        private AtmosEnvironmentSystem _atmosSystem;
+        private AtmosEnvironmentSubSystem _atmosSubSystem;
 
         public override void OnStartServer()
         {
             base.OnStartServer();
-            _atmosSystem = Subsystems.Get<AtmosEnvironmentSystem>();
+            _atmosSubSystem = Subsystems.Get<AtmosEnvironmentSubSystem>();
         }
 
         protected void Update()

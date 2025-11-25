@@ -60,7 +60,7 @@ namespace SS3D.Tests
 
         public static IEnumerator WaitUntilClientsLoaded(int amountOfClients, float timeout = 60f)
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
             int currentOnlineSouls = 0;
             float startTime = Time.time;
 
@@ -72,7 +72,7 @@ namespace SS3D.Tests
 
                 // Check whether all souls are online.
                 currentOnlineSouls = 0;
-                foreach (Player player in playerSystem.OnlinePlayers)
+                foreach (Player player in playerSubSystem.OnlinePlayers)
                 {
                     currentOnlineSouls++;
                 }
@@ -89,24 +89,24 @@ namespace SS3D.Tests
         /// </summary>
         public static void SetAllPlayersReady()
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            ReadyPlayersSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
+            ReadyPlayersSubSystem readyPlayersSubSystem = Subsystems.Get<ReadyPlayersSubSystem>();
             ChangePlayerReadyMessage msg;
                 
-            foreach (Player player in playerSystem.OnlinePlayers)
+            foreach (Player player in playerSubSystem.OnlinePlayers)
             {
                 msg = new ChangePlayerReadyMessage(player.Ckey, true);
-                readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(player.LocalConnection, msg);
+                readyPlayersSubSystem.ChangePlayerReadyMessageStubBroadcast(player.LocalConnection, msg);
             }
         }
 
         public static void SetPlayerReadiness(string Ckey, bool readiness)
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            ReadyPlayersSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSystem>();
-            Player player = playerSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == Ckey);
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
+            ReadyPlayersSubSystem readyPlayersSubSystem = Subsystems.Get<ReadyPlayersSubSystem>();
+            Player player = playerSubSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == Ckey);
             ChangePlayerReadyMessage msg = new ChangePlayerReadyMessage(Ckey, readiness);
-            readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(player.LocalConnection, msg);
+            readyPlayersSubSystem.ChangePlayerReadyMessageStubBroadcast(player.LocalConnection, msg);
         }
 
         /// <summary>
@@ -114,18 +114,18 @@ namespace SS3D.Tests
         /// </summary>
         public static void ChangeRoundState(bool running)
         {
-            RoundSystem roundSystem = Subsystems.Get<RoundSystem>();
+            RoundSubSystem roundSubSystem = Subsystems.Get<RoundSubSystem>();
             ChangeRoundStateMessage msg = new ChangeRoundStateMessage(running);
-            roundSystem.ChangeRoundStateMessageStubBroadcast(msg);
+            roundSubSystem.ChangeRoundStateMessageStubBroadcast(msg);
         }
 
         public static void SpawnLatePlayer(string Ckey)
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
+            EntitySubSystem entitySubSystem = Subsystems.Get<EntitySubSystem>();
 
-            Player player = playerSystem.GetPlayer(Ckey);
-            entitySystem.CmdSpawnLatePlayer(player);
+            Player player = playerSubSystem.GetPlayer(Ckey);
+            entitySubSystem.CmdSpawnLatePlayer(player);
         }
 
 

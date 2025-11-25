@@ -40,9 +40,9 @@ namespace SS3D.Systems.Atmospherics
             IAtmosPipe frontPipe;
             IAtmosPipe backPipe;
             IAtmosPipe sidePipe;
-            Subsystems.Get<PipeSystem>().TryGetAtmosPipe(FrontPipePosition, PipeLayer, out frontPipe);
-            Subsystems.Get<PipeSystem>().TryGetAtmosPipe(BackPipePosition, PipeLayer, out backPipe);
-            Subsystems.Get<PipeSystem>().TryGetAtmosPipe(SidePipePosition, PipeLayer, out sidePipe);
+            Subsystems.Get<PipeSubSystem>().TryGetAtmosPipe(FrontPipePosition, PipeLayer, out frontPipe);
+            Subsystems.Get<PipeSubSystem>().TryGetAtmosPipe(BackPipePosition, PipeLayer, out backPipe);
+            Subsystems.Get<PipeSubSystem>().TryGetAtmosPipe(SidePipePosition, PipeLayer, out sidePipe);
             FrontPipe = frontPipe;
             BackPipe = backPipe;
             SidePipe = sidePipe;

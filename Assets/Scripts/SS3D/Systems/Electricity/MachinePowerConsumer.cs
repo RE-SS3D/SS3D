@@ -30,7 +30,7 @@ namespace System.Electricity
         {
             IsIdle = false;
             _machineUsedOnce = true;
-            Subsystems.Get<ElectricitySystem>().OnTick += HandleMachineWasUsed;
+            Subsystems.Get<ElectricitySubSystem>().OnTick += HandleMachineWasUsed;
         }
 
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
@@ -41,7 +41,7 @@ namespace System.Electricity
         private void HandleMachineWasUsed()
         {
             _machineUsedOnce = false;
-            Subsystems.Get<ElectricitySystem>().OnTick -= HandleMachineWasUsed;
+            Subsystems.Get<ElectricitySubSystem>().OnTick -= HandleMachineWasUsed;
         }
     }
 }

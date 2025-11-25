@@ -13,7 +13,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -31,7 +30,7 @@ namespace SS3D.Systems.Interactions
 
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         private CameraActor _camera;
         private RadialInteractionView _radialView;
@@ -46,17 +45,17 @@ namespace SS3D.Systems.Interactions
             }
 
             _radialView = Subsystems.Get<RadialInteractionView>();
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
-            _inputSystem = Subsystems.Get<InputSystem>();
-            Controls controls = _inputSystem.Inputs;
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
+            Controls controls = _inputSubSystem.Inputs;
             _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
             _radialView = Subsystems.Get<RadialInteractionView>();
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
             _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
             _hotkeysControls.Use.performed += HandleUse;
-            _inputSystem.ToggleActionMap(_controls, true);
+            _inputSubSystem.ToggleActionMap(_controls, true);
         }
 
         public override void OnStopClient()
@@ -158,7 +157,7 @@ namespace SS3D.Systems.Interactions
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
             _hotkeysControls.Use.performed -= HandleUse;
-            _inputSystem.ToggleActionMap(_controls, false);
+            _inputSubSystem.ToggleActionMap(_controls, false);
         }
 
         /// <summary>
@@ -185,7 +184,7 @@ namespace SS3D.Systems.Interactions
         private void HandleView(InputAction.CallbackContext callbackContext)
         {
             // leftButton is enabled in RadialInteractionView HandleDisappear
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
+            _inputSubSystem.ToggleBinding("<Mouse>/leftButton", false);
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 return;
@@ -324,7 +323,7 @@ namespace SS3D.Systems.Interactions
         /// Gets all valid interaction targets from a game object
         /// </summary>
         /// <param name="source">The source of the interaction</param>
-        /// <param name="targetGameObject">The game objects the interaction targets are on</param>
+        /// <param name="targetGameObject">The game objects the interaction targets are on.</param>
         /// <returns>A list of all valid interaction targets</returns>
         [ServerOrClient]
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject targetGameObject)

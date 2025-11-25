@@ -27,7 +27,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public void Honk()
         {
             _animator.SetTrigger(HonkAnimation);
-            Subsystems.Get<AudioSystem>().PlayAudioSource(
+            Subsystems.Get<AudioSubSystem>().PlayAudioSource(
                 AudioType.Sfx,
                 Sounds.BikeHorn,
                 GameObject.transform.position,

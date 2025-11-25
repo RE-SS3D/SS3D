@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-using UnityEngine.InputSystem;
+using UnityEngine.InputSubSystem;
 #endif
 
 namespace RuntimeInspectorNamespace
@@ -54,7 +54,7 @@ namespace RuntimeInspectorNamespace
 		private void Update()
 		{
 #if !ENABLE_INPUT_SYSTEM || ENABLE_LEGACY_INPUT_MANAGER
-			// On new Input System, DraggedReferenceItem's PointerEventData is tracked by DraggedReferenceItem itself, not this component
+			// On new Input SubSystem, DraggedReferenceItem's PointerEventData is tracked by DraggedReferenceItem itself, not this component
 			if( draggingPointer != null )
 			{
 				if( !draggedReference || !draggedReference.gameObject.activeSelf )

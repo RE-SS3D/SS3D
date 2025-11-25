@@ -89,8 +89,8 @@ namespace SS3D.Systems.Atmospherics
                 Setup();
             }
 
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
             List<PlacedTileObject> neighbours = new();
             List<PlacedTileObject> neighbourPipeLeft = map.GetCardinalNeighbourPlacedObjects(TileLayer.PipeLeft, _placedObject.gameObject.transform.position).ToList();
             List<PlacedTileObject> neighbourPipeMiddle = map.GetCardinalNeighbourPlacedObjects(TileLayer.PipeMiddle, _placedObject.gameObject.transform.position).ToList();

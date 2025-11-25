@@ -34,7 +34,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
                 FinalizeObjective();
             }
 
-            Subsystems.Get<GamemodeSystem>().EndRound();
+            Subsystems.Get<GamemodeSubSystem>().EndRound();
         }
     }
 }

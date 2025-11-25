@@ -8,6 +8,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.UI;
@@ -16,7 +17,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
 namespace SS3D.Systems.Crafting
@@ -36,7 +36,7 @@ namespace SS3D.Systems.Crafting
 
         private readonly Dictionary<NetworkConnection, InteractionEvent> _eventForConnection = new();
 
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         /// <summary>
         ///  The model for a single slot, to display recipe step names in the crafting menu.
@@ -84,7 +84,7 @@ namespace SS3D.Systems.Crafting
         {
             base.OnStartNetwork();
             ShowUI(false);
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", false);
+            _inputSubSystem.ToggleBinding("<Mouse>/scroll/y", false);
             _isPointerOnMenu = true;
         }
 
@@ -101,7 +101,7 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public void OnPointerExit(PointerEventData eventData)
         {
-            _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+            _inputSubSystem.ToggleBinding("<Mouse>/scroll/y", true);
             _isPointerOnMenu = false;
         }
 
@@ -136,7 +136,7 @@ namespace SS3D.Systems.Crafting
             ShowUI(false);
             if (_isPointerOnMenu)
             {
-                _inputSystem.ToggleBinding("<Mouse>/scroll/y", true);
+                _inputSubSystem.ToggleBinding("<Mouse>/scroll/y", true);
             }
         }
 
@@ -229,7 +229,7 @@ namespace SS3D.Systems.Crafting
 
             foreach (SecondaryResult result in results)
             {
-                GenericObjectSo asset = Subsystems.Get<TileSystem>().GetAsset(result.Asset.Id);
+                GenericObjectSo asset = Subsystems.Get<TileSubSystem>().GetAsset(result.Asset.Id);
                 GameObject pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
                 pictureSlot.GetComponent<CraftingSlot>().Setup(asset, result.Amount);
             }
@@ -281,7 +281,7 @@ namespace SS3D.Systems.Crafting
         [TargetRpc]
         private void RpcClientInteract(NetworkConnection conn, GameObject target, GameObject sourceObject, int referenceId, int index, InteractionType type)
         {
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
+            Subsystems.TryGet(out CraftingSubSystem craftingSystem);
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
             List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, type);

@@ -116,9 +116,9 @@ namespace SS3D.Systems.Inventory.Interactions
 
                 try
                 {
-                    string ckey = Subsystems.Get<PlayerSystem>().GetCkey(networkBehaviour.Owner);
+                    string ckey = Subsystems.Get<PlayerSubSystem>().GetCkey(networkBehaviour.Owner);
 
-                    // and call the event for picking up items for the Game Mode System
+                    // and call the event for picking up items for the Game Mode SubSystem
                     new ItemPickedUpEvent(target, ckey).Invoke(this);
                 }
                 catch

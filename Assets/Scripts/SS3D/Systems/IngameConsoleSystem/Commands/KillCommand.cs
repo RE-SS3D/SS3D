@@ -41,14 +41,14 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return response.MakeInvalid("Invalid number of arguments");
             }
 
-            Player playerToKill = Subsystems.Get<PlayerSystem>().GetPlayer(args[0]);
+            Player playerToKill = Subsystems.Get<PlayerSubSystem>().GetPlayer(args[0]);
 
             if (playerToKill == null)
             {
                 return response.MakeInvalid("This player doesn't exist");
             }
 
-            Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(playerToKill);
+            Entity entityToKill = Subsystems.Get<EntitySubSystem>().GetSpawnedEntity(playerToKill);
 
             if (entityToKill == null)
             {

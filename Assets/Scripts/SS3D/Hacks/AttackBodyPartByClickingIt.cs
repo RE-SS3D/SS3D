@@ -34,12 +34,12 @@ namespace SS3D.Hacks
 
         private void Start()
         {
-            Subsystems.Get<Systems.Inputs.InputSystem>().Inputs.Other.Attack.performed += CheckForAttack;
+            Subsystems.Get<Systems.Inputs.InputSubSystem>().Inputs.Other.Attack.performed += CheckForAttack;
         }
 
         private void OnDestroy()
         {
-            Subsystems.Get<Systems.Inputs.InputSystem>().Inputs.Other.Attack.performed -= CheckForAttack;
+            Subsystems.Get<Systems.Inputs.InputSubSystem>().Inputs.Other.Attack.performed -= CheckForAttack;
         }
 
         private void CheckForAttack(InputAction.CallbackContext callbackContext)

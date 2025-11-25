@@ -24,13 +24,13 @@ namespace SS3D.Systems.Atmospherics
 
             AtmosObject = new(new int2(0, 0), 0.5f);
 
-            if (Subsystems.Get<PipeSystem>().IsSetUp)
+            if (Subsystems.Get<PipeSubSystem>().IsSetUp)
             {
-                Subsystems.Get<PipeSystem>().RegisterPipe(this);
+                Subsystems.Get<PipeSubSystem>().RegisterPipe(this);
             }
             else
             {
-                Subsystems.Get<PipeSystem>().OnSystemSetUp += () => Subsystems.Get<PipeSystem>().RegisterPipe(this);
+                Subsystems.Get<PipeSubSystem>().OnSystemSetUp += () => Subsystems.Get<PipeSubSystem>().RegisterPipe(this);
             }
 
             WorldOrigin = PlacedTileObject.WorldOrigin;
@@ -40,7 +40,7 @@ namespace SS3D.Systems.Atmospherics
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            Subsystems.Get<PipeSystem>().RemovePipe(this);
+            Subsystems.Get<PipeSubSystem>().RemovePipe(this);
         }
     }
 }

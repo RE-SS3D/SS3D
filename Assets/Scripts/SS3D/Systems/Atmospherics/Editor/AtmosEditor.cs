@@ -34,9 +34,9 @@ namespace SS3D.Systems.Atmospherics
             PipeLeft = 1,
         }
 
-        private TileSystem _tileManager;
-        private AtmosEnvironmentSystem _atmosEnvironmentSystem;
-        private PipeSystem _pipeSystem;
+        private TileSubSystem _tileSubManager;
+        private AtmosEnvironmentSubSystem _atmosEnvironmentSubSystem;
+        private PipeSubSystem _pipeSubSystem;
 
         private ViewType _viewOption = ViewType.Pressure;
         private ViewContent _viewContent = ViewContent.Environment;
@@ -80,9 +80,9 @@ namespace SS3D.Systems.Atmospherics
 
         protected void OnEnable()
         {
-            _tileManager = Subsystems.Get<TileSystem>();
-            _atmosEnvironmentSystem = FindObjectOfType<AtmosEnvironmentSystem>();
-            _pipeSystem = Subsystems.Get<PipeSystem>();
+            _tileSubManager = Subsystems.Get<TileSubSystem>();
+            _atmosEnvironmentSubSystem = FindObjectOfType<AtmosEnvironmentSubSystem>();
+            _pipeSubSystem = Subsystems.Get<PipeSubSystem>();
 
             SceneView.duringSceneGui += OnSceneGUI;
         }
@@ -94,7 +94,7 @@ namespace SS3D.Systems.Atmospherics
 
         protected void OnGUI()
         {
-            if (_tileManager == null || _atmosEnvironmentSystem == null)
+            if (_tileSubManager == null || _atmosEnvironmentSubSystem == null)
             {
                 return;
             }
@@ -125,7 +125,7 @@ namespace SS3D.Systems.Atmospherics
 
             if (EditorGUI.EndChangeCheck())
             {
-                _atmosEnvironmentSystem.UpdateRate = _updateRate;
+                _atmosEnvironmentSubSystem.UpdateRate = _updateRate;
             }
 
             _selectedOption = (GasEditorOption)EditorGUILayout.EnumPopup(_selectedOption);
@@ -142,18 +142,18 @@ namespace SS3D.Systems.Atmospherics
 
             if (GUILayout.Button("Clear all Gasses"))
             {
-                _atmosEnvironmentSystem.ClearAllGasses();
+                _atmosEnvironmentSubSystem.ClearAllGasses();
             }
 
             if (GUILayout.Button("Randomize all Gasses"))
             {
-                _atmosEnvironmentSystem.RandomizeAllGasses(_selectedAmount);
+                _atmosEnvironmentSubSystem.RandomizeAllGasses(_selectedAmount);
             }
         }
 
         private void OnSceneGUI(SceneView sceneView)
         {
-            if (_tileManager == null || _atmosEnvironmentSystem == null)
+            if (_tileSubManager == null || _atmosEnvironmentSubSystem == null)
             {
                 return;
             }
@@ -193,37 +193,37 @@ namespace SS3D.Systems.Atmospherics
                 {
                     case GasEditorOption.AddGasEnvironment:
                     {
-                        _atmosEnvironmentSystem.AddGasses(snappedPosition, amount);
+                        _atmosEnvironmentSubSystem.AddGasses(snappedPosition, amount);
                         break;
                     }
 
                     case GasEditorOption.RemoveGasEnvironment:
                     {
-                        _atmosEnvironmentSystem.RemoveGasses(snappedPosition, amount);
+                        _atmosEnvironmentSubSystem.RemoveGasses(snappedPosition, amount);
                         break;
                     }
 
                     case GasEditorOption.AddGasPipeLeft:
                     {
-                        _pipeSystem.AddCoreGasses(snappedPosition, amount, TileLayer.PipeLeft);
+                        _pipeSubSystem.AddCoreGasses(snappedPosition, amount, TileLayer.PipeLeft);
                         break;
                     }
 
                     case GasEditorOption.RemoveGasPipeLeft:
                     {
-                        _pipeSystem.RemoveCoreGasses(snappedPosition, amount, TileLayer.PipeLeft);
+                        _pipeSubSystem.RemoveCoreGasses(snappedPosition, amount, TileLayer.PipeLeft);
                         break;
                     }
 
                     case GasEditorOption.AddHeat:
                     {
-                        _atmosEnvironmentSystem.AddHeat(snappedPosition, _selectedAmount);
+                        _atmosEnvironmentSubSystem.AddHeat(snappedPosition, _selectedAmount);
                         break;
                     }
 
                     case GasEditorOption.RemoveHeat:
                     {
-                        _atmosEnvironmentSystem.RemoveHeat(snappedPosition, _selectedAmount);
+                        _atmosEnvironmentSubSystem.RemoveHeat(snappedPosition, _selectedAmount);
                         break;
                     }
                 }
@@ -263,7 +263,7 @@ namespace SS3D.Systems.Atmospherics
 
         private void DisplayGizmos()
         {
-            if (_atmosEnvironmentSystem == null)
+            if (_atmosEnvironmentSubSystem == null)
             {
                 return;
             }
@@ -286,7 +286,7 @@ namespace SS3D.Systems.Atmospherics
 
         private void DisplayEnvironmentObjects()
         {
-            List<AtmosJobPersistentData> atmosJobs = _atmosEnvironmentSystem.GetAtmosJobs();
+            List<AtmosJobPersistentData> atmosJobs = _atmosEnvironmentSubSystem.GetAtmosJobs();
 
             foreach (AtmosJobPersistentData job in atmosJobs)
             {
@@ -301,7 +301,7 @@ namespace SS3D.Systems.Atmospherics
 
         private void DisplayLeftPipeObjects()
         {
-            List<IAtmosPipe> pipes = Subsystems.Get<PipeSystem>().GetPipes(TileLayer.PipeLeft);
+            List<IAtmosPipe> pipes = Subsystems.Get<PipeSubSystem>().GetPipes(TileLayer.PipeLeft);
 
             foreach (IAtmosPipe pipe in pipes)
             {

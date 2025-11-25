@@ -12,7 +12,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
 using Actor = SS3D.Core.Behaviours.Actor;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
@@ -57,7 +56,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         private int _chosenPrevCommand;
         private Controls _controls;
         private Controls.ConsoleActions _consoleControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         [Client]
         public void AddText(string text)
@@ -69,14 +68,14 @@ namespace SS3D.Systems.IngameConsoleSystem
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _inputSystem = Subsystems.Get<InputSystem>();
-            _controls = _inputSystem.Inputs;
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
+            _controls = _inputSubSystem.Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;
             _consoleControls.Open.performed += HandleOpen;
             _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
             _consoleControls.Submit.performed += HandleSubmit;
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
+            _inputSubSystem.ToggleAction(_consoleControls.Open, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -107,9 +106,9 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = Vector2.zero;
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.DeactivateInputField();
-            _inputSystem.ToggleAllActions(true, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
-            _inputSystem.ToggleActionMap(_consoleControls, false, new InputAction[] { _consoleControls.Open });
+            _inputSubSystem.ToggleAllActions(true, ((InputActionMap)_consoleControls).ToArray());
+            _inputSubSystem.ToggleAction(_consoleControls.Open, true);
+            _inputSubSystem.ToggleActionMap(_consoleControls, false, new InputAction[] { _consoleControls.Open });
         }
 
         /// <summary>
@@ -121,9 +120,9 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.ActivateInputField();
-            _inputSystem.ToggleAllActions(false, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleActionMap(_consoleControls, true, new InputAction[] { _consoleControls.Open });
-            _inputSystem.ToggleAction(_consoleControls.Open, false);
+            _inputSubSystem.ToggleAllActions(false, ((InputActionMap)_consoleControls).ToArray());
+            _inputSubSystem.ToggleActionMap(_consoleControls, true, new InputAction[] { _consoleControls.Open });
+            _inputSubSystem.ToggleAction(_consoleControls.Open, false);
         }
 
         /// <summary>

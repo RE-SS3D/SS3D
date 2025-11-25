@@ -49,12 +49,12 @@ namespace SS3D.Systems.Tile
         [SerializeField]
         private GameObject _contentRoot;
 
-        private TileSystem _tileSystem;
+        private TileSubSystem _tileSubSystem;
 
         public void Setup()
         {
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            _tileSystem = Subsystems.Get<TileSystem>();
+            _tileSubSystem = Subsystems.Get<TileSubSystem>();
 
             LoadObjectGrid(
                 new TileLayer[]
@@ -88,7 +88,7 @@ namespace SS3D.Systems.Tile
         private void LoadObjectGrid(TileLayer[] allowedLayers, bool isItems)
         {
             ClearGrid();
-            _objectDatabase = _tileSystem.Loader.Assets;
+            _objectDatabase = _tileSubSystem.Loader.Assets;
 
             foreach (GenericObjectSo asset in _objectDatabase)
             {

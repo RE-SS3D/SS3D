@@ -41,7 +41,7 @@ namespace SS3D.Content.Furniture.Generic
         [SerializeField]
         private bool _useMillilitres;
 
-        private SubstancesSystem _registry;
+        private SubstancesSubSystem _registry;
 
         public bool TryGetInteractionPoint(IInteractionSource source, out Vector3 point) => this.GetInteractionPoint(source, out point);
 
@@ -93,7 +93,7 @@ namespace SS3D.Content.Furniture.Generic
         protected override void OnStart()
         {
             base.OnStart();
-            _registry = Subsystems.Get<SubstancesSystem>();
+            _registry = Subsystems.Get<SubstancesSubSystem>();
             if (_registry == null)
             {
                 Debug.LogError("SubstanceRegistry not found. Substances will be disabled.");

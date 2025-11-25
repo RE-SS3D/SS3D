@@ -92,7 +92,7 @@ namespace SS3D.Systems.Atmospherics
                 return;
             }
 
-            if (!Subsystems.Get<PipeSystem>().TryGetAtmosPipe(transform.position, _pipeLayer, out IAtmosPipe pipe))
+            if (!Subsystems.Get<PipeSubSystem>().TryGetAtmosPipe(transform.position, _pipeLayer, out IAtmosPipe pipe))
             {
                 return;
             }
@@ -112,7 +112,7 @@ namespace SS3D.Systems.Atmospherics
             // We loop 1 or 5 times based on the range setting
             for (int i = 0; i < numOfTiles; i++)
             {
-                AtmosObject atmos = Subsystems.Get<AtmosEnvironmentSystem>().GetAtmosContainer(_atmosNeighboursPositions[i]).AtmosObject;
+                AtmosObject atmos = Subsystems.Get<AtmosEnvironmentSubSystem>().GetAtmosContainer(_atmosNeighboursPositions[i]).AtmosObject;
                 float4 toSiphon = 0;
 
                 if (_mode == OperatingMode.Siphoning)
@@ -133,8 +133,8 @@ namespace SS3D.Systems.Atmospherics
                     continue;
                 }
 
-                Subsystems.Get<PipeSystem>().AddCoreGasses(pipe.PlacedTileObject.gameObject.transform.position, toSiphon, _pipeLayer);
-                Subsystems.Get<AtmosEnvironmentSystem>().RemoveGasses(_atmosNeighboursPositions[i], toSiphon);
+                Subsystems.Get<PipeSubSystem>().AddCoreGasses(pipe.PlacedTileObject.gameObject.transform.position, toSiphon, _pipeLayer);
+                Subsystems.Get<AtmosEnvironmentSubSystem>().RemoveGasses(_atmosNeighboursPositions[i], toSiphon);
             }
         }
 

@@ -1,9 +1,8 @@
-using SS3D.Core;
+﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Entities.Debug
 {
@@ -17,7 +16,7 @@ namespace SS3D.Systems.Entities.Debug
         {
             base.OnStart();
             
-            // _controls = Subsystems.Get<InputSystem>().Inputs.Other;
+            // _controls = Subsystems.Get<InputSubSystem>().Inputs.Other;
             // _controls.SwapMinds.performed += HandleMindSwap;
         }
 
@@ -36,8 +35,8 @@ namespace SS3D.Systems.Entities.Debug
                 return;
             }
 
-            MindSystem mindSystem = Subsystems.Get<MindSystem>();
-            mindSystem.CmdSwapMinds(Origin, Target);
+            MindSubSystem mindSubSystem = Subsystems.Get<MindSubSystem>();
+            mindSubSystem.CmdSwapMinds(Origin, Target);
 
             Origin = Target;
             Target = Origin;

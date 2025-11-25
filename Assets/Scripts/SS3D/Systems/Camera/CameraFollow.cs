@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Camera
 {
@@ -102,7 +101,7 @@ namespace SS3D.Systems.Camera
         private Vector3 _playerOffset;
 
         private Controls.CameraActions _controls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         /// <summary>
         /// Update the target the camera is meant to follow
@@ -124,13 +123,13 @@ namespace SS3D.Systems.Camera
         protected override void OnStart()
         {
             base.OnStart();
-            _inputSystem = Subsystems.Get<InputSystem>();
-            _controls = _inputSystem.Inputs.Camera;
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
+            _controls = _inputSubSystem.Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
             _controls.MouseRotation.performed += HandleMouseRotation;
-            _inputSystem.ToggleActionMap(_controls, true);
+            _inputSubSystem.ToggleActionMap(_controls, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -142,7 +141,7 @@ namespace SS3D.Systems.Camera
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
             _controls.MouseRotation.performed -= HandleMouseRotation;
-            _inputSystem.ToggleActionMap(_controls, false);
+            _inputSubSystem.ToggleActionMap(_controls, false);
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -174,11 +173,11 @@ namespace SS3D.Systems.Camera
 
         private void HandleMouseRotation(InputAction.CallbackContext context)
         {
-            float value = context.ReadValue<float>() * _inputSystem.MouseSensitivity;
+            float value = context.ReadValue<float>() * _inputSubSystem.MouseSensitivity;
             if (Math.Abs(value) > MouseSnapThreshold)
             {
                 Snap(value > 0);
-                _inputSystem.ToggleAction(_controls.MouseRotation, false);
+                _inputSubSystem.ToggleAction(_controls.MouseRotation, false);
                 StartCoroutine(MouseRotationTimeout(.4f));
             }
             else
@@ -190,7 +189,7 @@ namespace SS3D.Systems.Camera
         private IEnumerator MouseRotationTimeout(float time)
         {
             yield return new WaitForSeconds(time);
-            _inputSystem.ToggleAction(_controls.MouseRotation, true);
+            _inputSubSystem.ToggleAction(_controls.MouseRotation, true);
         }
 
         /// <summary>
@@ -252,7 +251,7 @@ namespace SS3D.Systems.Camera
             if (Vector3.Distance(Position, newPosition) <= _endTransitionDistance)
             {
                 _inTransition = false;
-                _inputSystem.ToggleActionMap(_controls, true);
+                _inputSubSystem.ToggleActionMap(_controls, true);
                 return;
             }
 
@@ -284,7 +283,7 @@ namespace SS3D.Systems.Camera
             // Smoothes movement at the end
             _endTransitionDistance = 0.05f / _transitionSpeed;
             _prevTargetPosition = targetPosition;
-            _inputSystem.ToggleActionMap(_controls, false);
+            _inputSubSystem.ToggleActionMap(_controls, false);
         }
     }
 }

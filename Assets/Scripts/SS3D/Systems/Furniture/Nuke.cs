@@ -47,8 +47,8 @@ namespace SS3D.Systems.Furniture
                 return;
             }
 
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
-            new NukeDetonateEvent(nuke, playerSystem.GetCkey(source.GetComponentInParent<Entity>().Owner)).Invoke(this);
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
+            new NukeDetonateEvent(nuke, playerSubSystem.GetCkey(source.GetComponentInParent<Entity>().Owner)).Invoke(this);
         }
     }
 }

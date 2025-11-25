@@ -108,7 +108,7 @@ namespace SS3D.Systems.Health
                 return;
             }
 
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            SubstancesSubSystem registry = Subsystems.Get<SubstancesSubSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
             if (HealthController.Circulatory.Container.GetSubstanceQuantity(oxygen) > HealthController.Circulatory.MaxOxygenQuantity)
             {

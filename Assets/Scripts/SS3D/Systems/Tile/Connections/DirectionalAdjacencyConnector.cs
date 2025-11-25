@@ -86,8 +86,8 @@ namespace SS3D.Systems.Tile.Connections
         public List<PlacedTileObject> GetNeighbours()
         {
             Setup();
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
-            TileMap map = tileSystem.CurrentMap;
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
 
             List<PlacedTileObject> neighbours = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
             return neighbours.Where(x => x != null &&

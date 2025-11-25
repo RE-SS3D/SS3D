@@ -97,10 +97,10 @@ namespace SS3D.Systems.Atmospherics
             float4 molesFirstToTransfer = BackPipe.AtmosObject.CoreGassesProportions * transferMoles1;
             float4 molesSecondToTransfer = BackPipe.AtmosObject.CoreGassesProportions * transferMoles2;
 
-            Subsystems.Get<PipeSystem>().RemoveCoreGasses(BackPipePosition, molesFirstToTransfer, PipeLayer);
-            Subsystems.Get<PipeSystem>().RemoveCoreGasses(SidePipePosition, molesSecondToTransfer, PipeLayer);
-            Subsystems.Get<PipeSystem>().AddCoreGasses(FrontPipePosition, molesFirstToTransfer, PipeLayer);
-            Subsystems.Get<PipeSystem>().AddCoreGasses(FrontPipePosition, molesSecondToTransfer, PipeLayer);
+            Subsystems.Get<PipeSubSystem>().RemoveCoreGasses(BackPipePosition, molesFirstToTransfer, PipeLayer);
+            Subsystems.Get<PipeSubSystem>().RemoveCoreGasses(SidePipePosition, molesSecondToTransfer, PipeLayer);
+            Subsystems.Get<PipeSubSystem>().AddCoreGasses(FrontPipePosition, molesFirstToTransfer, PipeLayer);
+            Subsystems.Get<PipeSubSystem>().AddCoreGasses(FrontPipePosition, molesSecondToTransfer, PipeLayer);
         }
 
         private void MixerInteract(InteractionEvent interactionEvent, InteractionReference arg2)

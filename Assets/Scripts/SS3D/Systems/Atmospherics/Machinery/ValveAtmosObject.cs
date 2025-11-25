@@ -43,13 +43,13 @@ namespace SS3D.Systems.Atmospherics
             TileLayer = PlacedTileObject.Layer;
             WorldOrigin = PlacedTileObject.WorldOrigin;
 
-            if (Subsystems.Get<PipeSystem>().IsSetUp)
+            if (Subsystems.Get<PipeSubSystem>().IsSetUp)
             {
-                Subsystems.Get<PipeSystem>().RegisterPipe(this);
+                Subsystems.Get<PipeSubSystem>().RegisterPipe(this);
             }
             else
             {
-                Subsystems.Get<PipeSystem>().OnSystemSetUp += () => Subsystems.Get<PipeSystem>().RegisterPipe(this);
+                Subsystems.Get<PipeSubSystem>().OnSystemSetUp += () => Subsystems.Get<PipeSubSystem>().RegisterPipe(this);
             }
         }
 
@@ -75,11 +75,11 @@ namespace SS3D.Systems.Atmospherics
 
             if (_isEnabled)
             {
-                Subsystems.Get<PipeSystem>().RegisterPipe(this);
+                Subsystems.Get<PipeSubSystem>().RegisterPipe(this);
             }
             else
             {
-                Subsystems.Get<PipeSystem>().RemovePipe(this);
+                Subsystems.Get<PipeSubSystem>().RemovePipe(this);
             }
         }
     }

@@ -100,7 +100,7 @@ namespace SS3D.Systems.Furniture
         [Server]
         private void SetOpen(bool open)
         {
-            Subsystems.Get<AtmosEnvironmentSystem>().ChangeState(transform.position, open ? AtmosState.Active : AtmosState.Blocked);
+            Subsystems.Get<AtmosEnvironmentSubSystem>().ChangeState(transform.position, open ? AtmosState.Active : AtmosState.Blocked);
             _animator.SetBool(OpenId, open);
         }
     }

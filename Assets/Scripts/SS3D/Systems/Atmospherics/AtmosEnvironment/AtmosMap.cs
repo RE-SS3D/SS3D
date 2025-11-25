@@ -25,12 +25,12 @@ namespace SS3D.Systems.Atmospherics
 
         private string _mapName;
 
-        private AtmosEnvironmentSystem _atmosEnvironmentSystem;
+        private AtmosEnvironmentSubSystem _atmosEnvironmentSubSystem;
 
         public AtmosMap(TileMap tileMap, string name)
         {
             _atmosChunks = new Dictionary<Vector2Int, AtmosChunk>();
-            _atmosEnvironmentSystem = Subsystems.Get<AtmosEnvironmentSystem>();
+            _atmosEnvironmentSubSystem = Subsystems.Get<AtmosEnvironmentSubSystem>();
             _mapName = name;
             _tileMap = tileMap;
         }

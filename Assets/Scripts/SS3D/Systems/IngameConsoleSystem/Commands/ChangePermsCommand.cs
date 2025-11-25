@@ -25,7 +25,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return response.InvalidArgs;
             }
 
-            Subsystems.Get<PermissionSystem>().ChangeUserPermission(values.Ckey, values.Role);
+            Subsystems.Get<PermissionSubSystem>().ChangeUserPermission(values.Ckey, values.Role);
             return "Permission changed to " + args[1];
         }
 

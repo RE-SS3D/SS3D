@@ -11,14 +11,13 @@ using SS3D.Systems.Inputs;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
     /// <summary>
     /// Controls the UI for a radial interaction menu
     /// </summary>
-    public sealed class RadialInteractionView : Core.Behaviours.System
+    public sealed class RadialInteractionView : Core.Behaviours.SubSystem
     {
         public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
 
@@ -44,7 +43,7 @@ namespace SS3D.Systems.Interactions
         private List<IInteraction> Interactions { get; set; }
         private InteractionEvent Event { get; set; }
         private Controls.InteractionsActions _controls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
 
         protected override void OnStart()
         {
@@ -69,8 +68,8 @@ namespace SS3D.Systems.Interactions
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
 
-            _inputSystem = Subsystems.Get<InputSystem>();
-            _controls = _inputSystem.Inputs.Interactions;
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
+            _controls = _inputSubSystem.Inputs.Interactions;
             _controls.ViewInteractions.canceled += HandleDisappear;
         }
 
@@ -189,7 +188,7 @@ namespace SS3D.Systems.Interactions
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
         {
             // leftButton is disabled in InteractionController HandleView
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            _inputSubSystem.ToggleBinding("<Mouse>/leftButton", true);
             Disappear();
         }
 

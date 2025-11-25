@@ -29,7 +29,7 @@ namespace SS3D.Systems.GameModes.Modes
         public event Action OnInitialized;
 
         /// <summary>
-        /// Called whenever a gamemode objective is updated, used for quick access by the GamemodeSystem.
+        /// Called whenever a gamemode objective is updated, used for quick access by the GamemodeSubSystem.
         /// </summary>
         public event Action<GamemodeObjective> OnObjectiveUpdated;
 
@@ -317,7 +317,7 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
-        /// Called whenever an objective is updated to tell the GamemodeSystem an objective was updated.
+        /// Called whenever an objective is updated to tell the GamemodeSubSystem an objective was updated.
         /// </summary>
         /// <param name="objective">The objective that was updated.</param>
         private void HandleGamemodeObjectiveUpdated(GamemodeObjective objective)
