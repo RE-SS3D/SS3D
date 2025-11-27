@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -9,9 +8,10 @@ using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.PlayerControl.Events;
-using SS3D.Systems.PlayerControl.Messages;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Rounds
@@ -21,7 +21,10 @@ namespace SS3D.Systems.Rounds
     /// </summary>
     public class ReadyPlayersSubSystem : NetworkSubSystem
     {
-        [SyncObject] private readonly SyncList<Player> _readyPlayers = new();
+        [SyncObject]
+        private readonly SyncList<Player> _readyPlayers = new();
+
+        public int Count => _readyPlayers.Count;
 
         public override void OnStartServer()
         {
@@ -86,20 +89,25 @@ namespace SS3D.Systems.Rounds
             switch (ready)
             {
                 case true when !playerIsReady:
+                {
                     Log.Information(this, "player is {ckey} is ready", Logs.ServerOnly, player.Ckey);
                     _readyPlayers.Add(player);
                     break;
+                }
+
                 case false when playerIsReady:
+                {
                     Log.Information(this, "player is {cCkey} is not ready", Logs.ServerOnly, player.Ckey);
                     _readyPlayers.Remove(player);
                     break;
+                }
             }
         }
 
         [Server]
         private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
-            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(m.Ckey);
+            Player player = Subsystems.Get<PlayerSubSystem>().GetPlayer(m.Ckey);
 
             SetPlayerReady(player, m.Ready);
         }
@@ -130,8 +138,6 @@ namespace SS3D.Systems.Rounds
             readyPlayersChanged.Invoke(this);
         }
 
-        public int Count => _readyPlayers.Count;
-
 #if UNITY_EDITOR
         /// <summary>
         /// This method facilitates automated testing, and is not to be used in production.
@@ -142,6 +148,7 @@ namespace SS3D.Systems.Rounds
         /// <param name="sender">The client the message is apparently from</param>
         /// <param name="m">The ChangePlayerReadyMessage apparently broadcast</param>
         [Server]
+        [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1202:ElementsMustBeOrderedByAccess", Justification = "Editor method used for test")]
         public void ChangePlayerReadyMessageStubBroadcast(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
             HandleChangePlayerReady(sender, m);

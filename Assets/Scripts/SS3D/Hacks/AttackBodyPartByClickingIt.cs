@@ -3,10 +3,8 @@ using SS3D.Core;
 using System.Linq;
 using UnityEngine;
 using SS3D.Systems.Health;
-using System;
 using System.Collections;
 using UnityEngine.InputSystem;
-using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Hacks
 {
@@ -36,28 +34,30 @@ namespace SS3D.Hacks
 
         private void Start()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.Attack.performed += CheckForAttack;
+            Subsystems.Get<Systems.Inputs.InputSubSystem>().Inputs.Other.Attack.performed += CheckForAttack;
         }
 
         private void OnDestroy()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.Attack.performed -= CheckForAttack;
+            Subsystems.Get<Systems.Inputs.InputSubSystem>().Inputs.Other.Attack.performed -= CheckForAttack;
         }
 
         private void CheckForAttack(InputAction.CallbackContext callbackContext)
 		{
-            LayerMask layerMask = LayerMask.GetMask("BodyParts");
+            //LayerMask layerMask = LayerMask.GetMask("BodyParts");
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
-			if (!Physics.Raycast(ray, out hit, 10f, layerMask))
+			if (!Physics.Raycast(ray, out hit, 10f, -1))
 			{
 				return;
 			}
+            
             BodyPart target = GetComponentsInChildren<BodyPart>().Where(x => x.BodyCollider == hit.collider).FirstOrDefault();
             if (!target)
 			{
 				return;
 			}
+            Debug.Log($"hit {target.Name}");
             CmdAttackBodyPart(target, damageAmount, hit.point);
 		}
 

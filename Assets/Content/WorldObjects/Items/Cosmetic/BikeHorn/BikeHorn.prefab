@@ -87,7 +87,7 @@ MeshFilter:
   m_Mesh: {fileID: 5709868560514540240, guid: b7735b41af47b164f841a513161d8f07, type: 3}
 --- !u!95 &7807247313645579261
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -104,7 +104,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3401307552301717060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
   IgnoredParameters: []
@@ -176,6 +177,7 @@ GameObject:
   - component: {fileID: 8613419490928921116}
   - component: {fileID: 2689380027240677461}
   - component: {fileID: 7692858249744895666}
+  - component: {fileID: 6349042502534451669}
   m_Layer: 10
   m_Name: BikeHorn
   m_TagString: Untagged
@@ -220,8 +222,6 @@ MonoBehaviour:
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 6351433192589740835}
-  AttachmentPoint: {fileID: 4619531351315044860}
-  AttachmentPointAlt: {fileID: 0}
   _container: {fileID: 0}
   _animator: {fileID: 7807247313645579261}
   _honkIcon: {fileID: 21300000, guid: 03812e70c708b3047b20e316b16f1896, type: 3}
@@ -244,6 +244,7 @@ MonoBehaviour:
   - {fileID: 5398674181771020985}
   - {fileID: 6573417749823381685}
   - {fileID: -1808419688812875912}
+  - {fileID: 7692858249744895666}
   - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -338,7 +339,7 @@ MeshCollider:
   m_Mesh: {fileID: 5709868560514540240, guid: b7735b41af47b164f841a513161d8f07, type: 3}
 --- !u!95 &6183259094829508424
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -355,7 +356,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &-1808419688812875912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,7 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 71368b829dabc4042bc1ed56eb8afecf, type: 2}
+  _key: {fileID: 11400000, guid: 71368b829dabc4042bc1ed56eb8afecf, type: 2}
 --- !u!114 &7692858249744895666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,6 +416,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: 4819234911439508660}
+  _networkObjectCache: {fileID: 4819234911439508660}
+--- !u!114 &6349042502534451669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99df7ac2c21c2d944818b5da5be3dd53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 0}
+  _primaryRightHandHold: {fileID: 4619531351315044860}
+  _primaryLeftHandHold: {fileID: 4619531351315044860}
+  _secondaryRightHandHold: {fileID: 0}
+  _secondaryLeftHandHold: {fileID: 0}
+  _holdableScriptableObject: {fileID: 11400000, guid: f93ccad7cfbe46b4fa3f8cfb8be8a1d9, type: 2}

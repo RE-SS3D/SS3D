@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SS3D.Core;
+﻿using SS3D.Core;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Audio;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using AudioType = SS3D.Systems.Audio.AudioType;
 
@@ -15,18 +15,28 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// </summary>
     public class BikeHorn : Item
     {
-        [Header("Bike horn settings")]
-        [SerializeField] private Animator _animator;
-
-        [SerializeField] private Sprite _honkIcon;
-
         private static readonly int HonkAnimation = Animator.StringToHash("Honk");
+
+        [Header("Bike horn settings")]
+        [SerializeField]
+        private Animator _animator;
+
+        [SerializeField]
+        private Sprite _honkIcon;
 
         public void Honk()
         {
             _animator.SetTrigger(HonkAnimation);
-            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.BikeHorn, GameObject.transform.position, NetworkObject,
-                false,0.7f, 1, 1, 5);
+            Subsystems.Get<AudioSubSystem>().PlayAudioSource(
+                AudioType.Sfx,
+                Sounds.BikeHorn,
+                GameObject.transform.position,
+                NetworkObject,
+                false,
+                0.7f,
+                1,
+                1,
+                5);
         }
 
         public bool IsHonking()
@@ -39,7 +49,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = base.CreateTargetInteractions(interactionEvent).ToList();
-            HonkInteraction honk = new() { Icon = _honkIcon };
+            HonkInteraction honk = new();
 
             interactions.Add(honk);
 

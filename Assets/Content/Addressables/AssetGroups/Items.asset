@@ -25,10 +25,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Command/NuclearAuthenticationDisk.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 264ea51d92067c14ebc6633999afac78
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/ToolBoxes/ToolboxBlue.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 2a63163a4db141744a802f3ff67087db
     m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityPDA.prefab
     m_ReadOnly: 0
@@ -103,10 +99,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 404443f7c306fc8469698745624fa3bf
     m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/GreyFloorTile.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f88a398ad3d01454f955de9c337d9b99
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelReinforcedSheet.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4cb99cf2fee96f944abbacc51b0b701c
@@ -301,14 +293,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirderUnbolted.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: a1a7407e08bb2914c97f431063bf83e2
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheetReinforced.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e2a06f02e6a7e0348bdc535344bfe1f3
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheet.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 2767aeb6e6fd53b43a1cb305789834d4
     m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodLog.prefab
     m_ReadOnly: 0
@@ -395,12 +379,44 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: f2493b5478dd8e946ba98861f533362e
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindowReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: 88d1ba1edb4ce5e4fa74c6a8d53e36e1
     m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurityLeft.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: bc08055e4ec2e204f8f46a379b2b6603
     m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurityRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e27b2c3f420e9b64da16541e1e381830
+    m_Address: Assets/Content/WorldObjects/Structures/Atmos/ValveManual.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 420c8757d9e32fa43bee79d6c980fd19
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/FilterR.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8c283d2cd4e5694418ce0a33cd23c85b
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/MixerL.prefab
+  - m_GUID: ff4004210dcb33749a7af3f49c474474
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Weapons/M4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 264ea51d92067c14ebc6633999afac78
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/ToolBoxes/ToolboxBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e2a06f02e6a7e0348bdc535344bfe1f3
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1233b131db219cd4bb2303de28d3d077
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassReinforcedSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 38a26a63cd3ac284c8a55899c0e91731
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelReinforcedSheet.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

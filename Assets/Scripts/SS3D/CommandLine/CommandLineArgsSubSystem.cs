@@ -9,14 +9,13 @@ using SS3D.Application.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS3D.Core.Behaviours;
 
 namespace SS3D.CommandLine
 {
     /// <summary>
     /// Loads the command line args and processes them for the application settings.
     /// </summary>
-    public sealed class CommandLineArgsSubSystem : SubSystem
+    public sealed class CommandLineArgsSubSystem : Core.Behaviours.SubSystem
     {
         private List<string> _commandLineArgs;
 

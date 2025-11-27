@@ -18,29 +18,35 @@ namespace SS3D.Systems.Tile
         /// <param name="tileObjectSo"></param>
         /// <param name="replaceExisting"></param>
         /// <returns></returns>
-        public static bool CanBuild(ITileLocation[] tileLocations, TileObjectSo tileObjectSo, Direction dir, Vector3 gridPosition,
-            PlacedTileObject[] adjacentObjects, bool replaceExisting)
+        public static bool CanBuild(
+            ITileLocation[] tileLocations,
+            TileObjectSo tileObjectSo,
+            Direction dir,
+            Vector3 gridPosition,
+            PlacedTileObject[] adjacentObjects,
+            bool replaceExisting)
         {
             bool canBuild = true;
 
-            TileLayer placedLayer = tileObjectSo.layer;
+            TileLayer placedLayer = tileObjectSo.Layer;
 
             // Cannot build if the layer is already occupied. Skip if we replace the existing object
             if (!replaceExisting)
+            {
                 canBuild &= tileLocations[(int)placedLayer].IsEmpty(dir);
-            
+            }
+
             // Cannot build anything unless a plenum is placed
             if (placedLayer != TileLayer.Plenum)
             {
-                if (!(tileLocations[(int)TileLayer.Plenum] is SingleTileLocation))
+                if (tileLocations[(int)TileLayer.Plenum] is not SingleTileLocation)
                 {
                     Debug.LogError("Location on Plenum should be a Single object location");
                     return false;
                 }
 
-                canBuild &= CanBuildOnPlenum((SingleTileLocation) tileLocations[(int)TileLayer.Plenum]);
+                canBuild &= CanBuildOnPlenum((SingleTileLocation)tileLocations[(int)TileLayer.Plenum]);
             }
-                
 
             switch (placedLayer)
             {
@@ -48,104 +54,29 @@ namespace SS3D.Systems.Tile
                 case TileLayer.WallMountLow when canBuild:
                 {
                     // If a wall mount is large, check to see if there are other large wall mounts
-                    canBuild &= !(tileObjectSo.isLarge && !tileLocations[(int)placedLayer].IsEmpty(TileHelper.GetNextCardinalDir(dir)));
-                    canBuild &= !(tileObjectSo.isLarge && !tileLocations[(int)placedLayer].IsEmpty(TileHelper.GetPreviousCardinalDir(dir)));
+                    canBuild &= !(tileObjectSo.IsLarge && !tileLocations[(int)placedLayer].IsEmpty(TileHelper.GetNextCardinalDir(dir)));
+                    canBuild &= !(tileObjectSo.IsLarge && !tileLocations[(int)placedLayer].IsEmpty(TileHelper.GetPreviousCardinalDir(dir)));
 
-                    canBuild &= CanBuildWallAttachment((SingleTileLocation) tileLocations[(int)TileLayer.Turf],
-                        tileObjectSo, dir, adjacentObjects);
+                    canBuild &= CanBuildWallAttachment((SingleTileLocation)tileLocations[(int)TileLayer.Turf], tileObjectSo, dir, adjacentObjects);
                     break;
                 }
+
                 // No furniture inside walls
                 case TileLayer.FurnitureBase:
                 case TileLayer.FurnitureTop:
                 {
-                    canBuild &= !IsWall((SingleTileLocation) tileLocations[(int)TileLayer.Turf]);
+                    canBuild &= !IsWall((SingleTileLocation)tileLocations[(int)TileLayer.Turf]);
                     break;
                 }
+
                 // No walls on furniture
-                case TileLayer.Turf when tileObjectSo.genericType == TileObjectGenericType.Wall:
+                case TileLayer.Turf when tileObjectSo.GenericType == TileObjectGenericType.Wall:
                 {
                     canBuild &= tileLocations[(int)TileLayer.FurnitureBase].IsFullyEmpty() &&
                     tileLocations[(int)TileLayer.FurnitureTop].IsFullyEmpty();
                     canBuild &= NoNeighbouringWallMount(gridPosition);
                     break;
                 }
-            }
-
-            return canBuild;
-        }
-
-        /// <summary>
-        /// Checks if a wall mount collides with a nearby wall
-        /// </summary>
-        /// <param name="tileObjectSo"></param>
-        /// <param name="dir"></param>
-        /// <param name="adjacentObjects"></param>
-        /// <returns></returns>
-        private static bool CanBuildWallCollision(TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects)
-        {
-            bool canBuild = true;
-
-            if (tileObjectSo.layer == TileLayer.WallMountHigh || tileObjectSo.layer == TileLayer.WallMountLow)
-            {
-                canBuild &= !(adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GenericType == TileObjectGenericType.Wall);
-            }
-
-            return canBuild;
-        }
-
-        private static bool IsWall(SingleTileLocation wallLocation)
-        {
-            return !wallLocation.IsEmpty() && wallLocation.PlacedObject.GenericType == TileObjectGenericType.Wall;
-        }
-
-        private static bool CanBuildWallAttachment(SingleTileLocation wallLocation, TileObjectSo wallAttachment, Direction dir, PlacedTileObject[] adjacentObjects)
-        {
-            bool canBuild = true;
-
-            // Cannot build when there isn't a wall
-            canBuild &= IsWall(wallLocation);
-
-            // No low wall mounts on windows
-            if (!wallLocation.IsEmpty(dir))
-            {
-                canBuild &= !(wallLocation.PlacedObject.NameString.Contains("Window") && wallAttachment.layer == TileLayer.WallMountLow);
-            }
-
-            // Mounts cannot collide with neighbouring wall
-            canBuild &= CanBuildWallCollision(wallAttachment, dir, adjacentObjects);
-
-
-            return canBuild;
-        }
-
-
-        /// <summary>
-        /// Check if any wall mount is present as a neighbour of the tile found at the grid position.
-        /// </summary>
-        /// <param name="GridPosition">The position of the tile we want to check.</param>
-        private static bool NoNeighbouringWallMount(Vector3 GridPosition)
-        {
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-            var map = tileSystem.CurrentMap;
-            var neighboursHigh = map.GetNeighbourPlacedObjects(TileLayer.WallMountHigh, GridPosition);
-            var neighboursLow= map.GetNeighbourPlacedObjects(TileLayer.WallMountLow, GridPosition);
-            if (neighboursHigh.Any(x => x != null) || neighboursLow.Any(x => x != null)) return false;
-            else return true;
-        }
-
-        private static bool CanBuildOnPlenum(SingleTileLocation plenumLocation)
-        {
-            bool canBuild = true;
-
-            if (!plenumLocation.IsEmpty())
-            {
-                // Can only build on a Plenum and not Catwalks or Lattices
-                canBuild &= plenumLocation.PlacedObject.NameString.Contains("Plenum") || plenumLocation.PlacedObject.name.Contains("Catwalk");
-            }
-            else
-            {
-                canBuild = false;
             }
 
             return canBuild;
@@ -179,9 +110,84 @@ namespace SS3D.Systems.Tile
 
             // Remove furniture top is furniture base is missing
             else if (tileObjects[(int)TileLayer.FurnitureBase].IsFullyEmpty())
+            {
                 toBeDestroyedList.Add(tileObjects[(int)TileLayer.FurnitureTop]);
+            }
 
             return toBeDestroyedList;
+        }
+
+        /// <summary>
+        /// Checks if a wall mount collides with a nearby wall
+        /// </summary>
+        /// <param name="tileObjectSo"></param>
+        /// <param name="dir"></param>
+        /// <param name="adjacentObjects"></param>
+        /// <returns></returns>
+        private static bool CanBuildWallCollision(TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects)
+        {
+            bool canBuild = true;
+
+            if (tileObjectSo.Layer == TileLayer.WallMountHigh || tileObjectSo.Layer == TileLayer.WallMountLow)
+            {
+                canBuild &= !(adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GenericType == TileObjectGenericType.Wall);
+            }
+
+            return canBuild;
+        }
+
+        private static bool IsWall(SingleTileLocation wallLocation)
+        {
+            return !wallLocation.IsEmpty() && wallLocation.PlacedObject.GenericType == TileObjectGenericType.Wall;
+        }
+
+        private static bool CanBuildWallAttachment(SingleTileLocation wallLocation, TileObjectSo wallAttachment, Direction dir, PlacedTileObject[] adjacentObjects)
+        {
+            bool canBuild = true;
+
+            // Cannot build when there isn't a wall
+            canBuild &= IsWall(wallLocation);
+
+            // No low wall mounts on windows
+            if (!wallLocation.IsEmpty(dir))
+            {
+                canBuild &= !(wallLocation.PlacedObject.NameString.Contains("Window") && wallAttachment.Layer == TileLayer.WallMountLow);
+            }
+
+            // Mounts cannot collide with neighbouring wall
+            canBuild &= CanBuildWallCollision(wallAttachment, dir, adjacentObjects);
+
+            return canBuild;
+        }
+
+        /// <summary>
+        /// Check if any wall mount is present as a neighbour of the tile found at the grid position.
+        /// </summary>
+        /// <param name="gridPosition">The position of the tile we want to check.</param>
+        private static bool NoNeighbouringWallMount(Vector3 gridPosition)
+        {
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
+            PlacedTileObject[] neighboursHigh = map.GetNeighbourPlacedObjects(TileLayer.WallMountHigh, gridPosition);
+            PlacedTileObject[] neighboursLow = map.GetNeighbourPlacedObjects(TileLayer.WallMountLow, gridPosition);
+            return neighboursHigh.All(x => x == null) && neighboursLow.All(x => x == null);
+        }
+
+        private static bool CanBuildOnPlenum(SingleTileLocation plenumLocation)
+        {
+            bool canBuild = true;
+
+            if (!plenumLocation.IsEmpty())
+            {
+                // Can only build on a Plenum and not Catwalks or Lattices
+                canBuild &= plenumLocation.PlacedObject.NameString.Contains("Plenum") || plenumLocation.PlacedObject.name.Contains("Catwalk");
+            }
+            else
+            {
+                canBuild = false;
+            }
+
+            return canBuild;
         }
     }
 }

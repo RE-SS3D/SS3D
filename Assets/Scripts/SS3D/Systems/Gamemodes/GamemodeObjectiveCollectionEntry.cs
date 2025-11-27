@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
 {
@@ -11,19 +12,29 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// The gamemode objective to be attributed.
         /// </summary>
-        public GamemodeObjective GamemodeObjective;
+        [field:SerializeField]
+        public GamemodeObjective GamemodeObjective { get; private set; }
 
         /// <summary>
         /// The probability of a player being assigned to this objective.
         /// </summary>
-        public float AssignmentProbability;
+        [field:SerializeField]
+        public float AssignmentProbability { get; private set; }
 
         /// <summary>
         /// How many objectives of this type are remaining to be assigned.
         /// </summary>
-        public int RemainingAssignments;
+        [field:SerializeField]
+        public int RemainingAssignments { get; private set; }
 
         // TODO: Job restrictions 🤯🥸
+        [NotNull]
+        public static GamemodeObjectiveCollectionEntry CreateInstance(GamemodeObjective objective, float assignmentProbability, int remainingAssignments)
+        {
+            GamemodeObjectiveCollectionEntry data = ScriptableObject.CreateInstance<GamemodeObjectiveCollectionEntry>();
+            data.Init(objective, assignmentProbability, remainingAssignments);
+            return data;
+        }
 
         /// <summary>
         /// Tries to get an objective, instantiates it instead of getting the original.
@@ -38,6 +49,7 @@ namespace SS3D.Systems.Gamemodes
                 if (RemainingAssignments == 0)
                 {
                     objective = null;
+
                     return false;
                 }
 
@@ -45,7 +57,15 @@ namespace SS3D.Systems.Gamemodes
             }
 
             objective = Instantiate(GamemodeObjective);
+
             return true;
+        }
+
+        private void Init(GamemodeObjective objective, float assignmentProbability, int remainingAssignments)
+        {
+            GamemodeObjective = objective;
+            AssignmentProbability = assignmentProbability;
+            RemainingAssignments = remainingAssignments;
         }
     }
 }

@@ -153,6 +153,7 @@ GameObject:
   - component: {fileID: 6072928490511251397}
   - component: {fileID: -6923105539505770605}
   - component: {fileID: -7978277362494375466}
+  - component: {fileID: 827317970361906839}
   m_Layer: 0
   m_Name: SteelWall
   m_TagString: Untagged
@@ -265,8 +266,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -367,6 +368,21 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -2900075557854325373}
   _asset: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: a0b4e2f901dd14b429586c816b29b97f, type: 2}
+--- !u!114 &827317970361906839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2db43ceae5151054892557650c883733, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -2900075557854325373}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

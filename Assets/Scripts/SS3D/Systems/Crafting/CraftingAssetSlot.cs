@@ -1,20 +1,20 @@
-﻿using TMPro;
-using UnityEngine;
-using SS3D.Core;
+﻿using SS3D.Core;
 using System.Linq;
+using TMPro;
+using UnityEngine;
 
 namespace SS3D.Systems.Crafting
 {
     /// <summary>
-    /// Script allowing to set up text slots in the crafting menu. Those slots, when clicked on, should trigger a given crafting 
+    /// Script allowing to set up text slots in the crafting menu. Those slots, when clicked on, should trigger a given crafting
     /// interaction.
     /// </summary>
     public class CraftingAssetSlot : MonoBehaviour
     {
         private int _index;
-        
+
         /// <summary>
-        /// Set up the name of the recipe step in a UI slot for the crafting menu. 
+        /// Set up the name of the recipe step in a UI slot for the crafting menu.
         /// </summary>
         public void Setup(string recipeStepName, int index)
         {
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public void OnClick()
         {
-            ViewLocator.Get<CraftingMenu>().First().RpcSetSelectedInteraction(_index);
+            ViewLocator.Get<CraftingMenu>()[0].RpcSetSelectedInteraction(_index);
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿using UnityEngine;
+﻿using FishNet;
 using FishNet.Object;
 using SS3D.Core;
-using FishNet;
-using UnityEngine.Serialization;
+using UnityEngine;
 
 namespace SS3D.Systems.Audio
 {
@@ -11,8 +10,7 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public class NoisyCollision : MonoBehaviour
     {
-
-        //Variables!!! Wow!
+        // Variables!!! Wow!
         [Header("Collision Noises Setup")]
         [Range(0f, 1f)]
         [SerializeField]
@@ -27,12 +25,12 @@ namespace SS3D.Systems.Audio
         [SerializeField]
         [Range(0f, 0.5f)]
         [Tooltip("How much lower pitch can the sound play?")]
-        private float _pitchModulationLow = 0;
+        private float _pitchModulationLow;
 
         [SerializeField]
         [Range(0f, 0.5f)]
         [Tooltip("How much higher pitch can the sound play?")]
-        private float _pitchModulationHigh = 0;
+        private float _pitchModulationHigh;
 
         [SerializeField]
         [Tooltip("How fast this object must hit another in order to make a light impact sound.")]
@@ -40,7 +38,7 @@ namespace SS3D.Systems.Audio
 
         [SerializeField]
         [Tooltip("Does this object make a different sound being struck at a high velocity?")]
-        private bool _useHardImpactSounds = false;
+        private bool _useHardImpactSounds;
 
         [SerializeField]
         [Tooltip("How fast this object must hit another in order to make a hard impact sound.")]
@@ -54,10 +52,7 @@ namespace SS3D.Systems.Audio
         [Tooltip("List of possible sounds that will play when this object collides heavily.")]
         private AudioClip[] _hardImpactSounds;
 
-        //For some reason, this is needed to have an enable/disable feature. Peculiar.
-        private void FixedUpdate() { }
-
-        private void OnValidate()
+        protected void OnValidate()
         {
             // Throw a warning if the user configured it retardedly.
             if ((!(_lightImpactVelocity > _hardImpactVelocity)) && (!_useHardImpactSounds || _hardImpactSounds != null) && (_lightImpactSounds != null))
@@ -69,14 +64,14 @@ namespace SS3D.Systems.Audio
             enabled = false;
         }
 
-        private void OnCollisionEnter(Collision other)
+        protected void OnCollisionEnter(Collision other)
         {
             if (!InstanceFinder.IsServer)
             {
                 return;
             }
 
-            //Only execute this code if we're supposed to make collision noises.
+            // Only execute this code if we're supposed to make collision noises.
             if (_useHardImpactSounds && other.relativeVelocity.magnitude > _hardImpactVelocity)
             {
                 PlayCollisionSound(_hardImpactSounds);
@@ -95,8 +90,14 @@ namespace SS3D.Systems.Audio
         private void PlayCollisionSound(AudioClip[] soundPool)
         {
             float pitch = Random.Range(_basePitch - _pitchModulationLow, _basePitch + _pitchModulationHigh);
-            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, PickSound(soundPool), gameObject.transform.position, null,
-                false, _collisionVolume, pitch);
+            Subsystems.Get<AudioSubSystem>().PlayAudioSource(
+                AudioType.Sfx,
+                PickSound(soundPool),
+                gameObject.transform.position,
+                null,
+                false,
+                _collisionVolume,
+                pitch);
         }
 
         private AudioClip PickSound(AudioClip[] availableSounds)

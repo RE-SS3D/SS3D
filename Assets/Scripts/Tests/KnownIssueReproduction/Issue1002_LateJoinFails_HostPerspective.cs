@@ -8,7 +8,6 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using System.Diagnostics;
-using SS3D.Systems.Entities.Humanoid;
 using System;
 using SS3D.Systems.PlayerControl;
 using System.Linq;
@@ -131,10 +130,10 @@ namespace SS3D.Tests
 
         protected IEnumerator WaitForClientSoulToAppearInLobby(string ckey, float timeout = 15f)
         {
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
             float startTime = Time.time;
 
-            while (playerSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == ckey) == null)
+            while (playerSubSystem.OnlinePlayers.ToList().Find(soul => soul.Ckey == ckey) == null)
             {
                 yield return new WaitForSeconds(1f);
                 Assert.IsTrue(Time.time < startTime + timeout, $"Client '{ckey}' not loaded after timeout of {timeout} seconds.");

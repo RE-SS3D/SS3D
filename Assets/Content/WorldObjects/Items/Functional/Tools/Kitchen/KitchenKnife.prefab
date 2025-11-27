@@ -23,14 +23,45 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 742329524854909756}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.49395734, y: 0.5059705, z: 0.50597054, w: 0.49395734}
+  m_LocalPosition: {x: 0.035, y: -0.026, z: -0.1027}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 212662597122105200}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -1.377, y: 90, z: 90}
+--- !u!1 &3344450127820818172
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 565090781094418479}
+  m_Layer: 10
+  m_Name: LeftAttachment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &565090781094418479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3344450127820818172}
+  m_LocalRotation: {x: -0.52992934, y: 0.53566086, z: 0.46238112, w: -0.4673821}
+  m_LocalPosition: {x: -0.011, y: -0.031, z: -0.113}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 212662597122105200}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 262.212, z: -89.384}
 --- !u!1 &3794527162878356835
 GameObject:
   m_ObjectHideFlags: 0
@@ -50,6 +81,7 @@ GameObject:
   - component: {fileID: 5464842264619517571}
   - component: {fileID: 2986267657943188832}
   - component: {fileID: 4004628490018734234}
+  - component: {fileID: 6288257911116267963}
   m_Layer: 10
   m_Name: KitchenKnife
   m_TagString: Untagged
@@ -70,6 +102,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8869951128713715569}
+  - {fileID: 565090781094418479}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -219,8 +252,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -251,8 +284,6 @@ MonoBehaviour:
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 2709008034070362697}
-  AttachmentPoint: {fileID: 8869951128713715569}
-  AttachmentPointAlt: {fileID: 8869951128713715569}
   _container: {fileID: 0}
 --- !u!114 &5464842264619517571
 MonoBehaviour:
@@ -291,4 +322,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dd866b0631d05441982a4824740ff8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 2
+  type: 3
+--- !u!114 &6288257911116267963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794527162878356835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99df7ac2c21c2d944818b5da5be3dd53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 261983550380735922}
+  _networkObjectCache: {fileID: 0}
+  _primaryRightHandHold: {fileID: 8869951128713715569}
+  _primaryLeftHandHold: {fileID: 565090781094418479}
+  _secondaryRightHandHold: {fileID: 0}
+  _secondaryLeftHandHold: {fileID: 0}
+  _holdableScriptableObject: {fileID: 11400000, guid: f93ccad7cfbe46b4fa3f8cfb8be8a1d9, type: 2}

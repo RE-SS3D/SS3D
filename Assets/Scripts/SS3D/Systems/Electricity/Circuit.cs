@@ -11,16 +11,18 @@ namespace System.Electricity
     /// </summary>
     public class Circuit
     {
+        private static Random _randomGenerator = new();
         private List<IPowerConsumer> _consumers;
         private List<IPowerProducer> _producers;
         private List<IPowerStorage> _storages;
-        private static Random RandomGenerator = new();
-        public Circuit() 
+
+        public Circuit()
         {
             _consumers = new();
             _producers = new();
             _storages = new();
         }
+
         /// <summary>
         /// Add an electric device to the circuit. An electric device can be a consumer and a producer, or
         /// a consumer and storage at the same time, or consumer, producer and storage. In this case, the electric device
@@ -31,18 +33,25 @@ namespace System.Electricity
             switch (device)
             {
                 case IPowerConsumer consumer:
+                {
                     _consumers.Add(consumer);
                     break;
-                
+                }
+
                 case IPowerProducer producer:
+                {
                     _producers.Add(producer);
                     break;
-                
+                }
+
                 case IPowerStorage storage:
+                {
                     _storages.Add(storage);
                     break;
+                }
             }
         }
+
         /// <summary>
         /// Do an update on the whole circuit power. Produce power, consume power that needs to be consumed, and charge stuff that can be charged.
         /// </summary>
@@ -88,23 +97,25 @@ namespace System.Electricity
             {
                 return -neededPower;
             }
-            
+
             List<IPowerStorage> availableStorages = _storages.Where(x => x.IsOn && x.MaxRemovablePower > 0)
                 .OrderBy(x => x.MaxRemovablePower).ToList();
             float maxPowerFromBatteries = availableStorages.Sum(x => x.MaxRemovablePower);
-            
+
             while (neededPower > maxPowerFromBatteries)
             {
                 List<IPowerConsumer> consumersToRemove = poweredConsumers.Where(x => x.PowerNeeded >= neededPower).ToList();
-                if (!consumersToRemove.Any())
+                if (consumersToRemove.Count == 0)
                 {
                     consumersToRemove.AddRange(poweredConsumers);
                 }
+
                 // Random is used to make sure that unpowered consumers won't be the same each tick
-                IPowerConsumer consumer = consumersToRemove[RandomGenerator.Next(consumersToRemove.Count)];
+                IPowerConsumer consumer = consumersToRemove[_randomGenerator.Next(consumersToRemove.Count)];
                 neededPower -= consumer.PowerNeeded;
                 poweredConsumers.Remove(consumer);
             }
+
             DrainBatteries(neededPower, availableStorages);
             return 0;
         }
@@ -112,16 +123,17 @@ namespace System.Electricity
         /// <summary>
         /// Drain batteries from storages equally
         /// </summary>
-        /// <param name="power">Power to drain in sum. Must be always lesser or equal than sum of available power from storages</param>
-        /// <param name="storages">Storages to drain from</param>
+        /// <param name="power"> Power to drain in sum. Must be always lesser or equal than sum of available power from storages</param>
+        /// <param name="storages"> Storages to drain from</param>
         private void DrainBatteries(float power, List<IPowerStorage> storages)
         {
-            if(power > storages.Sum(x => x.MaxRemovablePower))
+            if (power > storages.Sum(x => x.MaxRemovablePower))
             {
-                Log.Error(this, "Energy requested for draining batteries is greater than available energy in batteries." +
-                    "This will result in creating some free energy.");
+                Log.Error(
+                    this,
+                    "Energy requested for draining batteries is greater than available energy in batteries. This will result in creating some free energy.");
             }
-            
+
             float equalAmount = power / storages.Count;
             for (int i = 0; i < storages.Count; i++)
             {
@@ -136,7 +148,7 @@ namespace System.Electricity
                 }
             }
         }
-        
+
         /// <summary>
         /// Distribute available power equally to power storages.
         /// TODO : should limit the amount of power a storage can receive in a single update to avoid instant charge.
@@ -145,7 +157,11 @@ namespace System.Electricity
         /// <returns> Left over power if storages are full.</returns>
         private float ChargeStorages(float availablePower)
         {
-            if (availablePower <= 0f) return 0f;
+            if (availablePower <= 0f)
+            {
+                return 0f;
+            }
+
             // Order the list to make sure that storages to be fully charged come first
             List<IPowerStorage> notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn)
                 .OrderBy(x => x.RemainingCapacity).ToList();
@@ -163,6 +179,7 @@ namespace System.Electricity
                     availablePower -= notFullStorages[i].AddPower(equalAmount);
                 }
             }
+
             return availablePower;
         }
     }

@@ -5,6 +5,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Inventory.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace SS3D.Engine.Chat
 {
     public sealed class InGameChatController : NetworkActor
     {
-        [SerializeField] private HumanInventory _humanInventory;
+        private IInventory _inventory;
         
         [SyncObject]
         public readonly SyncList<string> AvailableChannels = new SyncList<string>();
@@ -55,8 +56,8 @@ namespace SS3D.Engine.Chat
         public override void OnStartServer()
         {
             base.OnStartServer();
-            
-            _humanInventory.OnContainerContentChanged += OnInventoryItemsUpdated;
+            _inventory = GetComponent<IInventory>();
+            _inventory.OnContainerContentChanged += OnInventoryItemsUpdated;
         }
 
         [Client]
@@ -109,18 +110,18 @@ namespace SS3D.Engine.Chat
         [Server]
         private bool HasHeadsetForChatChannel(ChatChannel chatChannel)
         {
-            if (_humanInventory == null)
+            if (_inventory == null)
             {
                 return false;
             }
 
-            if (_humanInventory.TryGetTypeContainer(ContainerType.EarLeft, 0, out AttachedContainer earLeftContainer)
+            if (_inventory.TryGetTypeContainer(ContainerType.EarLeft, 0, out AttachedContainer earLeftContainer)
                 && earLeftContainer.Items.Any(x => x.HasTrait(chatChannel.RequiredTraitInHeadset)))
             {
                 return true;
             }
 
-            if (_humanInventory.TryGetTypeContainer(ContainerType.EarRight, 0, out AttachedContainer earRightContainer)
+            if (_inventory.TryGetTypeContainer(ContainerType.EarRight, 0, out AttachedContainer earRightContainer)
                 && earRightContainer.Items.Any(x => x.HasTrait(chatChannel.RequiredTraitInHeadset)))
             {
                 return true;

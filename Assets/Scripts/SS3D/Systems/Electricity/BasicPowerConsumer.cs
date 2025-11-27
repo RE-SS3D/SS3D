@@ -11,13 +11,16 @@ namespace System.Electricity
     /// </summary>
     public class BasicPowerConsumer : BasicElectricDevice, IPowerConsumer
     {
+        public event EventHandler<PowerStatus> OnPowerStatusUpdated;
+
         [SerializeField]
         private float _powerConsumption = 1f;
 
         [SyncVar(OnChange = nameof(SyncPowerStatus))]
         private PowerStatus _powerStatus;
+
         public float PowerNeeded => _powerConsumption;
-        public event EventHandler<PowerStatus> OnPowerStatusUpdated;
+
         public PowerStatus PowerStatus { get => _powerStatus; set => _powerStatus = value; }
 
         public void Init(float powerConsumption)

@@ -16,15 +16,16 @@ namespace SS3D.Systems.Health
             Suceptibility = suceptibility;
             Resistance = resistance;
         }
-        
+
         public static BodyDamageInfo operator +(BodyDamageInfo a, float b)
         {
-            float quantity = Math.Max(a.Quantity + Math.Max(b * a.Suceptibility - a.Resistance, 0), 0);
+            float quantity = Math.Max(a.Quantity + Math.Max((b * a.Suceptibility) - a.Resistance, 0), 0);
             return new(a.InjuryType, quantity, a.Suceptibility, a.Resistance);
         }
+
         public static BodyDamageInfo operator -(BodyDamageInfo a, float b)
         {
-            float quantity = Math.Max(a.Quantity - Math.Max(b * a.Suceptibility - a.Resistance, 0), 0);
+            float quantity = Math.Max(a.Quantity - Math.Max((b * a.Suceptibility) - a.Resistance, 0), 0);
             return new(a.InjuryType, quantity, a.Suceptibility, a.Resistance);
         }
 
@@ -32,6 +33,7 @@ namespace SS3D.Systems.Health
         {
             return a + b.Quantity;
         }
+
         public static BodyDamageInfo operator -(BodyDamageInfo a, BodyDamageInfo b)
         {
             return a - b.Quantity;

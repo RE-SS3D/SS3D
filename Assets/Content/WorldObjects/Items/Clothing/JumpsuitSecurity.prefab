@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: 80b3c18bbdcbf1e4396112ca4bfd13a1, type: 2}
+    - target: {fileID: -9111137678263042396, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _key
+      value: 
+      objectReference: {fileID: 11400000, guid: 80b3c18bbdcbf1e4396112ca4bfd13a1, type: 2}
     - target: {fileID: 624365323667193137, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -83,5 +87,9 @@ PrefabInstance:
       propertyPath: <AssetPathHash>k__BackingField
       value: 5199498103544181230
       objectReference: {fileID: 0}
+    - target: {fileID: 2714375199182715142, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 6295007783518057475, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}

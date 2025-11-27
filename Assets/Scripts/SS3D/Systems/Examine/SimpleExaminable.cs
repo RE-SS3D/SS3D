@@ -1,17 +1,20 @@
 ﻿using SS3D.Core.Behaviours;
 using SS3D.Systems.Selection;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Examine
 {
     [RequireComponent(typeof(Selectable))]
-    public class SimpleExaminable : Actor, IExaminable
+    public class SimpleExaminable : AbstractExaminable
     {
-        [SerializeField] private ExamineData key;
+        [FormerlySerializedAs("key")]
+        [SerializeField]
+        private ExamineData _key;
 
-        public ExamineData GetData()
+        public override ExamineData GetData()
         {
-            return key;
+            return _key;
         }
     }
 }

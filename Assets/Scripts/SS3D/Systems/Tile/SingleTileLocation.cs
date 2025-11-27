@@ -6,7 +6,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Represents a location in the tilemap, at a certain layer. 
+    /// Represents a location in the tilemap, at a certain layer.
     /// Can contain a single PlacedTileObject when a prefab is placed.
     /// </summary>
     public class SingleTileLocation : ITileLocation
@@ -34,6 +34,7 @@ namespace SS3D.Systems.Tile
                 PlacedObject = null;
                 return true;
             }
+
             return false;
         }
 
@@ -43,10 +44,10 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public ISavedTileLocation Save()
         {
-            var placedSaveObject = PlacedObject.Save();
+            SavedPlacedTileObject placedSaveObject = PlacedObject.Save();
 
             // If we have a multi tile object, save only the instance where the origin is
-            if (PlacedObject.GridOffsetList.Count > 1 && placedSaveObject.origin != new Vector2Int(_x, _y))
+            if (PlacedObject.GridOffsetList.Count > 1 && placedSaveObject.Origin != new Vector2Int(_x, _y))
             {
                 return null;
             }
@@ -56,11 +57,12 @@ namespace SS3D.Systems.Tile
 
         public bool TryGetPlacedObject(out PlacedTileObject placedObject, Direction direction = Direction.North)
         {
-            if(PlacedObject != null)
+            if (PlacedObject != null)
             {
                 placedObject = PlacedObject;
                 return true;
             }
+
             placedObject = null;
             return false;
         }
@@ -87,7 +89,7 @@ namespace SS3D.Systems.Tile
 
         public List<PlacedTileObject> GetAllPlacedObject()
         {
-            return PlacedObject != null ? 
+            return PlacedObject != null ?
                 new List<PlacedTileObject> { PlacedObject } : new List<PlacedTileObject>();
         }
     }

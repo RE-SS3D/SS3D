@@ -1,60 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using FishNet.Object;
 using UnityEngine;
-using FishNet.Object;
 
 namespace SS3D.Systems.Health
 {
     /// <summary>
-    /// NerveLayer layer mostly determines the ability to feel things 
+    /// NerveLayer layer mostly determines the ability to feel things
     /// TODO : It should send a down top signal to brain, representing how much pain it has.
     /// Too much pain should make the player drop things, or fall.
     /// </summary>
     public class NerveLayer : BodyLayer, IOxygenNeeder
-	{
+    {
+        public NerveLayer(BodyPart bodyPart)
+            : base(bodyPart) { }
+
+        public NerveLayer(BodyPart bodyPart, DamagesContainer damages)
+            : base(bodyPart, damages) { }
 
         public NetworkBehaviour GetNetworkBehaviour => BodyPart;
 
+        public NetworkObject GetNetworkedObject
+        {
+            get { return BodyPart.NetworkObject; }
+            set { }
+        }
 
-		public NetworkObject getNetworkedObject
-		{
-			get
-			{
-				return BodyPart.NetworkObject;
-			}
-			set
-			{
+        public GameObject GetGameObject
+        {
+            get { return BodyPart.gameObject; }
+            set { }
+        }
 
-			}
-		}
+        public override BodyLayerType LayerType
+        {
+            get { return BodyLayerType.Nerve; }
+        }
 
-		public GameObject getGameObject
-		{
-			get
-			{
-				return BodyPart.gameObject;
-			}
-			set
-			{
+        public double GetOxygenNeeded()
+        {
+            return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
+        }
 
-			}
-		}
-
-		public override BodyLayerType LayerType
-		{
-			get { return BodyLayerType.Nerve; }
-		}
-
-		public NerveLayer(BodyPart bodyPart) : base(bodyPart)
-		{
-
-		}
-
-		public NerveLayer(BodyPart bodyPart,
-			DamagesContainer damages)
-			: base(bodyPart, damages)
-		{
-
-		}
+        public override void Cleanlayer() { }
 
         protected override void SetDamagesContainer()
         {
@@ -69,16 +55,6 @@ namespace SS3D.Systems.Health
             Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1f, 0f));
             Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 1.2f, 0f));
             Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 1f, 0f));
-        }
-
-        public double GetOxygenNeeded()
-        {
-            return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
-        }
-
-        public override void Cleanlayer()
-        {
-
         }
     }
 }

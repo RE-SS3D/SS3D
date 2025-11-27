@@ -1,0 +1,21 @@
+{
+    "name": "SS3D.Intro",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:fa8dbf94b90efa1478e7c833397cb0b2",
+        "GUID:3cf19ecc459d5694491bb233fc4fccbd",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:493bb11add906094faa30425cab7ce2e",
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

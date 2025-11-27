@@ -1,12 +1,12 @@
 ﻿using Coimbra;
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Engine.Chat;
 using SS3D.Logging;
 using SS3D.Systems.Rounds.Messages;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace SS3D.Systems.Rounds
 {
@@ -19,11 +19,14 @@ namespace SS3D.Systems.Rounds
         /// Round loop runner
         /// </summary>
         [Server]
-        protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage m)
+        protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage changeRoundStateMessage)
         {
-            if (!IsServer) { return; }
+            if (!IsServer)
+            {
+                return;
+            }
 
-            if (m.State)
+            if (changeRoundStateMessage.State)
             {
                 await StopRound();
                 await PrepareRound();
@@ -58,9 +61,9 @@ namespace SS3D.Systems.Rounds
         [Server]
         protected override async UniTask ProcessRoundTick()
         {
-            Log.Information(this, "Starting {seconds} seconds warmup tick", Logs.ServerOnly, _warmupSeconds);
+            Log.Information(this, "Starting {seconds} seconds warmup tick", Logs.ServerOnly, WarmupSeconds);
 
-            RoundSeconds = _warmupSeconds;
+            RoundSeconds = WarmupSeconds;
             TickCancellationToken = new CancellationTokenSource();
             TimeSpan second = TimeSpan.FromSeconds(1);
 
@@ -74,10 +77,6 @@ namespace SS3D.Systems.Rounds
 
             RoundState = RoundState.Ongoing;
             Log.Information(this, "Starting round tick", Logs.ServerOnly);
-            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
-            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
-            // TODO: use captain character name here
-            chatSystem.SendServerMessage(chatChannels.stationAlertsChannel, "Welcome aboard crew, you're under no captain. Enjoy!");
 
             while (IsOngoing)
             {
@@ -117,10 +116,11 @@ namespace SS3D.Systems.Rounds
         /// This method facilitates automated testing, and is not to be used in production.
         /// It simulates a ChangeRoundStateMessage broadcast received from a client, and
         /// is handled normally by the server. Method required because the server cannot
-        /// broadcast to itself. Note that authentication in RoundSystemBase has been
+        /// broadcast to itself. Note that authentication in RoundSubSystemBase has been
         /// bypassed by this method.
         /// </summary>
         /// <param name="m">The ChangeRoundStateMessage apparently broadcast</param>
+        [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1202:ElementsMustBeOrderedByAccess", Justification = "Editor method used for test")]
         [Server]
         public void ChangeRoundStateMessageStubBroadcast(ChangeRoundStateMessage m)
         {

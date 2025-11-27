@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _preload: 1
   _type: 2
-  ScaleInOutScale: 1.15
-  FadeInOutDuration: 0.35
-  ScaleInOutDuration: 0.25
+  _scaleInOutScale: 0
+  _fadeInOutDuration: 0
+  _scaleInOutDuration: 0

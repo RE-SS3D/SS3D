@@ -6,7 +6,6 @@ using UnityEngine;
 namespace SS3D.Systems.Gamemodes
 {
     [Serializable]
-    /// <inheritdoc cref="SS3D.Systems.Gamemodes.IGamemodeObjective" />
     public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
         /// <summary>
@@ -15,15 +14,28 @@ namespace SS3D.Systems.Gamemodes
         public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated;
 
         private int _id;
-        [SerializeField] private string _title;
-        [SerializeField] private CollaborationType _collaborationType;
-        [SerializeField] private Alignment _alignmentRequirement;
-        [SerializeField] private int _minAssignees = 1;
-        [SerializeField] private int _maxAssignees = 1;
-        private ObjectiveStatus _status;
-        private string _assigneeCkey;
 
-        [SerializeField] public List<IEvent> ListensToEvent;
+        [SerializeField]
+        private string _title;
+
+        [SerializeField]
+        private CollaborationType _collaborationType;
+
+        [SerializeField]
+        private Alignment _alignmentRequirement;
+
+        [SerializeField]
+        private int _minAssignees = 1;
+
+        [SerializeField]
+        private int _maxAssignees = 1;
+
+        [SerializeField]
+        private List<IEvent> _listensToEvent;
+
+        private ObjectiveStatus _status;
+
+        private string _assigneeCkey;
 
         /// <summary>
         /// No-arg constructor
@@ -67,7 +79,7 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public int MaxAssignees
         {
-            get => _maxAssignees; 
+            get => _maxAssignees;
             set => _maxAssignees = value;
         }
 

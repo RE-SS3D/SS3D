@@ -1,5 +1,5 @@
-using System;
 using Coimbra.Services.Events;
+using System;
 
 namespace SS3D.Systems.Rounds.Events
 {
@@ -11,6 +11,6 @@ namespace SS3D.Systems.Rounds.Events
       public RoundTickUpdated(int seconds)
       {
          Seconds = seconds;
-      } 
+      }
    }
 }

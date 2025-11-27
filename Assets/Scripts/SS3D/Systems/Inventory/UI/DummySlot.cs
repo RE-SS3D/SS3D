@@ -11,6 +11,5 @@ namespace SS3D.Systems.Inventory.UI
     /// </summary>
     public class DummySlot : MonoBehaviour
     {
-
     }
 }

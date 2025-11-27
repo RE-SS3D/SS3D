@@ -2,8 +2,8 @@
 {
     public enum ConstructionMode
     {
-        Valid,
-        Invalid,
-        Delete
+        Valid = 0,
+        Invalid = 1,
+        Delete = 2,
     }
 }

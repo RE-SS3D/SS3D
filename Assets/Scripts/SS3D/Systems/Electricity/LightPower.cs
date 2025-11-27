@@ -12,8 +12,8 @@ namespace System.Electricity
         [SerializeField]
         private Light _light;
         private float _poweredIntensity;
-        
-        private void Start()
+
+        protected void Start()
         {
             _consumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
             _poweredIntensity = _light.intensity;
@@ -28,8 +28,14 @@ namespace System.Electricity
 
         private void UpdateLights(PowerStatus powerStatus)
         {
-            if (powerStatus == PowerStatus.Powered) TurnLightOn();
-            else TurnLightOff();
+            if (powerStatus == PowerStatus.Powered)
+            {
+                TurnLightOn();
+            }
+            else
+            {
+                TurnLightOff();
+            }
         }
 
         private void TurnLightOn()

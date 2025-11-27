@@ -11,10 +11,13 @@ namespace SS3D.Systems.Roles
     [CreateAssetMenu(fileName = "Loadout", menuName = "Roles/Loadout")]
     public class RoleLoadout : ScriptableObject
     {
-        public GameObject HandLeft;
-        public GameObject HandRight;
+        [field:SerializeField]
+        public SerializableDictionary<ContainerType, GameObject> Equipment { get; private set; }
 
-        [FormerlySerializedAs("ItemsToEquip")]
-        public SerializableDictionary<ContainerType, GameObject> Equipment;
+        [field:SerializeField]
+        public GameObject HandLeft { get; private set; }
+
+        [field:SerializeField]
+        public GameObject HandRight { get; private set; }
     }
 }

@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Core;
+using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
-using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Selection
 {
@@ -12,7 +11,7 @@ namespace SS3D.Systems.Selection
     /// invisible RenderTexture. Each selectable (i.e. Examinable, Interactable)
     /// object is rendered in a different colour. Once rendered, the camera then
     /// reads back the colour of the pixel under the mouse, and sends that colour
-    /// to the Selection System for further action.
+    /// to the Selection SubSystem for further action.
     /// </summary>
     [RequireComponent(typeof(Camera))]
     public class SelectionCamera : Actor
@@ -20,7 +19,8 @@ namespace SS3D.Systems.Selection
         /// <summary>
         /// The Selection Shader used to render the scene.
         /// </summary>
-        [SerializeField] private Shader _shader;
+        [SerializeField]
+        private Shader _shader;
 
         /// <summary>
         /// The camera used for rendering. It should be a child of the Main Camera.
@@ -35,17 +35,17 @@ namespace SS3D.Systems.Selection
         /// <summary>
         /// The texture which will return the colour of the pixel under the camera.
         /// </summary>
-        private Texture2D _readbackTexture;
+        private Texture2D _readBackTexture;
 
         /// <summary>
-        /// Overarching System that performs all Selection-related processing.
+        /// Overarching SubSystem that performs all Selection-related processing.
         /// </summary>
-        private SelectionSubSystem _system;
+        private SelectionSubSystem _subSystem;
 
         /// <summary>
         /// Debug Mode allows the user to see the RenderTexture on screen, to facilitate debugging.
         /// </summary>
-        private bool DebugMode = false;
+        private bool _debugMode;
 
         /// <summary>
         /// The Main Camera on the scene. Required here only for Debug Mode.
@@ -54,35 +54,23 @@ namespace SS3D.Systems.Selection
 
         protected override void OnStart()
         {
-            _system = SubSystems.Get<SelectionSubSystem>();
+            _subSystem = Subsystems.Get<SelectionSubSystem>();
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
-            _camera.SetReplacementShader(_shader, "");
+            _camera.SetReplacementShader(_shader, string.Empty);
 
             GenerateRenderTexture();
             GenerateReadbackTexture();
-            SubSystems.Get<InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            Subsystems.Get<Inputs.InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
         }
 
-        private void GenerateReadbackTexture()
+        protected override void OnDestroyed()
         {
-            _readbackTexture = new Texture2D(1, 1, _renderTexture.graphicsFormat, TextureCreationFlags.None);
+            _renderTexture.Release();
+            Subsystems.Get<Inputs.InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
         }
 
-        private void GenerateRenderTexture()
-        {
-            if (_renderTexture != null) _renderTexture.Release();
-            _renderTexture = new RenderTexture(Screen.width, Screen.height, 0)
-            {
-                antiAliasing = 1,
-                filterMode = FilterMode.Point,
-                autoGenerateMips = false,
-                depth = 24
-            };
-            _camera.targetTexture = _renderTexture;
-        }
-
-        private void OnPreRender()
+        protected void OnPreRender()
         {
             if (_renderTexture.width != Screen.width || _renderTexture.height != Screen.height)
             {
@@ -90,7 +78,7 @@ namespace SS3D.Systems.Selection
             }
         }
 
-        private void OnPostRender()
+        protected void OnPostRender()
         {
             Color32 col;
             Vector3 pos = Input.mousePosition;
@@ -102,34 +90,50 @@ namespace SS3D.Systems.Selection
             }
             else
             {
-                _readbackTexture.ReadPixels(new Rect(pos.x, Screen.height-pos.y-1, 1, 1), 0, 0, false);
-                col = _readbackTexture.GetPixel(0, 0);
+                _readBackTexture.ReadPixels(new Rect(pos.x, Screen.height - pos.y - 1, 1, 1), 0, 0, false);
+                col = _readBackTexture.GetPixel(0, 0);
             }
 
-            _system.UpdateColourFromCamera(col);
+            _subSystem.UpdateColourFromCamera(col);
         }
 
-        protected override void OnDestroyed()
+        private void GenerateReadbackTexture()
         {
-            _renderTexture.Release();
-            SubSystems.Get<InputSubSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
+            _readBackTexture = new Texture2D(1, 1, _renderTexture.graphicsFormat, TextureCreationFlags.None);
+        }
+
+        private void GenerateRenderTexture()
+        {
+            if (_renderTexture != null)
+            {
+                _renderTexture.Release();
+            }
+
+            _renderTexture = new RenderTexture(Screen.width, Screen.height, 0)
+            {
+                antiAliasing = 1,
+                filterMode = FilterMode.Point,
+                autoGenerateMips = false,
+                depth = 24,
+            };
+            _camera.targetTexture = _renderTexture;
         }
 
         /// <summary>
         /// Uses the selection shader to render directly to screen.
         /// To be removed from production code.
         /// </summary>
-        public void ToggleDebugMode(InputAction.CallbackContext callbackContext)
+        private void ToggleDebugMode(InputAction.CallbackContext callbackContext)
         {
-            if (DebugMode)
+            if (_debugMode)
             {
                 _playerCamera.ResetReplacementShader();
-                DebugMode = false;
+                _debugMode = false;
             }
             else
             {
-                _playerCamera.SetReplacementShader(_shader, "");
-                DebugMode = true;
+                _playerCamera.SetReplacementShader(_shader, string.Empty);
+                _debugMode = true;
             }
         }
     }

@@ -1,7 +1,8 @@
-﻿using System;
-using SS3D.Interactions;
-using SS3D.Interactions.Interfaces;
+﻿using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Interactions;
+using System;
 using UnityEngine;
 
 namespace SS3D.Substances
@@ -11,18 +12,14 @@ namespace SS3D.Substances
         public event Action OnInteractionInvalid;
 
         public string Name { get; set; } = "Dispense";
-        /// <summary>
-        /// The substance to dispense
-        /// </summary>
+
         public SubstanceEntry Substance { get; set; }
-        /// <summary>
-        /// Checks if the interaction should be possible
-        /// </summary>
+
         public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
-        /// <summary>
-        /// If a range check should be automatically performed
-        /// </summary>
+
         public bool RangeCheck { get; set; }
+
+        public InteractionType InteractionType => InteractionType.None;
 
         public virtual string GetGenericName()
         {
@@ -51,14 +48,8 @@ namespace SS3D.Substances
                 return false;
             }
 
-            IGameObjectProvider provider = interactionEvent.Source as IGameObjectProvider;
-            if (provider == null)
-            {
-                return false;
-            }
-
-            SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
-            if (container == null)
+            IGameObjectProvider provider = interactionEvent.Source;
+            if (provider == null || provider.GameObject.TryGetComponent(out SubstanceContainer container))
             {
                 return false;
             }
@@ -74,27 +65,20 @@ namespace SS3D.Substances
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (interactionEvent.Source is IGameObjectProvider provider)
+            if (interactionEvent.Source is not IGameObjectProvider provider || !provider.GameObject.TryGetComponent(out SubstanceContainer container))
             {
-                SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
-                if (container != null)
-                {
-                    container.AddSubstance(Substance.Substance, Substance.MilliMoles);
-                    container.SetDirty();
-                }
+                return false;
             }
 
+            container.AddSubstance(Substance.Substance, Substance.MilliMoles);
+            container.SetDirty();
             return false;
         }
 
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
+        public bool Update(InteractionEvent interactionEvent, InteractionReference reference) => true;
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            return;
         }
     }
 }

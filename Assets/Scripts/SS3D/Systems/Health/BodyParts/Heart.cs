@@ -13,19 +13,18 @@ namespace SS3D.Systems.Health
 {
     public class Heart : BodyPart
     {
+        public event EventHandler OnPulse;
 
         // Number of beat per minutes
         private float _beatFrequency = 60f;
 
-        public event EventHandler OnPulse;
+        private float _timer;
 
-        public float SecondsBetweenBeats => _beatFrequency > 0 ? 60f / _beatFrequency : float.MaxValue;
-
-        private float _timer = 0f;
-
-        private float _oxygenSumNeeded; 
+        private float _oxygenSumNeeded;
 
         private List<BodyPart> _connectedToHeart;
+
+        public float SecondsBetweenBeats => _beatFrequency > 0 ? 60f / _beatFrequency : float.MaxValue;
 
         public float OxygenSumNeeded => _oxygenSumNeeded;
 
@@ -33,6 +32,54 @@ namespace SS3D.Systems.Health
         {
             base.OnStartServer();
             StartCoroutine(DelayInit());
+        }
+
+        /// <summary>
+        /// Simply set the heart frequency, the default is 60 BPM.
+        /// </summary>
+        [Server]
+        public void SetBeatFrequency(float frequency)
+        {
+            _beatFrequency = frequency;
+        }
+
+        /// <summary>
+        /// Simply remove a body part connected to heart
+        /// </summary>
+        [Server]
+        public void HandleBodyPartRemoved(object sender, BodyPart part)
+        {
+            _connectedToHeart.Remove(part);
+        }
+
+        protected void Update()
+        {
+            _timer += Time.deltaTime;
+
+            if (_timer > SecondsBetweenBeats)
+            {
+                _timer = 0f;
+                OnPulse?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        [Server]
+        protected override void AfterSpawningCopiedBodyPart()
+        {
+        }
+
+        [Server]
+        protected override void BeforeDestroyingBodyPart()
+        {
+        }
+
+        [Server]
+        protected override void AddInitialLayers()
+        {
+            TryAddBodyLayer(new MuscleLayer(this));
+            TryAddBodyLayer(new CirculatoryLayer(this, 3f));
+            TryAddBodyLayer(new NerveLayer(this));
+            TryAddBodyLayer(new OrganLayer(this));
         }
 
         /// <summary>
@@ -53,58 +100,28 @@ namespace SS3D.Systems.Health
 
             OnPulse += HandleHeartPulse;
 
-            //TODO : temporary fix for heart when it's not attached to a health controller. Should eventually prevent working
-            // when heart is detached from head.
+            // TODO :  Should eventually prevent heart from working when heart is detached from head.
             if (HealthController != null)
             {
                 HealthController.OnBodyPartRemoved += HandleBodyPartRemoved;
-            } 
+            }
         }
 
         /// <summary>
         /// Simple handler for pulse event.
         /// </summary>
         [Server]
-        public void HandleHeartPulse(object sender, EventArgs args)
+        private void HandleHeartPulse(object sender, EventArgs args)
         {
-            //TODO : temporary fix for heart when it's not attached to a health controller. Should eventually prevent working
+            // TODO : temporary fix for heart when it's not attached to a health controller. Should eventually prevent working
             // when heart is detached from head.
-            if (HealthController == null) return;
+            if (HealthController == null)
+            {
+                return;
+            }
 
             SendOxygen();
             Bleed();
-        }
-
-        void Update()
-        {
-            _timer += Time.deltaTime;
-
-            if (_timer > SecondsBetweenBeats)
-            {
-                _timer = 0f;
-                OnPulse?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        [Server]
-        protected override void AfterSpawningCopiedBodyPart()
-        {
-            return;
-        }
-
-        [Server]
-        protected override void BeforeDestroyingBodyPart()
-        {
-            return;
-        }
-
-        [Server]
-        protected override void AddInitialLayers()
-        {
-            TryAddBodyLayer(new MuscleLayer(this));
-            TryAddBodyLayer(new CirculatoryLayer(this, 3f));
-            TryAddBodyLayer(new NerveLayer(this));
-            TryAddBodyLayer(new OrganLayer(this));
         }
 
         /// <summary>
@@ -114,15 +131,15 @@ namespace SS3D.Systems.Health
         [Server]
         private void SendOxygen()
         {
-            double availableOxygen =  HealthController.Circulatory.AvailableOxygen();
+            double availableOxygen = HealthController.Circulatory.AvailableOxygen();
 
-            float[] oxygenNeededForEachpart = 
+            float[] oxygenNeededForEachpart =
                 HealthController.Circulatory.ComputeIndividualNeeds(_connectedToHeart.AsReadOnly());
 
             float sumNeeded = oxygenNeededForEachpart.Sum();
             int i = 0;
 
-            SubstancesSubSystem registry = SubSystems.Get<SubstancesSubSystem>();
+            SubstancesSubSystem registry = Subsystems.Get<SubstancesSubSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
 
             foreach (BodyPart part in _connectedToHeart)
@@ -141,6 +158,7 @@ namespace SS3D.Systems.Health
                     proportionAvailable = oxygenNeededForEachpart[i] / sumNeeded;
                     veins.ReceiveOxygen(proportionAvailable * availableOxygen);
                 }
+
                 i++;
             }
 
@@ -153,15 +171,6 @@ namespace SS3D.Systems.Health
             {
                 HealthController.Circulatory.Container.RemoveSubstance(oxygen, (float)availableOxygen);
             }
-        }
-
-        /// <summary>
-        /// Simply remove a body part connected to heart
-        /// </summary>
-        [Server]
-        public void HandleBodyPartRemoved(object sender, BodyPart part)
-        {
-            _connectedToHeart.Remove(part);
         }
 
         /// <summary>
@@ -178,7 +187,7 @@ namespace SS3D.Systems.Health
 
         /// <summary>
         /// Get a list of all body part attached to heart, including all internal organs.
-        /// A body part is considered attached to heart if it's either the external body part of heart, 
+        /// A body part is considered attached to heart if it's either the external body part of heart,
         /// a child of the latter or an internal body part of any, with the condition that they need to have a circulatory layer.
         /// Fixing a living foot on a wooden leg won't prevent it from dying.
         /// </summary>
@@ -192,6 +201,7 @@ namespace SS3D.Systems.Health
                 BodyPart heartContainer = ExternalBodyPart;
                 GetAllBodyPartAttachedToHeartRecursion(connectedToHeart, heartContainer);
             }
+
             return connectedToHeart;
         }
 
@@ -208,7 +218,7 @@ namespace SS3D.Systems.Health
 
             if (current.HasInternalBodyPart)
             {
-                foreach (var part in current.InternalBodyParts)
+                foreach (BodyPart part in current.InternalBodyParts)
                 {
                     connectedToHeart.Add(part);
                 }
@@ -218,15 +228,6 @@ namespace SS3D.Systems.Health
             {
                 GetAllBodyPartAttachedToHeartRecursion(connectedToHeart, bodyPart);
             }
-        }
-
-        /// <summary>
-        /// Simply set the heart frequency, the default is 60 BPM.
-        /// </summary>
-        [Server]
-        public void SetBeatFrequency(float frequency)
-        {
-            _beatFrequency = frequency;
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿using SS3D.Interactions.Interfaces;
-using SS3D.Interactions;
-using UnityEngine;
+﻿using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
-using FishNet.Object.Synchronizing;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
+using UnityEngine;
 
 namespace SS3D.Systems.Crafting
 {
@@ -14,9 +14,9 @@ namespace SS3D.Systems.Crafting
     public abstract class MultiStepCraftable : NetworkActor, ICraftable
     {
         [SyncVar]
-        protected string _currentStepName = "";
+        private string _currentStepName = string.Empty;
 
-        public string CurrentStepName => _currentStepName;
+        public string CurrentStepName { get; protected set; }
 
         public abstract GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent);
 
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Crafting
             if (!gameObject.TryGetComponent(out IWorldObjectAsset targetAssetReference))
             {
                 Log.Error(this, $"{gameObject} has a ICraftable component but no IWorldObjectAsset component set up on them, add one or it'll cause trouble for multi step crafting");
-                _currentStepName = "";
+                _currentStepName = string.Empty;
             }
             else
             {

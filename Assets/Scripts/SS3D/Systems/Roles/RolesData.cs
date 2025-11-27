@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace SS3D.Systems.Roles
 {
@@ -8,7 +9,10 @@ namespace SS3D.Systems.Roles
     [Serializable]
     public class RolesData
     {
-        public RoleData Data;
-        public int AvailableRoles;
+        [field: SerializeField]
+        public RoleData Data { get; private set; }
+
+        [field: SerializeField]
+        public int AvailableRoles { get; private set; }
     }
 }

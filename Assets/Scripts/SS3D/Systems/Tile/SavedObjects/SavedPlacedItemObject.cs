@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile
 {
@@ -11,8 +12,13 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public struct SavedPlacedItemObject
     {
-        public string itemName;
-        public Vector3 worldPosition;
-        public Quaternion rotation;
+        [FormerlySerializedAs("itemName")]
+        public string ItemName;
+
+        [FormerlySerializedAs("worldPosition")]
+        public Vector3 WorldPosition;
+
+        [FormerlySerializedAs("rotation")]
+        public Quaternion Rotation;
     }
 }

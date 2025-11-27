@@ -2,7 +2,6 @@
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
-using SS3D.Systems.Screens;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,7 +32,7 @@ namespace SS3D.Systems.Audio
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if(_listenerTarget != null)
+            if (_listenerTarget != null)
             {
                 _listener.transform.position = _listenerTarget.transform.position;
             }

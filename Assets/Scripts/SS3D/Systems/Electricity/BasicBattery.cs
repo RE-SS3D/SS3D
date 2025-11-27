@@ -9,17 +9,20 @@ namespace System.Electricity
     /// </summary>
     public class BasicBattery : BasicElectricDevice, IPowerStorage
     {
-        [SerializeField][SyncVar]
+        [SerializeField]
+        [SyncVar]
         private float _maxCapacity = 1000;
 
-        [SerializeField][SyncVar]
-        private float _storedPower = 0;
+        [SerializeField]
+        [SyncVar]
+        private float _storedPower;
 
-        [SerializeField][SyncVar]
+        [SerializeField]
+        [SyncVar]
         private float _maxPowerRate = 15f;
 
         [SyncVar(OnChange = nameof(HandleSyncEnabled))]
-        protected bool _isOn = true;
+        private bool _isOn = true;
 
         /// <inheritdoc> </inheritdoc>
         public float StoredPower { get => _storedPower; set => _storedPower = value >= 0 ? MathF.Min(MaxCapacity, value) : MathF.Max(0f, value); }
@@ -46,11 +49,13 @@ namespace System.Electricity
             StoredPower = storedPower;
         }
 
-
         /// <inheritdoc> </inheritdoc>
         public float AddPower(float amount)
         {
-            if (amount <= 0 || !_isOn) return 0;
+            if (amount <= 0 || !_isOn)
+            {
+                return 0;
+            }
 
             float addedAmount = Mathf.Min(RemainingCapacity, amount);
             _storedPower += addedAmount;
@@ -60,7 +65,10 @@ namespace System.Electricity
         /// <inheritdoc> </inheritdoc>
         public float RemovePower(float amount)
         {
-            if (amount <= 0 || !_isOn) return 0;
+            if (amount <= 0 || !_isOn)
+            {
+                return 0;
+            }
 
             float removedAmount = Mathf.Min(_storedPower, amount);
             _storedPower -= removedAmount;

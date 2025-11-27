@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0adc192349dc57848b5394a2c6707c23, type: 3}
   m_Name: PDA
   m_EditorClassIdentifier: 
-  mustHaveAll: 0
-  acceptedTraits:
-  - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
-  deniedTraits: []
-  hash: 104008869
+  _mustHaveAll: 0
+  <AcceptedTraits>k__BackingField:
+  - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
+  <DeniedTraits>k__BackingField: []

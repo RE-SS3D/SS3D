@@ -1,16 +1,9 @@
-﻿using UnityEngine;
-using FishNet.Object;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
-using Coimbra;
-using SS3D.Systems.Health;
-using SS3D.Systems.Interactions;
-using SS3D.Systems.Inventory.Containers;
-using System.Collections.Generic;
+﻿using FishNet.Object;
 using System;
-using System.Diagnostics.Tracing;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using UnityEngine;
 
 namespace SS3D.Systems.Health
 {
@@ -19,6 +12,11 @@ namespace SS3D.Systems.Health
     /// </summary>
     public class HealthController : NetworkBehaviour
     {
+        public event EventHandler<BodyPart> OnBodyPartRemoved;
+
+        public event EventHandler OnBodyPartAdded;
+
+        private readonly List<BodyPart> _bodyPartsOnEntity = new();
 
         [SerializeField]
         private CirculatoryController _circulatoryController;
@@ -30,22 +28,15 @@ namespace SS3D.Systems.Health
 
         public FeetController FeetController => _feetController;
 
-        private List<BodyPart> _bodyPartsOnEntity = new List<BodyPart>();
-
         public ReadOnlyCollection<BodyPart> BodyPartsOnEntity => _bodyPartsOnEntity.AsReadOnly();
 
-        public event EventHandler<BodyPart> OnBodyPartRemoved;
-
-        public event EventHandler OnBodyPartAdded;
-
-        public float BodyPartsVolume 
+        public float BodyPartsVolume
         {
             get
             {
-                BodyPart[] AllBodyparts = GetComponentsInChildren<BodyPart>();
-                return (float)AllBodyparts.Sum(x => x.Volume);
+                BodyPart[] allBodyparts = GetComponentsInChildren<BodyPart>();
+                return (float)allBodyparts.Sum(x => x.Volume);
             }
-            
         }
 
         public override void OnStartServer()
@@ -59,11 +50,6 @@ namespace SS3D.Systems.Health
             }
         }
 
-        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
-        {
-            OnBodyPartRemoved?.Invoke(this, (BodyPart)sender);
-        }
-
         /// <summary>
         /// This will eventually actually attach a bodypart to the body, for now,
         /// only used to warn other stuff that a body part was added.
@@ -73,6 +59,10 @@ namespace SS3D.Systems.Health
         {
             OnBodyPartAdded?.Invoke(this, EventArgs.Empty);
         }
+
+        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
+        {
+            OnBodyPartRemoved?.Invoke(this, (BodyPart)sender);
+        }
     }
 }
-

@@ -10,6 +10,7 @@ namespace SS3D.Systems.Roles
     [CreateAssetMenu(fileName = "Role Data", menuName = "Roles/Roles")]
     public class RolesAvailable : ScriptableObject
     {
-        public List<RolesData> Roles;
+        [field: SerializeField]
+        public List<RolesData> Roles { get; private set; }
     }
 }

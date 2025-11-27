@@ -14,10 +14,13 @@ namespace SS3D.Systems.Lobby.UI
 {
     public sealed class LobbyReadyView : NetworkActor
     {
-        [SerializeField] private ToggleLabelButton _readyButton;
-        [SerializeField] private LabelButton _embarkButton;
+        [SerializeField]
+        private ToggleLabelButton _readyButton;
 
-        protected override void OnAwake()           
+        [SerializeField]
+        private LabelButton _embarkButton;
+
+        protected override void OnAwake()
         {
             base.OnAwake();
 
@@ -48,9 +51,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessSpawnedPlayers()
         {
-            EntitySubSystem system = SubSystems.Get<EntitySubSystem>();
+            EntitySubSystem subSystem = Subsystems.Get<EntitySubSystem>();
 
-            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
+            bool isPlayedSpawned = subSystem.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned)
             {
@@ -63,9 +66,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessRoundState(RoundState roundState)
         {
-            EntitySubSystem system = SubSystems.Get<EntitySubSystem>();
+            EntitySubSystem subSystem = Subsystems.Get<EntitySubSystem>();
 
-            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
+            bool isPlayedSpawned = subSystem.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned && roundState == RoundState.Ongoing)
             {
@@ -99,18 +102,18 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleEmbarkButtonPressed(bool pressed)
         {
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
-            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
+            EntitySubSystem entitySubSystem = Subsystems.Get<EntitySubSystem>();
 
-            Player player = playerSystem.GetPlayer(LocalConnection);
-            entitySystem.CmdSpawnLatePlayer(player);
+            Player player = playerSubSystem.GetPlayer(LocalConnection);
+            entitySubSystem.CmdSpawnLatePlayer(player);
         }
 
         private void HandleReadyButtonPressed(bool pressed)
         {
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
 
-            string ckey = playerSystem.GetCkey(LocalConnection);
+            string ckey = playerSubSystem.GetCkey(LocalConnection);
             ChangePlayerReadyMessage playerReadyMessage = new(ckey, pressed);
 
             ClientManager.Broadcast(playerReadyMessage);

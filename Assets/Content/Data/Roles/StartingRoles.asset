@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 840fa1a907d5a7642adc129fbb261736, type: 3}
   m_Name: StartingRoles
   m_EditorClassIdentifier: 
-  Roles:
-  - Data: {fileID: 11400000, guid: 1928692fbc0905b4195e6a72d04f474d, type: 2}
-    AvailableRoles: 0
-  - Data: {fileID: 11400000, guid: 7485a795dffb1c94385d7b05561d2d78, type: 2}
-    AvailableRoles: 1
+  <Roles>k__BackingField:
+  - <Data>k__BackingField: {fileID: 11400000, guid: 1928692fbc0905b4195e6a72d04f474d, type: 2}
+    <AvailableRoles>k__BackingField: 1
+  - <Data>k__BackingField: {fileID: 11400000, guid: 7485a795dffb1c94385d7b05561d2d78, type: 2}
+    <AvailableRoles>k__BackingField: 1

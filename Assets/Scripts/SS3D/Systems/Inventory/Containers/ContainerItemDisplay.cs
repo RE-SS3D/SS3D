@@ -1,48 +1,64 @@
 ﻿using Coimbra;
 using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
     /// This allows control over the position of displayed items inside the container.
     /// It also allows to define multiple points where items can be displayed inside the container,
-    /// and items placed in the container appears at those different points in the order defined. 
+    /// and items placed in the container appears at those different points in the order defined.
     /// Take for example a battery compartment, battery should appear side by side when placed inside the compartment container.
     /// Without this they would pile up in the same spot.
     /// </summary>
+    [RequireComponent(typeof(AttachedContainer))]
     public class ContainerItemDisplay : MonoBehaviour
     {
-        public AttachedContainer attachedContainer;
-        public bool Mirrored;
+        [Tooltip(" The list of transforms defining where the items are displayed.")]
+        [SerializeField]
+        private Transform[] _displays;
+
+        private AttachedContainer _attachedContainer;
 
         /// <summary>
         /// The list of items displayed in the container;
         /// </summary>
         private Item[] _displayedItems;
 
-        public void Awake()
+        private int NumberDisplay => _displays.Length;
+
+        protected void Awake()
         {
-            Assert.IsNotNull(attachedContainer);
-            
-            _displayedItems = new Item[attachedContainer.Displays.Length];
-            attachedContainer.OnItemAttached += ContainerOnItemAttached;
-            attachedContainer.OnItemDetached += ContainerOnItemDetached;
+            _attachedContainer = GetComponent<AttachedContainer>();
+            _displayedItems = new Item[NumberDisplay];
+            _attachedContainer.OnClientContentsChanged += HandleContainerContentChanged;
         }
 
-        public void OnDestroy()
+        protected void OnDestroy()
         {
-            attachedContainer.OnItemAttached -= ContainerOnItemAttached;
-            attachedContainer.OnItemDetached -= ContainerOnItemDetached;
+            _attachedContainer.OnClientContentsChanged -= HandleContainerContentChanged;
         }
 
-        private void ContainerOnItemAttached(object sender, Item item)
+        private void HandleContainerContentChanged(AttachedContainer container, Item olditem, Item newitem, ContainerChangeType type)
+        {
+            if (type == ContainerChangeType.Add)
+            {
+                ContainerOnItemAttached(newitem);
+            }
+
+            if (type == ContainerChangeType.Remove)
+            {
+                ContainerOnItemDetached(olditem);
+            }
+        }
+
+        private void ContainerOnItemAttached(Item item)
         {
             // Defines the transform of the item to be the first available position.
             int index = -1;
-            for (int i = 0; i < attachedContainer.Displays.Length; i++)
+            for (int i = 0; i < NumberDisplay; i++)
             {
                 if (_displayedItems[i] == null)
                 {
@@ -57,48 +73,15 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Transform itemTransform = item.transform;
-
-            // Check if a custom attachment point should be used
-            Transform attachmentPoint = item.AttachmentPoint;
-            if (Mirrored && item.AttachmentPointAlt != null)
-            {
-                attachmentPoint = item.AttachmentPointAlt;
-            }
-
-            if (attachmentPoint != null)
-            {
-                // Create new (temporary) point
-                // HACK: Required because rotation pivot can be different
-                GameObject temporaryPoint = new GameObject("TempPivotPoint");
-
-                temporaryPoint.transform.SetParent(attachedContainer.Displays[index].transform, false);
-                temporaryPoint.transform.localPosition = Vector3.zero;
-
-                // Assign parent
-                itemTransform.SetParent(temporaryPoint.transform, false);
-
-                // Very sketchy, as the root is not reliable to be things we want them to be.
-                // Maybe we can tweak this in the future
-                temporaryPoint.transform.rotation = attachmentPoint.root.rotation * attachmentPoint.localRotation;
-               
-                // Assign the relative position between the attachment point and the object
-                itemTransform.localPosition = -attachmentPoint.localPosition;
-                itemTransform.localRotation = Quaternion.identity;
-            }
-            else
-            {
-                itemTransform.SetParent(attachedContainer.Displays[index].transform, false);
-                itemTransform.localPosition = new Vector3();
-                itemTransform.localRotation = new Quaternion();
-            }
-
-            _displayedItems[index] = item;
+            itemTransform.SetParent(_displays[index].transform, false);
+            itemTransform.localPosition = Vector3.zero;
+            itemTransform.localRotation = Quaternion.identity;
         }
 
-        private void ContainerOnItemDetached(object sender, Item item)
+        private void ContainerOnItemDetached(Item item)
         {
             int index = -1;
-            for (int i = 0; i < attachedContainer.Displays.Length; i++)
+            for (int i = 0; i < NumberDisplay; i++)
             {
                 if (_displayedItems[i] == item)
                 {
@@ -113,9 +96,10 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Transform itemParent = item.transform.parent;
-            if (itemParent != null && itemParent != attachedContainer.Displays[index])
+            if (itemParent != null && itemParent != _displays[index])
             {
                 item.transform.SetParent(null, true);
+
                 // It's currently deleting the game object containing the item, why is this here ?
                 itemParent.gameObject.Dispose(true);
             }

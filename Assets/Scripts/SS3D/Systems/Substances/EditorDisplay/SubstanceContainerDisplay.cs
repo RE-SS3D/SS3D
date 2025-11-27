@@ -1,32 +1,31 @@
-﻿using SS3D.Attributes;
-using SS3D.Substances;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
-
-/// <summary>
-/// Put it next to a substance container and set up the reference to see at run time
-/// the actual amount of different substances present in the substance container
-/// </summary>
+using UnityEngine.Serialization;
 
 namespace SS3D.Substances
 {
+    /// <summary>
+    /// Put it next to a substance container and set up the reference to see at run time
+    /// the actual amount of different substances present in the substance container
+    /// </summary>
     public class SubstanceContainerDisplay : MonoBehaviour
     {
+        [SerializeField]
+        private SubstanceContainer _container;
 
-        [SerializeField] private SubstanceContainer _container;
-
-        #if UNITY_EDITOR 
+        #if UNITY_EDITOR
+        [FormerlySerializedAs("Substances")]
         [ReadOnly]
         #endif
-        public List<SubstanceEntry> Substances;
+        [SerializeField]
+        private List<SubstanceEntry> _substances;
 
         // Update is called once per frame
-        void Update()
+        protected void Update()
         {
-            Substances = _container.Substances.ToList();
+            _substances = _container.Substances.ToList();
         }
     }
 }
-

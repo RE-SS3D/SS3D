@@ -185,16 +185,16 @@ namespace SS3D.Tests
 
         public static AttachedContainer LocalPlayerSpawnItemInFirstHandAvailable(string item)
         {
-            ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
-            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
-            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
+            ItemSubSystem itemSubSystem = Subsystems.Get<ItemSubSystem>();
+            EntitySubSystem entitySubSystem = Subsystems.Get<EntitySubSystem>();
+            entitySubSystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
             HumanInventory inventory = entity.gameObject.GetComponent<HumanInventory>();
 
             foreach (Hand hand in inventory.Hands.PlayerHands.Where(hand => hand.Container.Empty))
             {
                 Item itemToSpawn = Assets.Get<GameObject>(AssetDatabases.Items, item).GetComponent<Item>();
 
-                itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                itemSubSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
 
                 return hand.Container;
             }
@@ -206,16 +206,16 @@ namespace SS3D.Tests
 
         public static InteractionController GetLocalInteractionController()
         {
-            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
-            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
+            EntitySubSystem entitySubSystem = Subsystems.Get<EntitySubSystem>();
+            entitySubSystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
 
             return entity.gameObject.GetComponent<InteractionController>();
         }
 
         public static Vector3 GetLocalPlayerPosition()
         {
-            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
-            entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
+            EntitySubSystem entitySubSystem = Subsystems.Get<EntitySubSystem>();
+            entitySubSystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
 
             return entity.gameObject.transform.position;
         }

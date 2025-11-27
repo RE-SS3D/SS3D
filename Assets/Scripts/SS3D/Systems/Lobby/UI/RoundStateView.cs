@@ -1,4 +1,5 @@
 ﻿using Coimbra.Services.Events;
+using JetBrains.Annotations;
 using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -20,13 +21,17 @@ namespace SS3D.Systems.Lobby.UI
     /// </summary>
     public class RoundStateView : Actor
     {
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [SerializeField]
         private TMP_Text _roundCountdownText;
 
         private int _seconds;
+
         private RoundState _roundState;
-        [SerializeField] private LocalizedStringTable _localizedStringTable;
+
+        [SerializeField]
+        private LocalizedStringTable _localizedStringTable;
+
         private StringTable _currentStringTable;
 
         public void UpdateLocalization()

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace SS3D.Systems.Furniture
 {
     /// Currently a simple script to spot disposal Bins.

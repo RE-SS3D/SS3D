@@ -33,9 +33,9 @@ namespace SS3D.Engine.Chat
         {
             yield return new WaitForSecondsRealtime(_welcomeMessageDelayInSeconds);
             
-            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
+            ChatSubSystem chatSubSystem = Subsystems.Get<ChatSubSystem>();
             ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
-            chatSystem.SendServerMessageToCurrentPlayer(chatChannels.allSystemMessagesChannel, _welcomeMessage);
+            chatSubSystem.SendServerMessageToCurrentPlayer(chatChannels.allSystemMessagesChannel, _welcomeMessage);
         }
 
         protected override void HandleSendMessage(InputAction.CallbackContext context)

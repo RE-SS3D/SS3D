@@ -1,7 +1,9 @@
-﻿using SS3D.Interactions.Interfaces;
-using SS3D.Interactions;
+﻿using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Interactions;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Crafting
 {
@@ -12,15 +14,16 @@ namespace SS3D.Systems.Crafting
     public class Craft : MonoBehaviour, IInteractionSourceExtension
     {
         /// <summary>
-        /// The different types of interaction the game object with this component on can support. 
+        /// The different types of interaction the game object with this component on can support.
         /// </summary>
+        [FormerlySerializedAs("type")]
         [SerializeField]
-        private CraftingInteractionType type;
-        
+        private InteractionType _type;
+
         public void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            OpenCraftingMenuInteraction openCraftingMenuInteraction = new(type);
-            
+            OpenCraftingMenuInteraction openCraftingMenuInteraction = new(_type);
+
             foreach (IInteractionTarget target in targets)
             {
                 interactions.Add(new(target, openCraftingMenuInteraction));

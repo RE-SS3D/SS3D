@@ -1,29 +1,20 @@
 ﻿namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used on objects that won't have two of them at the same time.
-    /// Should not be instantiated at runtime.
+    /// Used on objects that wont have two of the same time. Should not be instantiated at runtime.
     /// </summary>
-    public class SubSystem : Actor, ISubSystem
+    public class SubSystem : Actor
     {
-        /// <summary>
-        /// Registers the system on awake.
-        /// </summary>
         protected override void OnAwake()
         {
             base.OnAwake();
-
-            SubSystems.Register(this);
+            Subsystems.Register(this);
         }
 
-        /// <summary>
-        /// Unregisters the system on destroyed.
-        /// </summary>
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-
-            SubSystems.Unregister(this);
+            Subsystems.Unregister(this);
         }
     }
 }

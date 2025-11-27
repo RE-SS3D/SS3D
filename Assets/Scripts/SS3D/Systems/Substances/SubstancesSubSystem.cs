@@ -1,46 +1,38 @@
-﻿using SS3D.Core.Behaviours;
+using SS3D.Core.Behaviours;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Substances
 {
     public sealed class SubstancesSubSystem : NetworkSubSystem
     {
-        public Dictionary<SubstanceType, Substance> Substances => substances;
-        public Recipe[] Recipes => recipes;
-
         // Only useful to serialize and fill the dictionnary substances.
         [SerializeField]
-        private List<Substance> substancesList;
+        private List<Substance> _substancesList;
 
+        public Dictionary<SubstanceType, Substance> Substances { get; private set; }
 
-        private Dictionary<SubstanceType, Substance> substances;
-        [SerializeField]
-
-        private Recipe[] recipes;
-
+        [field:SerializeField]
+        public Recipe[] Recipes { get; private set; }
 
         /// <summary>
         /// Gets a substance based on id
         /// </summary>
-        /// <param name="id">The id name of the substance</param>
+        /// <param name="type">The id name of the substance</param>
         /// <returns>A substance or null if it wasn't found</returns>
-        public Substance FromType(SubstanceType type)
-        {
-            return Substances[type];
-        }
+        public Substance FromType(SubstanceType type) => Substances[type];
 
         protected override void OnAwake()
         {
             base.OnAwake();
-            substances = new Dictionary<SubstanceType, Substance>();
-            foreach (var substance in substancesList)
+            Substances = new();
+            foreach (Substance substance in _substancesList)
             {
-                substances[substance.Type] = substance;
+                Substances[substance.Type] = substance;
             }
-            substancesList.Clear();
 
+            _substancesList.Clear();
         }
     }
-
 }

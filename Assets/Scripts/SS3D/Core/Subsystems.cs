@@ -2,31 +2,31 @@
 using System;
 using System.Collections.Generic;
 using SS3D.Logging;
-using SS3D.Core.Behaviours;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Core
 {
     /// <summary>
-    /// System locator class used to get game subsystems.
-    /// Uses generics and then making cache of said subsystems.
+    /// Class used to get game subsystems, using generics and then making cache of said subsystems.
     /// </summary>
-    public static class SubSystems
+    public static class Subsystems
     {
         /// <summary>
         /// A dictionary containing all the objects that registered themselves.
         /// </summary>
-        private static readonly Dictionary<Type, ISubSystem> RegisteredSubsystems = new();
+        private static readonly Dictionary<Type, object> RegisteredSubsystems = new();
 
         /// <summary>
         /// Tries to get a subsystem at runtime, make sure there's no duplicates of said subsystem before using.
         /// </summary>
         /// <typeparam name="T">The Type of object you want to get.</typeparam>
         /// <returns>If the subsystem is found or not</returns>
-        public static bool TryGet<T>([CanBeNull] out T subsystem) where T : class, ISubSystem
+        public static bool TryGet<T>([CanBeNull] out T subsystem)
         {
-            bool hasValue = RegisteredSubsystems.TryGetValue(typeof(T), out ISubSystem match);
+            bool hasValue = RegisteredSubsystems.TryGetValue(typeof(T), out object match);
 
-            subsystem = match as T;
+            subsystem = (T)match;
             return hasValue;
         }
 
@@ -35,52 +35,52 @@ namespace SS3D.Core
         /// </summary>
         /// <typeparam name="T">The Type of object you want to get.</typeparam>
         /// <returns>The found subsystem</returns>
-        public static T Get<T>() where T : class, ISubSystem
+        public static T Get<T>() where T : MonoBehaviour
         {
-            if (RegisteredSubsystems.TryGetValue(typeof(T), out ISubSystem match))
+            if (RegisteredSubsystems.TryGetValue(typeof(T), out object match))
             {
-                return match as T;
+                return (T)match;
             }
 
-            UnityEngine.Object subsystem = UnityEngine.Object.FindObjectOfType(typeof(T), true);
+            Object subsystem = Object.FindObjectOfType(typeof(T), true);
 
             if (subsystem != null)
             {
-                Register(subsystem as T);
-                return subsystem as T;
+                Register((MonoBehaviour)subsystem);
+                return (T)subsystem;
             }
 
             string message = $"Couldn't find subsystem of {typeof(T).Name} in the scene";
 
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Log.Error(typeof(SubSystems), message, Logs.Important);
+            Log.Error(typeof(Subsystems), message, Logs.Important);
 
             return null;
         }
 
         /// <summary>
-        /// Registers a subsystem in the dictionary so we don't have to use find object of type.
+        /// Registers a system in the dictionary so we don't have to use find object of type.
         /// </summary>
-        /// <param name="subSystem">The subsystem to register and be stored.</param>
-        public static void Register([NotNull] ISubSystem subSystem)
+        /// <param name="system">The object to be stored.</param>
+        public static void Register([NotNull] MonoBehaviour system)
         {
-            Type type = subSystem.GetType();
+            Type type = system.GetType();
 
-            if (!RegisteredSubsystems.TryGetValue(type, out ISubSystem _))
+            if (!RegisteredSubsystems.TryGetValue(type, out object _))
             {
-                Serilog.Log.Information($"{nameof(SubSystems)} - Registering {subSystem.GetType().Name}");
-                RegisteredSubsystems.Add(type, subSystem);
+                Serilog.Log.Information($"{nameof(Subsystems)} - Registering {system.GetType().Name}");
+                RegisteredSubsystems.Add(type, system);
             }
         }
 
         /// <summary>
-        /// Unregister the subsystem from the dictionary. 
+        /// Unregister the system from the dictionary. 
         /// </summary>
-        /// <param name="subSystem">The subsystem to unregister.</param>
-        public static void Unregister([NotNull] ISubSystem subSystem)
+        /// <param name="system">The system to unregister.</param>
+        public static void Unregister([NotNull] object system)
         {
-            Serilog.Log.Information($"{nameof(SubSystems)} - Unregistering {subSystem.GetType().Name}");
-            RegisteredSubsystems.Remove(subSystem.GetType());
+            Serilog.Log.Information($"{nameof(Subsystems)} - Unregistering {system.GetType().Name}");
+            RegisteredSubsystems.Remove(system.GetType());
         }
     }
 }

@@ -7,6 +7,11 @@ namespace SS3D.Systems.Crafting
     public interface ICraftable : INetworkObjectProvider, IGameObjectProvider
     {
         /// <summary>
+        /// for multi step crafting, at which step of the crafting process we are.
+        /// </summary>
+        public string CurrentStepName { get; }
+
+        /// <summary>
         /// Stuff happening at the end of the crafting process, called on the newly crafted object. Note that Craft is called on
         /// prefab, implying that the instantiating and spawning process should be done in it, and said instances should be modified.
         /// </summary>
@@ -15,10 +20,5 @@ namespace SS3D.Systems.Crafting
         public GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent);
 
         public void Modify(IInteraction interaction, InteractionEvent interactionEvent, string step);
-
-        /// <summary>
-        /// for multi step crafting, at which step of the crafting process we are.
-        /// </summary>
-        public string CurrentStepName { get; }
     }
 }

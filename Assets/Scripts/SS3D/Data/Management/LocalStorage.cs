@@ -117,7 +117,7 @@ namespace SS3D.Data.Management
             // If theres a save file, load it, if not return null
             if (mostRecentFile == null)
             {
-				Log.Error(typeof(LocalStorage), $"Failed to find the most recent file at {path}");
+				Log.Information(typeof(LocalStorage), $"Failed to find the most recent file at {path}");
 
 	            file = null;
 	            return false;

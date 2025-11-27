@@ -1,0 +1,28 @@
+{
+    "name": "SS3D.Screens",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:d2bbca7254de5e746857b04cfb560876",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
+        "GUID:46e20dca70571ce4e817a6b5874168a0",
+        "GUID:fa8dbf94b90efa1478e7c833397cb0b2",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:43c1375cedfd4704d8556970fe75a17e",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:09ed6ceb4221dc3468f1528207ef24d3",
+        "GUID:ee843510a9f25d145bb9efba0bac7e46",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:464244d81aa026b4caa46e2dbafa2694",
+        "GUID:eb124556ba20d60469be9771eb1f0360"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

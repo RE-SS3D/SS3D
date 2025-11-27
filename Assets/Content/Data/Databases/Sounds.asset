@@ -38,4 +38,6 @@ MonoBehaviour:
       _value: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
     - _key: FuelPowerGenerator
       _value: {fileID: 8300000, guid: 59b65ecaf8dffbf49876ab2768490b59, type: 3}
+    - _key: MachineGun
+      _value: {fileID: 8300000, guid: 364f80fae5c7d0841b306c0aa37084f3, type: 3}
     _new: 

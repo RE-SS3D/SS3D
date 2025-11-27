@@ -1,64 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Coimbra;
+﻿using Coimbra;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Systems.Inputs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.PlayerLoop;
 using Actor = SS3D.Core.Behaviours.Actor;
-using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
     public class ConsolePanelView : Actor
     {
-        [SerializeField] private RectTransform _consolePanel;
+        [SerializeField]
+        private RectTransform _consolePanel;
+
         /// <summary>
         /// Object, that contains command responses
         /// </summary>
-        [SerializeField] private GameObject _contentContainer;
+        [SerializeField]
+        private GameObject _contentContainer;
+
         /// <summary>
         /// Opening/closing speed
         /// </summary>
-        [SerializeField] private float _movingSpeed = 2500f;
-        [SerializeField] private TMP_InputField _inputField;
+        [SerializeField]
+        private float _movingSpeed = 2500f;
+
+        [SerializeField]
+        private TMP_InputField _inputField;
+
         // Used for opening/closing
         private bool _isSliding;
         private bool _isShowed;
         private Vector2 _targetPointMax;
         private Vector2 _targetPointMin;
+
         /// <summary>
         /// Text field with command responses in _contentContainer
         /// </summary>
         private TextMeshProUGUI _textField;
 
-        [SerializeField] private CommandsController _commandsController;
+        [SerializeField]
+        private CommandsController _commandsController;
 
         // Used for choosing command via arrows
-        [SerializeField] private List<string> _allPrevCommands = new() {""};
+        [SerializeField]
+        private List<string> _allPrevCommands = new() { string.Empty };
+
         private int _chosenPrevCommand;
         private Controls _controls;
         private Controls.ConsoleActions _consoleControls;
-        private InputSubSystem _inputSystem;
+        private InputSubSystem _inputSubSystem;
+
+        [Client]
+        public void AddText(string text)
+        {
+            _textField.text += "\n" + text;
+        }
 
         protected override void OnStart()
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _inputSystem = SubSystems.Get<InputSubSystem>();
-            _controls = _inputSystem.Inputs;
+            _inputSubSystem = Subsystems.Get<InputSubSystem>();
+            _controls = _inputSubSystem.Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;
             _consoleControls.Open.performed += HandleOpen;
             _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
             _consoleControls.Submit.performed += HandleSubmit;
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
+            _inputSubSystem.ToggleAction(_consoleControls.Open, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
@@ -66,7 +83,6 @@ namespace SS3D.Systems.IngameConsoleSystem
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            
             _consoleControls.Close.performed -= HandleClose;
             _consoleControls.Open.performed -= HandleOpen;
             _consoleControls.SwitchCommand.performed -= HandleSwitchCommand;
@@ -90,10 +106,11 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = Vector2.zero;
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.DeactivateInputField();
-            _inputSystem.ToggleAllActions(true, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleAction(_consoleControls.Open, true);
-            _inputSystem.ToggleActionMap(_consoleControls, false, new []{_consoleControls.Open});
+            _inputSubSystem.ToggleAllActions(true, ((InputActionMap)_consoleControls).ToArray());
+            _inputSubSystem.ToggleAction(_consoleControls.Open, true);
+            _inputSubSystem.ToggleActionMap(_consoleControls, false, new InputAction[] { _consoleControls.Open });
         }
+
         /// <summary>
         /// Move console to screen, enable all controls, disable Open action
         /// </summary>
@@ -103,10 +120,11 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.ActivateInputField();
-            _inputSystem.ToggleAllActions(false, ((InputActionMap)_consoleControls).ToArray());
-            _inputSystem.ToggleActionMap(_consoleControls, true, new []{_consoleControls.Open});
-            _inputSystem.ToggleAction(_consoleControls.Open, false);
+            _inputSubSystem.ToggleAllActions(false, ((InputActionMap)_consoleControls).ToArray());
+            _inputSubSystem.ToggleActionMap(_consoleControls, true, new InputAction[] { _consoleControls.Open });
+            _inputSubSystem.ToggleAction(_consoleControls.Open, false);
         }
+
         /// <summary>
         /// Put previously used commands in input field
         /// </summary>
@@ -116,16 +134,17 @@ namespace SS3D.Systems.IngameConsoleSystem
                 Math.Clamp(_chosenPrevCommand + (int)context.ReadValue<float>(), 0, _allPrevCommands.Count - 1);
             _inputField.text = _allPrevCommands[_chosenPrevCommand];
         }
+
         /// <summary>
         /// Process and remove command in input field
         /// </summary>
         private void HandleSubmit(InputAction.CallbackContext context)
         {
             ProcessCommand(_inputField.text);
-            _inputField.text = "";
+            _inputField.text = string.Empty;
             _inputField.ActivateInputField();
         }
-        
+
         private void Slide()
         {
             _consolePanel.offsetMax = Vector2.MoveTowards(_consolePanel.offsetMax, _targetPointMax, _movingSpeed * Time.deltaTime);
@@ -136,24 +155,19 @@ namespace SS3D.Systems.IngameConsoleSystem
                 _isShowed = !_isShowed;
             }
         }
+
         /// <summary>
-        /// Handle command taking from input field and showing a response 
+        /// Handle command taking from input field and showing a response
         /// </summary>
         [Client]
-        public void ProcessCommand(string command)
+        private void ProcessCommand(string command)
         {
             AddText("> <color=#742F27>" + command + "</color>");
             _allPrevCommands.RemoveLast();
             _allPrevCommands.Add(command);
-            _allPrevCommands.Add("");
+            _allPrevCommands.Add(string.Empty);
             _chosenPrevCommand = _allPrevCommands.Count;
             _commandsController.ClientProcessCommand(command);
-        }
-
-        [Client]
-        public void AddText(string text)
-        {
-            _textField.text += "\n" + text;
         }
     }
 }

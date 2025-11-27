@@ -1,0 +1,30 @@
+{
+    "name": "SS3D.Lobby",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:d2bbca7254de5e746857b04cfb560876",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:43c1375cedfd4704d8556970fe75a17e",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:6e00473804df0f0468c07310fbce5737",
+        "GUID:464244d81aa026b4caa46e2dbafa2694",
+        "GUID:eb124556ba20d60469be9771eb1f0360",
+        "GUID:ee61973a336722c41acef2425d9de4f5",
+        "GUID:09ed6ceb4221dc3468f1528207ef24d3",
+        "GUID:9a1080b2b38c7e741a8b9dfda7f5f683",
+        "GUID:eec0964c48f6f4e40bc3ec2257ccf8c5",
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

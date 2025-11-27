@@ -16,7 +16,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     public class TileMapSaveTab : NetworkActor, ITileMenuTab
     {
         [SerializeField]
-        private TileMapMenuSubSystem _menu;
+        private TileMapMenu _menu;
 
         [SerializeField]
         private GameObject _confirmOverWriteButton;
@@ -38,7 +38,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Clear()
         {
-            _confirmOverWriteButton.gameObject.SetActive(false);
+            _confirmOverWriteButton.SetActive(false);
             _saveMapContentRoot.SetActive(false);
             _saveText.gameObject.SetActive(false);
         }
@@ -48,8 +48,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Display()
         {
-            _saveMapContentRoot.gameObject.SetActive(true);
-            _confirmOverWriteButton.gameObject.SetActive(false);
+            _saveMapContentRoot.SetActive(true);
+            _confirmOverWriteButton.SetActive(false);
             _saveMapContentRoot.SetActive(true);
         }
 
@@ -68,7 +68,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void HandleConfirmOverWriteButton()
         {
             SaveMap(_saveInputField.text);
-            _confirmOverWriteButton.gameObject.SetActive(false);
+            _confirmOverWriteButton.SetActive(false);
         }
 
         /// <summary>
@@ -76,9 +76,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleSaveMapButton()
         {
-            if (SubSystems.Get<TileSubSystem>().MapNameAlreadyExist(_saveInputField.text))
+            if (Subsystems.Get<TileSubSystem>().MapNameAlreadyExist(_saveInputField.text))
             {
-                _confirmOverWriteButton.gameObject.SetActive(true);
+                _confirmOverWriteButton.SetActive(true);
             }
             else
             {
@@ -94,7 +94,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                SubSystems.Get<TileSubSystem>().Save(mapName, true);
+                Subsystems.Get<TileSubSystem>().Save(mapName, true);
                 DisplaySaveText(mapName);
             }
             else
@@ -135,7 +135,5 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             _saveText.gameObject.SetActive(false);
         }
-
-
     }
 }

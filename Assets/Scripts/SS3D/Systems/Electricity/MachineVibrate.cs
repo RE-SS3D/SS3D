@@ -4,57 +4,65 @@ using FishNet;
 using SS3D.Core.Behaviours;
 using UnityEngine;
 
-/// <summary>
-/// Little script to make stuff vibrate back and forth. Mostly useful for electrical furnitures functionning.
-/// </summary>
-public class MachineVibrate : Actor
+namespace System.Electricity
 {
-    [SerializeField]
-    private float _amplitude = 1; // How much is the amplitude of the vibration.
-    [SerializeField]
-    private float _frequency = 35;       // Vibrating speed.
-    private Quaternion _initialRotation; // Rotation of the generator at rest.
-    private Vector3 _directionOfShake;   // In which direction the generator shake.
-    private bool _enable = false;
-    private float _elapsedTime = 0f; // Elapsed time for the vibrating stuff.
-
-    public bool Enable
+    /// <summary>
+    /// Little script to make stuff vibrate back and forth. Mostly useful for electrical furnitures functionning.
+    /// </summary>
+    public class MachineVibrate : Actor
     {
-        get => _enable;
-        set => SetEnable(value);
-    }
+        [SerializeField]
+        private float _amplitude = 1; // How much is the amplitude of the vibration.
+        [SerializeField]
+        private float _frequency = 35;       // Vibrating speed.
+        private Quaternion _initialRotation; // Rotation of the generator at rest.
+        private Vector3 _directionOfShake;   // In which direction the generator shake.
+        private bool _enable;
+        private float _elapsedTime; // Elapsed time for the vibrating stuff.
 
-    protected override void OnStart()
-    {
-        base.OnStart();
-        // do not need to show the vibrating stuff on server
-        if (InstanceFinder.IsServerOnly) return;
-
-        AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
-        _initialRotation = Rotation;
-        _directionOfShake = Transform.right;
-    }
-
-    private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
-    {
-        if (_enable)
+        public bool Enable
         {
-            Vibrate();
+            get => _enable;
+            set => SetEnable(value);
         }
-    }
-    
-    private void Vibrate()
-    {
-        _elapsedTime += Time.fixedDeltaTime;
-        transform.rotation = _initialRotation * Quaternion.Euler(_directionOfShake * (-_amplitude + Mathf.PingPong(_frequency * _elapsedTime, 2f * _amplitude)));
-    }
 
-    private void SetEnable(bool enable)
-    {
-        _enable = enable;
-        if (enable)
+        protected override void OnStart()
         {
-            Rotation = _initialRotation;
+            base.OnStart();
+
+            // do not need to show the vibrating stuff on server
+            if (InstanceFinder.IsServerOnly)
+            {
+                return;
+            }
+
+            AddHandle(FixedUpdateEvent.AddListener(HandleFixedUpdate));
+            _initialRotation = Rotation;
+            _directionOfShake = Transform.right;
+        }
+
+        private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
+        {
+            if (_enable)
+            {
+                Vibrate();
+            }
+        }
+
+        private void Vibrate()
+        {
+            _elapsedTime += Time.fixedDeltaTime;
+            transform.rotation = _initialRotation * Quaternion.Euler(_directionOfShake * (-_amplitude + Mathf.PingPong(_frequency * _elapsedTime, 2f * _amplitude)));
+        }
+
+        private void SetEnable(bool enable)
+        {
+            _enable = enable;
+
+            if (enable)
+            {
+                Rotation = _initialRotation;
+            }
         }
     }
 }

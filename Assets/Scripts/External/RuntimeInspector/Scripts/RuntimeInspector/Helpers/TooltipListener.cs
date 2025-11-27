@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-using Pointer = UnityEngine.InputSystem.Pointer;
+using Pointer = UnityEngine.InputSubSystem.Pointer;
 #endif
 
 namespace RuntimeInspectorNamespace
@@ -38,7 +38,7 @@ namespace RuntimeInspectorNamespace
 			if( hoveringPointer != null )
 			{
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-				// PointerEventData.delta isn't set to (0,0) for static pointers in the new Input System, so we use the active Pointer's delta instead
+				// PointerEventData.delta isn't set to (0,0) for static pointers in the new Input SubSystem, so we use the active Pointer's delta instead
 				// The default value isn't Vector2.zero but Vector2.one because we don't want to show tooltip if there is no pointer
 				Vector2 pointerDelta = Pointer.current != null ? Pointer.current.delta.ReadValue() : Vector2.one;
 #else

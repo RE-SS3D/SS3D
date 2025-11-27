@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Systems.Inventory.Items;
+using UnityEngine.Serialization;
 
-namespace SS3D.Systems
+namespace SS3D.Traits
 {
     /// <summary>
     /// An inventory filter that only allows items with certain traits
@@ -10,52 +11,53 @@ namespace SS3D.Systems
     [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
     public class Filter : ScriptableObject
     {
-        public bool mustHaveAll;
-        public List<Trait> acceptedTraits;
-        public List<Trait> deniedTraits;
+        [SerializeField]
+        private bool _mustHaveAll;
 
-        public bool CanStore(Item item)
+        // Hash for identification
+        private int _hash;
+
+        [field:SerializeField]
+        public List<Trait> AcceptedTraits { get; set; }
+
+        [field:SerializeField]
+        public List<Trait> DeniedTraits { get; set; }
+
+        public bool CanStore(ITraitsHolder item)
         {
             int traitCount = 0;
-            if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
+
+            if (AcceptedTraits.Count == 0 && DeniedTraits.Count == 0)
+            {
                 return true;
+            }
 
             foreach (Trait trait in item.Traits)
             {
-                if (acceptedTraits.Contains(trait))
+                if (AcceptedTraits.Contains(trait))
                 {
                     traitCount++;
                 }
-                else if (deniedTraits.Contains(trait))
+                else if (DeniedTraits.Contains(trait))
                 {
                     return false;
                 }
             }
 
-            //If mustHaveAll then it will only return true if has all traits, otherwise having any will do
-            if (mustHaveAll)
+            // If mustHaveAll then it will only return true if has all traits, otherwise having any will do
+            if (_mustHaveAll)
             {
-                return traitCount == acceptedTraits.Count;
+                return traitCount == AcceptedTraits.Count;
             }
-            else
-            {
-                return traitCount > 0;
-            }
-        }
-        
-        //Hash for identification
-        protected int hash;
-        [HideInInspector] public int Hash => hash;
 
-        [ExecuteInEditMode]
-        private void OnValidate()
-        {
-            hash = GetHash(name);
+            return traitCount > 0;
         }
 
-        public static int GetHash(string str)
+        protected void OnValidate()
         {
-            return Animator.StringToHash(str.ToUpper());
+            _hash = GetHash(name);
         }
+
+        private static int GetHash([NotNull] string str) => Animator.StringToHash(str.ToUpper());
     }
 }

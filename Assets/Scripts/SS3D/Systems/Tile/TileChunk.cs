@@ -12,13 +12,8 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Class for holding a 16x16 grid of TileObjects.
     /// </summary>
-    public class TileChunk: NetworkBehaviour
+    public class TileChunk : NetworkBehaviour
     {
-        /// <summary>
-        /// Number of TileObjects that should go in a chunk. 16 x 16
-        /// </summary>
-        public const int ChunkSize = TileConstants.ChunkSize;
-
         /// <summary>
         /// Grid for grouping TileObjects per layer. Can be used for walking through objects on the same layer fast.
         /// </summary>
@@ -29,15 +24,24 @@ namespace SS3D.Systems.Tile
         }
 
         /// <summary>
+        /// Number of TileObjects that should go in a chunk. 16 x 16
+        /// </summary>
+        public const int ChunkSize = TileConstants.ChunkSize;
+
+        /// <summary>
         /// Unique key for each chunk
         /// </summary>
         private Vector2Int _chunkKey;
         private Vector3 _originPosition;
         private List<TileGrid> _tileGridList;
 
+        public Vector2Int Key => _chunkKey;
+
+        public Vector3 Origin => _originPosition;
+
         public static TileChunk Create(Vector2Int chunkKey, Vector3 originPosition)
         {
-            GameObject chunkObject = new GameObject($"Chunk [{originPosition.x},{originPosition.z}]" );
+            GameObject chunkObject = new GameObject($"Chunk [{originPosition.x},{originPosition.z}]");
             TileChunk chunk = chunkObject.AddComponent<TileChunk>();
 
             chunk.Setup(chunkKey, originPosition);
@@ -48,51 +52,6 @@ namespace SS3D.Systems.Tile
             }
 
             return chunk;
-        }
-
-        private void Setup(Vector2Int chunkKey, Vector3 originPosition)
-        {
-            _chunkKey = chunkKey;
-            _originPosition = originPosition;
-
-            CreateAllGrids();
-        }
-
-        /// <summary>
-        /// Create a new empty grid for a given layer.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <returns></returns>
-        private TileGrid CreateGrid(TileLayer layer)
-        {
-            TileGrid grid = new TileGrid { Layer = layer };
-
-            int gridSize = ChunkSize * ChunkSize;
-            grid.TileObjectsGrid = new ITileLocation[gridSize];
-
-
-            for (int x = 0; x < ChunkSize; x++)
-            {
-                for (int y = 0; y < ChunkSize; y++)
-                {
-                    grid.TileObjectsGrid[y * ChunkSize + x] = TileHelper.CreateTileLocation(layer,x,y);
-                }
-            }
-
-            return grid;
-        }
-
-        /// <summary>
-        /// Create empty grids for all layers.
-        /// </summary>
-        private void CreateAllGrids()
-        {
-            _tileGridList = new List<TileGrid>();
-
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
-            {
-                _tileGridList.Add(CreateGrid(layer));
-            }
         }
 
         /// <summary>
@@ -116,16 +75,15 @@ namespace SS3D.Systems.Tile
             return new Vector2Int((int)Math.Round(worldPosition.x - _originPosition.x), (int)Math.Round(worldPosition.z - _originPosition.z));
         }
 
-
         public void SetTileObject(TileLayer layer, int x, int y, ITileLocation value)
         {
             if (x >= 0 && y >= 0 && x < ChunkSize && y < ChunkSize)
             {
-                _tileGridList[(int)layer].TileObjectsGrid[y * ChunkSize + x] = value;
+                _tileGridList[(int)layer].TileObjectsGrid[(y * ChunkSize) + x] = value;
             }
             else
             {
-                Log.Warning(SubSystems.Get<TileSubSystem>(), "Tried to set tile object outside of chunk boundary");
+                Log.Warning(Subsystems.Get<TileSubSystem>(), "Tried to set tile object outside of chunk boundary");
             }
         }
 
@@ -133,26 +91,23 @@ namespace SS3D.Systems.Tile
         {
             if (x >= 0 && y >= 0 && x < ChunkSize && y < ChunkSize)
             {
-                return _tileGridList[(int)layer].TileObjectsGrid[y * ChunkSize + x];
+                return _tileGridList[(int)layer].TileObjectsGrid[(y * ChunkSize) + x];
             }
-            else
-            {
-                Log.Warning(SubSystems.Get<TileSubSystem>(), "Tried to get tile object outside of chunk boundary");
-                return default;
-            }
+
+            Log.Warning(Subsystems.Get<TileSubSystem>(), "Tried to get tile object outside of chunk boundary");
+            return default;
         }
 
         public List<ITileLocation> GetTileLocations(int x, int y)
         {
+            List<ITileLocation> allLocationOnTile = new();
 
-            List<ITileLocation> AllLocationOnTile= new();
-
-            foreach(TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                AllLocationOnTile.Add(GetTileLocation(layer, x, y));
+                allLocationOnTile.Add(GetTileLocation(layer, x, y));
             }
 
-            return AllLocationOnTile;
+            return allLocationOnTile;
         }
 
         public ITileLocation GetTileObject(TileLayer layer, Vector3 worldPosition)
@@ -185,8 +140,7 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public SavedTileChunk Save()
         {
-            List<ISavedTileLocation> SavedTiles = new();
-
+            List<ISavedTileLocation> savedTiles = new();
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
@@ -199,18 +153,13 @@ namespace SS3D.Systems.Tile
                         {
                             continue;
                         }
-                        SavedTiles.Add(tileLocation.Save());       
+
+                        savedTiles.Add(tileLocation.Save());
                     }
                 }
             }
 
-            SavedTileChunk saveObject = new SavedTileChunk
-            {
-                savedTiles = SavedTiles.ToArray(),
-                originPosition = _originPosition,
-                chunkKey = _chunkKey,
-            };
-
+            SavedTileChunk saveObject = new(savedTiles.ToArray(), _chunkKey, _originPosition);
             return saveObject;
         }
 
@@ -219,19 +168,63 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public List<PlacedTileObject> GetAllTilePlacedObjects()
         {
-            var list = new List<PlacedTileObject>();
-            foreach(TileGrid grid in _tileGridList)
+            List<PlacedTileObject> list = new();
+            foreach (TileGrid grid in _tileGridList)
             {
-                foreach(ITileLocation location in grid.TileObjectsGrid)
+                foreach (ITileLocation location in grid.TileObjectsGrid)
                 {
-
-                    if(location != null)
+                    if (location != null)
                     {
                         list.AddRange(location.GetAllPlacedObject());
                     }
                 }
             }
+
             return list;
+        }
+
+        private void Setup(Vector2Int chunkKey, Vector3 originPosition)
+        {
+            _chunkKey = chunkKey;
+            _originPosition = originPosition;
+
+            CreateAllGrids();
+        }
+
+        /// <summary>
+        /// Create a new empty grid for a given layer.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        private TileGrid CreateGrid(TileLayer layer)
+        {
+            TileGrid grid = new TileGrid { Layer = layer };
+
+            const int gridSize = ChunkSize * ChunkSize;
+            grid.TileObjectsGrid = new ITileLocation[gridSize];
+
+            for (int x = 0; x < ChunkSize; x++)
+            {
+                for (int y = 0; y < ChunkSize; y++)
+                {
+                    grid.TileObjectsGrid[(y * ChunkSize) + x] = TileHelper.CreateTileLocation(layer, x, y);
+                }
+            }
+
+            return grid;
+        }
+
+        /// <summary>
+        /// Create empty grids for all layers.
+        /// </summary>
+        private void CreateAllGrids()
+        {
+            _tileGridList = new List<TileGrid>();
+
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            {
+                _tileGridList.Add(CreateGrid(layer));
+            }
         }
     }
 }

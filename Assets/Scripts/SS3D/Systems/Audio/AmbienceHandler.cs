@@ -12,27 +12,33 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public class AmbienceHandler : Actor
     {
-
         [Header("Current Status")]
 
-        //TODO: Change this based on how much air is in the room.
+        // TODO: Change this based on how much air is in the room.
         [Tooltip("How much air is in the room. This effects the volume of the audio sources.")]
-        [SerializeField, Range(0f, 1f)] private float _air = 1;
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float _air = 1;
 
-        //TODO: Change this based on air flow in the room.
+        // TODO: Change this based on air flow in the room.
         [Tooltip("How windy the air is in the area. This effects how the air sounds.")]
-        [SerializeField, Range(0f, 1f)] private float _windiness;
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float _windiness;
 
-        //TODO: Change this based on area's power.
+        // TODO: Change this based on area's power.
         [Tooltip("The amount of power in the area. Lower levels means quieter and deeper electrical humming.")]
-        [SerializeField, Range(0f, 1f)] private float _power = 1;
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float _power = 1;
 
         [Tooltip("What clip is currently being played by the ambient noise generator. You don't need to mess with this, just for debugging purposes.")]
-        [SerializeField] private AudioClip _nowPlaying;
+        [SerializeField]
+        private AudioClip _nowPlaying;
 
         [Header("Audio Source Setup")]
 
-        //We need three wind-related audio sources so we can seamlessly shift between them. Don't worry, they get disabled when they aren't needed.
+        // We need three wind-related audio sources so we can seamlessly shift between them. Don't worry, they get disabled when they aren't needed.
         [Tooltip("The audio source that will be playing air noises.")]
         [SerializeField]
         private AudioSource _airPlayer;
@@ -60,9 +66,10 @@ namespace SS3D.Systems.Audio
 
         [Tooltip("How likely (percentage) it is that an ambient noise will play.")]
         [SerializeField]
-        [Range(0, 100)] private int _ambientNoiseChance = 75;
+        [Range(0, 100)]
+        private int _ambientNoiseChance = 75;
 
-        //TODO: Create a way to get the environment to tell us what noises it makes. Would be useful for off-station or room-based ambience.
+        // TODO: Create a way to get the environment to tell us what noises it makes. Would be useful for off-station or room-based ambience.
         [Tooltip("Sounds that will be made by the environment -- for example, general station noises.")]
         [SerializeField]
         private AudioClip[] _environmentNoises;
@@ -76,13 +83,19 @@ namespace SS3D.Systems.Audio
         private Animator _sfxAnimator;
 
         [Tooltip("Value of lowpass cutoff in SFX mixer group. Attenuated by the animator.")]
-        [SerializeField, Range(480f, 22000f)] private float _sfxLowPassCutoff = 22000f;
+        [SerializeField]
+        [Range(480f, 22000f)]
+        private float _sfxLowPassCutoff = 22000f;
 
         [Tooltip("Value of pitch boosting in SFX mixer group. Attenuated by the animator.")]
-        [SerializeField, Range(1f, 2f)] private float _sfxPitchBoost = 1;
+        [SerializeField]
+        [Range(1f, 2f)]
+        private float _sfxPitchBoost = 1;
 
         [Tooltip("Value of pitch shifting in SFX mixer group. Attenuated by the animator.")]
-        [SerializeField, Range(0.8f, 1f)] private float _sfxPitchShift = 1;
+        [SerializeField]
+        [Range(0.8f, 1f)]
+        private float _sfxPitchShift = 1;
 
         [Tooltip("The mixer that we need to look at to grab our effects.")]
         [SerializeField]
@@ -92,13 +105,17 @@ namespace SS3D.Systems.Audio
 
         protected override void OnStart()
         {
-            SubSystems.Get<EntitySubSystem>().OnClientSpawn += HandleClientSpawn;
+            Subsystems.Get<EntitySubSystem>().ClientSpawn += HandleClientSpawn;
             SetVolumeOfAll(0f);
         }
 
-        private void Update()
+        protected void Update()
         {
-            if (!_clientHasSpawned) return;
+            if (!_clientHasSpawned)
+            {
+                return;
+            }
+
             AttenuateWindSounds();
             AttenuatePowerSounds();
             MuffleSFX();
@@ -110,7 +127,7 @@ namespace SS3D.Systems.Audio
             if (_ambientNoiseFrequency != 0)
             {
                 PlayAmbience();
-            }   
+            }
         }
 
         /// <summary>
@@ -118,16 +135,18 @@ namespace SS3D.Systems.Audio
         /// </summary>
         private void AttenuateWindSounds()
         {
-            //Stagnant air volume should decrease by the amount of windiness
+            // Stagnant air volume should decrease by the amount of windiness
             _airPlayer.volume = _air - _windiness;
 
             if (_windiness != 0)
             {
                 _lightWindPlayer.enabled = true;
                 _heavyWindPlayer.enabled = true;
-                //light wind should peak at .5 windiness, effected by the amount of air. Less air = less loud.
+
+                // light wind should peak at .5 windiness, effected by the amount of air. Less air = less loud.
                 _lightWindPlayer.volume = Mathf.Clamp(_windiness * 2, 0f, 1f) * _air;
-                //Heavy wind should be fully loud at max windiness with max air. Less air = less loud.
+
+                // Heavy wind should be fully loud at max windiness with max air. Less air = less loud.
                 _heavyWindPlayer.volume = _windiness * _air;
             }
             else
@@ -145,7 +164,6 @@ namespace SS3D.Systems.Audio
             _electricalPlayer.volume = _power * _air;
             _electricalPlayer.pitch = _power;
         }
-
 
         /// <summary>
         /// Muffles SFX channel based on the amount of air.
@@ -172,6 +190,7 @@ namespace SS3D.Systems.Audio
             {
                 _nowPlaying = PickSound(_environmentNoises);
             }
+
             _noisePlayer.clip = _nowPlaying;
             _noisePlayer.Play();
             StartCoroutine(AmbientNoiseTimer());
@@ -182,7 +201,7 @@ namespace SS3D.Systems.Audio
         /// </summary>
         private AudioClip PickSound(AudioClip[] availableSounds)
         {
-            //Pick a clip from the supplied array and return it
+            // Pick a clip from the supplied array and return it
             AudioClip currentClip = availableSounds[Random.Range(0, availableSounds.Length)];
             return currentClip;
         }
@@ -190,9 +209,10 @@ namespace SS3D.Systems.Audio
         /// <summary>
         /// Waits a certain amount of time until playing ambience.
         /// </summary>
-        IEnumerator AmbientNoiseTimer()
+        private IEnumerator AmbientNoiseTimer()
         {
             yield return new WaitForSeconds(_ambientNoiseFrequency);
+
             // If we generate a number bigger than our chance, then the attempt fails, and we try again in x minutes.
             if (Random.Range(1, 101) < _ambientNoiseChance)
             {
@@ -202,7 +222,6 @@ namespace SS3D.Systems.Audio
             {
                 StartCoroutine(AmbientNoiseTimer());
             }
-
         }
 
         private void SetVolumeOfAll(float volume)

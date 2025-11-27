@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &695450429969100720
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 322378326703094219}
+  m_Layer: 0
+  m_Name: LeftAttachment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &322378326703094219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 695450429969100720}
+  m_LocalRotation: {x: -0.09572769, y: -0.001012604, z: 0.99448144, w: -0.04291722}
+  m_LocalPosition: {x: -0.0076, y: 0.4378, z: 0.0271}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5161115935698005760}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0.586, y: 349.028, z: -175.114}
 --- !u!1 &8197868818743549203
 GameObject:
   m_ObjectHideFlags: 0
@@ -19,6 +50,7 @@ GameObject:
   - component: {fileID: 3684970640593888479}
   - component: {fileID: 6232149895420462588}
   - component: {fileID: -2580189880636271799}
+  - component: {fileID: 1959492050112075494}
   m_Layer: 10
   m_Name: Boombox
   m_TagString: Untagged
@@ -39,6 +71,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2804866248626254785}
+  - {fileID: 322378326703094219}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -295,8 +328,8 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -355,6 +388,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c29d9bd4b2537794d853d40450283289, type: 2}
+--- !u!114 &1959492050112075494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197868818743549203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2f43d6592863cc4c9dcad00f8a27ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _primaryRightHandHold: {fileID: 2804866248626254785}
+  _primaryLeftHandHold: {fileID: 322378326703094219}
+  _secondaryRightHandHold: {fileID: 0}
+  _secondaryLeftHandHold: {fileID: 0}
+  _canHoldTwoHand: 0
+  _singleHandHold: 1
+  _twoHandHold: 0
+  _singleHandHoldHarm: 1
+  _twoHandHoldHarm: 0
+  _singleHandHoldThrow: 1
+  _twoHandHoldThrow: 0
+  _primaryHandPoseType: 0
+  _secondaryHandPoseType: 0
 --- !u!1 &8730915866332464111
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,11 +436,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8730915866332464111}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: 0.064, y: 0.318, z: 0}
+  m_LocalRotation: {x: 0.99291533, y: 0.09031743, z: -0.061995924, w: -0.046026014}
+  m_LocalPosition: {x: -0.021, y: 0.432, z: -0.019}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5161115935698005760}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: -4.6, y: 187.577, z: 169.3}

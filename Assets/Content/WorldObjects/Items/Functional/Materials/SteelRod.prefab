@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1947834495625167159
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7299541478030139503}
+  m_Layer: 0
+  m_Name: LeftAttachment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7299541478030139503
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947834495625167159}
+  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: -0.5}
+  m_LocalPosition: {x: -0.027, y: -0.062, z: -0.103}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6104867219766065872}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: -180, y: 90, z: 90}
 --- !u!1 &4292740740182341727
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,6 +144,7 @@ GameObject:
   - component: {fileID: 1034747657592807112}
   - component: {fileID: 7829680980916556598}
   - component: {fileID: 2491671203066484625}
+  - component: {fileID: 3465265934103052042}
   m_Layer: 10
   m_Name: SteelRod
   m_TagString: Untagged
@@ -134,6 +166,7 @@ Transform:
   m_Children:
   - {fileID: 8776331283961773675}
   - {fileID: 8309000899177645629}
+  - {fileID: 7299541478030139503}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -216,11 +249,12 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 2568864249795578972}
   - {fileID: 5296084984690686628}
+  - {fileID: 2491671203066484625}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0.007853894, z: 0, w: 0.9999692}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
@@ -252,8 +286,6 @@ MonoBehaviour:
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 3882670034855778047}
-  AttachmentPoint: {fileID: 8309000899177645629}
-  AttachmentPointAlt: {fileID: 8309000899177645629}
   _container: {fileID: 0}
 --- !u!114 &1034747657592807112
 MonoBehaviour:
@@ -292,9 +324,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 1773710978803455870}
+  _networkObjectCache: {fileID: 1773710978803455870}
+--- !u!114 &3465265934103052042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99df7ac2c21c2d944818b5da5be3dd53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 0}
+  _primaryRightHandHold: {fileID: 8309000899177645629}
+  _primaryLeftHandHold: {fileID: 7299541478030139503}
+  _secondaryRightHandHold: {fileID: 0}
+  _secondaryLeftHandHold: {fileID: 0}
+  _holdableScriptableObject: {fileID: 11400000, guid: f93ccad7cfbe46b4fa3f8cfb8be8a1d9, type: 2}
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,11 +370,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8648817992091836969}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalRotation: {x: 0.53972185, y: 0.53972185, z: 0.45683736, w: 0.45683736}
+  m_LocalPosition: {x: 0.007, y: -0.054, z: -0.111}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6104867219766065872}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 99.509, z: 90}

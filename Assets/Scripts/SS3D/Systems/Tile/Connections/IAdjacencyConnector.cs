@@ -8,7 +8,7 @@ namespace SS3D.Systems.Tile.Connections
     public interface IAdjacencyConnector
     {
         /// <summary>
-        /// Update a single connection, and eventually update the neighbour as well. 
+        /// Update a single connection, and eventually update the neighbour as well.
         /// neighbour object can be null, which generally means the neighbour object is removed.
         /// dir should indicate the direction in which the neighbour object is, if it makes sense, and if
         /// it's useful. For some neighbours,in some particula cases, it might not be useful.
@@ -24,7 +24,7 @@ namespace SS3D.Systems.Tile.Connections
         void UpdateAllConnections();
 
         /// <summary>
-        /// Check if a given neighbour of the placed object linked to this connector is connected to 
+        /// Check if a given neighbour of the placed object linked to this connector is connected to
         /// the placed object linked to this connector. Connection conditions
         /// may vary widely from a connector to another.
         /// </summary>
@@ -40,5 +40,7 @@ namespace SS3D.Systems.Tile.Connections
         /// linked to this connector will not necessarily be connected with its neighbour.
         /// </summary>
         List<PlacedTileObject> GetNeighbours();
+
+        List<PlacedTileObject> GetConnectedNeighbours();
     }
 }

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4559952172929818812}
   - component: {fileID: 4559952172929818819}
   - component: {fileID: 4559952172929818818}
+  - component: {fileID: 4294910304007421001}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -194,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 478bec67b8584f5c9943e2f27b095002, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _camera: {fileID: 4559952172929818808}
+  _camera: {fileID: 4294910304007421001}
   _cameraFollow: {fileID: 4559952172929818818}
 --- !u!114 &4559952172929818818
 MonoBehaviour:
@@ -212,6 +213,19 @@ MonoBehaviour:
   _cameraDistance: 3
   _horizontalAngle: 90
   _verticalAngle: 60
+--- !u!114 &4294910304007421001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4559952172929818810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fa0efac9db8780408b293b0810fd881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Camera>k__BackingField: {fileID: 4559952172929818808}
 --- !u!1 &6076100242948381278
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,6 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _listener: {fileID: 5659394821902966807}
+  _listenerTarget: {fileID: 0}
 --- !u!1 &8609354537043388887
 GameObject:
   m_ObjectHideFlags: 0

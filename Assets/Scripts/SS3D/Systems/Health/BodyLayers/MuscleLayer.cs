@@ -1,31 +1,31 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SS3D.Systems.Health
 {
     /// <summary>
-    /// Muscle layer mostly determines the ability to move and to hold things. 
-    /// TODO : It should receive a top down signal from brain, and all muscle layer on the way influence 
+    /// Muscle layer mostly determines the ability to move and to hold things.
+    /// TODO : It should receive a top down signal from brain, and all muscle layer on the way influence
     /// how much this one is able to function.
     /// </summary>
-	public class MuscleLayer : BodyLayer, IOxygenNeeder
-	{
-		public override BodyLayerType LayerType
-		{
-			get { return BodyLayerType.Muscle; }
-		}
+    public class MuscleLayer : BodyLayer, IOxygenNeeder
+    {
+        public MuscleLayer(BodyPart bodyPart)
+            : base(bodyPart)
+        {
+        }
 
-		public MuscleLayer(BodyPart bodyPart) : base(bodyPart)
-		{
+        public MuscleLayer(BodyPart bodyPart, DamagesContainer damages)
+            : base(bodyPart, damages)
+        {
+        }
 
-		}
+        public override BodyLayerType LayerType => BodyLayerType.Muscle;
 
-		public MuscleLayer(BodyPart bodyPart,
-			DamagesContainer damages)
-			: base(bodyPart, damages)
-		{
+        public double GetOxygenNeeded() => HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
 
-		}
+        public override void Cleanlayer()
+        {
+        }
 
         protected override void SetDamagesContainer()
         {
@@ -40,16 +40,6 @@ namespace SS3D.Systems.Health
             Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1.5f, 0f));
             Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 1f, 0f));
             Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 1.5f, 0f));
-        }
-
-        public double GetOxygenNeeded()
-        {
-            return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
-        }
-
-        public override void Cleanlayer()
-        {
-
         }
     }
 }

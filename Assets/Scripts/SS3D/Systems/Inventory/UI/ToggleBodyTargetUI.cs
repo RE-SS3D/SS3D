@@ -13,7 +13,7 @@ namespace SS3D.Systems.Inventory.UI
         private bool _isShowing = true;
         private RectTransform _buttonTransform;
 
-        void Start()
+        protected void Start()
         {
             _bodyTargetCanvas = GameObject.Find("Body Parts").GetComponent<CanvasGroup>();
             _expandButton = GetComponent<Button>();
@@ -21,15 +21,7 @@ namespace SS3D.Systems.Inventory.UI
             _buttonTransform = GetComponent<RectTransform>();
         }
 
-        private void Update()
-        {
-            // Button to toggle the internal clothing UI
-            /*if (Input.GetButtonDown("Toggle Body Target"))
-            {
-                Toggle();
-            }*/
-        }
-        public void TaskOnClick()
+        private void TaskOnClick()
         {
             Toggle();
         }
@@ -41,15 +33,16 @@ namespace SS3D.Systems.Inventory.UI
         {
             if (_isShowing)
             {
-                _bodyTargetCanvas.alpha = 0f; //this makes everything transparent
-                _bodyTargetCanvas.blocksRaycasts = false; //this prevents the UI element to receive input events
+                _bodyTargetCanvas.alpha = 0f; // this makes everything transparent
+                _bodyTargetCanvas.blocksRaycasts = false; // this prevents the UI element to receive input events
             }
             else
             {
-                _bodyTargetCanvas.alpha = 1f; //this makes it visible again
-                _bodyTargetCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
+                _bodyTargetCanvas.alpha = 1f; // this makes it visible again
+                _bodyTargetCanvas.blocksRaycasts = true; // this allows the UI to receive inputs again.
             }
-            this.gameObject.transform.GetChild(0).eulerAngles = new Vector3(this.gameObject.transform.GetChild(0).eulerAngles.x, this.gameObject.transform.GetChild(0).eulerAngles.y, this.gameObject.transform.GetChild(0).eulerAngles.z + 180);
+
+            gameObject.transform.GetChild(0).eulerAngles = new Vector3(gameObject.transform.GetChild(0).eulerAngles.x, gameObject.transform.GetChild(0).eulerAngles.y, gameObject.transform.GetChild(0).eulerAngles.z + 180);
             _isShowing = !_isShowing;
         }
     }

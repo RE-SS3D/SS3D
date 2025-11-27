@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -7870356800615129184}
   - component: {fileID: 4840393447774820463}
   - component: {fileID: 8399519541836331320}
+  - component: {fileID: 5915189518970650810}
   m_Layer: 0
   m_Name: SMES
   m_TagString: Untagged
@@ -36,6 +37,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 608453462504062702}
+  - {fileID: 7499286863265064138}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -164,6 +166,21 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -5414623717715724467}
   _networkObjectCache: {fileID: -5414623717715724467}
   _on: 0
+  _toggle: {fileID: 0}
+--- !u!114 &5915189518970650810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9b1134be21b33843967f48258787c1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactionPoints:
+  - {fileID: 7499286863265064138}
 --- !u!1 &4379219507269237858
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,3 +281,34 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.000000014901161, y: 0.48807514, z: 0.025044113}
     m_Extent: {x: 0.41364294, y: 0.48807514, z: 0.43868694}
   m_DirtyAABB: 0
+--- !u!1 &8679078277714624616
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7499286863265064138}
+  m_Layer: 0
+  m_Name: StartPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7499286863265064138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8679078277714624616}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.061, y: 0.655, z: 0.454}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8033135651520204425}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

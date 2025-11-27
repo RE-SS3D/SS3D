@@ -1,12 +1,10 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
-using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
 using UnityEngine;
 
 namespace SS3D.Systems.Health
@@ -24,17 +22,20 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// The controller for this entity.
         /// </summary>
-        [SerializeField] private HumanoidController _player;
+        [SerializeField]
+        private ISpeedProvider _speedProvider;
 
         /// <summary>
         /// The PlayerControllable component for this entity.
         /// </summary>
-        [SerializeField] private Entity _entity;
+        [SerializeField]
+        private Entity _entity;
 
         /// <summary>
         /// Provides a way for the client to access the current player stamina.
         /// </summary>
-        [SyncVar(OnChange = nameof(SyncCurrentStamina))] private float _currentStamina;
+        [SyncVar(OnChange = nameof(SyncCurrentStamina))]
+        private float _currentStamina;
 
         /// <summary>
         /// Actual stamina data. Will only exist on the server.
@@ -58,13 +59,6 @@ namespace SS3D.Systems.Health
         /// </summary>
         public bool CanContinueInteraction => IsServerOnly ? _stamina.CanContinueInteraction : _currentStamina > 0f;
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        }
-
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -77,18 +71,30 @@ namespace SS3D.Systems.Health
         public override void OnStartClient()
         {
             base.OnStartClient();
-            _staminaBarView = ViewLocator.Get<StaminaBarView>().First();
+            _staminaBarView = ViewLocator.Get<StaminaBarView>()[0];
+            _speedProvider = GetComponent<ISpeedProvider>();
+
             // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
             SubscribeToEvents();
             InitialAssignViewToControllable();
         }
 
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        /// <summary>
+        /// Depletes stamina by a set amount. To be called only from server-side scripts (e.g. Interactions)
+        /// </summary>
+        /// /// <param name="amountToDeplete">The amount of stamina to reduce</param>
+        [Server]
+        public void ServerDepleteStamina(float amountToDeplete)
         {
-            if (IsServer)
-            {
-                _stamina.RechargeStamina(updateEvent.DeltaTime);
-            }
+            _stamina.ConsumeStamina(amountToDeplete);
+            _currentStamina = _stamina.Current;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
@@ -97,17 +103,24 @@ namespace SS3D.Systems.Health
             UnsubscribeFromEvents();
         }
 
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        {
+            if (IsServer)
+            {
+                // _stamina.RechargeStamina(updateEvent.DeltaTime);
+            }
+        }
+
         private void SubscribeToEvents()
         {
-            _player.OnSpeedChangeEvent += DepleteStamina;
+            _speedProvider.OnSpeedChangeEvent += DepleteStamina;
             _entity.OnMindChanged += AssignViewToControllable;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _player.OnSpeedChangeEvent -= DepleteStamina;
+            _speedProvider.OnSpeedChangeEvent -= DepleteStamina;
             _entity.OnMindChanged -= AssignViewToControllable;
-
         }
 
         [Client]
@@ -121,17 +134,6 @@ namespace SS3D.Systems.Health
             {
                 _staminaBarView.AssignViewToPlayer(this);
             }
-        }
-
-        /// <summary>
-        /// Depletes stamina by a set amount. To be called only from server-side scripts (e.g. Interactions)
-        /// </summary>
-        /// /// <param name="amountToDeplete">The amount of stamina to reduce</param>
-        [Server]
-        public void ServerDepleteStamina(float amountToDeplete)
-        {
-            _stamina.ConsumeStamina(amountToDeplete);
-            _currentStamina = _stamina.Current;
         }
 
         /// <summary>
@@ -172,7 +174,6 @@ namespace SS3D.Systems.Health
 
         private void SyncCurrentStamina(float old, float value, bool asServer)
         {
-
         }
     }
 }

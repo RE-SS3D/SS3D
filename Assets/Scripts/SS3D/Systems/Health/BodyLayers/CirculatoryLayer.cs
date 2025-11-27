@@ -5,11 +5,10 @@ using SS3D.Substances;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace SS3D.Systems.Health
 {
     public class CirculatoryLayer : BodyLayer, IOxygenConsumer, IOxygenNeeder
-	{
+    {
         /// <summary>
         /// MilliMole quantity this layer can contain of oxygen.
         /// </summary>
@@ -25,76 +24,37 @@ namespace SS3D.Systems.Health
         private double _oxygenNeeded;
 
         /// <summary>
-        /// To keep things simple for now, 
-        /// a body part simply needs the average of 
-        /// oxygen consumed for each consuming layer composing it.
-        /// </summary>
-        public double OxygenNeeded
-        {
-            private set => SetOxygenNeeded();
-            get => _oxygenNeeded;
-        }
-        
-		public override BodyLayerType LayerType
-		{
-			get { return BodyLayerType.Circulatory; }
-		}
-
-        /// <summary>
         /// </summary>
         /// <param name="bodyPart"></param>
         /// <param name="oxygenReserveFactor">The oxygen reserve factor defines how much oxygen this bodylayer can store.
         /// In normal conditions, it should roughly be equal to the time in seconds of reserve</param>
-		public CirculatoryLayer(BodyPart bodyPart, float oxygenReserveFactor) : base(bodyPart)
-		{
+        public CirculatoryLayer(BodyPart bodyPart, float oxygenReserveFactor)
+            : base(bodyPart)
+        {
             // Should approximately correspond to "OxygenSecondOfReserveInNormalConditions * oxygenReserveFactor"
             // seconds of oxygen reserve at 60 bmp heart rate.
             Init(bodyPart, oxygenReserveFactor);
         }
 
-		public CirculatoryLayer(BodyPart bodyPart,
-		DamagesContainer damages, float oxygenReserveFactor)
-		: base(bodyPart, damages)
-		{
+        public CirculatoryLayer(BodyPart bodyPart, DamagesContainer damages, float oxygenReserveFactor)
+            : base(bodyPart, damages)
+        {
             Init(bodyPart, oxygenReserveFactor);
         }
 
-        private void Init(BodyPart bodyPart, float oxygenReserveFactor)
+        /// <summary>
+        /// To keep things simple for now,
+        /// a body part simply needs the average of
+        /// oxygen consumed for each consuming layer composing it.
+        /// </summary>
+        public double OxygenNeeded
         {
-            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
-            _oxygenReserve = _oxygenMaxCapacity;
+            get => _oxygenNeeded;
 
-            // TODO : Currently only set the amount of oxygen needed once at Init.
-            // Should maybe change too if a layer is changing the amount of oxygen it needs,
-            // or if it gets destroyed or one gets added.
-            SetOxygenNeeded();
-
-            RegisterToOxygenConsumerSystem();
-            if(bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
-            {
-                _bleedingHandler = bleedingBodyPart; 
-            }
-            else
-            {
-                Log.Error(this, "Trying to set up a circulatory layer without a BleedingBodyPart component next to the body part." +
-                    " Please add a BleedingBodyPart component.");
-            }
+            private set => SetOxygenNeeded();
         }
 
-        protected override void SetDamagesContainer()
-        {
-            Damages[DamageType.Crush] = new (DamageType.Crush);
-            Damages[DamageType.Slash] = new (DamageType.Slash);
-            Damages[DamageType.Puncture] = new (DamageType.Puncture, 0f, 2f);
-            Damages[DamageType.Pressure] = new (DamageType.Pressure);
-            Damages[DamageType.Heat] = new (DamageType.Heat);
-            Damages[DamageType.Cold] = new (DamageType.Cold);
-            Damages[DamageType.Shock] = new (DamageType.Shock);
-            Damages[DamageType.Rad] = new (DamageType.Rad);
-            Damages[DamageType.Acid] = new (DamageType.Acid);
-            Damages[DamageType.Toxic] = new (DamageType.Toxic, 0f, 1.5f);
-            Damages[DamageType.Oxy] = new (DamageType.Oxy);
-        }
+        public override BodyLayerType LayerType => BodyLayerType.Circulatory;
 
         /// <summary>
         /// Consume oxygen and inflict damages if not enough oxygen is present.
@@ -102,7 +62,7 @@ namespace SS3D.Systems.Health
         [Server]
         public void ConsumeOxygen()
         {
-            float fractionOfNeededOxygen =(float)(_oxygenReserve / _oxygenNeeded);
+            float fractionOfNeededOxygen = (float)(_oxygenReserve / _oxygenNeeded);
 
             if (_oxygenNeeded > _oxygenReserve)
             {
@@ -115,27 +75,10 @@ namespace SS3D.Systems.Health
             }
         }
 
-
-
-        /// <summary>
-        /// Inflict Oxy damage to all body layers needing oxygen, in proportion of what's left in reserve.
-        /// </summary>
-        /// <param name="fractionOfNeededOxygen"> oxygen in reserve divided by needed oxygen. Should be between 0 and 1.</param>
-        [Server]
-        private void InflictOxyDamage(float fractionOfNeededOxygen)
-        {
-            var consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
-            foreach (BodyLayer layer in consumers)
-            {
-                BodyPart.TryInflictDamage(layer.LayerType,
-                    new(DamageType.Oxy, (1- fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
-            }
-        }
-
         [Server]
         public void ReceiveOxygen(double mole)
         {
-            if(_oxygenReserve + mole > _oxygenMaxCapacity)
+            if (_oxygenReserve + mole > _oxygenMaxCapacity)
             {
                 _oxygenReserve = _oxygenMaxCapacity;
             }
@@ -158,17 +101,17 @@ namespace SS3D.Systems.Health
         [Server]
         public void Bleed()
         {
-            SubstancesSubSystem registry = SubSystems.Get<SubstancesSubSystem>();
+            SubstancesSubSystem registry = Subsystems.Get<SubstancesSubSystem>();
             Substance blood = registry.FromType(SubstanceType.Blood);
             BodyPart.HealthController.Circulatory.Container.RemoveSubstance(blood, HealthConstants.MaxBloodLost * RelativeDamage);
 
-            if (!_bleedingHandler.isBleeding && RelativeDamage > 0)
+            if (!_bleedingHandler.IsBleeding && RelativeDamage > 0)
             {
-                _bleedingHandler.isBleeding = true;
+                _bleedingHandler.IsBleeding = true;
             }
-            else if ((_bleedingHandler.isBleeding && RelativeDamage == 0))
+            else if (_bleedingHandler.IsBleeding && RelativeDamage == 0)
             {
-                _bleedingHandler.isBleeding = false;
+                _bleedingHandler.IsBleeding = false;
             }
         }
 
@@ -178,7 +121,7 @@ namespace SS3D.Systems.Health
         [Server]
         public void RegisterToOxygenConsumerSystem()
         {
-            OxygenConsumerSubSystem registry = SubSystems.Get<OxygenConsumerSubSystem>();
+            OxygenConsumerSubSystem registry = Subsystems.Get<OxygenConsumerSubSystem>();
             registry.RegisterConsumer(this);
         }
 
@@ -188,8 +131,24 @@ namespace SS3D.Systems.Health
         [Server]
         public override void Cleanlayer()
         {
-            OxygenConsumerSubSystem registry = SubSystems.Get<OxygenConsumerSubSystem>();
+            OxygenConsumerSubSystem registry = Subsystems.Get<OxygenConsumerSubSystem>();
             registry.UnregisterConsumer(this);
+        }
+
+        protected override void SetDamagesContainer()
+        {
+            Damages[DamageType.Crush] = new(DamageType.Crush);
+            Damages[DamageType.Crush] = new(DamageType.Crush);
+            Damages[DamageType.Slash] = new(DamageType.Slash);
+            Damages[DamageType.Puncture] = new(DamageType.Puncture, 0f, 2f);
+            Damages[DamageType.Pressure] = new(DamageType.Pressure);
+            Damages[DamageType.Heat] = new(DamageType.Heat);
+            Damages[DamageType.Cold] = new(DamageType.Cold);
+            Damages[DamageType.Shock] = new(DamageType.Shock);
+            Damages[DamageType.Rad] = new(DamageType.Rad);
+            Damages[DamageType.Acid] = new(DamageType.Acid);
+            Damages[DamageType.Toxic] = new(DamageType.Toxic, 0f, 1.5f);
+            Damages[DamageType.Oxy] = new(DamageType.Oxy);
         }
 
         [Server]
@@ -199,6 +158,41 @@ namespace SS3D.Systems.Health
             double totalOxygen = oxygenNeeders.Sum(x => x.GetOxygenNeeded());
             int numberOfConsumers = oxygenNeeders.Count();
             _oxygenNeeded = numberOfConsumers > 0 ? totalOxygen / numberOfConsumers : 0;
+        }
+
+        private void Init(BodyPart bodyPart, float oxygenReserveFactor)
+        {
+            _oxygenMaxCapacity = BodyPart.Volume * HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * oxygenReserveFactor;
+            _oxygenReserve = _oxygenMaxCapacity;
+
+            // TODO : Currently only set the amount of oxygen needed once at Init.
+            // Should maybe change too if a layer is changing the amount of oxygen it needs,
+            // or if it gets destroyed or one gets added.
+            SetOxygenNeeded();
+
+            RegisterToOxygenConsumerSystem();
+            if (bodyPart.TryGetComponent(out BleedingBodyPart bleedingBodyPart))
+            {
+                _bleedingHandler = bleedingBodyPart;
+            }
+            else
+            {
+                Log.Error(this, "Trying to set up a circulatory layer without a BleedingBodyPart component next to the body part. Please add a BleedingBodyPart component.");
+            }
+        }
+
+        /// <summary>
+        /// Inflict Oxy damage to all body layers needing oxygen, in proportion of what's left in reserve.
+        /// </summary>
+        /// <param name="fractionOfNeededOxygen"> oxygen in reserve divided by needed oxygen. Should be between 0 and 1.</param>
+        [Server]
+        private void InflictOxyDamage(float fractionOfNeededOxygen)
+        {
+            IEnumerable<IOxygenNeeder> consumers = BodyPart.BodyLayers.OfType<IOxygenNeeder>();
+            foreach (BodyLayer layer in consumers)
+            {
+                BodyPart.TryInflictDamage(layer.LayerType, new(DamageType.Oxy, (1 - fractionOfNeededOxygen) * HealthConstants.DamageWithNoOxygen));
+            }
         }
     }
 }

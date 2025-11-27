@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: ToolboxBlue
   m_EditorClassIdentifier: 
-  nameString: toolbox_blue
-  prefab: {fileID: 5533951594911835035, guid: 264ea51d92067c14ebc6633999afac78, type: 3}
+  prefab: {fileID: 7256796119011547647, guid: 264ea51d92067c14ebc6633999afac78, type: 3}
   icon: {fileID: 0}

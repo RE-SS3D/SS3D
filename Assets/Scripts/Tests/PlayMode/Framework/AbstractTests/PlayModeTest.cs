@@ -2,15 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using Coimbra;
 using NUnit.Framework;
 using SS3D.Core;
-using SS3D.Core.Settings;
 using SS3D.Networking;
 using SS3D.Networking.Settings;
-using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Interactions;
 using Tests.Play_Mode.Framework.Helpers;
@@ -18,7 +14,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.SceneManagement;
-using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
@@ -53,7 +48,7 @@ namespace SS3D.Tests
 
         public Mouse Mouse => mouse;
 
-        protected HumanoidController HumanoidController;
+        protected HumanoidMovementController HumanoidController;
         protected InteractionController InteractionController;
 
         protected abstract bool UseMockUpInputs();
@@ -105,7 +100,7 @@ namespace SS3D.Tests
             while (HumanoidController == null)
             {
                 yield return null;
-                HumanoidController = GameObject.FindWithTag("Player")?.GetComponent<HumanoidController>();
+                HumanoidController = GameObject.FindWithTag("Player")?.GetComponent<HumanoidMovementController>();
                 if (Time.time - startTime > timeout)
                 {
                     throw new Exception($"Humanoid controller not found within timeout of {timeout} seconds.");
@@ -230,7 +225,7 @@ namespace SS3D.Tests
         public static InputDevice SetUpMockInputForActions(ref List<InputAction> inputActions)
         {
             UnityEngine.Debug.Log("Entering SetUpMockInput");
-            InputActionAsset actions = SubSystems.Get<Systems.Inputs.InputSubSystem>().Inputs.asset;
+            InputActionAsset actions = Subsystems.Get<Systems.Inputs.InputSubSystem>().Inputs.asset;
             UnityEngine.Debug.Log(actions.ToString());
 
             var layoutName = actions.name;

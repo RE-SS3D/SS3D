@@ -92,7 +92,7 @@ MonoBehaviour:
       _new: {fileID: 0}
     _conditions:
     - {fileID: 11400000, guid: 22f5cb218c973ef4291a27c11ca43fe9, type: 2}
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelGirder
     _to: SteelGirderWithMetalSheet
     _modifyResult: 0
@@ -102,7 +102,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 0
+    _craftingInteractionType: 1
     _from: SteelGirderWithMetalSheet
     _to: SteelWall
     _modifyResult: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
         _value: 1
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelGirder
     _to: SteelGirderWithGlassSheet
     _modifyResult: 0
@@ -124,7 +124,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 0
+    _craftingInteractionType: 1
     _from: SteelGirderWithGlassSheet
     _to: SteelWindow
     _modifyResult: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
         _value: 1
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelGirder
     _to: ReinforcedSteelGirderWithStruts
     _modifyResult: 0
@@ -148,7 +148,7 @@ MonoBehaviour:
         _value: 1
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: ReinforcedSteelGirderWithStruts
     _to: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
     _modifyResult: 0
@@ -158,7 +158,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 0
+    _craftingInteractionType: 2
     _from: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
     _to: ReinforcedWall
     _modifyResult: 0
@@ -170,7 +170,7 @@ MonoBehaviour:
         _value: 1
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: ReinforcedSteelGirderWithStruts
     _to: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
     _modifyResult: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 0
+    _craftingInteractionType: 2
     _from: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
     _to: ReinforcedWindow
     _modifyResult: 0
@@ -190,7 +190,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 5
+    _craftingInteractionType: 6
     _from: ReinforcedWall
     _to: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
     _modifyResult: 0
@@ -200,7 +200,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 4
+    _craftingInteractionType: 5
     _from: ReinforcedSteelGirderWithBoltedReinforcedMetalSheets
     _to: ReinforcedSteelGirderWithBoltedMetalSheets
     _modifyResult: 0
@@ -210,7 +210,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 2
     _from: ReinforcedSteelGirderWithBoltedMetalSheets
     _to: ReinforcedSteelGirderWithStruts
     _modifyResult: 0
@@ -230,7 +230,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 1
+    _craftingInteractionType: 2
     _from: SteelGirder
     _to: SteelGirderUnbolted
     _modifyResult: 0
@@ -240,7 +240,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelGirderWithMetalSheet
     _to: SteelGirder
     _modifyResult: 0
@@ -252,7 +252,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelGirderWithGlassSheet
     _to: SteelGirder
     _modifyResult: 0
@@ -264,7 +264,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 4
+    _craftingInteractionType: 5
     _from: ReinforcedSteelGirderWithBoltedReinforcedGlassSheets
     _to: ReinforcedSteelGirderWithBoltedGlassSheets
     _modifyResult: 0
@@ -274,7 +274,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: ReinforcedSteelGirderWithBoltedGlassSheets
     _to: ReinforcedSteelGirderWithStruts
     _modifyResult: 0
@@ -286,7 +286,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 2
+    _craftingInteractionType: 3
     _from: ReinforcedSteelGirderWithStruts
     _to: ReinforcedSteelGirder
     _modifyResult: 0

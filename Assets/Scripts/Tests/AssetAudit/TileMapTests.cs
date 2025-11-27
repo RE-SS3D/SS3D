@@ -27,8 +27,8 @@ namespace AssetAudit
         [Test, TestCaseSource(nameof(AllTileObjectSo))]
         public void EveryTileHasRealisticSize(TileObjectSo tile)
         {
-            bool invalidSize = tile.height <= 0 || tile.height > 5 || tile.width <= 0 || tile.width > 5;
-            Assert.IsFalse(invalidSize, $"TileObjectSo '{tile.name}' has an unrealistic size of { tile.width},{ tile.height}.\n");
+            bool invalidSize = tile.Height <= 0 || tile.Height > 5 || tile.Width <= 0 || tile.Width > 5;
+            Assert.IsFalse(invalidSize, $"TileObjectSo '{tile.name}' has an unrealistic size of { tile.Width},{ tile.Height}.\n");
         }
         #endregion
 

@@ -1,9 +1,12 @@
 ﻿using FishNet.Object;
+using SS3D.Core;
+using SS3D.Systems.Atmospherics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Furniture
 {
@@ -17,71 +20,75 @@ namespace SS3D.Systems.Furniture
         /// <summary>
         /// Time in second before the door start to close when player are out of the trigger collider of the airlock.
         /// </summary>
-        private const float DOOR_WAIT_CLOSE_TIME = 2.0f;
-
-        [SerializeField]
-        private Animator _animator;
+        private const float DoorWaitCloseTime = 2.0f;
 
         /// <summary>
         /// The animation's id of the animation we want to trigger
         /// </summary>
         private static readonly int OpenId = Animator.StringToHash("Open");
 
-        [SerializeField] private LayerMask doorTriggerLayers = -1;
+        [SerializeField]
+        private Animator _animator;
+
+        [FormerlySerializedAs("doorTriggerLayers")]
+        [SerializeField]
+        private LayerMask _doorTriggerLayers = -1;
 
         /// <summary>
         /// Number of player close enough to the airlock.
         /// </summary>
-        private int playersInTrigger; // Server Only
+        private int _playersInTrigger; // Server Only
 
         /// <summary>
         /// Coroutine to eventually close the door when no one is around.
         /// </summary>
-        private Coroutine closeTimer; // Server Only
+        private Coroutine _closeTimer; // Server Only
 
+        [SerializeField]
+        private List<SkinnedMeshRenderer> _skinnedMeshesToColor;
 
         [SerializeField]
         private List<MeshRenderer> _meshesToColor;
 
         public ReadOnlyCollection<MeshRenderer> MeshesToColor => _meshesToColor.AsReadOnly();
 
-
-        [SerializeField]
-        private List<SkinnedMeshRenderer> _skinnedMeshesToColor;
-
         public ReadOnlyCollection<SkinnedMeshRenderer> SkinnedMeshesToColor => _skinnedMeshesToColor.AsReadOnly();
 
-
-        public void OnTriggerEnter(Collider other)
+        protected void OnTriggerEnter(Collider other)
         {
-            if (!IsServer) return;
-            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
-
-            if (playersInTrigger == 0)
+            if (!IsServer || (1 << other.gameObject.layer & _doorTriggerLayers) == 0)
             {
-                if (closeTimer != null)
+                return;
+            }
+
+            if (_playersInTrigger == 0)
+            {
+                if (_closeTimer != null)
                 {
-                    StopCoroutine(closeTimer);
-                    closeTimer = null;
+                    StopCoroutine(_closeTimer);
+                    _closeTimer = null;
                 }
+
                 SetOpen(true);
             }
 
-            playersInTrigger += 1;
+            _playersInTrigger += 1;
         }
 
-        public void OnTriggerExit(Collider other)
+        protected void OnTriggerExit(Collider other)
         {
-            if(!IsServer) return;
-            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
-
-            if (playersInTrigger == 1)
+            if (!IsServer || (1 << other.gameObject.layer & _doorTriggerLayers) == 0)
             {
-                // Start the close timer (which may be stopped).
-                closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
+                return;
             }
 
-            playersInTrigger = Math.Max(playersInTrigger - 1, 0);
+            if (_playersInTrigger == 1)
+            {
+                // Start the close timer (which may be stopped).
+                _closeTimer = StartCoroutine(RunCloseEventually(DoorWaitCloseTime));
+            }
+
+            _playersInTrigger = Math.Max(_playersInTrigger - 1, 0);
         }
 
         private IEnumerator RunCloseEventually(float time)
@@ -93,6 +100,7 @@ namespace SS3D.Systems.Furniture
         [Server]
         private void SetOpen(bool open)
         {
+            Subsystems.Get<AtmosEnvironmentSubSystem>().ChangeState(transform.position, open ? AtmosState.Active : AtmosState.Blocked);
             _animator.SetBool(OpenId, open);
         }
     }

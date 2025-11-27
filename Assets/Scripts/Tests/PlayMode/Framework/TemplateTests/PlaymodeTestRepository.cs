@@ -1,15 +1,15 @@
 ﻿using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Data.Generated;
+using SS3D.Systems.Camera;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Rounds;
-using SS3D.Systems.Screens;
 using SS3D.UI.Buttons;
 using System.Collections;
 using System.Text;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace SS3D.Tests
@@ -36,7 +36,7 @@ namespace SS3D.Tests
         /// <param name="controller">The player character.</param>
         /// <param name="showDebug">Whether the position log (by frame) should be displayed in the console.</param>
         /// <returns>IEnumerator for use as a UnityTest.</returns>
-        public static IEnumerator PlayerRemainsAboveStationLevelAfterSpawn(HumanoidController controller, bool showDebug = false)
+        public static IEnumerator PlayerRemainsAboveStationLevelAfterSpawn(HumanoidMovementController controller, bool showDebug = false)
         {
             // The height that we are checking
             const float StationHeight = 0f;
@@ -84,8 +84,8 @@ namespace SS3D.Tests
         {
             // ARRANGE
             // Check the number of players currently ready in the game
-            ReadyPlayersSubSystem readyPlayersSystem = SubSystems.Get<ReadyPlayersSubSystem>();
-            int originalReadyPlayers = readyPlayersSystem.Count;
+            ReadyPlayersSubSystem readyPlayersSubSystem = Subsystems.Get<ReadyPlayersSubSystem>();
+            int originalReadyPlayers = readyPlayersSubSystem.Count;
 
             // Check the colour of the ready button
             LabelButton button = TestHelpers.GetButton(ReadyButtonName);
@@ -97,7 +97,7 @@ namespace SS3D.Tests
 
             // ASSERT #1: Player should now be Ready.
             // Check: The ready player count should have incremented.
-            Assert.IsTrue(readyPlayersSystem.Count == originalReadyPlayers + 1, $"Number of ready players was not incremented when this player became ready.");
+            Assert.IsTrue(readyPlayersSubSystem.Count == originalReadyPlayers + 1, $"Number of ready players was not incremented when this player became ready.");
             // Check: The ready button color should have changed.
             Assert.IsTrue(originalButtonColor != button.GetComponent<Image>().color, $"The button colour did not change when the button was clicked");
 
@@ -108,7 +108,7 @@ namespace SS3D.Tests
 
             // ASSERT #2: Player should now be Not Ready
             // Check: The ready player count should be back to having the original number of ready players.
-            Assert.IsTrue(readyPlayersSystem.Count == originalReadyPlayers, $"Number of ready players was not decremented when this player became not ready.");
+            Assert.IsTrue(readyPlayersSubSystem.Count == originalReadyPlayers, $"Number of ready players was not decremented when this player became not ready.");
             // Check: The ready button color should have changed back to the original.
             Assert.IsTrue(originalButtonColor == button.GetComponent<Image>().color, $"The button colour did not change when the button was clicked");
         }
@@ -116,17 +116,17 @@ namespace SS3D.Tests
         public static IEnumerator PlayerCanDropAndPickUpItem(PlayModeTest fixture)
         {
             // Get local player position, interaction controller and put bikehorn in first hand available.
-            var hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Items.PDA);
-            var playerPosition = TestHelpers.GetLocalPlayerPosition();
+            AttachedContainer hand = TestHelpers.LocalPlayerSpawnItemInFirstHandAvailable(Items.PDA);
+            Vector3 playerPosition = TestHelpers.GetLocalPlayerPosition();
 
             yield return new WaitForSeconds(0.2f);
 
             // Drop item at a close position from local player
-            var itemPosition = playerPosition;
-            var camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
-            var target = camera.WorldToScreenPoint(itemPosition);
+            Vector3 itemPosition = playerPosition;
+            Camera camera = Subsystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
+            Vector3 target = camera.WorldToScreenPoint(itemPosition);
 
-            var target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);
+            Vector2 target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);
             fixture.Set(fixture.Mouse.position, target2D);
 
             // Check that player can drop and pick up item again.
@@ -149,7 +149,7 @@ namespace SS3D.Tests
         /// Note: this test is vulnerable to the player being blocked from movement by map features.
         /// </summary>
         /// <param name="controller">The player character.</param>
-        public static IEnumerator PlayerCanMoveInEachDirectionCorrectly(PlayModeTest fixture, HumanoidController controller)
+        public static IEnumerator PlayerCanMoveInEachDirectionCorrectly(PlayModeTest fixture, HumanoidMovementController controller)
         {
             yield return MoveInDirection(fixture, controller, +1, 0);  // East
             yield return MoveInDirection(fixture, controller, -1, 0);  // West
@@ -161,7 +161,7 @@ namespace SS3D.Tests
             yield return MoveInDirection(fixture, controller, +1, -1); // Southeast
         }
 
-        private static IEnumerator MoveInDirection(PlayModeTest fixture, HumanoidController controller, float xInput = 0, float yInput = 0)
+        private static IEnumerator MoveInDirection(PlayModeTest fixture, HumanoidMovementController controller, float xInput = 0, float yInput = 0)
         {
             // Record the original position
             Vector3 originalPosition = controller.Position;

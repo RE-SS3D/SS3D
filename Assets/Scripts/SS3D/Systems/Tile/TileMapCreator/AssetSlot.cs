@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace SS3D.Systems.Tile.UI
@@ -10,12 +11,16 @@ namespace SS3D.Systems.Tile.UI
     /// </summary>
     public class AssetSlot : MonoBehaviour
     {
+        [FormerlySerializedAs("Image")]
         [SerializeField]
-        protected Image Image;
+        private Image _image;
+
+        [FormerlySerializedAs("AssetName")]
         [SerializeField]
-        protected TMP_Text AssetName;
-        protected GenericObjectSo GenericObjectSo;
-        
+        private TMP_Text _assetName;
+
+        protected GenericObjectSo GenericObjectSo { get; private set; }
+
         /// <summary>
         /// Load an UI icon and string for the item/tile.
         /// </summary>
@@ -23,8 +28,8 @@ namespace SS3D.Systems.Tile.UI
         public void Setup(GenericObjectSo genericObjectSo)
         {
             GenericObjectSo = genericObjectSo;
-            Image.sprite = genericObjectSo.icon;
-            AssetName.text = genericObjectSo.NameString;
+            _image.sprite = genericObjectSo.Icon;
+            _assetName.text = genericObjectSo.NameString;
         }
     }
 }

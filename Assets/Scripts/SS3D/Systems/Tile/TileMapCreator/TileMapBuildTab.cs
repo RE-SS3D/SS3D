@@ -15,8 +15,14 @@ namespace SS3D.Systems.Tile.TileMapCreator
     /// </summary>
     public class TileMapBuildTab : NetworkActor, ITileMenuTab
     {
+        // purplish color when deleting
+        private readonly Color _deleteColor = new Color(169 / 255f, 102 / 255f, 223 / 255f, 1f);
+
+        // bluish color when building
+        private readonly Color _buildColor = new Color(88 / 255f, 148 / 255f, 223 / 255f, 1f);
+
         [SerializeField]
-        private TileMapMenuSubSystem _menu;
+        private TileMapMenu _menu;
 
         /// <summary>
         /// Game object for the root of slots of the build tab.
@@ -54,27 +60,18 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// true if the construction mode is deleting the tile objects.
         /// </summary>
-        private bool _isDeleting;
-        public bool IsDeleting => _isDeleting;
-
-        // purpulish color when deleting
-        private Color _deleteColor = new Color(169/255f, 102/255f, 223/255f, 1f);
-
-        // bluish color when building
-        private Color _buildColor = new Color(88/255f, 148/255f, 223/255f, 1f);
-
+        public bool IsDeleting { get; private set; }
 
         /// <summary>
         /// Clear the build tab.
         /// </summary>
         public void Clear()
         {
-            _buildRoot.gameObject.SetActive(false);
+            _buildRoot.SetActive(false);
             _tileObjectSearchBar.gameObject.SetActive(false);
             _layerPlacementDropdown.gameObject.SetActive(false);
             _buildOrDelete.gameObject.SetActive(false);
             _tileObjectSearchBar.text = string.Empty;
-
 
             for (int i = 0; i < _slotsRoot.transform.childCount; i++)
             {
@@ -89,7 +86,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             _assetGrid.Setup();
             _tileObjectSearchBar.text = string.Empty;
-            _buildRoot.gameObject.SetActive(true);
+            _buildRoot.SetActive(true);
             _tileObjectSearchBar.gameObject.SetActive(true);
             _layerPlacementDropdown.gameObject.SetActive(true);
             _buildOrDelete.gameObject.SetActive(true);
@@ -117,8 +114,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleBuildOrDeleteButton()
         {
-            _isDeleting = !_isDeleting;
-            var tmpComponent = (TextMeshProUGUI)_buildOrDelete.targetGraphic;
+            IsDeleting = !IsDeleting;
+            TextMeshProUGUI tmpComponent = (TextMeshProUGUI)_buildOrDelete.targetGraphic;
             if (IsDeleting)
             {
                 tmpComponent.text = "Delete";

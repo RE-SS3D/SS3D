@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile
 {
@@ -11,8 +12,29 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public class SavedTileMap
     {
-        public string mapName;
-        public SavedTileChunk[] savedChunkList;
-        public SavedPlacedItemObject[] savedItemList;
+        [FormerlySerializedAs("mapName")]
+        [SerializeField]
+        private string _mapName;
+
+        [FormerlySerializedAs("savedChunkList")]
+        [SerializeField]
+        private SavedTileChunk[] _savedChunkList;
+
+        [FormerlySerializedAs("savedItemList")]
+        [SerializeField]
+        private SavedPlacedItemObject[] _savedItemList;
+
+        public SavedTileMap(string mapName, SavedTileChunk[] savedChunkList, SavedPlacedItemObject[] savedItemList)
+        {
+            _mapName = mapName;
+            _savedItemList = savedItemList;
+            _savedChunkList = savedChunkList;
+        }
+
+        public string MapName => _mapName;
+
+        public SavedTileChunk[] SavedChunkList => _savedChunkList;
+
+        public SavedPlacedItemObject[] SavedItemList => _savedItemList;
     }
 }

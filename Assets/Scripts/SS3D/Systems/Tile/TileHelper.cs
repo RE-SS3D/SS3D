@@ -1,11 +1,7 @@
-﻿using SS3D.Logging;
+﻿using SS3D.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using SS3D.Utils;
-using Coimbra;
 
 namespace SS3D.Systems.Tile
 {
@@ -14,8 +10,8 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public static class TileHelper
     {
-        private static TileLayer[] TileLayers;
-        
+        private static TileLayer[] _tileLayers;
+
         /// <summary>
         /// Get a direction 90 degree clockwise from the one passed in parameter.
         /// </summary>
@@ -25,7 +21,6 @@ namespace SS3D.Systems.Tile
         {
             switch (dir)
             {
-                default:
                 case Direction.South: return Direction.West;
                 case Direction.SouthWest: return Direction.NorthWest;
                 case Direction.West: return Direction.North;
@@ -34,23 +29,15 @@ namespace SS3D.Systems.Tile
                 case Direction.NorthEast: return Direction.SouthEast;
                 case Direction.East: return Direction.South;
                 case Direction.SouthEast: return Direction.SouthWest;
+                default: return Direction.North;
             }
         }
 
-        public static Direction GetPreviousCardinalDir(Direction dir)
-        {
-            return (Direction) MathUtility.mod((int)dir - 2, 8);
-        }
+        public static Direction GetPreviousCardinalDir(Direction dir) => (Direction)MathUtility.mod((int)dir - 2, 8);
 
-        public static Direction GetPreviousDir(Direction dir)
-        {
-            return (Direction)MathUtility.mod((int)dir - 1, 8);
-        }
+        public static Direction GetPreviousDir(Direction dir) => (Direction)MathUtility.mod((int)dir - 1, 8);
 
-        public static Direction GetNextDir(Direction dir)
-        {
-            return (Direction)MathUtility.mod((int)dir + 1, 8);
-        }
+        public static Direction GetNextDir(Direction dir) => (Direction)MathUtility.mod((int)dir + 1, 8);
 
         /// <summary>
         /// Get the rotation angle of a particular dir.
@@ -66,11 +53,12 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static TileLayer[] GetTileLayers()
         {
-            if (TileLayers == null)
+            if (_tileLayers == null)
             {
-                TileLayers = (TileLayer[])Enum.GetValues(typeof(TileLayer));
+                _tileLayers = (TileLayer[])Enum.GetValues(typeof(TileLayer));
             }
-            return TileLayers;
+
+            return _tileLayers;
         }
 
         /// <summary>
@@ -78,24 +66,20 @@ namespace SS3D.Systems.Tile
         /// </summary>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public static List<Direction> ClosestCardinalAdjacentTo(Direction dir)
-        {
-            if(CardinalDirections().Contains(dir)) return new List<Direction> { dir };
-            return GetAdjacentDirections(dir);
-        }
+        public static List<Direction> ClosestCardinalAdjacentTo(Direction dir) => CardinalDirections().Contains(dir) ? new List<Direction> { dir } : GetAdjacentDirections(dir);
 
-        public static List<Direction> GetAdjacentDirections(Direction dir)
+        public static List<Direction> GetAdjacentDirections(Direction dir) => new()
         {
-            return new List<Direction>{ (Direction)MathUtility.mod((int)dir + 1, 8),
-                (Direction)MathUtility.mod((int)dir - 1, 8) };
-        }
+            (Direction)MathUtility.mod((int)dir + 1, 8),
+            (Direction)MathUtility.mod((int)dir - 1, 8),
+        };
 
         /// <summary>
         /// Return the three adjacent directions to Direction dir including itself.
         /// </summary>
         public static List<Direction> GetAdjacentAndMiddleDirection(Direction dir)
         {
-            var list = new List<Direction> { dir };
+            List<Direction> list = new List<Direction> { dir };
             list.AddRange(GetAdjacentDirections(dir));
             return list;
         }
@@ -105,11 +89,13 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static List<Direction> GetFiveAdjacents(Direction dir)
         {
-            return new List<Direction>{ dir,
+            return new List<Direction>
+            {
+                dir,
                 (Direction)MathUtility.mod((int)dir + 1, 8),
                 (Direction)MathUtility.mod((int)dir - 1, 8),
                 (Direction)MathUtility.mod((int)dir - 2, 8),
-                (Direction)MathUtility.mod((int)dir +2, 8),
+                (Direction)MathUtility.mod((int)dir + 2, 8),
             };
         }
 
@@ -118,20 +104,24 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static Tuple<int, int> ToCardinalVector(Direction direction)
         {
-            return new Tuple<int, int>(
-                (direction > Direction.North && direction < Direction.South) ? 1 : (direction > Direction.South) ? -1 : 0,
-                (direction > Direction.East && direction < Direction.West) ? -1 : (direction == Direction.East || direction == Direction.West) ? 0 : 1
-            );
+            return direction switch
+            {
+                Direction.North => new Tuple<int, int>(0, 1),
+                Direction.NorthEast => new Tuple<int, int>(1, 1),
+                Direction.East => new Tuple<int, int>(1, 0),
+                Direction.SouthEast => new Tuple<int, int>(1, -1),
+                Direction.South => new Tuple<int, int>(0, -1),
+                Direction.SouthWest => new Tuple<int, int>(-1, -1),
+                Direction.West => new Tuple<int, int>(-1, 0),
+                Direction.NorthWest => new Tuple<int, int>(-1, 1),
+            };
         }
 
         /// <summary>
         /// Get the closest round number world position on the plane where y = 0.
         /// </summary>
-        public static Vector3 GetClosestPosition(Vector3 worldPosition)
-        {
-            return new Vector3(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
-        }
-        
+        public static Vector3 GetClosestPosition(Vector3 worldPosition) => new(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
+
         /// <summary>
         /// Get position on the tile grid, that mouse points to.
         /// </summary>
@@ -140,23 +130,19 @@ namespace SS3D.Systems.Tile
         public static Vector3 GetPointedPosition(bool isTilePosition = false)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (new Plane(Vector3.up, 0).Raycast(ray, out float distance))
+
+            if (!new Plane(Vector3.up, 0).Raycast(ray, out float distance))
             {
-                Vector3 point = ray.GetPoint(distance);
-                if (isTilePosition)
-                {
-                    return GetClosestPosition(point);
-                }
-                else
-                {
-                    return point;
-                }
+                return Vector3.zero;
             }
-            return Vector3.zero;
+
+            Vector3 point = ray.GetPoint(distance);
+
+            return isTilePosition ? GetClosestPosition(point) : point;
         }
 
         /// <summary>
-        /// Get the relative direction between two direction. 
+        /// Get the relative direction between two direction.
         /// </summary>
         public static Direction GetRelativeDirection(Direction from, Direction to)
         {
@@ -176,8 +162,11 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static List<Direction> AllDirections()
         {
-            return new List<Direction> { Direction.North, Direction.NorthEast, Direction.East, Direction.SouthEast,
-                Direction.South, Direction.SouthWest, Direction.West, Direction.NorthWest };
+            return new List<Direction>
+            {
+                Direction.North, Direction.NorthEast, Direction.East, Direction.SouthEast,
+                Direction.South, Direction.SouthWest, Direction.West, Direction.NorthWest,
+            };
         }
 
         /// <summary>
@@ -193,10 +182,18 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static Direction GetDiagonalBetweenTwoCardinals(Direction cardinal1, Direction cardinal2)
         {
-            List<Direction> givenCardinals = new List<Direction> { cardinal1, cardinal2 };
-            return givenCardinals.Contains(Direction.South) ?
-                givenCardinals.Contains(Direction.East) ? Direction.SouthEast : Direction.SouthWest :
-                givenCardinals.Contains(Direction.West) ? Direction.NorthWest : Direction.NorthEast;
+            return (cardinal1, cardinal2) switch
+            {
+                (Direction.South, Direction.East) => Direction.SouthEast,
+                (Direction.East, Direction.South) => Direction.SouthEast,
+                (Direction.South, Direction.West) => Direction.SouthWest,
+                (Direction.West, Direction.South) => Direction.SouthWest,
+                (Direction.North, Direction.East) => Direction.NorthEast,
+                (Direction.East, Direction.North) => Direction.NorthEast,
+                (Direction.North, Direction.West) => Direction.NorthWest,
+                (Direction.West, Direction.North) => Direction.NorthWest,
+                (_, _) => Direction.NorthEast,
+            };
         }
 
         /// <summary>
@@ -204,17 +201,25 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static Direction GetCardinalBetweenTwoDiagonals(Direction diagonal1, Direction diagonal2)
         {
-            List<Direction> givenDiagonals = new List<Direction> { diagonal1, diagonal2 };
-            return givenDiagonals.Contains(Direction.SouthEast) ?
-                givenDiagonals.Contains(Direction.NorthEast) ? Direction.East : Direction.South :
-                givenDiagonals.Contains(Direction.SouthWest) ? Direction.West : Direction.North;
+            return (diagonal1, diagonal2) switch
+            {
+                (Direction.SouthEast, Direction.SouthWest) => Direction.South,
+                (Direction.SouthWest, Direction.SouthEast) => Direction.South,
+                (Direction.SouthEast, Direction.NorthEast) => Direction.East,
+                (Direction.NorthEast, Direction.SouthEast) => Direction.East,
+                (Direction.NorthEast, Direction.NorthWest) => Direction.North,
+                (Direction.NorthWest, Direction.NorthEast) => Direction.North,
+                (Direction.NorthWest, Direction.SouthWest) => Direction.West,
+                (Direction.SouthWest, Direction.NorthWest) => Direction.West,
+                (_, _) => Direction.North,
+            };
         }
 
         /// <summary>
         /// Shortest distance between two directions, in the sense of the number of 45 degree rotation needed
         /// to get from one direction to another.
         /// </summary>
-        public static int DistanceBetweenDir(Direction dir1, Direction dir2) 
+        public static int DistanceBetweenDir(Direction dir1, Direction dir2)
         {
             int dist1 = MathUtility.mod(dir1 - dir2, 8);
             int dist2 = MathUtility.mod(dir2 - dir1, 8);
@@ -228,23 +233,26 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static Direction ClosestDiagonalFromTwo(Direction dir1, Direction dir2)
         {
-            if(IsDiagonal(dir1) && IsDiagonal(dir2) && DistanceBetweenDir(dir1, dir2) == 2)
+            if (IsDiagonal(dir1) && IsDiagonal(dir2) && DistanceBetweenDir(dir1, dir2) == 2)
             {
                 return dir1;
             }
 
             Direction res = Direction.NorthEast;
             int minDistance = int.MaxValue;
-            int distance;
-            foreach(Direction diagonal in DiagonalDirections())
-            { 
-                distance = (int) Math.Pow(DistanceBetweenDir(dir1, diagonal),2) +
-                    (int) Math.Pow(DistanceBetweenDir(dir2, diagonal),2);
-                if(distance < minDistance)
+
+            foreach (Direction diagonal in DiagonalDirections())
+            {
+                int distance = (int)Math.Pow(DistanceBetweenDir(dir1, diagonal), 2) +
+                    (int)Math.Pow(DistanceBetweenDir(dir2, diagonal), 2);
+
+                if (distance >= minDistance)
                 {
-                    minDistance = distance;
-                    res = diagonal;
+                    continue;
                 }
+
+                minDistance = distance;
+                res = diagonal;
             }
 
             return res;
@@ -286,7 +294,7 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public static Vector2Int CoordinateDifferenceInFrontFacingDirection(Direction direction)
         {
-            switch(direction)
+            switch (direction)
             {
                 case Direction.North:
                     return new Vector2Int(0, 1);
@@ -313,18 +321,14 @@ namespace SS3D.Systems.Tile
                     return new Vector2Int(-1, 1);
 
                 default:
+                {
                     Debug.LogError("direction not handled, returning (0,0)");
                     return new Vector2Int(0, 0);
+                }
             }
         }
 
-
-
-
-        public static bool IsCardinalDirection(Direction dir)
-        {
-            return (int) dir == 0 || (int) dir == 2 || (int) dir == 4 || (int) dir == 6 ;
-        }
+        public static bool IsCardinalDirection(Direction dir) => (int)dir == 0 || (int)dir == 2 || (int)dir == 4 || (int)dir == 6;
 
         /// <summary>
         /// Create the right type of tile location depending on the layer it'll be on.
@@ -334,34 +338,49 @@ namespace SS3D.Systems.Tile
             switch (layer)
             {
                 case TileLayer.Plenum:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.Turf:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.Wire:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.Disposal:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.PipeSurface:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.PipeMiddle:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.PipeRight:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.PipeLeft:
-                    return new SingleTileLocation(layer, x, y);
-                case TileLayer.WallMountHigh:
-                    return new CardinalTileLocation(layer, x, y);
-                case TileLayer.WallMountLow:
-                    return new CardinalTileLocation(layer, x, y);
                 case TileLayer.FurnitureBase:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.FurnitureTop:
-                    return new SingleTileLocation(layer, x, y);
                 case TileLayer.Overlays:
                     return new SingleTileLocation(layer, x, y);
+                case TileLayer.WallMountHigh:
+                case TileLayer.WallMountLow:
+                    return new CardinalTileLocation(layer, x, y);
                 default:
+                {
                     Debug.LogError($"no objects defined for layer {layer}, add a case to this switch.");
                     return null;
+                }
+            }
+        }
+
+        public static int GetCardinalDirectionIndex(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.North:
+                    return 0;
+
+                case Direction.East:
+                    return 1;
+
+                case Direction.South:
+                    return 2;
+
+                case Direction.West:
+                    return 3;
+
+                default:
+                {
+                    Debug.LogError("direction not handled, returning 0");
+                    return 0;
+                }
             }
         }
     }

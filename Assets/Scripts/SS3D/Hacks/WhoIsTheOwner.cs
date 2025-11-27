@@ -1,11 +1,11 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Systems.Inputs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Hacks
 {
@@ -18,12 +18,12 @@ namespace SS3D.Hacks
 
         private void Start()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
+            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
         }
 
         private void OnDestroy()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= ShowOwner;
+            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= ShowOwner;
         }
 
         private void ShowOwner(InputAction.CallbackContext callbackContext)

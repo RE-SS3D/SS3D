@@ -3286,7 +3286,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 239.6948, y: 239.6948}
+  m_SizeDelta: {x: 1000, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9032741811675472009
 CanvasRenderer:
@@ -3310,8 +3310,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 5013659950546819736}
   _indicator: {fileID: 9032741810358349787}
-  _indicatorImage: {fileID: 9032741810358349786}
-  _indicatorNormalColor: {r: 1, g: 1, b: 1, a: 0.31764707}
   _missingIcon: {fileID: 21300000, guid: e0109717a842e6c498ae6642bc46dede, type: 3}
   _interactionButtons:
   - {fileID: 18072884}
@@ -3322,8 +3320,6 @@ MonoBehaviour:
   - {fileID: 1828008745}
   - {fileID: 2077887372}
   - {fileID: 1810732887}
-  _mouseAngle: 0
-  _mouseDistance: 0
 --- !u!225 &5013659950546819736
 CanvasGroup:
   m_ObjectHideFlags: 0

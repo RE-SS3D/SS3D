@@ -9,9 +9,10 @@ namespace SS3D.Systems.Crafting
     {
         [SerializeField]
         private TMP_Text _textAmount;
+
         public void Setup(GenericObjectSo genericObjectSo, uint amount)
         {
-            base.Setup(genericObjectSo);
+            Setup(genericObjectSo);
             _textAmount.text = "x" + amount;
         }
     }

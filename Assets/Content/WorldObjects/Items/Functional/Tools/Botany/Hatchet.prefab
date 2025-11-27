@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &254989268004508310
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4179726070643219569}
+  m_Layer: 0
+  m_Name: LeftAttachment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4179726070643219569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254989268004508310}
+  m_LocalRotation: {x: 0.51799667, y: -0.50089663, z: -0.49914747, w: 0.48128352}
+  m_LocalPosition: {x: -0.045, y: -0.27, z: -0.129}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1660963557818230072}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: -0.082, y: -92.203, z: -92.002}
 --- !u!1 &2283926212237889908
 GameObject:
   m_ObjectHideFlags: 0
@@ -23,14 +54,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2283926212237889908}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.25, z: -0.018}
+  m_LocalRotation: {x: -0.5245652, y: -0.47416395, z: -0.47416395, w: -0.52456504}
+  m_LocalPosition: {x: 0.039, y: -0.256, z: -0.121}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1660963557818230072}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -185.778, y: -90, z: -90}
 --- !u!1 &2402587210622244651
 GameObject:
   m_ObjectHideFlags: 0
@@ -49,6 +80,7 @@ GameObject:
   - component: {fileID: 6800495836141411361}
   - component: {fileID: 8006545930481202674}
   - component: {fileID: 2132217192414121469}
+  - component: {fileID: 84831043492534286}
   m_Layer: 10
   m_Name: Hatchet
   m_TagString: Untagged
@@ -69,6 +101,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7991373112210367801}
+  - {fileID: 4179726070643219569}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -250,8 +283,6 @@ MonoBehaviour:
   _weight: 1
   _startingTraits: []
   _rigidbody: {fileID: 3368721005309584205}
-  AttachmentPoint: {fileID: 7991373112210367801}
-  AttachmentPointAlt: {fileID: 7991373112210367801}
   _container: {fileID: 0}
 --- !u!114 &8006545930481202674
 MonoBehaviour:
@@ -278,3 +309,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 5d19c9ff4cee1d0488b8f4004446e4fa, type: 2}
+--- !u!114 &84831043492534286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99df7ac2c21c2d944818b5da5be3dd53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 1602098408367427586}
+  _networkObjectCache: {fileID: 0}
+  _primaryRightHandHold: {fileID: 7991373112210367801}
+  _primaryLeftHandHold: {fileID: 4179726070643219569}
+  _secondaryRightHandHold: {fileID: 0}
+  _secondaryLeftHandHold: {fileID: 0}
+  _holdableScriptableObject: {fileID: 11400000, guid: f93ccad7cfbe46b4fa3f8cfb8be8a1d9, type: 2}

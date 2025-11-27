@@ -1,0 +1,20 @@
+{
+    "name": "SS3D.Substances",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:1476e4af5b8d89d4c9963efe314428b9",
+        "GUID:eb124556ba20d60469be9771eb1f0360"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

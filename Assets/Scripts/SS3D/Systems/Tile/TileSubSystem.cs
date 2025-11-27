@@ -11,90 +11,27 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
- 
     /// <summary>
     /// Manages and keeps an inventory of all placed tiles. This is where all others scripts that use the tilemap should interact with.
     /// </summary>
     public class TileSubSystem : NetworkSubSystem
     {
-	    public const string savePath = "/Tilemaps";
+        public event Action OnTileSystemLoaded;
 
-	    public const string unnamedMapName = "UnnamedMap";
+        private const string SavingPath = "/Tilemaps";
 
-        public TileResourceLoader Loader { get; private set; }
- 
+        private const string UnnamedMapName = "UnnamedMap";
+
         private TileMap _currentMap;
+
         public TileMap CurrentMap => _currentMap;
 
-        public string SavePath => savePath;
+        public string SavePath => SavingPath;
 
-
-        [ServerOrClient]
-        protected override void OnStart()
-        {
-            base.OnStart();
-            Setup();
-        }
-
-        [ServerOrClient]
-        private async UniTask WaitForResourcesLoad()
-        {
-	        await UniTask.WaitUntil(() => Loader.IsInitialized);
-
-            Load();
-        }
-
-        [Server]
-        private async void Setup()
-        {
-	        Loader = GetComponent<TileResourceLoader>();
-
-	        // Server only loads the map
-	        if (!IsServer)
-	        {
-		        return;
-	        }
-
-	        CreateMap(unnamedMapName);
-
-	        await WaitForResourcesLoad();
-
-            Log.Information(this, "All tiles loaded successfully");
-        }
-
-        [ServerOrClient]
-        private void CreateMap(string mapName)
-        {
-	        if (_currentMap != null)
-	        {
-                Log.Warning(this, $"A map is already loaded. {mapName}");
-		        return;
-	        }
-
-			Log.Information(this, $"Creating new tilemap {mapName}");
-
-	        TileMap map = TileMap.Create(mapName);
-	        map.transform.SetParent(transform);
-	        _currentMap = map;
-        }
+        public TileResourceLoader Loader { get; private set; }
 
         [ServerOrClient]
         public GenericObjectSo GetAsset(string assetName) => Loader.GetAsset(assetName);
-
-        [Server]
-        private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
-        {
-	        switch (genericObjectSo)
-	        {
-		        case TileObjectSo so:
-			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false, out GameObject placedObject);
-		        case ItemObjectSo so:
-			        _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
-			        break;
-	        }
-
-	        return true;
-        }
 
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
@@ -111,7 +48,7 @@ namespace SS3D.Systems.Tile
         public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
         {
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
-            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
+            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).Layer, dir);
         }
 
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
@@ -132,10 +69,8 @@ namespace SS3D.Systems.Tile
         [Server]
         public void Save(string mapName, bool overwrite)
         {
-			Log.Information(this, $"Saving tilemap {mapName}");
-
+            Log.Information(this, $"Saving tilemap {mapName}");
             SavedTileMap mapSave = _currentMap.Save();
-												    
             LocalStorage.SaveObject(SavePath + "/" + mapName, mapSave, overwrite);
         }
 
@@ -143,9 +78,7 @@ namespace SS3D.Systems.Tile
         public void Load()
         {
             Log.Information(this, "Loading most recent tilemap");
-            
-	        SavedTileMap mapSave = LocalStorage.LoadMostRecentObject<SavedTileMap>(SavePath);
-
+            SavedTileMap mapSave = LocalStorage.LoadMostRecentObject<SavedTileMap>(SavePath);
             _currentMap.Load(mapSave);
         }
 
@@ -169,7 +102,78 @@ namespace SS3D.Systems.Tile
 
         public bool MapNameAlreadyExist(string name)
         {
-            return LocalStorage.FolderAlreadyContainsName(savePath, name);
+            return LocalStorage.FolderAlreadyContainsName(SavingPath, name);
+        }
+
+        [ServerOrClient]
+        protected override void OnStart()
+        {
+            base.OnStart();
+            Setup();
+        }
+
+        [ServerOrClient]
+        private async UniTask WaitForResourcesLoad()
+        {
+            await UniTask.WaitUntil(() => Loader.IsInitialized);
+
+            Load();
+        }
+
+        [Server]
+        private async void Setup()
+        {
+            Loader = GetComponent<TileResourceLoader>();
+
+            // Server only loads the map
+            if (!IsServer)
+            {
+                return;
+            }
+
+            CreateMap(UnnamedMapName);
+
+            await WaitForResourcesLoad();
+
+            Log.Information(this, "All tiles loaded successfully");
+
+            OnTileSystemLoaded?.Invoke();
+        }
+
+        [ServerOrClient]
+        private void CreateMap(string mapName)
+        {
+            if (_currentMap != null)
+            {
+                Log.Warning(this, $"A map is already loaded. {mapName}");
+                return;
+            }
+
+            Log.Information(this, $"Creating new tilemap {mapName}");
+
+            TileMap map = TileMap.Create(mapName);
+            map.transform.SetParent(transform);
+            _currentMap = map;
+        }
+
+        [Server]
+        private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
+        {
+            switch (genericObjectSo)
+            {
+                case TileObjectSo so:
+                {
+                    return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false, out GameObject placedObject);
+                }
+
+                case ItemObjectSo so:
+                {
+                    _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
+                    break;
+                }
+            }
+
+            return true;
         }
     }
 }

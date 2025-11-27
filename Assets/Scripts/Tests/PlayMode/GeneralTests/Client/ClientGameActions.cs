@@ -1,23 +1,5 @@
-﻿using System;
-using System.Collections;
-using NUnit.Framework;
-using SS3D.Core;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.IngameConsoleSystem.Commands;
-using SS3D.Systems.Interactions;
-using SS3D.Systems.Inventory.Items;
-using SS3D.Systems.Screens;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.UI;
-using UnityEngine.Scripting.APIUpdating;
+﻿using System.Collections;
 using UnityEngine.TestTools;
-using UnityEngine.Windows;
-using SS3D.Systems.Inventory.Containers;
-using System.Security.Cryptography;
-using SS3D.Core.Settings;
 using SS3D.Networking;
 
 namespace SS3D.Tests

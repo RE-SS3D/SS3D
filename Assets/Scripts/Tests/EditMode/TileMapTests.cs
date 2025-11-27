@@ -48,11 +48,7 @@ namespace EditorTests
             TileLayer layer, TileObjectGenericType genericType)
         {
             TileObjectSo testSo = (TileObjectSo)ScriptableObject.CreateInstance(typeof(TileObjectSo));
-            testSo.width = 1;
-            testSo.height = 1;
-            testSo.layer = TileLayer.Turf;
-            testSo.genericType = TileObjectGenericType.Pipe;
-
+            testSo.Init(1, 1, TileLayer.Turf, TileObjectGenericType.Pipe);
             return testSo;
         }
     }

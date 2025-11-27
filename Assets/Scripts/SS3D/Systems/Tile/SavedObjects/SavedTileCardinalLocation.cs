@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile
 {
@@ -12,25 +13,15 @@ namespace SS3D.Systems.Tile
     public class SavedTileCardinalLocation : ISavedTileLocation
     {
         [SerializeField]
-        public List<SavedPlacedTileObject> _placedSaveObjects = new List<SavedPlacedTileObject>();
+        private List<SavedPlacedTileObject> _placedSaveObjects;
 
+        [FormerlySerializedAs("x")]
         [SerializeField]
-        public int x;
+        private int _x;
 
+        [FormerlySerializedAs("y")]
         [SerializeField]
-        public int y;
-
-        public Vector2Int Location
-        {
-            get => new Vector2Int(x, y);
-            set { x = value.x; y = value.y; }
-        }
-
-        public TileLayer Layer
-        {
-            get;
-            set;
-        }
+        private int _y;
 
         public SavedTileCardinalLocation(List<SavedPlacedTileObject> placedSaveObjects, Vector2Int location, TileLayer layer)
         {
@@ -39,6 +30,21 @@ namespace SS3D.Systems.Tile
             Layer = layer;
         }
 
+        public Vector2Int Location
+        {
+            get => new Vector2Int(_x, _y);
+            set
+            {
+                _x = value.x;
+                _y = value.y;
+            }
+        }
+
+        public TileLayer Layer
+        {
+            get;
+            set;
+        }
 
         public List<SavedPlacedTileObject> GetPlacedObjects()
         {

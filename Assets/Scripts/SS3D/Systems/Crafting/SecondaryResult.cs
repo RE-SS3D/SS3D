@@ -8,7 +8,7 @@ namespace SS3D.Systems.Crafting
     {
         public WorldObjectAssetReference Asset;
         public uint Amount;
-        
+
         public SecondaryResult(WorldObjectAssetReference asset, uint amount)
         {
             Asset = asset;

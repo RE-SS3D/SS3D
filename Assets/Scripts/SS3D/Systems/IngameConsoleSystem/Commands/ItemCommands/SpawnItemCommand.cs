@@ -12,7 +12,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
     public class SpawnItemCommand : Command
     {
         public override string LongDescription => "Spawn item using item name at the same position as human or at position x,z";
+
         public override string ShortDescription => "Spawn item";
+
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
 
         public override CommandType Type => CommandType.Server;
@@ -21,25 +23,27 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
         {
             CheckArgsResponse checkArgsResponse = CheckArgs(args);
 
-            if (checkArgsResponse.IsValid == false)
+            if (!checkArgsResponse.IsValid)
+            {
                 return checkArgsResponse.InvalidArgs;
+            }
 
             string itemName = args[0];
 
-            if (!SubSystems.Get<EntitySubSystem>().TryGetOwnedEntity(conn, out Entity entity))
+            if (!Subsystems.Get<EntitySubSystem>().TryGetOwnedEntity(conn, out Entity entity))
             {
                 return "Connection does not own any entity registered in entity system.";
             }
 
-            ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
-            itemSystem.CmdSpawnItem(itemName, entity.transform.position, Quaternion.identity);
+            ItemSubSystem itemSubSystem = Subsystems.Get<ItemSubSystem>();
+            itemSubSystem.CmdSpawnItem(itemName, entity.transform.position, Quaternion.identity);
 
             return $"item {itemName} spawned at position {entity.transform.position}";
         }
 
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
+            CheckArgsResponse response = default;
 
             if (args.Length != 1 && args.Length != 3)
             {

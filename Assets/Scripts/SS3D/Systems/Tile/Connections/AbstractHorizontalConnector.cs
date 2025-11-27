@@ -14,7 +14,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// Abstract class implementing the IAdjacencyConnector interface. 
+    /// Abstract class implementing the IAdjacencyConnector interface.
     /// Idea of this class is to provide a basic implementation for all adjacency connector working mostly
     /// on the same layer. This is because it uses the adjacencyMap, which consider only 8 possible connections.
     /// It should be generic enough to work as a base class for most IAdjacencyConnector working with same
@@ -24,40 +24,34 @@ namespace SS3D.Systems.Tile.Connections
     /// </summary>
     public abstract class AbstractHorizontalConnector : NetworkActor, IAdjacencyConnector
     {
+        public event EventHandler<MeshDirectionInfo> OnMeshUpdate;
+
         /// <summary>
         /// Is this a table ? A Door ? A carpet ? A pipe ?
         /// </summary>
-        protected TileObjectGenericType _genericType;
-
+        private TileObjectGenericType _genericType;
 
         /// <summary>
         /// Is this a wooden table ? A glass table ? A poker table ?
         /// </summary>
-        protected TileObjectSpecificType _specificType;
-
-        /// <summary>
-        /// Script that help with resolving the specific mesh a connectable should take.
-        /// </summary>
-        protected abstract IMeshAndDirectionResolver AdjacencyResolver { get; }
+        private TileObjectSpecificType _specificType;
 
         /// <summary>
         /// A structure containing data regarding connection of this PlacedTileObject with all 8
         /// adjacent neighbours (cardinal and diagonal connections).
         /// </summary>
-        protected AdjacencyMap _adjacencyMap;
+        private AdjacencyMap _adjacencyMap;
 
         /// <summary>
         /// The specific mesh this connectable has.
         /// </summary>
-        protected MeshFilter _filter;
+        private MeshFilter _filter;
 
         /// <summary>
         /// The Placed tile object linked to this connector. It's this placed object that this
         /// connector update.
         /// </summary>
-        protected PlacedTileObject _placedObject;
-
-        public PlacedTileObject PlacedObject => _placedObject;
+        private PlacedTileObject _placedObject;
 
         /// <summary>
         /// A byte, representing the 8 possible connections with neighbours.
@@ -70,44 +64,28 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool _initialized;
 
+        public PlacedTileObject PlacedObject => _placedObject;
+
+        public AdjacencyMap AdjacencyMap => _adjacencyMap;
+
+        protected TileObjectGenericType GenericType => _genericType;
+
+        protected TileObjectSpecificType SpecificType => _specificType;
+
+        /// <summary>
+        /// Script that help with resolving the specific mesh a connectable should take.
+        /// </summary>
+        protected abstract IMeshAndDirectionResolver AdjacencyResolver { get; }
+
         /// <summary>
         /// Abstract method, as from one connector to another, the code to check for connection greatly changes.
         /// </summary>
         public abstract bool IsConnected(PlacedTileObject neighbourObject);
 
-        public EventHandler<MeshDirectionInfo> OnMeshUpdate;
-
-
         public override void OnStartClient()
         {
             base.OnStartClient();
             Setup();
-        }
-
-        /// <summary>
-        /// Simply set things up, including creating new references, and fetching generic and specific type
-        /// from the associated scriptable object.
-        /// </summary>
-        private void Setup()
-        {
-            if (!_initialized)
-            {
-                _adjacencyMap = new AdjacencyMap();
-                _filter = GetComponent<MeshFilter>();
-
-                _placedObject = GetComponentInParent<PlacedTileObject>();
-                if (_placedObject == null)
-                {
-                    _genericType = TileObjectGenericType.None;
-                    _specificType = TileObjectSpecificType.None;
-                }
-                else
-                {
-                    _genericType = _placedObject.GenericType;
-                    _specificType = _placedObject.SpecificType;
-                }
-                _initialized = true;
-            }
         }
 
         /// <summary>
@@ -117,10 +95,10 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            var neighbourObjects = GetNeighbours();
+            List<PlacedTileObject> neighbourObjects = GetNeighbours();
 
             bool changed = false;
-            foreach (var neighbourObject in neighbourObjects)
+            foreach (PlacedTileObject neighbourObject in neighbourObjects)
             {
                 _placedObject.NeighbourAtDirectionOf(neighbourObject, out Direction dir);
                 changed |= UpdateSingleConnection(dir, neighbourObject, true);
@@ -141,11 +119,15 @@ namespace SS3D.Systems.Tile.Connections
 
             bool isConnected = IsConnected(neighbourObject);
 
-            bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
+            bool isUpdated = _adjacencyMap.SetConnection(dir, isConnected);
 
             if (isUpdated)
             {
-                neighbourObject?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, false);
+                if (neighbourObject)
+                {
+                    neighbourObject.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), _placedObject, false);
+                }
+
                 _syncedConnections = _adjacencyMap.SerializeToByte();
                 UpdateMeshAndDirection();
             }
@@ -154,18 +136,37 @@ namespace SS3D.Systems.Tile.Connections
         }
 
         /// <summary>
-        /// Sync adjacency map on client, and update mesh and direction using this new map.
+        /// Sets a given direction blocked or unblocked.
+        /// If blocked, this means that it will no longer be allowed to connect on that direction (until further update).
         /// </summary>
-        private void SyncAdjacencies(byte oldValue, byte newValue, bool asServer)
+        public void SetBlockedDirection(Direction dir, bool value)
         {
-            if (!asServer)
+            _adjacencyMap.SetConnection(dir, value);
+            UpdateMeshAndDirection();
+        }
+
+        /// <summary>
+        /// Get all neighbour placed objects from this placed object.
+        /// Return only existing neighbours. Neighbours here are adjacent (cardinal and diagonal)
+        /// tile objects on the same layer.
+        /// </summary>
+        [JetBrains.Annotations.NotNull]
+        public List<PlacedTileObject> GetNeighbours()
+        {
+            if (!_initialized)
             {
                 Setup();
-
-                _adjacencyMap.DeserializeFromByte(newValue);
-                UpdateMeshAndDirection();
             }
+
+            TileSubSystem tileSubSystem = Subsystems.Get<TileSubSystem>();
+            TileMap map = tileSubSystem.CurrentMap;
+            List<PlacedTileObject> neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
+            neighbours.RemoveAll(x => x == null);
+            return neighbours;
         }
+
+        [JetBrains.Annotations.NotNull]
+        public List<PlacedTileObject> GetConnectedNeighbours() => GetNeighbours().Where(IsConnected).ToList();
 
         /// <summary>
         /// Update the current mesh of the game object this connector is onto, as well
@@ -173,10 +174,12 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         protected virtual void UpdateMeshAndDirection()
         {
-            if (AdjacencyResolver == null) return;
+            if (AdjacencyResolver == null)
+            {
+                return;
+            }
 
-            MeshDirectionInfo info = new();
-            info = AdjacencyResolver.GetMeshAndDirection(_adjacencyMap);
+            MeshDirectionInfo info = AdjacencyResolver.GetMeshAndDirection(_adjacencyMap);
 
             if (_filter == null)
             {
@@ -195,27 +198,46 @@ namespace SS3D.Systems.Tile.Connections
         }
 
         /// <summary>
-        /// Sets a given direction blocked or unblocked. 
-        /// If blocked, this means that it will no longer be allowed to connect on that direction (until further update).
+        /// Simply set things up, including creating new references, and fetching generic and specific type
+        /// from the associated scriptable object.
         /// </summary>
-        public void SetBlockedDirection(Direction dir, bool value)
+        private void Setup()
         {
-            _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));
-            UpdateMeshAndDirection();
+            if (_initialized)
+            {
+                return;
+            }
+
+            _adjacencyMap = new AdjacencyMap();
+            _filter = GetComponent<MeshFilter>();
+
+            _placedObject = GetComponentInParent<PlacedTileObject>();
+            if (!_placedObject)
+            {
+                _genericType = TileObjectGenericType.None;
+                _specificType = TileObjectSpecificType.None;
+            }
+            else
+            {
+                _genericType = _placedObject.GenericType;
+                _specificType = _placedObject.SpecificType;
+            }
+
+            _initialized = true;
         }
 
         /// <summary>
-        /// Get all neighbour placed objects from this placed object.
-        /// Return only existing neighbours. Neighbours here are adjacent (cardinal and diagonal)
-        /// tile objects on the same layer.
+        /// Sync adjacency map on client, and update mesh and direction using this new map.
         /// </summary>
-        public List<PlacedTileObject> GetNeighbours()
+        private void SyncAdjacencies(byte oldValue, byte newValue, bool asServer)
         {
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-            var map = tileSystem.CurrentMap;
-            var neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
-            neighbours.RemoveAll(x => x == null);
-            return neighbours;
+            if (!asServer)
+            {
+                Setup();
+
+                _adjacencyMap.DeserializeFromByte(newValue);
+                UpdateMeshAndDirection();
+            }
         }
     }
 }

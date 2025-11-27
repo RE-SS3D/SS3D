@@ -35,7 +35,7 @@ namespace SS3D.Engine.Chat
         public int GetTabCount() => _tabRow.childCount;
 
         protected override ChatChannel GetCurrentChatChannel() => 
-            SubSystems.Get<ChatSubSystem>().RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
+            Subsystems.Get<ChatSubSystem>().RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
 
         public void InitializeWithAllAvailableChannels()
         {
@@ -63,14 +63,14 @@ namespace SS3D.Engine.Chat
             _channelDropDown.options.Clear();
             _channelDropdownOptions.Clear();
             
-            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
-            string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
-            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
-            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
+            PlayerSubSystem playerSubSystem = Subsystems.Get<PlayerSubSystem>();
+            string playerCkey = playerSubSystem.GetCkey(InstanceFinder.ClientManager.Connection);
+            PermissionSubSystem permissionSubSystem = Subsystems.Get<PermissionSubSystem>();
+            ChatSubSystem chatSubSystem = Subsystems.Get<ChatSubSystem>();
             
             foreach (string channelName in tabData.Channels)
             {
-                ChatChannel chatChannel = chatSystem.RegisteredChatChannels[channelName];
+                ChatChannel chatChannel = chatSubSystem.RegisteredChatChannels[channelName];
                 if (chatChannel != null)
                 {
                     if (chatChannel.CodeOnlyChannel)
@@ -80,7 +80,7 @@ namespace SS3D.Engine.Chat
                     
                     // Checks if player can use tab
                     if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None 
-                        && !permissionSystem.IsAtLeast(playerCkey, chatChannel.RoleRequiredToUse))
+                        && !permissionSubSystem.IsAtLeast(playerCkey, chatChannel.RoleRequiredToUse))
                     {
                         continue;
                     }

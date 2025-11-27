@@ -10,7 +10,15 @@
         "SS3D.Data",
         "SS3D.Logging",
         "SS3D.Interactions",
-        "SS3D.Tests.Common"
+        "SS3D.Tests.Common",
+        "SS3D.Traits",
+        "SS3D.Selection",
+        "SS3D.Substances",
+        "SS3D.GameModes",
+        "SS3D.Electricity",
+        "SS3D.Tiles",
+        "SS3D.Inventory",
+        "SS3D.Health"
     ],
     "includePlatforms": [
         "Editor"

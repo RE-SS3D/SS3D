@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile
 {
@@ -10,10 +11,23 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class GenericObjectSo : ScriptableObject
     {
-        [NotNull]
-        public string NameString => prefab.name;
+        [FormerlySerializedAs("prefab")]
+        [SerializeField]
+        private GameObject _prefab;
 
-        public GameObject prefab;
-        public Sprite icon;
+        [FormerlySerializedAs("icon")]
+        [SerializeField]
+        private Sprite _icon;
+
+        [NotNull]
+        public string NameString => _prefab.name;
+
+        public GameObject Prefab => _prefab;
+
+        public Sprite Icon
+        {
+            get => _icon;
+            set => _icon = value;
+        }
     }
 }

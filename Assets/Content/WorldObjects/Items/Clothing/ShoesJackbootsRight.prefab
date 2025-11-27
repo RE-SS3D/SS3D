@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 5115188675067491857}
   - component: {fileID: 6346135518713412714}
   - component: {fileID: 2953780017709645008}
+  - component: {fileID: 2708803826621153586}
   m_Layer: 10
   m_Name: ShoesJackbootsRight
   m_TagString: Untagged
@@ -263,6 +264,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 9d94de2d01fe3e74d8a6e1ccd4b2bf09, type: 2}
+--- !u!114 &2708803826621153586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2653363475000095017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2f43d6592863cc4c9dcad00f8a27ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canHoldTwoHand: 0
+  _singleHandHold: 5
+  _twoHandHold: 0
+  _singleHandHoldHarm: 5
+  _twoHandHoldHarm: 0
+  _singleHandHoldThrow: 5
+  _twoHandHoldThrow: 0
+  _primaryRightHandHold: {fileID: 8951779009884257322}
+  _secondaryRightHandHold: {fileID: 0}
+  _primaryLeftHandHold: {fileID: 8951779009884257322}
+  _secondaryLeftHandHold: {fileID: 0}
 --- !u!1 &6774639687541203304
 GameObject:
   m_ObjectHideFlags: 0

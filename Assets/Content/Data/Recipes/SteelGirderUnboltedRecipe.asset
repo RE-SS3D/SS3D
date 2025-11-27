@@ -44,7 +44,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 0
+    _craftingInteractionType: 1
     _from: SteelGirderUnbolted
     _to: SteelSheet
     _modifyResult: 0

@@ -1,0 +1,21 @@
+{
+    "name": "SS3D.Examine",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:1cd92d21431e79d40bd01dca3fc2878f",
+        "GUID:eec0964c48f6f4e40bc3ec2257ccf8c5",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

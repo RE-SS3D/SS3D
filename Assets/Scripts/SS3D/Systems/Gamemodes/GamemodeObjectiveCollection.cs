@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -13,12 +14,20 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// All the objectives in this collection.
         /// </summary>
-        public List<GamemodeObjectiveCollectionEntry> Entries;
+        public List<GamemodeObjectiveCollectionEntry> Entries { get; private set; }
 
         /// <summary>
         /// The amount of objectives in this collection.
         /// </summary>
         public int Count => Entries.Count;
+
+        [NotNull]
+        public static GamemodeObjectiveCollection CreateInstance(List<GamemodeObjectiveCollectionEntry> entries)
+        {
+            GamemodeObjectiveCollection data = ScriptableObject.CreateInstance<GamemodeObjectiveCollection>();
+            data.Init(entries);
+            return data;
+        }
 
         /// <summary>
         /// Clones the collection entry so you don't modify the SO file.
@@ -28,7 +37,7 @@ namespace SS3D.Systems.Gamemodes
         {
             GamemodeObjectiveCollection clone = Instantiate(this);
 
-            List<GamemodeObjectiveCollectionEntry> entriesClone = Entries.Select(Instantiate).ToList();
+            List<GamemodeObjectiveCollectionEntry> entriesClone = new(Entries);
             clone.Entries = entriesClone;
 
             return clone;
@@ -43,6 +52,11 @@ namespace SS3D.Systems.Gamemodes
             bool hasObjective = Entries[index].TryGetObjective(out objective, useAssignmentRestrictions);
 
             return hasObjective;
+        }
+
+        private void Init(List<GamemodeObjectiveCollectionEntry> entries)
+        {
+            Entries = entries;
         }
     }
 }

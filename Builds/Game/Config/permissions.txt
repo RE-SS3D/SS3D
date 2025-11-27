@@ -1,3 +1,4 @@
 john ServerOwner
 editorUser ServerOwner
 hostingUser Administrator
+unknown ServerOwner

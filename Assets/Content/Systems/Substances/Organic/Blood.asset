@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Blood
   m_EditorClassIdentifier: 
-  Type: 5
-  Color: {r: 0, g: 0, b: 0, a: 0}
-  MillilitersPerMilliMoles: 0.05
+  <Type>k__BackingField: 5
+  <Color>k__BackingField: {r: 1, g: 0, b: 0, a: 0}
+  <MillilitersPerMilliMoles>k__BackingField: 25

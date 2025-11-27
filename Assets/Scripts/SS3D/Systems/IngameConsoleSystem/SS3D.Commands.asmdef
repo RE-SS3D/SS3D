@@ -1,0 +1,33 @@
+{
+    "name": "SS3D.Commands",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:d2bbca7254de5e746857b04cfb560876",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
+        "GUID:46e20dca70571ce4e817a6b5874168a0",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:6e00473804df0f0468c07310fbce5737",
+        "GUID:464244d81aa026b4caa46e2dbafa2694",
+        "GUID:186fa68ae385dc1428d879a33dd0af09",
+        "GUID:68fcf497849e4be49a6cdafed5519ce7",
+        "GUID:ee843510a9f25d145bb9efba0bac7e46",
+        "GUID:1476e4af5b8d89d4c9963efe314428b9",
+        "GUID:ccbc17dd85baaaf4dbadcbffe6661ee3",
+        "GUID:8979f103c1228714eb0115e440b2b33a",
+        "GUID:ee61973a336722c41acef2425d9de4f5",
+        "GUID:4c7f3fb9e6d5040458fec84bce7ac111",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

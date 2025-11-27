@@ -1,14 +1,13 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
-using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Camera;
 using SS3D.Systems.Inputs;
-using SS3D.Systems.Screens;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
-using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Entities.Silicon
 {
@@ -20,18 +19,29 @@ namespace SS3D.Systems.Entities.Silicon
     public class ThreadController : NetworkActor
     {
         public event Action<float> OnSpeedChanged;
+
         public event Action<bool> OnPowerChanged;
 
         [Header("Components")]
-        [SerializeField] private CharacterController _characterController;
-        [FormerlySerializedAs("_playerControllable")] [SerializeField] private Entity _entity;
+        [SerializeField]
+        private CharacterController _characterController;
+
+        [FormerlySerializedAs("_playerControllable")]
+        [SerializeField]
+        private Entity _entity;
 
         [Header("Movement Settings")]
-        [SerializeField] private float _movementSpeed;
-        [SerializeField] private float _lerpMultiplier;
-        [SerializeField] private float _rotationLerpMultiplier;
+        [SerializeField]
+        private float _movementSpeed;
 
-        [SerializeField] private Transform _movementTarget;
+        [SerializeField]
+        private float _lerpMultiplier;
+
+        [SerializeField]
+        private float _rotationLerpMultiplier;
+
+        [SerializeField]
+        private Transform _movementTarget;
 
         [Header("Debug Info")]
         private Vector3 _absoluteMovement;
@@ -42,7 +52,7 @@ namespace SS3D.Systems.Entities.Silicon
 
         private float _smoothedX;
         private float _smoothedY;
-        private Actor _camera;
+        private CameraActor _camera;
         private Controls.MovementActions _controls;
 
         protected override void OnStart()
@@ -54,8 +64,8 @@ namespace SS3D.Systems.Entities.Silicon
 
         private void Setup()
         {
-            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
-            _controls = SubSystems.Get<InputSubSystem>().Inputs.Movement;
+            _camera = Subsystems.Get<CameraSubSystem>().PlayerCamera;
+            _controls = Subsystems.Get<InputSubSystem>().Inputs.Movement;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
@@ -98,12 +108,12 @@ namespace SS3D.Systems.Entities.Silicon
         /// <param name="movementInput"></param>
         private void MoveTarget(Vector2 movementInput, float multiplier = 1)
         {
-            //makes the movement align to the camera view
+            // Makes the movement align to the camera view
             Vector3 newTargetMovement =
-                movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized +
-                movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
+                (movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized) +
+                (movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized);
 
-            // smoothly changes the target movement
+            // Smoothly changes the target movement
             _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
 
             Vector3 resultingMovement = _targetMovement + transform.position;
@@ -126,7 +136,7 @@ namespace SS3D.Systems.Entities.Silicon
         /// </summary>
         private void MovePlayer()
         {
-            _characterController.Move(_targetMovement * ((_movementSpeed) * Time.deltaTime));
+            _characterController.Move(_targetMovement * (_movementSpeed * Time.deltaTime));
         }
 
         /// <summary>
@@ -142,6 +152,7 @@ namespace SS3D.Systems.Entities.Silicon
                 x = _controls.Movement.ReadValue<Vector2>().x;
                 y = _controls.Movement.ReadValue<Vector2>().y;
             }
+
             _input = new Vector2(x, y);
             OnSpeedChanged?.Invoke(_input.magnitude != 0 ? _input.magnitude : 0);
 

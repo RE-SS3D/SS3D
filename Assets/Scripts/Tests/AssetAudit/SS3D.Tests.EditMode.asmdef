@@ -2,15 +2,16 @@
     "name": "SS3D.Tests.AssetAudit",
     "rootNamespace": "",
     "references": [
-        "Tests.Common",
-        "SS3D.Core",
+        "Coimbra",
         "FishNet.Runtime",
         "SS3D.Attributes",
-        "SS3D.Systems",
+        "SS3D.Core",
         "SS3D.Data",
-        "Coimbra",
+        "SS3D.Examine",
         "SS3D.Logging",
-        "Unity.Localization"
+        "SS3D.Systems",
+        "Unity.Localization",
+        "SS3D.Tiles"
     ],
     "includePlatforms": [
         "Editor"

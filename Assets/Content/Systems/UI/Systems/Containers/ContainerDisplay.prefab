@@ -243,10 +243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2312bce62c1ec0a469d1c904f8697ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Inventory: {fileID: 0}
-  ItemSlotPrefab: {fileID: 5890138111718056204, guid: 07f21311e013fe5489e5dbdff88b210e, type: 3}
-  ItemDisplayPrefab: {fileID: 7823076622193320381, guid: 044ba9e29227844459b8efa7114bd24a, type: 3}
-  AttachedContainer: {fileID: 0}
+  _itemSlotPrefab: {fileID: 5890138111718056204, guid: 07f21311e013fe5489e5dbdff88b210e, type: 3}
+  _itemDisplayPrefab: {fileID: 7823076622193320381, guid: 044ba9e29227844459b8efa7114bd24a, type: 3}
 --- !u!1 &176838957447208628
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,6 +305,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -363,8 +362,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ecbde25c2d14d0eb96deabf8cc85f37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Grid: {fileID: 1271593770586543597}
-  ContainerName: {fileID: 4307856147151523802}
+  _grid: {fileID: 1271593770586543597}
+  _containerName: {fileID: 4307856147151523802}
 --- !u!222 &8355071219440756668
 CanvasRenderer:
   m_ObjectHideFlags: 0

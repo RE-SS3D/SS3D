@@ -1,0 +1,18 @@
+{
+    "name": "SS3D.Selection",
+    "rootNamespace": "",
+    "references": [
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:ee843510a9f25d145bb9efba0bac7e46",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

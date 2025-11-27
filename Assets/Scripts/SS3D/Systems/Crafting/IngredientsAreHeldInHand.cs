@@ -14,7 +14,7 @@ namespace SS3D.Systems.Crafting
     {
         public override List<IRecipeIngredient> UsableIngredients(List<IRecipeIngredient> ingredients)
         {
-            return ingredients.Where(x => x.GameObject.TryGetComponent(out Item item) && item.Container?.ContainerType == ContainerType.Hand).ToList();
+            return ingredients.Where(x => x.GameObject.TryGetComponent(out Item item) && item.Container && item.Container.ContainerType == ContainerType.Hand).ToList();
         }
     }
 }

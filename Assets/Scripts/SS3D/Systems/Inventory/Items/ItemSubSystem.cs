@@ -3,14 +3,13 @@ using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Logging;
-using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Items
 {
     /// <summary>
-    /// System used to spawn items.
+    /// SubSystem used to spawn items.
     /// </summary>
     public sealed class ItemSubSystem : NetworkSubSystem
     {
@@ -46,7 +45,6 @@ namespace SS3D.Systems.Inventory.Items
             return itemInstance;
         }
 
-
         /// <summary>
         /// Requests to spawn an item in a given container.
         /// </summary>
@@ -71,7 +69,7 @@ namespace SS3D.Systems.Inventory.Items
         {
             Item itemPrefab = Assets.Get<GameObject>(AssetDatabases.Items, id).GetComponent<Item>();
 
-            if (attachedContainer is null)
+            if (!attachedContainer)
             {
                 Log.Error(this, "Container does not found!", Logs.ServerOnly);
                 return null;
@@ -97,16 +95,5 @@ namespace SS3D.Systems.Inventory.Items
             Log.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
             return itemInstance;
         }
-
-        /// <summary>
-        /// Return the item in the active hand of the given player entity.
-        /// </summary>
-        public Item GetItemInHand(Entity playerEntity)
-        {
-            Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;
-            return hands.SelectedHand.ItemInHand;
-        }
-
-
     }
 }

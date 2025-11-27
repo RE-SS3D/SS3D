@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2197c1d93e4c39a4d958f015762fc338, type: 3}
   m_Name: Security
   m_EditorClassIdentifier: 
-  _roleName: Security
-  _pdaPrefab: {fileID: 5261116577612792016, guid: 79260483ae5d3e04fa272e092b49abac, type: 3}
-  _idCardPrefab: {fileID: 5261116577612792016, guid: d8b0c8d1ddcdeb24d9763054c103c9fe, type: 3}
-  _permissions:
-  - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
+  <Name>k__BackingField: Security
+  <PdaPrefab>k__BackingField: {fileID: 5261116577612792016, guid: 2a63163a4db141744a802f3ff67087db, type: 3}
+  <IDCardPrefab>k__BackingField: {fileID: 5261116577612792016, guid: ff95abc9c2b779340a1b50f1a128a934, type: 3}
+  <Permissions>k__BackingField:
   - {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
-  _loadout: {fileID: 11400000, guid: b960cfb4622f98a41bda8879b31656f8, type: 2}
+  <Loadout>k__BackingField: {fileID: 11400000, guid: b960cfb4622f98a41bda8879b31656f8, type: 2}

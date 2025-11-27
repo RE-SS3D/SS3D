@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using Coimbra;
+using SS3D.Data.AssetDatabases;
+using SS3D.Systems.Interactions;
 using System;
 using System.Collections.Generic;
-using Coimbra;
-using SS3D.Data.AssetDatabases;
-using UnityEngine.Serialization;
+using UnityEngine;
 
 namespace SS3D.Systems.Crafting
 {
@@ -13,38 +13,38 @@ namespace SS3D.Systems.Crafting
     [Serializable]
     public class RecipeStepLink
     {
-        [Tooltip("Elements of the recipe, that will be consumed in the crafting process, and the necessary number of each.")] 
+        [Tooltip("Elements of the recipe, that will be consumed in the crafting process, and the necessary number of each.")]
         [SerializeField]
         private SerializableDictionary<WorldObjectAssetReference, int> _elements = new();
-        
-        [Tooltip("Bunch of conditions for ingredients to be valid to use in the recipe.")] 
+
+        [Tooltip("Bunch of conditions for ingredients to be valid to use in the recipe.")]
         [SerializeField]
         private List<IngredientCondition> _conditions = new();
 
-        [Tooltip("The needed type of crafting interaction to go through this link.")] 
+        [Tooltip("The needed type of crafting interaction to go through this link.")]
         [SerializeField]
-        private CraftingInteractionType _craftingInteractionType;
+        private InteractionType _craftingInteractionType;
 
-        [Tooltip("The source recipe step.")] 
+        [Tooltip("The source recipe step.")]
         [SerializeField]
         private string _from;
 
-        [Tooltip("The target recipe step. The step reached once the requirement for this step link are met")] 
+        [Tooltip("The target recipe step. The step reached once the requirement for this step link are met")]
         [SerializeField]
         private string _to;
 
         [Tooltip("If true, The main result of the target step will be modified, using the Modify method of the"
             + " ICraftable interface. The main result's prefab should have a component implementing the ICraftable interface"
-            + " for it to work.")] 
+            + " for it to work.")]
         [SerializeField]
         private bool _modifyResult;
 
-        [Tooltip("The time the crafting should take in seconds.")] 
+        [Tooltip("The time the crafting should take in seconds.")]
         [SerializeField]
         private float _executionTime;
 
         [Tooltip("Things produced by going through this recipe link, upon reaching next step. Secondary results"
-            + " are always crafted using the default crafting method")] 
+            + " are always crafted using the default crafting method")]
         [SerializeField]
         private List<SecondaryResult> _secondaryResults;
 
@@ -58,7 +58,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// The needed type of crafting interaction to go through this link
         /// </summary>
-        public CraftingInteractionType CraftingInteractionType => _craftingInteractionType;
+        public InteractionType CraftingInteractionType => _craftingInteractionType;
 
         /// <summary>
         /// Bunch of conditions for ingredients to be valid.
@@ -90,7 +90,7 @@ namespace SS3D.Systems.Crafting
             get
             {
                 Dictionary<string, int> elements = new();
-                
+
                 foreach (KeyValuePair<WorldObjectAssetReference, int> keyValuePair in _elements)
                 {
                     elements.Add(keyValuePair.Key.Id, keyValuePair.Value);

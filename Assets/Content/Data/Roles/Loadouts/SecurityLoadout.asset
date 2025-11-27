@@ -12,14 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
   m_Name: SecurityLoadout
   m_EditorClassIdentifier: 
-  HandLeft: {fileID: 8197868818743549203, guid: 1d2cf546d53e3fe4c9103007427aaec7, type: 3}
-  HandRight: {fileID: 0}
-  Equipment:
+  <Equipment>k__BackingField:
     _list:
     - _key: 512
-      _value: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
-    - _key: 16
-      _value: {fileID: 60374868058361228, guid: 4b790b4ffedbe564dab49f896d71eaa6, type: 3}
-    - _key: 32
-      _value: {fileID: 2653363475000095017, guid: d7d68992cbd3cda45bb11a35a1490dc3, type: 3}
+      _value: {fileID: 6330158209413936013, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
     _new: 0
+  <HandLeft>k__BackingField: {fileID: 0}
+  <HandRight>k__BackingField: {fileID: 0}

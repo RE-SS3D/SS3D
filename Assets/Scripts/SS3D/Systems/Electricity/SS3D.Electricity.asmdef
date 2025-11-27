@@ -1,0 +1,27 @@
+{
+    "name": "SS3D.Electricity",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:d2bbca7254de5e746857b04cfb560876",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
+        "GUID:46e20dca70571ce4e817a6b5874168a0",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:43c1375cedfd4704d8556970fe75a17e",
+        "GUID:137607592728bd9429ad9592e8494e6c",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:6e00473804df0f0468c07310fbce5737",
+        "GUID:1476e4af5b8d89d4c9963efe314428b9",
+        "GUID:eb124556ba20d60469be9771eb1f0360",
+        "GUID:875ed3cc6089f324194c2cd8d7a978f0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

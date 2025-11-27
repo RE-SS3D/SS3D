@@ -7,31 +7,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Health
 {
     public class Lungs : BodyPart
     {
-
         public enum BreathingState
         {
-            Nice,
-            Difficult,
-            Suffocating
+            Nice = 0,
+            Difficult = 1,
+            Suffocating = 2,
         }
 
-        public BreathingState breathing;
+        public event EventHandler OnBreath;
+
+        private BreathingState _breathing;
 
         // Number of inspiration and expiration per minutes
         private float _breathFrequency = 60f;
 
-        public event EventHandler OnBreath;
-
-        private float _timer = 0f;
+        private float _timer;
 
         // TODO : remove this and replace with oxygen taken from atmos when possible
+        [FormerlySerializedAs("OxygenConstantIntake")]
         [SerializeField]
-        private float OxygenConstantIntake = 0.4f;
+        private float _oxygenConstantIntake = 0.4f;
 
         public float SecondsBetweenBreaths => _breathFrequency > 0 ? 60f / _breathFrequency : float.MaxValue;
 
@@ -39,21 +40,6 @@ namespace SS3D.Systems.Health
         {
             base.OnStartServer();
             StartCoroutine(DelayInit());
-        }
-
-        /// <summary>
-        /// Necessary to prevent issue with body part not getting attached ...
-        /// TODO : Implement a proper pipeline of initialisation.
-        /// </summary>
-        private IEnumerator DelayInit()
-        {
-            yield return null;
-            yield return null;
-
-            if(HealthController == null)
-            {
-                HealthController = GetComponentInParent<HealthController>();
-            }
         }
 
         [Server]
@@ -65,15 +51,44 @@ namespace SS3D.Systems.Health
             TryAddBodyLayer(new OrganLayer(this));
         }
 
-        void Update()
+        protected void Update()
         {
-            if (!IsServer) return;
+            if (!IsServer)
+            {
+                return;
+            }
+
             _timer += Time.deltaTime;
 
             if (_timer > SecondsBetweenBreaths)
             {
                 _timer = 0f;
                 Breath();
+            }
+        }
+
+        [Server]
+        protected override void AfterSpawningCopiedBodyPart()
+        {
+        }
+
+        [Server]
+        protected override void BeforeDestroyingBodyPart()
+        {
+        }
+
+        /// <summary>
+        /// Necessary to prevent issue with body part not getting attached ...
+        /// TODO : Implement a proper pipeline of initialisation.
+        /// </summary>
+        private IEnumerator DelayInit()
+        {
+            yield return null;
+            yield return null;
+
+            if (HealthController == null)
+            {
+                HealthController = GetComponentInParent<HealthController>();
             }
         }
 
@@ -86,26 +101,26 @@ namespace SS3D.Systems.Health
         {
             OnBreath?.Invoke(this, EventArgs.Empty);
 
-            //TODO : temporary fix for lungs when they are not attached to a health controller. Should eventually prevent breathing
+            // TODO : temporary fix for lungs when they are not attached to a health controller. Should eventually prevent breathing
             // when lungs are detached from head.
-            if (HealthController == null) return;
+            if (HealthController == null)
+            {
+                return;
+            }
 
-            SubstancesSubSystem registry = SubSystems.Get<SubstancesSubSystem>();
+            SubstancesSubSystem registry = Subsystems.Get<SubstancesSubSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
             if (HealthController.Circulatory.Container.GetSubstanceQuantity(oxygen) > HealthController.Circulatory.MaxOxygenQuantity)
             {
                 return;
             }
-            else
-            {
-                HealthController.Circulatory.Container.AddSubstance(oxygen, OxygenConstantIntake);
-            }
 
+            HealthController.Circulatory.Container.AddSubstance(oxygen, _oxygenConstantIntake);
             SetBreathingState();
         }
 
         /// <summary>
-        /// Breathing state could be useful to set stuff like breathing noises. This set it up depending on the amount of 
+        /// Breathing state could be useful to set stuff like breathing noises. This set it up depending on the amount of
         /// available and needed oxygen. Breathing becomes more difficult as oxygen amount becomes uncomfortable.
         /// </summary>
         [Server]
@@ -116,28 +131,16 @@ namespace SS3D.Systems.Health
 
             if (availableOxygen > HealthConstants.SafeOxygenFactor * sumNeeded)
             {
-                breathing = BreathingState.Nice;
+                _breathing = BreathingState.Nice;
             }
             else if (availableOxygen > sumNeeded)
             {
-                breathing = BreathingState.Difficult;
+                _breathing = BreathingState.Difficult;
             }
             else
             {
-                breathing = BreathingState.Suffocating;
+                _breathing = BreathingState.Suffocating;
             }
-        }
-
-        [Server]
-        protected override void AfterSpawningCopiedBodyPart()
-        {
-            return;
-        }
-
-        [Server]
-        protected override void BeforeDestroyingBodyPart()
-        {
-            return;
         }
     }
 }

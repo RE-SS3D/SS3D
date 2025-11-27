@@ -1,109 +1,149 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Substances
 {
     public class SubstanceDisplay : NetworkBehaviour
     {
+        private static readonly int FillAmount = Shader.PropertyToID("_FillAmount");
+
+        private static readonly int Tint = Shader.PropertyToID("_Tint");
+
+        private static readonly int TopColor = Shader.PropertyToID("_TopColor");
+
+        private static readonly int WobbleX = Shader.PropertyToID("_WobbleX");
+
+        private static readonly int WobbleZ = Shader.PropertyToID("_WobbleZ");
+
         /// <summary>
         /// The container to display
         /// </summary>
-        public SubstanceContainer Container;
+        [SerializeField]
+        private SubstanceContainer _container;
+
         /// <summary>
         /// The object displaying the fluid level
         /// </summary>
-        public GameObject DisplayObject;
+        [SerializeField]
+        private GameObject _displayObject;
+
         /// <summary>
         /// The position of fill when empty
         /// </summary>
-        public Vector3 EmptyPosition;
+        [SerializeField]
+        private Vector3 _emptyPosition;
+
         /// <summary>
         /// The position of fill when full
         /// </summary>
-        public Vector3 FullPosition;
-        public AnimationCurve ScaleX;
-        public AnimationCurve ScaleY;
-        public AnimationCurve ScaleZ;
-        private Renderer meshRenderer;
+        [SerializeField]
+        private Vector3 _fullPosition;
+
+        [SerializeField]
+        private AnimationCurve _scaleX;
+
+        [SerializeField]
+        private AnimationCurve _scaleY;
+
+        [SerializeField]
+        private AnimationCurve _scaleZ;
+
+        [SerializeField]
+        private float _maxWobble = 0.03f;
+
+        [SerializeField]
+        private float _wobbleSpeed = 1f;
+
+        [SerializeField]
+        private float _recovery = 1f;
+
+        private Renderer _meshRenderer;
 
         // wobble shader stuff
-        Vector3 lastPos;
-        Vector3 velocity;
-        Vector3 lastRot;
-        Vector3 angularVelocity;
-        public float MaxWobble = 0.03f;
-        public float WobbleSpeed = 1f;
-        public float Recovery = 1f;
-        float wobbleAmountX;
-        float wobbleAmountZ;
-        float wobbleAmountToAddX;
-        float wobbleAmountToAddZ;
-        float pulse;
-        float time = 0.5f;
+        private Vector3 _lastPos;
 
-        private void Start()
+        private Vector3 _velocity;
+
+        private Vector3 _lastRot;
+
+        private Vector3 _angularVelocity;
+
+        private float _wobbleAmountX;
+
+        private float _wobbleAmountZ;
+
+        private float _wobbleAmountToAddX;
+
+        private float _wobbleAmountToAddZ;
+
+        private float _pulse;
+
+        private float _time = 0.5f;
+
+        protected void Start()
         {
-            meshRenderer = DisplayObject.GetComponent<Renderer>();
+            _meshRenderer = _displayObject.GetComponent<Renderer>();
             if (IsServer)
             {
-                Container.ContentsChanged += container => UpdateDisplay();
+                _container.OnContentChanged += container => UpdateDisplay();
                 UpdateDisplay();
             }
         }
 
-        private void Update()
+        protected void Update()
         {
-            time += Time.deltaTime;
+            _time += Time.deltaTime;
+
             // decrease wobble over time
-            wobbleAmountToAddX = Mathf.Lerp(wobbleAmountToAddX, 0, Time.deltaTime * (Recovery));
-            wobbleAmountToAddZ = Mathf.Lerp(wobbleAmountToAddZ, 0, Time.deltaTime * (Recovery));
+            _wobbleAmountToAddX = Mathf.Lerp(_wobbleAmountToAddX, 0, Time.deltaTime * _recovery);
+            _wobbleAmountToAddZ = Mathf.Lerp(_wobbleAmountToAddZ, 0, Time.deltaTime * _recovery);
 
             // make a sine wave of the decreasing wobble
-            pulse = 2 * Mathf.PI * WobbleSpeed;
-            wobbleAmountX = wobbleAmountToAddX * Mathf.Sin(pulse * time);
-            wobbleAmountZ = wobbleAmountToAddZ * Mathf.Sin(pulse * time);
+            _pulse = 2 * Mathf.PI * _wobbleSpeed;
+            _wobbleAmountX = _wobbleAmountToAddX * Mathf.Sin(_pulse * _time);
+            _wobbleAmountZ = _wobbleAmountToAddZ * Mathf.Sin(_pulse * _time);
 
             // send it to the shader
-            meshRenderer.material.SetFloat("_WobbleX", wobbleAmountX);
-            meshRenderer.material.SetFloat("_WobbleZ", wobbleAmountZ);
+            _meshRenderer.material.SetFloat(WobbleX, _wobbleAmountX);
+            _meshRenderer.material.SetFloat(WobbleZ, _wobbleAmountZ);
 
             // velocity
-            velocity = (lastPos - transform.position) / Time.deltaTime;
-            angularVelocity = transform.rotation.eulerAngles - lastRot;
-
+            _velocity = (_lastPos - transform.position) / Time.deltaTime;
+            _angularVelocity = transform.rotation.eulerAngles - _lastRot;
 
             // add clamped velocity to wobble
-            wobbleAmountToAddX += Mathf.Clamp((velocity.x + (angularVelocity.z * 0.2f)) * MaxWobble, -MaxWobble, MaxWobble);
-            wobbleAmountToAddZ += Mathf.Clamp((velocity.z + (angularVelocity.x * 0.2f)) * MaxWobble, -MaxWobble, MaxWobble);
+            _wobbleAmountToAddX += Mathf.Clamp((_velocity.x + (_angularVelocity.z * 0.2f)) * _maxWobble, -_maxWobble, _maxWobble);
+            _wobbleAmountToAddZ += Mathf.Clamp((_velocity.z + (_angularVelocity.x * 0.2f)) * _maxWobble, -_maxWobble, _maxWobble);
 
             // keep last position
-            lastPos = transform.position;
-            lastRot = transform.rotation.eulerAngles;
+            _lastPos = transform.position;
+            _lastRot = transform.rotation.eulerAngles;
         }
 
         [Server]
         private void UpdateDisplay()
         {
-            float relativeVolume = (Container.CurrentVolume / Container.Volume);
-            Transform trans = DisplayObject.transform;
+            float relativeVolume = _container.CurrentVolume / _container.Volume;
+            Transform trans = _displayObject.transform;
 
             Color newColor = CalculateColor();
 
-            meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
-            meshRenderer.material.SetColor("_Tint", newColor);
-            meshRenderer.material.SetColor("_TopColor", newColor);
+            _meshRenderer.material.SetFloat(FillAmount, relativeVolume);
+            _meshRenderer.material.SetColor(Tint, newColor);
+            _meshRenderer.material.SetColor(TopColor, newColor);
 
-            //trans.localPosition = Vector3.Lerp(EmptyPosition, FullPosition, Mathf.Min(relativeVolume, 1));
-            //trans.localScale = new Vector3(ScaleX.Evaluate(relativeVolume), ScaleY.Evaluate(relativeVolume), ScaleZ.Evaluate(relativeVolume));
+            // trans.localPosition = Vector3.Lerp(EmptyPosition, FullPosition, Mathf.Min(relativeVolume, 1));
+            // trans.localScale = new Vector3(ScaleX.Evaluate(relativeVolume), ScaleY.Evaluate(relativeVolume), ScaleZ.Evaluate(relativeVolume));
             RpcUpdateDisplay(trans.localPosition, trans.localScale, newColor, relativeVolume);
         }
 
         private Color CalculateColor()
         {
-            float totalMilliMoles = Container.TotalMilliMoles;
+            float totalMilliMoles = _container.TotalMilliMoles;
             Color color = new Color(0, 0, 0, 0);
-            foreach (SubstanceEntry entry in Container.Substances)
+            foreach (SubstanceEntry entry in _container.Substances)
             {
                 float relativeMoles = entry.MilliMoles / totalMilliMoles;
                 color += entry.Substance.Color * relativeMoles;
@@ -117,17 +157,17 @@ namespace SS3D.Substances
         private void RpcUpdateDisplay(Vector3 position, Vector3 scale, Color color, float relativeVolume)
         {
             // Ensure this is initialised.
-            if (meshRenderer == null)
+            if (_meshRenderer == null)
             {
                 Start();
             }
-            
-            Transform trans = DisplayObject.transform;
+
+            Transform trans = _displayObject.transform;
             trans.localPosition = position;
             trans.localScale = scale;
-            meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
-            meshRenderer.material.SetColor("_Tint", color);
-            meshRenderer.material.SetColor("_TopColor", color);
+            _meshRenderer.material.SetFloat(FillAmount, relativeVolume);
+            _meshRenderer.material.SetColor(Tint, color);
+            _meshRenderer.material.SetColor(TopColor, color);
         }
     }
 }

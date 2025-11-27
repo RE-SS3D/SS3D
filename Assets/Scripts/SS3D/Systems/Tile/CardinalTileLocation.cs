@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +21,17 @@ namespace SS3D.Systems.Tile
         /// </summary>
         private PlacedTileObject[] _cardinalPlacedTileObject = new PlacedTileObject[4];
 
-        /// <summary>
-        /// The layer this location is on.
-        /// </summary>
-        public TileLayer Layer => _layer;
-
         public CardinalTileLocation(TileLayer layer, int x, int y)
         {
             _layer = layer;
             _x = x;
             _y = y;
         }
+
+        /// <summary>
+        /// The layer this location is on.
+        /// </summary>
+        public TileLayer Layer => _layer;
 
         public void ClearAllPlacedObject()
         {
@@ -46,18 +47,19 @@ namespace SS3D.Systems.Tile
             {
                 return false;
             }
+
             return _cardinalPlacedTileObject[DirToIndex(direction)] == null;
         }
 
         public bool IsFullyEmpty()
         {
-            return _cardinalPlacedTileObject.Where(x => x != null).Count() == 0;
+            return _cardinalPlacedTileObject.Count(x => x != null) == 0;
         }
 
         public ISavedTileLocation Save()
         {
-            List<SavedPlacedTileObject> savedTileObjects= new List<SavedPlacedTileObject>();
-            foreach(PlacedTileObject tileObject in _cardinalPlacedTileObject.Where(x => x != null))
+            List<SavedPlacedTileObject> savedTileObjects = new List<SavedPlacedTileObject>();
+            foreach (PlacedTileObject tileObject in _cardinalPlacedTileObject.Where(x => x != null))
             {
                 savedTileObjects.Add(tileObject.Save());
             }
@@ -73,13 +75,15 @@ namespace SS3D.Systems.Tile
             }
 
             PlacedTileObject placedObject = _cardinalPlacedTileObject[DirToIndex(direction)];
-            if (placedObject != null)
+
+            if (placedObject == null)
             {
-                placedObject.DestroySelf();
-                placedObject = null;
-                return true;
+                return false;
             }
-            return false;
+
+            placedObject.DestroySelf();
+            placedObject = null;
+            return true;
         }
 
         public bool TryGetPlacedObject(out PlacedTileObject placedObject, Direction direction = Direction.North)
@@ -96,6 +100,7 @@ namespace SS3D.Systems.Tile
                 placedObject = currentPlacedObject;
                 return true;
             }
+
             placedObject = null;
             return false;
         }
@@ -106,31 +111,24 @@ namespace SS3D.Systems.Tile
             {
                 return;
             }
-            else
-            {
-                _cardinalPlacedTileObject[DirToIndex(direction)] = tileObject;
-            }
+
+            _cardinalPlacedTileObject[DirToIndex(direction)] = tileObject;
         }
 
-        /// <summary>
-        /// Tie an index array to each cardinal direction.
-        /// </summary>
-        private int DirToIndex(Direction direction)
-        {
-            return (int)direction / 2;
-        }
-
-        /// <summary>
-        /// Tie an index array to each cardinal direction.
-        /// </summary>
-        private Direction IndexToDir(int i)
-        {
-            return (Direction) (i*2);
-        }
-
+        [NotNull]
         public List<PlacedTileObject> GetAllPlacedObject()
         {
-            return _cardinalPlacedTileObject.Where(x => x!= null).ToList();
+            return _cardinalPlacedTileObject.Where(x => x != null).ToList();
         }
+
+        /// <summary>
+        /// Tie an index array to each cardinal direction.
+        /// </summary>
+        private int DirToIndex(Direction direction) => (int)direction / 2;
+
+        /// <summary>
+        /// Tie an index array to each cardinal direction.
+        /// </summary>
+        private Direction IndexToDir(int i) => (Direction)(i * 2);
     }
 }

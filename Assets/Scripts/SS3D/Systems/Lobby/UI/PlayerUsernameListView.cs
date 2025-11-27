@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
-using SS3D.Attributes;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.Rounds.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Lobby.UI
@@ -20,26 +19,34 @@ namespace SS3D.Systems.Lobby.UI
     public sealed class PlayerUsernameListView : NetworkActor
     {
         // The UI element this is linked to
-        [SerializeField] [NotNull] private Transform _root;
+        [SerializeField]
+        [JetBrains.Annotations.NotNull]
+        private Transform _root;
 
         // Username list, local list that is "networked" by the SyncList on LobbyManager
-        [SerializeField] [NotNull] private List<PlayerUsernameView> _playerUsernames;
+        [SerializeField]
+        [JetBrains.Annotations.NotNull]
+        private List<PlayerUsernameView> _playerUsernames;
 
         // The username panel prefab
-        [SerializeField] [NotNull] private GameObject _uiPrefab;
-        [SerializeField] private Color _userReadyColor = PaletteColors.LightBlue;
+        [SerializeField]
+        [JetBrains.Annotations.NotNull]
+        private GameObject _uiPrefab;
+
+        [SerializeField]
+        private Color _userReadyColor = PaletteColors.LightBlue;
+
+        public override void OnStartNetwork()
+        {
+            base.OnStartNetwork();
+            SubscribeToEvents();
+        }
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
             AddHandle(ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged));
-        }
-
-        public override void OnStartNetwork()
-        {
-            base.OnStartNetwork();
-            SubscribeToEvents();
         }
 
         private void SubscribeToEvents()
@@ -61,11 +68,17 @@ namespace SS3D.Systems.Lobby.UI
             switch (changeType)
             {
                 case ChangeType.Addition:
+                {
                     AddUsernameUI(ckey);
                     break;
+                }
+
                 case ChangeType.Removal:
+                {
                     RemoveUsernameUI(ckey);
                     break;
+                }
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }

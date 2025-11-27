@@ -1,5 +1,4 @@
-﻿
-namespace SS3D.Systems.Audio
+﻿namespace SS3D.Systems.Audio
 {
     /// <summary>
     /// Enums helping determine which track to use on the audio mixer for a given sound.

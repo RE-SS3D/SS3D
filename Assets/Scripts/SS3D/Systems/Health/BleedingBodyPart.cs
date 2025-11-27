@@ -1,9 +1,9 @@
-﻿using FishNet.Object;
+﻿using Coimbra;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using UnityEngine;
-using Coimbra;
 using SS3D.Data.Generated;
 using System;
+using UnityEngine;
 
 namespace SS3D.Systems.Health
 {
@@ -16,9 +16,15 @@ namespace SS3D.Systems.Health
         private BodyPart _bodyPart;
 
         [SyncVar(OnChange = nameof(SyncBleedEffect))]
-        public bool isBleeding;
+        private bool _isBleeding;
 
         private GameObject _bloodEffect;
+
+        public bool IsBleeding
+        {
+            get => _isBleeding;
+            set => _isBleeding = value;
+        }
 
         public override void OnStartServer()
         {
@@ -26,20 +32,12 @@ namespace SS3D.Systems.Health
             _bodyPart.OnBodyPartDetached += HandleBodyPartDestroyedOrDetached;
         }
 
-        private void OnDestroy()
-        {
-            _bodyPart.OnBodyPartDestroyed -= HandleBodyPartDestroyedOrDetached;
-            _bodyPart.OnBodyPartDetached -= HandleBodyPartDestroyedOrDetached;
-        }
-
-        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
-        {
-            isBleeding = false;
-        }
-
         public void SyncBleedEffect(bool prev, bool next, bool asServer)
         {
-            if (prev == next) return;
+            if (prev == next)
+            {
+                return;
+            }
 
             if (next && _bloodEffect == null)
             {
@@ -64,6 +62,17 @@ namespace SS3D.Systems.Health
             {
                 _bloodEffect.Dispose(true);
             }
+        }
+
+        protected void OnDestroy()
+        {
+            _bodyPart.OnBodyPartDestroyed -= HandleBodyPartDestroyedOrDetached;
+            _bodyPart.OnBodyPartDetached -= HandleBodyPartDestroyedOrDetached;
+        }
+
+        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
+        {
+            _isBleeding = false;
         }
     }
 }

@@ -1,3 +1,4 @@
+using SS3D.Traits;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,19 +9,23 @@ namespace SS3D.Systems.Roles
     /// All the relevant data for a role, including it's name, default ID Card and PDA, 
     /// Permissions and Starting Items
     /// </summary>
-    [Serializable, CreateAssetMenu(fileName = "Role Data", menuName = "Roles/RoleData")]
+    [Serializable]     
+    [CreateAssetMenu(fileName = "Role Data", menuName = "Roles/RoleData")]
     public class RoleData : ScriptableObject
     {
-        [SerializeField] private string _roleName;
-        [SerializeField] private GameObject _pdaPrefab;
-        [SerializeField] private GameObject _idCardPrefab;
-        [SerializeField] private List<IDPermission> _permissions = new List<IDPermission>();
-        [SerializeField] private RoleLoadout _loadout;
+        [field:SerializeField] 
+        public string Name { get; private set; }
 
-        public string Name => _roleName;
-        public GameObject IDCardPrefab => _idCardPrefab;
-        public GameObject PDAPrefab => _pdaPrefab;
-        public List<IDPermission> Permissions => _permissions;
-        public RoleLoadout Loadout => _loadout;
+        [field:SerializeField] 
+        public GameObject PdaPrefab { get; private set; }
+
+        [field:SerializeField] 
+        public GameObject IDCardPrefab { get; private set; }
+
+        [field:SerializeField] 
+        public List<IDPermission> Permissions { get; private set; }
+
+        [field:SerializeField] 
+        public RoleLoadout Loadout { get; private set; }
     }
 }

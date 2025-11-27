@@ -3,7 +3,7 @@
 charset = utf-8-bom
 end_of_line = crlf
 trim_trailing_whitespace = false
-insert_final_newline = false
+insert_final_newline = true
 indent_style = space
 indent_size = 4
 
@@ -249,7 +249,7 @@ resharper_unity_inefficient_property_access_highlighting = hint
 resharper_unity_load_scene_disabled_scene_name_highlighting = error
 resharper_unity_load_scene_unexisting_scene_highlighting = error
 resharper_unity_performance_critical_code_camera_main_highlighting = error
-resharper_unity_performance_critical_code_invocation_highlighting = warning
+resharper_unity_performance_critical_code_invocation_highlighting = hint
 resharper_unity_performance_critical_code_null_comparison_highlighting = warning
 resharper_unity_prefer_non_alloc_api_highlighting = error
 resharper_unity_redundant_attribute_on_target_highlighting = error

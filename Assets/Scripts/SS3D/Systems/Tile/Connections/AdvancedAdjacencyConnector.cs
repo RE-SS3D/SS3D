@@ -12,20 +12,24 @@ namespace SS3D.Systems.Tile.Connections
     /// <summary>
     /// Basic connector using the Advanced connector struct for resolving shape and direction.
     /// </summary>
-    public class AdvancedAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
+    public class AdvancedAdjacencyConnector : AbstractHorizontalConnector
     {
-        [SerializeField] private AdvancedConnector advancedAdjacency;
-        protected override IMeshAndDirectionResolver AdjacencyResolver => advancedAdjacency;
+        [FormerlySerializedAs("advancedAdjacency")]
+        [SerializeField]
+        private AdvancedConnector _advancedAdjacency;
+
+        protected override IMeshAndDirectionResolver AdjacencyResolver => _advancedAdjacency;
 
         public override bool IsConnected(PlacedTileObject neighbourObject)
         {
-            bool isConnected = false;
-            if (neighbourObject)
+            if (!neighbourObject)
             {
-                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
-                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
-                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
+                return false;
             }
+
+            bool isConnected = neighbourObject && neighbourObject.HasAdjacencyConnector;
+            isConnected &= neighbourObject.GenericType == GenericType || GenericType == TileObjectGenericType.None;
+            isConnected &= neighbourObject.SpecificType == SpecificType || SpecificType == TileObjectSpecificType.None;
             return isConnected;
         }
     }

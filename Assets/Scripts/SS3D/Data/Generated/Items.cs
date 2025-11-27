@@ -7,7 +7,6 @@ namespace SS3D.Data.Generated
     {
         public static DatabaseAsset BikeHorn = new DatabaseAsset("BikeHorn", "Items");
         public static DatabaseAsset NuclearAuthenticationDisk = new DatabaseAsset("NuclearAuthenticationDisk", "Items");
-        public static DatabaseAsset ToolboxBlue = new DatabaseAsset("ToolboxBlue", "Items");
         public static DatabaseAsset SecurityPDA = new DatabaseAsset("SecurityPDA", "Items");
         public static DatabaseAsset SecurityIDCard = new DatabaseAsset("SecurityIDCard", "Items");
         public static DatabaseAsset PDA = new DatabaseAsset("PDA", "Items");
@@ -27,7 +26,6 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset DonkPocket = new DatabaseAsset("DonkPocket", "Items");
         public static DatabaseAsset Boombox = new DatabaseAsset("Boombox", "Items");
         public static DatabaseAsset FloorTile = new DatabaseAsset("FloorTile", "Items");
-        public static DatabaseAsset SteelReinforcedSheet = new DatabaseAsset("SteelReinforcedSheet", "Items");
         public static DatabaseAsset SteelSheet = new DatabaseAsset("SteelSheet", "Items");
         public static DatabaseAsset Crowbar = new DatabaseAsset("Crowbar", "Items");
         public static DatabaseAsset ScrewdriverBlue = new DatabaseAsset("ScrewdriverBlue", "Items");
@@ -76,8 +74,6 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset SteelGirder = new DatabaseAsset("SteelGirder", "Items");
         public static DatabaseAsset Plenum = new DatabaseAsset("Plenum", "Items");
         public static DatabaseAsset SteelGirderUnbolted = new DatabaseAsset("SteelGirderUnbolted", "Items");
-        public static DatabaseAsset GlassReinforcedSheet = new DatabaseAsset("GlassReinforcedSheet", "Items");
-        public static DatabaseAsset GlassSheet = new DatabaseAsset("GlassSheet", "Items");
         public static DatabaseAsset WoodLog = new DatabaseAsset("WoodLog", "Items");
         public static DatabaseAsset WoodPlank = new DatabaseAsset("WoodPlank", "Items");
         public static DatabaseAsset SteelRod = new DatabaseAsset("SteelRod", "Items");
@@ -102,6 +98,14 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset SteelWindowReinforced = new DatabaseAsset("SteelWindowReinforced", "Items");
         public static DatabaseAsset HeadsetSecurityLeft = new DatabaseAsset("HeadsetSecurityLeft", "Items");
         public static DatabaseAsset HeadsetSecurityRight = new DatabaseAsset("HeadsetSecurityRight", "Items");
+        public static DatabaseAsset ValveManual = new DatabaseAsset("ValveManual", "Items");
+        public static DatabaseAsset FilterR = new DatabaseAsset("FilterR", "Items");
+        public static DatabaseAsset MixerL = new DatabaseAsset("MixerL", "Items");
+        public static DatabaseAsset M4 = new DatabaseAsset("M4", "Items");
+        public static DatabaseAsset ToolboxBlue = new DatabaseAsset("ToolboxBlue", "Items");
+        public static DatabaseAsset GlassSheet = new DatabaseAsset("GlassSheet", "Items");
+        public static DatabaseAsset GlassReinforcedSheet = new DatabaseAsset("GlassReinforcedSheet", "Items");
+        public static DatabaseAsset SteelReinforcedSheet = new DatabaseAsset("SteelReinforcedSheet", "Items");
     }
 }
 

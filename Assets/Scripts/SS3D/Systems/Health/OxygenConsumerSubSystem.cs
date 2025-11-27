@@ -8,13 +8,26 @@ namespace SS3D.Systems.Health
 {
     public class OxygenConsumerSubSystem : NetworkSubSystem
     {
-        private readonly List<IOxygenConsumer> consumerList = new List<IOxygenConsumer>();
-        private float _timer = 0f;
+        private readonly List<IOxygenConsumer> _consumerList = new();
+        private float _timer;
         private float _timeBeforeConsuming = 1f;
 
-        void Update()
+        public void RegisterConsumer(IOxygenConsumer consumer)
         {
-            if (!IsServer) return;
+            _consumerList.Add(consumer);
+        }
+
+        public void UnregisterConsumer(IOxygenConsumer consumer)
+        {
+            _consumerList.Remove(consumer);
+        }
+
+        protected void Update()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
 
             _timer += Time.deltaTime;
 
@@ -22,21 +35,11 @@ namespace SS3D.Systems.Health
             {
                 _timer = 0f;
 
-                for (int i= consumerList.Count-1; i>=0; i--)
+                for (int i = _consumerList.Count - 1; i >= 0; i--)
                 {
-                    consumerList[i].ConsumeOxygen();
+                    _consumerList[i].ConsumeOxygen();
                 }
             }
-        }
-
-        public void RegisterConsumer(IOxygenConsumer consumer)
-        {
-            consumerList.Add(consumer);
-        }
-
-        public void UnregisterConsumer(IOxygenConsumer consumer)
-        {
-            consumerList.Remove(consumer);
         }
     }
 }

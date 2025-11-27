@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile
 {
@@ -11,8 +12,13 @@ namespace SS3D.Systems.Tile
     [Serializable]
     public struct SavedPlacedTileObject
     {
-        public string tileObjectSOName;
-        public Vector2Int origin;
-        public Direction dir;
+        [FormerlySerializedAs("tileObjectSOName")]
+        public string TileObjectSoName;
+
+        [FormerlySerializedAs("origin")]
+        public Vector2Int Origin;
+
+        [FormerlySerializedAs("dir")]
+        public Direction Dir;
     }
 }

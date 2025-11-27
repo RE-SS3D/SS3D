@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -2184613742833408818}
   - component: {fileID: 8762327486351513096}
   - component: {fileID: -7818111786806045911}
+  - component: {fileID: 1517725324955553934}
   m_Layer: 0
   m_Name: AtmosPipesL1
   m_TagString: Untagged
@@ -55,18 +56,19 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 2229135679135330135}
+  - {fileID: 1517725324955553934}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 81
+  <PrefabId>k__BackingField: 104
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -136,21 +138,22 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -7727686409064562107}
   _networkObjectCache: {fileID: -7727686409064562107}
-  _syncedConnections: 0
-  _connector:
-    o: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    uNorth: {fileID: -4913184590784469283, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    uSouth: {fileID: -8982356636661201101, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    i: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lNE: {fileID: 1452706557494696559, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lNW: {fileID: 2974487339661499261, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lSE: {fileID: -8284340391569421606, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lSW: {fileID: -710663454644857736, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tSWE: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNEW: {fileID: -4415080472327585715, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNSW: {fileID: -8084914691331622005, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNSE: {fileID: -7828955826838884863, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    x: {fileID: 5978052073093224489, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  _pipeConnector:
+    O: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    UNorth: {fileID: -4913184590784469283, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    USouth: {fileID: -8982356636661201101, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    I: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    INorthMachinery: {fileID: -1620234467289525196, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    ISouthMachinery: {fileID: 8309825238281200940, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LNe: {fileID: 1452706557494696559, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LNw: {fileID: 2974487339661499261, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LSe: {fileID: -8284340391569421606, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LSW: {fileID: -710663454644857736, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TSwe: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TNew: {fileID: -4415080472327585715, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TNsw: {fileID: -8084914691331622005, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TNse: {fileID: -7828955826838884863, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    X: {fileID: 5978052073093224489, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!114 &-2184613742833408818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,4 +192,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: 1560fd5f9b47de74fbf91224b725ba61, type: 2}
+  _key: {fileID: 11400000, guid: 1560fd5f9b47de74fbf91224b725ba61, type: 2}
+--- !u!114 &1517725324955553934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc5064f08d782f64295eb0712467d2a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -7727686409064562107}
+  _networkObjectCache: {fileID: -7727686409064562107}

@@ -1,0 +1,31 @@
+{
+    "name": "SS3D.Chat",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
+        "GUID:d2bbca7254de5e746857b04cfb560876",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:464244d81aa026b4caa46e2dbafa2694",
+        "GUID:ee843510a9f25d145bb9efba0bac7e46",
+        "GUID:1476e4af5b8d89d4c9963efe314428b9",
+        "GUID:eb124556ba20d60469be9771eb1f0360",
+        "GUID:8979f103c1228714eb0115e440b2b33a",
+        "GUID:ee61973a336722c41acef2425d9de4f5",
+        "GUID:09ed6ceb4221dc3468f1528207ef24d3",
+        "GUID:4c7f3fb9e6d5040458fec84bce7ac111",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:ccbc17dd85baaaf4dbadcbffe6661ee3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

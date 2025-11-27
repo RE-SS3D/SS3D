@@ -7,6 +7,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Rounds.Messages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,6 +34,24 @@ namespace SS3D.Engine.Chat
             
             InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnClientReceiveChatMessage);
             InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnServerReceiveChatMessage);
+            ServerManager.RegisterBroadcast<ChangeRoundStateMessage>(HandleRoundChange);
+            Subsystems.Get<EntitySubSystem>().EntitySpawned += HandleEntitySpawned;
+        }
+
+        private void HandleEntitySpawned(Entity entity)
+        {
+            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+
+            // TODO: replace with character name and role
+            SendServerMessage(chatChannels.stationAlertsChannel, $"{entity.Ckey}, assistant, has joined the ship");;
+        }
+
+        private void HandleRoundChange(NetworkConnection arg1, ChangeRoundStateMessage arg2)
+        {
+            ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
+
+            // TODO: use captain character name here
+            SendServerMessage(chatChannels.stationAlertsChannel, "Welcome aboard crew, you're under no captain. Enjoy!");
         }
 
         private void OnServerReceiveChatMessage(NetworkConnection conn, ChatMessage msg)
@@ -72,8 +91,8 @@ namespace SS3D.Engine.Chat
 
             if (chatChannel.RoleRequiredToUse != ServerRoleTypes.None)
             {
-                PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
-                if (!permissionSystem.IsAtLeast(player.Ckey, chatChannel.RoleRequiredToUse))
+                PermissionSubSystem permissionSubSystem = Subsystems.Get<PermissionSubSystem>();
+                if (!permissionSubSystem.IsAtLeast(player.Ckey, chatChannel.RoleRequiredToUse))
                 {
                     return;
                 }

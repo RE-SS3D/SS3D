@@ -39,7 +39,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelSheet
     _to: SteelRod
     _modifyResult: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelSheet
     _to: SteelGirderUnbolted
     _modifyResult: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
       _list: []
       _new: {fileID: 0}
     _conditions: []
-    _craftingInteractionType: 3
+    _craftingInteractionType: 4
     _from: SteelSheet
     _to: FloorTile
     _modifyResult: 0

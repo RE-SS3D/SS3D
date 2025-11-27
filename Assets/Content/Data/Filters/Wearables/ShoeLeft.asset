@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0adc192349dc57848b5394a2c6707c23, type: 3}
   m_Name: ShoeLeft
   m_EditorClassIdentifier: 
-  mustHaveAll: 0
-  acceptedTraits:
+  _mustHaveAll: 0
+  <AcceptedTraits>k__BackingField:
   - {fileID: 11400000, guid: 144a9ec15419baf49ba8c376f97628c6, type: 2}
-  deniedTraits: []
+  <DeniedTraits>k__BackingField: []

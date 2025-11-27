@@ -1,66 +1,66 @@
-﻿using SS3D.Data.Generated;
+﻿using SS3D.Core;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
-using SS3D.Systems.Entities;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.UI;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
-    public class ViewContainerInteraction : Interaction
+    public class ViewContainerInteraction : ContinuousInteraction
     {
-        public float MaxDistance { get; set; }
-
-        public readonly AttachedContainer AttachedContainer;
+        private readonly AttachedContainer _attachedContainer;
 
         public ViewContainerInteraction(AttachedContainer attachedContainer)
         {
-            AttachedContainer = attachedContainer;
+            _attachedContainer = attachedContainer;
         }
 
-        public override string GetName(InteractionEvent interactionEvent)
-        {
-            return "View " + AttachedContainer.ContainerName;
-        }
+        public override InteractionType InteractionType => InteractionType.None;
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return Icon != null ? Icon : InteractionIcons.Open;
-        }
+        public float MaxDistance { get; set; }
+
+        public override string GetGenericName() => "View Container";
+
+        public override IClientInteraction CreateClient(InteractionEvent interactionEvent) => null;
+
+        public override string GetName(InteractionEvent interactionEvent) => "View " + _attachedContainer.ContainerName;
+
+        public override Sprite GetIcon(InteractionEvent interactionEvent) => InteractionIcons.Open;
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            if (!InteractionExtensions.RangeCheck(interactionEvent) || _attachedContainer == null)
             {
                 return false;
             }
 
-            if (AttachedContainer == null)
-            {
-                return false;
-            }
-
-            var containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
-            if (containerViewer == null)
-            {
-                return false;
-            }
-
-            Entity entity = interactionEvent.Source.GetComponentInParent<Entity>();
-            if (entity == null)
-            {
-                return false;
-            }
-            return !containerViewer.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().SelectedHand.CanInteract(AttachedContainer.gameObject);
+            return !ViewLocator.Get<ContainerView>()[0].ContainerIsDisplayed(_attachedContainer);
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            var containerViewer = interactionEvent.Source.GetComponentInParent<ContainerViewer>();
+            ContainerView containerView = ViewLocator.Get<ContainerView>()[0];
+            containerView.RpcCloseContainer(interactionEvent.Source.NetworkObject.Owner, _attachedContainer);
+        }
 
-            containerViewer.ShowContainerUI(AttachedContainer);
+        protected override bool CanKeepInteracting(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            return InteractionExtensions.RangeCheck(interactionEvent) && _attachedContainer != null;
+        }
 
-            return false;
+        protected override bool StartImmediately(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            ContainerView containerView = ViewLocator.Get<ContainerView>()[0];
+            containerView.RpcOpenContainer(interactionEvent.Source.NetworkObject.Owner, _attachedContainer, interactionEvent.Source.NetworkObject);
+            return true;
+        }
+
+        protected override void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference)
+        {
         }
     }
 }

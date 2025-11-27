@@ -15,14 +15,14 @@ namespace SS3D.Systems.Crafting
         [Server]
         public void Consume()
         {
-            if (TryGetComponent(out Item item) && item.IsInContainer())
+            if (TryGetComponent(out Item item) && item.IsInContainer)
             {
                 item.Container.RemoveItem(item);
             }
 
             if (TryGetComponent(out PlacedTileObject tileObject))
             {
-                SubSystems.Get<TileSubSystem>().CurrentMap.ClearTileObject(gameObject.transform.position, tileObject.Layer, tileObject.Direction);
+                Subsystems.Get<TileSubSystem>().CurrentMap.ClearTileObject(gameObject.transform.position, tileObject.Layer, tileObject.Direction);
                 return;
             }
 

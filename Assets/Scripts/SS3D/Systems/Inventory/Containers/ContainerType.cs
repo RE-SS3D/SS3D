@@ -6,9 +6,8 @@ namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
     /// Make sure all the "clothes" type container are at the end of this enum (starting from Shoes..).
-    /// This is necessary for differentiating between clothes and non clothes containers in some methods. 
+    /// This is necessary for differentiating between clothes and non clothes containers in some methods.
     /// </summary>
-    [SerializeField]
     public enum ContainerType
     {
         None = 0,
@@ -30,4 +29,3 @@ namespace SS3D.Systems.Inventory.Containers
         Belt = 1 << 15,
     }
 }
-

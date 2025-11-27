@@ -1,14 +1,17 @@
-﻿using SS3D.Data.Generated;
+﻿using JetBrains.Annotations;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
-    public sealed class StoreInteraction : Interaction
+    public sealed class StoreInteraction : IInteraction
     {
         private readonly AttachedContainer _attachedContainer;
 
@@ -17,31 +20,31 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
-        public override string GetName(InteractionEvent interactionEvent)
-        {
-            return "Store in " + _attachedContainer.ContainerName;
-        }
+        public InteractionType InteractionType => InteractionType.None;
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return Icon != null ? Icon : InteractionIcons.Discard;
-        }
+        public IClientInteraction CreateClient(InteractionEvent interactionEvent) => null;
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        [NotNull]
+        public string GetName(InteractionEvent interactionEvent) => "Store in " + _attachedContainer.ContainerName;
+
+        public string GetGenericName() => "Store";
+
+        public Sprite GetIcon(InteractionEvent interactionEvent) => InteractionIcons.Discard;
+
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }
 
-            IInteractionSource source = interactionEvent.Source;
-            if (source is not IGameObjectProvider sourceGameObjectProvider)
+            IInteractionSource source = interactionEvent.Source.GetRootSource();
+            if (source is not IContainerProvider containerProvider)
             {
                 return false;
             }
 
-            Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-            if (!hands || !_attachedContainer)
+            if (!_attachedContainer)
             {
                 return false;
             }
@@ -51,28 +54,32 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 return false;
             }
-            
-            return !hands.SelectedHand.IsEmpty() && CanStore(item, _attachedContainer);
+
+            return !containerProvider.Container.Empty && CanStore(item, _attachedContainer);
+        }
+
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            IInteractionSource source = interactionEvent.Source.GetRootSource();
+            if (source is IContainerProvider containerProvider)
+            {
+                Item item = containerProvider.Container.Items.First();
+                containerProvider.Container.Dump();
+                _attachedContainer.AddItem(item);
+            }
+
+            return false;
+        }
+
+        public bool Update(InteractionEvent interactionEvent, InteractionReference reference) => false;
+
+        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        {
         }
 
         private bool CanStore(Item item, AttachedContainer target)
         {
             return target.CanContainItem(item);
-        }
-
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            IInteractionSource source = interactionEvent.Source;
-            if (source is IGameObjectProvider sourceGameObjectProvider)
-            {
-                Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                Item item = hands.SelectedHand.ItemInHand;
-
-                hands.SelectedHand.Container.Dump();
-                _attachedContainer.AddItem(item);
-            }
-
-            return false;
         }
     }
 }

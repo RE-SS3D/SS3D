@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
@@ -25,5 +24,4 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Refresh();
     }
-
 }

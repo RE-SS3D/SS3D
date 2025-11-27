@@ -1,7 +1,7 @@
 using FishNet.Serializing;
 using UnityEngine;
 
-namespace SS3D.Systems.Roles
+namespace SS3D.Traits
 {
     public static class IDPermissionSerializer
     {

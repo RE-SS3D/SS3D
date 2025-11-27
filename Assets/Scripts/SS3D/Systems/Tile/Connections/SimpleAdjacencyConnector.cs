@@ -7,6 +7,7 @@ using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -15,20 +16,24 @@ namespace SS3D.Systems.Tile.Connections
     /// Things do not need special connections in corners.
     /// The only condition to connect to a neighbour is that they share generic and specific type.
     /// </summary>
-    public class SimpleAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
+    public class SimpleAdjacencyConnector : AbstractHorizontalConnector
     {
-        [SerializeField] private SimpleConnector simpleAdjacency;
-        protected override IMeshAndDirectionResolver AdjacencyResolver => simpleAdjacency;
+        [FormerlySerializedAs("simpleAdjacency")]
+        [SerializeField]
+        private SimpleConnector _simpleAdjacency;
+
+        protected override IMeshAndDirectionResolver AdjacencyResolver => _simpleAdjacency;
 
         public override bool IsConnected(PlacedTileObject neighbourObject)
         {
             bool isConnected = false;
             if (neighbourObject != null)
             {
-                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
-                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
-                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
+                isConnected = neighbourObject && neighbourObject.HasAdjacencyConnector;
+                isConnected &= neighbourObject.GenericType == GenericType || GenericType == TileObjectGenericType.None;
+                isConnected &= neighbourObject.SpecificType == SpecificType || SpecificType == TileObjectSpecificType.None;
             }
+
             return isConnected;
         }
     }

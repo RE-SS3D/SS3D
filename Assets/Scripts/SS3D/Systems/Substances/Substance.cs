@@ -7,10 +7,14 @@ namespace SS3D.Substances
     [CreateAssetMenu(menuName = "SS3D/Substances/Substance")]
     public class Substance : ScriptableObject
     {
-        public SubstanceType Type;
-        public Color Color;
+        [field:SerializeField]
+        public SubstanceType Type { get; set; }
+
+        [field:SerializeField]
+        public Color Color { get; set; }
 
         // Todo : Is this in "normal conditions" ? (1 atm, ambient room temperature around 27 celsius degree)
-        public float MillilitersPerMilliMoles;
+        [field:SerializeField]
+        public float MillilitersPerMilliMoles { get; set; }
     }
 }

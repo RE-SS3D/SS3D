@@ -49,7 +49,7 @@ namespace RuntimeInspectorNamespace
 			input.onValueChanged.AddListener( OnValueChanged );
 
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-			// On new Input System, scroll sensitivity is much higher than legacy Input system
+			// On new Input SubSystem, scroll sensitivity is much higher than legacy Input system
 			templateRoot.GetComponent<ScrollRect>().scrollSensitivity *= 0.25f;
 #endif
 		}

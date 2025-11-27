@@ -30,11 +30,11 @@ namespace SS3D.Systems.Health
 
         /// <summary>
         /// The volume of blood in mLs the substance container can contain as a maximum. the 1 plus MaxOxygenToBloodVolumeRatio factor
-        /// is there to "leave place" to oxygen in the container, which takes up a significant amount 
+        /// is there to "leave place" to oxygen in the container, which takes up a significant amount
         /// (up to MaxOxygenToBloodVolumeRatio times 100 % of the blood volume).
         /// </summary>
-        public float MaxBloodVolume =>  _healthController.BodyPartsVolume * HealthConstants.BloodVolumeToHumanVolumeRatio /
-            (1+HealthConstants.MaxOxygenToBloodVolumeRatio);
+        public float MaxBloodVolume => _healthController.BodyPartsVolume * HealthConstants.BloodVolumeToHumanVolumeRatio /
+            (1 + HealthConstants.MaxOxygenToBloodVolumeRatio);
 
         /// <summary>
         /// The maximum amount of blood in mmols _container can handle.
@@ -42,16 +42,9 @@ namespace SS3D.Systems.Health
         public float MaxBloodQuantity => MaxBloodVolume / _blood.MillilitersPerMilliMoles;
 
         /// <summary>
-        /// The maximum volume in mLs of oxygen _container can handle.
-        /// </summary>
-        private float MaxOxygenFullBloodVolume => HealthConstants.MaxOxygenToBloodVolumeRatio * MaxBloodVolume;
-
-
-        /// <summary>
         /// Maximum volume of oxygen in mLs that can fit in _container, given the present amount of blood in it.
         /// </summary>
         public float MaxOxygenVolume => HealthConstants.MaxOxygenToBloodVolumeRatio * _container.GetSubstanceVolume(_blood);
-
 
         /// <summary>
         /// Maximum amount of oxygen in mmols that can fit in _container, given the present amount of blood in it.
@@ -59,23 +52,79 @@ namespace SS3D.Systems.Health
         public float MaxOxygenQuantity => MaxOxygenVolume / _oxygen.MillilitersPerMilliMoles;
 
         /// <summary>
-        /// The maximum amount of oxygen in mmols _container can handle.
-        /// </summary>
-        private float MaxOxygenFullBloodQuantity => MaxOxygenFullBloodVolume / _oxygen.MillilitersPerMilliMoles;
-
-        /// <summary>
-        /// Max total volume _container can have. The tolerance factor allows for a margin, but trouble can occurs if 
+        /// Max total volume _container can have. The tolerance factor allows for a margin, but trouble can occurs if
         /// the volume of the container is above MaxOxygenVolume + MaxBloodVolume.
         /// </summary>
         public float MaxTotalVolume => (MaxOxygenFullBloodVolume + MaxBloodVolume) * HealthConstants.HighBloodVolumeToleranceFactor;
 
+        /// <summary>
+        /// The maximum volume in mLs of oxygen _container can handle.
+        /// </summary>
+        private float MaxOxygenFullBloodVolume => HealthConstants.MaxOxygenToBloodVolumeRatio * MaxBloodVolume;
+
+        /// <summary>
+        /// The maximum amount of oxygen in mmols _container can handle.
+        /// </summary>
+        private float MaxOxygenFullBloodQuantity => MaxOxygenFullBloodVolume / _oxygen.MillilitersPerMilliMoles;
+
         public override void OnStartServer()
         {
             base.OnStartServer();
-            SubstancesSubSystem registry = SubSystems.Get<SubstancesSubSystem>();
+            SubstancesSubSystem registry = Subsystems.Get<SubstancesSubSystem>();
             _blood = registry.FromType(SubstanceType.Blood);
             _oxygen = registry.FromType(SubstanceType.Oxygen);
             StartCoroutine(Init());
+        }
+
+        /// <summary>
+        /// Return the amount of oxygen the circulatory system can send to organs.
+        /// If the blood quantity is above a given treshold, all oxygen in the circulatory container is available.
+        /// If blood gets below, it starts diminishing the availability of oxygen despite the circulatory system containing enough.
+        /// This is to mimick the lack of blood making oxygen transport difficult and potentially leading to organ suffocation.
+        /// </summary>
+        [Server]
+        public double AvailableOxygen()
+        {
+            float bloodVolume = _container.GetSubstanceVolume(_blood);
+
+            float healthyBloodVolume = HealthConstants.HealthyBloodVolumeRatio * MaxBloodVolume;
+
+            float oxygenQuantity = _container.GetSubstanceQuantity(_oxygen);
+
+            if (oxygenQuantity > MaxOxygenQuantity)
+            {
+                _container.RemoveSubstance(_oxygen, oxygenQuantity - MaxOxygenQuantity);
+            }
+
+            return bloodVolume > healthyBloodVolume ? oxygenQuantity : (bloodVolume / healthyBloodVolume) * oxygenQuantity;
+        }
+
+        /// <summary>
+        /// Compute the need in oxygen of every body part in the provided list.
+        /// </summary>
+        [Server]
+        public float[] ComputeIndividualNeeds(ReadOnlyCollection<BodyPart> parts)
+        {
+            float[] oxygenNeededForEachpart = new float[parts.Count];
+            int i = 0;
+            foreach (BodyPart bodyPart in parts)
+            {
+                bodyPart.TryGetBodyLayer(out CirculatoryLayer circulatory);
+                oxygenNeededForEachpart[i] = (float)circulatory.OxygenNeeded;
+                i++;
+            }
+
+            return oxygenNeededForEachpart;
+        }
+
+        /// <summary>
+        /// Simply add oxygen and blood in the maximum allowed amount.
+        /// </summary>
+        /// <returns></returns>
+        public void AddInitialSubstance()
+        {
+            _container.AddSubstance(_blood, MaxBloodQuantity);
+            _container.AddSubstance(_oxygen, MaxOxygenFullBloodQuantity);
         }
 
         /// <summary>
@@ -101,56 +150,6 @@ namespace SS3D.Systems.Health
         private void UpdateVolume()
         {
             _container.ChangeVolume(MaxTotalVolume);
-        }
-
-        /// <summary>
-        /// Return the amount of oxygen the circulatory system can send to organs.
-        /// If the blood quantity is above a given treshold, all oxygen in the circulatory container is available.
-        /// If blood gets below, it starts diminishing the availability of oxygen despite the circulatory system containing enough.
-        /// This is to mimick the lack of blood making oxygen transport difficult and potentially leading to organ suffocation.
-        /// </summary>
-        [Server]
-        public double AvailableOxygen()
-        {
-            float bloodVolume = _container.GetSubstanceVolume(_blood);
-
-            float healthyBloodVolume = HealthConstants.HealthyBloodVolumeRatio * MaxBloodVolume;
-
-            float oxygenQuantity = _container.GetSubstanceQuantity(_oxygen);
-
-            if(oxygenQuantity > MaxOxygenQuantity)
-            {
-                _container.RemoveSubstance(_oxygen, oxygenQuantity - MaxOxygenQuantity);
-            }
-
-            return bloodVolume > healthyBloodVolume ? oxygenQuantity : (bloodVolume / healthyBloodVolume) * oxygenQuantity;
-        }
-
-        /// <summary>
-        /// Compute the need in oxygen of every body part in the provided list.
-        /// </summary>
-        [Server]
-        public float[] ComputeIndividualNeeds(ReadOnlyCollection<BodyPart> parts)
-        {
-            float[] oxygenNeededForEachpart = new float[parts.Count];
-            int i = 0;
-            foreach (BodyPart bodyPart in parts)
-            {
-                bodyPart.TryGetBodyLayer(out CirculatoryLayer circulatory);
-                oxygenNeededForEachpart[i] = (float)circulatory.OxygenNeeded;
-                i++;
-            }
-            return oxygenNeededForEachpart;
-        }
-
-        /// <summary>
-        /// Simply add oxygen and blood in the maximum allowed amount.
-        /// </summary>
-        /// <returns></returns>
-        public void AddInitialSubstance()
-        {
-            _container.AddSubstance(_blood, MaxBloodQuantity);
-            _container.AddSubstance(_oxygen, MaxOxygenFullBloodQuantity);
         }
     }
 }

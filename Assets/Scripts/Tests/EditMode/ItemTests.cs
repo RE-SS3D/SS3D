@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using SS3D.Systems;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Traits;
 
 namespace EditorTests
 {
@@ -90,7 +91,7 @@ namespace EditorTests
             // Apply the traits to the item and return it
             var go = new GameObject();
             var item = go.AddComponent<Item>();
-            item.Init("TestItem", 1f, traits);
+            item.Init("TestItem", traits);
             return item;
         }
 
@@ -103,7 +104,7 @@ namespace EditorTests
         {
             var go = new GameObject();
             var item = go.AddComponent<Item>();
-            item.Init("TestItem", 1f, traits);
+            item.Init("TestItem", traits);
             return item;
         }
 
@@ -116,7 +117,7 @@ namespace EditorTests
         {
             var go = new GameObject();
             var item = go.AddComponent<Item>();
-            item.Init("TestItem", 1f, new List<Trait>());
+            item.Init("TestItem", new List<Trait>());
             return item;
         }
         #endregion

@@ -1,7 +1,6 @@
 ﻿using SS3D.Permissions;
-using SS3D.Systems;
 using SS3D.Systems.Entities;
-using System;
+using SS3D.Traits;
 using UnityEngine;
 
 namespace SS3D.Engine.Chat

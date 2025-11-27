@@ -1,4 +1,5 @@
 ﻿using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
@@ -53,19 +54,18 @@ namespace SS3D.Systems.Crafting
         [SerializeField]
         private MeshRenderer _struts;
 
-
         /// <summary>
         /// Change the current girder prefab model into another one, modifying its mesh.
         /// </summary>
         [Server]
         public override void Modify(IInteraction interaction, InteractionEvent interactionEvent, string step)
         {
-            _currentStepName = step;
-
+            CurrentStepName = step;
             ClientModify(step);
         }
 
-        public override GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent) { return gameObject; }
+        [NotNull]
+        public override GameObject Craft(IInteraction interaction, InteractionEvent interactionEvent) => gameObject;
 
         private void AddMetalSheet()
         {
@@ -97,7 +97,6 @@ namespace SS3D.Systems.Crafting
             _supportMesh.enabled = true;
         }
 
-
         /// <summary>
         /// Put the girder back to its initial mesh.
         /// </summary>
@@ -127,43 +126,72 @@ namespace SS3D.Systems.Crafting
             switch (stepName)
             {
                 case "SteelGirderWithMetalSheet":
+                {
                     AddMetalSheet();
                     break;
+                }
+
                 case "SteelGirderWithGlassSheet":
+                {
                     AddWindowSheet();
                     break;
+                }
+
                 case "ReinforcedSteelGirderWithStruts":
+                {
                     AddStruts();
                     AddSupports();
                     break;
+                }
+
                 case "ReinforcedSteelGirderWithBoltedReinforcedMetalSheets":
+                {
                     AddStruts();
                     AddSupports();
                     AddReinforcedSteelSheets();
                     break;
+                }
+
                 case "ReinforcedSteelGirderWithBoltedReinforcedGlassSheets":
+                {
                     AddStruts();
                     AddSupports();
                     AddReinforcedWindowSheets();
                     break;
+                }
+
                 case "ReinforcedSteelGirderWithBoltedGlassSheets":
+                {
                     AddStruts();
                     AddSupports();
                     AddWindowSheet();
                     break;
+                }
+
                 case "ReinforcedSteelGirderWithBoltedMetalSheets":
+                {
                     AddStruts();
                     AddSupports();
                     AddMetalSheet();
                     break;
+                }
+
                 case "ReinforcedSteelGirder":
+                {
                     AddSupports();
                     break;
+                }
+
                 case "SteelGirder":
+                {
                     break;
+                }
+
                 default:
+                {
                     Log.Error(this, "step name passed in parameter is not handled by girderCraftable");
                     break;
+                }
             }
         }
     }

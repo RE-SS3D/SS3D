@@ -6,23 +6,34 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health
 {
-	public class BoneLayer : BodyLayer
-	{
-		public override BodyLayerType LayerType
-		{
-			get { return BodyLayerType.Bone; }
-		}
+    public class BoneLayer : BodyLayer
+    {
+        public BoneLayer(BodyPart bodyPart)
+        : base(bodyPart)
+        {
+        }
 
-		public BoneLayer(BodyPart bodyPart) : base(bodyPart)
-		{
+        public BoneLayer(BodyPart bodyPart, DamagesContainer damages)
+        : base(bodyPart, damages)
+        {
+        }
 
-		}
+        public override BodyLayerType LayerType
+        {
+            get { return BodyLayerType.Bone; }
+        }
 
-		public BoneLayer(BodyPart bodyPart, DamagesContainer damages)
-		: base(bodyPart, damages)
-		{
+        /// <summary>
+        /// Generate a certain amount of blood and put it in the circulatory system if there's one.
+        /// </summary>
+        public virtual void ProduceBlood()
+        {
+            throw new NotImplementedException();
+        }
 
-		}
+        public override void Cleanlayer()
+        {
+        }
 
         protected override void SetDamagesContainer()
         {
@@ -37,19 +48,6 @@ namespace SS3D.Systems.Health
             Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1f, 0f));
             Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 0.8f, 0f));
             Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 0f, 0f));
-        }
-
-		/// <summary>
-		/// Generate a certain amount of blood and put it in the circulatory system if there's one.
-		/// </summary>
-		public virtual void ProduceBlood()
-		{
-			throw new NotImplementedException();
-		}
-
-        public override void Cleanlayer()
-        {
-            
         }
     }
 }

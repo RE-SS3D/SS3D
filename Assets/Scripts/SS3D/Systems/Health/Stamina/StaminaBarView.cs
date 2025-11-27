@@ -1,4 +1,3 @@
-using System.Linq;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Attributes;
@@ -16,35 +15,13 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// The actual UI bar
         /// </summary>
-        [SerializeField] private Slider _slider;
+        [SerializeField]
+        private Slider _slider;
 
         /// <summary>
         /// Reference to the stamina controller that this view is supporting
         /// </summary>
         private StaminaController _controller;
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-            
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            var uiVisibilityView = ViewLocator.Get<GlobalUiVisibilityControllerView>().First();
-            uiVisibilityView.RegisterToggle(GameObject);
-        }
-
-        /// <summary>
-        /// Set the slider to the correct value
-        /// </summary>
-        /// <param name="stamina">Proportion of stamina available (in range of 0f to 1f)</param>
-        private void SetStamina(float stamina)
-        {
-            _slider.value = stamina;
-        }
-
-        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
-        {
-            SetStamina(_controller ? _controller.CurrentStamina : 0f);
-        }
 
         public void AssignViewToPlayer(StaminaController staminaController)
         {
@@ -64,6 +41,28 @@ namespace SS3D.Systems.Health
             {
                 _controller = null;
             }
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            GlobalUiVisibilityControllerView uiVisibilityView = ViewLocator.Get<GlobalUiVisibilityControllerView>()[0];
+            uiVisibilityView.RegisterToggle(GameObject);
+        }
+
+        /// <summary>
+        /// Set the slider to the correct value
+        /// </summary>
+        /// <param name="stamina">Proportion of stamina available (in range of 0f to 1f)</param>
+        private void SetStamina(float stamina)
+        {
+            _slider.value = stamina;
+        }
+
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        {
+            SetStamina(_controller ? _controller.CurrentStamina : 0f);
         }
     }
 }

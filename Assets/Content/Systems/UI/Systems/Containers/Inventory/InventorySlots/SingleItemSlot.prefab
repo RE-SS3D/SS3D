@@ -89,8 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b2e863b1d33f1408d51dfcf60dcfcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemImage: {fileID: 1643315341115440644}
-  _item: {fileID: 0}
+  _itemImage: {fileID: 1643315341115440644}
 --- !u!1001 &2541968410778507077
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -188,6 +187,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3393983965762327756, guid: 1fd282cd3862b2848a83fe40030cf431, type: 3}
       propertyPath: ItemDisplay
+      value: 
+      objectReference: {fileID: 4932109889070309484}
+    - target: {fileID: 3393983965762327756, guid: 1fd282cd3862b2848a83fe40030cf431, type: 3}
+      propertyPath: _itemDisplay
       value: 
       objectReference: {fileID: 4932109889070309484}
     m_RemovedComponents: []

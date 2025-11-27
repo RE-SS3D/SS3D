@@ -66,7 +66,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 30
+  <PrefabId>k__BackingField: 38
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -136,21 +136,22 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -7727686409064562107}
   _networkObjectCache: {fileID: -7727686409064562107}
-  _syncedConnections: 0
-  _connector:
-    o: {fileID: -1444037753683383277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    uNorth: {fileID: 3280808188743794696, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    uSouth: {fileID: -3806360359158251138, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    i: {fileID: -1444037753683383277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lNE: {fileID: 4857098003923351258, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lNW: {fileID: -7474402538799832598, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lSE: {fileID: -5765311014171972663, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lSW: {fileID: -2676322450833060381, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tSWE: {fileID: -599376364307708729, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNEW: {fileID: -1086356526325406277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNSW: {fileID: -7630757551065068057, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNSE: {fileID: 35210991009650323, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    x: {fileID: 8288866924156647885, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  _pipeConnector:
+    O: {fileID: -1444037753683383277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    UNorth: {fileID: 3280808188743794696, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    USouth: {fileID: -3806360359158251138, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    I: {fileID: -1444037753683383277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    INorthMachinery: {fileID: -2196235759914568156, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    ISouthMachinery: {fileID: -6917731878647649375, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LNe: {fileID: 4857098003923351258, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LNw: {fileID: -7474402538799832598, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LSe: {fileID: -5765311014171972663, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    LSW: {fileID: -2676322450833060381, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TSwe: {fileID: -599376364307708729, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TNew: {fileID: -1086356526325406277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TNsw: {fileID: -7630757551065068057, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    TNse: {fileID: 35210991009650323, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    X: {fileID: 8288866924156647885, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!114 &-5784000675025238074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,4 +190,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: dc359615c950d954eb46014a2772b11d, type: 2}
+  _key: {fileID: 11400000, guid: dc359615c950d954eb46014a2772b11d, type: 2}

@@ -9,18 +9,18 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public enum TileLayer
     {
-        Plenum,
-        Turf,
-        Wire,
-        Disposal,
-        PipeSurface,
-        WallMountHigh,
-        WallMountLow,
-        FurnitureBase,
-        FurnitureTop,
-        Overlays,
-        PipeMiddle,
-        PipeLeft,
-        PipeRight,
+        Plenum = 0,
+        Turf = 1,
+        Wire = 2,
+        Disposal = 3,
+        PipeSurface = 4,
+        WallMountHigh = 5,
+        WallMountLow = 6,
+        FurnitureBase = 7,
+        FurnitureTop = 8,
+        Overlays = 9,
+        PipeMiddle = 10,
+        PipeLeft = 11,
+        PipeRight = 12,
     }
 }

@@ -1,11 +1,11 @@
 ﻿using SS3D.Core;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Hacks
 {
@@ -13,12 +13,12 @@ namespace SS3D.Hacks
     {
         public void Start()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += SeeContents;
+            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += SeeContents;
         }
 
         private void OnDestroy()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= SeeContents;
+            Subsystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= SeeContents;
         }
 
         private void SeeContents(InputAction.CallbackContext callbackContext)

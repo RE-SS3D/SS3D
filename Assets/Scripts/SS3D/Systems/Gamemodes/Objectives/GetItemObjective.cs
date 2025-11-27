@@ -1,5 +1,6 @@
 using Coimbra.Services.Events;
 using SS3D.Systems.GameModes.Events;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -15,7 +16,8 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <summary>
         /// The item id required to complete the objective.
         /// </summary>
-        [SerializeField] private GameObject _targetItem;
+        [SerializeField]
+        private GameObject _targetItem;
 
         /// <summary>
         /// The item that was picked up.
@@ -41,6 +43,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
             {
                 return;
             }
+
             Succeed();
         }
 
@@ -49,13 +52,15 @@ namespace SS3D.Systems.Gamemodes.Objectives
             GameObject itemIdId = e.Item.GameObject;
             string playerCkey = e.Player;
 
-            if (itemIdId == _targetItem  && playerCkey.Equals(AssigneeCkey))
+            if (itemIdId != _targetItem || !playerCkey.Equals(AssigneeCkey))
             {
-                _caughtItem = itemIdId;
-                _caughtPlayerCkey = playerCkey;
-
-                FinalizeObjective();
+                return;
             }
+
+            _caughtItem = itemIdId;
+            _caughtPlayerCkey = playerCkey;
+
+            FinalizeObjective();
         }
     }
 }

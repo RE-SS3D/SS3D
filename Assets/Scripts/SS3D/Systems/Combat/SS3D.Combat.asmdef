@@ -1,0 +1,27 @@
+{
+    "name": "SS3D.Combat",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:43c1375cedfd4704d8556970fe75a17e",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:6e00473804df0f0468c07310fbce5737",
+        "GUID:464244d81aa026b4caa46e2dbafa2694",
+        "GUID:68fcf497849e4be49a6cdafed5519ce7",
+        "GUID:9acdf52dae3820e4f88b46f9ccd6e053",
+        "GUID:1476e4af5b8d89d4c9963efe314428b9",
+        "GUID:ccbc17dd85baaaf4dbadcbffe6661ee3",
+        "GUID:ee843510a9f25d145bb9efba0bac7e46",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:137607592728bd9429ad9592e8494e6c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -4,24 +4,27 @@ using UnityEngine;
 
 namespace SS3D.Systems.Health
 {
-	public class OrganLayer : BodyLayer, IOxygenNeeder
+    public class OrganLayer : BodyLayer, IOxygenNeeder
     {
-        public OrganLayer(BodyPart bodyPart) : base(bodyPart)
-		{
-		}
+        public OrganLayer(BodyPart bodyPart)
+            : base(bodyPart)
+        {
+        }
 
-		public OrganLayer(BodyPart bodyPart,
-		DamagesContainer damages)
-		: base(bodyPart, damages)
-		{
+        public OrganLayer(BodyPart bodyPart, DamagesContainer damages)
+            : base(bodyPart, damages)
+        {
+        }
 
-		}
-
-		public override BodyLayerType LayerType { get => BodyLayerType.Organ; }
+        public override BodyLayerType LayerType { get => BodyLayerType.Organ; }
 
         public double GetOxygenNeeded()
         {
             return HealthConstants.MilliMolesOfOxygenPerMillilitersOfBody * BodyPart.Volume;
+        }
+
+        public override void Cleanlayer()
+        {
         }
 
         protected override void SetDamagesContainer()
@@ -37,11 +40,6 @@ namespace SS3D.Systems.Health
             Damages.DamagesInfo.Add(DamageType.Acid, new BodyDamageInfo(DamageType.Acid, 0f, 1.5f, 0f));
             Damages.DamagesInfo.Add(DamageType.Toxic, new BodyDamageInfo(DamageType.Toxic, 0f, 1.5f, 0f));
             Damages.DamagesInfo.Add(DamageType.Oxy, new BodyDamageInfo(DamageType.Oxy, 0f, 1f, 0f));
-        }
-
-        public override void Cleanlayer()
-        {
-
         }
     }
 }

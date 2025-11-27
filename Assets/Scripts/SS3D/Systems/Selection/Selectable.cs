@@ -1,49 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Core;
+using UnityEngine;
 
-namespace SS3D.Systems.Selection {
-
+namespace SS3D.Systems.Selection
+{
     [DisallowMultipleComponent]
     public class Selectable : Actor
     {
-        /// <summary>
-        /// The color that this Selectable will be rendered by the Selection Camera
-        /// </summary>
-        Color32 _selectionColor;
+        private static readonly int SelectionColorPropertyId = Shader.PropertyToID("_SelectionColor");
 
         /// <summary>
         /// The color that this Selectable will be rendered by the Selection Camera
         /// </summary>
-        public Color32 SelectionColor
-        {
-            get => _selectionColor;
-            set => _selectionColor = value;
-        }
+        public Color32 SelectionColor { get; set; }
 
         protected override void OnStart()
         {
             base.OnStart();
-            _selectionColor = SubSystems.Get<SelectionSubSystem>().RegisterSelectable(this);
-            SetColorRecursively(this.gameObject, _selectionColor, this);
-            
+            SelectionColor = Subsystems.Get<SelectionSubSystem>().RegisterSelectable(this);
+            SetColorRecursively(gameObject, SelectionColor, this);
         }
 
-        private void SetColorRecursively(GameObject go, Color32 color, Selectable initial)
+        private static void SetColorRecursively(GameObject go, Color32 color, Selectable initial)
         {
             // If the gameobject is selectable in its own right, it will set its own color
-            Selectable current = go.GetComponent<Selectable>();
-            if (current != null && current != initial) return;
+            if (go.TryGetComponent(out Selectable current) && current != initial)
+            {
+                return;
+            }
 
-            // If the gameobject has renderers, add SelectionColor to their MaterialPropertyBlock.
-            Renderer renderer = go.GetComponent<Renderer>();
-            if (renderer != null)
+            // If the gameobject has renderers, add SelectionColor to their MaterialPropertyBlock.;
+            if (go.TryGetComponent(out Renderer renderer))
             {
                 MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
                 renderer.GetPropertyBlock(propertyBlock);
-                propertyBlock.SetColor("_SelectionColor", color);
+                propertyBlock.SetColor(SelectionColorPropertyId, color);
                 renderer.SetPropertyBlock(propertyBlock);
             }
 
@@ -52,7 +43,6 @@ namespace SS3D.Systems.Selection {
             {
                 SetColorRecursively(child.gameObject, color, initial);
             }
-
         }
     }
 }

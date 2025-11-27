@@ -5,6 +5,7 @@ using SS3D.Systems;
 using SS3D.Systems.Inventory.Containers;
 using System.Linq;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Traits;
 
 namespace EditorTests
 {
@@ -19,7 +20,7 @@ namespace EditorTests
         {
 			// ARRANGE
 			AttachedContainer container = CreateContainer(new Vector2Int(10,10), null);
-			Item item = createItem();
+			Item item = CreateItem();
 
             // ACT
             container.AddItem(item);
@@ -38,11 +39,11 @@ namespace EditorTests
             // ARRANGE
             Vector2Int containerSize = new Vector2Int(2, 2);  // Container is only large enough for four of the items.
 			AttachedContainer container = CreateContainer(containerSize, null);
-			Item item1 = createItem();
-            Item item2 = createItem();
-            Item item3 = createItem();
-            Item item4 = createItem();
-			Item item5 = createItem();
+			Item item1 = CreateItem();
+            Item item2 = CreateItem();
+            Item item3 = CreateItem();
+            Item item4 = CreateItem();
+			Item item5 = CreateItem();
 
 			// ACT
 			container.AddItem(item1);
@@ -70,8 +71,8 @@ namespace EditorTests
             // ARRANGE
             Vector2Int containerSize = new Vector2Int(1, 1);  // Container is only large enough for one of the items.
 			AttachedContainer container = CreateContainer(containerSize, null);
-			Item item1 = createItem();
-            Item item2 = createItem();
+			Item item1 = CreateItem();
+            Item item2 = CreateItem();
             
             // Preload container with first item, and confirm that it cannot accept the second item (because it is full after the first)
             container.AddItem(item1);
@@ -106,14 +107,14 @@ namespace EditorTests
             deniedTrait.Name = "Denied Trait";
 
             Filter filter = ScriptableObject.CreateInstance<Filter>();
-            filter.acceptedTraits = new List<Trait>() { acceptedTrait };
-            filter.deniedTraits = new List<Trait>() { deniedTrait };
+            filter.AcceptedTraits = new() { acceptedTrait };
+            filter.DeniedTraits = new() { deniedTrait };
 
 			AttachedContainer container = CreateContainer(new Vector2Int(10,10), filter);
             
-            Item acceptedItem = createItemWithTrait(acceptedTrait);
-            Item neutralItem = createItemWithTrait(neutralTrait);
-            Item deniedItem = createItemWithTrait(deniedTrait);
+            Item acceptedItem = CreateItemWithTrait(acceptedTrait);
+            Item neutralItem = CreateItemWithTrait(neutralTrait);
+            Item deniedItem = CreateItemWithTrait(deniedTrait);
 
 
             // ACT
@@ -139,7 +140,7 @@ namespace EditorTests
         {
 			GameObject go = new GameObject();
 			AttachedContainer container = go.AddComponent<AttachedContainer>();
-			container.Init(size, filter);
+			container.Init(size);
             return container;
         }
 
@@ -148,11 +149,11 @@ namespace EditorTests
         /// </summary>
         /// <param name="traits"></param>
         /// <returns></returns>
-        private static Item createItemWithTrait(Trait trait)
+        private static Item CreateItemWithTrait(Trait trait)
         {
-            var go = new GameObject();
-            var item = go.AddComponent<Item>();
-            item.Init(trait.Name, 1f, new List<Trait>() { trait });
+            GameObject go = new();
+            Item item = go.AddComponent<Item>();
+            item.Init(trait.Name, new List<Trait>() { trait });
             return item;
         }
 
@@ -161,11 +162,11 @@ namespace EditorTests
         /// </summary>
         /// <param name="traits"></param>
         /// <returns></returns>
-        private static Item createItem(string name = "TestItem", float weight = 1f)
+        private static Item CreateItem(string name = "TestItem", float weight = 1f)
         {
-            var go = new GameObject();
-            var item = go.AddComponent<Item>();
-            item.Init(name, weight, new List<Trait>());
+            GameObject go = new();
+            Item item = go.AddComponent<Item>();
+            item.Init(name, new List<Trait>());
             return item;
         }
 
