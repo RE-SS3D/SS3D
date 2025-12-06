@@ -4,7 +4,6 @@ using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.TileMapCreator;
-using SS3D.Systems.Tile.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +69,7 @@ public class AssetGrid : Actor
         foreach (GenericObjectSo asset in _objectDatabase)
         {
             if (!asset.name.Contains(text, StringComparison.OrdinalIgnoreCase)) continue;
-            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<ConstructionSlot>().Setup(asset);
+            Instantiate(_slotPrefab, _contentRoot.transform).GetComponent<ConstructionSlot>().Setup(asset);
         }
     }
 
@@ -90,7 +89,7 @@ public class AssetGrid : Actor
                 case false when asset is TileObjectSo so && !allowedLayers.Contains(so.layer):
                     continue;
             }
-            Instantiate(_slotPrefab, _contentRoot.transform, true).GetComponent<ConstructionSlot>().Setup(asset);
+            Instantiate(_slotPrefab, _contentRoot.transform).GetComponent<ConstructionSlot>().Setup(asset);
         }
     }
 
