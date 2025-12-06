@@ -216,7 +216,7 @@ namespace SS3D.Systems.Crafting
             int index = 0;
             foreach (string stepName in stepNames)
             {
-                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(stepName, index);
+                Instantiate(_textSlotPrefab, _textSlotArea.transform).GetComponent<CraftingAssetSlot>().Setup(stepName, index);
                 index++;
             }
 
@@ -231,7 +231,7 @@ namespace SS3D.Systems.Crafting
             foreach (SecondaryResult result in results)
             {
                 GenericObjectSo asset = SubSystems.Get<TileSubSystem>().GetAsset(result.Asset.Id);
-                GameObject pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
+                GameObject pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform);
                 pictureSlot.GetComponent<CraftingSlot>().Setup(asset, result.Amount);
             }
 
