@@ -51,8 +51,8 @@ public class AssetGrid : Actor
     public void Setup()
     {
         AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        _tileSystem= SubSystems.Get<TileSubSystem>();
-        LoadObjectGrid(new[] { TileLayer.Plenum }, false);
+        _tileSystem = SubSystems.Get<TileSubSystem>();
+        OnDropDownChange();
     }
 
     private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
