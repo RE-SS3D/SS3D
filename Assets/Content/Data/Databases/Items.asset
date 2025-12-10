@@ -206,12 +206,4 @@ MonoBehaviour:
       _value: {fileID: 5049739216948387840, guid: a38ee818c953a404787757d8d20d2851, type: 3}
     - _key: Headset
       _value: {fileID: 8712940276313799639, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
-    - _key: HeadsetLeft
-      _value: {fileID: 7723921361698481624, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
-    - _key: HeadsetRight
-      _value: {fileID: 8712940276313799639, guid: 1a2f912be4bc1b948a2b22ffde517cdc, type: 3}
-    - _key: HeadsetSecurityLeft
-      _value: {fileID: 1529136833643899573, guid: 88d1ba1edb4ce5e4fa74c6a8d53e36e1, type: 3}
-    - _key: HeadsetSecurityRight
-      _value: {fileID: 2114292304283180005, guid: bc08055e4ec2e204f8f46a379b2b6603, type: 3}
     _new: 
