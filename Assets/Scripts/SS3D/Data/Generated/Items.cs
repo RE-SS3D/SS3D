@@ -99,6 +99,8 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset HeadsetSecurity = new DatabaseAsset("HeadsetSecurity", "Items");
         public static DatabaseAsset Headset = new DatabaseAsset("Headset", "Items");
         public static DatabaseAsset GloveInsulated = new DatabaseAsset("GloveInsulated", "Items");
+        public static DatabaseAsset ShoeHiTops = new DatabaseAsset("ShoeHiTops", "Items");
+        public static DatabaseAsset ShoeJackboots = new DatabaseAsset("ShoeJackboots", "Items");
     }
 }
 
