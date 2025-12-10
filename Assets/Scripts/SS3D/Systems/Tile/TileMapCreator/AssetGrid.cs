@@ -52,7 +52,7 @@ public class AssetGrid : Actor
     {
         AddHandle(UpdateEvent.AddListener(HandleUpdate));
         _tileSystem = SubSystems.Get<TileSubSystem>();
-        OnDropDownChange();
+        LoadCurrentCategory();
     }
 
     private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -96,7 +96,7 @@ public class AssetGrid : Actor
     /// <summary>
     /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
     /// </summary>
-    private void OnDropDownChange()
+    private void LoadCurrentCategory()
     {
         int index = _layerPlacementDropdown.value;
         bool isItems = false;
