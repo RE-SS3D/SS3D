@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: 17bb956de5fb959409b38dacb5749129, type: 2}
+    - target: {fileID: 2090621500076283417, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
+      propertyPath: _clothMeshes._list.Array.data[0]._value
+      value: 
+      objectReference: {fileID: -1549501771742983402, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     - target: {fileID: 4761919558556035364, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -25,7 +29,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6270372984438359393, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 77
+      value: 79
       objectReference: {fileID: 0}
     - target: {fileID: 6270372984438359393, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
       propertyPath: <AssetPathHash>k__BackingField

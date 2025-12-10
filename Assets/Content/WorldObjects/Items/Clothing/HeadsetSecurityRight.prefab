@@ -41,7 +41,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3346295071430447723, guid: 1a2f912be4bc1b948a2b22ffde517cdc, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 75
+      value: 76
       objectReference: {fileID: 0}
     - target: {fileID: 3346295071430447723, guid: 1a2f912be4bc1b948a2b22ffde517cdc, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
@@ -63,6 +63,10 @@ PrefabInstance:
       propertyPath: SerializedTransformProperties.LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4111475043132229960, guid: 1a2f912be4bc1b948a2b22ffde517cdc, type: 3}
+      propertyPath: _clothMeshes._list.Array.data[0]._value
+      value: 
+      objectReference: {fileID: -6645550767686512298, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     - target: {fileID: 7016257906270051300, guid: 1a2f912be4bc1b948a2b22ffde517cdc, type: 3}
       propertyPath: m_RootOrder
       value: 0

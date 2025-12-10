@@ -269,6 +269,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 3
+  _clothMeshes:
+    _list:
+    - _key: 3
+      _value: {fileID: -4072701865736530102, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    _new: 0
 --- !u!114 &234574913902294794
 MonoBehaviour:
   m_ObjectHideFlags: 0

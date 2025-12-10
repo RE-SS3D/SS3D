@@ -182,7 +182,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 58
+  <PrefabId>k__BackingField: 64
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -238,6 +238,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 7
+  _clothMeshes:
+    _list:
+    - _key: 7
+      _value: {fileID: -8786829411053318343, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    _new: 0
 --- !u!114 &3597852928683333302
 MonoBehaviour:
   m_ObjectHideFlags: 0

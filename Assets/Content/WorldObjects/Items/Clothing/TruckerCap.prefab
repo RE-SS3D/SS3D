@@ -203,6 +203,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: -3359041045153695440}
   - {fileID: -1938953542191470901}
+  - {fileID: 7778212894035129079}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -270,6 +271,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 4
+  _clothMeshes:
+    _list:
+    - _key: 4
+      _value: {fileID: -7106450658240330850, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    _new: 0
 --- !u!114 &5067584742411346480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,6 +313,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: -1921154974467191097}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -1921154974467191097}

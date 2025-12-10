@@ -238,6 +238,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 11
+  _clothMeshes:
+    _list:
+    - _key: 11
+      _value: {fileID: 7252442911032059456, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    _new: 0
 --- !u!114 &3118820370331042218
 MonoBehaviour:
   m_ObjectHideFlags: 0

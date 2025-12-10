@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -9,10 +7,15 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class ClothedBodyPart : MonoBehaviour
     {
+        /// <summary>
+        /// The type of clothes that can be worn on this body part.
+        /// </summary>
         [SerializeField]
-        private ClothType clothType;
+        private ClothType _clothType;
 
-        public ClothType Type => clothType;
+        /// <summary>
+        /// The type of clothes that can be worn on this body part.
+        /// </summary>
+        public ClothType Type => _clothType;
     }
-
 }
