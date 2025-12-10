@@ -37,10 +37,6 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset TruckerCap = new DatabaseAsset("TruckerCap", "Items");
         public static DatabaseAsset Sunglasses = new DatabaseAsset("Sunglasses", "Items");
         public static DatabaseAsset FacewearGasMask = new DatabaseAsset("FacewearGasMask", "Items");
-        public static DatabaseAsset ShoesHiTopsLeft = new DatabaseAsset("ShoesHiTopsLeft", "Items");
-        public static DatabaseAsset ShoesHiTopsRight = new DatabaseAsset("ShoesHiTopsRight", "Items");
-        public static DatabaseAsset ShoesJackbootsLeft = new DatabaseAsset("ShoesJackbootsLeft", "Items");
-        public static DatabaseAsset ShoesJackbootsRight = new DatabaseAsset("ShoesJackbootsRight", "Items");
         public static DatabaseAsset HumanArmLeft = new DatabaseAsset("HumanArmLeft", "Items");
         public static DatabaseAsset HumanArmRight = new DatabaseAsset("HumanArmRight", "Items");
         public static DatabaseAsset HumanEarLeft = new DatabaseAsset("HumanEarLeft", "Items");

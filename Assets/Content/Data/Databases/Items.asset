@@ -80,14 +80,6 @@ MonoBehaviour:
       _value: {fileID: 2667451333340596270, guid: 9b9f6bd470226a74b903e74dbe9e423a, type: 3}
     - _key: FacewearGasMask
       _value: {fileID: 1687938131941834081, guid: bf177f8bab26bc84b87fd9a971004418, type: 3}
-    - _key: ShoesHiTopsLeft
-      _value: {fileID: 6003340987905195654, guid: 5fa15d6fdef93dc4e80d798cefe8be0b, type: 3}
-    - _key: ShoesHiTopsRight
-      _value: {fileID: 930591319891399865, guid: 317ec7dcff3b11d4eae3a47929200b93, type: 3}
-    - _key: ShoesJackbootsLeft
-      _value: {fileID: 60374868058361228, guid: 4b790b4ffedbe564dab49f896d71eaa6, type: 3}
-    - _key: ShoesJackbootsRight
-      _value: {fileID: 2653363475000095017, guid: d7d68992cbd3cda45bb11a35a1490dc3, type: 3}
     - _key: HumanArmLeft
       _value: {fileID: 1888615333292121711, guid: 06b6be83779804245b7f6411fe07b851, type: 3}
     - _key: HumanArmRight

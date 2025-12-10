@@ -145,22 +145,6 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/FacewearGasMask.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 5fa15d6fdef93dc4e80d798cefe8be0b
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesHiTopsLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 317ec7dcff3b11d4eae3a47929200b93
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesHiTopsRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4b790b4ffedbe564dab49f896d71eaa6
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesJackbootsLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d7d68992cbd3cda45bb11a35a1490dc3
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesJackbootsRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 06b6be83779804245b7f6411fe07b851
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
     m_ReadOnly: 0
