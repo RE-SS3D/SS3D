@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 2684969213490069762}
   - component: {fileID: 7426271177468713804}
   m_Layer: 10
-  m_Name: GlovesInsulatedRight
+  m_Name: GloveInsulated
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -217,7 +217,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 1182993708247473142
+  <AssetPathHash>k__BackingField: 15154817967069366980
 --- !u!114 &6984312597055688722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,11 +233,12 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4692070367735979832}
   _networkObjectCache: {fileID: 4692070367735979832}
-  _asset: {fileID: 11400000, guid: 88cb0aca0b6265d49b25526ca55295e9, type: 2}
-  _name: Glove insulated right
+  _asset: {fileID: 11400000, guid: 55deb25596d5d314b8b7dd58eafb8aec, type: 2}
+  _name: Glove Insulated
   _weight: 1
   _startingTraits:
   - {fileID: 11400000, guid: 6dc4b6b828749aa49aa1f52e147f2003, type: 2}
+  - {fileID: 11400000, guid: 901be8d20f1f0f24181cc992dfd362ae, type: 2}
   _rigidbody: {fileID: 6087662318167862822}
   AttachmentPoint: {fileID: 4300571028311695952}
   AttachmentPointAlt: {fileID: 4300571028311695952}
@@ -268,11 +269,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac42f7f6bb00ec44dbe827d0faf7fd62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 8
   _clothMeshes:
     _list:
     - _key: 8
       _value: {fileID: -5084255070057250593, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    - _key: 7
+      _value: {fileID: -8786829411053318343, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     _new: 0
 --- !u!114 &2684969213490069762
 MonoBehaviour:
@@ -298,4 +300,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38640bf88ae0c29409092a258bd36878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 11400000, guid: cf117d68f1bc58c478bdf94436b24bbf, type: 2}
+  key: {fileID: 11400000, guid: b130649c1f118244189eea0b3330a197, type: 2}

@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
-  m_Name: GloveInsulatedLeft
+  m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
+  m_Name: GloveInsulated
   m_EditorClassIdentifier: 
-  nameString: Glove insulated left
-  prefab: {fileID: 739222591386748088, guid: f1aeab0a35c29314a8a3f823de9815c1, type: 3}
-  icon: {fileID: 0}
+  Id: GloveInsulated
+  Database: Items
