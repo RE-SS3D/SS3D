@@ -43,6 +43,8 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset ShoesHiTopsRight = new DatabaseAsset("ShoesHiTopsRight", "Items");
         public static DatabaseAsset ShoesJackbootsLeft = new DatabaseAsset("ShoesJackbootsLeft", "Items");
         public static DatabaseAsset ShoesJackbootsRight = new DatabaseAsset("ShoesJackbootsRight", "Items");
+        public static DatabaseAsset HeadsetLeft = new DatabaseAsset("HeadsetLeft", "Items");
+        public static DatabaseAsset HeadsetRight = new DatabaseAsset("HeadsetRight", "Items");
         public static DatabaseAsset HumanArmLeft = new DatabaseAsset("HumanArmLeft", "Items");
         public static DatabaseAsset HumanArmRight = new DatabaseAsset("HumanArmRight", "Items");
         public static DatabaseAsset HumanEarLeft = new DatabaseAsset("HumanEarLeft", "Items");
@@ -98,10 +100,6 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset SteelWindow = new DatabaseAsset("SteelWindow", "Items");
         public static DatabaseAsset SteelWallReinforced = new DatabaseAsset("SteelWallReinforced", "Items");
         public static DatabaseAsset SteelWindowReinforced = new DatabaseAsset("SteelWindowReinforced", "Items");
-        public static DatabaseAsset HeadsetSecurity = new DatabaseAsset("HeadsetSecurity", "Items");
-        public static DatabaseAsset Headset = new DatabaseAsset("Headset", "Items");
-        public static DatabaseAsset HeadsetLeft = new DatabaseAsset("HeadsetLeft", "Items");
-        public static DatabaseAsset HeadsetRight = new DatabaseAsset("HeadsetRight", "Items");
         public static DatabaseAsset HeadsetSecurityLeft = new DatabaseAsset("HeadsetSecurityLeft", "Items");
         public static DatabaseAsset HeadsetSecurityRight = new DatabaseAsset("HeadsetSecurityRight", "Items");
     }

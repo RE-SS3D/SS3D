@@ -1,5 +1,6 @@
-﻿using Coimbra;
-using SS3D.Logging;
+﻿using SS3D.Systems.Inventory.Containers;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Containers
@@ -11,23 +12,8 @@ namespace SS3D.Systems.Inventory.Containers
     public class Cloth : MonoBehaviour
     {
         [SerializeField]
-        private SerializableDictionary<ClothType, Mesh> _clothMeshes;
+        private ClothType clothType;
 
-        /// <summary>
-        /// Get the mesh associated to a cloth type.
-        /// </summary>
-        /// <param name="clothType">type of cloth for which mesh is required</param>
-        /// <returns>Mesh of the required cloth type</returns>
-        public Mesh GetClothMesh(ClothType clothType)
-        {
-            if (_clothMeshes.TryGetValue(clothType, out Mesh mesh))
-            {
-                return mesh;
-            }
-
-            Log.Error(this, "Cloth Mesh not found");
-
-            return null;
-        }
+        public ClothType Type => clothType;
     }
 }

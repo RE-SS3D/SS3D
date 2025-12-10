@@ -92,6 +92,10 @@ MonoBehaviour:
       _value: {fileID: 60374868058361228, guid: 4b790b4ffedbe564dab49f896d71eaa6, type: 3}
     - _key: ShoesJackbootsRight
       _value: {fileID: 2653363475000095017, guid: d7d68992cbd3cda45bb11a35a1490dc3, type: 3}
+    - _key: HeadsetLeft
+      _value: {fileID: 7723921361698481624, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
+    - _key: HeadsetRight
+      _value: {fileID: 8712940276313799639, guid: 1a2f912be4bc1b948a2b22ffde517cdc, type: 3}
     - _key: HumanArmLeft
       _value: {fileID: 1888615333292121711, guid: 06b6be83779804245b7f6411fe07b851, type: 3}
     - _key: HumanArmRight
@@ -202,14 +206,6 @@ MonoBehaviour:
       _value: {fileID: 3591147544166670882, guid: abcc60752234e584d8d98c9dec03e7cc, type: 3}
     - _key: SteelWindowReinforced
       _value: {fileID: 3591147544166670882, guid: f2493b5478dd8e946ba98861f533362e, type: 3}
-    - _key: HeadsetSecurity
-      _value: {fileID: 5049739216948387840, guid: a38ee818c953a404787757d8d20d2851, type: 3}
-    - _key: Headset
-      _value: {fileID: 8712940276313799639, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
-    - _key: HeadsetLeft
-      _value: {fileID: 7723921361698481624, guid: f549f4153ef612c4586c46ea280e0e94, type: 3}
-    - _key: HeadsetRight
-      _value: {fileID: 8712940276313799639, guid: 1a2f912be4bc1b948a2b22ffde517cdc, type: 3}
     - _key: HeadsetSecurityLeft
       _value: {fileID: 1529136833643899573, guid: 88d1ba1edb4ce5e4fa74c6a8d53e36e1, type: 3}
     - _key: HeadsetSecurityRight

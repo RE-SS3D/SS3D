@@ -269,11 +269,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clothType: 8
-  _clothMeshes:
-    _list:
-    - _key: 8
-      _value: {fileID: -5084255070057250593, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
-    _new: 0
 --- !u!114 &2684969213490069762
 MonoBehaviour:
   m_ObjectHideFlags: 0

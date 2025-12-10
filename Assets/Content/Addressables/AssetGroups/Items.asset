@@ -169,6 +169,14 @@ MonoBehaviour:
     m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoesJackbootsRight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: f549f4153ef612c4586c46ea280e0e94
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1a2f912be4bc1b948a2b22ffde517cdc
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: 06b6be83779804245b7f6411fe07b851
     m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
     m_ReadOnly: 0
@@ -387,24 +395,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: f2493b5478dd8e946ba98861f533362e
     m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindowReinforced.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a38ee818c953a404787757d8d20d2851
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurity.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: db15899bc1eb2794fb2b24129852a209
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/Headset.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f549f4153ef612c4586c46ea280e0e94
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1a2f912be4bc1b948a2b22ffde517cdc
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 88d1ba1edb4ce5e4fa74c6a8d53e36e1
     m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurityLeft.prefab
     m_ReadOnly: 0
