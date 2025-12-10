@@ -37,6 +37,8 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset TruckerCap = new DatabaseAsset("TruckerCap", "Items");
         public static DatabaseAsset Sunglasses = new DatabaseAsset("Sunglasses", "Items");
         public static DatabaseAsset FacewearGasMask = new DatabaseAsset("FacewearGasMask", "Items");
+        public static DatabaseAsset GlovesInsulatedLeft = new DatabaseAsset("GlovesInsulatedLeft", "Items");
+        public static DatabaseAsset GlovesInsulatedRight = new DatabaseAsset("GlovesInsulatedRight", "Items");
         public static DatabaseAsset ShoesHiTopsLeft = new DatabaseAsset("ShoesHiTopsLeft", "Items");
         public static DatabaseAsset ShoesHiTopsRight = new DatabaseAsset("ShoesHiTopsRight", "Items");
         public static DatabaseAsset ShoesJackbootsLeft = new DatabaseAsset("ShoesJackbootsLeft", "Items");
@@ -98,7 +100,6 @@ namespace SS3D.Data.Generated
         public static DatabaseAsset SteelWindowReinforced = new DatabaseAsset("SteelWindowReinforced", "Items");
         public static DatabaseAsset HeadsetSecurity = new DatabaseAsset("HeadsetSecurity", "Items");
         public static DatabaseAsset Headset = new DatabaseAsset("Headset", "Items");
-        public static DatabaseAsset GloveInsulated = new DatabaseAsset("GloveInsulated", "Items");
     }
 }
 

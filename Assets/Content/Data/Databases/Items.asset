@@ -80,6 +80,10 @@ MonoBehaviour:
       _value: {fileID: 2667451333340596270, guid: 9b9f6bd470226a74b903e74dbe9e423a, type: 3}
     - _key: FacewearGasMask
       _value: {fileID: 1687938131941834081, guid: bf177f8bab26bc84b87fd9a971004418, type: 3}
+    - _key: GlovesInsulatedLeft
+      _value: {fileID: 739222591386748088, guid: f1aeab0a35c29314a8a3f823de9815c1, type: 3}
+    - _key: GlovesInsulatedRight
+      _value: {fileID: 4581819739591165899, guid: 8725b7f8f45d28a4ba6063318904cc8a, type: 3}
     - _key: ShoesHiTopsLeft
       _value: {fileID: 6003340987905195654, guid: 5fa15d6fdef93dc4e80d798cefe8be0b, type: 3}
     - _key: ShoesHiTopsRight
@@ -202,6 +206,4 @@ MonoBehaviour:
       _value: {fileID: 5049739216948387840, guid: a38ee818c953a404787757d8d20d2851, type: 3}
     - _key: Headset
       _value: {fileID: 8712940276313799639, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
-    - _key: GloveInsulated
-      _value: {fileID: 4581819739591165899, guid: 65679cf5a30d6dd458666804af7c3ca3, type: 3}
     _new: 
