@@ -6867,7 +6867,7 @@ MonoBehaviour:
   _observerConditions: []
 --- !u!95 &1252106768682846670
 Animator:
-  serializedVersion: 5
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6884,8 +6884,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!143 &3812744165389046210
 CharacterController:
   m_ObjectHideFlags: 0
@@ -13422,10 +13421,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6336386848008735701, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
-      propertyPath: _startFilter
-      value: 
-      objectReference: {fileID: 11400000, guid: 5e8826e46aa002245a5a27541f6e626c, type: 2}
-    - target: {fileID: 6336386848008735701, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: _addedNetworkObject
       value: 
       objectReference: {fileID: 2930813178971533500}
@@ -13437,10 +13432,6 @@ PrefabInstance:
       propertyPath: _componentIndexCache
       value: 61
       objectReference: {fileID: 0}
-    - target: {fileID: 6551821992144761648, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
-      propertyPath: _startFilter
-      value: 
-      objectReference: {fileID: 11400000, guid: 5e8826e46aa002245a5a27541f6e626c, type: 2}
     - target: {fileID: 6551821992144761648, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: _addedNetworkObject
       value: 
