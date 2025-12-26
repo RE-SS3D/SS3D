@@ -54,23 +54,43 @@ namespace SS3D.Systems.IngameConsoleSystem
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs;
             _consoleControls = _controls.Console;
-            _consoleControls.Close.performed += HandleClose;
-            _consoleControls.Open.performed += HandleOpen;
-            _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
-            _consoleControls.Submit.performed += HandleSubmit;
             _inputSystem.ToggleAction(_consoleControls.Open, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        protected override void OnDestroyed()
+        protected override void OnEnabled()
         {
-            base.OnDestroyed();
-            
-            _consoleControls.Close.performed -= HandleClose;
-            _consoleControls.Open.performed -= HandleOpen;
-            _consoleControls.SwitchCommand.performed -= HandleSwitchCommand;
-            _consoleControls.Submit.performed -= HandleSubmit;
+            base.OnEnabled();
+
+            InputSubSystem inputSystem = SubSystems.Get<InputSubSystem>();
+
+            if (inputSystem && inputSystem.Inputs != null)
+            {
+                Controls.ConsoleActions consoleInputs = inputSystem.Inputs.Console;
+
+                consoleInputs.Close.performed += HandleClose;
+                consoleInputs.Open.performed += HandleOpen;
+                consoleInputs.SwitchCommand.performed += HandleSwitchCommand;
+                consoleInputs.Submit.performed += HandleSubmit;
+            }
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            InputSubSystem inputSystem = SubSystems.Get<InputSubSystem>();
+
+            if (inputSystem && inputSystem.Inputs != null)
+            {
+                Controls.ConsoleActions consoleInputs = inputSystem.Inputs.Console;
+
+                consoleInputs.Close.performed -= HandleClose;
+                consoleInputs.Open.performed -= HandleOpen;
+                consoleInputs.SwitchCommand.performed -= HandleSwitchCommand;
+                consoleInputs.Submit.performed -= HandleSubmit;
+            }
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
