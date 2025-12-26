@@ -26,6 +26,13 @@ namespace SS3D.Systems.Gamemodes.UI
         protected override void OnAwake()
         {
             base.OnAwake();
+            
+            InputSubSystem inputSystem = SubSystems.Get<InputSubSystem>();
+
+            if (inputSystem)
+            {
+                _controls = inputSystem.Inputs.Other;
+            }
 
             _gamemodeObjectiveItems = new Dictionary<int, GamemodeObjectiveItemView>();
 
@@ -37,14 +44,19 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-            _controls = SubSystems.Get<InputSubSystem>().Inputs.Other;
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            
             _controls.Fade.performed += HandleFadePerformed;
             _controls.Fade.canceled += HandleFadeCanceled;
         }
-
-        protected override void OnDestroyed()
+        
+        protected override void OnDisabled()
         {
-            base.OnDestroyed();
+            base.OnDisabled();
             
             _controls.Fade.performed -= HandleFadePerformed;
             _controls.Fade.canceled -= HandleFadeCanceled;
