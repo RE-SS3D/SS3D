@@ -65,17 +65,36 @@ namespace SS3D.Systems.Tile.TileMapCreator
             CreateHologram(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            base.OnAwake();
+            
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
+            
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            
             _controls.Place.started += HandlePlaceStarted;
             _controls.Place.performed += HandlePlacePerformed;
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
             _controls.Rotate.performed += HandleRotate;
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+            
+            _controls.Place.started -= HandlePlaceStarted;
+            _controls.Place.performed -= HandlePlacePerformed;
+            _controls.Replace.performed -= HandleReplace;
+            _controls.Replace.canceled -= HandleReplace;
+            _controls.Rotate.performed -= HandleRotate;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
