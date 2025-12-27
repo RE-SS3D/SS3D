@@ -47,12 +47,32 @@ namespace SS3D.Systems.Interactions
         private Controls.InteractionsActions _controls;
         private InputSubSystem _inputSystem;
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            Setup();
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
 
-            Setup();
             Disappear();
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            _controls.ViewInteractions.canceled += HandleDisappear;
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            _controls.ViewInteractions.canceled -= HandleDisappear;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -65,6 +85,7 @@ namespace SS3D.Systems.Interactions
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
 
             Interactions = new List<IInteraction>();
+
             foreach (RadialInteractionButton interactionButton in _interactionButtons)
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
@@ -72,14 +93,6 @@ namespace SS3D.Systems.Interactions
 
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Interactions;
-            _controls.ViewInteractions.canceled += HandleDisappear;
-        }
-
-        protected override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            
-            _controls.ViewInteractions.canceled -= HandleDisappear;
         }
 
         private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
