@@ -91,31 +91,40 @@ namespace SS3D.Systems.Screens
 
         #endregion
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
+            
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Camera;
-            _controls.Zoom.performed += HandleZoom;
-            _controls.SnapRight.performed += HandleSnapRight;
-            _controls.SnapLeft.performed += HandleSnapLeft;
-            _controls.MouseRotation.performed += HandleMouseRotation;
-            _inputSystem.ToggleActionMap(_controls, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        protected override void OnDestroyed()
+        protected override void OnEnabled()
         {
-            base.OnDestroyed();
+            base.OnEnabled();
+            
+            _controls.Zoom.performed += HandleZoom;
+            _controls.SnapRight.performed += HandleSnapRight;
+            _controls.SnapLeft.performed += HandleSnapLeft;
+            _controls.MouseRotation.performed += HandleMouseRotation;
+            
+            _inputSystem.ToggleActionMap(_controls, true);
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
             
             _controls.Zoom.performed -= HandleZoom;
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
             _controls.MouseRotation.performed -= HandleMouseRotation;
+            
             _inputSystem.ToggleActionMap(_controls, false);
         }
-        
+
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             ProcessCameraPosition();
