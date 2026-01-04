@@ -2,6 +2,7 @@
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inputs;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
@@ -21,15 +22,56 @@ namespace SS3D.Hacks
 
         private Controls.OtherActions _controls;
 
-        public override void OnStartClient()
+        protected override void OnAwake()
         {
-            base.OnStartClient();
-            if (!IsOwner) return;
+            base.OnAwake();
 
-            _controls = SubSystems.Get<InputSubSystem>().Inputs.Other;
-            _controls.Ragdoll.performed += HandleKnockdown;
+            InputSubSystem inputSubSystem = SubSystems.Get<InputSubSystem>();
+
+            if (inputSubSystem)
+            {
+                _controls = inputSubSystem.Inputs.Other;
+            }
         }
 
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            StartCoroutine(SubscribeToInput());
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            UnsubscribeFromInput();
+        }
+
+        /// <summary>
+        /// Waits until the owner is valid before subscribing to input
+        /// </summary>
+        private IEnumerator SubscribeToInput()
+        {
+            // Wait until the owner is valid
+            yield return new WaitUntil(() => Owner.IsValid);
+
+            if (Owner.IsLocalClient)
+            {
+                _controls.Ragdoll.performed += HandleKnockdown;
+            }
+        }
+
+        /// <summary>
+        /// Unsubscribes from input events
+        /// </summary>
+        private void UnsubscribeFromInput()
+        {
+            if (Owner.IsLocalClient)
+            {
+                _controls.Ragdoll.performed -= HandleKnockdown;
+            }
+        }
 
         private void HandleKnockdown(InputAction.CallbackContext context)
         {
@@ -37,4 +79,3 @@ namespace SS3D.Hacks
         }
     }
 }
-
