@@ -63,6 +63,9 @@ namespace SS3D.Systems.Interactions
             DisableInput();
         }
 
+        /// <summary>
+        /// Function to subscribe to input events and toggle action maps when the owner is local client.
+        /// </summary>
         private IEnumerator EnableInput()
         {
             // Wait until the owner is valid
@@ -77,6 +80,9 @@ namespace SS3D.Systems.Interactions
             }
         }
 
+        /// <summary>
+        /// Function to unsubscribe from input events and toggle action maps when the owner is local client.
+        /// </summary>
         private void DisableInput()
         {
             if (Owner.IsLocalClient)
