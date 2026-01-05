@@ -10,6 +10,7 @@ using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -34,48 +35,57 @@ namespace SS3D.Systems.Interactions
         
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
-        
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            if (!Owner.IsLocalClient) return;
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            
             _radialView = SubSystems.Get<RadialInteractionSubSystem>();
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
+            
             _inputSystem = SubSystems.Get<InputSubSystem>();
             Controls controls = _inputSystem.Inputs;
             _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
-            _radialView = SubSystems.Get<RadialInteractionSubSystem>();
-            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
-            _controls.RunPrimary.performed += HandleRunPrimary;
-            _controls.ViewInteractions.performed += HandleView;
-            _hotkeysControls.Use.performed += HandleUse;
-            _inputSystem.ToggleActionMap(_controls, true);
         }
 
-        public override void OnStopClient()
+        protected override void OnEnabled()
         {
-            base.OnStopClient();
-            UnsubscribeFromEvents();
+            base.OnEnabled();
+            
+            StartCoroutine(EnableInput());
         }
 
-        private void UnsubscribeFromEvents()
+        protected override void OnDisabled()
         {
-            if (!Owner.IsLocalClient)
+            base.OnDisabled();
+            
+            DisableInput();
+        }
+
+        private IEnumerator EnableInput()
+        {
+            // Wait until the owner is valid
+            yield return new WaitUntil(() => Owner.IsValid);
+
+            if (Owner.IsLocalClient)
             {
-                return;
+                _controls.RunPrimary.performed += HandleRunPrimary;
+                _controls.ViewInteractions.performed += HandleView;
+                _hotkeysControls.Use.performed += HandleUse;
+                _inputSystem.ToggleActionMap(_controls, true);
             }
-            _controls.RunPrimary.performed -= HandleRunPrimary;
-            _controls.ViewInteractions.performed -= HandleView;
-            _hotkeysControls.Use.performed -= HandleUse;
-            _inputSystem.ToggleActionMap(_controls, false);
         }
-        
-        protected override void OnDestroyed()
+
+        private void DisableInput()
         {
-            base.OnDestroyed();
-            UnsubscribeFromEvents();
+            if (Owner.IsLocalClient)
+            {
+                _controls.RunPrimary.performed -= HandleRunPrimary;
+                _controls.ViewInteractions.performed -= HandleView;
+                _hotkeysControls.Use.performed -= HandleUse;
+                _inputSystem.ToggleActionMap(_controls, false);
+            }
         }
 
         /// <summary>
@@ -84,7 +94,6 @@ namespace SS3D.Systems.Interactions
         [Client]
         public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
-            
             Debug.Log("run primary : " + Mouse.current.position.ReadValue());
             if (EventSystem.current.IsPointerOverGameObject())
             {
