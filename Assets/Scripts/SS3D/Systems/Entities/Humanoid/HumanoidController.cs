@@ -1,10 +1,11 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
-using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
@@ -58,15 +59,47 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsRunning => _isRunning;
         #endregion
 
-        protected override void OnStart()
+        protected void Awake()
         {
-            base.OnStart();
-            if (!Owner.IsLocalClient) return;
-            Setup();
+            base.Awake();
         }
 
-        protected void Setup()
+        protected override void OnAwake()
         {
+            base.OnAwake();
+
+            StartCoroutine(Setup());
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            StartCoroutine(EnableInput());
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            DisableInput();
+            TargetMovement = Vector3.zero;
+        }
+
+        /// <summary>
+        /// Sets up the controller, getting references for the local player
+        /// </summary>
+        private IEnumerator Setup()
+        {
+            // Wait until the owner is valid
+            yield return new WaitUntil(() => Owner.IsValid);
+
+            // Only proceed if this is the local client
+            if (!Owner.IsLocalClient)
+            {
+                yield break;
+            }
+
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
@@ -76,25 +109,43 @@ namespace SS3D.Systems.Entities.Humanoid
 
             MovementControls = controls.Movement;
             HotkeysControls = controls.Hotkeys;
-            MovementControls.ToggleRun.performed += HandleToggleRun;
-
-            _inputSystem.ToggleActionMap(MovementControls, true);
-            _inputSystem.ToggleActionMap(HotkeysControls, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        protected override void OnDisabled()
+        /// <summary>
+        /// Enables the input for the local player
+        /// </summary>
+        private IEnumerator EnableInput()
         {
-	        base.OnDisabled();
-	        TargetMovement = Vector3.zero;
+            // Wait until the setup is done
+            yield return new WaitUntil(() => _inputSystem);
+
+            // Only proceed if this is the local client
+            if (!Owner.IsLocalClient)
+            {
+                yield break;
+            }
+
+            MovementControls.ToggleRun.performed += HandleToggleRun;
+
+            _inputSystem.ToggleActionMap(MovementControls, true);
+            _inputSystem.ToggleActionMap(HotkeysControls, true);
         }
 
-        protected override void OnDestroyed()
+        /// <summary>
+        /// Disables the input for the local player
+        /// </summary>
+        private void DisableInput()
         {
-            base.OnDestroyed();
-            UnityEngine.Debug.Log("destroying controller " + gameObject.name);
+            // Only proceed if this is the local client
+            if (!Owner.IsLocalClient)
+            {
+                return;
+            }
+
             MovementControls.ToggleRun.performed -= HandleToggleRun;
+
             _inputSystem.ToggleActionMap(MovementControls, false);
             _inputSystem.ToggleActionMap(HotkeysControls, false);
         }
