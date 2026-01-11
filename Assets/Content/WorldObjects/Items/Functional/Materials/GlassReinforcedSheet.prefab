@@ -280,7 +280,7 @@ MonoBehaviour:
   _enableTeleport: 0
   _teleportThreshold: 1
   _scaleThreshold: 1
-  _clientAuthoritative: 1
+  _clientAuthoritative: 0
   _sendToOwner: 1
   _enableNetworkLod: 1
   _interval: 1
@@ -317,6 +317,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 2568864249795578972}
   - {fileID: 5296084984690686628}
+  - {fileID: 5305823004215370601}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -328,7 +329,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 167
+  <PrefabId>k__BackingField: 165
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -393,9 +394,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 1773710978803455870}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1773710978803455870}
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

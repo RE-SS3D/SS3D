@@ -278,7 +278,7 @@ MonoBehaviour:
   _enableTeleport: 0
   _teleportThreshold: 1
   _scaleThreshold: 1
-  _clientAuthoritative: 1
+  _clientAuthoritative: 0
   _sendToOwner: 1
   _enableNetworkLod: 1
   _interval: 1
@@ -315,6 +315,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 2874730927934163503}
   - {fileID: 9006176345843005737}
+  - {fileID: 9058576779372462729}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -391,9 +392,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d37ab5b82ded9419a6e3ab3d05af02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 4037338737721612837}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 4037338737721612837}
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

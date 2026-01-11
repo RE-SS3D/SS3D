@@ -69,7 +69,7 @@ PrefabInstance:
       objectReference: {fileID: 1392182379186180254, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 26
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
