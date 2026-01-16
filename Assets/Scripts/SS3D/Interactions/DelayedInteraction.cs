@@ -7,8 +7,11 @@ namespace SS3D.Interactions
     /// <summary>
     /// Base class for interactions which execute after a delay
     /// </summary>
-    public abstract class DelayedInteraction : Interaction
+    public abstract class DelayedInteraction : IInteraction
     {
+        public string Name;
+        public Sprite Icon;
+
         /// <summary>
         /// The delay in seconds before performing the interaction
         /// </summary>
@@ -29,7 +32,7 @@ namespace SS3D.Interactions
         /// Creates a client-side interaction object for this interaction
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
-        public override IClientInteraction CreateClient(InteractionEvent interactionEvent)
+        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             // Don't create client interaction if delay too small
             if (Math.Abs(Delay) < 0.1f)
@@ -43,18 +46,20 @@ namespace SS3D.Interactions
             };
         }
 
-        public abstract override string GetName(InteractionEvent interactionEvent);
-        public override Sprite GetIcon(InteractionEvent interactionEvent) { return Icon; }
-        public abstract override bool CanInteract(InteractionEvent interactionEvent);
+        public abstract string GetName(InteractionEvent interactionEvent);
+        public abstract string GetGenericName();
+        public Sprite GetIcon(InteractionEvent interactionEvent) { return Icon; }
+        public abstract bool CanInteract(InteractionEvent interactionEvent);
 
         /// <summary>
         /// Sets up the delay
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
         /// <param name="reference">The reference to this interaction</param>
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             StartCounter();
+
             return true;
         }
 
@@ -63,7 +68,7 @@ namespace SS3D.Interactions
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
         /// <param name="reference">The reference to this interaction</param>
-        public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
+        public virtual bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
             if (_lastCheck + CheckInterval < Time.time && _hasStarted)
             {
@@ -71,6 +76,7 @@ namespace SS3D.Interactions
                 {
                     // Cancel the interaction
                     interactionEvent.Source.CancelInteraction(reference);
+
                     return true;
                 }
 
@@ -82,12 +88,14 @@ namespace SS3D.Interactions
                 if (CanInteract(interactionEvent))
                 {
                     StartDelayed(interactionEvent, reference);
+
                     return false;
                 }
                 else
                 {
                     // Cancel own interaction
                     interactionEvent.Source.CancelInteraction(reference);
+
                     return true;
                 }
             }
@@ -103,7 +111,7 @@ namespace SS3D.Interactions
         }
 
         /// <inheritdoc />
-        public abstract override void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
+        public abstract void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
 
         /// <summary>
         /// Starts the interaction after the delay has passed

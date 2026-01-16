@@ -6,9 +6,12 @@ namespace SS3D.Interactions
     /// <summary>
     /// Can be used to wrap an interaction, adding additional consequences
     /// </summary>
-    public abstract class Requirement : Interaction
+    public abstract class Requirement : IInteraction
     {
-        public IInteraction Interaction { get; set; }
+        public string Name;
+        public Sprite Icon;
+
+        public IInteraction Interaction { get; }
 
         protected Requirement(IInteraction interaction)
         {
@@ -26,43 +29,49 @@ namespace SS3D.Interactions
         /// <param name="interactionEvent"></param>
         protected virtual void ApplyRequirement(InteractionEvent interactionEvent) { }
 
-        public override IClientInteraction CreateClient(InteractionEvent interactionEvent)
+        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return Interaction.CreateClient(interactionEvent);
         }
 
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return Interaction.GetName(interactionEvent);
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public abstract string GetGenericName();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Interaction.GetIcon(interactionEvent);
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             return SatisfiesRequirement(interactionEvent) && Interaction.CanInteract(interactionEvent);
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (Interaction.Start(interactionEvent, reference)) return true;
+            if (Interaction.Start(interactionEvent, reference))
+                return true;
 
             ApplyRequirement(interactionEvent);
+
             return false;
         }
 
-        public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (Interaction.Update(interactionEvent, reference)) return true;
+            if (Interaction.Update(interactionEvent, reference))
+                return true;
 
             ApplyRequirement(interactionEvent);
+
             return false;
         }
 
-        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Interaction.Cancel(interactionEvent, reference);
         }

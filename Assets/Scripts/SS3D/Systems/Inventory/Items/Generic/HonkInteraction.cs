@@ -10,25 +10,30 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// <summary>
     /// Honks a horn. Honking requires the target to be BikeHorn
     /// </summary>
-    public class HonkInteraction : Interaction
+    public class HonkInteraction : IInteraction
     {
-        public override string GetName(InteractionEvent interactionEvent)
+        public string Name;
+        public Sprite Icon;
+
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Honk";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new System.NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : InteractionIcons.Honk;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             IInteractionTarget target = interactionEvent.Target;
             IInteractionSource source = interactionEvent.Source;
             bool inRange = InteractionExtensions.RangeCheck(interactionEvent);
 
-            if(source is not Hand)
+            if (source is not Hand)
             {
                 return false;
             }
@@ -46,12 +51,13 @@ namespace SS3D.Systems.Inventory.Items.Generic
             return !horn.IsHonking();
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             if (interactionEvent.Target is BikeHorn horn)
             {
                 horn.Honk();
             }
+
             return false;
         }
     }

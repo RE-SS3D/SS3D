@@ -1,8 +1,6 @@
 ﻿using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Audio
@@ -10,26 +8,32 @@ namespace SS3D.Systems.Audio
     /// <summary>
     /// Interaction to change music on Jukeboxes and boomboxes.
     /// </summary>
-    public class ChangeMusicInteraction : Interaction
+    public class ChangeMusicInteraction : IInteraction
     {
-        public override IClientInteraction CreateClient(InteractionEvent interactionEvent)
+        public string Name;
+        public Sprite Icon;
+
+        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return null;
         }
 
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Change Music";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new System.NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is Boombox boom)
                 return boom.InteractionIcon;
+
             return null;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is Boombox boom)
             {
@@ -37,29 +41,21 @@ namespace SS3D.Systems.Audio
                 {
                     return false;
                 }
+
                 return boom.AudioOn;
             }
 
             return false;
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             if (interactionEvent.Target is Boombox boom)
             {
                 boom.ChangeCurrentMusic();
             }
+
             return false;
-        }
-
-        public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

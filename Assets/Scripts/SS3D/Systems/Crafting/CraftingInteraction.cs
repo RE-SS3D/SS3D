@@ -106,6 +106,8 @@ namespace SS3D.Systems.Crafting
             return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
         }
 
+        public override string GetGenericName() => throw new System.NotImplementedException();
+
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
             SubSystems.TryGet(out CraftingSubSystem craftingSystem);

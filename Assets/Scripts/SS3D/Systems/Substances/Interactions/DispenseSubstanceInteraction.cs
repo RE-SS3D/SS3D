@@ -86,15 +86,5 @@ namespace SS3D.Substances
 
             return false;
         }
-
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
-
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return;
-        }
     }
 }
