@@ -1,11 +1,11 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
@@ -59,6 +59,20 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsRunning => _isRunning;
         #endregion
 
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
+        {
+            base.OnOwnershipClient(prevOwner);
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+            else if (prevOwner.Equals(LocalConnection))
+            {
+                UnsubscribeFromInput();
+            }
+        }
+
         protected void Awake()
         {
             base.Awake();
@@ -67,39 +81,37 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void OnAwake()
         {
             base.OnAwake();
-
-            StartCoroutine(Setup());
+            
+            Setup();
         }
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
 
-            StartCoroutine(EnableInput());
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
         }
 
         protected override void OnDisabled()
         {
             base.OnDisabled();
 
-            DisableInput();
+            if (IsOwner)
+            {
+                UnsubscribeFromInput();
+            }
+
             TargetMovement = Vector3.zero;
         }
 
         /// <summary>
         /// Sets up the controller, getting references for the local player
         /// </summary>
-        private IEnumerator Setup()
+        private void Setup()
         {
-            // Wait until the owner is valid
-            yield return new WaitUntil(() => Owner.IsValid);
-
-            // Only proceed if this is the local client
-            if (!Owner.IsLocalClient)
-            {
-                yield break;
-            }
-
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
@@ -116,15 +128,12 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>
         /// Enables the input for the local player
         /// </summary>
-        private IEnumerator EnableInput()
+        private void SubscribeToInput()
         {
-            // Wait until the setup is done
-            yield return new WaitUntil(() => _inputSystem);
-
-            // Only proceed if this is the local client
-            if (!Owner.IsLocalClient)
+            // Only proceed if we have an input system
+            if (!_inputSystem)
             {
-                yield break;
+                return;
             }
 
             MovementControls.ToggleRun.performed += HandleToggleRun;
@@ -136,10 +145,10 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>
         /// Disables the input for the local player
         /// </summary>
-        private void DisableInput()
+        private void UnsubscribeFromInput()
         {
-            // Only proceed if this is the local client
-            if (!Owner.IsLocalClient)
+            // Only proceed if we have an input system
+            if (!_inputSystem)
             {
                 return;
             }
