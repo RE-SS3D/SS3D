@@ -1,8 +1,8 @@
-﻿using SS3D.Core;
+﻿using FishNet.Connection;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inputs;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
@@ -22,6 +22,20 @@ namespace SS3D.Hacks
 
         private Controls.OtherActions _controls;
 
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
+        {
+            base.OnOwnershipClient(prevOwner);
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+            else if (prevOwner.Equals(LocalConnection))
+            {
+                UnsubscribeFromInput();
+            }
+        }
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -38,28 +52,28 @@ namespace SS3D.Hacks
         {
             base.OnEnabled();
 
-            StartCoroutine(SubscribeToInput());
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
         }
 
         protected override void OnDisabled()
         {
             base.OnDisabled();
 
-            UnsubscribeFromInput();
+            if (IsOwner)
+            {
+                UnsubscribeFromInput();
+            }
         }
 
         /// <summary>
         /// Waits until the owner is valid before subscribing to input
         /// </summary>
-        private IEnumerator SubscribeToInput()
+        private void SubscribeToInput()
         {
-            // Wait until the owner is valid
-            yield return new WaitUntil(() => Owner.IsValid);
-
-            if (Owner.IsLocalClient)
-            {
-                _controls.Ragdoll.performed += HandleKnockdown;
-            }
+            _controls.Ragdoll.performed += HandleKnockdown;
         }
 
         /// <summary>
@@ -67,10 +81,7 @@ namespace SS3D.Hacks
         /// </summary>
         private void UnsubscribeFromInput()
         {
-            if (Owner.IsLocalClient)
-            {
-                _controls.Ragdoll.performed -= HandleKnockdown;
-            }
+            _controls.Ragdoll.performed -= HandleKnockdown;
         }
 
         private void HandleKnockdown(InputAction.CallbackContext context)
