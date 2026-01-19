@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FishNet.Connection;
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
@@ -36,6 +37,20 @@ namespace SS3D.Systems.Interactions
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
 
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
+        {
+            base.OnOwnershipClient(prevOwner);
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+            else if (prevOwner.Equals(LocalConnection))
+            {
+                UnsubscribeFromInput();
+            }
+        }
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -52,46 +67,43 @@ namespace SS3D.Systems.Interactions
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            
-            StartCoroutine(EnableInput());
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
         }
 
         protected override void OnDisabled()
         {
             base.OnDisabled();
-            
-            DisableInput();
+
+            if (IsOwner)
+            {
+                UnsubscribeFromInput();
+            }
         }
 
         /// <summary>
         /// Function to subscribe to input events and toggle action maps when the owner is local client.
         /// </summary>
-        private IEnumerator EnableInput()
+        private void SubscribeToInput()
         {
-            // Wait until the owner is valid
-            yield return new WaitUntil(() => Owner.IsValid);
-
-            if (Owner.IsLocalClient)
-            {
-                _controls.RunPrimary.performed += HandleRunPrimary;
-                _controls.ViewInteractions.performed += HandleView;
-                _hotkeysControls.Use.performed += HandleUse;
-                _inputSystem.ToggleActionMap(_controls, true);
-            }
+            _controls.RunPrimary.performed += HandleRunPrimary;
+            _controls.ViewInteractions.performed += HandleView;
+            _hotkeysControls.Use.performed += HandleUse;
+            _inputSystem.ToggleActionMap(_controls, true);
         }
 
         /// <summary>
         /// Function to unsubscribe from input events and toggle action maps when the owner is local client.
         /// </summary>
-        private void DisableInput()
+        private void UnsubscribeFromInput()
         {
-            if (Owner.IsLocalClient)
-            {
-                _controls.RunPrimary.performed -= HandleRunPrimary;
-                _controls.ViewInteractions.performed -= HandleView;
-                _hotkeysControls.Use.performed -= HandleUse;
-                _inputSystem.ToggleActionMap(_controls, false);
-            }
+            _controls.RunPrimary.performed -= HandleRunPrimary;
+            _controls.ViewInteractions.performed -= HandleView;
+            _hotkeysControls.Use.performed -= HandleUse;
+            _inputSystem.ToggleActionMap(_controls, false);
         }
 
         /// <summary>
