@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class OpenCraftingMenuInteraction : IInteraction
+public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSource
 {
     public string Name;
     public Sprite Icon;

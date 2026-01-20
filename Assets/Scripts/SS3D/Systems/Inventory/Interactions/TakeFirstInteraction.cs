@@ -10,7 +10,7 @@ using UnityEngine;
 namespace SS3D.Systems.Inventory.Interactions
 {
     // This Interaction takes the first available item inside a container
-    public sealed class TakeFirstInteraction : IInteraction
+    public sealed class TakeFirstInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

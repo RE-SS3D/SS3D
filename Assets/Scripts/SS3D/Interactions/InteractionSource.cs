@@ -57,7 +57,7 @@ namespace SS3D.Interactions
                 else
                 {
                     // Continue running the interaction until it's done
-                    if (instance.Interaction != null && instance.Interaction.Update(instance.Event, instance.Reference))
+                    if (instance.Interaction is IDelayedInteraction interaction && interaction.Update(instance.Event, instance.Reference))
                     {
                         continue;
                     }
@@ -146,7 +146,13 @@ namespace SS3D.Interactions
 
         public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction, InteractionReference reference)
         {
-            IClientInteraction clientInteraction = interaction.CreateClient(interactionEvent);
+            if (interaction is not IClientInteractionSource clientInteractionSource)
+            {
+                return;
+            }
+
+            IClientInteraction clientInteraction = clientInteractionSource.CreateClient(interactionEvent);
+
             if (clientInteraction != null)
             {
                 _clientInteractions.Add(new ClientInteractionInstance(clientInteraction, interactionEvent, reference));
@@ -158,10 +164,13 @@ namespace SS3D.Interactions
         public void CancelInteraction(InteractionReference reference)
         {
             InteractionInstance instance = _interactions.FirstOrDefault(i => Equals(reference, i.Reference));
-            if (instance == null) return;
+            if (instance == null || instance.Interaction is not IDelayedInteraction interaction)
+            {
+                return;
+            }
 
             RpcCancelInteraction(reference.Id);
-            instance.Interaction.Cancel(instance.Event, reference);
+            interaction.Cancel(instance.Event, reference);
             _interactions.Remove(instance);
         }
 
@@ -169,11 +178,14 @@ namespace SS3D.Interactions
         private void RpcCancelInteraction(int id)
         {
             ClientInteractionInstance instance = _clientInteractions.FirstOrDefault(i => i.Reference.Id == id);
-            if (instance != null)
+
+            if (instance == null)
             {
-                instance.Interaction.ClientCancel(instance.Event);
-                _clientInteractions.Remove(instance);
+                return;
             }
+
+            instance.Interaction.ClientCancel(instance.Event);
+            _clientInteractions.Remove(instance);
         }
     }
 }

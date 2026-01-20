@@ -1,7 +1,6 @@
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
-using SS3D.Substances;
 using System;
 using UnityEngine;
 
@@ -15,11 +14,6 @@ namespace SS3D.Substances
         /// Checks if the interaction should be possible
         /// </summary>
         public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
-
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
 
         public string GetName(InteractionEvent interactionEvent)
         {

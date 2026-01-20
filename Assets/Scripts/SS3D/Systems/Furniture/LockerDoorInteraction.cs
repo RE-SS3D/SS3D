@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {
-    public class LockerDoorInteraction : IInteraction
+    public class LockerDoorInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

@@ -13,11 +13,6 @@ namespace SS3D.Systems.Audio
         public string Name;
         public Sprite Icon;
 
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
-
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Change Music";

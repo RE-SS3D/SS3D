@@ -29,11 +29,6 @@ namespace SS3D.Substances
             return Name;
         }
 
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
-
         public string GetName(InteractionEvent interactionEvent)
         {
             return Name;

@@ -10,7 +10,7 @@ namespace SS3D.Systems.Furniture
     /// <summary>
     /// The interaction to dispense a product on a VendingMachine.
     /// </summary>
-    public class DispenseProductInteraction : IInteraction
+    public class DispenseProductInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

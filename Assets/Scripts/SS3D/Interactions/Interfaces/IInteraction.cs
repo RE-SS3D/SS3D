@@ -8,11 +8,6 @@ namespace SS3D.Interactions.Interfaces
     public interface IInteraction
     {
         /// <summary>
-        /// Creates a client interaction (client-side)
-        /// </summary>
-        IClientInteraction CreateClient(InteractionEvent interactionEvent) => new ClientDelayedInteraction();
-
-        /// <summary>
         /// Gets the name when interacted with a source
         /// </summary>
         /// <param name="interactionEvent">The source used in the interaction</param>
@@ -45,23 +40,5 @@ namespace SS3D.Interactions.Interfaces
         /// <param name="reference"></param>
         /// <returns>If the interaction should continue running</returns>
         bool Start(InteractionEvent interactionEvent, InteractionReference reference);
-
-        /// <summary>
-        /// Continues the interaction (server-side)
-        /// </summary>
-        /// <param name="interactionEvent">The source used in the interaction</param>
-        /// <param name="reference"></param>
-        /// <returns>If the interaction should continue running</returns>
-        bool Update(InteractionEvent interactionEvent, InteractionReference reference) => true;
-
-        /// <summary>
-        /// Called when the interaction is cancelled (server-side)
-        /// </summary>
-        /// <param name="interactionEvent">The source used in the interaction</param>
-        /// <param name="reference"></param>
-        void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return;
-        }
     }
 }

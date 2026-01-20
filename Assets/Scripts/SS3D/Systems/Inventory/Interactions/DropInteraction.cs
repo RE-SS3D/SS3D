@@ -11,7 +11,7 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     // a drop interaction is when we remove an item from the hand
     [Serializable]
-    public class DropInteraction : IInteraction
+    public class DropInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

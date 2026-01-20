@@ -8,7 +8,7 @@ namespace SS3D.Interactions
     /// <summary>
     /// Utility class for toggle interactions
     /// </summary>
-    public class ToggleInteraction : IInteraction
+    public class ToggleInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

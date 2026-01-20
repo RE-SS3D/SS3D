@@ -14,7 +14,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// <summary>
     /// Boom.
     /// </summary>
-    public class NukeDetonateInteraction : IInteraction
+    public class NukeDetonateInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

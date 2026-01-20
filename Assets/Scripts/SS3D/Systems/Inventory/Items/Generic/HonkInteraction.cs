@@ -10,7 +10,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// <summary>
     /// Honks a horn. Honking requires the target to be BikeHorn
     /// </summary>
-    public class HonkInteraction : IInteraction
+    public class HonkInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

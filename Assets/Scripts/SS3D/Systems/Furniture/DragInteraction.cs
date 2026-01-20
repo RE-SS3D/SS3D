@@ -12,7 +12,7 @@ namespace SS3D.Systems.Furniture
     /// <summary>
     /// Interaction used to drag heavy stuff around the map.
     /// </summary>
-    public class DragInteraction : IInteraction
+    public class DragInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

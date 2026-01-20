@@ -12,7 +12,7 @@ namespace SS3D.Systems.Combat.Interactions
     /// <summary>
     /// Interaction to hit another player.
     /// </summary>
-    public class HitInteraction : IInteraction
+    public class HitInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

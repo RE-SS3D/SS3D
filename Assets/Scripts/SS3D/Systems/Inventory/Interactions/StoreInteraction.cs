@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
-    public sealed class StoreInteraction : IInteraction
+    public sealed class StoreInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

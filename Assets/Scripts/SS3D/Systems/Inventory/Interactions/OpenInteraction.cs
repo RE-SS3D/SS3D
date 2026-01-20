@@ -10,7 +10,7 @@ using UnityEngine;
 namespace SS3D.Systems.Inventory.Interactions
 {
     [Serializable]
-    public class OpenInteraction : IInteraction
+    public class OpenInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;

@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
-    public sealed class LockLockerInteraction : IInteraction
+    public sealed class LockLockerInteraction : IInteraction, IClientInteractionSource
     {
         public string Name;
         public Sprite Icon;
