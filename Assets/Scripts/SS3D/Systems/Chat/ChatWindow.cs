@@ -28,7 +28,8 @@ namespace SS3D.Engine.Chat
         [HideInInspector] public List<string> AvailableChannels = new List<string>();
         
         private readonly List<ChatMessage> _chatMessages = new List<ChatMessage>();
-        
+
+        private ChatSubSystem _chatSystem;
         private InputSubSystem _inputSystem;
         private Controls.OtherActions _controls;
 
@@ -37,17 +38,18 @@ namespace SS3D.Engine.Chat
         protected override void OnAwake()
         {
             base.OnAwake();
-            
+
+            _chatSystem = SubSystems.Get<ChatSubSystem>();
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.Other;
         }
 
         protected override void OnEnabled()
         {
-            base.OnDisabled();
+            base.OnEnabled();
 
             _controls.SendChatMessage.performed += HandleSendMessage;
-            SubSystems.Get<ChatSubSystem>().OnMessageReceived += OnClientReceiveChatMessage;
+            _chatSystem.OnMessageReceived += OnClientReceiveChatMessage;
         }
 
         protected override void OnDisabled()
@@ -55,7 +57,7 @@ namespace SS3D.Engine.Chat
             base.OnDisabled();
 
             _controls.SendChatMessage.performed -= HandleSendMessage;
-            SubSystems.Get<ChatSubSystem>().OnMessageReceived -= OnClientReceiveChatMessage;
+            _chatSystem.OnMessageReceived -= OnClientReceiveChatMessage;
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -84,19 +86,18 @@ namespace SS3D.Engine.Chat
             _inputField.text = "";
             
             PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
-            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
             Player player = playerSystem.GetPlayer(playerCkey);
             ChatChannel chatChannel = GetCurrentChatChannel();
             
             if (AvailableChannels.Contains(chatChannel.name))
             {
-                chatSystem.SendPlayerMessage(chatChannel, text, player);
+                _chatSystem.SendPlayerMessage(chatChannel, text, player);
             }
             else
             {
                 ChatChannels chatChannels = ScriptableSettings.GetOrFind<ChatChannels>();
-                chatSystem.SendServerMessageToCurrentPlayer(
+                _chatSystem.SendServerMessageToCurrentPlayer(
                     chatChannels.inGameSystemMessagesChannel, 
                     $"[UNAUTHORIZED ACCESS TO {chatChannel.name} CHANNEL]");
             }
@@ -120,8 +121,7 @@ namespace SS3D.Engine.Chat
                 return;
             }
             
-            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
-            ChatChannel channel = chatSystem.RegisteredChatChannels[message.Channel];
+            ChatChannel channel = _chatSystem.RegisteredChatChannels[message.Channel];
             if (channel.DistanceBased)
             {
                 PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
@@ -143,16 +143,16 @@ namespace SS3D.Engine.Chat
             return _chatMessages.Where(x => chatChannelsNames.Any(y => x.Channel.Equals(y))).ToList();
         }
         
-        protected virtual void UpdateMessages() {}
+        protected virtual void UpdateMessages() { }
         
         public void OnInputFieldSelect()
         {
-            SubSystems.Get<InputSubSystem>().ToggleAllActions(false, new [] { _controls.SendChatMessage });
+            _inputSystem.ToggleAllActions(false, new[] { _controls.SendChatMessage });
         }
 
         public void OnInputFieldDeselect()
         {
-            SubSystems.Get<InputSubSystem>().ToggleAllActions(true, new [] { _controls.SendChatMessage });
+            _inputSystem.ToggleAllActions(true, new[] { _controls.SendChatMessage });
         }
     }
 }

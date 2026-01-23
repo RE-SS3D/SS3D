@@ -62,7 +62,7 @@ namespace SS3D.Systems.Inventory.Containers.ObserverConditions
         /// <returns></returns>
         public override ObserverCondition Clone()
         {
-            return this;
+            return Instantiate(this);
         }
 
     }

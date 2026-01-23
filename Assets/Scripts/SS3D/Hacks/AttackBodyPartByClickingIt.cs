@@ -10,63 +10,71 @@ using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Hacks
 {
-	/// <summary>
-	/// Placeholder class to simulate attacks on oneself. Inflicted damage will cause various effects
-	/// like bruising and bleeding, but they don't do anything yet. Damage can also sever bodyparts, which is also
-	/// only visual at the moment.
-	///
-	/// Should be attached to player prefab.
-	///
-	/// Mouse over other players (or yourself) and hit F to attack.
-	/// </summary>
-	/// 
-	public class AttackBodyPartByClickingIt : NetworkBehaviour
-	{
-		[SerializeField] private GameObject attackParticleEffect;
-		[SerializeField] private DamageType attackType;
-		[SerializeField][Range(1, 10)] private float damageAmount;
+    /// <summary>
+    /// Placeholder class to simulate attacks on oneself. Inflicted damage will cause various effects
+    /// like bruising and bleeding, but they don't do anything yet. Damage can also sever bodyparts, which is also
+    /// only visual at the moment.
+    ///
+    /// Should be attached to player prefab.
+    ///
+    /// Mouse over other players (or yourself) and hit F to attack.
+    /// </summary>
+    /// 
+    public class AttackBodyPartByClickingIt : NetworkBehaviour
+    {
+        [SerializeField] private GameObject attackParticleEffect;
+        [SerializeField] private DamageType attackType;
+        [SerializeField][Range(1, 10)] private float damageAmount;
         [SerializeField] private bool _inflictToSingleLayer;
         [SerializeField] private BodyLayerType _bodyLayerType;
 
+        private InputSubSystem _inputSubSystem;
+
         public override void OnStartClient()
-		{
-			base.OnStartClient();
-			if (!IsOwner) enabled = false;
-		}
+        {
+            base.OnStartClient();
+
+            if (!IsOwner) enabled = false;
+        }
+
+        private void Awake()
+        {
+            _inputSubSystem = SubSystems.Get<InputSubSystem>();
+        }
 
         private void Start()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.Attack.performed += CheckForAttack;
+            _inputSubSystem.Inputs.Other.Attack.performed += CheckForAttack;
         }
 
         private void OnDestroy()
         {
-            SubSystems.Get<InputSubSystem>().Inputs.Other.Attack.performed -= CheckForAttack;
+            _inputSubSystem.Inputs.Other.Attack.performed -= CheckForAttack;
         }
 
         private void CheckForAttack(InputAction.CallbackContext callbackContext)
-		{
+        {
             LayerMask layerMask = LayerMask.GetMask("BodyParts");
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit;
-			if (!Physics.Raycast(ray, out hit, 10f, layerMask))
-			{
-				return;
-			}
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (!Physics.Raycast(ray, out hit, 10f, layerMask))
+            {
+                return;
+            }
             BodyPart target = GetComponentsInChildren<BodyPart>().Where(x => x.BodyCollider == hit.collider).FirstOrDefault();
             if (!target)
-			{
-				return;
-			}
+            {
+                return;
+            }
             CmdAttackBodyPart(target, damageAmount, hit.point);
-		}
+        }
 
 
-		[ServerRpc]
-		private void CmdAttackBodyPart(BodyPart bodypart, float damageAmount, Vector3 attackPosition)
-		{
+        [ServerRpc]
+        private void CmdAttackBodyPart(BodyPart bodypart, float damageAmount, Vector3 attackPosition)
+        {
 
-			RpcInstantiateAttackParticleEffect(attackPosition);
+            RpcInstantiateAttackParticleEffect(attackPosition);
             if (!_inflictToSingleLayer)
             {
                 bodypart.InflictDamageToAllLayer(new DamageTypeQuantity(attackType, damageAmount));
@@ -89,5 +97,5 @@ namespace SS3D.Hacks
             yield return new WaitForSeconds(1.0f);
             DestroyImmediate(gameObject);
         }
-	}
+    }
 }
