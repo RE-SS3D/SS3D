@@ -22,7 +22,7 @@
 - [ ] Update the related GitBook document, or create a new one if needed.
 
 <!-- optional. -->
-# Pictures/Videos)
+# Pictures/Videos
 
 <!-- Include photos or videos if possible to help reviewers. -->
 <!-- It may also be used in our monthly devblog. -->
