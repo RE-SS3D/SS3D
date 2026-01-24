@@ -84,9 +84,6 @@ namespace SS3D.Systems.Interactions
             }
         }
 
-        /// <summary>
-        /// Function to subscribe to input events and toggle action maps when the owner is local client.
-        /// </summary>
         private void SubscribeToInput()
         {
             _controls.RunPrimary.performed += HandleRunPrimary;
