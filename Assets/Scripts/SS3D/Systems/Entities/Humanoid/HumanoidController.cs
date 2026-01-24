@@ -108,9 +108,6 @@ namespace SS3D.Systems.Entities.Humanoid
             TargetMovement = Vector3.zero;
         }
 
-        /// <summary>
-        /// Sets up the controller, getting references for the local player
-        /// </summary>
         private void Setup()
         {
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
