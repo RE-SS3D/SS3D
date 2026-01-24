@@ -68,9 +68,6 @@ namespace SS3D.Hacks
             }
         }
 
-        /// <summary>
-        /// Waits until the owner is valid before subscribing to input
-        /// </summary>
         private void SubscribeToInput()
         {
             _controls.Ragdoll.performed += HandleKnockdown;
