@@ -92,9 +92,6 @@ namespace SS3D.Systems.Interactions
             _inputSystem.ToggleActionMap(_controls, true);
         }
 
-        /// <summary>
-        /// Function to unsubscribe from input events and toggle action maps when the owner is local client.
-        /// </summary>
         private void UnsubscribeFromInput()
         {
             _controls.RunPrimary.performed -= HandleRunPrimary;
