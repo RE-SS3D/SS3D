@@ -32,13 +32,19 @@ namespace SS3D.Systems.Screens
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
 
             _controls = SubSystems.Get<InputSubSystem>().Inputs.Other;
-            _controls.ToggleMenu.performed += HandleToggleMenu;
         }
 
-        protected override void OnDestroyed()
+        protected override void OnEnabled()
         {
-            base.OnDestroyed();
-
+            base.OnEnabled();
+            
+            _controls.ToggleMenu.performed += HandleToggleMenu;
+        }
+        
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+            
             _controls.ToggleMenu.performed -= HandleToggleMenu;
         }
 

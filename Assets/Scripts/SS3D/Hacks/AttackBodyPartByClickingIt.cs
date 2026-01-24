@@ -3,7 +3,6 @@ using SS3D.Core;
 using System.Linq;
 using UnityEngine;
 using SS3D.Systems.Health;
-using System;
 using System.Collections;
 using UnityEngine.InputSystem;
 using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
@@ -37,19 +36,23 @@ namespace SS3D.Hacks
             if (!IsOwner) enabled = false;
         }
 
-        private void Awake()
+        private void OnEnable()
         {
             _inputSubSystem = SubSystems.Get<InputSubSystem>();
-        }
-
-        private void Start()
-        {
             _inputSubSystem.Inputs.Other.Attack.performed += CheckForAttack;
+
+            if (_inputSubSystem)
+            {
+                _inputSubSystem.Inputs.Other.Attack.performed += CheckForAttack;
+            }
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
-            _inputSubSystem.Inputs.Other.Attack.performed -= CheckForAttack;
+            if (_inputSubSystem)
+            {
+                _inputSubSystem.Inputs.Other.Attack.performed -= CheckForAttack;
+            }
         }
 
         private void CheckForAttack(InputAction.CallbackContext callbackContext)

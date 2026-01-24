@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using SS3D.Core;
+using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,9 +21,28 @@ namespace External.RuntimeInspector
         // Start is called before the first frame update
         void Start()
         {
-            SubSystems.Get<SS3D.Systems.Inputs.InputSubSystem>().Inputs.Other.ToggleRuntimeEditor.performed += HandleToggle;
             _hierarchyWidth = _runtimeHierarchy.sizeDelta.x;
             _inspectorWidth = _runtimeInspector.sizeDelta.x;
+        }
+
+        private void OnEnable()
+        {
+            InputSubSystem inputSubSystem = SubSystems.Get<InputSubSystem>();
+
+            if (inputSubSystem)
+            {
+                inputSubSystem.Inputs.Other.ToggleRuntimeEditor.performed += HandleToggle;
+            }
+        }
+        
+        private void OnDisable()
+        {
+            InputSubSystem inputSubSystem = SubSystems.Get<InputSubSystem>();
+
+            if (inputSubSystem)
+            {
+                inputSubSystem.Inputs.Other.ToggleRuntimeEditor.performed -= HandleToggle;
+            }
         }
 
         private void HandleToggle(InputAction.CallbackContext context)

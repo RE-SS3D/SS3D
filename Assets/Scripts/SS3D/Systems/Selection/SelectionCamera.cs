@@ -52,19 +52,50 @@ namespace SS3D.Systems.Selection
         /// </summary>
         private Camera _playerCamera;
 
-        private InputSubSystem _inputSubSystem;
+        /// <summary>
+        /// The input subsystem for subscribing to toggling debug mode
+        /// </summary>
+        private InputSubSystem _inputSystem;
 
         protected override void OnStart()
         {
             _system = SubSystems.Get<SelectionSubSystem>();
-            _inputSubSystem = SubSystems.Get<InputSubSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
             _camera.SetReplacementShader(_shader, "");
 
             GenerateRenderTexture();
             GenerateReadbackTexture();
-            _inputSubSystem.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            
+            _inputSyste.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            
+            _inputSystem = SubSystems.Get<InputSubSystem>();
+
+            if (_inputSystem)
+            {
+                _inputSystem.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            }
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            if (_inputSystem)
+            {
+                _inputSystem.Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
+            }
+        }
+
+        protected override void OnDestroyed()
+        {
+            _renderTexture.Release();
         }
 
         private void GenerateReadbackTexture()
@@ -110,12 +141,6 @@ namespace SS3D.Systems.Selection
             }
 
             _system.UpdateColourFromCamera(col);
-        }
-
-        protected override void OnDestroyed()
-        {
-            _renderTexture.Release();
-            _inputSubSystem.Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
         }
 
         /// <summary>

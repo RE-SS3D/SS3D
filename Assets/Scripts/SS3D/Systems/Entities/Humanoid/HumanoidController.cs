@@ -1,10 +1,11 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
-using System;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
@@ -58,14 +59,56 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsRunning => _isRunning;
         #endregion
 
-        protected override void OnStart()
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
-            base.OnStart();
-            if (!Owner.IsLocalClient) return;
+            base.OnOwnershipClient(prevOwner);
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+            else if (prevOwner.Equals(LocalConnection))
+            {
+                UnsubscribeFromInput();
+            }
+        }
+// Must have, Unity doesn't invoke Awake() in NetworkActor and therefore doesn't call OnAwake() without it
+
+        protected void Awake()
+        {
+            base.Awake();
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            
             Setup();
         }
 
-        protected void Setup()
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            if (IsOwner)
+            {
+                UnsubscribeFromInput();
+            }
+
+            TargetMovement = Vector3.zero;
+        }
+
+        private void Setup()
         {
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
@@ -76,25 +119,32 @@ namespace SS3D.Systems.Entities.Humanoid
 
             MovementControls = controls.Movement;
             HotkeysControls = controls.Hotkeys;
-            MovementControls.ToggleRun.performed += HandleToggleRun;
-
-            _inputSystem.ToggleActionMap(MovementControls, true);
-            _inputSystem.ToggleActionMap(HotkeysControls, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        protected override void OnDisabled()
+        private void SubscribeToInput()
         {
-	        base.OnDisabled();
-	        TargetMovement = Vector3.zero;
+            if (!_inputSystem)
+            {
+                return;
+            }
+
+            MovementControls.ToggleRun.performed += HandleToggleRun;
+
+            _inputSystem.ToggleActionMap(MovementControls, true);
+            _inputSystem.ToggleActionMap(HotkeysControls, true);
         }
 
-        protected override void OnDestroyed()
+        private void UnsubscribeFromInput()
         {
-            base.OnDestroyed();
-            UnityEngine.Debug.Log("destroying controller " + gameObject.name);
+            if (!_inputSystem)
+            {
+                return;
+            }
+
             MovementControls.ToggleRun.performed -= HandleToggleRun;
+
             _inputSystem.ToggleActionMap(MovementControls, false);
             _inputSystem.ToggleActionMap(HotkeysControls, false);
         }
