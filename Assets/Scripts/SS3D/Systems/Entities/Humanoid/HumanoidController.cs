@@ -136,9 +136,6 @@ namespace SS3D.Systems.Entities.Humanoid
             _inputSystem.ToggleActionMap(HotkeysControls, true);
         }
 
-        /// <summary>
-        /// Disables the input for the local player
-        /// </summary>
         private void UnsubscribeFromInput()
         {
             // Only proceed if we have an input system
