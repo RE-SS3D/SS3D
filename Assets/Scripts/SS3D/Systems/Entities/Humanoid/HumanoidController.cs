@@ -123,9 +123,6 @@ namespace SS3D.Systems.Entities.Humanoid
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        /// <summary>
-        /// Enables the input for the local player
-        /// </summary>
         private void SubscribeToInput()
         {
             // Only proceed if we have an input system
