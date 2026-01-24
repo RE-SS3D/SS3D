@@ -138,7 +138,6 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void UnsubscribeFromInput()
         {
-            // Only proceed if we have an input system
             if (!_inputSystem)
             {
                 return;
