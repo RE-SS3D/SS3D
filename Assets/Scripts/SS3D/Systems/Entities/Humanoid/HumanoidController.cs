@@ -72,6 +72,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 UnsubscribeFromInput();
             }
         }
+// Must have, Unity doesn't invoke Awake() in NetworkActor and therefore doesn't call OnAwake() without it
 
         protected void Awake()
         {
