@@ -68,7 +68,7 @@ namespace SS3D.Systems.Selection
             GenerateRenderTexture();
             GenerateReadbackTexture();
             
-            _inputSyste.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            _inputSystem.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
         }
 
         protected override void OnEnabled()
