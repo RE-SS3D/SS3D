@@ -114,6 +114,10 @@ MonoBehaviour:
     m_Localized: "Termin\xE9"
     m_Metadata:
       m_Items: []
+  - m_Id: 190815154683764736
+    m_Localized: "<sprite name=\"pc\"> autorisation refus\xE9e"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -114,6 +114,10 @@ MonoBehaviour:
     m_Localized: Ended
     m_Metadata:
       m_Items: []
+  - m_Id: 190815154683764736
+    m_Localized: <sprite name="pc"> permission denied
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
