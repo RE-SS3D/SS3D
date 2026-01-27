@@ -1,4 +1,5 @@
-﻿using SS3D.Data.Generated;
+﻿using SS3D.Data;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Systems.Inventory.Containers;
@@ -25,7 +26,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : InteractionIcons.Take;
+            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

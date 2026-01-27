@@ -1,5 +1,4 @@
 ﻿using Coimbra;
-using Cysharp.Threading.Tasks;
 using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
@@ -15,7 +14,6 @@ using SS3D.Logging;
 using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Tile;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -601,8 +599,8 @@ namespace SS3D.Systems.Crafting
         [ObserversRpc]
         private void AddCraftingSmoke(GameObject target, int referenceId)
         {
-            GameObject particleGameObject = Instantiate(ParticlesEffects.ConstructionParticle.Prefab, target.transform.position, Quaternion.identity);
-            ParticleSystem particles = particleGameObject.GetComponent<ParticleSystem>();
+            ParticleSystem particlePrefab = Assets.Get<ParticleSystem>(AssetDatabases.ParticlesEffects, ParticlesEffects.ConstructionParticle);
+            ParticleSystem particles = Instantiate(particlePrefab, target.transform.position, Quaternion.identity);
 
             // Get the shape module of the dust cloud particle system
             ParticleSystem.ShapeModule shapeModule = particles.shape;

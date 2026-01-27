@@ -1,4 +1,5 @@
-﻿using SS3D.Data.Generated;
+﻿using SS3D.Data;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Systems.Entities;
@@ -31,7 +32,7 @@ namespace SS3D.Systems.Furniture
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return InteractionIcons.Discard;
+            return Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

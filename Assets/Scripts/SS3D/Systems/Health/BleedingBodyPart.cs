@@ -2,6 +2,7 @@
 using FishNet.Object.Synchronizing;
 using UnityEngine;
 using Coimbra;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using System;
 
@@ -43,7 +44,7 @@ namespace SS3D.Systems.Health
 
             if (next && _bloodEffect == null)
             {
-                GameObject bleedingEffect = ParticlesEffects.BleedingParticle;
+                GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, ParticlesEffects.BleedingParticle);
                 GameObject bloodDisplayer;
                 Transform bloodParent;
                 if (_bodyPart.BodyCollider != null)

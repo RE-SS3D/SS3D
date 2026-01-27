@@ -1,6 +1,7 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Systems.Audio;
@@ -61,8 +62,8 @@ namespace System.Electricity
             }
             else
             {
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject,
-                    true, 0.7f, 1, 1, 10);
+                AudioClip fuelPowerGeneratorClip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.FuelPowerGenerator);
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, fuelPowerGeneratorClip, Position, NetworkObject, true, 0.7f, 1, 1, 10);
             }
         }
 

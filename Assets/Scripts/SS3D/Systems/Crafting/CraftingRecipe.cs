@@ -25,7 +25,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// First step of the recipe, which should have the same name as the target of the recipe.
         /// </summary>
-        public string RootStepName => Target.Prefab.name;
+        public string RootStepName => Target?.Get<GameObject>()?.name;
         
         public bool HasInitial => Steps.Any(x => x.IsInitialState);
         

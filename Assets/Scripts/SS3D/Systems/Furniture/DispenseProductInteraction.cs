@@ -1,8 +1,8 @@
-﻿using SS3D.Data.Generated;
+﻿using SS3D.Data;
+using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Tile;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -39,7 +39,7 @@ namespace SS3D.Systems.Furniture
         /// <inheritdoc />
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : InteractionIcons.Take;
+            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
         }
 
         /// <inheritdoc />
