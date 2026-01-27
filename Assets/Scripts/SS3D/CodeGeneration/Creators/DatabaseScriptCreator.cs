@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace SS3D.CodeGeneration.Creators
 {
-    public static class DatabaseAssetCreator
+    public static class DatabaseScriptCreator
     {
          #if UNITY_EDITOR
         /// <summary>
@@ -26,7 +26,7 @@ namespace SS3D.CodeGeneration.Creators
                 Directory.CreateDirectory(fullPath);
             }
 
-            DatabaseAssetWriter.Write(fullPath, className, enums, namespaceName);
+            DatabaseScriptWriter.Write(fullPath, className, enums, namespaceName);
 
             if (EditorWindow.focusedWindow != null)
             {

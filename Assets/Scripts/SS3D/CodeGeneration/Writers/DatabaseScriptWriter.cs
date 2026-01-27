@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SS3D.CodeGeneration
 {
-    public static class DatabaseAssetWriter
+    public static class DatabaseScriptWriter
     {
         /// <summary>
         /// Writes a static class of a DatabaseAssets from an AssetDatabase.  
