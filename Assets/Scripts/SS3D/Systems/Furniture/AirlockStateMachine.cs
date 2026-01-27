@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Systems.Audio;
 using UnityEngine;
@@ -32,12 +33,15 @@ namespace SS3D.Systems.Furniture
             if (stateInfo.IsName(Opening))
             {
                 ChangeColors(_openingColor, animator);
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockOpen, animator.GetComponent<NetworkObject>());
+                AudioClip airlockOpenClip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.AirlockOpen);
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, airlockOpenClip, animator.GetComponent<NetworkObject>());
             }
+
             if (stateInfo.IsName(Closing))
             {
                 ChangeColors(_closingColor, animator);
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockClose, animator.GetComponent<NetworkObject>());
+                AudioClip airlockCloseClip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.AirlockClose);
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, airlockCloseClip, animator.GetComponent<NetworkObject>());
             }
         }
 

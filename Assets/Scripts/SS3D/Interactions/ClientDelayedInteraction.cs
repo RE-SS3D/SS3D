@@ -1,5 +1,4 @@
 ﻿using Coimbra;
-using Serilog;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
@@ -38,8 +37,9 @@ namespace SS3D.Interactions
             {
                 return true;
             }
-                                                             
-            WorldSpaceUI.LoadingBar.CreateAs(out _loadingBarInstance, source.GameObject.transform);
+
+            LoadingBar loadingBarPrefab = Assets.Get<LoadingBar>(AssetDatabases.WorldSpaceUI, WorldSpaceUI.LoadingBar);
+            _loadingBarInstance = Object.Instantiate(loadingBarPrefab, source.GameObject.transform);
             
             _loadingBarInstance.LocalPosition = LoadingBarOffset;
             _loadingBarInstance.Duration = Delay;

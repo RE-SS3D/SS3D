@@ -37,7 +37,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public Item SpawnItem(string id, Vector3 position, Quaternion rotation)
         {
-            Item itemPrefab = Assets.Get<GameObject>(AssetDatabases.Items, id).GetComponent<Item>();
+            Item itemPrefab = Assets.Get<Item>(AssetDatabases.Items, id);
 
             Item itemInstance = Instantiate(itemPrefab, position, rotation);
             ServerManager.Spawn(itemInstance.GameObject);
@@ -69,15 +69,16 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public Item SpawnItemInContainer(string id, AttachedContainer attachedContainer)
         {
-            Item itemPrefab = Assets.Get<GameObject>(AssetDatabases.Items, id).GetComponent<Item>();
+            Item itemPrefab = Assets.Get<Item>(AssetDatabases.Items, id);
 
-            if (attachedContainer is null)
+            if (attachedContainer is not null && itemPrefab is not null)
             {
-                Log.Error(this, "Container does not found!", Logs.ServerOnly);
-                return null;
+                return SpawnItemInContainer(itemPrefab.GameObject, attachedContainer);
             }
 
-            return SpawnItemInContainer(itemPrefab.GameObject, attachedContainer);
+            Log.Error(this, "Container does not found!", Logs.ServerOnly);
+            return null;
+
         }
 
         // <summary>

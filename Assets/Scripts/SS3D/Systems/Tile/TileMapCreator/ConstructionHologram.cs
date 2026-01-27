@@ -3,9 +3,7 @@ using SS3D.Data.Generated;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using SS3D.Core.Behaviours;
-using Coimbra;
-using Actor = SS3D.Core.Behaviours.Actor;
+using SS3D.Data;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -63,13 +61,20 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <param name="mode"></param>
         public void ChangeHologramColor(ConstructionMode mode)
         {
-            Material ghostMat = mode switch
+            Material ghostMat = null;
+
+            string ghostMatName = mode switch
             {
                 ConstructionMode.Valid => Materials.ValidConstruction,
                 ConstructionMode.Invalid => Materials.InvalidConstruction,
                 ConstructionMode.Delete => Materials.DeleteConstruction,
-                _ => null
+                _ => null,
             };
+
+            if (ghostMatName != null)
+            {
+                ghostMat = Assets.Get<Material>(AssetDatabases.Materials, ghostMatName);
+            }
 
             foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())
             {
