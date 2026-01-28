@@ -34,7 +34,7 @@ namespace SS3D.Core.Behaviours
         /// <summary>
         /// If this Actor is initialized or not.
         /// </summary>
-        private bool _initialized;
+        private bool _actorInitialized;
 
         /// <summary>
         /// The event bus listeners added to this object, cleared on OnDestroy
@@ -229,7 +229,7 @@ namespace SS3D.Core.Behaviours
             _transformCache = transform;
             _gameObjectCache = gameObject;
 
-            _initialized = true;
+            _actorInitialized = true;
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace SS3D.Core.Behaviours
         /// <returns>Returns the Cached Transform</returns>
         private Transform GetTransform()
         {
-            if (!_initialized)
+            if (!_actorInitialized)
             {
                 Initialize();
             }
@@ -265,7 +265,7 @@ namespace SS3D.Core.Behaviours
         /// <returns>Returns the Cached Game Object</returns>
         private GameObject GetGameObject()
         {
-            if (!_initialized)
+            if (!_actorInitialized)
             {
                 Initialize();
             }
