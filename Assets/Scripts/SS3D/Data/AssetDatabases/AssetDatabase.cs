@@ -144,7 +144,7 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            DatabaseAssetCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, Assets.Values, DatabaseAssetNamespaceName);
+            DatabaseScriptCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, Assets.Values, DatabaseAssetNamespaceName);
         }
 #endif
     }
