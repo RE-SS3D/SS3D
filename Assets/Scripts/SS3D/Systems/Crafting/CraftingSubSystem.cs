@@ -156,7 +156,8 @@ namespace SS3D.Systems.Crafting
             {
                 for (int i = 0; i < secondaryResult.Amount; i++)
                 {
-                    DefaultCraft(interaction, interactionEvent, secondaryResult.Asset.Prefab, link.Target);
+                    GameObject secondaryResultPrefab = Assets.Get<GameObject>(secondaryResult.Asset.Database, secondaryResult.Asset.Id);
+                    DefaultCraft(interaction, interactionEvent, secondaryResultPrefab, link.Target);
                 }
             }
 
@@ -189,7 +190,9 @@ namespace SS3D.Systems.Crafting
         {
             GameObject resultInstance;
 
-            if (!result.Prefab)
+            GameObject resultPrefab = Assets.Get<GameObject>(result.Database, result.Id);
+
+            if (!resultPrefab)
             {
                 Log.Error(this, $"World object reference {result} has no prefab associated");
                 return;
@@ -197,11 +200,11 @@ namespace SS3D.Systems.Crafting
                 
             if (link.Target.CustomCraft)
             {
-                resultInstance = result.Prefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+                resultInstance = resultPrefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
             }
             else
             {
-                resultInstance = DefaultCraft(interaction, interactionEvent, result.Prefab, link.Target);
+                resultInstance = DefaultCraft(interaction, interactionEvent, resultPrefab, link.Target);
             }
             
             if (link.Tag == null || !link.Tag.ModifyResult) return;
@@ -225,14 +228,16 @@ namespace SS3D.Systems.Crafting
                 return "";
             }
 
-            if (targetAssetReference.Asset.Prefab == null)
+            GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset.Database, targetAssetReference.Asset.Id);
+
+            if (targetPrefab == null)
             {
                 Log.Error(this, $"IWorldObjectAsset {targetAssetReference} has no prefab associated, returning");
 
                 return "";
             }
 
-            string rootStepName = targetAssetReference.Asset.Prefab.name;
+            string rootStepName = targetPrefab.name;
             string stepName;
 
             if (target.TryGetComponent(out ICraftable craftableTarget) && craftableTarget.CurrentStepName != rootStepName)
@@ -241,7 +246,7 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                stepName = targetAssetReference.Asset.Prefab.name;
+                stepName = targetPrefab.name;
             }
 
             return stepName;
@@ -548,7 +553,9 @@ namespace SS3D.Systems.Crafting
         {
             if (!recipeStep.TryGetResult(out WorldObjectAssetReference recipeResult)) return true;
 
-            if (recipeResult.Prefab && recipeResult.Prefab.TryGetComponent(out PlacedTileObject result))
+            GameObject recipeResultPrefab = Assets.Get<GameObject>(recipeResult.Database, recipeResult.Id);
+
+            if (recipeResultPrefab && recipeResultPrefab.TryGetComponent(out PlacedTileObject result))
             {
                 return ResultIsValidPlacedTileObject(result, interactionEvent);
             }
