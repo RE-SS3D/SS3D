@@ -1,4 +1,5 @@
 ﻿using QuikGraph;
+using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace SS3D.Systems.Crafting
         /// <summary>
         /// First step of the recipe, which should have the same name as the target of the recipe.
         /// </summary>
-        public string RootStepName => Target?.Get<GameObject>()?.name;
+        public string RootStepName => Target ? Assets.Get<GameObject>(Target.Database, Target.Id)?.name : null;
         
         public bool HasInitial => Steps.Any(x => x.IsInitialState);
         
