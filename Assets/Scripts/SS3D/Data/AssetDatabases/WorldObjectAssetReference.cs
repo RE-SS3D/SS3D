@@ -16,15 +16,6 @@ namespace SS3D.Data.AssetDatabases
 		[CanBeNull]
 		public GameObject Prefab => Assets.Get<GameObject>(Database, Id);
 
-        /// <summary>
-        /// Short access to the Assets.Get function.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        [CanBeNull]
-        public T Get<T>()
-            where T : Object => Assets.Get<T>(Database, Id);
-
 #if UNITY_EDITOR
 		[ReadOnly]
 #endif
