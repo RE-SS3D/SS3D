@@ -100,7 +100,7 @@ namespace SS3D.Systems.Crafting
             
             if (!_recipeOrganiser.TryGetValue(targetAssetReference.Asset.Id, out List<CraftingRecipe> recipes))
             {
-                Log.Information(this, $"no recipes with target's name {targetAssetReference.Asset.Id}");
+                Log.Information(this, $"no recipes with target's name {targetAssetReference.Asset.name}");
                 return false;
             }
             
@@ -156,7 +156,7 @@ namespace SS3D.Systems.Crafting
             {
                 for (int i = 0; i < secondaryResult.Amount; i++)
                 {
-                    GameObject secondaryResultPrefab = Assets.Get<GameObject>(secondaryResult.Asset.Database, secondaryResult.Asset.Id);
+                    GameObject secondaryResultPrefab = Assets.Get<GameObject>(secondaryResult.Asset);
                     DefaultCraft(interaction, interactionEvent, secondaryResultPrefab, link.Target);
                 }
             }
@@ -190,7 +190,7 @@ namespace SS3D.Systems.Crafting
         {
             GameObject resultInstance;
 
-            GameObject resultPrefab = Assets.Get<GameObject>(result.Database, result.Id);
+            GameObject resultPrefab = Assets.Get<GameObject>(result);
 
             if (!resultPrefab)
             {
@@ -228,7 +228,7 @@ namespace SS3D.Systems.Crafting
                 return "";
             }
 
-            GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset.Database, targetAssetReference.Asset.Id);
+            GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset);
 
             if (targetPrefab == null)
             {
@@ -553,7 +553,7 @@ namespace SS3D.Systems.Crafting
         {
             if (!recipeStep.TryGetResult(out WorldObjectAssetReference recipeResult)) return true;
 
-            GameObject recipeResultPrefab = Assets.Get<GameObject>(recipeResult.Database, recipeResult.Id);
+            GameObject recipeResultPrefab = Assets.Get<GameObject>(recipeResult);
 
             if (recipeResultPrefab && recipeResultPrefab.TryGetComponent(out PlacedTileObject result))
             {

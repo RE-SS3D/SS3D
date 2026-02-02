@@ -32,7 +32,7 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset.Database, targetAssetReference.Asset.Id);
+                GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset);
                 _currentStepName = targetPrefab?.name;
             }
         }
