@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: HealthScanner
   m_EditorClassIdentifier: 
-  Id: HealthScanner
-  Database: Items
+  Id: e9f99df80a74fd242aa46e53c7ec0376
+  Database: c2644d7b34e956743a0bc485e7ca5e37

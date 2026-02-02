@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: ShoeJackboots
   m_EditorClassIdentifier: 
-  Id: ShoeJackboots
-  Database: Items
+  Id: 535ed7c02b5cbdc43ae2b234a963c5cc
+  Database: c2644d7b34e956743a0bc485e7ca5e37

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: HumanArmRight
   m_EditorClassIdentifier: 
-  Id: HumanArmRight
-  Database: Items
+  Id: 432a4ad70e41e5c4f8f913f76fe0e66c
+  Database: c2644d7b34e956743a0bc485e7ca5e37

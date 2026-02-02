@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: HumanIntestineLarge
   m_EditorClassIdentifier: 
-  Id: HumanIntestineLarge
-  Database: Items
+  Id: 1e304f9a331c2ba419514ef8afb8a13c
+  Database: c2644d7b34e956743a0bc485e7ca5e37

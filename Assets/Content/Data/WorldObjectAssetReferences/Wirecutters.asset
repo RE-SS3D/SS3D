@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: Wirecutters
   m_EditorClassIdentifier: 
-  Id: Wirecutters
-  Database: Items
+  Id: 41a1c8c211dc32c4d8ffca5f0892f9dc
+  Database: c2644d7b34e956743a0bc485e7ca5e37

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: HumanStomach
   m_EditorClassIdentifier: 
-  Id: HumanStomach
-  Database: Items
+  Id: 2bc6f6a968d5ba04c919ba56d0ccdab4
+  Database: c2644d7b34e956743a0bc485e7ca5e37

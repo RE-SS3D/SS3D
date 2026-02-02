@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: GlassReinforcedSheet
   m_EditorClassIdentifier: 
-  Id: GlassReinforcedSheet
-  Database: Items
+  Id: a1a7407e08bb2914c97f431063bf83e2
+  Database: c2644d7b34e956743a0bc485e7ca5e37

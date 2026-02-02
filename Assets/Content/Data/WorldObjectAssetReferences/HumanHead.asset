@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: HumanHead
   m_EditorClassIdentifier: 
-  Id: HumanHead
-  Database: Items
+  Id: cc54bc74b2f4c2349b1f84b501b0a091
+  Database: c2644d7b34e956743a0bc485e7ca5e37
