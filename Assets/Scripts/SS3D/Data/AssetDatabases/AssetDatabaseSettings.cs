@@ -40,7 +40,7 @@ namespace SS3D.Data.AssetDatabases
 
             const string dataPath = AssetDatabase.DatabaseAssetPath;
 
-            DatabaseScriptCreator.CreateAtPath(dataPath, "AssetDatabases", IncludedAssetDatabases);
+            DatabaseScriptCreator.CreateAtPath(dataPath, "AssetDatabases", new(IncludedAssetDatabases));
         }
 #endif
     }

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
+using UnityEditor;
+using Object = UnityEngine.Object;
 
 namespace SS3D.CodeGeneration
 {
@@ -14,9 +16,9 @@ namespace SS3D.CodeGeneration
         /// <param name="className">The name of the class, currently being the asset database name</param>
         /// <param name="items">the elements to add to this class</param>
         /// <param name="namespaceName">the namespace name to use</param>
-        public static void Write(string filePath, string className, IEnumerable<string> items, string namespaceName = "SS3D.Data.Enums")
+        public static void Write(string filePath, string className, List<Object> items, string namespaceName = "SS3D.Data.Enums")
         {
-            IEnumerable<string> filtered = items.GroupBy(name => name).Select(nameGroup => nameGroup.Key);
+            items.Sort((obj1, obj2) => string.Compare(obj1.name, obj2.name, StringComparison.InvariantCulture));
 
             SourceFile sourceFile = new();
 
@@ -27,22 +29,26 @@ namespace SS3D.CodeGeneration
 
                 using (new BracesScope(sourceFile))
                 {
-                    for (int index = 0; index < filtered.ToList().Count; index++)
+                    foreach (Object item in items)
                     {
-                        string member = filtered.ToList()[index];
+                        string itemPath = AssetDatabase.GetAssetPath(item);
 
-                        if (string.IsNullOrWhiteSpace(member))
-                        {
+                        if(string.IsNullOrEmpty(itemPath) || !File.Exists(itemPath))
                             continue;
-                        }
+                        
+                        if (!item || string.IsNullOrWhiteSpace(item.name))
+                            continue;
 
-                        char[] corrected = member.ToCharArray();
+                        char[] corrected = item.name.ToCharArray();
                         corrected[0] = corrected[0].ToString().ToUpper()[0];
 
                         StringBuilder stringBuilder = new();
                         stringBuilder.Append(corrected);
-
-                        sourceFile.AppendLine($"public const string {stringBuilder} = \"{stringBuilder}\";"); }
+                        
+                        string guid = AssetDatabase.AssetPathToGUID(itemPath);
+                        
+                        sourceFile.AppendLine($"public const string {stringBuilder} = \"{guid}\";");
+                    }
                 }
             }
 

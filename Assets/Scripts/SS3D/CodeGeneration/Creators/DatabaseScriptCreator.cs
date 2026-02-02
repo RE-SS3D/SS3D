@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -14,10 +13,8 @@ namespace SS3D.CodeGeneration.Creators
         /// <summary>
         /// Creates a list of database assets in the object path, with the defined class name and using a list of provided assets as its elements.
         /// </summary>
-        public static void CreateAtPath(string path, string className, [NotNull] IEnumerable<Object> assets, string namespaceName = "SS3D.Data.Generated")
+        public static void CreateAtPath(string path, string className, [NotNull] List<Object> assets, string namespaceName = "SS3D.Data.Generated")
         {
-            IEnumerable<string> enums = assets.Select(reference => reference.name);
-
             string dataPath = Application.dataPath;
             string fullPath = dataPath + path;
 
@@ -26,7 +23,7 @@ namespace SS3D.CodeGeneration.Creators
                 Directory.CreateDirectory(fullPath);
             }
 
-            DatabaseScriptWriter.Write(fullPath, className, enums, namespaceName);
+            DatabaseScriptWriter.Write(fullPath, className, assets, namespaceName);
 
             if (EditorWindow.focusedWindow != null)
             {

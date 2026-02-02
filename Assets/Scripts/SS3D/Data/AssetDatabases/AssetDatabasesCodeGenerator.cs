@@ -2,10 +2,12 @@
 using Coimbra;
 using JetBrains.Annotations;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases
 {
@@ -76,32 +78,30 @@ namespace SS3D.Data.AssetDatabases
             int createdAssets = 0;
             int modifiedAssets = 0;
 
-            foreach (Object asset in assetDatabase.Assets.Values)
+            foreach ((string guid, Object asset) in assetDatabase.Assets)
             {
                 if (asset is not GameObject gameObject)
                 {
                     continue;
                 }
+                
+                WorldObjectAssetReference worldObjectAssetReference = SavedAssetReferences.Values.ToList().Find(reference => reference.Id == guid && reference.Database == assetDatabase.DatabaseID);
 
-                if (SavedAssetReferences.Values.ToList().Exists(reference => reference.Id == gameObject.name && reference.Database == assetDatabase.DatabaseName))
+                if (worldObjectAssetReference)
                 {
-                    WorldObjectAssetReference worldObjectAssetReference = SavedAssetReferences.Values.ToList().Find(reference => reference.Id == gameObject.name && reference.Database == assetDatabase.DatabaseName);
-
                     UpdateWorldObjectAssetReference(worldObjectAssetReference, gameObject, ref modifiedAssets);
                 }
                 else
                 {
-                    WorldObjectAssetReference worldObjectAssetReference = CreateWorldObjectAssetReference(gameObject.name, assetDatabase.DatabaseName);
+                    worldObjectAssetReference = CreateWorldObjectAssetReference(gameObject.name, guid, assetDatabase.DatabaseID);
 
-                    string key = $"{WorldObjectAssetPath}{worldObjectAssetReference.Id}.asset";
+                    string key = $"{WorldObjectAssetPath}{gameObject.name}.asset";
 
-                    if (SavedAssetReferences.ContainsKey(key))
+                    if (!SavedAssetReferences.TryAdd(key, worldObjectAssetReference))
                     {
                         Debug.LogError($"[{nameof(AssetDatabasesCodeGenerator)}] - {key} is already on the dictionary");
                         continue;
                     }
-
-                    SavedAssetReferences.Add(key, worldObjectAssetReference);
 
                     UpdateWorldObjectAssetReference(worldObjectAssetReference, gameObject, ref createdAssets);
                 }
@@ -123,25 +123,25 @@ namespace SS3D.Data.AssetDatabases
             }
         }
 
-        private static WorldObjectAssetReference CreateWorldObjectAssetReference(string gameObjectName, string assetDatabaseName)
+        private static WorldObjectAssetReference CreateWorldObjectAssetReference(string fileName, string gameObjectID, string assetDatabaseName)
         {
             WorldObjectAssetReference worldObjectAssetReference = ScriptableObject.CreateInstance<WorldObjectAssetReference>();
 
-            worldObjectAssetReference.Id = gameObjectName;
+            worldObjectAssetReference.Id = gameObjectID;
             worldObjectAssetReference.Database = assetDatabaseName;
 
-            UnityEditor.AssetDatabase.CreateAsset(worldObjectAssetReference, $"{WorldObjectAssetPath}{worldObjectAssetReference.Id}.asset");
+            UnityEditor.AssetDatabase.CreateAsset(worldObjectAssetReference, $"{WorldObjectAssetPath}{fileName}.asset");
 
             HasModifiedAssetsWhenGenerating = true;
 
-            Debug.Log($"[{nameof(AssetDatabasesCodeGenerator)}] - Creating {worldObjectAssetReference.Id} WorldObjectReferenceAsset as it was missing.");
+            Debug.Log($"[{nameof(AssetDatabasesCodeGenerator)}] - Creating {fileName} WorldObjectReferenceAsset as it was missing.");
 
             return worldObjectAssetReference;
         }
 
         private static void CleanupWorldObjectAssetReferences(List<AssetDatabase> assetDatabases)
         {
-            List<KeyValuePair<string, WorldObjectAssetReference>> assetsToDestroy = new List<KeyValuePair<string, WorldObjectAssetReference>>();
+            List<KeyValuePair<string, WorldObjectAssetReference>> assetsToDestroy = new();
             List<KeyValuePair<string, WorldObjectAssetReference>> nullSavedAssetReferences = SavedAssetReferences.Where(pair => pair.Value == null).ToList();
 
             foreach (KeyValuePair<string, WorldObjectAssetReference> pair in nullSavedAssetReferences)
@@ -149,16 +149,19 @@ namespace SS3D.Data.AssetDatabases
                 SavedAssetReferences.Remove(pair.Key);
             }
 
-            List<string> assetDatabaseAssets = new List<string>();
+            Dictionary<string, string> assetsInDatabases = new();
 
             foreach (AssetDatabase database in assetDatabases)
             {
-                assetDatabaseAssets.AddRange(database.Assets.Values.Select(o => o.name));
+                foreach (string key in database.Assets.Keys)
+                {
+                    assetsInDatabases.TryAdd(key, database.DatabaseID);
+                }
             }
 
             foreach (KeyValuePair<string, WorldObjectAssetReference> savedAsset in SavedAssetReferences)
             {
-                if (assetDatabaseAssets.Exists(assetName => assetName == savedAsset.Value.Id))
+                if (assetsInDatabases.TryGetValue(savedAsset.Value.Id, out string databaseID) && databaseID == savedAsset.Value.Database)
                 {
                     continue;
                 }

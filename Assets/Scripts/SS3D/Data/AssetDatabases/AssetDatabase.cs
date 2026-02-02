@@ -38,6 +38,8 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public string DatabaseName;
 
+        public string DatabaseID;
+
 #if UNITY_EDITOR
         /// <summary>
         /// The asset group that constitutes this AssetDatabase, the system gets every asset from it and adds to an asset list.
@@ -60,7 +62,7 @@ namespace SS3D.Data.AssetDatabases
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)
             {
-                Assets.TryAdd(entry.MainAsset.name, entry.MainAsset);
+                Assets.TryAdd(entry.guid, entry.MainAsset);
             }
 
             EditorUtility.SetDirty(this);
@@ -83,7 +85,7 @@ namespace SS3D.Data.AssetDatabases
                 return null;
             }
 
-            if (typeof(T) != typeof(GameObject) && asset is GameObject gameObject)
+            if (typeof(T).IsSubclassOf(typeof(Component)) && asset is GameObject gameObject)
             {
                 return gameObject.GetComponent<T>();
             }
@@ -144,7 +146,7 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            DatabaseScriptCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, Assets.Values, DatabaseAssetNamespaceName);
+            DatabaseScriptCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, Assets.Values.ToList(), DatabaseAssetNamespaceName);
         }
 #endif
     }
