@@ -76,8 +76,7 @@ namespace SS3D.Systems.Furniture
 
             if (productToDispenseStock.Stock <= 0)
             {
-                AudioClip bikeHornClip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.BikeHorn);
-                audioSubSystem.PlayAudioSource(Audio.AudioType.Sfx, bikeHornClip, Position, NetworkObject, false, 0.7f, 1, 1, 3);
+                audioSubSystem.PlayAudioSource(Audio.AudioType.Sfx, Sounds.BikeHorn, Position, NetworkObject, false, 0.7f, 1, 1, 3);
 
                 return;
             }
@@ -85,8 +84,7 @@ namespace SS3D.Systems.Furniture
             _powerConsumer.UseMachineOnce();
             productToDispenseStock.Stock--;
 
-            AudioClip can1Clip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.Can1);
-            audioSubSystem.PlayAudioSource(Audio.AudioType.Sfx, can1Clip, Position, NetworkObject, false, 0.7f, 1, 1, 3);
+            audioSubSystem.PlayAudioSource(Audio.AudioType.Sfx, Sounds.Can1, Position, NetworkObject, false, 0.7f, 1, 1, 3);
 
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));

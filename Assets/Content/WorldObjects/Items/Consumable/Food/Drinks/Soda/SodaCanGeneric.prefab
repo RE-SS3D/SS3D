@@ -319,9 +319,15 @@ MonoBehaviour:
   _lightImpactSounds:
   - {fileID: 8300000, guid: 1a34c805f84be3b4caac14d7de790607, type: 3}
   - {fileID: 8300000, guid: 8d93fdf9dcada204a952e29213f0293f, type: 3}
+  _lightImpactSoundReferences:
+  - {fileID: 11400000, guid: a018567162ec7ad40bdd2d7d8ae6074b, type: 2}
+  - {fileID: 11400000, guid: 5d6d1f8ffca30774e8791de6a68f2d97, type: 2}
   _hardImpactSounds:
   - {fileID: 8300000, guid: f00c6b5a098e84b4b87d80d23b4f295a, type: 3}
   - {fileID: 8300000, guid: b315c4abdef36244fb211c5f643d411a, type: 3}
+  _hardImpactSoundReferences:
+  - {fileID: 11400000, guid: 4cac36cceddb62f4c914372c095706e3, type: 2}
+  - {fileID: 11400000, guid: b30cc2cc7d13a7f459a5911da388787f, type: 2}
 --- !u!114 &2460252798676826451
 MonoBehaviour:
   m_ObjectHideFlags: 0

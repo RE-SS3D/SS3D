@@ -154,11 +154,11 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 4294524822034227355}
   _networkObjectCache: {fileID: 4294524822034227355}
   _powerConsumer: {fileID: 8272970134100573020}
-  _songs:
-  - {fileID: 8300000, guid: ec8b849764a7e9147b2a565f81a1ca42, type: 3}
-  - {fileID: 8300000, guid: fd331e360db5fbb448e66367e41d1893, type: 3}
-  - {fileID: 8300000, guid: 3f51862f0b88a5243a8cceb97147489d, type: 3}
-  RadioOn: 0
+  _songReferences:
+  - {fileID: 11400000, guid: 25feb284497d72e419a785e18fd7e290, type: 2}
+  - {fileID: 11400000, guid: 09d1c5fc70b293a4ab1411d9636b6f01, type: 2}
+  - {fileID: 11400000, guid: f5f3cdceb1529134a986e01cfa0d66a0, type: 2}
+  AudioOn: 0
   CurrentMusic: 0
   InteractionIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   InteractionIconOn: {fileID: 0}

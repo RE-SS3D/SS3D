@@ -62,8 +62,7 @@ namespace System.Electricity
             }
             else
             {
-                AudioClip fuelPowerGeneratorClip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.FuelPowerGenerator);
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, fuelPowerGeneratorClip, Position, NetworkObject, true, 0.7f, 1, 1, 10);
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject, true, 0.7f, 1, 1, 10);
             }
         }
 
