@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: HumanEarRight
   m_EditorClassIdentifier: 
-  Id: HumanEarRight
-  Database: Items
+  Id: 30794a01d5f4c174a9d20b2c632f2dca
+  Database: c2644d7b34e956743a0bc485e7ca5e37

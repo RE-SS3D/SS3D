@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: Boombox
   m_EditorClassIdentifier: 
-  Id: Boombox
-  Database: Items
+  Id: 1d2cf546d53e3fe4c9103007427aaec7
+  Database: c2644d7b34e956743a0bc485e7ca5e37

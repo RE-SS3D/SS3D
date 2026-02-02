@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ba336da0014235becfe02dce35b6ca, type: 3}
   m_Name: ConstructionParticle
   m_EditorClassIdentifier: 
-  Id: ConstructionParticle
-  Database: ParticlesEffects
+  Id: ca5e6b5f7c6c5054a8f8155ef44e3e43
+  Database: 099b9943e9299d54b82d2c1163500458

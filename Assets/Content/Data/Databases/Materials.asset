@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Materials
   m_EditorClassIdentifier: 
   DatabaseName: Materials
+  DatabaseID: acbbffb4c89caec469bb21b6197c7626
   AssetGroup: {fileID: 11400000, guid: 2caa591261a883b4183d04829ce705fd, type: 2}
   Assets:
     _list:
-    - _key: DeleteConstruction
+    - _key: ed5a1263eb564c94abc6407ac0919ea7
       _value: {fileID: 2100000, guid: ed5a1263eb564c94abc6407ac0919ea7, type: 2}
-    - _key: InvalidConstruction
+    - _key: e9b99cfb2e59ffa40a062c2f4b88b729
       _value: {fileID: 2100000, guid: e9b99cfb2e59ffa40a062c2f4b88b729, type: 2}
-    - _key: ValidConstruction
+    - _key: 6d2a18aa72cbaf94694dce9f8451160b
       _value: {fileID: 2100000, guid: 6d2a18aa72cbaf94694dce9f8451160b, type: 2}
     _new: 
