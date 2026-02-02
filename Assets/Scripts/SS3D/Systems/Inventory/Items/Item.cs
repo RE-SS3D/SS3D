@@ -120,7 +120,7 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
 
-        public Item Prefab => Asset ? Assets.Get<Item>(Asset.Database, Asset.Id) : null;
+        public Item Prefab => Asset ? Assets.Get<Item>(Asset) : null;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
