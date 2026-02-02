@@ -33,15 +33,13 @@ namespace SS3D.Systems.Furniture
             if (stateInfo.IsName(Opening))
             {
                 ChangeColors(_openingColor, animator);
-                AudioClip airlockOpenClip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.AirlockOpen);
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, airlockOpenClip, animator.GetComponent<NetworkObject>());
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockOpen, animator.GetComponent<NetworkObject>());
             }
 
             if (stateInfo.IsName(Closing))
             {
                 ChangeColors(_closingColor, animator);
-                AudioClip airlockCloseClip = Assets.Get<AudioClip>(AssetDatabases.Sounds, Sounds.AirlockClose);
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, airlockCloseClip, animator.GetComponent<NetworkObject>());
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockClose, animator.GetComponent<NetworkObject>());
             }
         }
 

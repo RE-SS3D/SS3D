@@ -1,4 +1,7 @@
 ﻿using SS3D.Attributes;
+using System.Linq;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -20,5 +23,36 @@ namespace SS3D.Data.AssetDatabases
 #endif
 		[Header("This file is auto-generated, do not modify it manually")]
 		public string Database;
-	}
+
+#if UNITY_EDITOR
+        public void Init(Object asset)
+        {
+            string assetPath = UnityEditor.AssetDatabase.GetAssetPath(asset);
+            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+            
+            AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+            AddressableAssetEntry entry = settings.FindAssetEntry(guid);
+            if (entry == null)
+            {
+                Debug.LogError($"Asset {asset.name} with GUID {guid} not found in Addressable Asset Settings.");
+                return;
+            }
+            
+            AssetDatabaseSettings databaseSettings = Coimbra.ScriptableSettings.GetOrFind<AssetDatabaseSettings>();
+
+            if (!databaseSettings)
+            {
+                Debug.LogError("AssetDatabaseSettings not found.");
+                return;
+            }
+            
+            foreach (AssetDatabase database in databaseSettings.IncludedAssetDatabases.Where(database => database.AssetGroup == entry.parentGroup))
+            {
+                Id = guid;
+                Database = database.DatabaseID;
+                break;
+            }
+        }
+  #endif
+    }
 }
