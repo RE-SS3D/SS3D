@@ -41,7 +41,8 @@ namespace SS3D.Systems.Tile
 
 	        foreach (GenericObjectSo asset in assets)
 	        {
-		        Transform prefabTransform = asset.prefab.transform;
+                GameObject prefab = Data.Assets.Get<GameObject>(asset.PrefabAsset);
+                Transform prefabTransform = prefab.transform;
 		        Shader shader = Shader.Find("Unlit/ObjectIcon");
 
 		        Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(prefabTransform, shader, null, 128, 128, true);
