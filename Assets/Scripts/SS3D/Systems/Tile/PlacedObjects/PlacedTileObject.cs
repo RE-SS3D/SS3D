@@ -2,6 +2,7 @@
 using FishNet.Object;
 using SS3D.Attributes;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
@@ -29,7 +30,8 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
-            GameObject placedGameObject = Instantiate(tileObjectSo.prefab);
+            GameObject tileObjectPrefab = Assets.Get<GameObject>(tileObjectSo.PrefabAsset);
+            GameObject placedGameObject = Instantiate(tileObjectPrefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();

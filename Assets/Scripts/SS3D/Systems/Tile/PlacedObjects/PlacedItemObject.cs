@@ -1,6 +1,7 @@
 ﻿using FishNet;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Logging;
 using System;
 using System.Collections;
@@ -34,7 +35,8 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                placedGameObject = Instantiate(itemSo.prefab);
+                GameObject itemPrefab = Assets.Get<GameObject>(itemSo.PrefabAsset);
+                placedGameObject = Instantiate(itemPrefab);
             }
             placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
 

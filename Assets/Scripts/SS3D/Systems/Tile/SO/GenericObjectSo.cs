@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
+using SS3D.Data.AssetDatabases;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -11,9 +10,13 @@ namespace SS3D.Systems.Tile
     public class GenericObjectSo : ScriptableObject
     {
         [NotNull]
-        public string NameString => prefab.name;
+        public string NameString => PrefabAsset.name;
 
-        public GameObject prefab;
+        public WorldObjectAssetReference PrefabAsset;
         public Sprite icon;
+
+        [SerializeField]
+        [HideInInspector]
+        private string _nameString;
     }
 }
