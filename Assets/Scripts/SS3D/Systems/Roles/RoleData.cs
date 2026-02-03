@@ -15,9 +15,9 @@ namespace SS3D.Systems.Roles
         [SerializeField]
         private string _roleName;
         [SerializeField]
-        private WorldObjectAssetReference _pdaAsset;
+        private ObjectAssetReference _pdaAsset;
         [SerializeField]
-        private WorldObjectAssetReference _idCardAsset;
+        private ObjectAssetReference _idCardAsset;
         [SerializeField]
         private List<IDPermission> _permissions = new();
         [SerializeField]
@@ -25,9 +25,9 @@ namespace SS3D.Systems.Roles
 
         public string Name => _roleName;
 
-        public WorldObjectAssetReference IDCardAsset => _idCardAsset;
+        public ObjectAssetReference IDCardAsset => _idCardAsset;
 
-        public WorldObjectAssetReference PDAAsset => _pdaAsset;
+        public ObjectAssetReference PDAAsset => _pdaAsset;
 
         public List<IDPermission> Permissions => _permissions;
 

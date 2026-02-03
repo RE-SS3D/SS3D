@@ -41,7 +41,7 @@ namespace SS3D.Data
         /// Returns an asset from a  database casting the object found to TAsset.
         /// </summary>
         [CanBeNull]
-        public static TAsset Get<TAsset>([NotNull] WorldObjectAssetReference assetReference)
+        public static TAsset Get<TAsset>([NotNull] ObjectAssetReference assetReference)
             where TAsset : Object
         {
             return GetDatabase(assetReference.Database)?.Get<TAsset>(assetReference.Id);

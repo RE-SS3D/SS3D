@@ -11,9 +11,9 @@ namespace SS3D.Systems.Roles
     [CreateAssetMenu(fileName = "Loadout", menuName = "Roles/Loadout")]
     public class RoleLoadout : ScriptableObject
     {
-        public WorldObjectAssetReference HandLeftAsset;
-        public WorldObjectAssetReference HandRightAsset;
+        public ObjectAssetReference HandLeftAsset;
+        public ObjectAssetReference HandRightAsset;
 
-        public SerializableDictionary<ContainerType, WorldObjectAssetReference> EquipmentAssets;
+        public SerializableDictionary<ContainerType, ObjectAssetReference> EquipmentAssets;
     }
 }

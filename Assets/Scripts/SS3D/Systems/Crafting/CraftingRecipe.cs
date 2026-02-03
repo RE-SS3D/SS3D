@@ -15,7 +15,7 @@ namespace SS3D.Systems.Crafting
     public class CraftingRecipe : ScriptableObject
     {
         [Tooltip("The target of the crafting, what needs to be clicked on by the player to start the crafting.")]
-        public WorldObjectAssetReference Target;
+        public ObjectAssetReference Target;
         
         [Tooltip("A bunch of recipe steps, representing each steps of the recipe.")]
         public List<RecipeStep> Steps;

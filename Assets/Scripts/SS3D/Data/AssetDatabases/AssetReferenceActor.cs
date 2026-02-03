@@ -1,7 +1,4 @@
 ﻿using SS3D.Attributes;
-using SS3D.Data.AssetDatabases;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -19,9 +16,9 @@ namespace SS3D.Data.AssetDatabases
         [ReadOnly]
         [Header("This field is filled automatically by the AssetData system.")]
 #endif
-        private WorldObjectAssetReference _asset;
+        private ObjectAssetReference _asset;
 
-        public WorldObjectAssetReference Asset
+        public ObjectAssetReference Asset
         {
             get => _asset;
             set

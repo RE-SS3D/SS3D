@@ -15,7 +15,7 @@ namespace SS3D.Systems.Crafting
     {
         [Tooltip("Elements of the recipe, that will be consumed in the crafting process, and the necessary number of each.")] 
         [SerializeField]
-        private SerializableDictionary<WorldObjectAssetReference, int> _elements = new();
+        private SerializableDictionary<ObjectAssetReference, int> _elements = new();
         
         [Tooltip("Bunch of conditions for ingredients to be valid to use in the recipe.")] 
         [SerializeField]
@@ -91,7 +91,7 @@ namespace SS3D.Systems.Crafting
             {
                 Dictionary<string, int> elements = new();
                 
-                foreach (KeyValuePair<WorldObjectAssetReference, int> keyValuePair in _elements)
+                foreach (KeyValuePair<ObjectAssetReference, int> keyValuePair in _elements)
                 {
                     elements.Add(keyValuePair.Key.Id, keyValuePair.Value);
                 }

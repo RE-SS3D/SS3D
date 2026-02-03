@@ -62,7 +62,7 @@ namespace SS3D.Systems.Tile
         [ReadOnly]
         [Header("This field is filled automatically by the AssetData system.")]
 #endif
-        private WorldObjectAssetReference _asset;
+        private ObjectAssetReference _asset;
 
         [SerializeField]
         private TileObjectSo _tileObjectSo;
@@ -96,7 +96,7 @@ namespace SS3D.Systems.Tile
 
         public bool HasAdjacencyConnector => _connector != null;
 
-        public WorldObjectAssetReference Asset
+        public ObjectAssetReference Asset
         {
             get => _asset;
             set

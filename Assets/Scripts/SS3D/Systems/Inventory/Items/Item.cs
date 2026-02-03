@@ -39,7 +39,7 @@ namespace SS3D.Systems.Inventory.Items
         [ReadOnly]
         [Header("This field is filled automatically by the AssetData system.")]
 #endif
-        private WorldObjectAssetReference _asset;
+        private ObjectAssetReference _asset;
 
         #region Item
         [Header("Item settings")]
@@ -107,7 +107,7 @@ namespace SS3D.Systems.Inventory.Items
             set => _nativeColliders = value;
         }
 
-        public WorldObjectAssetReference Asset
+        public ObjectAssetReference Asset
         {
             get => _asset;
             set

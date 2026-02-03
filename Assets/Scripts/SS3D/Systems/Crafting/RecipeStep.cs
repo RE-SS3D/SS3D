@@ -45,7 +45,7 @@ namespace SS3D.Systems.Crafting
         [ShowIf(nameof(IsTerminal))]
         [AllowNesting]
         [Tooltip("A resulting object that will spawn at the end of the crafting process, optional.")] 
-        public WorldObjectAssetReference Result;
+        public ObjectAssetReference Result;
         
         /// <summary>
         /// If true, show IsInitialState in the inspector
@@ -57,7 +57,7 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public string Name => _name;
 
-        public WorldObjectAssetReference GetResultOrTarget() => Result ? Result : Recipe.Target;
+        public ObjectAssetReference GetResultOrTarget() => Result ? Result : Recipe.Target;
 
         public RecipeStep(CraftingRecipe recipe, string name)
         {
@@ -68,7 +68,7 @@ namespace SS3D.Systems.Crafting
             Result = new();
         }
         
-        public bool TryGetResult(out WorldObjectAssetReference result)
+        public bool TryGetResult(out ObjectAssetReference result)
         {
             result = Result;
             return Result is not null;

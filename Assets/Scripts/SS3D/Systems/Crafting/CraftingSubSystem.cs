@@ -31,7 +31,7 @@ namespace SS3D.Systems.Crafting
     public sealed class CraftingSubSystem : NetworkSubSystem
     {
         /// <summary>
-        /// First string is the id of the target object of the recipe (as the WorldObjectAssetReference's id).
+        /// First string is the id of the target object of the recipe (as the ObjectAssetReference's id).
         /// The value is a list of craftingRecipe, for which the target is the key.
         /// </summary>
         private readonly Dictionary<string, List<CraftingRecipe>> _recipeOrganiser = new();
@@ -141,7 +141,7 @@ namespace SS3D.Systems.Crafting
 
             ModifyOrConsumeRecipeTarget(recipeTarget, interaction, interactionEvent, link);
 
-            if (link.Target.TryGetResult(out WorldObjectAssetReference result))
+            if (link.Target.TryGetResult(out ObjectAssetReference result))
             {
                 SpawnOrModifyMainResult(result, interaction, interactionEvent, link);
             }
@@ -185,7 +185,7 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        private void SpawnOrModifyMainResult(WorldObjectAssetReference result, CraftingInteraction interaction,
+        private void SpawnOrModifyMainResult(ObjectAssetReference result, CraftingInteraction interaction,
             InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
             GameObject resultInstance;
@@ -551,7 +551,7 @@ namespace SS3D.Systems.Crafting
         [Server]
         private bool ResultIsValid(InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
-            if (!recipeStep.TryGetResult(out WorldObjectAssetReference recipeResult)) return true;
+            if (!recipeStep.TryGetResult(out ObjectAssetReference recipeResult)) return true;
 
             GameObject recipeResultPrefab = Assets.Get<GameObject>(recipeResult);
 

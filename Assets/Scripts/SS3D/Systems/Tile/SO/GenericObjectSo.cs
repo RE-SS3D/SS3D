@@ -12,7 +12,7 @@ namespace SS3D.Systems.Tile
         [NotNull]
         public string NameString => PrefabAsset.name;
 
-        public WorldObjectAssetReference PrefabAsset;
+        public ObjectAssetReference PrefabAsset;
         public Sprite icon;
 
         [SerializeField]

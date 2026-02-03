@@ -186,7 +186,7 @@ namespace SS3D.Systems.Crafting
             _interactionEvent = _eventForConnection[conn];
             List<SecondaryResult> results = new();
             
-            if (_interaction.ChosenLink.Target.IsTerminal && _interaction.ChosenLink.Target.TryGetResult(out WorldObjectAssetReference result))
+            if (_interaction.ChosenLink.Target.IsTerminal && _interaction.ChosenLink.Target.TryGetResult(out ObjectAssetReference result))
             {
                 results.Add(new (result, 1));
             }

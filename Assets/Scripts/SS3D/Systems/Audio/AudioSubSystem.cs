@@ -251,7 +251,7 @@ namespace SS3D.Systems.Audio
 
             foreach (AudioClip selectedClip in selectedClips)
             {
-                WorldObjectAssetReference.Create(selectedClip);
+                ObjectAssetReference.Create(selectedClip);
             }
         }
 #endif
