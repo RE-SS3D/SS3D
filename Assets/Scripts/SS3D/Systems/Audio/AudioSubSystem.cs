@@ -251,32 +251,10 @@ namespace SS3D.Systems.Audio
 
             foreach (AudioClip selectedClip in selectedClips)
             {
-                CreateAudioClipReference(selectedClip);
+                WorldObjectAssetReference.Create(selectedClip);
             }
         }
-
-        private static void CreateAudioClipReference(AudioClip selectedClip)
-        {
-            if (!selectedClip)
-            {
-                Debug.LogError("No audio clip selected.");
-
-                return;
-            }
-
-            WorldObjectAssetReference asset = ScriptableObject.CreateInstance<WorldObjectAssetReference>();
-            asset.Init(selectedClip);
-
-            string clipPath = UnityEditor.AssetDatabase.GetAssetPath(selectedClip);
-            string clipDirectory = System.IO.Path.GetDirectoryName(clipPath);
-            string assetPath = System.IO.Path.Combine(clipDirectory, $"{selectedClip.name}.asset");
-
-            UnityEditor.AssetDatabase.CreateAsset(asset, assetPath);
-            UnityEditor.AssetDatabase.SaveAssets();
-
-            Debug.Log($"Created Audio Clip Reference for {selectedClip.name} at {assetPath}", asset);
-        }
-  #endif
+#endif
     }
 }
 
