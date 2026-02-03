@@ -19,7 +19,7 @@ namespace SS3D.Systems.Audio
         private MachinePowerConsumer _powerConsumer;
         
         [SerializeField]
-        private List<WorldObjectAssetReference> _songReferences;
+        private List<ObjectAssetReference> _songReferences;
 
         [SyncVar]
         public bool AudioOn;

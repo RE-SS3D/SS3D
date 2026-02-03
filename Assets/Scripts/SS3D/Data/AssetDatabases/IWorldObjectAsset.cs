@@ -6,9 +6,9 @@
     public interface IWorldObjectAsset
     {
         /// <summary>
-        /// The reference to the WorldObjectAssetReference asset, which is a way to identify which asset this is without in a more automated manner.
+        /// The reference to the ObjectAssetReference asset, which is a way to identify which asset this is without in a more automated manner.
         /// This field is setup by the AssetData system automatically when its implemented on a class.
         /// </summary>
-        public WorldObjectAssetReference Asset { get; set; }
+        public ObjectAssetReference Asset { get; set; }
     }
 }

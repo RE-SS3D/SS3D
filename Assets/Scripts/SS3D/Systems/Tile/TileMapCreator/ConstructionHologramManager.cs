@@ -174,7 +174,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Instantiate in the correct position and rotation a single hologram.
         /// </summary>
-        public ConstructionHologram CreateHologram(WorldObjectAssetReference prefabAsset, Vector3 position)
+        public ConstructionHologram CreateHologram(ObjectAssetReference prefabAsset, Vector3 position)
         {
             GameObject prefab = Assets.Get<GameObject>(prefabAsset);
             GameObject tileObject = Instantiate(prefab);

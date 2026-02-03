@@ -13,11 +13,11 @@ namespace SS3D.Data.AssetDatabases
 	/// This SO is used to reference world object assets in inspector fields without worrying about losing data.
 	/// World object assets are anything that can be placed in the world as a GameObject, like items and tileobjects.
 	/// </summary>
-	public sealed class WorldObjectAssetReference : ScriptableObject
+	public sealed class ObjectAssetReference : ScriptableObject
 	{
 #if UNITY_EDITOR
         /// <summary>
-        /// The path in the project where to put the WorldObjectAssetReference assets.
+        /// The path in the project where to put the ObjectAssetReference assets.
         /// </summary>
         public static readonly string WorldObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
 #endif
@@ -36,7 +36,7 @@ namespace SS3D.Data.AssetDatabases
 
 #if UNITY_EDITOR
         [CanBeNull]
-        public static WorldObjectAssetReference Create(Object asset)
+        public static ObjectAssetReference Create(Object asset)
         {
             if (!asset)
             {
@@ -45,7 +45,7 @@ namespace SS3D.Data.AssetDatabases
                 return null;
             }
 
-            WorldObjectAssetReference assetReference = CreateInstance<WorldObjectAssetReference>();
+            ObjectAssetReference assetReference = CreateInstance<ObjectAssetReference>();
             assetReference.Init(asset);
 
             string assetPath = System.IO.Path.Combine(WorldObjectAssetPath, $"{asset.name}.asset");

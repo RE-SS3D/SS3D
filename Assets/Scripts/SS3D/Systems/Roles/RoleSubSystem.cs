@@ -209,7 +209,7 @@ namespace SS3D.Systems.Roles
                 containers.Add(inventoryContainer.ContainerType, inventoryContainer);
             }
 
-            foreach (KeyValuePair<ContainerType, WorldObjectAssetReference> itemToEquip in loadout.EquipmentAssets)
+            foreach (KeyValuePair<ContainerType, ObjectAssetReference> itemToEquip in loadout.EquipmentAssets)
             {
                 if (!itemToEquip.Value)
                 {
@@ -241,7 +241,7 @@ namespace SS3D.Systems.Roles
         /// <param name="assetReference"></param>
         /// <param name="shouldSpawn">Condition indicating if the item should be spawned</param>
         /// <param name="container">Container the item will be spawned in</param>
-        private Item SpawnItemInSlot(WorldObjectAssetReference assetReference, bool shouldSpawn, AttachedContainer container)
+        private Item SpawnItemInSlot(ObjectAssetReference assetReference, bool shouldSpawn, AttachedContainer container)
         {
             if (!shouldSpawn)
             {

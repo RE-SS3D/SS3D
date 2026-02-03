@@ -53,7 +53,7 @@ namespace SS3D.Systems.Audio
         
         [SerializeField]
         [Tooltip("List of references of possible sounds that will play when this object collides lightly.")]
-        private WorldObjectAssetReference[] _lightImpactSoundReferences;
+        private ObjectAssetReference[] _lightImpactSoundReferences;
 
         // [SerializeField]
         // [Tooltip("List of possible sounds that will play when this object collides heavily.")]
@@ -61,7 +61,7 @@ namespace SS3D.Systems.Audio
 
         [SerializeField]
         [Tooltip("List of references of possible sounds that will play when this object collides heavily.")]
-        private WorldObjectAssetReference[] _hardImpactSoundReferences;
+        private ObjectAssetReference[] _hardImpactSoundReferences;
 
         //For some reason, this is needed to have an enable/disable feature. Peculiar.
         private void FixedUpdate() { }
@@ -101,17 +101,17 @@ namespace SS3D.Systems.Audio
         /// </summary>
         /// <param name="soundPool"></param>
         [Server]
-        private void PlayCollisionSound(WorldObjectAssetReference[] soundPool)
+        private void PlayCollisionSound(ObjectAssetReference[] soundPool)
         {
             float pitch = Random.Range(_basePitch - _pitchModulationLow, _basePitch + _pitchModulationHigh);
             SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, PickSound(soundPool).Id, gameObject.transform.position, null,
                 false, _collisionVolume, pitch);
         }
 
-        private WorldObjectAssetReference PickSound(WorldObjectAssetReference[] availableSounds)
+        private ObjectAssetReference PickSound(ObjectAssetReference[] availableSounds)
         {
             // Pick a clip from the supplied array and return it
-            WorldObjectAssetReference currentClipReference = availableSounds[Random.Range(0, availableSounds.Length)];
+            ObjectAssetReference currentClipReference = availableSounds[Random.Range(0, availableSounds.Length)];
 
             return currentClipReference;
         }
