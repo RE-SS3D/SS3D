@@ -1,7 +1,10 @@
-﻿using SS3D.Attributes;
+﻿using JetBrains.Annotations;
+using SS3D.Attributes;
 using System.Linq;
+#if UNITY_EDITOR
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
+  #endif
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -12,6 +15,13 @@ namespace SS3D.Data.AssetDatabases
 	/// </summary>
 	public sealed class WorldObjectAssetReference : ScriptableObject
 	{
+#if UNITY_EDITOR
+        /// <summary>
+        /// The path in the project where to put the WorldObjectAssetReference assets.
+        /// </summary>
+        public static readonly string WorldObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
+#endif
+        
 #if UNITY_EDITOR
 		[ReadOnly]
 #endif
@@ -25,8 +35,36 @@ namespace SS3D.Data.AssetDatabases
 		public string Database;
 
 #if UNITY_EDITOR
-        public void Init(Object asset)
+        [CanBeNull]
+        public static WorldObjectAssetReference Create(Object asset)
         {
+            if (!asset)
+            {
+                Debug.LogError("No asset found.");
+
+                return null;
+            }
+
+            WorldObjectAssetReference assetReference = CreateInstance<WorldObjectAssetReference>();
+            assetReference.Init(asset);
+
+            string assetPath = System.IO.Path.Combine(WorldObjectAssetPath, $"{asset.name}.asset");
+
+            UnityEditor.AssetDatabase.CreateAsset(assetReference, assetPath);
+            UnityEditor.AssetDatabase.SaveAssetIfDirty(assetReference);
+
+            return assetReference;
+        }
+
+        private void Init(Object asset)
+        {
+            if (!asset)
+            {
+                Debug.LogError("No asset found.");
+
+                return;
+            }
+            
             string assetPath = UnityEditor.AssetDatabase.GetAssetPath(asset);
             string guid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
             
@@ -53,6 +91,7 @@ namespace SS3D.Data.AssetDatabases
                 break;
             }
         }
-  #endif
+
+        #endif
     }
 }
