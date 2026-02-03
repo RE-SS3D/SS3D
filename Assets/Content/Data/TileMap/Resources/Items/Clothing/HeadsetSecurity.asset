@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: HeadsetSecurity
   m_EditorClassIdentifier: 
   prefab: {fileID: 5049739216948387840, guid: a38ee818c953a404787757d8d20d2851, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 5e0824505970aa040a1780b6e80e4630, type: 2}
   icon: {fileID: 0}
+  _nameString: 

@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: APC
   m_EditorClassIdentifier: 
   prefab: {fileID: 5287103069661579500, guid: 4c966398d6624164c910cd29c1faa980, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: cd7e56a30be55964da66a4dc51f532d1, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 6
   genericType: 0
   specificType: 0

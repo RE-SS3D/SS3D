@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: TruckerCap
   m_EditorClassIdentifier: 
-  nameString: TruckerCap
   prefab: {fileID: 2601952054522247362, guid: 1ef3c21a685ec2d4e9f0876719839d5f, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: e53ebba96eeba474e8478131c8d24085, type: 2}
   icon: {fileID: 0}
+  _nameString: 

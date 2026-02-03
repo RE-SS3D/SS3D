@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TablePoker
   m_EditorClassIdentifier: 
-  nameString: table_poker
   prefab: {fileID: 3879826479501069436, guid: ebddb1721dcbe36499e4d093e5a7ff09, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 3ba25a1b639ddcd489a491e3bbc3eb03, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 7
   specificType: 2
   width: 1
   height: 1
+  isLarge: 0

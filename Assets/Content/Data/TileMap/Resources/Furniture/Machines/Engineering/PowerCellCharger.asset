@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: PowerCellCharger
   m_EditorClassIdentifier: 
   prefab: {fileID: 4094910103892312607, guid: d32855055305ce5489c69379e2219a7d, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 927209024a2e722458a308e2433956cb, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

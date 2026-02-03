@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: GloveInsulated
   m_EditorClassIdentifier: 
   prefab: {fileID: 4581819739591165899, guid: 65679cf5a30d6dd458666804af7c3ca3, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 55deb25596d5d314b8b7dd58eafb8aec, type: 2}
   icon: {fileID: 0}
+  _nameString: 

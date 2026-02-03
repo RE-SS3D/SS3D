@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Sunglasses
   m_EditorClassIdentifier: 
-  nameString: Sunglasses
   prefab: {fileID: 2667451333340596270, guid: 9b9f6bd470226a74b903e74dbe9e423a, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: c0a5c4fc200a5ae4693d9b02fee23b49, type: 2}
   icon: {fileID: 0}
+  _nameString: 

@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: CornerOrange
   m_EditorClassIdentifier: 
-  nameString: overlay_orange
   prefab: {fileID: 6767447678079105841, guid: 6cd51fc127b8aac40b2accd3e2666202, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 5ca13124364b49a4e8812b39fcdf9c03, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 9
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

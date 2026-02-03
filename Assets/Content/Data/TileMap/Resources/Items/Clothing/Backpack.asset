@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Backpack
   m_EditorClassIdentifier: 
-  nameString: Backpack
   prefab: {fileID: 802333698458937824, guid: ddaa28fac1956b2428aff1dac1d89707, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 9435365903a79d64184af9ee71e060e5, type: 2}
   icon: {fileID: 0}
+  _nameString: 

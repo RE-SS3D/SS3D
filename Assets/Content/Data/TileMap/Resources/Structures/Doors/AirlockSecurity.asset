@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: AirlockSecurity
   m_EditorClassIdentifier: 
-  nameString: airlock_security
   prefab: {fileID: 7133738675197207439, guid: d25b39d1e2379b64cba47629530ada78, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: a88eb8e09990e854d81539973299f61f, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 1
   genericType: 13
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

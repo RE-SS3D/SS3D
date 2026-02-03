@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: WaterTank
   m_EditorClassIdentifier: 
   prefab: {fileID: 2473656465330762349, guid: d675e0c37e3147a4b8501314b5106f13, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 3b3e7d5b83122c048bf3679e7e38edd2, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

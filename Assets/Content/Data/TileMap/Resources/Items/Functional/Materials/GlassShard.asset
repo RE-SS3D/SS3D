@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: GlassShard
   m_EditorClassIdentifier: 
   prefab: {fileID: 7125681683583715523, guid: 5cab1a9f6c7f74948b84d0d625319efe, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: e8b9b8395d0c7624aa218df1abb9e29d, type: 2}
   icon: {fileID: 0}
+  _nameString: 

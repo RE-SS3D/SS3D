@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: KitchenKnife
   m_EditorClassIdentifier: 
-  nameString: Kitchen knife
   prefab: {fileID: 3794527162878356835, guid: 411b513efc8f06a40aecfc47d0c5fc5a, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: f5a2860feace1434ea982b06d2445f9f, type: 2}
   icon: {fileID: 0}
+  _nameString: 

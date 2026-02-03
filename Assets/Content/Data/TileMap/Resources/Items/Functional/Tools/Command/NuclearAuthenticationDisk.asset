@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: NuclearAuthenticationDisk
   m_EditorClassIdentifier: 
-  nameString: nuke_disk
   prefab: {fileID: 6891363543938182813, guid: 1ae18785d74e9fa4699b6f6de889c243, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 50284e9bdc2ff2943ba806e8d5ce8f9f, type: 2}
   icon: {fileID: 0}
+  _nameString: 

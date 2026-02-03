@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: PowerCell
   m_EditorClassIdentifier: 
-  nameString: PowerCell
   prefab: {fileID: 2402587210622244651, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 4d84c9a7bcbaa564d8958c6875c8c02d, type: 2}
   icon: {fileID: 0}
+  _nameString: 

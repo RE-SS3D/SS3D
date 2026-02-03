@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TableBoozeDispenser
   m_EditorClassIdentifier: 
-  nameString: boozedispenser_table
   prefab: {fileID: 1918783493706165866, guid: 7b74e45100446b440b4b0a12cd6d05ef, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: a73deecf4da493441be493a67fe479ba, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

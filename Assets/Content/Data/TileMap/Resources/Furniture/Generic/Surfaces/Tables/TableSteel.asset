@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TableSteel
   m_EditorClassIdentifier: 
-  nameString: table_steel
   prefab: {fileID: 8036950609662249464, guid: 6caa99f8281726e40a793826d5c047db, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: f3930eec4b86e7746a89c6c716e27798, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 7
   specificType: 3
   width: 1
   height: 1
+  isLarge: 0

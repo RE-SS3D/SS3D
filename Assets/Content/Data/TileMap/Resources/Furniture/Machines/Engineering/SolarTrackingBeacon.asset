@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SolarTrackingBeacon
   m_EditorClassIdentifier: 
-  nameString: SolarTrackingBeacon
   prefab: {fileID: 1918783493706165866, guid: 50405f05821f58c49a8badc89506b019, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: b27d3b93e8709f840a9f1aab59a9cc75, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

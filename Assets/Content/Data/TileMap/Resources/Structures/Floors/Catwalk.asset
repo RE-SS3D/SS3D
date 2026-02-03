@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Catwalk
   m_EditorClassIdentifier: 
-  nameString: catwalk
   prefab: {fileID: 8178185248287418974, guid: a28267798293970468ab30803632a3f7, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: b4f1b51f78d516547a665fcbfcc9a7c9, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 0
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

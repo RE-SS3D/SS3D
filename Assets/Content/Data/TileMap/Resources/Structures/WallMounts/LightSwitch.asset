@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: LightSwitch
   m_EditorClassIdentifier: 
-  nameString: light_switch
   prefab: {fileID: 4866668043303595546, guid: d07b5fba3896ff448855d6e54356c365, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 2bdfc2fea79ba2643bb298047a8f3f67, type: 2}
   icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}
+  _nameString: 
   layer: 6
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

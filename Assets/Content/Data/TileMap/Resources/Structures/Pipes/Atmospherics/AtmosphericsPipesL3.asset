@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: AtmosphericsPipesL3
   m_EditorClassIdentifier: 
-  nameString: pipe_atmos3
   prefab: {fileID: 2802364579275783218, guid: adc07a7f0fee8304691f45a201509b13, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 0ad56fda1bd23c84e87f2ffa176cfe45, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 12
   genericType: 1
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

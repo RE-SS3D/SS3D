@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Hatchet
   m_EditorClassIdentifier: 
   prefab: {fileID: 2402587210622244651, guid: 9e967cb4084bf064c8a0ca5f57a33b0c, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 2577eda4621dd6248b3c3813ef15ad76, type: 2}
   icon: {fileID: 0}
+  _nameString: 

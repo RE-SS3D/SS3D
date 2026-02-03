@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: ChemicalDispenser
   m_EditorClassIdentifier: 
   prefab: {fileID: 2314780735993174911, guid: 829e74fee2b909242821055cc2b096e0, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: d1f5ecddf221c1a47982808266f2070c, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

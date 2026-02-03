@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: SleeperBed
   m_EditorClassIdentifier: 
   prefab: {fileID: 7357446777869910137, guid: d27600b4734eb3a4284be037a2f9d02b, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: ba51a5776f8c1d942925425a344831a5, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

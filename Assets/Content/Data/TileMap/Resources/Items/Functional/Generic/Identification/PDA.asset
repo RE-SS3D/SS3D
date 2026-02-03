@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: PDA
   m_EditorClassIdentifier: 
-  nameString: pda
   prefab: {fileID: 5261116577612792016, guid: 79260483ae5d3e04fa272e092b49abac, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 4773cbe0a88c809459547e0d0eff8d29, type: 2}
   icon: {fileID: 0}
+  _nameString: 

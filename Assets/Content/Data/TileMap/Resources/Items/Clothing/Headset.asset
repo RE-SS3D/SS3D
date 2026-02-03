@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Headset
   m_EditorClassIdentifier: 
   prefab: {fileID: 8712940276313799639, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: f2914f9670967764e93aa1b262968344, type: 2}
   icon: {fileID: 0}
+  _nameString: 

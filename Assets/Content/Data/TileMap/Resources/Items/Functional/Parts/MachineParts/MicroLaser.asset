@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: MicroLaser
   m_EditorClassIdentifier: 
   prefab: {fileID: 2402587210622244651, guid: 84cec183559b4954c883b11f20f767c9, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 57ac37b5fd825134a8d8d08b9d87ba70, type: 2}
   icon: {fileID: 0}
+  _nameString: 

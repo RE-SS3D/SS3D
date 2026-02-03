@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: ElectricalWire
   m_EditorClassIdentifier: 
   prefab: {fileID: 7125681683583715523, guid: cc71128d4bcc0c548ac11481000ac424, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 61cd16bb4793cd544836dea40a2450f8, type: 2}
   icon: {fileID: 0}
+  _nameString: 
