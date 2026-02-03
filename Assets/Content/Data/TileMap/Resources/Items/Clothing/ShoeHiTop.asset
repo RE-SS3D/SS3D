@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: ShoeHiTop
   m_EditorClassIdentifier: 
   prefab: {fileID: 930591319891399865, guid: 81faf4debf00a0a478b924176f48d011, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 7877ae994c8a31244bf59b1b971caaa5, type: 2}
   icon: {fileID: 0}
+  _nameString: 

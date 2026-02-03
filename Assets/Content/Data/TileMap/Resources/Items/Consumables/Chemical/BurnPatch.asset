@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: BurnPatch
   m_EditorClassIdentifier: 
   prefab: {fileID: 4068007204767187790, guid: 162e188d33a82b440a239f20901c716a, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: e28b644ad26ceae45acf3ceb84b8cbff, type: 2}
   icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}
+  _nameString: 

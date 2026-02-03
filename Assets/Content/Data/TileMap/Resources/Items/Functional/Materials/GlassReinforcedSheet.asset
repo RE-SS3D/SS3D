@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: GlassReinforcedSheet
   m_EditorClassIdentifier: 
   prefab: {fileID: 7125681683583715523, guid: a1a7407e08bb2914c97f431063bf83e2, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 761f8c0e668a1d94ca1e59a4d7561a75, type: 2}
   icon: {fileID: 0}
+  _nameString: 

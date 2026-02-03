@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: JumpsuitEngineer
   m_EditorClassIdentifier: 
   prefab: {fileID: 4245634344425516727, guid: 7436f4976849b994aaee40df1bca7d89, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: c3e196c40ac645e4d840edb82a27baf9, type: 2}
   icon: {fileID: 0}
+  _nameString: 

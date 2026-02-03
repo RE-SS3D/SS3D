@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: MachineFrame
   m_EditorClassIdentifier: 
   prefab: {fileID: 5860930364823099125, guid: bdeac5e9a27546348a584caa74f00ec7, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 7965545d91b399842b227ff775f06b33, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

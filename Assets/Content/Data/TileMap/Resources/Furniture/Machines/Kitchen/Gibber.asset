@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Gibber
   m_EditorClassIdentifier: 
   prefab: {fileID: 8859943380013583148, guid: ad055c3d74a711a4b9d9b31217883a03, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: b207b8ee084b79b4596fdecc5de5c8dd, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

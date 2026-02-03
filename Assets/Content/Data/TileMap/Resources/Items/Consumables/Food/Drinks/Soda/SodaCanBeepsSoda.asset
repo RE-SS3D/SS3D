@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: SodaCanBeepsSoda
   m_EditorClassIdentifier: 
-  nameString: soda_beepsoda
   prefab: {fileID: 4482577744063562115, guid: f490a74616c067c4f83995017e10b420, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: bffc6c08d28041549ae1af640b76ce92, type: 2}
   icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}
+  _nameString: 

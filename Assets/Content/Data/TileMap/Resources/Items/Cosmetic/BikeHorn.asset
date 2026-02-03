@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: BikeHorn
   m_EditorClassIdentifier: 
-  nameString: bikehorn
   prefab: {fileID: 6891363543938182813, guid: 11f824c472e04854e95065dda095e8f4, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 3747dddbc41cad94bbbfc43bfed384c3, type: 2}
   icon: {fileID: 0}
+  _nameString: 

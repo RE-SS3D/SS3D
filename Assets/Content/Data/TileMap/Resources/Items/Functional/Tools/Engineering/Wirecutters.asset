@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Wirecutters
   m_EditorClassIdentifier: 
-  nameString: Wirecutters
   prefab: {fileID: 2402587210622244651, guid: 41a1c8c211dc32c4d8ffca5f0892f9dc, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: f784858d359bb434c9a7ea797c27552d, type: 2}
   icon: {fileID: 0}
+  _nameString: 

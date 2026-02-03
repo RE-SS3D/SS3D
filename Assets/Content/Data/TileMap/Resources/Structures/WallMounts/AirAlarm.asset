@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: AirAlarm
   m_EditorClassIdentifier: 
   prefab: {fileID: 6961426338783081091, guid: 11a2276338ebc64429dfc565b491e437, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 553dd4a427540f54dba418ab2a639b82, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 6
   genericType: 0
   specificType: 0

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Wrench
   m_EditorClassIdentifier: 
-  nameString: Wrench
   prefab: {fileID: 3792017003477948967, guid: 772da386eb7b01745913050fee544c32, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: fd8e3cf550cdc704281d3b94b5c8d631, type: 2}
   icon: {fileID: 0}
+  _nameString: 

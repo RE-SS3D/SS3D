@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: SodaCanTonic
   m_EditorClassIdentifier: 
-  nameString: soda_tonic
   prefab: {fileID: 2434868383632068905, guid: a7c35693adae32f43b4d7fe2eb8b091b, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 532f39f1310fc5d41b37195bc4d0ae11, type: 2}
   icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}
+  _nameString: 

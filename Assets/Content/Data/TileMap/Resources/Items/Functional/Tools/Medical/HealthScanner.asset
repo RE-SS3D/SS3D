@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: HealthScanner
   m_EditorClassIdentifier: 
   prefab: {fileID: 3794527162878356835, guid: e9f99df80a74fd242aa46e53c7ec0376, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 8b24dd8aaf23acb41b038d6e4394f749, type: 2}
   icon: {fileID: 0}
+  _nameString: 

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Boombox
   m_EditorClassIdentifier: 
   prefab: {fileID: 8197868818743549203, guid: 1d2cf546d53e3fe4c9103007427aaec7, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
   icon: {fileID: 0}
+  _nameString: 

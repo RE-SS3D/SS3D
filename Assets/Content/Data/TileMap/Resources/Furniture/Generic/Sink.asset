@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Sink
   m_EditorClassIdentifier: 
   prefab: {fileID: 1918783493706165866, guid: 1e0936c2ffa28eb419deda61c5c1cb8a, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: b0b8c9665d651934382cdad26ffa8081, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

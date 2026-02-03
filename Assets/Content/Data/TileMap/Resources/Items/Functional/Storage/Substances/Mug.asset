@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Mug
   m_EditorClassIdentifier: 
-  nameString: mug
   prefab: {fileID: 5261116577612792016, guid: d9aabfd5d726a7f499b8e360d919eba4, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 162ccd1fc7d534046874df3d9dcf2315, type: 2}
   icon: {fileID: 0}
+  _nameString: 

@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SMES
   m_EditorClassIdentifier: 
-  nameString: SMES
   prefab: {fileID: 1918783493706165866, guid: b38ae683afaacc4419ac13936cecd1a5, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 2b02816e423698b4590effe2b46616a4, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

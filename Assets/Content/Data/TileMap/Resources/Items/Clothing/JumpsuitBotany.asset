@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: JumpsuitBotany
   m_EditorClassIdentifier: 
   prefab: {fileID: 8312388220934557560, guid: be3fcf1a74268ad49bfedb1edd9f5318, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 6a9a8af0ce91a634ab42f12ebc7b24a6, type: 2}
   icon: {fileID: 0}
+  _nameString: 

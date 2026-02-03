@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Doodad
   m_EditorClassIdentifier: 
-  nameString: Doodad
   prefab: {fileID: 3792017003477948967, guid: f6528d8afa18fa14998a0158260ef26c, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 27ff1c5556f9d4c40b179cfecee706ea, type: 2}
   icon: {fileID: 0}
+  _nameString: 

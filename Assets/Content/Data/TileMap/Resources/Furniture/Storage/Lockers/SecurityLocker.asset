@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SecurityLocker
   m_EditorClassIdentifier: 
-  nameString: locker_security
   prefab: {fileID: 5533951594911835035, guid: dd3ce5340ed4aba4babae7020f737084, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 534d22d36c7a7df49adb294f3e2118a5, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

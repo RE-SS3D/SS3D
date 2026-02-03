@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: SlotMachine
   m_EditorClassIdentifier: 
   prefab: {fileID: 2979169873714900079, guid: 9f028e95d4196b141acf363c01d24806, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: ad014a0995d51f64992e3022889cf64d, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0
