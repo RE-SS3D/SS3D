@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -33,9 +34,9 @@ namespace SS3D.CodeGeneration
                     {
                         string itemPath = AssetDatabase.GetAssetPath(item);
 
-                        if(string.IsNullOrEmpty(itemPath) || !File.Exists(itemPath))
+                        if (string.IsNullOrEmpty(itemPath))
                             continue;
-                        
+
                         if (!item || string.IsNullOrWhiteSpace(item.name))
                             continue;
 
@@ -44,9 +45,9 @@ namespace SS3D.CodeGeneration
 
                         StringBuilder stringBuilder = new();
                         stringBuilder.Append(corrected);
-                        
+
                         string guid = AssetDatabase.AssetPathToGUID(itemPath);
-                        
+
                         sourceFile.AppendLine($"public const string {stringBuilder} = \"{guid}\";");
                     }
                 }
@@ -56,3 +57,4 @@ namespace SS3D.CodeGeneration
         }
     }
 }
+#endif
