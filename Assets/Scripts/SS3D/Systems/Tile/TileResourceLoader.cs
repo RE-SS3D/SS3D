@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System;
 using System.Collections;
@@ -77,6 +78,19 @@ namespace SS3D.Systems.Tile
             if (genericObjectSo == null)
             {
 	            Log.Warning(this, "Requested tile asset {assetName} was not found.", Logs.Generic, assetName);
+            }
+
+            return genericObjectSo;
+        }
+
+        [CanBeNull]
+        public GenericObjectSo GetAsset(ObjectAssetReference asset)
+        {
+            GenericObjectSo genericObjectSo = Assets.FirstOrDefault(tileObject => tileObject.PrefabAsset.Equals(asset));
+
+            if (!genericObjectSo)
+            {
+                Log.Warning(this, "Requested tile asset {assetName} was not found.", Logs.Generic, asset);
             }
 
             return genericObjectSo;
