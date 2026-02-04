@@ -14,9 +14,5 @@ namespace SS3D.Systems.Tile
 
         public ObjectAssetReference PrefabAsset;
         public Sprite icon;
-
-        [SerializeField]
-        [HideInInspector]
-        private string _nameString;
     }
 }
