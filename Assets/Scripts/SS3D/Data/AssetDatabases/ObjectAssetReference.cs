@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using SS3D.Attributes;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor.AddressableAssets;
@@ -16,7 +15,7 @@ namespace SS3D.Data.AssetDatabases
 	/// This SO is used to reference world object assets in inspector fields without worrying about losing data.
 	/// World object assets are anything that can be placed in the world as a GameObject, like items and tileobjects.
 	/// </summary>
-	public sealed class ObjectAssetReference : ScriptableObject, IEqualityComparer<ObjectAssetReference>
+	public sealed class ObjectAssetReference : ScriptableObject
 	{
 #if UNITY_EDITOR
         /// <summary>
@@ -37,14 +36,9 @@ namespace SS3D.Data.AssetDatabases
 		[Header("This file is auto-generated, do not modify it manually")]
 		public string Database;
 
-        public bool Equals(ObjectAssetReference x, ObjectAssetReference y) => x && y 
-            && x.Id.Equals(y.Id, StringComparison.OrdinalIgnoreCase) && x.Database.Equals(y.Database, StringComparison.OrdinalIgnoreCase);
+        public override bool Equals(object other) => other is ObjectAssetReference otherReference && Id.Equals(otherReference.Id) && Database.Equals(otherReference.Database);
 
-        public int GetHashCode(ObjectAssetReference reference)
-        {
-            ScriptableObject baseReference = reference;
-            return baseReference.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
 #if UNITY_EDITOR
         [CanBeNull]
