@@ -11,9 +11,9 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 'lts/*'
       - run: npm install @actions/core
-      - run: npm install @actions/github
+      - run: npm install @actions/github3:12 06.02.2026
       - name: Get list of projects
         uses: octokit/graphql-action@v2.2.24
         id: get-project-title
