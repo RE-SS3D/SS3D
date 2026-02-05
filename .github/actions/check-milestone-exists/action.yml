@@ -10,5 +10,5 @@ outputs:
   EXISTING_PROJECT_ID:
     description: 'String containing the project ID that matches the provided project name. Blank string if not found.'
 runs:
-  using: 'node16'
+  using: 'node24'
   main: 'index.js'
