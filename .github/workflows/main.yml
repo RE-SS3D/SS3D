@@ -33,6 +33,12 @@ jobs:
         with:
           buildName: RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}
           targetPlatform: ${{ matrix.targetPlatform }}
+      - name: Run Unity Tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Create new release from tag
         uses: actions/create-release@v1
         id: create_release
