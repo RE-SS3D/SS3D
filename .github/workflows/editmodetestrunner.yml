@@ -23,7 +23,12 @@ jobs:
         with:
           testMode: editmode
         env:
-          UNITY_LICENSE_FILE: ../Documents/UnityLicense.ulf
+        uses: game-ci/unity-test-runner@v4
+with:
+testMode: editmode
+githubToken: ${{ secrets.GITHUB_TOKEN }}
+env:
+UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       - name: Produce summary output
         uses: ./.github/actions/interpret-test-results
         if: always()
