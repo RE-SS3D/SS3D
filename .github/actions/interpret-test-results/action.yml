@@ -1,4 +1,5 @@
 name: 'Interpret Test Results'
+description: 'Converts Unity XML results into a readable summary'
 inputs:
   XML_PATH:
     description: 'String containing the path of the test results (i.e. editmode-results.xml).'
@@ -6,8 +7,23 @@ inputs:
 outputs:
   DISPLAY_STRING:
     description: 'String containing truncated output suitable for display.'
+    value: ${{ steps.script.outputs.DISPLAY_STRING }}
   ALL_TESTS_PASSED:
     description: 'Boolean indicating whether all test cases had passed.'  
+    value: ${{ steps.script.outputs.ALL_TESTS_PASSED }}
+
 runs:
-  using: 'node24'
-  main: 'index.js'
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      run: npm install
+      shell: bash
+      working-directory: ${{ github.action_path }}
+
+    - name: Run Interpretation Script
+      id: script
+      run: node ${{ github.action_path }}/index.js
+      shell: bash
+      env:
+        # This maps the YAML input to the Environment Variable the script expects
+        INPUT_XML_PATH: ${{ inputs.XML_PATH }}
