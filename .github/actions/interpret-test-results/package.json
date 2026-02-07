@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@actions/core": "^1.11.1",
-    "jsdom": "^26.0.0"
-  }
-}

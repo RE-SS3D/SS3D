@@ -1,0 +1,10 @@
+{
+  "name": "ss3d-shared-actions-deps",
+  "version": "1.0.0",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0",
+    "@octokit/core": "^6.1.2",
+    "jsdom": "^26.0.0"
+  }
+}
