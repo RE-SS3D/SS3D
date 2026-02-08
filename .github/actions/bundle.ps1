@@ -1,4 +1,4 @@
-# Navigate to the actions directory
+# Get current directory
 $actionsDir = Get-ChildItem -Path "." -Directory
 
 foreach ($dir in $actionsDir) {
