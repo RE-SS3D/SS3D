@@ -10,4 +10,4 @@ outputs:
     description: 'Boolean indicating whether all test cases had passed.'  
 runs:
   using: 'node24'
-  main: 'index.js'
+  main: 'dist/index.js'

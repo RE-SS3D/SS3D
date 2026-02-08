@@ -11,4 +11,4 @@ outputs:
     description: 'ID for the specific single select field option.'
 runs:
   using: 'node24'
-  main: 'index.js'
+  main: 'dist/index.js'
