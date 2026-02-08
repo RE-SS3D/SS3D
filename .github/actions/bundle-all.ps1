@@ -1,4 +1,4 @@
-# Get current directory
+# Get all subdirectories (actions)
 $actionsDir = Get-ChildItem -Path "." -Directory
 
 foreach ($dir in $actionsDir) {
@@ -11,7 +11,6 @@ foreach ($dir in $actionsDir) {
     npm install
     
     # 2. Bundle the code into a single file in the 'dist' folder
-    # We use npx so you don't have to install ncc globally
     npx @vercel/ncc build index.js -o dist --minify
     
     # 3. Cleanup local clutter (keep your local repo clean)
