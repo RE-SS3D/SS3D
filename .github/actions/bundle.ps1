@@ -1,5 +1,5 @@
 # Navigate to the actions directory
-$actionsDir = Get-ChildItem -Path ".github/actions" -Directory
+$actionsDir = Get-ChildItem -Path "." -Directory
 
 foreach ($dir in $actionsDir) {
     Write-Host "--- Bundling $($dir.Name) ---" -ForegroundColor Cyan
