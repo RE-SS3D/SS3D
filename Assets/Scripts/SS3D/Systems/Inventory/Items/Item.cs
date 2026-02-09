@@ -6,7 +6,6 @@ using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
-using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -119,8 +118,6 @@ namespace SS3D.Systems.Inventory.Items
                 _asset = value;
             }
         }
-
-        public Item Prefab => Asset ? Assets.Get<Item>(Asset) : null;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
