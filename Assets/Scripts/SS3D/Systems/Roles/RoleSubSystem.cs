@@ -129,6 +129,16 @@ namespace SS3D.Systems.Roles
                 roleCounter.RemovePlayer(player);
             }
         }
+        
+        public Dictionary<Player, RoleData> GetRolePlayers()
+        {
+            return _rolePlayers;
+        }
+
+        public KeyValuePair<Player, RoleData>? GetRoleFromPlayer(Player player)
+        {
+            return _rolePlayers.FirstOrDefault(rp => rp.Key == player);
+        }
 
         /// <summary>
         /// Checks the role of the player and spawns his items

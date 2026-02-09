@@ -30,6 +30,11 @@ namespace SS3D.Systems.Entities
         /// Event that should be evoked only on client, when the client spawns in the station.
         /// </summary>
         public Action OnClientSpawn;
+        
+        /// <summary>
+        /// Event that gets called when the server spawns the entity
+        /// </summary>
+        public Action<Entity> OnServerSpawn;
 
         /// <summary>
         /// The prefab used for the player object.
@@ -207,6 +212,9 @@ namespace SS3D.Systems.Entities
             entity.SetMind(createdMind);
 
             SubSystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
+            
+            // TODO: wrap in method
+            OnServerSpawn?.Invoke(entity);
 
             _spawnedPlayers.Add(entity);
 
