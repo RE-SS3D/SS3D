@@ -50,7 +50,7 @@ namespace SS3D.Systems.Rounds
         /// <summary>
         /// The current round state.
         /// </summary>
-        protected RoundState RoundState
+        public RoundState RoundState
         {
             get => _roundState;
             set => _roundState = value;

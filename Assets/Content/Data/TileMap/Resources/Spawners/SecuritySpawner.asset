@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: AssistantSpawnPoint
+  m_Name: SecuritySpawner
   m_EditorClassIdentifier: 
   prefab: {fileID: 7517011500498074631, guid: 9724e382fff7b1d40b1c694f250f7fd5, type: 3}
-  icon: {fileID: 21300000, guid: da545229eea36164d8b8cba2f75a1143, type: 3}
+  icon: {fileID: 21300000, guid: 309b1d5a294fd6c43ae9cf77656c1852, type: 3}
   layer: 1
   genericType: 9
   specificType: 0

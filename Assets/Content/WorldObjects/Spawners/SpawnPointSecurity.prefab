@@ -14,8 +14,9 @@ GameObject:
   - component: {fileID: 4820184695347381900}
   - component: {fileID: -7050293382051454710}
   - component: {fileID: 4099859988230524348}
+  - component: {fileID: -4322665530232701327}
   m_Layer: 0
-  m_Name: SpawnPointAssistant
+  m_Name: SpawnPointSecurity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,9 +49,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6122bcdaba0467aa8442b3c5ced7d99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -4155309935682150279}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -4155309935682150279}
   SpawnPointData: {fileID: 11400000, guid: c3360b901cde0d14cb434193585d7a08, type: 2}
 --- !u!114 &-4155309935682150279
 MonoBehaviour:
@@ -67,7 +68,8 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 4084815809895739187}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -79,11 +81,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 168
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 15504795018235722396
+  <AssetPathHash>k__BackingField: 2710589153292815370
 --- !u!114 &4820184695347381900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,3 +150,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7517011500498074631}
   m_Mesh: {fileID: -7835664460937394586, guid: 94d5895af06455e4b9f170e8897bac98, type: 3}
+--- !u!65 &-4322665530232701327
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517011500498074631}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.240392, y: 0.061182197, z: 1.2390676}
+  m_Center: {x: 0.012190074, y: 0.030591099, z: -0.012747079}

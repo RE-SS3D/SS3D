@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e2852b444b34e57b0b023be2c6d1191, type: 3}
-  m_Name: AssistantSpawnPointData
+  m_Name: SecuritySpawnPointData
   m_EditorClassIdentifier: 
-  RoleData: {fileID: 11400000, guid: 1928692fbc0905b4195e6a72d04f474d, type: 2}
+  RoleData: {fileID: 11400000, guid: 7485a795dffb1c94385d7b05561d2d78, type: 2}
   SpawnType: 1

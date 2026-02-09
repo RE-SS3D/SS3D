@@ -12,7 +12,7 @@ namespace SS3D.Systems.Spawners
         [Tooltip("Defines which type of players will spawn based on conditions like late-joining")]
         public SpawnType SpawnType;
     }
-
+    
     public enum SpawnType
     {
         LateJoin,

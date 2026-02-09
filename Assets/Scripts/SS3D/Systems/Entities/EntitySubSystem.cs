@@ -15,6 +15,7 @@ using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
+using SS3D.Systems.Spawners;
 using SS3D.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -214,7 +215,8 @@ namespace SS3D.Systems.Entities
             SubSystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
             
             // TODO: wrap in method
-            OnServerSpawn?.Invoke(entity);
+            SpawnPointManager spawnPointManager = SubSystems.Get<SpawnPointManager>();
+            spawnPointManager.HandleSpawning(entity);
 
             _spawnedPlayers.Add(entity);
 
