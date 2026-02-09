@@ -5,14 +5,11 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditorInternal;
 using UnityEditor.Callbacks;
-using UnityEditor.UIElements;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 namespace Hierarchy2
 {

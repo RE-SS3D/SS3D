@@ -13,17 +13,24 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 'lts/*'
       - run: npm install @actions/core
       - run: npm install @actions/github
       - run: npm install jsdom
       - run: npm install fs
+      - name: Debug Secret Visibility
+        run: |
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ]; then
+            echo "SECRET IS EMPTY"
+          else
+            echo "SECRET IS DEFINED"
+          fi
       - name: Run tests
-        uses: game-ci/unity-test-runner@v2
+        uses: game-ci/unity-test-runner@v4
         with:
           testMode: editmode
         env:
-          UNITY_LICENSE_FILE: ../Documents/UnityLicense.ulf
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       - name: Produce summary output
         uses: ./.github/actions/interpret-test-results
         if: always()
