@@ -31,11 +31,6 @@ namespace SS3D.Systems.Entities
         /// Event that should be evoked only on client, when the client spawns in the station.
         /// </summary>
         public Action OnClientSpawn;
-        
-        /// <summary>
-        /// Event that gets called when the server spawns the entity
-        /// </summary>
-        public Action<Entity> OnServerSpawn;
 
         /// <summary>
         /// The prefab used for the player object.
@@ -205,21 +200,30 @@ namespace SS3D.Systems.Entities
         {
             MindSubSystem mindSystem = SubSystems.Get<MindSubSystem>();
             mindSystem.TryCreateMind(player, out Mind createdMind);
-
-            Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
+            
+            // Get the spawn position of the player based on job/late-join/observer
+            SpawnPointManager spawnPointManager = SubSystems.Get<SpawnPointManager>();
+            bool isLateJoin = _hasSpawnedInitialPlayers;
+            SpawnPoint spawnPoint = spawnPointManager.HandleSpawning(player, isLateJoin);
+            
+            // Get the SpawnPoint's location if it's not null, otherwise apply the _spawnPoint position
+            Vector3 spawnLoc = spawnPoint ? spawnPoint.Position : _spawnPoint.position;
+            
+            Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], spawnLoc, Quaternion.identity);
             ServerManager.Spawn(entity.NetworkObject, player.Owner);
 
             createdMind.SetPlayer(player);
             entity.SetMind(createdMind);
 
             SubSystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
-            
-            // Overwrite the spawn position of the player with a valid spawn position based on job/late-join/observer
-            SpawnPointManager spawnPointManager = SubSystems.Get<SpawnPointManager>();
-            bool isLateJoin = _hasSpawnedInitialPlayers;
-            spawnPointManager.HandleSpawning(entity, isLateJoin);
 
             _spawnedPlayers.Add(entity);
+            
+            // Sync the position of the spawn point so the client spawns correctly
+            if (spawnPoint)
+            {
+                spawnPointManager.SyncEntityWithSpawnPoint(entity.NetworkObject, spawnPoint);
+            }
 
             RpcInvokeClientSpawned(entity.Owner);
 

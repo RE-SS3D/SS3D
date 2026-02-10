@@ -1,11 +1,14 @@
 ﻿using Coimbra.Services.Events;
 using FishNet.Object;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Roles;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using System.Collections.Generic;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace SS3D.Systems.Spawners
@@ -51,11 +54,12 @@ namespace SS3D.Systems.Spawners
         /// Decides the SpawnPoints of an entity (Player) based on SpawnTypes (late-join, job) and tries to pick a valid location.
         /// If there's no valid locations, it spawns the player at (0, 0).
         /// </summary>
-        /// <param name="entity"></param> The entity we want to handle spawning for
+        /// <param name="player"></param> The player we want to handle spawning for
         /// <param name="isLateJoin"></param> Whether the entity is late-joining or not
         [Server]
-        public void HandleSpawning(Entity entity, bool isLateJoin)
+        public SpawnPoint HandleSpawning(Player player, bool isLateJoin)
         {
+            RoleSubSystem roleSubSystem = SubSystems.Get<RoleSubSystem>();
             List<SpawnPoint> possibleSpawnPoints = new List<SpawnPoint>();
 
             // Iterate over spawn points to choose a valid one
@@ -68,7 +72,9 @@ namespace SS3D.Systems.Spawners
                 }
                 
                 // The round is not ongoing (in-lobby) and the spawn type is a job
-                if (!isLateJoin && spawnPoint.SpawnPointData.SpawnType == SpawnType.Job)
+                if (!isLateJoin 
+                    && spawnPoint.SpawnPointData.SpawnType == SpawnType.Job
+                    && ( roleSubSystem.GetRoleFromPlayer(player)?.Value == spawnPoint.SpawnPointData.RoleData ) )
                 {
                     possibleSpawnPoints.Add(spawnPoint);
                 }
@@ -81,7 +87,7 @@ namespace SS3D.Systems.Spawners
                 if (_spawnPoints.Count == 0)
                 {
                     Log.Error(this, "No spawn points were available on this map. Spawning at default location");
-                    return;
+                    return null;
                 }
                 
                 // Pick first spawn point from _spawnPoints as fallback 
@@ -91,10 +97,24 @@ namespace SS3D.Systems.Spawners
             
             // Random selection of valid spawn points
             int randIndex = Random.Range(0, possibleSpawnPoints.Count);
-            SpawnPoint spawnLocation = possibleSpawnPoints[randIndex];
+            return possibleSpawnPoints[randIndex];
+        }
 
-            // Actually try to spawn the player here
-            spawnLocation.SpawnPlayerOnPoint(entity);
+        /// <summary>
+        /// Synces the position of a networkobject with the spawn point
+        /// </summary>
+        /// <param name="networkObject"></param>The object to sync
+        /// <param name="spawnPoint"></param>The spawn point to sync with
+        [ObserversRpc(RunLocally = false)]
+        public void SyncEntityWithSpawnPoint(NetworkObject networkObject, SpawnPoint spawnPoint)
+        {
+            // TODO: find better solution...? why this works is beyond me and im tired of debugging this
+            if (networkObject.TryGetComponent<CharacterController>(out CharacterController cc))
+            {
+                cc.enabled = false;
+                networkObject.transform.position = spawnPoint.Position;
+                cc.enabled = true;
+            }
         }
     }
 }
