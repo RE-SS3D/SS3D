@@ -1,11 +1,6 @@
 ﻿using Coimbra.Services.Events;
-using FishNet.Component.Transforming;
-using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Roles;
-using System.Collections.Generic;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Tile;
@@ -36,33 +31,6 @@ namespace SS3D.Systems.Spawners
             {
                 SubSystems.Get<SpawnPointManager>().RegisterSpawnPoint(this);
             }
-        }
-
-        /// <summary>
-        /// Spawns a player on this SpawnPoint based on whether they have the correct RoleData
-        /// </summary>
-        /// <param name="entity"></param>
-        [Server]
-        public void SpawnPlayerOnPoint(Entity entity)
-        {
-            // We do not care about having the correct job in late-join spawn points
-            if (SpawnPointData.SpawnType == SpawnType.LateJoin)
-            {
-                entity.Position = Position;
-
-                return;
-            }
-            
-            Player player = entity.Mind.player;
-            KeyValuePair<Player, RoleData>? rolePair = SubSystems.Get<RoleSubSystem>().GetRoleFromPlayer(player);
-
-            // This player does not have the correct Role for this SpawnPoint, so we don't spawn them
-            if (rolePair is not { } role || role.Value != SpawnPointData.RoleData)
-            {
-                return;
-            }
-            
-            entity.Position = Position;
         }
     }
 }
