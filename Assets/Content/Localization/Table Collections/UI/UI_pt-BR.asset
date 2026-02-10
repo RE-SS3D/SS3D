@@ -118,6 +118,10 @@ MonoBehaviour:
     m_Localized: "<sprite name=\"pc\"> permiss\xE3o negada"
     m_Metadata:
       m_Items: []
+  - m_Id: 195668385599578112
+    m_Localized: "Voc\xEA precisa ser um administrador para visualizar isto."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
