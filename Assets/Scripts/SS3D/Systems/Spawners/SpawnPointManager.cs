@@ -1,24 +1,20 @@
 ﻿using Coimbra.Services.Events;
 using FishNet.Object;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
-using SS3D.Systems.Tile;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Random = UnityEngine.Random;
 
 namespace SS3D.Systems.Spawners
 {
     /// <summary>
     /// This system handles spawning players on their correct SpawnPoints. It does not account for RoleData.
-    /// It registers all the alive SpawnPoints on the game and it randomly picks valid ones.
+    /// It registers all the alive SpawnPoints on the game, and it randomly picks valid ones.
     /// 
-    /// It's important to also note that this system just overwrites the predefined location that EntitySubSystem uses.
+    /// It's important to also note that this system just overwrites the predefined location that EntitySubSystem uses in SpawnPlayer method.
     /// </summary>
     public class SpawnPointManager : NetworkSubSystem
     {
@@ -50,32 +46,41 @@ namespace SS3D.Systems.Spawners
         {
             _spawnPoints.Remove(spawnPoint);
         }
-
+        
+        /// <summary>
+        /// Decides the SpawnPoints of an entity (Player) based on SpawnTypes (late-join, job) and tries to pick a valid location.
+        /// If there's no valid locations, it spawns the player at (0, 0).
+        /// </summary>
+        /// <param name="entity"></param> The entity we want to handle spawning for
+        /// <param name="isLateJoin"></param> Whether the entity is late-joining or not
         [Server]
-        public void HandleSpawning(Entity entity)
+        public void HandleSpawning(Entity entity, bool isLateJoin)
         {
             List<SpawnPoint> possibleSpawnPoints = new List<SpawnPoint>();
-            RoundSubSystemBase roundSystem = SubSystems.Get<RoundSubSystemBase>();
 
             // Iterate over spawn points to choose a valid one
             foreach (SpawnPoint spawnPoint in _spawnPoints)
             {
-                // The round is ongoing and the spawn point is a job, therefore we spawn them on it
-                if (roundSystem.RoundState == RoundState.Ongoing && spawnPoint.SpawnPointData.SpawnType == SpawnType.Job)
+                // The round is ongoing and the spawn point is a late-join
+                if (isLateJoin && spawnPoint.SpawnPointData.SpawnType == SpawnType.LateJoin)
                 {
                     possibleSpawnPoints.Add(spawnPoint);
                 }
                 
-                // TODO: Handle late-joining here
+                // The round is not ongoing (in-lobby) and the spawn type is a job
+                if (!isLateJoin && spawnPoint.SpawnPointData.SpawnType == SpawnType.Job)
+                {
+                    possibleSpawnPoints.Add(spawnPoint);
+                }
             }
 
-            // If no valid spawn points exist, either pick (0,0) or the first spawn point in the _spawnPoints list
+            // If no valid spawn points exist, either pick the default location of EntitySubSystem, or the first spawn point in our _spawnPoints list
             if (possibleSpawnPoints.Count == 0)
             {
-                // Spawn at (0, 0) since _spawnPoints is empty
+                // Spawn at default location since our _spawnPoints is empty
                 if (_spawnPoints.Count == 0)
                 {
-                    Log.Error(this, "No spawn points were available on this map. Spawning at (0, 0)");
+                    Log.Error(this, "No spawn points were available on this map. Spawning at default location");
                     return;
                 }
                 
@@ -84,9 +89,11 @@ namespace SS3D.Systems.Spawners
                 Log.Error(this, "No valid spawn points were available on this map, spawning at random spawn point.");
             }
             
+            // Random selection of valid spawn points
             int randIndex = Random.Range(0, possibleSpawnPoints.Count);
             SpawnPoint spawnLocation = possibleSpawnPoints[randIndex];
 
+            // Actually try to spawn the player here
             spawnLocation.SpawnPlayerOnPoint(entity);
         }
     }

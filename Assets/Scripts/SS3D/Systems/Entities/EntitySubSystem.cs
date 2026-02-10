@@ -214,9 +214,10 @@ namespace SS3D.Systems.Entities
 
             SubSystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
             
-            // TODO: wrap in method
+            // Overwrite the spawn position of the player with a valid spawn position based on job/late-join/observer
             SpawnPointManager spawnPointManager = SubSystems.Get<SpawnPointManager>();
-            spawnPointManager.HandleSpawning(entity);
+            bool isLateJoin = _hasSpawnedInitialPlayers;
+            spawnPointManager.HandleSpawning(entity, isLateJoin);
 
             _spawnedPlayers.Add(entity);
 

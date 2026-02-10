@@ -160,7 +160,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 
                 if (Camera.main != null)
                 {
-                    Log.Information(this, "Disabling UI, disabling map editor mask");
+                    // Disable the visibility of objects in MapEditor layer
                     Camera.main.cullingMask &= ~(1 << LayerMask.NameToLayer("MapEditor"));
                 }
             }
@@ -168,7 +168,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 if (Camera.main != null)
                 {
-                    Log.Information(this, "Enabling UI, enabling map editor mask");
+                    // Enable the visibility of objects in MapEditor layer since we are using the Map Editor
                     Camera.main.cullingMask |= (1 << LayerMask.NameToLayer("MapEditor"));
                 }
             }

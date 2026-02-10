@@ -1,17 +1,14 @@
 ﻿using Coimbra.Services.Events;
+using FishNet.Component.Transforming;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Roles;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
-using SS3D.Logging;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Tile;
-using SS3D.Systems.Tile.TileMapCreator;
 
 namespace SS3D.Systems.Spawners
 {
@@ -33,7 +30,7 @@ namespace SS3D.Systems.Spawners
 
         public void HandleRoundStateChanged(ref EventContext context, in RoundStateUpdated state)
         {
-            // Prepare the SpawnPoints on the current map
+            // Prepare the SpawnPoint on the current map
             TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
             if (state.RoundState == RoundState.WarmingUp && tileSubSystem.CurrentMap)
             {
@@ -45,8 +42,17 @@ namespace SS3D.Systems.Spawners
         /// Spawns a player on this SpawnPoint based on whether they have the correct RoleData
         /// </summary>
         /// <param name="entity"></param>
+        [Server]
         public void SpawnPlayerOnPoint(Entity entity)
         {
+            // We do not care about having the correct job in late-join spawn points
+            if (SpawnPointData.SpawnType == SpawnType.LateJoin)
+            {
+                entity.Position = Position;
+
+                return;
+            }
+            
             Player player = entity.Mind.player;
             KeyValuePair<Player, RoleData>? rolePair = SubSystems.Get<RoleSubSystem>().GetRoleFromPlayer(player);
 
@@ -55,9 +61,8 @@ namespace SS3D.Systems.Spawners
             {
                 return;
             }
-
+            
             entity.Position = Position;
-            Log.Information(this, "Player has been spawned correctly");
         }
     }
 }
