@@ -4,6 +4,7 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Management;
+using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using TMPro;
 using UnityEngine;
@@ -156,7 +157,22 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 // Detach the tab from a movable panel. It's necessary to prevent disabling all tabs in the panel.
                 _tab.Detach();
                 _hologramManager.DestroyHolograms();
+                
+                if (Camera.main != null)
+                {
+                    Log.Information(this, "Disabling UI, disabling map editor mask");
+                    Camera.main.cullingMask &= ~(1 << LayerMask.NameToLayer("MapEditor"));
+                }
             }
+            else
+            {
+                if (Camera.main != null)
+                {
+                    Log.Information(this, "Enabling UI, enabling map editor mask");
+                    Camera.main.cullingMask |= (1 << LayerMask.NameToLayer("MapEditor"));
+                }
+            }
+            
             _tab.Panel.gameObject.SetActive(isShow);
             _menuRoot.SetActive(isShow);
         }

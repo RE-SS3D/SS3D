@@ -2242,6 +2242,7 @@ MonoBehaviour:
   - {fileID: 661652618}
   - {fileID: 1000564558}
   - {fileID: 478615869}
+  - {fileID: 1717953776}
   SerializedTransformProperties:
     Position: {x: 698.9584, y: 414.30542, z: -44.10029}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
@@ -2442,10 +2443,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 11
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  _networkBehaviours:
+  - {fileID: 1717953777}
+  <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
@@ -2473,9 +2475,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 733668063d434ae9b42d33ffb57e624f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1506918116}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1717953776}
 --- !u!4 &1820032161 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7939122254879796211, guid: 2dff3e99d61d74c4282d2983e482289c, type: 3}
@@ -6351,6 +6353,10 @@ PrefabInstance:
     - target: {fileID: 4559952172929818808, guid: b904697874e9a0445ad5e0c9cad35c19, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4559952172929818808, guid: b904697874e9a0445ad5e0c9cad35c19, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 7223
       objectReference: {fileID: 0}
     - target: {fileID: 4559952172929818810, guid: b904697874e9a0445ad5e0c9cad35c19, type: 3}
       propertyPath: m_Name
