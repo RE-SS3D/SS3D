@@ -1,25 +1,27 @@
 using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Logging;
+using SS3D.Permissions.Events;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UserPermissionsChangedEvent = SS3D.Permissions.Events.UserPermissionsChangedEvent;
 
 namespace SS3D.Permissions
 {
-  public class PermissionBasedView : MonoBehaviour
-  {
-        [System.Serializable]
-        private sealed class RoleView
-        {
-                public ServerRoleTypes minimumRole;
-                public List<GameObject> objects;
-        }
-
-            [SerializeField] private List<GameObject> _defaultObjects;
-            [SerializeField] private List<RoleView> _roleViews;
+    public class PermissionBasedView : MonoBehaviour
+    {
+        /// <summary>
+        /// Minimum role required to see allowed objects.
+        /// </summary>
+        [SerializeField] private ServerRoleTypes _requiredRole;
+        /// <summary>
+        /// Objects shown when the user meets the required role.
+        /// </summary>
+        [SerializeField] private List<GameObject> _allowedObjects;
+        /// <summary>
+        /// Objects shown when the user does not meet the required role.
+        /// </summary>
+        [SerializeField] private List<GameObject> _deniedObjects;
 
         private IEnumerator Start()
         {
@@ -45,20 +47,23 @@ namespace SS3D.Permissions
             if (string.IsNullOrEmpty(ckey))
             {
                 Log.Warning(this, "Local player ckey is null or empty, cannot initialize permission-based view", Logs.UI);
-                SetActive(_defaultObjects, true);
+                SetVisibilityForRole(ServerRoleTypes.None);
                 yield break;
             }
 
             if (permissionSystem.TryGetUserRole(ckey, out ServerRoleTypes role))
             {
-                UpdateObjectsVisibility(role);
+                SetVisibilityForRole(role);
             }
             else
             {
-                UpdateObjectsVisibility(ServerRoleTypes.None);
+                SetVisibilityForRole(ServerRoleTypes.None);
             }
         }
 
+        /// <summary>
+        /// Handles updates when user permissions change.
+        /// </summary>
         private void HandleUserPermissionsUpdated(ref EventContext context, in UserPermissionsChangedEvent e)
         {
             string ckey = Core.Settings.LocalPlayer.Ckey;
@@ -70,34 +75,21 @@ namespace SS3D.Permissions
             }
 
             ServerRoleTypes role = ServerRoleTypes.None;
-            if (e.Permissions != null)
-            {
-                e.Permissions.TryGetValue(ckey, out role);
-            }
+            e.Permissions?.TryGetValue(ckey, out role);
 
             Log.Information(this, "Permission view updated for {ckey} with role {role}", Logs.UI, ckey, role);
-            UpdateObjectsVisibility(role);
+            SetVisibilityForRole(role);
         }
 
         /// <summary>
-        /// Updates the visibility of objects based on the given role, starting from the topmost role.
+        /// Updates the visibility of objects based on the given role.
         /// </summary>
         /// <param name="role">The role to determine visibility.</param>
-        private void UpdateObjectsVisibility(ServerRoleTypes role)
+        private void SetVisibilityForRole(ServerRoleTypes role)
         {
-            bool anyRoleViewMatched = false;
-
-            if (_roleViews != null)
-            {
-                foreach (RoleView view in _roleViews.Where(view => view != null))
-                {
-                bool isAllowed = role >= view.minimumRole;
-                anyRoleViewMatched |= isAllowed;
-                SetActive(view.objects, isAllowed);
-                }
-            }
-
-            SetActive(_defaultObjects, !anyRoleViewMatched);
+            bool isAllowed = role >= _requiredRole;
+            SetActive(_allowedObjects, isAllowed);
+            SetActive(_deniedObjects, !isAllowed);
         }
 
         /// <summary>
@@ -112,8 +104,13 @@ namespace SS3D.Permissions
                 return;
             }
 
-            foreach (GameObject o in objects.Where(o => o != null))
+            foreach (GameObject o in objects)
             {
+                if (o == null)
+                {
+                    continue;
+                }
+
                 o.SetActive(state);
             }
         }

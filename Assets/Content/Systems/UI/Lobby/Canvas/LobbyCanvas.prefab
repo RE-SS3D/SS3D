@@ -1291,12 +1291,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ee203dba8d50945953cbc24d889f14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultObjects:
+  _requiredRole: 3
+  _allowedObjects:
+  - {fileID: 5397281151860095728}
+  _deniedObjects:
   - {fileID: 3659165591958274705}
-  _roleViews:
-  - minimumRole: 3
-    objects:
-    - {fileID: 5397281151860095728}
 --- !u!1 &1669090661
 GameObject:
   m_ObjectHideFlags: 0
