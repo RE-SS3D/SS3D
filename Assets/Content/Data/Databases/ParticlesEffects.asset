@@ -24,3 +24,24 @@ MonoBehaviour:
     - _key: ca5e6b5f7c6c5054a8f8155ef44e3e43
       _value: {fileID: 9126258469831405173, guid: ca5e6b5f7c6c5054a8f8155ef44e3e43, type: 3}
     _new: 
+  AssetReferences:
+    _list:
+    - _key: 17b0d9163e9cdf14aa557557e7d9d76b
+      _value:
+        m_AssetGUID: 17b0d9163e9cdf14aa557557e7d9d76b
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - _key: a6a77c26ee7edd94c804f4ddd851c8ba
+      _value:
+        m_AssetGUID: a6a77c26ee7edd94c804f4ddd851c8ba
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - _key: ca5e6b5f7c6c5054a8f8155ef44e3e43
+      _value:
+        m_AssetGUID: ca5e6b5f7c6c5054a8f8155ef44e3e43
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    _new: 

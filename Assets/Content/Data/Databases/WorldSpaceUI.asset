@@ -20,3 +20,12 @@ MonoBehaviour:
     - _key: 03bcc1824d3b20748b912ca532f86bb9
       _value: {fileID: 1998198171871307260, guid: 03bcc1824d3b20748b912ca532f86bb9, type: 3}
     _new: 
+  AssetReferences:
+    _list:
+    - _key: 03bcc1824d3b20748b912ca532f86bb9
+      _value:
+        m_AssetGUID: 03bcc1824d3b20748b912ca532f86bb9
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    _new: 
