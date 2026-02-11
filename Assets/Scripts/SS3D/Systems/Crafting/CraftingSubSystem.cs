@@ -22,6 +22,7 @@ using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using SS3D.Systems.Inventory.Containers;
+using System.Threading.Tasks;
 
 namespace SS3D.Systems.Crafting
 {
@@ -132,18 +133,16 @@ namespace SS3D.Systems.Crafting
         /// spawn the result item. 
         /// </summary>
         [Server]
-        public void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent)
+        public async void Craft(CraftingInteraction interaction, InteractionEvent interactionEvent)
         {
             TaggedEdge<RecipeStep, RecipeStepLink> link = interaction.ChosenLink;
             if (!CanCraftRecipeLink(interactionEvent, link))  return;
             List<IRecipeIngredient> ingredients = GetIngredientsToConsume(interactionEvent, link);
             IRecipeIngredient recipeTarget = interactionEvent.Target.GetGameObject().GetComponent<IRecipeIngredient>();
 
-            ModifyOrConsumeRecipeTarget(recipeTarget, interaction, interactionEvent, link);
-
             if (link.Target.TryGetResult(out ObjectAssetReference result))
             {
-                SpawnOrModifyMainResult(result, interaction, interactionEvent, link);
+                await SpawnOrModifyMainResultAsync(result, interaction, interactionEvent, link);
             }
 
             if (link.Tag == null)
@@ -154,12 +153,27 @@ namespace SS3D.Systems.Crafting
             
             foreach (SecondaryResult secondaryResult in link.Tag.SecondaryResults)
             {
+                if (!secondaryResult.Asset)
+                {
+                    Log.Error(this, $"Secondary result {secondaryResult} has no asset associated, skipping");
+                    continue;
+                }
+                    
+                GameObject secondaryResultPrefab = await Assets.GetAsync<GameObject>(secondaryResult.Asset);
+
+                if (!secondaryResultPrefab)
+                {
+                    Log.Error(this, $"Secondary result {secondaryResult} has no prefab associated, skipping");
+                    continue;
+                }
+                
                 for (int i = 0; i < secondaryResult.Amount; i++)
                 {
-                    GameObject secondaryResultPrefab = Assets.Get<GameObject>(secondaryResult.Asset);
                     DefaultCraft(interaction, interactionEvent, secondaryResultPrefab, link.Target);
                 }
             }
+
+            ModifyOrConsumeRecipeTarget(recipeTarget, interaction, interactionEvent, link);
 
             foreach (IRecipeIngredient item in ingredients)
             {
@@ -185,12 +199,9 @@ namespace SS3D.Systems.Crafting
             }
         }
 
-        private void SpawnOrModifyMainResult(ObjectAssetReference result, CraftingInteraction interaction,
-            InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
+        private async Task SpawnOrModifyMainResultAsync(ObjectAssetReference result, CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            GameObject resultInstance;
-
-            GameObject resultPrefab = Assets.Get<GameObject>(result);
+            GameObject resultPrefab = await Assets.GetAsync<GameObject>(result);
 
             if (!resultPrefab)
             {
@@ -198,22 +209,21 @@ namespace SS3D.Systems.Crafting
                 return;
             }
                 
-            if (link.Target.CustomCraft)
-            {
-                resultInstance = resultPrefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
-            }
-            else
-            {
-                resultInstance = DefaultCraft(interaction, interactionEvent, resultPrefab, link.Target);
-            }
+            GameObject resultInstance = link.Target.CustomCraft ?
+                resultPrefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent) :
+                DefaultCraft(interaction, interactionEvent, resultPrefab, link.Target);
             
-            if (link.Tag == null || !link.Tag.ModifyResult) return;
-            
+            if (link.Tag is not { ModifyResult: true })
+            {
+                return;
+            }
+
             if (!resultInstance)
             {
                 Log.Error(this, "could not craft an instance for the recipe result");
                 return;
             }
+            
             resultInstance.GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
         }
 
@@ -225,19 +235,10 @@ namespace SS3D.Systems.Crafting
             if (!target.TryGetComponent(out IWorldObjectAsset targetAssetReference))
             {
                 Log.Warning(this, $"GameObject {target} has no IWorldObjectAsset component, can't retrieve the current step name");
-                return "";
+                return string.Empty;
             }
 
-            GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset);
-
-            if (targetPrefab == null)
-            {
-                Log.Error(this, $"IWorldObjectAsset {targetAssetReference} has no prefab associated, returning");
-
-                return "";
-            }
-
-            string rootStepName = targetPrefab.name;
+            string rootStepName = targetAssetReference.Asset.name;
             string stepName;
 
             if (target.TryGetComponent(out ICraftable craftableTarget) && craftableTarget.CurrentStepName != rootStepName)
@@ -246,7 +247,7 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                stepName = targetPrefab.name;
+                stepName = targetAssetReference.Asset.name;
             }
 
             return stepName;
@@ -420,11 +421,11 @@ namespace SS3D.Systems.Crafting
             GameObject instance;
 
             // If result is an item held in hand, either put the crafting result in hand or in front of the crafter.
-            if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand &&
-                    targetItem.Container == hand.Container)
+            if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand && targetItem.Container == hand.Container)
             {
                 instance = DefaultCraftItemHeldInHand(prefab, hand, recipeStep, interaction);
             }
+            
             // If result is a placed tile object, just place it on the tilemap.
             else if (prefab.TryGetComponent(out PlacedTileObject resultTileObject))
             {
@@ -474,12 +475,10 @@ namespace SS3D.Systems.Crafting
         [Server]
         private GameObject DefaultCraftItemHeldInHand(GameObject prefab, Hand hand, RecipeStep recipeStep, CraftingInteraction interaction)
         {
-            GameObject instance;
+            GameObject instance = Instantiate(prefab);
 
-            if (prefab.TryGetComponent(out Item resultItem))
+            if (instance.TryGetComponent(out Item resultItem))
             {
-                instance = Instantiate(prefab);
-
                 // If result is an item, replace whatever is in hand by the new item.
                 if (recipeStep.IsTerminal)
                 {
@@ -492,12 +491,11 @@ namespace SS3D.Systems.Crafting
                     characterGround.y = 0;
                     instance.transform.position = characterGround + interaction.CharacterTransform.forward;
                 }
+                
                 InstanceFinder.ServerManager.Spawn(instance);
             }
             else
             {
-                instance = Instantiate(prefab);
-
                 Vector3 characterGround = interaction.CharacterTransform.position;
                 characterGround.y = 0;
                 instance.transform.position = characterGround + interaction.CharacterTransform.forward;
@@ -551,33 +549,32 @@ namespace SS3D.Systems.Crafting
         [Server]
         private bool ResultIsValid(InteractionEvent interactionEvent, RecipeStep recipeStep)
         {
-            if (!recipeStep.TryGetResult(out ObjectAssetReference recipeResult)) return true;
-
-            GameObject recipeResultPrefab = Assets.Get<GameObject>(recipeResult);
-
-            if (recipeResultPrefab && recipeResultPrefab.TryGetComponent(out PlacedTileObject result))
+            if (!recipeStep.TryGetResult(out ObjectAssetReference recipeResult))
             {
-                return ResultIsValidPlacedTileObject(result, interactionEvent);
+                return true;
             }
 
-            return true;
+            TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
+            TileObjectSo tileObjectSo = tileSubSystem.GetAsset(recipeResult) as TileObjectSo;
+
+            return !tileObjectSo || ResultIsValidPlacedTileObject(tileObjectSo, interactionEvent);
         }
 
         /// <summary>
         /// Check if the result placed object won't conflict with other placed tile objects. Should check collisions too probably.
         /// </summary>
         [Server]
-        private bool ResultIsValidPlacedTileObject([NotNull] PlacedTileObject result, [NotNull] InteractionEvent interactionEvent)
+        private bool ResultIsValidPlacedTileObject([NotNull] TileObjectSo result, [NotNull] InteractionEvent interactionEvent)
         {
             bool replace = false;
             bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject target);
 
-            if (targetIsPlacedTileObject && result.Layer == target.Layer)
+            if (targetIsPlacedTileObject && result.layer == target.Layer)
             {
                 replace = true;
             }
 
-            return SubSystems.Get<TileSubSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
+            return SubSystems.Get<TileSubSystem>().CanBuild(result, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
         }
 
         /// <summary>

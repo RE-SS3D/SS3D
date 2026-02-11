@@ -25,15 +25,14 @@ namespace SS3D.Systems.Crafting
 
         protected override void OnAwake()
         {
-            if (!gameObject.TryGetComponent(out IWorldObjectAsset targetAssetReference))
+            if (!gameObject.TryGetComponent(out IWorldObjectAsset targetObject))
             {
                 Log.Error(this, $"{gameObject} has a ICraftable component but no IWorldObjectAsset component set up on them, add one or it'll cause trouble for multi step crafting");
                 _currentStepName = "";
             }
             else
             {
-                GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset);
-                _currentStepName = targetPrefab?.name;
+                _currentStepName = targetObject.Asset.name;
             }
         }
     }
