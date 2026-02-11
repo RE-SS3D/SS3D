@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
@@ -30,8 +31,11 @@ namespace SS3D.Data
         /// A dictionary of the loaded databases, useful to get the databases quickly with the name of it.
         /// </summary>
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
-        
-        private static readonly Dictionary<string, Object> LoadedAssets = new();
+
+        /// <summary>
+        /// A dictionary to keep track of the loading operations for each asset, so we don't load the same asset multiple times if multiple requests are made before the asset is done loading.
+        /// </summary>
+        private static readonly Dictionary<string, AsyncOperationHandle<Object>> LoadingOperations = new();
 
         /// <summary>
         /// Initializes the Addressables system and loads the asset databases in the project.
@@ -199,24 +203,28 @@ namespace SS3D.Data
         private static async Task<TAsset> GetAsync<TAsset>([NotNull] AssetReference reference)
             where TAsset : class
         {
-            if (!LoadedAssets.TryGetValue(reference.AssetGUID, out Object loadedAsset))
+            if (!LoadingOperations.TryGetValue(reference.AssetGUID, out AsyncOperationHandle<Object> loadingOperation))
             {
-                loadedAsset = await reference.LoadAssetAsync<Object>().Task;
+                loadingOperation = reference.LoadAssetAsync<Object>();
+                LoadingOperations.Add(reference.AssetGUID, loadingOperation);
+            }
 
-                if (loadedAsset)
-                {
-                    LoadedAssets.Add(reference.AssetGUID, loadedAsset);
-                }
-                else
-                {
-                    return null;
-                }
+            Object loadedAsset = await loadingOperation.Task;
+
+            if (loadingOperation is
+            {
+                IsDone: true,
+                Status: AsyncOperationStatus.Failed,
+            })
+            {
+                LoadingOperations.Remove(reference.AssetGUID);
             }
 
             TAsset asset = CastAsset<TAsset>(loadedAsset);
+
             return asset;
         }
-        
+
         private static TAsset CastAsset<TAsset>(Object obj)
             where TAsset : class
         {
@@ -226,7 +234,6 @@ namespace SS3D.Data
             }
 
             return obj as TAsset;
-
         }
 
 #if UNITY_EDITOR
@@ -240,8 +247,8 @@ namespace SS3D.Data
             }
 
             Log.Error(typeof(Assets), $"Database of type {databaseID} not found cannot add to addressables");
-            return false;
 
+            return false;
         }
 #endif
     }
