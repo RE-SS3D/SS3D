@@ -1,8 +1,12 @@
 ﻿using Coimbra;
+using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
@@ -26,52 +30,117 @@ namespace SS3D.Data
         /// A dictionary of the loaded databases, useful to get the databases quickly with the name of it.
         /// </summary>
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
+        
+        private static readonly Dictionary<string, Object> LoadedAssets = new();
+
+        /// <summary>
+        /// Initializes the Addressables system and loads the asset databases in the project.
+        /// </summary>
+        public static async void InitializeAsync()
+        {
+            try
+            {
+                await Addressables.InitializeAsync();
+                LoadAssetDatabases();
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(Assets), e, "An exception occurred while initializing the Addressables system.");
+            }
+        }
 
         /// <summary>
         /// Returns an asset from a  database casting the object found to TAsset.
         /// </summary>
         [CanBeNull]
         public static TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
-            where TAsset : Object
-        {
-            return GetDatabase(databaseId)?.Get<TAsset>(assetId);
-        }
+            where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
 
         /// <summary>
         /// Returns an asset from a  database casting the object found to TAsset.
         /// </summary>
         [CanBeNull]
         public static TAsset Get<TAsset>([NotNull] ObjectAssetReference assetReference)
-            where TAsset : Object
+            where TAsset : Object => Get<TAsset>(assetReference.Database, assetReference.Id);
+
+        /// <summary>
+        /// Function to get an asset asynchronously from a database.
+        /// </summary>
+        /// <param name="databaseId">ID of the Database the asset is to be loaded from.</param>
+        /// <param name="assetId">ID of the asset to be loaded.</param>
+        /// <param name="onAssetLoaded">Callback to be called after the asset is loaded. (Optional)</param>
+        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
+        /// <returns>Task for the asset to be loaded.</returns>
+        [ItemCanBeNull]
+        public static async Task<TAsset> GetAsync<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] Action<TAsset> onAssetLoaded = null)
+            where TAsset : class
         {
-            return GetDatabase(assetReference.Database)?.Get<TAsset>(assetReference.Id);
+            TAsset asset = null;
+            AssetReference reference = GetDatabase(databaseId)?.GetReference(assetId);
+
+            if (reference != null)
+            {
+                asset = await GetAsync<TAsset>(reference);
+            }
+
+            try
+            {
+                onAssetLoaded?.Invoke(asset);
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(Assets), e, "An exception occurred while invoking the onAssetLoaded callback in GetAsync");
+            }
+
+            return asset;
         }
+
+        /// <summary>
+        /// Function to get an asset asynchronously from a WorldObjectAssetReference.
+        /// </summary>
+        /// <param name="reference">WorldObjectAssetReference object for the asset.</param>
+        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
+        /// <returns>Task for the asset to be loaded.</returns>
+        [ItemCanBeNull]
+        public static async Task<TAsset> GetAsync<TAsset>([NotNull] ObjectAssetReference reference)
+            where TAsset : class => await GetAsync<TAsset>(reference.Database, reference.Id);
 
         /// <summary>
         /// Returns an asset from a database casting the object found to TAsset.
         /// </summary>
         public static bool TryGet<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] out TAsset asset)
-            where TAsset : Object
-        {
-            return GetDatabase(databaseId).TryGet(assetId, out asset);
-        }
+            where TAsset : Object => GetDatabase(databaseId)!.TryGet(assetId, out asset);
 
         /// <summary>
-        /// Loads the databases in the project from the AssetDatabaseSettings, saves it in a Dictionary for easy & performant access.
+        /// Function to try getting an asset asynchronously from a database.
         /// </summary>
-        public static void LoadAssetDatabases()
+        /// <param name="databaseId">ID of the database the asset belongs to.</param>
+        /// <param name="assetId">ID of the asset.</param>
+        /// <param name="onAssetLoaded">The callback to get the asset.</param>
+        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
+        /// <returns>True if asset is loaded, false if not.</returns>
+        public static async Task<bool> TryGetAsync<TAsset>([NotNull] string databaseId, [NotNull] string assetId, Action<TAsset> onAssetLoaded)
+            where TAsset : class
         {
-            List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
+            AssetDatabase database = GetDatabase(databaseId);
 
-            Databases.Clear();
-
-            for (int index = 0; index < assetDatabases.Count; index++)
+            if (!database || database.TryGetReference(assetId, out AssetReference reference) || reference == null)
             {
-                AssetDatabase database = assetDatabases[index];
-                Databases.Add(database.DatabaseID, database);
+                return false;
             }
 
-            Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+            TAsset asset = await GetAsync<TAsset>(reference);
+
+            try
+            {
+                onAssetLoaded?.Invoke(asset);
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(Assets), e, "An exception occurred while invoking the onAssetLoaded callback in TryGetAsync");
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -88,7 +157,7 @@ namespace SS3D.Data
                 LoadAssetDatabases();
             }
 
-            if (databaseId == String.Empty)
+            if (string.IsNullOrEmpty(databaseId))
             {
                 return null;
             }
@@ -101,6 +170,63 @@ namespace SS3D.Data
             }
 
             return database;
+        }
+
+        /// <summary>
+        /// Loads the databases in the project from the AssetDatabaseSettings, saves it in a Dictionary for easy & performant access.
+        /// </summary>
+        private static void LoadAssetDatabases()
+        {
+            List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
+
+            Databases.Clear();
+
+            foreach (AssetDatabase database in assetDatabases)
+            {
+                Databases.Add(database.DatabaseID, database);
+            }
+
+            Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+        }
+
+        /// <summary>
+        /// Function to get an asset asynchronously from an AssetReference.
+        /// </summary>
+        /// <param name="reference">Asset Reference object for the asset.</param>
+        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
+        /// <returns>Task for the asset to be loaded.</returns>
+        [ItemCanBeNull]
+        private static async Task<TAsset> GetAsync<TAsset>([NotNull] AssetReference reference)
+            where TAsset : class
+        {
+            if (!LoadedAssets.TryGetValue(reference.AssetGUID, out Object loadedAsset))
+            {
+                loadedAsset = await reference.LoadAssetAsync<Object>().Task;
+
+                if (loadedAsset)
+                {
+                    LoadedAssets.Add(reference.AssetGUID, loadedAsset);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            TAsset asset = CastAsset<TAsset>(loadedAsset);
+            return asset;
+        }
+        
+        private static TAsset CastAsset<TAsset>(Object obj)
+            where TAsset : class
+        {
+            if (obj is GameObject gameObject && typeof(TAsset) != typeof(GameObject))
+            {
+                return gameObject.GetComponent<TAsset>();
+            }
+
+            return obj as TAsset;
+
         }
 
 #if UNITY_EDITOR

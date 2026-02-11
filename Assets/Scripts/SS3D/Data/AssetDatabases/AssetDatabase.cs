@@ -5,6 +5,7 @@ using SS3D.CodeGeneration.Creators;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -44,11 +45,17 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public AddressableAssetGroup AssetGroup;
 #endif
-        
+
         /// <summary>
         /// All loaded assets that will be included in the built game.
         /// </summary>
         public SerializableDictionary<string, Object> Assets;
+
+        /// <summary>
+        /// All asset references for the assets in the database.
+        /// </summary>
+        [SerializeField]
+        internal SerializableDictionary<string, AssetReference> AssetReferences;
 
 #if UNITY_EDITOR
         /// <summary>
@@ -56,11 +63,13 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public void LoadAssetsFromAssetGroup()
         {
-            Assets = new SerializableDictionary<string, Object>();
+            Assets = new();
+            AssetReferences = new();
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)
             {
                 Assets.TryAdd(entry.guid, entry.MainAsset);
+                AssetReferences.TryAdd(entry.guid, new(entry.guid));
             }
 
             EditorUtility.SetDirty(this);
@@ -80,27 +89,58 @@ namespace SS3D.Data.AssetDatabases
             if (!Assets.TryGetValue(id, out Object asset))
             {
                 Log.Error($"{nameof(AssetDatabase)} Asset of {id} is not found on the {DatabaseName} database.");
+
                 return null;
             }
 
-            if (typeof(T).IsSubclassOf(typeof(Component)) && asset is GameObject gameObject)
+            if (typeof(T) != typeof(MonoBehaviour) && asset is GameObject gameObject && gameObject.TryGetComponent(out T component))
             {
-                return gameObject.GetComponent<T>();
+                return component;
             }
 
             return asset as T;
         }
 
+        /// <summary>
+        /// Gets an asset based on its ID (index).
+        /// </summary>
+        /// <param name="id">Uses the ID of the asset cast into a int to get the asset from a list position.</param>
+        /// <returns>Asset reference of the asset.</returns>
+        [CanBeNull]
+        public AssetReference GetReference([NotNull] string id)
+        {
+            if (AssetReferences.TryGetValue(id, out AssetReference assetReference))
+            {
+                return assetReference;
+            }
+
+            Log.Error("{AssetDatabaseName} Asset of {ID} is not found on the {DatabaseName} database.", nameof(AssetDatabase), id, DatabaseName);
+
+            return null;
+        }
+
         public bool TryGet<T>([NotNull] string index, [CanBeNull] out T asset)
             where T : Object
         {
-            bool hasValue = Assets.TryGetValue(index, out Object foundValue);
+            asset = null;
 
-            asset = foundValue as T;
+            if (Assets.TryGetValue(index, out Object foundValue))
+            {
+                asset = foundValue as T;
+            }
 
-            return hasValue;
+            return asset;
         }
 
+        /// <summary>
+        /// Tries to get an asset reference based on its ID (index).
+        /// </summary>
+        /// <param name="index">Uses the ID of the asset cast into a int to get the asset from a list position.</param>
+        /// <param name="assetReference">The asset reference object of the asset.</param>
+        /// <returns>If the asset reference is found or not.</returns>
+        public bool TryGetReference([NotNull] string index, [CanBeNull] out AssetReference assetReference) => AssetReferences.TryGetValue(index, out assetReference);
+
+#if UNITY_EDITOR
         /// <summary>
         /// Adds abd asset to the asset database. Should be used only for additional content or runtime stuff.
         /// </summary>
@@ -109,10 +149,13 @@ namespace SS3D.Data.AssetDatabases
         public void Add<TAsset>([NotNull] TAsset asset)
             where TAsset : Object
         {
-            Assets.Add(asset.name, asset);
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(asset.name);
+            string guid = UnityEditor.AssetDatabase.GUIDFromAssetPath(path).ToString();
+
+            Assets.Add(guid, asset);
+            AssetReferences.Add(guid, new(guid));
         }
 
-#if UNITY_EDITOR
         /// <summary>
         /// Initializes all asset databases in the project and adds to the databases list.
         /// </summary>
@@ -183,7 +226,7 @@ namespace SS3D.Data.AssetDatabases
 
             EditorUtility.SetDirty(asset);
             EditorUtility.SetDirty(this);
-            
+
             UnityEditor.AssetDatabase.SaveAssetIfDirty(asset);
             UnityEditor.AssetDatabase.SaveAssetIfDirty(this);
 

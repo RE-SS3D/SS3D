@@ -17,16 +17,20 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         public VisualTreeAsset _assetDatabaseVisualTree;
 
         private ScrollView _assetsListView;
+        private PropertyField _assetReferencesListView;
         private Button _loadAssetsButton;
         private ObjectField _assetGroupObjectField;
         private Label _assetDatabaseLabel;
         private TextField _enumNameTextField;
+
+        private SerializedProperty _referencesProperty;
 
         private void OnEnable()
         {
             _assetDatabase = (AssetDatabase)target;
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
             if (_enumNameTextField != null)
@@ -41,6 +45,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             }
         }
+#endif
 
         /// <summary>
         /// This sets ups the UI for the custom inspector using the UI Toolkit
@@ -61,10 +66,12 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetGroupObjectField = root.Q<ObjectField>("asset-group-field");
             _loadAssetsButton = root.Q<Button>("load-assets-from-addressables-group-button");
             _assetsListView = root.Q<ScrollView>("assets-list");
+            _assetReferencesListView = root.Q<PropertyField>("asset-references-field");
 
             _assetDatabaseLabel.text = $"{_assetDatabase.name} ASSET DATABASE";
             _enumNameTextField.value = _assetDatabase.DatabaseName;
             _assetGroupObjectField.value = _assetDatabase.AssetGroup;
+            _referencesProperty = serializedObject.FindProperty(nameof(_assetDatabase.AssetReferences));
 
             _assetDatabase.LoadAssetsFromAssetGroup();
 
@@ -83,6 +90,12 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
                     _assetsListView.Add(objectField);
                 }
+            }
+
+            // Todo: Find a way to show just the asset references without showing the whole dictionary.
+            if (_assetDatabase.AssetReferences != null && _referencesProperty != null)
+            {
+                _assetReferencesListView.BindProperty(_referencesProperty);
             }
 
             _loadAssetsButton.clicked += HandleLoadAssetsButtonPressed;
