@@ -6,9 +6,9 @@ using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Inventory.Items;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -297,13 +297,13 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null)
+        public async Task PlaceItemObjectAsync(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null)
         {
             // Handle existing items that already have a PlacedItemObject component
-            if (existingItem != null)
+            if (existingItem)
             {
                 PlacedItemObject existingPlacedItem = existingItem.GetComponent<PlacedItemObject>();
-                if (existingPlacedItem != null)
+                if (existingPlacedItem)
                 {
                     if (_items.Contains(existingPlacedItem))
                     {
@@ -311,16 +311,14 @@ namespace SS3D.Systems.Tile
                         existingPlacedItem.UpdatePosition(worldPosition, rotation);
                         return;
                     }
-                    else
-                    {
-                        // Item has PlacedItemObject but not tracked, remove the old component
-                        DestroyImmediate(existingPlacedItem);
-                    }
+
+                    // Item has PlacedItemObject but not tracked, remove the old component
+                    DestroyImmediate(existingPlacedItem);
                 }
             }
             
             // Create new PlacedItemObject and add to tracking
-            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem);
+            PlacedItemObject placedItem = await PlacedItemObject.CreateAsync(worldPosition, rotation, itemObjectSo, existingItem);
             placedItem.transform.SetParent(transform);
             _items.Add(placedItem);
         }
@@ -406,7 +404,7 @@ namespace SS3D.Systems.Tile
             };
         }
 
-        public void Load([CanBeNull] SavedTileMap saveObject)
+        public async void Load([CanBeNull] SavedTileMap saveObject)
         {
             if (saveObject == null)
             {
@@ -439,12 +437,16 @@ namespace SS3D.Systems.Tile
                     }
                 }
             }
+            
+            List<Task> loadingTasks = new List<Task>();
 
             foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
             {
                 ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
-                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
+                loadingTasks.Add(PlaceItemObjectAsync(savedItem.worldPosition, savedItem.rotation, toBePlaced));
             }
+            
+            await Task.WhenAll(loadingTasks);
 
             OnMapLoaded?.Invoke(this, EventArgs.Empty);
             UpdateAllAdjacencies();

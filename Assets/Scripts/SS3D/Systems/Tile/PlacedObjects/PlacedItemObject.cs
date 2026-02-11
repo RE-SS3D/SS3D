@@ -1,11 +1,13 @@
 ﻿using FishNet;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -24,24 +26,25 @@ namespace SS3D.Systems.Tile
         /// <param name="itemSo"></param>
         /// <param name="existingItem">The existing Item GameObject to add the PlacedItemObject component to</param>
         /// <returns></returns>
-        public static PlacedItemObject Create(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
+        [ItemNotNull]
+        public static async Task<PlacedItemObject> CreateAsync(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
         {
             GameObject placedGameObject;
             
-            if (existingItem != null)
+            if (existingItem)
             {
                 // Use the existing item GameObject
                 placedGameObject = existingItem;
             }
             else
             {
-                GameObject itemPrefab = Assets.Get<GameObject>(itemSo.PrefabAsset);
+                GameObject itemPrefab = await Assets.GetAsync<GameObject>(itemSo.PrefabAsset);
                 placedGameObject = Instantiate(itemPrefab);
             }
+
             placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);
 
-            PlacedItemObject placedObject = placedGameObject.GetComponent<PlacedItemObject>();
-            if (placedObject == null)
+            if (!placedGameObject.TryGetComponent(out PlacedItemObject placedObject))
             {
                 // Ideally an editor script adds this instead of doing it at runtime
                 placedObject = placedGameObject.AddComponent<PlacedItemObject>();
@@ -49,13 +52,18 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(worldPosition, rotation, itemSo);
 
-            if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
+            if (!InstanceFinder.ServerManager || !placedObject.TryGetComponent<NetworkObject>(out _))
             {
-                if (placedObject.GetComponent<NetworkObject>() == null)
-                    Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
-                        Logs.Generic, placedObject.NameString);
-                else
-                    InstanceFinder.ServerManager.Spawn(placedGameObject);
+                return placedObject;
+            }
+
+            if (!placedObject.TryGetComponent<NetworkObject>(out _))
+            {
+                Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned", Logs.Generic, placedObject.NameString);
+            }
+            else
+            {
+                InstanceFinder.ServerManager.Spawn(placedGameObject);
             }
 
             return placedObject;
