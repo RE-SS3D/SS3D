@@ -440,8 +440,6 @@ namespace SS3D.Systems.Tile
                     }
                 }
             }
-            
-            List<Task> loadingTasks = new List<Task>();
 
             foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
             {
