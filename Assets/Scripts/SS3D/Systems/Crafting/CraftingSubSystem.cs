@@ -169,7 +169,7 @@ namespace SS3D.Systems.Crafting
                 
                 for (int i = 0; i < secondaryResult.Amount; i++)
                 {
-                    DefaultCraft(interaction, interactionEvent, secondaryResultPrefab, link.Target);
+                    await DefaultCraftAsync(interaction, interactionEvent, secondaryResultPrefab, link.Target);
                 }
             }
 
@@ -209,10 +209,17 @@ namespace SS3D.Systems.Crafting
                 return;
             }
                 
-            GameObject resultInstance = link.Target.CustomCraft ?
-                resultPrefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent) :
-                DefaultCraft(interaction, interactionEvent, resultPrefab, link.Target);
-            
+            GameObject resultInstance;
+
+            if (link.Target.CustomCraft)
+            {
+                resultInstance = resultPrefab.GetComponent<ICraftable>()?.Craft(interaction, interactionEvent);
+            }
+            else
+            {
+                resultInstance = await DefaultCraftAsync(interaction, interactionEvent, resultPrefab, link.Target);
+            }
+
             if (link.Tag is not { ModifyResult: true })
             {
                 return;
@@ -416,7 +423,8 @@ namespace SS3D.Systems.Crafting
         /// Method that should handle basic spawning for everything.
         /// </summary>
         [Server]
-        private GameObject DefaultCraft(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
+        [ItemCanBeNull]
+        private async Task<GameObject> DefaultCraftAsync(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
         {
             GameObject instance;
 
@@ -429,7 +437,7 @@ namespace SS3D.Systems.Crafting
             // If result is a placed tile object, just place it on the tilemap.
             else if (prefab.TryGetComponent(out PlacedTileObject resultTileObject))
             {
-                instance = DefaultCraftTileObject(interactionEvent, resultTileObject);
+                instance = await DefaultCraftTileObjectAsync(interactionEvent, resultTileObject);
             }
             else if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject _) && prefab.TryGetComponent(out Draggable _))
             {
@@ -511,20 +519,14 @@ namespace SS3D.Systems.Crafting
         /// The default method to craft new tile objects.
         /// </summary>
         [Server]
-        private GameObject DefaultCraftTileObject([NotNull] InteractionEvent interactionEvent, [NotNull] PlacedTileObject resultTileObject)
+        [ItemCanBeNull]
+        private async Task<GameObject> DefaultCraftTileObjectAsync([NotNull] InteractionEvent interactionEvent, [NotNull] PlacedTileObject resultTileObject)
         {
-            bool replace = false;
-            Direction direction = Direction.North;
+            bool replace = interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject) && targetTileObject.Layer == resultTileObject.Layer;
 
-            if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject)
-                && targetTileObject.Layer == resultTileObject.Layer)
-            {
-                replace = true;
-            }
-
-            SubSystems.Get<TileSubSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
+            GameObject instance = await SubSystems.Get<TileSubSystem>().CurrentMap.PlaceTileObjectAsync(resultTileObject.tileObjectSO,
                 TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position),
-                direction, false, replace, false, out GameObject instance);
+                Direction.North, false, replace, false);
 
             return instance;
         }

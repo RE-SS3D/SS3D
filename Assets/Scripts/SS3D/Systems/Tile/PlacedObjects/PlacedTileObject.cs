@@ -1,5 +1,6 @@
 ﻿using FishNet;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Data;
@@ -10,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using math = SS3D.Utils.MathUtility;
 
@@ -28,14 +30,14 @@ namespace SS3D.Systems.Tile
         /// <param name="dir"></param>
         /// <param name="tileObjectSo"></param>
         /// <returns></returns>
-        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
+        [ItemNotNull]
+        public static async Task<PlacedTileObject> CreateAsync(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
-            GameObject tileObjectPrefab = Assets.Get<GameObject>(tileObjectSo.PrefabAsset);
+            GameObject tileObjectPrefab = await Assets.GetAsync<GameObject>(tileObjectSo.PrefabAsset);
             GameObject placedGameObject = Instantiate(tileObjectPrefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
-            PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
-            if (placedObject == null)
+            if (!placedGameObject.TryGetComponent(out PlacedTileObject placedObject))
             {
                 // Ideally an editor script adds this instead of doing it at runtime
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
@@ -45,13 +47,18 @@ namespace SS3D.Systems.Tile
 
             // TODO : Spawning the placed game object does not spawn with it everything. In particular, the values
             // such as tileobjectSO, origin or world position are not spawned. This might (or not) be an issue later on.
-            if (InstanceFinder.ServerManager != null)
+            if (!InstanceFinder.ServerManager)
             {
-                if (placedObject.GetComponent<NetworkObject>() == null)
-                    Log.Information(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
-                        Logs.Generic, placedObject.NameString);
-                else
-                    InstanceFinder.ServerManager.Spawn(placedGameObject);
+                return placedObject;
+            }
+
+            if (!placedObject.TryGetComponent<NetworkObject>(out _))
+            {
+                Log.Information(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned", Logs.Generic, placedObject.NameString);
+            }
+            else
+            {
+                InstanceFinder.ServerManager.Spawn(placedGameObject);
             }
 
             return placedObject;

@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -86,18 +87,17 @@ namespace SS3D.Systems.Tile
         public GenericObjectSo GetAsset(ObjectAssetReference asset) => Loader.GetAsset(asset);
 
         [Server]
-        private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
+        private async void PlaceObjectAsync(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
 	        switch (genericObjectSo)
 	        {
 		        case TileObjectSo so:
-			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false, out GameObject placedObject);
-		        case ItemObjectSo so:
-			        _currentMap.PlaceItemObjectAsync(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
+                    await _currentMap.PlaceTileObjectAsync(so, placePosition, dir, false, replaceExisting, false);
+                    break;
+                case ItemObjectSo so:
+			        await _currentMap.PlaceItemObjectAsync(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
 			        break;
 	        }
-
-	        return true;
         }
 
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
@@ -106,7 +106,7 @@ namespace SS3D.Systems.Tile
         public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
-            PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
+            PlaceObjectAsync(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.

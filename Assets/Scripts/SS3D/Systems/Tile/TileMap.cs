@@ -197,41 +197,43 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
-        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
-            bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo)
+        [ItemCanBeNull]
+        public async Task<GameObject> PlaceTileObjectAsync(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool skipBuildCheck, bool replaceExisting, bool skipAdjacency)
         {
             bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
-            placedObjectGo = null;
 
-            if (canBuild || skipBuildCheck)
+            if (!canBuild && !skipBuildCheck)
             {
-                TileChunk chunk = GetOrCreateChunk(placePosition);
-                Vector2Int origin = chunk.GetXY(placePosition);
-                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo);
-                placedObject.transform.SetParent(chunk.transform);
-
-                foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
-                {
-                    Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
-                    chunk = GetOrCreateChunk(gridPosition);
-
-                    // Remove an existing object if there
-                    if (replaceExisting)
-                        ClearTileObject(gridPosition, tileObjectSo.layer, dir);
-
-                    // Place new object
-                    chunk.GetTileObject(tileObjectSo.layer, gridPosition).AddPlacedObject(placedObject, dir);
-                }
-
-                // Handle Adjacency connectors, can skip it particulary when loading the map.
-                if (!skipAdjacency){
-                    placedObject.UpdateAdjacencies();
-                }
-
-                placedObjectGo = placedObject.gameObject;
+                return null;
             }
 
-            return canBuild;
+            TileChunk chunk = GetOrCreateChunk(placePosition);
+            Vector2Int origin = chunk.GetXY(placePosition);
+            PlacedTileObject placedObject = await PlacedTileObject.CreateAsync(placePosition, origin, dir, tileObjectSo);
+            placedObject.transform.SetParent(chunk.transform);
+
+            foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
+            {
+                Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
+                chunk = GetOrCreateChunk(gridPosition);
+
+                // Remove an existing object if there
+                if (replaceExisting)
+                {
+                    ClearTileObject(gridPosition, tileObjectSo.layer, dir);
+                }
+
+                // Place new object
+                chunk.GetTileObject(tileObjectSo.layer, gridPosition).AddPlacedObject(placedObject, dir);
+            }
+
+            // Handle Adjacency connectors, can skip it particulary when loading the map.
+            if (!skipAdjacency)
+            {
+                placedObject.UpdateAdjacencies();
+            }
+
+            return placedObject.gameObject;
         }
 
         public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
@@ -419,13 +421,14 @@ namespace SS3D.Systems.Tile
             ClearUntrackedItems();
 
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+            List<Task> loadingTasks = new();
 
             foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
                 ISavedTileLocation[] savedTiles = savedChunk.savedTiles;
 
-                foreach (var savedTile in savedTiles)
+                foreach (ISavedTileLocation savedTile in savedTiles)
                 {
                     foreach (SavedPlacedTileObject savedObject in savedTile.GetPlacedObjects())
                     {
@@ -433,12 +436,10 @@ namespace SS3D.Systems.Tile
                         Vector3 placePosition = chunk.GetWorldPosition(savedTile.Location.x, savedTile.Location.y);
 
                         // Skipping build check here to allow loading tile objects in a non-valid order
-                        PlaceTileObject(toBePlaced, placePosition, savedObject.dir, true, false, true, out GameObject placedObject);
+                        loadingTasks.Add(PlaceTileObjectAsync(toBePlaced, placePosition, savedObject.dir, true, false, true));
                     }
                 }
             }
-            
-            List<Task> loadingTasks = new List<Task>();
 
             foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
             {
