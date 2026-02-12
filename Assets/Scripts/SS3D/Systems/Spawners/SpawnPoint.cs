@@ -22,7 +22,7 @@ namespace SS3D.Systems.Spawners
         {
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateChanged));
         }
-
+        
         public void HandleRoundStateChanged(ref EventContext context, in RoundStateUpdated state)
         {
             // Prepare the SpawnPoint on the current map

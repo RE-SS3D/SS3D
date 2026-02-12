@@ -80,7 +80,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 78
+  <PrefabId>k__BackingField: 79
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -119,7 +119,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 143d8fe5f64b27d44a592f57d7949e1c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -148,4 +148,4 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5277356304662430582}
-  m_Mesh: {fileID: -7835664460937394586, guid: 94d5895af06455e4b9f170e8897bac98, type: 3}
+  m_Mesh: {fileID: 6295007783518057475, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4099859988230524348}
   - component: {fileID: -4322665530232701327}
   m_Layer: 13
-  m_Name: SpawnPointSecurity
+  m_Name: SpawnPointAssistant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52,7 +52,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -4155309935682150279}
   _networkObjectCache: {fileID: -4155309935682150279}
-  SpawnPointData: {fileID: 11400000, guid: c3360b901cde0d14cb434193585d7a08, type: 2}
+  SpawnPointData: {fileID: 11400000, guid: 6e9d7ce01e8520b4f85d94240184c8da, type: 2}
 --- !u!114 &-4155309935682150279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,11 +81,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 29
+  <PrefabId>k__BackingField: 37
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 8948382436201810665
+  <AssetPathHash>k__BackingField: 3176061693827538231
 --- !u!114 &4820184695347381900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,7 +120,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b35e5d5edbcc63442bf15e5482e4cfe4, type: 2}
+  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -149,7 +149,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7517011500498074631}
-  m_Mesh: {fileID: 6295007783518057475, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+  m_Mesh: {fileID: -6331385627053906942, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
 --- !u!65 &-4322665530232701327
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -221,7 +221,7 @@ namespace SS3D.Systems.Entities
             // Sync the position of the spawn point so the client spawns correctly
             if (spawnPoint)
             {
-                spawnPointManager.SyncEntityWithSpawnPoint(entity.NetworkObject, spawnPoint);
+                spawnPointManager.SyncObjectWithSpawnPoint(entity.NetworkObject, spawnPoint);
             }
 
             RpcInvokeClientSpawned(entity.Owner);

@@ -3,6 +3,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
 using Coimbra.Services.Events;
+using JetBrains.Annotations;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Logging;
 using System.Collections.Generic;
@@ -135,9 +136,10 @@ namespace SS3D.Systems.Roles
         /// </summary>
         /// <param name="player"></param> The player to get the data from
         /// <returns></returns>
-        public KeyValuePair<Player, RoleData>? GetRoleFromPlayer(Player player)
+        [CanBeNull]
+        public RoleData GetRoleFromPlayer(Player player)
         {
-            return _rolePlayers.FirstOrDefault(rp => rp.Key == player);
+            return _rolePlayers.FirstOrDefault(rp => rp.Key == player).Value;
         }
 
         /// <summary>
