@@ -18,6 +18,12 @@ namespace SS3D.Systems.Spawners
         /// </summary>
         public SpawnPointData SpawnPointData;
 
+        /// <summary>
+        /// Reserves a SpawnPoint so other players can't spawn on it once someone else has spawned on it.
+        /// This only applies for Spawn Points that have SpawnType set to Job.
+        /// </summary>
+        public bool Reserved;
+
         public override void OnStartServer()
         {
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateChanged));
@@ -31,6 +37,11 @@ namespace SS3D.Systems.Spawners
             {
                 SubSystems.Get<SpawnPointManager>().RegisterSpawnPoint(this);
             }
+        }
+
+        public void Reserve()
+        {
+            Reserved = true;
         }
     }
 }

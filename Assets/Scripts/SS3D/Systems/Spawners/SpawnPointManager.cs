@@ -7,10 +7,8 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace SS3D.Systems.Spawners
 {
@@ -18,44 +16,99 @@ namespace SS3D.Systems.Spawners
     /// This system handles spawning players on their correct SpawnPoints.
     /// It registers all the alive SpawnPoints on the game, and it randomly picks valid ones.
     /// 
-    /// It's important to also note that this system just overwrites the predefined location that EntitySubSystem uses in SpawnPlayer method.
+    /// It's important to also note that the Spawn Points rely on the mapper.
+    /// The mapper should:
+    /// 1. Map the exact spawn points required for each role (e.g. if map has 5 sec roles, map 5 sec spawners)
+    /// 2. Map enough late-join spawners. This depends on the map.
+    /// For example, if a map is low-pop and holds 30 players then you should map; 30 minus spawn points for ready players.
+    ///
+    /// Fallback will happen if the every player stands on a late-join spawn point (very unlikely)
+    ///
+    /// Spawn points for ready players (Job Spawners) get reserved once someone spawns on them. Late-join spawners don't get reserved.
+    ///
+    /// TODO: find a better way to handle late-join spawners because compared to ss13/ss14, in ss3d player-collision is prominent
+    /// TODO: Implement Observer spawners once they get implemented
+    /// TODO: Implement Cryo late-join spawners once they get implemented
     /// </summary>
     public class SpawnPointManager : NetworkSubSystem
     {
-        public Action RequestSpawnPoints;
+        /// <summary>
+        /// Holds spawn points that have RoleData in them.
+        /// </summary>
+        private readonly Dictionary<RoleData, List<SpawnPoint>> _spawnPoints = new();
         
         /// <summary>
-        /// The SpawnPoints that exist on the current map.
+        /// Holds late-join spawn points
         /// </summary>
-        private List<SpawnPoint> _spawnPoints = new();
+        private readonly List<SpawnPoint> _lateJoinSpawnPoints = new();
+        
+        /// <summary>
+        /// Holds all spawn points
+        /// </summary>
+        private readonly List<SpawnPoint> _allSpawnPoints = new();
 
         /// <summary>
-        /// Max tries before we give up when no unnocupied spawn points exist, and nothing is valid
+        /// RoleSubSystem needed for checking the role of the player
         /// </summary>
-        private int _maxTries = 50;
+        private RoleSubSystem _roleSubSystem;
+
+        /// <summary>
+        /// Character layer needed for checking if a spawn point is occupied by another player, physics-wise
+        /// </summary>
+        private LayerMask _characterLayer;
 
         protected override void OnStart()
         {
+            _roleSubSystem = SubSystems.Get<RoleSubSystem>();
+            _characterLayer = LayerMask.GetMask("Characters");
+            
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateChanged));
         }
 
         public void HandleRoundStateChanged(ref EventContext context, in RoundStateUpdated state)
         {
+            // Clear all spawn points for new round
             if (state.RoundState == RoundState.Preparing)
             {
+                foreach (SpawnPoint point in _allSpawnPoints)
+                {
+                    // Unreserve them on the prefab script so we can spawn on them next round
+                    point.Reserved = false;
+                }
+                
                 _spawnPoints.Clear();
+                _allSpawnPoints.Clear();
+                _lateJoinSpawnPoints.Clear();
+                
                 Log.Information(this, "Cleared all spawn points for new round.");
             }
         }
 
         public void RegisterSpawnPoint(SpawnPoint spawnPoint)
         {
-            _spawnPoints.Add(spawnPoint);
-        }
+            // Register the spawn point to all spawn points
+            _allSpawnPoints.Add(spawnPoint);
+            
+            // Register the spawn point to late-join spawners, if it's a latejoin
+            if (spawnPoint.SpawnPointData.SpawnType == SpawnType.LateJoin)
+            {
+                _lateJoinSpawnPoints.Add(spawnPoint);
 
-        public void UnregisterSpawnPoint(SpawnPoint spawnPoint)
-        {
-            _spawnPoints.Remove(spawnPoint);
+                return;
+            }
+
+            // Register the spawn point based on role
+            RoleData role = spawnPoint.SpawnPointData.RoleData;
+            if (role)
+            {
+                if (!_spawnPoints.TryGetValue(role, out List<SpawnPoint> points))
+                {
+                    points = new List<SpawnPoint>();
+                    _spawnPoints[role] = points;
+                }
+                
+                points.Add(spawnPoint);
+            }
         }
         
         /// <summary>
@@ -67,65 +120,60 @@ namespace SS3D.Systems.Spawners
         [Server]
         public SpawnPoint HandleSpawning(Player player, bool isLateJoin)
         {
-            RoleSubSystem roleSubSystem = SubSystems.Get<RoleSubSystem>();
-            List<SpawnPoint> possibleSpawnPoints = new List<SpawnPoint>();
-            RoleData roleData = roleSubSystem.GetRoleFromPlayer(player);
-
-            // Iterate over spawn points to choose a valid one
-            foreach (SpawnPoint spawnPoint in _spawnPoints)
+            RoleData roleData = _roleSubSystem.GetRoleFromPlayer(player);
+            if (!roleData)
             {
-                if (IsSpawnPointOccupied(spawnPoint))
-                {
-                    Log.Warning(this, "SpawnPoint was occupied");
-                    continue;
-                }
-                
-                // The round is ongoing and the spawn point is a late-join
-                if (isLateJoin && spawnPoint.SpawnPointData.SpawnType == SpawnType.LateJoin)
-                {
-                    possibleSpawnPoints.Add(spawnPoint);
-                }
-                
-                // The round is not ongoing (in-lobby) and the spawn type is a job
-                if (!isLateJoin 
-                    && spawnPoint.SpawnPointData.SpawnType == SpawnType.Job
-                    && ( roleData == spawnPoint.SpawnPointData.RoleData ) )
-                {
-                    possibleSpawnPoints.Add(spawnPoint);
-                }
+                Log.Error(this, $"Player {player} had no role set.");
+                return null;
             }
 
-            // If no valid spawn points exist, either pick the default location of EntitySubSystem, or the first spawn point in our _spawnPoints list
-            if (possibleSpawnPoints.Count == 0)
+            // User is late-joining, get a late-join spawner and try to spawn them on it
+            if (isLateJoin)
             {
-                // Spawn at default location since our _spawnPoints is empty
-                if (_spawnPoints.Count == 0)
+                SpawnPoint spawnPoint = GetValidSpawnPoint(_lateJoinSpawnPoints);
+
+                if (spawnPoint)
                 {
-                    Log.Error(this, "No spawn points were available on this map. Spawning at default location");
-                    return null;
+                    return spawnPoint;
                 }
-                
-                Log.Warning(this, $"Map does not have enough spawn points to handle the job: {roleData?.Name}.");
-                
-                // Usually the below block happens when a mapper hasn't mapped the correct amount of spawn points for ready players
-                //
-                // Check if there exists any unoccupied spawn points and spawn them there
-                foreach (SpawnPoint spawnPoint in _spawnPoints)
+            }
+            else
+            {
+                // This is a player who pressed "Ready", so get the spawn points that corresponds to the correct role
+                if (_spawnPoints.TryGetValue(roleData, out List<SpawnPoint> spawnPoints))
                 {
-                    if (!IsSpawnPointOccupied(spawnPoint))
+                    SpawnPoint spawnPoint = GetValidSpawnPoint(spawnPoints);
+                    if (spawnPoint)
                     {
+                        spawnPoint.Reserve();
                         return spawnPoint;
                     }
                 }
-
-                // Nothing worked, spawning at first spawn point. Time for clipping!
-                Log.Error(this, "No valid unoccupied spawn points were available on this map, spawning at first spawn point.");
-                return _spawnPoints[0];
             }
-            
-            // Random selection of valid spawn points
-            int randIndex = Random.Range(0, possibleSpawnPoints.Count);
-            return possibleSpawnPoints[randIndex];
+
+            // Nothing worked, get a fallback spawner
+            SpawnPoint fallback = GetValidSpawnPoint(_allSpawnPoints);
+            if (fallback)
+            {
+                if (fallback.SpawnPointData.SpawnType == SpawnType.LateJoin)
+                {
+                    return fallback;
+                }
+                
+                fallback.Reserve();
+                return fallback;
+            }
+
+            // There's no spawn points at all
+            if (_allSpawnPoints.Count == 0)
+            {
+                Log.Error(this, "No spawn points exist on this map");
+                return null;
+            }
+
+            // Well, this will likely result into clipping so have fun...
+            Log.Error(this, $"There were no valid spawn points for {roleData.name}, spawning at first spawn point");
+            return _allSpawnPoints[0];
         }
 
         /// <summary>
@@ -145,15 +193,51 @@ namespace SS3D.Systems.Spawners
             }
         }
         
-        [Server]
+        /// <summary>
+        /// Gets a valid spawn point that isn't occupied
+        /// </summary>
+        /// <param name="spawnPoints"></param> The spawn points to check
+        /// <returns></returns>
+        private SpawnPoint GetValidSpawnPoint(List<SpawnPoint> spawnPoints)
+        {
+            if (spawnPoints.Count == 0)
+            {
+                return null;
+            }
+            
+            foreach (SpawnPoint point in spawnPoints)
+            {
+                // Try to skip physics check for job spawners, since they rely on Reserved boolean
+                if (point.SpawnPointData.SpawnType == SpawnType.Job && !point.Reserved)
+                {
+                    return point;
+                }
+                
+                if (!IsSpawnPointOccupied(point))
+                {
+                    return point;
+                }
+            }
+
+            return null;
+        }
+        
+        /// <summary>
+        /// Checks whether a spawn point is occupied or not.
+        /// First checks if its reserved (applies only for Spawn Points that have SpawnType set to Job)
+        /// Then, if they're not reserved, checks if you can spawn on it
+        /// </summary>
+        /// <param name="spawnPoint"></param>
+        /// <returns></returns>
         private bool IsSpawnPointOccupied(SpawnPoint spawnPoint)
         {
-            float checkRadius = 0.5f;
-            LayerMask characterLayer = LayerMask.GetMask("Characters");
-    
-            Collider[] hits = Physics.OverlapSphere(spawnPoint.Position, checkRadius, characterLayer);
-
-            return hits.Length > 0;
+            if (spawnPoint.Reserved)
+            {
+                return true;
+            }
+            
+            float checkRadius = 0.4f;
+            return Physics.CheckSphere(spawnPoint.Position, checkRadius, _characterLayer);
         }
     }
 }
