@@ -52,7 +52,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
             if (source is NukeCard _ && target is Nuke nuke)
             {
                 nuke.Detonate();
-                PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+                PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
 
                 new NukeDetonateEvent(nuke, playerSystem.GetCkey(source.GetComponentInParent<Entity>().Owner)).Invoke(this);
             }

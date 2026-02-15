@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 1
+  _clothType: 1
 --- !u!1 &106812091747019403
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 7
+  _clothType: 7
 --- !u!1 &1038917509191347453
 GameObject:
   m_ObjectHideFlags: 0
@@ -1610,7 +1610,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 0
+  _clothType: 0
 --- !u!1 &1674863463214297859
 GameObject:
   m_ObjectHideFlags: 0
@@ -2529,7 +2529,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 4
+  _clothType: 4
 --- !u!1 &2388839449928180625
 GameObject:
   m_ObjectHideFlags: 0
@@ -3548,7 +3548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 10
+  _clothType: 10
 --- !u!1 &3626982131771350130
 GameObject:
   m_ObjectHideFlags: 0
@@ -3729,7 +3729,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 8
+  _clothType: 8
 --- !u!1 &3704160777848949328
 GameObject:
   m_ObjectHideFlags: 0
@@ -4416,7 +4416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 9
+  _clothType: 9
 --- !u!1 &4127238172761884466
 GameObject:
   m_ObjectHideFlags: 0
@@ -5406,7 +5406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 2
+  _clothType: 2
 --- !u!1 &5259835642244508253
 GameObject:
   m_ObjectHideFlags: 0
@@ -6096,7 +6096,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 5
+  _clothType: 5
 --- !u!1 &6200983958115876081
 GameObject:
   m_ObjectHideFlags: 0
@@ -6867,7 +6867,7 @@ MonoBehaviour:
   _observerConditions: []
 --- !u!95 &1252106768682846670
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6884,7 +6884,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!143 &3812744165389046210
 CharacterController:
   m_ObjectHideFlags: 0
@@ -8071,7 +8072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 3
+  _clothType: 3
 --- !u!1 &7528059133581162048
 GameObject:
   m_ObjectHideFlags: 0
@@ -8662,7 +8663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 12
+  _clothType: 12
 --- !u!114 &646566339906030138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9700,7 +9701,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ec1254401471447af0ba6a605e6715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clothType: 11
+  _clothType: 11
 --- !u!1 &8981706509230505178
 GameObject:
   m_ObjectHideFlags: 0
@@ -10545,6 +10546,10 @@ PrefabInstance:
       propertyPath: <ParentNetworkObject>k__BackingField
       value: 
       objectReference: {fileID: 2930813178971533500}
+    - target: {fileID: 3856680766676271507, guid: 4a9d34a6cf84ef045a740513d8ae30b1, type: 3}
+      propertyPath: _clothType
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 3864220388322859529, guid: 4a9d34a6cf84ef045a740513d8ae30b1, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
       value: 14
@@ -10573,6 +10578,10 @@ PrefabInstance:
       propertyPath: <ParentNetworkObject>k__BackingField
       value: 
       objectReference: {fileID: 2930813178971533500}
+    - target: {fileID: 5082936104091796996, guid: 4a9d34a6cf84ef045a740513d8ae30b1, type: 3}
+      propertyPath: _clothType
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 5278616363062496600, guid: 4a9d34a6cf84ef045a740513d8ae30b1, type: 3}
       propertyPath: HealthController
       value: 
@@ -10628,6 +10637,10 @@ PrefabInstance:
     - target: {fileID: 5562010227207703736, guid: 4a9d34a6cf84ef045a740513d8ae30b1, type: 3}
       propertyPath: m_Name
       value: HumanTorso
+      objectReference: {fileID: 0}
+    - target: {fileID: 5668692621538489592, guid: 4a9d34a6cf84ef045a740513d8ae30b1, type: 3}
+      propertyPath: _clothType
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6030422096952570203, guid: 4a9d34a6cf84ef045a740513d8ae30b1, type: 3}
       propertyPath: m_IsActive
@@ -11051,6 +11064,10 @@ PrefabInstance:
     - target: {fileID: 3171269491459057760, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
       propertyPath: _componentIndexCache
       value: 54
+      objectReference: {fileID: 0}
+    - target: {fileID: 3604787340550094276, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
+      propertyPath: _clothType
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4418670870993768765, guid: 7f5954f009d06b2439ca637b43920440, type: 3}
       propertyPath: m_RootBone
@@ -12772,6 +12789,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Human Foot Right
       objectReference: {fileID: 0}
+    - target: {fileID: 7610292138979804179, guid: e60ba1e09be8316448e419ecbdfb64a6, type: 3}
+      propertyPath: _clothType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7758906804251673387, guid: e60ba1e09be8316448e419ecbdfb64a6, type: 3}
       propertyPath: _addedNetworkObject
       value: 
@@ -12900,6 +12921,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1392344557297588459, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+      propertyPath: _clothType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1876522948203975508, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: <ComponentIndex>k__BackingField
       value: 3
@@ -12908,6 +12933,10 @@ PrefabInstance:
       propertyPath: <ParentNetworkObject>k__BackingField
       value: 
       objectReference: {fileID: 2930813178971533500}
+    - target: {fileID: 2218925970494072951, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+      propertyPath: _clothType
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 2516703127647681493, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: HealthController
       value: 
@@ -13421,6 +13450,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6336386848008735701, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+      propertyPath: _startFilter
+      value: 
+      objectReference: {fileID: 11400000, guid: f28df533f0deb1f489ddbd81d25cb947, type: 2}
+    - target: {fileID: 6336386848008735701, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: _addedNetworkObject
       value: 
       objectReference: {fileID: 2930813178971533500}
@@ -13432,6 +13465,10 @@ PrefabInstance:
       propertyPath: _componentIndexCache
       value: 61
       objectReference: {fileID: 0}
+    - target: {fileID: 6551821992144761648, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+      propertyPath: _startFilter
+      value: 
+      objectReference: {fileID: 11400000, guid: c478b931770d21244b442d55735833fd, type: 2}
     - target: {fileID: 6551821992144761648, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: _addedNetworkObject
       value: 
@@ -13464,6 +13501,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8001127732702099468, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+      propertyPath: _clothType
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8006468508714419156, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: m_Name
       value: HumanHead
@@ -13471,6 +13512,14 @@ PrefabInstance:
     - target: {fileID: 8010198090661034686, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8282081122173104245, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+      propertyPath: _clothType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721858046646967455, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
+      propertyPath: _clothType
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8802097008930864518, guid: cc54bc74b2f4c2349b1f84b501b0a091, type: 3}
       propertyPath: _addedNetworkObject
@@ -14398,6 +14447,10 @@ PrefabInstance:
     - target: {fileID: 7380375041138074868, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
       propertyPath: _componentIndexCache
       value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 8777769590427729744, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
+      propertyPath: _clothType
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 9077970806922634082, guid: 35dfc7c3f708a5b48a206b4a44e7ab49, type: 3}
       propertyPath: _addedNetworkObject

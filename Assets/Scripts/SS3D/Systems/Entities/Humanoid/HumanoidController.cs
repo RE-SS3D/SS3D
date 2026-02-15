@@ -1,14 +1,15 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
-using System;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
@@ -47,7 +48,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private Actor _camera;
         protected Controls.MovementActions MovementControls;
         protected Controls.HotkeysActions HotkeysControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -58,43 +59,92 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsRunning => _isRunning;
         #endregion
 
-        protected override void OnStart()
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
-            base.OnStart();
-            if (!Owner.IsLocalClient) return;
+            base.OnOwnershipClient(prevOwner);
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+            else if (prevOwner.Equals(LocalConnection))
+            {
+                UnsubscribeFromInput();
+            }
+        }
+// Must have, Unity doesn't invoke Awake() in NetworkActor and therefore doesn't call OnAwake() without it
+
+        protected void Awake()
+        {
+            base.Awake();
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            
             Setup();
         }
 
-        protected void Setup()
+        protected override void OnEnabled()
         {
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
+            base.OnEnabled();
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            if (IsOwner)
+            {
+                UnsubscribeFromInput();
+            }
+
+            TargetMovement = Vector3.zero;
+        }
+
+        private void Setup()
+        {
+            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
 
             Controls controls = _inputSystem.Inputs;
 
             MovementControls = controls.Movement;
             HotkeysControls = controls.Hotkeys;
-            MovementControls.ToggleRun.performed += HandleToggleRun;
-
-            _inputSystem.ToggleActionMap(MovementControls, true);
-            _inputSystem.ToggleActionMap(HotkeysControls, true);
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        protected override void OnDisabled()
+        private void SubscribeToInput()
         {
-	        base.OnDisabled();
-	        TargetMovement = Vector3.zero;
+            if (!_inputSystem)
+            {
+                return;
+            }
+
+            MovementControls.ToggleRun.performed += HandleToggleRun;
+
+            _inputSystem.ToggleActionMap(MovementControls, true);
+            _inputSystem.ToggleActionMap(HotkeysControls, true);
         }
 
-        protected override void OnDestroyed()
+        private void UnsubscribeFromInput()
         {
-            base.OnDestroyed();
-            UnityEngine.Debug.Log("destroying controller " + gameObject.name);
+            if (!_inputSystem)
+            {
+                return;
+            }
+
             MovementControls.ToggleRun.performed -= HandleToggleRun;
+
             _inputSystem.ToggleActionMap(MovementControls, false);
             _inputSystem.ToggleActionMap(HotkeysControls, false);
         }

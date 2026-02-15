@@ -15,13 +15,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
-            Subsystems.Get<InputSystem>().ToggleAllActions(false);
+            SubSystems.Get<InputSubSystem>().ToggleAllActions(false);
         }
 
         public override void OnDeselect(BaseEventData eventData)
         {
             base.OnDeselect(eventData);
-            Subsystems.Get<InputSystem>().ToggleAllActions(true);
+            SubSystems.Get<InputSubSystem>().ToggleAllActions(true);
         }
     }
 }

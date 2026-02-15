@@ -15,7 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -110,7 +110,7 @@ namespace SS3D.Systems.Inventory.Containers
             SetHandHighlight(PlayerHands.First(), true);
 
             // Set up hand related controls.
-            _controls = Subsystems.Get<InputSystem>().Inputs.Hotkeys;
+            _controls = SubSystems.Get<InputSubSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
 

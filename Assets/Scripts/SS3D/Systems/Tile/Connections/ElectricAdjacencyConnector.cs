@@ -45,7 +45,7 @@ namespace SS3D.Systems.Tile.Connections
 
         private List<PlacedTileObject> GetElectricDevicesOnSameTile()
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             TileMap map = tileSystem.CurrentMap;
 
             List<PlacedTileObject> devicesOnSameTile = new();
@@ -71,7 +71,7 @@ namespace SS3D.Systems.Tile.Connections
 
         private List<PlacedTileObject> GetNeighbourElectricDevicesOnSameLayer()
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             TileMap map = tileSystem.CurrentMap;
             IEnumerable<PlacedTileObject> electricNeighbours = map.GetCardinalNeighbourPlacedObjects(PlacedObject.Layer,
                 PlacedObject.gameObject.transform.position).Where(x => x!= null && x.gameObject.TryGetComponent(out IElectricDevice device));

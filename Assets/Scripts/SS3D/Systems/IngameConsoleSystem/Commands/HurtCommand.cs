@@ -63,10 +63,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
             if (!Enum.TryParse(damageTypeName, true, out damageType)) return response.MakeInvalid("Invalid damage type");
 
-            Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
             if (player == null) return response.MakeInvalid("This player doesn't exist");
 
-            Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+            Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
             if (entity == null) return response.MakeInvalid("This entity doesn't exist");
             
             IEnumerable<BodyPart> bodyParts = entity.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == bodyPartName).ToArray();

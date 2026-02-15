@@ -1,4 +1,4 @@
-using SS3D.Interactions;
+﻿using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using FishNet.Object;
 using SS3D.Core;
@@ -14,7 +14,7 @@ namespace SS3D.Systems.Furniture
         public void Detonate()
         {
             // Ends the round, regardless of how many objectives were completed
-            Subsystems.Get<GamemodeSystem>().EndRound();
+            SubSystems.Get<GamemodeSubSystem>().EndRound();
         }
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)

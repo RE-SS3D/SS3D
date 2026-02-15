@@ -111,10 +111,10 @@ namespace SS3D.Systems.IngameConsoleSystem
         [ServerRpc(RequireOwnership = false)]
         private void CmdProcessOnlineCommand(string commandName, string[] args, NetworkConnection conn = null)
         {
-            string ckey = Subsystems.Get<PlayerSystem>().GetCkey(conn);
+            string ckey = SubSystems.Get<PlayerSubSystem>().GetCkey(conn);
             FindCommand(commandName, out Command command);
 
-            if (!Subsystems.Get<PermissionSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
+            if (!SubSystems.Get<PermissionSubSystem>().TryGetUserRole(ckey, out ServerRoleTypes userPermission))
             {
                 CommandAnswer(string.Format("No role found for user {0}, can't process command", ckey), conn);
                 return;

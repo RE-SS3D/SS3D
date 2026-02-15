@@ -19,7 +19,7 @@ namespace SS3D.Engine.Chat
         {
             if (chatChannel.DistanceBased)
             {
-                Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+                Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
                 Origin = entity.Position;
             }
 

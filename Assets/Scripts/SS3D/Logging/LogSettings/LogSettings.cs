@@ -23,6 +23,8 @@ namespace SS3D.Logging.LogSettings
 	    [FormerlySerializedAs("defaultLogLevel")]
 	    public LogEventLevel DefaultLogLevel = LogEventLevel.Verbose;
 
+        public bool UseCompactJsonFormatter = false;
+
         /// <summary>
         /// Get all the name of the SS3D namespaces in alphanumerical order.
         /// </summary>

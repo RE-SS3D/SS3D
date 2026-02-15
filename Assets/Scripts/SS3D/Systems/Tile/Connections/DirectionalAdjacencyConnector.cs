@@ -101,7 +101,7 @@ namespace SS3D.Systems.Tile.Connections
         public List<PlacedTileObject> GetNeighbours()
         {
             Setup();
-            var tileSystem = Subsystems.Get<TileSystem>();
+            var tileSystem = SubSystems.Get<TileSubSystem>();
             var map = tileSystem.CurrentMap;
 
             var neighbours = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);

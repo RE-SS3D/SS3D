@@ -16,7 +16,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     public class TileMapSaveTab : NetworkActor, ITileMenuTab
     {
         [SerializeField]
-        private TileMapMenu _menu;
+        private TileMapMenuSubSystem _menu;
 
         [SerializeField]
         private GameObject _confirmOverWriteButton;
@@ -76,7 +76,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void HandleSaveMapButton()
         {
-            if (Subsystems.Get<TileSystem>().MapNameAlreadyExist(_saveInputField.text))
+            if (SubSystems.Get<TileSubSystem>().MapNameAlreadyExist(_saveInputField.text))
             {
                 _confirmOverWriteButton.gameObject.SetActive(true);
             }
@@ -94,7 +94,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                Subsystems.Get<TileSystem>().Save(mapName, true);
+                SubSystems.Get<TileSubSystem>().Save(mapName, true);
                 DisplaySaveText(mapName);
             }
             else

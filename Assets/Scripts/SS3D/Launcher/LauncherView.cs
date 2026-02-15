@@ -67,7 +67,7 @@ namespace SS3D.Launcher
             string ip = _ipAddressTextField.value;
             string port = _portTextField.value;
 
-            Subsystems.Get<LauncherSystem>().LaunchGame(networkType, ckey, ip, port);
+            SubSystems.Get<LauncherSubSystem>().LaunchGame(networkType, ckey, ip, port);
         }
     }
 }

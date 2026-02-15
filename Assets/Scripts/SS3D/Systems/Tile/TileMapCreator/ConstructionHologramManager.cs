@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Tile.TileMapCreator
 {
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// The last direction registered by a build ghost.
         /// </summary>
         private Direction _lastRegisteredDirection;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         private Controls.TileCreatorActions _controls;
         private bool _isPlacingItem = false;
         /// <summary>
@@ -49,7 +49,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private List<ConstructionHologram> _holograms = new();
         [SerializeField]
-        private TileMapMenu _menu;
+        private TileMapMenuSubSystem _menu;
 
         public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
@@ -65,17 +65,36 @@ namespace SS3D.Systems.Tile.TileMapCreator
             CreateHologram(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-            _inputSystem = Subsystems.Get<InputSystem>();
+            base.OnAwake();
+            
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
+            
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            
             _controls.Place.started += HandlePlaceStarted;
             _controls.Place.performed += HandlePlacePerformed;
             _controls.Replace.performed += HandleReplace;
             _controls.Replace.canceled += HandleReplace;
             _controls.Rotate.performed += HandleRotate;
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+            
+            _controls.Place.started -= HandlePlaceStarted;
+            _controls.Place.performed -= HandlePlacePerformed;
+            _controls.Replace.performed -= HandleReplace;
+            _controls.Replace.canceled -= HandleReplace;
+            _controls.Rotate.performed -= HandleRotate;
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -245,7 +264,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             foreach (ConstructionHologram buildGhost in _holograms)
             {
-                Subsystems.Get<TileSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
+                SubSystems.Get<TileSubSystem>().RpcPlaceObject(_selectedObject.NameString, buildGhost.TargetPosition, buildGhost.Direction, isReplacing);
             }
         }
 
@@ -262,7 +281,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             {
                 foreach (ConstructionHologram hologram in _holograms)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
+                    SubSystems.Get<TileSubSystem>().RpcClearTileObject(_selectedObject.NameString, hologram.TargetPosition, hologram.Direction);
                 }
             }
         }
@@ -341,7 +360,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
 
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
             TileObjectSo tileObjectSo = (TileObjectSo)tileSystem.GetAsset(tileObjectSoName);
 
@@ -388,7 +407,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
                 if (placedItem != null)
                 {
-                    Subsystems.Get<TileSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
+                    SubSystems.Get<TileSubSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
                 }
             }
         }

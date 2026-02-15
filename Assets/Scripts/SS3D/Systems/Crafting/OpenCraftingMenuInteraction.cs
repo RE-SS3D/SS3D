@@ -42,7 +42,7 @@ public class OpenCraftingMenuInteraction : Interaction
     /// <returns>If the interaction can be executed</returns>
     public override bool CanInteract(InteractionEvent interactionEvent)
     {
-        if (!Subsystems.TryGet(out CraftingSystem craftingSystem)) return false;
+        if (!SubSystems.TryGet(out CraftingSubSystem craftingSystem)) return false;
 
         bool recipesAvailable = true;
         recipesAvailable &= craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent,
@@ -59,7 +59,7 @@ public class OpenCraftingMenuInteraction : Interaction
     /// <returns>If the interaction should continue running</returns>
     public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
     {
-        Subsystems.TryGet(out CraftingSystem craftingSystem);
+        SubSystems.TryGet(out CraftingSubSystem craftingSystem);
         List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, _craftingInteractionType);
         ViewLocator.Get<CraftingMenu>().First().DisplayMenu(craftingInteractions, interactionEvent, reference, _craftingInteractionType);
         return true;

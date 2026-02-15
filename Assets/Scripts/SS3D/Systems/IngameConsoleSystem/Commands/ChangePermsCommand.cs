@@ -19,7 +19,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         {
             if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
-            Subsystems.Get<PermissionSystem>().ChangeUserPermission(values.Ckey, values.Role);
+            SubSystems.Get<PermissionSubSystem>().ChangeUserPermission(values.Ckey, values.Role);
             return "Permission changed to " + args[1];
         }
         

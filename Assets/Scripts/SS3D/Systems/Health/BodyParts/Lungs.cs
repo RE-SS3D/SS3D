@@ -90,7 +90,7 @@ namespace SS3D.Systems.Health
             // when lungs are detached from head.
             if (HealthController == null) return;
 
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            SubstancesSubSystem registry = SubSystems.Get<SubstancesSubSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
             if (HealthController.Circulatory.Container.GetSubstanceQuantity(oxygen) > HealthController.Circulatory.MaxOxygenQuantity)
             {

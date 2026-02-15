@@ -354,7 +354,7 @@ namespace SS3D.Substances
         /// </summary>
         public static void ProcessContainer(SubstanceContainer container)
         {
-            var registry = Subsystems.Get<SubstancesSystem>();
+            var registry = SubSystems.Get<SubstancesSubSystem>();
             float temperature = container.Temperature;
 
             // Process recipes

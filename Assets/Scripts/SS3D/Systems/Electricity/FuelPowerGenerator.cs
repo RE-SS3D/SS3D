@@ -57,11 +57,11 @@ namespace System.Electricity
         {
             if (!isEnabled)
             {
-                Subsystems.Get<AudioSystem>().StopAudioSource(NetworkObject);
+                SubSystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
             }
             else
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject,
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, Sounds.FuelPowerGenerator, Position, NetworkObject,
                     true, 0.7f, 1, 1, 10);
             }
         }

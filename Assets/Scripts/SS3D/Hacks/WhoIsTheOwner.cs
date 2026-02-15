@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Hacks
 {
@@ -18,12 +18,12 @@ namespace SS3D.Hacks
 
         private void Start()
         {
-            Subsystems.Get<InputSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed += ShowOwner;
         }
 
         private void OnDestroy()
         {
-            Subsystems.Get<InputSystem>().Inputs.Other.SeeContainerContents.performed -= ShowOwner;
+            SubSystems.Get<InputSubSystem>().Inputs.Other.SeeContainerContents.performed -= ShowOwner;
         }
 
         private void ShowOwner(InputAction.CallbackContext callbackContext)

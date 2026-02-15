@@ -26,12 +26,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
 
             string itemName = args[0];
 
-            if (!Subsystems.Get<EntitySystem>().TryGetOwnedEntity(conn, out Entity entity))
+            if (!SubSystems.Get<EntitySubSystem>().TryGetOwnedEntity(conn, out Entity entity))
             {
                 return "Connection does not own any entity registered in entity system.";
             }
 
-            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
+            ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             itemSystem.CmdSpawnItem(itemName, entity.transform.position, Quaternion.identity);
 
             return $"item {itemName} spawned at position {entity.transform.position}";

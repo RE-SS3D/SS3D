@@ -17,7 +17,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
     public class TileMapLoadTab : NetworkActor, ITileMenuTab
     {
         [SerializeField]
-        private TileMapMenu _menu;
+        private TileMapMenuSubSystem _menu;
 
         /// <summary>
         /// A prefab containing an input field for the name of a map, 
@@ -50,7 +50,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         public void Display()
         {
             _loadMapContentRoot.gameObject.SetActive(true);
-            var MapNames = LocalStorage.GetAllObjectsNameInFolder(Subsystems.Get<TileSystem>().SavePath);
+            var MapNames = LocalStorage.GetAllObjectsNameInFolder(SubSystems.Get<TileSubSystem>().SavePath);
 
             foreach (string mapName in MapNames)
             {
@@ -88,7 +88,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                LocalStorage.DeleteFile(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
+                LocalStorage.DeleteFile(SubSystems.Get<TileSubSystem>().SavePath + "/" + mapName);
             }
             else
             {
@@ -106,7 +106,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             if (IsServer)
             {
-                Subsystems.Get<TileSystem>().Load(Subsystems.Get<TileSystem>().SavePath + "/" + mapName);
+                SubSystems.Get<TileSubSystem>().Load(SubSystems.Get<TileSubSystem>().SavePath + "/" + mapName);
             }
             else
             {
@@ -142,13 +142,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
             mapNameField.onSelect.RemoveAllListeners();
             mapNameField.readOnly = true;
 
-            if (Subsystems.Get<TileSystem>().MapNameAlreadyExist(mapNameField.text))
+            if (SubSystems.Get<TileSubSystem>().MapNameAlreadyExist(mapNameField.text))
             {
                 mapNameField.text = oldName;
             }
             else
             {
-                string savePath = Subsystems.Get<TileSystem>().SavePath;
+                string savePath = SubSystems.Get<TileSubSystem>().SavePath;
                 LocalStorage.RenameFile(savePath + "/" + oldName, savePath + "/" + mapNameField.text);
             }
 

@@ -22,7 +22,7 @@ namespace SS3D.Systems.Crafting
 
             if (TryGetComponent(out PlacedTileObject tileObject))
             {
-                Subsystems.Get<TileSystem>().CurrentMap.ClearTileObject(gameObject.transform.position, tileObject.Layer, tileObject.Direction);
+                SubSystems.Get<TileSubSystem>().CurrentMap.ClearTileObject(gameObject.transform.position, tileObject.Layer, tileObject.Direction);
                 return;
             }
 

@@ -77,11 +77,15 @@ PrefabInstance:
       objectReference: {fileID: 8281616745360485254, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 28
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 2703128900779190152
       objectReference: {fileID: 0}
+    - target: {fileID: 7201402233169256053, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _clothMeshes._list.Array.data[0]._value
+      value: 
+      objectReference: {fileID: 8281616745360485254, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}

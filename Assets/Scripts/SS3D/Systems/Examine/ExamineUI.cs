@@ -17,13 +17,13 @@ namespace SS3D.Systems.Examine
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            Subsystems.Get<ExamineSystem>().OnExaminableChanged += UpdateHoverText;
+            SubSystems.Get<ExamineSubSystem>().OnExaminableChanged += UpdateHoverText;
         }
 
         protected override void OnDisabled()
         {
             base.OnEnabled();
-            Subsystems.Get<ExamineSystem>().OnExaminableChanged -= UpdateHoverText;
+            SubSystems.Get<ExamineSubSystem>().OnExaminableChanged -= UpdateHoverText;
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-using Coimbra.Services.Events;
+﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
@@ -8,7 +8,7 @@ using SS3D.Systems.Screens;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Entities.Silicon
 {
@@ -54,8 +54,8 @@ namespace SS3D.Systems.Entities.Silicon
 
         private void Setup()
         {
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera;
-            _controls = Subsystems.Get<InputSystem>().Inputs.Movement;
+            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
+            _controls = SubSystems.Get<InputSubSystem>().Inputs.Movement;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
 
             AddHandle(UpdateEvent.AddListener(HandleUpdate));

@@ -12,9 +12,9 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
     {
         public static Item GetItemInHand(NetworkConnection conn = null)
         {
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
             Player player = playerSystem.GetPlayer(conn);
-            Entity playerEntity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+            Entity playerEntity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
             if (playerEntity == null) return null;
             
             Hands hands = playerEntity.GetComponentInParent<HumanInventory>().Hands;

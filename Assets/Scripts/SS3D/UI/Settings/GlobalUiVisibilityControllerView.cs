@@ -16,10 +16,7 @@ namespace SS3D.UI.Settings
 
         protected override void OnDestroyed()
         {
-            foreach (var uiElement in _uiElements)
-            {
-                UnregisterToggle(uiElement);
-            }
+            _uiElements.Clear();
         }
 
         /// <summary>
@@ -33,6 +30,7 @@ namespace SS3D.UI.Settings
                 _uiElements.Add(go);    
             }
         }
+        
         /// <summary>
         /// Removes an object from the list of tracked objects
         /// </summary>

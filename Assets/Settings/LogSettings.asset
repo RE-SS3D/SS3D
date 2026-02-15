@@ -148,3 +148,4 @@ MonoBehaviour:
   - _name: SS3D.Utils.Editor
     _level: 0
   DefaultLogLevel: 0
+  UseCompactJsonFormatter: 0

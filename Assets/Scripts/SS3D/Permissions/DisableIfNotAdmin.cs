@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -37,7 +37,7 @@ namespace SS3D.Permissions
                 return;
             }
 
-            PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
+            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
 
             if (!permissionSystem.HasLoadedPermissions)
             {

@@ -21,7 +21,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
 
             string ret = "";
-            List<Player> players = Subsystems.Get<PlayerSystem>().OnlinePlayers.ToList();
+            List<Player> players = SubSystems.Get<PlayerSubSystem>().OnlinePlayers.ToList();
             foreach (Player i in players)
             {
                 ret += i.Ckey + "\t";

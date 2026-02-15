@@ -85,7 +85,7 @@ namespace SS3D.Systems.Crafting
         {
             StartCounter();
             _startPosition = _characterTransform.position;
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
+            SubSystems.TryGet(out CraftingSubSystem craftingSystem);
             craftingSystem.MoveAllObjectsToCraftPoint(this, interactionEvent, reference);
             ViewLocator.Get<CraftingMenu>().First().HideMenu();
             return true;
@@ -93,7 +93,7 @@ namespace SS3D.Systems.Crafting
 
         protected override void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (Subsystems.TryGet(out CraftingSystem craftingSystem))
+            if (SubSystems.TryGet(out CraftingSubSystem craftingSystem))
             {
                 craftingSystem.CancelMoveAllObjectsToCraftPoint(reference);
                 craftingSystem.Craft(this, interactionEvent);
@@ -108,7 +108,7 @@ namespace SS3D.Systems.Crafting
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
+            SubSystems.TryGet(out CraftingSubSystem craftingSystem);
             craftingSystem.CancelMoveAllObjectsToCraftPoint(reference);
         }
     }

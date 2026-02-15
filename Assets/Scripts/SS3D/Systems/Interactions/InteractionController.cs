@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FishNet.Connection;
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
@@ -10,10 +11,11 @@ using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -30,52 +32,72 @@ namespace SS3D.Systems.Interactions
 
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
         
         private Camera _camera;
-        private RadialInteractionView _radialView;
-        
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            if (!Owner.IsLocalClient) return;
+        private RadialInteractionSubSystem _radialView;
 
-            _radialView = Subsystems.Get<RadialInteractionView>();
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            _inputSystem = Subsystems.Get<InputSystem>();
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
+        {
+            base.OnOwnershipClient(prevOwner);
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+            else if (prevOwner.Equals(LocalConnection))
+            {
+                UnsubscribeFromInput();
+            }
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            
+            _radialView = SubSystems.Get<RadialInteractionSubSystem>();
+            _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
+            
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             Controls controls = _inputSystem.Inputs;
             _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
-            _radialView = Subsystems.Get<RadialInteractionView>();
-            _camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            if (IsOwner)
+            {
+                UnsubscribeFromInput();
+            }
+        }
+
+        private void SubscribeToInput()
+        {
             _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
             _hotkeysControls.Use.performed += HandleUse;
             _inputSystem.ToggleActionMap(_controls, true);
         }
 
-        public override void OnStopClient()
+        private void UnsubscribeFromInput()
         {
-            base.OnStopClient();
-            UnsubscribeFromEvents();
-        }
-
-        private void UnsubscribeFromEvents()
-        {
-            if (!Owner.IsLocalClient)
-            {
-                return;
-            }
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
             _hotkeysControls.Use.performed -= HandleUse;
             _inputSystem.ToggleActionMap(_controls, false);
-        }
-        
-        protected override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            UnsubscribeFromEvents();
         }
 
         /// <summary>
@@ -84,7 +106,6 @@ namespace SS3D.Systems.Interactions
         [Client]
         public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
-            
             Debug.Log("run primary : " + Mouse.current.position.ReadValue());
             if (EventSystem.current.IsPointerOverGameObject())
             {

@@ -40,8 +40,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 rotation = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
             }
 
-            Player Player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
-            Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(Player);
+            Player Player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
+            Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(Player);
 
             GameObject leftHandPrefab = Items.HumanHandLeft;
             GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, entity.transform);
@@ -68,14 +68,14 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return response;
             }
             string ckey = args[0];
-            Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
             if (player == null)
             {
                 response.IsValid = false;
                 response.InvalidArgs = "This player doesn't exist";
                 return response;
             }
-            Entity entityToKill = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+            Entity entityToKill = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
             if (entityToKill == null)
             {
                 response.IsValid = false;

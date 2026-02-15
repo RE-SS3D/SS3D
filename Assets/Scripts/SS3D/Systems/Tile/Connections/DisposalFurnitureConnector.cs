@@ -78,7 +78,7 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool TryGetPipeBelow(out PlacedTileObject pipe)
         {
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             var map = tileSystem.CurrentMap;
 
             TileChunk currentChunk = map.GetChunk(_placedObject.gameObject.transform.position);

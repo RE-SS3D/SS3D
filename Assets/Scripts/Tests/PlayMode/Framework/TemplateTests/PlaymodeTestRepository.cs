@@ -84,7 +84,7 @@ namespace SS3D.Tests
         {
             // ARRANGE
             // Check the number of players currently ready in the game
-            ReadyPlayersSystem readyPlayersSystem = Subsystems.Get<ReadyPlayersSystem>();
+            ReadyPlayersSubSystem readyPlayersSystem = SubSystems.Get<ReadyPlayersSubSystem>();
             int originalReadyPlayers = readyPlayersSystem.Count;
 
             // Check the colour of the ready button
@@ -123,7 +123,7 @@ namespace SS3D.Tests
 
             // Drop item at a close position from local player
             var itemPosition = playerPosition;
-            var camera = Subsystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            var camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
             var target = camera.WorldToScreenPoint(itemPosition);
 
             var target2D = new Vector2(target.x, target.y) - new Vector2(-60, -60);

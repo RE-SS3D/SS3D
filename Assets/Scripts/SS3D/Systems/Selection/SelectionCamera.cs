@@ -3,7 +3,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Core;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Selection
 {
@@ -40,7 +40,7 @@ namespace SS3D.Systems.Selection
         /// <summary>
         /// Overarching System that performs all Selection-related processing.
         /// </summary>
-        private SelectionSystem _system;
+        private SelectionSubSystem _system;
 
         /// <summary>
         /// Debug Mode allows the user to see the RenderTexture on screen, to facilitate debugging.
@@ -52,16 +52,50 @@ namespace SS3D.Systems.Selection
         /// </summary>
         private Camera _playerCamera;
 
+        /// <summary>
+        /// The input subsystem for subscribing to toggling debug mode
+        /// </summary>
+        private InputSubSystem _inputSystem;
+
         protected override void OnStart()
         {
-            _system = Subsystems.Get<SelectionSystem>();
+            _system = SubSystems.Get<SelectionSubSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
             _camera.SetReplacementShader(_shader, "");
 
             GenerateRenderTexture();
             GenerateReadbackTexture();
-            Subsystems.Get<InputSystem>().Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            
+            _inputSystem.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            
+            _inputSystem = SubSystems.Get<InputSubSystem>();
+
+            if (_inputSystem)
+            {
+                _inputSystem.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
+            }
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            if (_inputSystem)
+            {
+                _inputSystem.Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
+            }
+        }
+
+        protected override void OnDestroyed()
+        {
+            _renderTexture.Release();
         }
 
         private void GenerateReadbackTexture()
@@ -102,17 +136,11 @@ namespace SS3D.Systems.Selection
             }
             else
             {
-                _readbackTexture.ReadPixels(new Rect(pos.x, Screen.height-pos.y-1, 1, 1), 0, 0, false);
+                _readbackTexture.ReadPixels(new Rect(pos.x, Screen.height - pos.y - 1, 1, 1), 0, 0, false);
                 col = _readbackTexture.GetPixel(0, 0);
             }
 
             _system.UpdateColourFromCamera(col);
-        }
-
-        protected override void OnDestroyed()
-        {
-            _renderTexture.Release();
-            Subsystems.Get<InputSystem>().Inputs.Other.ToggleSelectionDebug.performed -= ToggleDebugMode;
         }
 
         /// <summary>

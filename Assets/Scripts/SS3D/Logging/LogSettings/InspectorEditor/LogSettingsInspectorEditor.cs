@@ -1,17 +1,14 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 
 using Serilog.Events;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
-using SS3D.Logging.LogSettings;
 
 namespace SS3D.Logging.LogSettings.InspectorEditor
 {
     /// <summary>
-    /// Custom inspector for the log settings, allow to show the list of namespaces in a convenient manner,
-    /// as well as resetting easily all namespaces logging level.
+    /// Custom inspector for the log settings
+    /// Shows the list of namespaces in a convenient manner, as well as easily resetting all namespaces logging level.
     /// </summary>
     [CustomEditor(typeof(LogSettings))]
     public class LogSettingsInspectorEditor : Editor
@@ -20,14 +17,17 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
         {
             serializedObject.Update();
 
-            SerializedProperty spDefaultLevel = serializedObject.FindProperty("defaultLogLevel");
+			SerializedProperty useCompactJsonFormatter = serializedObject.FindProperty(nameof(LogSettings.UseCompactJsonFormatter));
+            EditorGUILayout.PropertyField(useCompactJsonFormatter);
+
+			SerializedProperty spDefaultLevel = serializedObject.FindProperty(nameof(LogSettings.DefaultLogLevel));
 
             // default log level, the log level at which all namespace will be by default.
             LogEventLevel defaultLevel = (LogEventLevel)EditorGUILayout.EnumPopup(new GUIContent("Default log level"), (LogEventLevel)spDefaultLevel.enumValueIndex);
 
             spDefaultLevel.enumValueIndex = (int)defaultLevel;
 
-            SerializedProperty sp = serializedObject.FindProperty("SS3DNameSpaces");
+            SerializedProperty sp = serializedObject.FindProperty(nameof(LogSettings.SS3DNameSpaces));
 
             // Button to reset all namespaces to the default log level.
             if (GUILayout.Button("Reset to default log level"))
@@ -48,4 +48,5 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
         }
     }
 }
+
 #endif

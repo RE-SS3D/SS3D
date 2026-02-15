@@ -15,7 +15,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 using NetworkView = SS3D.Core.Behaviours.NetworkView;
 
 namespace SS3D.Systems.Crafting
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Crafting
     /// </summary>
     public class CraftingMenu : NetworkView, IPointerEnterHandler, IPointerExitHandler
     {
-        private InputSystem _inputSystem;
+        private InputSubSystem _inputSystem;
 
         /// <summary>
         ///  The model for a single slot, to display recipe step names in the crafting menu.
@@ -83,7 +83,7 @@ namespace SS3D.Systems.Crafting
         {
             base.OnStartNetwork();
             ShowUI(false);
-            _inputSystem = Subsystems.Get<InputSystem>();
+            _inputSystem = SubSystems.Get<InputSubSystem>();
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace SS3D.Systems.Crafting
             int index = 0;
             foreach (string stepName in stepNames)
             {
-                Instantiate(_textSlotPrefab, _textSlotArea.transform, true).GetComponent<CraftingAssetSlot>().Setup(stepName, index);
+                Instantiate(_textSlotPrefab, _textSlotArea.transform).GetComponent<CraftingAssetSlot>().Setup(stepName, index);
                 index++;
             }
 
@@ -230,8 +230,8 @@ namespace SS3D.Systems.Crafting
 
             foreach (SecondaryResult result in results)
             {
-                GenericObjectSo asset = Subsystems.Get<TileSystem>().GetAsset(result.Asset.Id);
-                GameObject pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform, true);
+                GenericObjectSo asset = SubSystems.Get<TileSubSystem>().GetAsset(result.Asset.Id);
+                GameObject pictureSlot = Instantiate(_pictureSlotPrefab, _pictureSlotArea.transform);
                 pictureSlot.GetComponent<CraftingSlot>().Setup(asset, result.Amount);
             }
 
@@ -276,7 +276,7 @@ namespace SS3D.Systems.Crafting
         [TargetRpc]
         private void RpcClientInteract(NetworkConnection conn, GameObject target, GameObject sourceObject, int referenceId, int index, CraftingInteractionType type)
         {
-            Subsystems.TryGet(out CraftingSystem craftingSystem);
+            SubSystems.TryGet(out CraftingSubSystem craftingSystem);
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
             List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, type);

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using InputSystem = SS3D.Systems.Inputs.InputSystem;
+using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Inventory.UI
 {
@@ -20,7 +20,7 @@ namespace SS3D.Systems.Inventory.UI
             _internalClothingCanvas = GameObject.Find("InternalClothing").GetComponent<CanvasGroup>();
             _expandButton = GetComponent<Button>();
             _expandButton.onClick.AddListener(TaskOnClick);
-            Subsystems.Get<InputSystem>().Inputs.Hotkeys.ToggleInternalClothing.performed += HandleToggleClothing;
+            SubSystems.Get<InputSubSystem>().Inputs.Hotkeys.ToggleInternalClothing.performed += HandleToggleClothing;
         }
 
         private void TaskOnClick()

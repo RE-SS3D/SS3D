@@ -230,7 +230,7 @@ namespace SS3D.Tests
         public static InputDevice SetUpMockInputForActions(ref List<InputAction> inputActions)
         {
             UnityEngine.Debug.Log("Entering SetUpMockInput");
-            InputActionAsset actions = Subsystems.Get<Systems.Inputs.InputSystem>().Inputs.asset;
+            InputActionAsset actions = SubSystems.Get<Systems.Inputs.InputSubSystem>().Inputs.asset;
             UnityEngine.Debug.Log(actions.ToString());
 
             var layoutName = actions.name;

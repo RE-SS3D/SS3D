@@ -49,10 +49,10 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 			if (args.Length < 1 || args.Length > 2) return response.MakeInvalid("Invalid number of arguments");
 			
 			string ckey = args[0];
-			Player player = Subsystems.Get<PlayerSystem>().GetPlayer(ckey);
+			Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
 			if (player == null) return response.MakeInvalid("This player doesn't exist");
 			
-			Entity entity = Subsystems.Get<EntitySystem>().GetSpawnedEntity(player);
+			Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
 			if (entity == null) return response.MakeInvalid("This entity doesn't exist");
 
             float time = 0;

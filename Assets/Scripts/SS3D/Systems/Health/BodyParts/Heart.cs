@@ -122,7 +122,7 @@ namespace SS3D.Systems.Health
             float sumNeeded = oxygenNeededForEachpart.Sum();
             int i = 0;
 
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            SubstancesSubSystem registry = SubSystems.Get<SubstancesSubSystem>();
             Substance oxygen = registry.FromType(SubstanceType.Oxygen);
 
             foreach (BodyPart part in _connectedToHeart)

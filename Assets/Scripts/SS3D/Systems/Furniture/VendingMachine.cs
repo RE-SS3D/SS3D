@@ -72,17 +72,17 @@ namespace SS3D.Systems.Furniture
             VendingMachineProductStock productToDispenseStock = _productsToDispense[productIndex];
             if (productToDispenseStock.Stock <= 0)
             {
-                Subsystems.Get<AudioSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.BikeHorn, Position, NetworkObject,
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.BikeHorn, Position, NetworkObject,
                     false, 0.7f, 1, 1, 3);
                 return;
             }
 
             _powerConsumer.UseMachineOnce();
             productToDispenseStock.Stock--;
-            Subsystems.Get<AudioSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.Can1, Position, NetworkObject,
+            SubSystems.Get<AudioSubSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.Can1, Position, NetworkObject,
                 false, 0.7f, 1, 1, 3);
             
-            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
+            ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
             itemSystem.SpawnItem(productToDispenseStock.Product.name, _dispensingTransform.position, quaternion);

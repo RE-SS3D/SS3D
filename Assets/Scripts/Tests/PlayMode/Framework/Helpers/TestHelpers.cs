@@ -185,8 +185,8 @@ namespace SS3D.Tests
 
         public static AttachedContainer LocalPlayerSpawnItemInFirstHandAvailable(string item)
         {
-            ItemSystem itemSystem = Subsystems.Get<ItemSystem>();
-            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
+            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
             entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
             HumanInventory inventory = entity.gameObject.GetComponent<HumanInventory>();
 
@@ -206,7 +206,7 @@ namespace SS3D.Tests
 
         public static InteractionController GetLocalInteractionController()
         {
-            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
             entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
 
             return entity.gameObject.GetComponent<InteractionController>();
@@ -214,7 +214,7 @@ namespace SS3D.Tests
 
         public static Vector3 GetLocalPlayerPosition()
         {
-            EntitySystem entitySystem = Subsystems.Get<EntitySystem>();
+            EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
             entitySystem.TryGetOwnedEntity(InstanceFinder.ClientManager.Connection, out Entity entity);
 
             return entity.gameObject.transform.position;

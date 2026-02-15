@@ -1,4 +1,4 @@
-using Coimbra;
+﻿using Coimbra;
 using FishNet;
 using SS3D.Core;
 using SS3D.Permissions;
@@ -35,7 +35,7 @@ namespace SS3D.Engine.Chat
         public int GetTabCount() => _tabRow.childCount;
 
         protected override ChatChannel GetCurrentChatChannel() => 
-            Subsystems.Get<ChatSystem>().RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
+            SubSystems.Get<ChatSubSystem>().RegisteredChatChannels[_channelDropdownOptions[_channelDropDown.value]];
 
         public void InitializeWithAllAvailableChannels()
         {
@@ -63,10 +63,10 @@ namespace SS3D.Engine.Chat
             _channelDropDown.options.Clear();
             _channelDropdownOptions.Clear();
             
-            PlayerSystem playerSystem = Subsystems.Get<PlayerSystem>();
+            PlayerSubSystem playerSystem = SubSystems.Get<PlayerSubSystem>();
             string playerCkey = playerSystem.GetCkey(InstanceFinder.ClientManager.Connection);
-            PermissionSystem permissionSystem = Subsystems.Get<PermissionSystem>();
-            ChatSystem chatSystem = Subsystems.Get<ChatSystem>();
+            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
+            ChatSubSystem chatSystem = SubSystems.Get<ChatSubSystem>();
             
             foreach (string channelName in tabData.Channels)
             {

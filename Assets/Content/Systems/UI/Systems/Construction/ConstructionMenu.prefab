@@ -425,7 +425,7 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 60, y: 60}
-  m_Spacing: {x: 5, y: 5}
+  m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 2
 --- !u!1 &582456148449418934
@@ -3594,7 +3594,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6241789247798514904}
         m_TargetAssemblyTypeName: TileMapMenuBuildingView, SS3D.Systems
-        m_MethodName: OnDropDownChange
+        m_MethodName: LoadCurrentCategory
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -72,7 +72,7 @@ namespace SS3D.Systems.Health
         public override void OnStartServer()
         {
             base.OnStartServer();
-            SubstancesSystem registry = Subsystems.Get<SubstancesSystem>();
+            SubstancesSubSystem registry = SubSystems.Get<SubstancesSubSystem>();
             _blood = registry.FromType(SubstanceType.Blood);
             _oxygen = registry.FromType(SubstanceType.Oxygen);
             StartCoroutine(Init());

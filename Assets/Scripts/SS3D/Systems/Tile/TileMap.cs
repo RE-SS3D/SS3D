@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Inventory.Items;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -296,9 +297,30 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo)
+        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo, GameObject existingItem = null)
         {
-            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo);
+            // Handle existing items that already have a PlacedItemObject component
+            if (existingItem != null)
+            {
+                PlacedItemObject existingPlacedItem = existingItem.GetComponent<PlacedItemObject>();
+                if (existingPlacedItem != null)
+                {
+                    if (_items.Contains(existingPlacedItem))
+                    {
+                        // Item is already tracked, just update its position
+                        existingPlacedItem.UpdatePosition(worldPosition, rotation);
+                        return;
+                    }
+                    else
+                    {
+                        // Item has PlacedItemObject but not tracked, remove the old component
+                        DestroyImmediate(existingPlacedItem);
+                    }
+                }
+            }
+            
+            // Create new PlacedItemObject and add to tracking
+            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo, existingItem);
             placedItem.transform.SetParent(transform);
             _items.Add(placedItem);
         }
@@ -320,6 +342,19 @@ namespace SS3D.Systems.Tile
             _items.Remove(toRemove);
         }
 
+        /// <summary>
+        /// Remove a specific PlacedItemObject from TileMap tracking without destroying the GameObject.
+        /// This is used when items are picked up and placed in containers.
+        /// </summary>
+        /// <param name="placedItemObject">The PlacedItemObject to remove from tracking</param>
+        public void RemovePlacedItemFromTracking(PlacedItemObject placedItemObject)
+        {
+            if (placedItemObject != null && _items.Contains(placedItemObject))
+            {
+                _items.Remove(placedItemObject);
+            }
+        }
+
         public void Clear()
         {
             foreach (TileChunk chunk in _chunks.Values)
@@ -329,16 +364,23 @@ namespace SS3D.Systems.Tile
 
             _chunks.Clear();
 
-            foreach (PlacedItemObject item in _items)
+            // Clear items list safely, checking for null references
+            while (_items.Count > 0)
             {
-                item.DestroySelf();
+                PlacedItemObject item = _items.First();
+                if (item != null && item.gameObject != null)
+                {
+                    item.DestroySelf();
+                }
+                
+                _items.RemoveAt(0);
             }
-
-            _items.Clear();
         }
 
         /// <summary>
         /// Returns a new SaveObject for storing the entire map.
+        /// Note: Items in player inventory (containers) are not saved as they have their PlacedItemObject
+        /// component removed when picked up. Only items placed in the world are saved.
         /// </summary>
         /// <returns></returns>
         public SavedTileMap Save()
@@ -372,9 +414,13 @@ namespace SS3D.Systems.Tile
                 return;
             }
 
+            // Clear TileMap data first (this clears the _items list)
             Clear();
+            
+            // Then clear all items in the scene, not just those tracked by TileMap
+            ClearUntrackedItems();
 
-            TileSystem tileSystem = Subsystems.Get<TileSystem>();
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
             foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
             {
@@ -418,6 +464,32 @@ namespace SS3D.Systems.Tile
                         var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
                         obj.UpdateAdjacencies();
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clear untracked items in the scene that are not in containers and don't have a PlacedItemObject component
+        /// </summary>
+        private void ClearUntrackedItems()
+        {
+            // Find all Item components in the scene
+            Item[] allItems = FindObjectsOfType<Item>();
+            
+            foreach (Item item in allItems)
+            {
+                // Skip items that are in containers (player inventory, etc.)
+                // and items that already have PlacedItemObject (they're already tracked)
+                if (item.Container != null || item.GetComponent<PlacedItemObject>() != null)
+                {
+                    continue;
+                }
+                
+                // Destroy items that are in the world but not tracked by TileMap
+                if (item.gameObject != null)
+                {
+                    Debug.LogWarning($"Destroying untracked item: {item.gameObject.name} at position {item.gameObject.transform.position}");
+                    DestroyImmediate(item.gameObject);
                 }
             }
         }

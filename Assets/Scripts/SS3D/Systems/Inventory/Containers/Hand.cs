@@ -4,6 +4,8 @@ using System.Linq;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
 using FishNet.Object;
+using SS3D.Systems.Tile;
+using SS3D.Core;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -124,13 +126,23 @@ namespace SS3D.Systems.Inventory.Containers
         public void PlaceHeldItemOutOfHand(Vector3 position, Quaternion rotation)
         {
             if (IsEmpty())
-            {
                 return;
-            }
+            
             ItemInHand.GiveOwnership(null);
             Item item = ItemInHand;
             item.Container.RemoveItem(item);
             ItemUtility.Place(item, position, rotation);
+
+            // Register with TileMap for saving
+            TileMap tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
+            if (tileMap != null)
+            {
+                ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset.Id) as ItemObjectSo;
+                if (itemObjectSo != null)
+                {
+                    tileMap.PlaceItemObject(position, rotation, itemObjectSo, item.gameObject);
+                }
+            }
         }
 
         /// <summary>

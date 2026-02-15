@@ -37,13 +37,13 @@ namespace System.Electricity
         {
             isIdle = false;
             _machineUsedOnce = true;
-            Subsystems.Get<ElectricitySystem>().OnTick += HandleMachineWasUsed;
+            SubSystems.Get<ElectricitySubSystem>().OnTick += HandleMachineWasUsed;
         }
         
         private void HandleMachineWasUsed()
         {
             _machineUsedOnce = false;
-            Subsystems.Get<ElectricitySystem>().OnTick -= HandleMachineWasUsed;
+            SubSystems.Get<ElectricitySubSystem>().OnTick -= HandleMachineWasUsed;
         }
     }
 }

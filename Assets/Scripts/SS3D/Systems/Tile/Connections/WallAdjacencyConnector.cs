@@ -49,7 +49,7 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private bool TryGetOnLeftOrRightDoor(out PlacedTileObject door)
         {
-            var tileSystem = Subsystems.Get<TileSystem>();
+            var tileSystem = SubSystems.Get<TileSubSystem>();
             var map = tileSystem.CurrentMap;
             var neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
 
@@ -87,7 +87,7 @@ namespace SS3D.Systems.Tile.Connections
                 isConnected &= IsConnectedToDoor(neighbourObject);
             }
 
-            var tileSystem = Subsystems.Get<TileSystem>();
+            var tileSystem = SubSystems.Get<TileSubSystem>();
             var map = tileSystem.CurrentMap;
 
             // Needed for a weird edge case when you put walls all around a door. Will avoid connecting
