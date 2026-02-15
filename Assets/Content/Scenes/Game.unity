@@ -6414,6 +6414,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 4559952172929818813, guid: b904697874e9a0445ad5e0c9cad35c19, type: 3}
+      propertyPath: m_AfterStackBundles.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4559952172929818813, guid: b904697874e9a0445ad5e0c9cad35c19, type: 3}
+      propertyPath: m_AfterStackBundles.Array.data[0].assemblyQualifiedName
+      value: VisionFilter, SS3D.Systems, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      objectReference: {fileID: 0}
     - target: {fileID: 4559952172929818815, guid: b904697874e9a0445ad5e0c9cad35c19, type: 3}
       propertyPath: m_RootOrder
       value: 15

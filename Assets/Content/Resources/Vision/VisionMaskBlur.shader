@@ -59,12 +59,13 @@ Shader "Vision/VisionMaskBlur"
                 
                 if(length(UNITY_SAMPLE_TEX2D(_FovTex, IN.uv)) < 0.5) //Check if location is masked
                 {
-                    col = float4(0, 0, 0, 1);
+                    col = lerp (col, float4(0, 0, 0, 1), 0.5);
                 }
                 
                 if(average > 0)
                 {
-                    average = average * 4;
+                    average = average * 2 - 0.1;
+                    average = max (average, 0);
                     col = float4(0,0,0,1) * average + col * (1 - average);
                 }
                 return col;

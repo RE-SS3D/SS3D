@@ -32,7 +32,7 @@ Shader "Vision/VisionMask"
                 o.vertex = float4(v.vertex.xy, 0, 1);
                 o.uv = v.vertex.xy;
 
-                if (_ProjectionParams.x < 0) o.uv.y = 1 - o.uv.y;
+                if (_ProjectionParams.x < 0) o.uv.y = (1 - o.uv.y) - 1;
 
                 return o;
             }

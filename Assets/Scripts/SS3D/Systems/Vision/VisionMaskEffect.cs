@@ -6,8 +6,8 @@ using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Rendering;
 
 [Serializable]
-[PostProcess(typeof(VisionRenderer), PostProcessEvent.AfterStack, "Custom/Vision")]
-public sealed class VisionFilter : PostProcessEffectSettings
+[PostProcess(typeof(VisionRenderer), PostProcessEvent.AfterStack, "Vision/VisionMask")]
+public sealed class VisionMaskEffect : PostProcessEffectSettings
 {
     public FloatParameter Quality = new FloatParameter {value = 5};
     public FloatParameter Directions = new FloatParameter {value = 25};
@@ -22,7 +22,7 @@ public sealed class VisionFilter : PostProcessEffectSettings
             && Size.value.y >0f;
     }
 }
-public sealed class VisionRenderer : PostProcessEffectRenderer<VisionFilter>
+public sealed class VisionRenderer : PostProcessEffectRenderer<VisionMaskEffect>
 {
     public override void Render(PostProcessRenderContext context)
     {
