@@ -1543,6 +1543,31 @@ MonoBehaviour:
   Size:
     overrideState: 0
     value: {x: 6.53, y: 9.87}
+--- !u!114 &-49764144089175348
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: VisionFilter
+  m_EditorClassIdentifier: SS3D.Systems::VisionFilter
+  active: 0
+  enabled:
+    overrideState: 1
+    value: 1
+  Quality:
+    overrideState: 0
+    value: 5
+  Directions:
+    overrideState: 0
+    value: 25
+  Size:
+    overrideState: 0
+    value: {x: 5, y: 5}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1564,7 +1589,7 @@ MonoBehaviour:
   - {fileID: -4984722078144235035}
   - {fileID: -2400775673892574313}
   - {fileID: -9132564074991082903}
-  - {fileID: -3474480085703392108}
+  - {fileID: 1971999996643561787}
 --- !u!114 &1043265621962283185
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1590,6 +1615,31 @@ MonoBehaviour:
   Size:
     overrideState: 1
     value: {x: 3, y: 3}
+--- !u!114 &1971999996643561787
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: VisionFilter
+  m_EditorClassIdentifier: SS3D.Systems::VisionFilter
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  Quality:
+    overrideState: 0
+    value: 5
+  Directions:
+    overrideState: 0
+    value: 25
+  Size:
+    overrideState: 0
+    value: {x: 5, y: 5}
 --- !u!114 &4662285201658728894
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1634,6 +1684,31 @@ MonoBehaviour:
   opacity:
     overrideState: 0
     value: 1
+--- !u!114 &6523417069567221237
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: VisionFilter
+  m_EditorClassIdentifier: SS3D.Systems::VisionFilter
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  Quality:
+    overrideState: 0
+    value: 5
+  Directions:
+    overrideState: 0
+    value: 25
+  Size:
+    overrideState: 0
+    value: {x: 5, y: 5}
 --- !u!114 &7149465766786482175
 MonoBehaviour:
   m_ObjectHideFlags: 3

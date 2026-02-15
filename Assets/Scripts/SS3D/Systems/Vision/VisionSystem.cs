@@ -15,7 +15,6 @@ using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using SS3D.Systems.Tile.Connections;
 using FishNet.Utility.Performance;
 using DG.Tweening;
-using FishNet.Configuring;
 
 namespace SS3D.Systems.Vision
 {

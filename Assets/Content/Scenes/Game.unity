@@ -1633,7 +1633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021075485018, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -230
+      value: -229.99997
       objectReference: {fileID: 0}
     - target: {fileID: 4468402021449001342, guid: cc5383d385556f443b2a7d3202f2b2c1, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -2525,16 +2525,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showDebug: 0
-  radialDepthTex: {fileID: 0}
+  visionMap: {fileID: 0}
   target: {fileID: 0}
   viewRange: 35
   viewConeWidth: 360
   obstacleMask:
     serializedVersion: 2
     m_Bits: 65536
-  meshResolution: 3
-  edgeResolveIterations: 0
-  edgeDistanceThreshold: 0
+  resolution: 5
   detectionOffset: {x: 0, y: 0, z: 0}
 --- !u!4 &1820032161 stripped
 Transform:

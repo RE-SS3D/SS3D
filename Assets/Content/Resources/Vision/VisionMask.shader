@@ -1,4 +1,4 @@
-Shader "Hidden/Custom/VisionMask"
+Shader "Vision/VisionMask"
 {
     //TODO Clean this up for multiplatform and add comments
     SubShader

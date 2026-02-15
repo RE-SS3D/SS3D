@@ -9,9 +9,9 @@ using UnityEngine.Rendering;
 [PostProcess(typeof(VisionRenderer), PostProcessEvent.AfterStack, "Custom/Vision")]
 public sealed class VisionFilter : PostProcessEffectSettings
 {
-    public FloatParameter Quality = new FloatParameter {value = 3};
-    public FloatParameter Directions = new FloatParameter {value = 16};
-    public Vector2Parameter Size = new Vector2Parameter {value = new Vector2(3,3)};
+    public FloatParameter Quality = new FloatParameter {value = 5};
+    public FloatParameter Directions = new FloatParameter {value = 25};
+    public Vector2Parameter Size = new Vector2Parameter {value = new Vector2(5,5)};
 
     public override bool IsEnabledAndSupported(PostProcessRenderContext context)
     {
@@ -36,14 +36,14 @@ public sealed class VisionRenderer : PostProcessEffectRenderer<VisionFilter>
 		var viewProjectionMatrix = projectionMatrix * (worldToCameraMatrix);
         var fovTexture = RenderTexture.GetTemporary(Screen.width,Screen.height);
 
-        var sheet = context.propertySheets.Get(Shader.Find("Hidden/Custom/VisionMask"));
+        var sheet = context.propertySheets.Get(Shader.Find("Vision/VisionMask"));
 
         sheet.properties.SetMatrix("_PlayerCameraInvViewProj", viewProjectionMatrix.inverse);
 
         context.command.BlitFullscreenTriangle(context.source, fovTexture, sheet, 0,false,null,true);
 
 
-        sheet = context.propertySheets.Get(Shader.Find("Hidden/Custom/VisionMaskBlur"));
+        sheet = context.propertySheets.Get(Shader.Find("Vision/VisionMaskBlur"));
 
         sheet.properties.SetFloat("_FovBlurQuality", settings.Quality);
         sheet.properties.SetFloat("_FovBlurDirections", settings.Directions);
