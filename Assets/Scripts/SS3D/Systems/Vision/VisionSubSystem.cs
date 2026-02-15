@@ -1,24 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
-using SS3D.Core;
-using SS3D.Systems.Screens;
 using SS3D.Systems.Entities.Events;
 using Coimbra;
 using Coimbra.Services.Events;
-using SS3D.Systems.Tile.Connections.AdjacencyTypes;
-using SS3D.Systems.Tile.Connections;
-using FishNet.Utility.Performance;
-using DG.Tweening;
 
 namespace SS3D.Systems.Vision
 {
-    public class VisionSystem : Core.Behaviours.System
+    public class VisionSubSystem : Core.Behaviours.SubSystem
     {
         [SerializeField]
         public bool showDebug;

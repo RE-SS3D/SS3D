@@ -56,6 +56,31 @@ MonoBehaviour:
   scale:
     overrideState: 0
     value: 1
+--- !u!114 &-6574777559651070848
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: VisionFilter
+  m_EditorClassIdentifier: SS3D.Systems::VisionFilter
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  Quality:
+    overrideState: 0
+    value: 5
+  Directions:
+    overrideState: 0
+    value: 25
+  Size:
+    overrideState: 0
+    value: {x: 5, y: 5}
 --- !u!114 &-6454460764997554514
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1589,7 +1614,7 @@ MonoBehaviour:
   - {fileID: -4984722078144235035}
   - {fileID: -2400775673892574313}
   - {fileID: -9132564074991082903}
-  - {fileID: 1971999996643561787}
+  - {fileID: -6574777559651070848}
 --- !u!114 &1043265621962283185
 MonoBehaviour:
   m_ObjectHideFlags: 3

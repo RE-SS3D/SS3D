@@ -1,4 +1,4 @@
-Shader "Hidden/Vision/VisionMaskBlur"
+Shader "Vision/VisionMaskBlur"
 {
     //TODO Clean this up for multiplatform and add comments
     SubShader

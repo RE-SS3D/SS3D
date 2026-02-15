@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Vision
 {
-    [CustomEditor(typeof(VisionSystem))]
+    [CustomEditor(typeof(VisionSubSystem))]
     public class VisionSystemEditor : UnityEditor.Editor
     {
-        private VisionSystem _vision;
+        private VisionSubSystem _vision;
 
         private SerializedProperty _detectionOffsetProp;
         private SerializedProperty _viewConeWidthProp;
@@ -14,7 +14,7 @@ namespace SS3D.Systems.Vision
 
         protected void OnEnable()
         {
-            _vision = (VisionSystem)target;
+            _vision = (VisionSubSystem)target;
 
             _detectionOffsetProp = serializedObject.FindProperty("detectionOffset");
             _viewConeWidthProp = serializedObject.FindProperty("viewConeWidth");
