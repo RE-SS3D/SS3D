@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TileCarpet
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3591147544166670882, guid: 9b8a1328991fc2846bc55a3d9a82e5c0, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 6f588fdc347034040af927379a043428, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: a9974cc3e6409d54d9e1a273d43ebc84, type: 3}
   layer: 1
   genericType: 9
   specificType: 5

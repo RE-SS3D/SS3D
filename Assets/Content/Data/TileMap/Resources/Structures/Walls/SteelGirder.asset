@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SteelGirder
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3591147544166670882, guid: 6c2559c2017ada740b245951a23c2e1d, type: 3}
   PrefabAsset: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 23850d223c0e57b4daa47b7c9a456ef0, type: 3}
   layer: 1
   genericType: 3
   specificType: 3

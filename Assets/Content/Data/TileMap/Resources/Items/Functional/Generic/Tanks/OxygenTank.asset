@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: OxygenTank
   m_EditorClassIdentifier: 
-  prefab: {fileID: 7125681683583715523, guid: 5479411218b869144b7d09d6db6dc58e, type: 3}
   PrefabAsset: {fileID: 11400000, guid: b42f227c43baa2141938339b7dda3f71, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 97478579152d7f44f9ee92970267052a, type: 3}

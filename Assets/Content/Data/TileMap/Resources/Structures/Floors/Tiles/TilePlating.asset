@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TilePlating
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6767447678079105841, guid: 8686fbdb413e33b4395a775c4f2ba990, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 663cae2ee60f36940a4e26dc0b3bf960, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: f7f2db9148cb10d4482e9199459a7ad6, type: 3}
   layer: 1
   genericType: 9
   specificType: 0

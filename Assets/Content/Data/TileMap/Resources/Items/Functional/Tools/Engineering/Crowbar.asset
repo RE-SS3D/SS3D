@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Crowbar
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1888703706215615217, guid: 7becfab153276864f9fc7636a839d837, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 9310ba3e563558e42bdbd19ee6b8440c, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: fe6c29d8cdc45e247b9f2d378958a865, type: 3}

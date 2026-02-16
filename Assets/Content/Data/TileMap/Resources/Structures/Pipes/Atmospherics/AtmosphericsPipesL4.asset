@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: AtmosphericsPipesL4
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2802364579275783218, guid: 48efd00c91c310e4bb965d025c63b3ba, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 8bb00252a30a34b42a51ef42c87b2427, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 92c084c5348f5594ca2feaca589102ef, type: 3}
   layer: 4
   genericType: 1
   specificType: 0

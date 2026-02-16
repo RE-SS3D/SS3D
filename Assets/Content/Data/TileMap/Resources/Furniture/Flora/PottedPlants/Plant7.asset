@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Plant7
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4182798096333233391, guid: 8ae2f499d25bfcd41bf26b735c852ab1, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 9f69d24f5d22e8a4ebc1e60eb6c74d98, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 6ef1b355852b26543bc053387040fbf2, type: 3}
   layer: 7
   genericType: 0
   specificType: 0

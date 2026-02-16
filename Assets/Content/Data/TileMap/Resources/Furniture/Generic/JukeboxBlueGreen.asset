@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: JukeboxBlueGreen
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6118765911134750290, guid: 8dc5399c58290d54f9a6cc2f6c1c9d9f, type: 3}
   PrefabAsset: {fileID: 11400000, guid: f7b11732c4258a14a99087cbbc175eab, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: dc0c98a2f0803984db677d2e2146a31d, type: 3}
   layer: 7
   genericType: 0
   specificType: 0

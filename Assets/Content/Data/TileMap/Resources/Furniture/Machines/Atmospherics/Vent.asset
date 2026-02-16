@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Vent
   m_EditorClassIdentifier: 
-  prefab: {fileID: 9154955770433736351, guid: bb2ccbe283c7a7d459f283a7483e04b9, type: 3}
   PrefabAsset: {fileID: 11400000, guid: c05dfac29f4de184e8dcb9be586d1d72, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: 8b9f716f624ae6643b431f45ff8cafd3, type: 3}
   layer: 7
   genericType: 0
   specificType: 0

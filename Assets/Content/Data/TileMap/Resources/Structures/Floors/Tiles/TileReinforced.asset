@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TileReinforced
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8597721773267636030, guid: df4cf328d472de046bcbc073cbda2868, type: 3}
   PrefabAsset: {fileID: 11400000, guid: 4ab72d74a57157a4fba259b6707a1234, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: c07e81e7db8a3aa44aa4b100dcd45509, type: 3}
   layer: 1
   genericType: 9
   specificType: 0

@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SlotMachine
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2979169873714900079, guid: 9f028e95d4196b141acf363c01d24806, type: 3}
   PrefabAsset: {fileID: 11400000, guid: ad014a0995d51f64992e3022889cf64d, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: c03c95e7dcd21b04f857b39ba37c7ecd, type: 3}
   layer: 7
   genericType: 0
   specificType: 0

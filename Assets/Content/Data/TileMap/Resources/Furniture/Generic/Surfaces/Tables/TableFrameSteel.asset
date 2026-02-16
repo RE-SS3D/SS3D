@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TableFrameSteel
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3879826479501069436, guid: e9009aff81f29eb429148fd71961539f, type: 3}
   PrefabAsset: {fileID: 11400000, guid: c4e3ed17ef66be443b04296dab2a7ae5, type: 2}
-  icon: {fileID: 0}
-  _nameString: 
+  icon: {fileID: 21300000, guid: b9d1538ddabaf1646933990e4a7288c8, type: 3}
   layer: 7
   genericType: 0
   specificType: 0
