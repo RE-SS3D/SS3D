@@ -61,13 +61,6 @@ namespace SS3D.Data
             where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
 
         /// <summary>
-        /// Returns an asset from a  database casting the object found to TAsset.
-        /// </summary>
-        [CanBeNull]
-        public static TAsset Get<TAsset>([NotNull] ObjectAssetReference assetReference)
-            where TAsset : Object => Get<TAsset>(assetReference.Database, assetReference.Id);
-
-        /// <summary>
         /// Function to get an asset asynchronously from a database.
         /// </summary>
         /// <param name="databaseId">ID of the Database the asset is to be loaded from.</param>
