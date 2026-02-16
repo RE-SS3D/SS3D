@@ -2,6 +2,7 @@
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Connection;
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
@@ -174,16 +175,21 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Instantiate in the correct position and rotation a single hologram.
         /// </summary>
-        public ConstructionHologram CreateHologram(ObjectAssetReference prefabAsset, Vector3 position)
+        public async void CreateHologram([NotNull] ObjectAssetReference prefabAsset, Vector3 position)
         {
-            GameObject prefab = Assets.Get<GameObject>(prefabAsset);
+            GameObject prefab = await Assets.GetAsync<GameObject>(prefabAsset);
+            if (!prefab)
+            {
+                Log.Error(this, "Cannot create hologram, prefab asset is not found");
+                return;
+            }
+
             GameObject tileObject = Instantiate(prefab);
             ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
             tileObject.transform.position = hologram.TargetPosition;
             _holograms.Add(hologram);
             RefreshHologram(hologram);
-            return hologram;
         }
 
         /// <summary>
