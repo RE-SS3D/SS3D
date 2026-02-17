@@ -11,6 +11,8 @@ Shader "Vision/VisionMaskBlur"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #include "VisionCG.cginc"
+
 
             struct appdata
             {
@@ -44,28 +46,38 @@ Shader "Vision/VisionMaskBlur"
             {
                 float2 diameter = (_FovBlurSize / _ScreenParams.xy) * 2;
                 float average;
+                float3 thisPos = ClipToWorld(IN.uv * 2 - 1);
+                float3 thisDepth = thisPos - _WorldSpaceCameraPos;
+                float thisVisible = length(UNITY_SAMPLE_TEX2D(_FovTex, IN.uv)) > 0.5;
+                float totalSamples = 0;
                 for(float angle = 0; angle < UNITY_TWO_PI; angle += UNITY_TWO_PI / _FovBlurDirections)
                 {
                     for(float sample = 1; sample <= _FovBlurQuality; sample++)
                     {
                         float2 offset = float2(cos(angle),sin(angle)) * diameter * (sample / _FovBlurQuality);
                         float2 sampleUV = IN.uv + offset;
-                        average += length(UNITY_SAMPLE_TEX2D(_FovTex, sampleUV)) < 0.5;
+                        float3 samplePos = ClipToWorld(sampleUV * 2 - 1);
+                        float3 sampleDepth = samplePos - _WorldSpaceCameraPos;
+                        if((!thisVisible || length(offset) < 0.006 || (length(thisDepth - sampleDepth) < 0.5)))
+                        {
+                            totalSamples += 1;
+                            if(length(UNITY_SAMPLE_TEX2D(_FovTex, sampleUV)) < 0.5)
+                            {
+                                average += 1;
+                            }
+                        }
                     }
                 }
-                average /= _FovBlurQuality * _FovBlurDirections;
-
+                average /= totalSamples;
                 float4 col = UNITY_SAMPLE_TEX2D(_MainTex, IN.uv);
                 
-                if(length(UNITY_SAMPLE_TEX2D(_FovTex, IN.uv)) < 0.5) //Check if location is masked
+                if(!thisVisible) //Check if location is masked
                 {
-                    col = lerp (col, float4(0, 0, 0, 1), 0.5);
+                    col = lerp (col, float4(0, 0, 0, 1), 0.2);
                 }
                 
                 if(average > 0)
                 {
-                    average = average * 2 - 0.1;
-                    average = max (average, 0);
                     col = float4(0,0,0,1) * average + col * (1 - average);
                 }
                 return col;

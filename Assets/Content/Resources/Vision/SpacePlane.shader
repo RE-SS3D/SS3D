@@ -9,11 +9,12 @@ Shader "Custom/SpacePlane"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        ZWrite On 
+        Tags {"Queue"="Transparent" "RenderType"="Transparent" }
         LOD 200
         CGPROGRAM
         #include "VisionCG.cginc"
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard fullforwardshadows alpha
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -37,8 +38,8 @@ Shader "Custom/SpacePlane"
                 discard;
             }
             
-            float4 c = float4(0,0,0,1);
-            o.Albedo = c.rgb;
+            float4 c = tex2D(_MainTex, IN.uv_MainTex);
+            o.Albedo = c.rgba;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
