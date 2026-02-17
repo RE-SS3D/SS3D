@@ -1028,9 +1028,9 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 981233763}
+      - m_Target: {fileID: 996747443}
         m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-        m_MethodName: set_text
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1040,9 +1040,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 1
-      - m_Target: {fileID: 2650967272445454317}
+      - m_Target: {fileID: 3150050563010274363}
         m_TargetAssemblyTypeName: SS3D.UI.LocalizeFont, SS3D.UI
-        m_MethodName: UpdateFont
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
