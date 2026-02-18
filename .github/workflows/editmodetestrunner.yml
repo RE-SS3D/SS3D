@@ -21,19 +21,14 @@ jobs:
       - run: npm install @actions/github
       - run: npm install jsdom
       - run: npm install fs
-      - name: Debug Secret Visibility
-        run: |
-          if [ -z "${{ secrets.UNITY_LICENSE }}" ]; then
-            echo "SECRET IS EMPTY"
-          else
-            echo "SECRET IS DEFINED"
-          fi
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
         with:
           testMode: editmode
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
       - name: Produce summary output
         uses: ./.github/actions/interpret-test-results
         if: always()
