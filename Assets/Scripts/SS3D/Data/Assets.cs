@@ -12,12 +12,6 @@ using System.Linq;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
-#if UNITY_EDITOR
-using System.IO;
-using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
-#endif
 
 namespace SS3D.Data
 {

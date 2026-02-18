@@ -13,7 +13,7 @@ namespace SS3D.CodeGeneration.Creators
         /// <summary>
         /// Creates a list of database assets in the object path, with the defined class name and using a list of provided assets as its elements.
         /// </summary>
-        public static void CreateAtPath(string path, string className, [NotNull] List<Object> assets, string namespaceName = "SS3D.Data.Generated")
+        public static void CreateAtPath(string path, string className, [NotNull] List<Object> assets, string namespaceName)
         {
             string dataPath = Application.dataPath;
             string fullPath = dataPath + path;
