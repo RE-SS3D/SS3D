@@ -49,12 +49,12 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
                 return response;
             }
 
-            string itemName = args[0];
+            string id = args[0];
 
-            if (!Assets.TryGet(AssetDatabases.Items, itemName, out Item item))
+            if (!Assets.Has(AssetDatabases.Items, id))
             {
                 response.IsValid = false;
-                response.InvalidArgs = $"item with name {itemName} not found";
+                response.InvalidArgs = $"item with name {id} not found";
 
                 return response;
             }

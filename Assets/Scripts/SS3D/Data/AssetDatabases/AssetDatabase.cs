@@ -119,26 +119,12 @@ namespace SS3D.Data.AssetDatabases
             return null;
         }
 
-        public bool TryGet<T>([NotNull] string index, [CanBeNull] out T asset)
-            where T : Object
-        {
-            asset = null;
-
-            if (Assets.TryGetValue(index, out Object foundValue))
-            {
-                asset = foundValue as T;
-            }
-
-            return asset;
-        }
-
         /// <summary>
-        /// Tries to get an asset reference based on its ID (index).
+        /// Checks if the database has an asset with the given ID
         /// </summary>
-        /// <param name="index">Uses the ID of the asset cast into a int to get the asset from a list position.</param>
-        /// <param name="assetReference">The asset reference object of the asset.</param>
-        /// <returns>If the asset reference is found or not.</returns>
-        public bool TryGetReference([NotNull] string index, [CanBeNull] out AssetReference assetReference) => AssetReferences.TryGetValue(index, out assetReference);
+        /// <param name="id">ID to check</param>
+        /// <returns>True if the database contains the ID</returns>
+        public bool Has([NotNull] string id) => AssetReferences.ContainsKey(id);
 
 #if UNITY_EDITOR
         /// <summary>

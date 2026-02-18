@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
@@ -103,41 +104,21 @@ namespace SS3D.Data
             where TAsset : class => await GetAsync<TAsset>(reference.Database, reference.Id);
 
         /// <summary>
-        /// Returns an asset from a database casting the object found to TAsset.
+        /// Checks if an asset exists in a database with the given id.
         /// </summary>
-        public static bool TryGet<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] out TAsset asset)
-            where TAsset : Object => GetDatabase(databaseId)!.TryGet(assetId, out asset);
+        /// <param name="databaseId">Database to check in</param>
+        /// <param name="assetId">Asset ID to check</param>
+        /// <returns>True if specified database has that asset</returns>
+        public static bool Has([NotNull] string databaseId, [NotNull] string assetId) => GetDatabase(databaseId)!.Has(assetId);
 
         /// <summary>
-        /// Function to try getting an asset asynchronously from a database.
+        /// Checks if an asset exists in any database
         /// </summary>
-        /// <param name="databaseId">ID of the database the asset belongs to.</param>
-        /// <param name="assetId">ID of the asset.</param>
-        /// <param name="onAssetLoaded">The callback to get the asset.</param>
-        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
-        /// <returns>True if asset is loaded, false if not.</returns>
-        public static async Task<bool> TryGetAsync<TAsset>([NotNull] string databaseId, [NotNull] string assetId, Action<TAsset> onAssetLoaded)
-            where TAsset : class
+        /// <param name="assetId">Asset ID to check</param>
+        /// <returns>True if any database has that asset</returns>
+        public static bool Has([NotNull] string assetId)
         {
-            AssetDatabase database = GetDatabase(databaseId);
-
-            if (!database || database.TryGetReference(assetId, out AssetReference reference) || reference == null)
-            {
-                return false;
-            }
-
-            TAsset asset = await GetAsync<TAsset>(reference);
-
-            try
-            {
-                onAssetLoaded?.Invoke(asset);
-            }
-            catch (Exception e)
-            {
-                Log.Error(typeof(Assets), e, "An exception occurred while invoking the onAssetLoaded callback in TryGetAsync");
-            }
-
-            return true;
+            return Databases.Any(pair => pair.Value.Has(assetId));
         }
 
         public static void Unload([NotNull] ObjectAssetReference assetReference)
