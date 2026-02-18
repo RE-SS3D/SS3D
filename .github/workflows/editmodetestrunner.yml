@@ -21,22 +21,6 @@ jobs:
       - run: npm install @actions/github
       - run: npm install jsdom
       - run: npm install fs
-      - name: Debug Secret Visibility
-        run: |
-          if [ -z "${{ secrets.UNITY_LICENSE }}" ]; then
-            echo "SECRET IS EMPTY"
-          else
-            echo "SECRET IS DEFINED"
-          fi
-      - name: Debug license/email/password lengths
-         run: |
-          echo "UNITY_LICENSE length: ${#UNITY_LICENSE}"
-          echo "UNITY_EMAIL length: ${#UNITY_EMAIL}"
-          echo "UNITY_PASSWORD length: ${#UNITY_PASSWORD}"
-         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
         with:
