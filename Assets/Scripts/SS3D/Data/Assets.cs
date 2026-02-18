@@ -140,6 +140,19 @@ namespace SS3D.Data
             return true;
         }
 
+        public static void Unload([NotNull] ObjectAssetReference assetReference)
+        {
+            Unload(assetReference.Id);
+        }
+
+        public static void Unload([NotNull] string assetId)
+        {
+            if (LoadingOperations.TryGetValue(assetId, out AsyncOperationHandle<Object> loadingOperation))
+            {
+                Addressables.Release(loadingOperation);
+            }
+        }
+
         /// <summary>
         /// Helper function to find a database in the database dict.
         /// </summary>
