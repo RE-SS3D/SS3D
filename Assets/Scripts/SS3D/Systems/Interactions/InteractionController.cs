@@ -418,7 +418,7 @@ namespace SS3D.Systems.Interactions
             }
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
-            if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
+            if (chosenEntry.Interaction is IClientInteractionSource)
             {
                 RpcExecuteClientInventoryInteraction(target, sourceObject, interactionName, reference.Id);
             }

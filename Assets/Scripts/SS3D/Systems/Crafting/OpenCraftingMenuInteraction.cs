@@ -1,13 +1,17 @@
 ﻿using QuikGraph;
 using SS3D.Core;
 using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Crafting;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class OpenCraftingMenuInteraction : Interaction
+public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSource
 {
+    public string Name;
+    public Sprite Icon;
+
     private CraftingInteractionType _craftingInteractionType;
 
     public OpenCraftingMenuInteraction(CraftingInteractionType craftingInteraction)
@@ -15,14 +19,14 @@ public class OpenCraftingMenuInteraction : Interaction
         _craftingInteractionType = craftingInteraction;
     }
 
-    public override string GetGenericName() => "Open crafting menu";
-    
+    public string GetGenericName() => "Open crafting menu";
+
     /// <summary>
     /// Get the name of the interaction
     /// </summary>
     /// <param name="interactionEvent">The source used in the interaction</param>
     /// <returns>The display name of the interaction</returns>
-    public override string GetName(InteractionEvent interactionEvent)
+    public string GetName(InteractionEvent interactionEvent)
     {
         return "Open crafting menu";
     }
@@ -30,7 +34,7 @@ public class OpenCraftingMenuInteraction : Interaction
     /// <summary>
     /// Get the icon of the interaction
     /// </summary>
-    public override Sprite GetIcon(InteractionEvent interactionEvent)
+    public Sprite GetIcon(InteractionEvent interactionEvent)
     {
         return null;
     }
@@ -40,13 +44,13 @@ public class OpenCraftingMenuInteraction : Interaction
     /// </summary>
     /// <param name="interactionEvent">The interaction source</param>
     /// <returns>If the interaction can be executed</returns>
-    public override bool CanInteract(InteractionEvent interactionEvent)
+    public bool CanInteract(InteractionEvent interactionEvent)
     {
-        if (!SubSystems.TryGet(out CraftingSubSystem craftingSystem)) return false;
+        if (!SubSystems.TryGet(out CraftingSubSystem craftingSystem))
+            return false;
 
         bool recipesAvailable = true;
-        recipesAvailable &= craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent,
-            out List<TaggedEdge<RecipeStep, RecipeStepLink>> _);
+        recipesAvailable &= craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent, out List<TaggedEdge<RecipeStep, RecipeStepLink>> _);
 
         return recipesAvailable;
     }
@@ -57,11 +61,12 @@ public class OpenCraftingMenuInteraction : Interaction
     /// <param name="interactionEvent">The source used in the interaction</param>
     /// <param name="reference"></param>
     /// <returns>If the interaction should continue running</returns>
-    public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+    public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
     {
         SubSystems.TryGet(out CraftingSubSystem craftingSystem);
         List<CraftingInteraction> craftingInteractions = craftingSystem.CreateInteractions(interactionEvent, _craftingInteractionType);
         ViewLocator.Get<CraftingMenu>().First().DisplayMenu(craftingInteractions, interactionEvent, reference, _craftingInteractionType);
+
         return true;
     }
 }

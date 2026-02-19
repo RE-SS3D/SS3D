@@ -1,6 +1,7 @@
 ﻿using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System.Linq;
@@ -9,8 +10,10 @@ using UnityEngine;
 namespace SS3D.Systems.Inventory.Interactions
 {
     // This Interaction takes the first available item inside a container
-    public sealed class TakeFirstInteraction : Interaction
+    public sealed class TakeFirstInteraction : IInteraction, IClientInteractionSource
     {
+        public string Name;
+        public Sprite Icon;
         private readonly AttachedContainer _attachedContainer;
 
         public TakeFirstInteraction(AttachedContainer attachedContainer)
@@ -18,17 +21,19 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Take in " + _attachedContainer.ContainerName;
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new System.NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : InteractionIcons.Take;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -44,9 +49,9 @@ namespace SS3D.Systems.Inventory.Interactions
             return false;
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hand hand = (Hand) interactionEvent.Source;
+            Hand hand = (Hand)interactionEvent.Source;
 
             Item pickupItem = _attachedContainer.Items.First();
 

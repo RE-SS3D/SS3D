@@ -12,20 +12,24 @@ namespace SS3D.Systems.Combat.Interactions
     /// <summary>
     /// Interaction to hit another player.
     /// </summary>
-    public class HitInteraction : Interaction
+    public class HitInteraction : IInteraction, IClientInteractionSource
     {
+        public string Name;
+        public Sprite Icon;
 
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Hit";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new System.NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : InteractionIcons.Nuke;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             IInteractionTarget target = interactionEvent.Target;
             IInteractionSource source = interactionEvent.Source;
@@ -35,14 +39,15 @@ namespace SS3D.Systems.Combat.Interactions
             // Also should be able to hit with other things than just hands.
             if (target is IGameObjectProvider targetBehaviour && source is Hand hand)
             {
-
                 Entity entity = targetBehaviour.GameObject.GetComponentInParent<Entity>();
 
-                if (entity == null) return false;
+                if (entity == null)
+                    return false;
 
                 BodyPart bodyPart = entity.GetComponentInChildren<BodyPart>();
 
-                if (bodyPart == null) return false;
+                if (bodyPart == null)
+                    return false;
 
                 bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
 
@@ -52,7 +57,7 @@ namespace SS3D.Systems.Combat.Interactions
             return false;
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             IInteractionTarget target = interactionEvent.Target;
             IInteractionSource source = interactionEvent.Source;
@@ -64,7 +69,7 @@ namespace SS3D.Systems.Combat.Interactions
             {
                 Entity entity = targetBehaviour.GameObject.GetComponentInParent<Entity>();
                 BodyPart bodyPart = entity.GetComponentInChildren<BodyPart>();
-                
+
                 // Inflict a fix amount and type of damages for now. Long term, should be passed in parameter and depends on weapon type, velocity ...
                 bodyPart.InflictDamageToAllLayer(new DamageTypeQuantity(DamageType.Slash, 50));
             }

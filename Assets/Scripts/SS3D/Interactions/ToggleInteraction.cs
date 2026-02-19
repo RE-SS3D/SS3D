@@ -1,4 +1,5 @@
 ﻿using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
 using System;
 using UnityEngine;
 
@@ -7,8 +8,10 @@ namespace SS3D.Interactions
     /// <summary>
     /// Utility class for toggle interactions
     /// </summary>
-    public class ToggleInteraction : Interaction
+    public class ToggleInteraction : IInteraction, IClientInteractionSource
     {
+        public string Name;
+        public Sprite Icon;
         /// <summary>
         /// The icon when state is true
         /// </summary>
@@ -36,9 +39,8 @@ namespace SS3D.Interactions
         /// If the interaction should be range limited
         /// </summary>
         public bool RangeCheck { get; set; } = true;
-        
 
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is IToggleable toggle)
             {
@@ -48,7 +50,9 @@ namespace SS3D.Interactions
             return null;
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             if (interactionEvent.Target is IToggleable toggle)
             {
@@ -58,16 +62,17 @@ namespace SS3D.Interactions
             return null;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (RangeCheck && !InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }
+
             return CanInteractCallback.Invoke(interactionEvent);
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             if (interactionEvent.Target is IToggleable toggle1)
             {

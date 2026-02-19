@@ -14,19 +14,24 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// <summary>
     /// Boom.
     /// </summary>
-    public class NukeDetonateInteraction : Interaction
+    public class NukeDetonateInteraction : IInteraction, IClientInteractionSource
     {
-        public override string GetName(InteractionEvent interactionEvent)
+        public string Name;
+        public Sprite Icon;
+
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Detonate Nuke";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new System.NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : InteractionIcons.Nuke;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             IInteractionSource source = interactionEvent.Source;
             bool inRange = InteractionExtensions.RangeCheck(interactionEvent);
@@ -44,7 +49,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
             return true;
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             IInteractionSource source = interactionEvent.Source;
             IInteractionTarget target = interactionEvent.Target;
@@ -56,6 +61,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
                 new NukeDetonateEvent(nuke, playerSystem.GetCkey(source.GetComponentInParent<Entity>().Owner)).Invoke(this);
             }
+
             return false;
         }
     }
