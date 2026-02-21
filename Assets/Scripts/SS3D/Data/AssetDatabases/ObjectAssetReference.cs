@@ -21,6 +21,8 @@ namespace SS3D.Data.AssetDatabases
         [Header("This file is auto-generated, do not modify it manually")]
         public string Database;
 
-        public override bool Equals(object other) => other is ObjectAssetReference otherReference && Id.Equals(otherReference.Id) && Database.Equals(otherReference.Database);
+        public override bool Equals(object other) 
+            => other is ObjectAssetReference otherReference &&
+                Id.Equals(otherReference.Id) && Database.Equals(otherReference.Database);
     }
 }
