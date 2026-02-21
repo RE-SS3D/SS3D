@@ -21,7 +21,7 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// The path in the project where to put the ObjectAssetReference assets.
         /// </summary>
-        public static readonly string ObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
+        private const string ObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
 #endif
         
 #if UNITY_EDITOR
