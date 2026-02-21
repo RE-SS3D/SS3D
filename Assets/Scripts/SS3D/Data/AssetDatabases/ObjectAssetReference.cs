@@ -21,7 +21,7 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// The path in the project where to put the ObjectAssetReference assets.
         /// </summary>
-        public static readonly string WorldObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
+        public static readonly string ObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
 #endif
         
 #if UNITY_EDITOR
@@ -54,7 +54,7 @@ namespace SS3D.Data.AssetDatabases
             ObjectAssetReference assetReference = CreateInstance<ObjectAssetReference>();
             assetReference.Init(asset);
 
-            string assetPath = System.IO.Path.Combine(WorldObjectAssetPath, $"{asset.name}.asset");
+            string assetPath = System.IO.Path.Combine(ObjectAssetPath, $"{asset.name}.asset");
 
             UnityEditor.AssetDatabase.CreateAsset(assetReference, assetPath);
             UnityEditor.AssetDatabase.SaveAssetIfDirty(assetReference);
