@@ -38,8 +38,6 @@ namespace SS3D.Data.AssetDatabases
 
         public override bool Equals(object other) => other is ObjectAssetReference otherReference && Id.Equals(otherReference.Id) && Database.Equals(otherReference.Database);
 
-        public override int GetHashCode() => base.GetHashCode();
-
 #if UNITY_EDITOR
         [CanBeNull]
         public static ObjectAssetReference Create(Object asset)
