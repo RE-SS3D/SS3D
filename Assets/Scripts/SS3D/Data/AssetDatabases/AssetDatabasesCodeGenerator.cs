@@ -14,11 +14,6 @@ namespace SS3D.Data.AssetDatabases
     /// </summary>
     public static class AssetDatabasesCodeGenerator
     {
-        /// <summary>
-        /// The path in the project where to put the ObjectAssetReference assets.
-        /// </summary>
-        private static readonly string WorldObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
-
         private static readonly Dictionary<string, ObjectAssetReference> SavedAssetReferences = new Dictionary<string, ObjectAssetReference>();
 
         private static bool HasModifiedAssetsWhenGenerating;
@@ -93,7 +88,7 @@ namespace SS3D.Data.AssetDatabases
                 {
                     objectAssetReference = CreateWorldObjectAssetReference(gameObject.name, guid, assetDatabase.DatabaseID);
 
-                    string key = $"{WorldObjectAssetPath}{gameObject.name}.asset";
+                    string key = $"{ObjectAssetReference.ObjectAssetPath}{gameObject.name}.asset";
 
                     if (!SavedAssetReferences.TryAdd(key, objectAssetReference))
                     {
@@ -128,7 +123,7 @@ namespace SS3D.Data.AssetDatabases
             objectAssetReference.Id = gameObjectID;
             objectAssetReference.Database = assetDatabaseName;
 
-            UnityEditor.AssetDatabase.CreateAsset(objectAssetReference, $"{WorldObjectAssetPath}{fileName}.asset");
+            UnityEditor.AssetDatabase.CreateAsset(objectAssetReference, $"{ObjectAssetReference.ObjectAssetPath}{fileName}.asset");
 
             HasModifiedAssetsWhenGenerating = true;
 
@@ -181,7 +176,7 @@ namespace SS3D.Data.AssetDatabases
         {
             SavedAssetReferences.Clear();
 
-            Debug.Log($"[{nameof(AssetDatabasesCodeGenerator)}] - Loading all {nameof(ObjectAssetReference)} assets under {WorldObjectAssetPath}");
+            Debug.Log($"[{nameof(AssetDatabasesCodeGenerator)}] - Loading all {nameof(ObjectAssetReference)} assets under {ObjectAssetReference.ObjectAssetPath}");
 
             string[] loadAllAssetsAtPath = UnityEditor.AssetDatabase.FindAssets($"t:{nameof(ObjectAssetReference)}");
 
