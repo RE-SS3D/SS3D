@@ -64,7 +64,7 @@ namespace SS3D.Data.AssetDatabases
         {
             if (!asset)
             {
-                Debug.LogError("No asset found.");
+                Log.Error(this, "No asset found.");
 
                 return;
             }
@@ -76,7 +76,8 @@ namespace SS3D.Data.AssetDatabases
             AddressableAssetEntry entry = settings.FindAssetEntry(guid);
             if (entry == null)
             {
-                Debug.LogError($"Asset {asset.name} with GUID {guid} not found in Addressable Asset Settings.");
+                Log.Error(this, $"Asset {asset.name} with GUID {guid} not found in Addressable Asset Settings."
+
                 return;
             }
             
@@ -84,7 +85,8 @@ namespace SS3D.Data.AssetDatabases
 
             if (!databaseSettings)
             {
-                Debug.LogError("AssetDatabaseSettings not found.");
+                Log.Error(this, "AssetDatabaseSettings not found.");
+
                 return;
             }
             
