@@ -21,7 +21,7 @@ namespace SS3D.Data.AssetDatabases
         {
             if (!asset)
             {
-                Debug.LogError("No asset found.");
+                Log.Error(typeof(ObjectAssetReference), "No asset found.");
 
                 return null;
             }
