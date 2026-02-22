@@ -54,7 +54,7 @@ namespace SS3D.Data.AssetDatabases
 
             if (entry == null)
             {
-                Log.Error(this, $"Asset {asset.name} with GUID {guid} not found in Addressable Asset Settings."
+                Log.Error(this, $"Asset {asset.name} with GUID {guid} not found in Addressable Asset Settings.");
 
                 return;
             }
