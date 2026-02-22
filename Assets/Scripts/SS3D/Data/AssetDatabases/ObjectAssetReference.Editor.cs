@@ -13,7 +13,7 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// The path in the project where to put the ObjectAssetReference assets.
         /// </summary>
-        public const string ObjectAssetPath = "Assets/Content/Data/WorldObjectAssetReferences/";
+        public const string ObjectAssetPath = "Assets/Content/Data/ObjectAssetReferences/";
 
 
         [CanBeNull]
