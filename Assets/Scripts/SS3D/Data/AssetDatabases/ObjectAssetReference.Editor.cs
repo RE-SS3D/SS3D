@@ -1,11 +1,11 @@
-﻿using JetBrains.Annotations;
+﻿#if UNITY_EDITOR
+using JetBrains.Annotations;
 using SS3D.Logging;
 using System.Linq;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
-#if UNITY_EDITOR
 namespace SS3D.Data.AssetDatabases
 {
     public partial class ObjectAssetReference
