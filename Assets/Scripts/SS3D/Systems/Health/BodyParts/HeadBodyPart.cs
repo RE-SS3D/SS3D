@@ -1,10 +1,10 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using System.Collections;
-using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Health
@@ -79,11 +79,10 @@ namespace SS3D.Systems.Health
 
         protected override void SpawnOrgans()
         {
-            GameObject brainPrefab = Items.HumanBrain;
-            GameObject brainGameObject = Instantiate(brainPrefab);
-            Brain = brainGameObject.GetComponent<Brain>();
+            Brain brainPrefab = Assets.Get<Brain>(AssetDatabases.Items, Items.HumanBrain);
+            Brain = Instantiate(brainPrefab);
             Brain.HealthController = HealthController;
-            Spawn(brainGameObject, Owner);
+            Spawn(Brain.GameObject, Owner);
         }
     }
 }

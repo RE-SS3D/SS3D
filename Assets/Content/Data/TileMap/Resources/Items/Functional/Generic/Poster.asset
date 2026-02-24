@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Poster
   m_EditorClassIdentifier: 
-  nameString: poster
   prefab: {fileID: 5161561551087789900, guid: b044d7bdb55405046a9055726a779eb1, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: cd3268046db629240800ee48b64a9810, type: 2}
   icon: {fileID: 0}
+  _nameString: 

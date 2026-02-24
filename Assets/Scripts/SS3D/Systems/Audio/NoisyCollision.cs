@@ -2,6 +2,7 @@
 using FishNet.Object;
 using SS3D.Core;
 using FishNet;
+using SS3D.Data.AssetDatabases;
 using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio
@@ -46,13 +47,21 @@ namespace SS3D.Systems.Audio
         [Tooltip("How fast this object must hit another in order to make a hard impact sound.")]
         private float _hardImpactVelocity = 7.5f;
 
+        // [SerializeField]
+        // [Tooltip("List of possible sounds that will play when this object collides lightly.")]
+        // private AudioClip[] _lightImpactSounds;
+        
         [SerializeField]
-        [Tooltip("List of possible sounds that will play when this object collides lightly.")]
-        private AudioClip[] _lightImpactSounds;
+        [Tooltip("List of references of possible sounds that will play when this object collides lightly.")]
+        private ObjectAssetReference[] _lightImpactSoundReferences;
+
+        // [SerializeField]
+        // [Tooltip("List of possible sounds that will play when this object collides heavily.")]
+        // private AudioClip[] _hardImpactSounds;
 
         [SerializeField]
-        [Tooltip("List of possible sounds that will play when this object collides heavily.")]
-        private AudioClip[] _hardImpactSounds;
+        [Tooltip("List of references of possible sounds that will play when this object collides heavily.")]
+        private ObjectAssetReference[] _hardImpactSoundReferences;
 
         //For some reason, this is needed to have an enable/disable feature. Peculiar.
         private void FixedUpdate() { }
@@ -60,7 +69,7 @@ namespace SS3D.Systems.Audio
         private void OnValidate()
         {
             // Throw a warning if the user configured it retardedly.
-            if ((!(_lightImpactVelocity > _hardImpactVelocity)) && (!_useHardImpactSounds || _hardImpactSounds != null) && (_lightImpactSounds != null))
+            if ((!(_lightImpactVelocity > _hardImpactVelocity)) && (!_useHardImpactSounds || _hardImpactSoundReferences != null) && (_lightImpactSoundReferences != null))
             {
                 return;
             }
@@ -79,11 +88,11 @@ namespace SS3D.Systems.Audio
             //Only execute this code if we're supposed to make collision noises.
             if (_useHardImpactSounds && other.relativeVelocity.magnitude > _hardImpactVelocity)
             {
-                PlayCollisionSound(_hardImpactSounds);
+                PlayCollisionSound(_hardImpactSoundReferences);
             }
             else if (other.relativeVelocity.magnitude > _lightImpactVelocity)
             {
-                PlayCollisionSound(_lightImpactSounds);
+                PlayCollisionSound(_lightImpactSoundReferences);
             }
         }
 
@@ -92,19 +101,19 @@ namespace SS3D.Systems.Audio
         /// </summary>
         /// <param name="soundPool"></param>
         [Server]
-        private void PlayCollisionSound(AudioClip[] soundPool)
+        private void PlayCollisionSound(ObjectAssetReference[] soundPool)
         {
             float pitch = Random.Range(_basePitch - _pitchModulationLow, _basePitch + _pitchModulationHigh);
-            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, PickSound(soundPool), gameObject.transform.position, null,
+            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, PickSound(soundPool).Id, gameObject.transform.position, null,
                 false, _collisionVolume, pitch);
         }
 
-        private AudioClip PickSound(AudioClip[] availableSounds)
+        private ObjectAssetReference PickSound(ObjectAssetReference[] availableSounds)
         {
             // Pick a clip from the supplied array and return it
-            AudioClip currentClip = availableSounds[Random.Range(0, availableSounds.Length)];
+            ObjectAssetReference currentClipReference = availableSounds[Random.Range(0, availableSounds.Length)];
 
-            return currentClip;
+            return currentClipReference;
         }
     }
 }

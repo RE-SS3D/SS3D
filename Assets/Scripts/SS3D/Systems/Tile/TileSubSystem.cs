@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
+using SS3D.Data.AssetDatabases;
 using SS3D.Data.Management;
 using SS3D.Logging;
 using System;
@@ -80,6 +81,9 @@ namespace SS3D.Systems.Tile
 
         [ServerOrClient]
         public GenericObjectSo GetAsset(string assetName) => Loader.GetAsset(assetName);
+
+        [ServerOrClient]
+        public GenericObjectSo GetAsset(ObjectAssetReference asset) => Loader.GetAsset(asset);
 
         [Server]
         private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)

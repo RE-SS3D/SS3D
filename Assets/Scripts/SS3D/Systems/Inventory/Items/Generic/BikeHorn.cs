@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -25,8 +26,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public void Honk()
         {
             _animator.SetTrigger(HonkAnimation);
-            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.BikeHorn, GameObject.transform.position, NetworkObject,
-                false,0.7f, 1, 1, 5);
+            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.BikeHorn, GameObject.transform.position, NetworkObject, false, 0.7f, 1, 1, 5);
         }
 
         public bool IsHonking()

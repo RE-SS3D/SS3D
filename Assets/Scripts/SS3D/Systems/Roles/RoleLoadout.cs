@@ -1,7 +1,7 @@
 ﻿using Coimbra;
+using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Roles
 {
@@ -11,10 +11,9 @@ namespace SS3D.Systems.Roles
     [CreateAssetMenu(fileName = "Loadout", menuName = "Roles/Loadout")]
     public class RoleLoadout : ScriptableObject
     {
-        public GameObject HandLeft;
-        public GameObject HandRight;
+        public ObjectAssetReference HandLeftAsset;
+        public ObjectAssetReference HandRightAsset;
 
-        [FormerlySerializedAs("ItemsToEquip")]
-        public SerializableDictionary<ContainerType, GameObject> Equipment;
+        public SerializableDictionary<ContainerType, ObjectAssetReference> EquipmentAssets;
     }
 }

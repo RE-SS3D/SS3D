@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TileDirt
   m_EditorClassIdentifier: 
-  nameString: tile_dirt
   prefab: {fileID: 6767447678079105841, guid: 0ef9cea3bb74e6c4788f77e711f92d4d, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 41904bd2be19b8d4f9b54bcb4c35e4b1, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 1
   genericType: 9
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

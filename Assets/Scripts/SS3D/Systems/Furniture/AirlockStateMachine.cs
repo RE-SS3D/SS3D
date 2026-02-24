@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Systems.Audio;
 using UnityEngine;
@@ -34,6 +35,7 @@ namespace SS3D.Systems.Furniture
                 ChangeColors(_openingColor, animator);
                 SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Sfx, Sounds.AirlockOpen, animator.GetComponent<NetworkObject>());
             }
+
             if (stateInfo.IsName(Closing))
             {
                 ChangeColors(_closingColor, animator);

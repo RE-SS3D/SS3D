@@ -1,3 +1,4 @@
+using SS3D.Data.AssetDatabases;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,16 +12,25 @@ namespace SS3D.Systems.Roles
     [Serializable, CreateAssetMenu(fileName = "Role Data", menuName = "Roles/RoleData")]
     public class RoleData : ScriptableObject
     {
-        [SerializeField] private string _roleName;
-        [SerializeField] private GameObject _pdaPrefab;
-        [SerializeField] private GameObject _idCardPrefab;
-        [SerializeField] private List<IDPermission> _permissions = new List<IDPermission>();
-        [SerializeField] private RoleLoadout _loadout;
+        [SerializeField]
+        private string _roleName;
+        [SerializeField]
+        private ObjectAssetReference _pdaAsset;
+        [SerializeField]
+        private ObjectAssetReference _idCardAsset;
+        [SerializeField]
+        private List<IDPermission> _permissions = new();
+        [SerializeField]
+        private RoleLoadout _loadout;
 
         public string Name => _roleName;
-        public GameObject IDCardPrefab => _idCardPrefab;
-        public GameObject PDAPrefab => _pdaPrefab;
+
+        public ObjectAssetReference IDCardAsset => _idCardAsset;
+
+        public ObjectAssetReference PDAAsset => _pdaAsset;
+
         public List<IDPermission> Permissions => _permissions;
+
         public RoleLoadout Loadout => _loadout;
     }
 }

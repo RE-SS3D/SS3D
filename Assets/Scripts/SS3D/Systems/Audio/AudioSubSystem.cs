@@ -6,7 +6,9 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
+using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Systems.Audio
@@ -63,9 +65,9 @@ namespace SS3D.Systems.Audio
         /// Grabs a free audio source and parents it to a specific object before playing it.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, AudioClip audioClipId, NetworkObject parent)
+        public void PlayAudioSource(AudioType audioType, string audioClipId, NetworkObject parent)
         {
-            RpcPlayAudioSource(audioType, audioClipId.name, parent.transform.position, parent);
+            RpcPlayAudioSource(audioType, audioClipId, parent.transform.position, parent);
         }
 
         /// <summary>
@@ -73,10 +75,10 @@ namespace SS3D.Systems.Audio
         /// Volume, pitch, and ranges are optional.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, AudioClip audioClipId, Vector3 position, NetworkObject parent,
+        public void PlayAudioSource(AudioType audioType, string audioClipId, Vector3 position, NetworkObject parent,
             bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
-            RpcPlayAudioSource(audioType, audioClipId.name, position, parent, isLooping, volume, pitch, minRange, maxRange);
+            RpcPlayAudioSource(audioType, audioClipId, position, parent, isLooping, volume, pitch, minRange, maxRange);
         }
 
         [Server]
@@ -98,13 +100,13 @@ namespace SS3D.Systems.Audio
         }
 
         [ObserversRpc]
-        public void RpcPlayAudioSource(AudioType type, string audioClip, Vector3 position, NetworkObject parent,
+        public void RpcPlayAudioSource(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
             bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             AudioSource audioSource = FindAvailableAudioSource(type);
 
             audioSource.gameObject.transform.position = position;
-            audioSource.clip = Assets.Get<AudioClip>(AssetDatabases.Sounds, audioClip);
+            audioSource.clip = Assets.Get<AudioClip>(AssetDatabases.Sounds, audioClipID);
             audioSource.volume = volume;
             audioSource.pitch = pitch;
             audioSource.minDistance = minRange;
@@ -240,6 +242,19 @@ namespace SS3D.Systems.Audio
                 }
             }
         }
+
+#if UNITY_EDITOR
+        [MenuItem("Assets/Create/Audio Clip Reference")]
+        private static void CreateAudioClipReference()
+        {
+            AudioClip[] selectedClips = UnityEditor.Selection.GetFiltered<AudioClip>(SelectionMode.Assets);
+
+            foreach (AudioClip selectedClip in selectedClips)
+            {
+                ObjectAssetReference.Create(selectedClip);
+            }
+        }
+#endif
     }
 }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
 using FishNet.Object.Synchronizing;
+using SS3D.Data;
 using SS3D.Logging;
 
 namespace SS3D.Systems.Crafting
@@ -31,7 +32,8 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                _currentStepName = targetAssetReference.Asset.Prefab.name;
+                GameObject targetPrefab = Assets.Get<GameObject>(targetAssetReference.Asset);
+                _currentStepName = targetPrefab?.name;
             }
         }
     }

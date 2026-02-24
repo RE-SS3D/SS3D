@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SteelWallReinforced
   m_EditorClassIdentifier: 
-  nameString: wall_steelreinforced
   prefab: {fileID: 3591147544166670882, guid: abcc60752234e584d8d98c9dec03e7cc, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 1
   genericType: 3
   specificType: 3
   width: 1
   height: 1
+  isLarge: 0

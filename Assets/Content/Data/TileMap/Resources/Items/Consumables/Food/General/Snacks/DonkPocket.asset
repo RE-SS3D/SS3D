@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: DonkPocket
   m_EditorClassIdentifier: 
   prefab: {fileID: 3969530706517246485, guid: 56b1aff2041026242bed0f064dee56bb, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 5ebf0777f77019c469729ac80e12720b, type: 2}
   icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}
+  _nameString: 

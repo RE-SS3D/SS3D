@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: OfficeChairBlue
   m_EditorClassIdentifier: 
-  nameString: chair_office_blue
   prefab: {fileID: 2552998557361554814, guid: 51049866c35db47418dfe5e78bee76e7, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: cb3ca8be4114e4d409b3d69fae2f9428, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

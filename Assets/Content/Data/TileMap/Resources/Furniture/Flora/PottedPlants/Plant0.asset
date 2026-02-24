@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Plant0
   m_EditorClassIdentifier: 
-  nameString: plant0
   prefab: {fileID: 4182798096333233391, guid: 41d7af24659a0d3439668aeb4c46d9bc, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 7f81f6e487d7acc449f47ee1bb0c8cb7, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

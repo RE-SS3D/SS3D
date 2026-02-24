@@ -1,16 +1,14 @@
 ﻿using Coimbra;
 using JetBrains.Annotations;
 using Serilog;
-using System.Collections.Generic;
-using Object = UnityEngine.Object;
-using SS3D.CodeGeneration;
 using SS3D.CodeGeneration.Creators;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
-
+using Object = UnityEngine.Object;
 #if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 #endif
 
@@ -38,16 +36,18 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public string DatabaseName;
 
+        public string DatabaseID;
+
 #if UNITY_EDITOR
         /// <summary>
         /// The asset group that constitutes this AssetDatabase, the system gets every asset from it and adds to an asset list.
         /// </summary>
         public AddressableAssetGroup AssetGroup;
-
+#endif
+        
         /// <summary>
         /// All loaded assets that will be included in the built game.
         /// </summary>
-#endif
         public SerializableDictionary<string, Object> Assets;
 
 #if UNITY_EDITOR
@@ -60,7 +60,7 @@ namespace SS3D.Data.AssetDatabases
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)
             {
-                Assets.TryAdd(entry.MainAsset.name, entry.MainAsset);
+                Assets.TryAdd(entry.guid, entry.MainAsset);
             }
 
             EditorUtility.SetDirty(this);
@@ -83,7 +83,7 @@ namespace SS3D.Data.AssetDatabases
                 return null;
             }
 
-            if (typeof(T) != typeof(GameObject) && asset is GameObject gameObject)
+            if (typeof(T).IsSubclassOf(typeof(Component)) && asset is GameObject gameObject)
             {
                 return gameObject.GetComponent<T>();
             }
@@ -106,10 +106,10 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         /// <param name="asset"></param>
         /// <typeparam name="TAsset"></typeparam>
-        public void Add<TAsset>(Object asset)
+        public void Add<TAsset>([NotNull] TAsset asset)
             where TAsset : Object
         {
-            Assets.Add(asset.name, asset as TAsset);
+            Assets.Add(asset.name, asset);
         }
 
 #if UNITY_EDITOR
@@ -144,7 +144,50 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            DatabaseAssetCreator.CreateAtPath(DatabaseAssetPath, typeof(DatabaseAsset), DatabaseName, Assets.Values, DatabaseAssetNamespaceName);
+            DatabaseScriptCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, Assets.Values.ToList(), DatabaseAssetNamespaceName);
+        }
+
+        public bool AddToAddressables([NotNull] Object asset)
+        {
+            string path = UnityEditor.AssetDatabase.GetAssetPath(asset);
+
+            if (string.IsNullOrEmpty(path))
+            {
+                Log.Error($"Asset {asset.name} does not have a valid path, cannot add to addressables.");
+
+                return false;
+            }
+
+            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(path);
+
+            if (!AssetGroup)
+            {
+                Log.Error($"Addressable Asset Group {name} not found, cannot add asset {asset.name} to addressables.");
+
+                return false;
+            }
+
+            AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+            AddressableAssetEntry entry = settings.FindAssetEntry(guid);
+
+            if (entry != null)
+            {
+                Log.Warning($"Asset {asset.name} is already in Addressable Group {entry.parentGroup.name}.");
+
+                return false;
+            }
+
+            settings.CreateOrMoveEntry(guid, AssetGroup);
+
+            Add(asset);
+
+            EditorUtility.SetDirty(asset);
+            EditorUtility.SetDirty(this);
+            
+            UnityEditor.AssetDatabase.SaveAssetIfDirty(asset);
+            UnityEditor.AssetDatabase.SaveAssetIfDirty(this);
+
+            return true;
         }
 #endif
     }

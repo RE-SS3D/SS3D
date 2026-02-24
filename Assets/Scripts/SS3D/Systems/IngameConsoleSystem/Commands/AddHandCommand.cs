@@ -5,6 +5,7 @@ using UnityEngine;
 using FishNet;
 using SS3D.Systems.Inventory.Containers;
 using FishNet.Connection;
+using SS3D.Data;
 using SS3D.Permissions;
 using SS3D.Data.Generated;
 
@@ -43,17 +44,16 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             Player Player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
             Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(Player);
 
-            GameObject leftHandPrefab = Items.HumanHandLeft;
-            GameObject leftHandObject = GameObject.Instantiate(leftHandPrefab, entity.transform);
-            leftHandObject.transform.localPosition = position;
-            leftHandObject.transform.localEulerAngles = rotation;
+            Hand leftHandPrefab = Assets.Get<Hand>(AssetDatabases.Items, Items.HumanHandLeft);
+            Hand leftHand = Object.Instantiate(leftHandPrefab, entity.transform);
+            leftHand.Transform.localPosition = position;
+            leftHand.Transform.localEulerAngles = rotation;
 
-            Hand leftHand = leftHandObject.GetComponent<Hand>();
-            InstanceFinder.ServerManager.Spawn(leftHandObject, Player.Owner);
+            InstanceFinder.ServerManager.Spawn(leftHand.GameObject, Player.Owner);
 
             Hands hands = entity.GetComponent<Hands>();
             HumanInventory inventory = entity.GetComponent<HumanInventory>();
-            inventory.TryAddContainer(leftHandObject.GetComponent<AttachedContainer>());
+            inventory.TryAddContainer(leftHand.GetComponent<AttachedContainer>());
             hands.AddHand(leftHand);
 
             return "hand added";

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: Multitool
   m_EditorClassIdentifier: 
-  nameString: Multitool
   prefab: {fileID: 2402587210622244651, guid: 2ca5f2886cf2f19428b50bf284689b86, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: bd14f7dd0646a2240adf09ba61ce700a, type: 2}
   icon: {fileID: 0}
+  _nameString: 

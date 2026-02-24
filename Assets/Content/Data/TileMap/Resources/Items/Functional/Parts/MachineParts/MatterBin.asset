@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: MatterBin
   m_EditorClassIdentifier: 
   prefab: {fileID: 2402587210622244651, guid: ed77d98d3e75b7946b404face1fe8f82, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: d09858427deec014fb0abe5ea0b79bdd, type: 2}
   icon: {fileID: 0}
+  _nameString: 

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: MedicalPatch
   m_EditorClassIdentifier: 
   prefab: {fileID: 4068007204767187790, guid: 2332a158259900e4f8a237fa8daff266, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 1a9f9df755637c3478bf4649e7ab04fd, type: 2}
   icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}
+  _nameString: 

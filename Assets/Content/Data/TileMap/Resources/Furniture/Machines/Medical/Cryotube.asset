@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Cryotube
   m_EditorClassIdentifier: 
   prefab: {fileID: 3366070093996439494, guid: 081d9ee3e54295d49a4970a88f4943a9, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 47922ffa76b90df46b58005fe77de084, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

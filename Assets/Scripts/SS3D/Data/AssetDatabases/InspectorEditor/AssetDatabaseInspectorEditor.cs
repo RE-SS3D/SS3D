@@ -1,11 +1,9 @@
 ﻿#if UNITY_EDITOR
-using SS3D.CodeGeneration;
-using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
@@ -29,7 +27,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetDatabase = (AssetDatabase)target;
         }
 
-#if UNITY_EDITOR
         private void OnValidate()
         {
             if (_enumNameTextField != null)
@@ -37,12 +34,13 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 _assetDatabase.DatabaseName = _enumNameTextField.value;
             }
 
+            _assetDatabase.DatabaseID = GetDatabaseID();
+
             if (_assetGroupObjectField != null)
             {
                 _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             }
         }
-#endif
 
         /// <summary>
         /// This sets ups the UI for the custom inspector using the UI Toolkit
@@ -95,6 +93,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         private void HandleLoadAssetsButtonPressed()
         {
             _assetDatabase.DatabaseName = _enumNameTextField.value;
+            _assetDatabase.DatabaseID = GetDatabaseID();
 
             _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             _assetDatabase.LoadAssetsFromAssetGroup();
@@ -113,6 +112,19 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             EditorUtility.SetDirty(_assetDatabase);
 
             _assetDatabase.GenerateDatabaseCode();
+        }
+
+        private string GetDatabaseID()
+        {
+            string assetPath = UnityEditor.AssetDatabase.GetAssetPath(_assetDatabase);
+
+            if (!File.Exists(assetPath))
+            {
+                return null;
+            }
+
+            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+            return guid;
         }
     }
 }

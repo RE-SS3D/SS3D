@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TableGlass
   m_EditorClassIdentifier: 
-  nameString: table_glass
   prefab: {fileID: 2839728781945606427, guid: 4d48472d06930bd42a15897e6a1794ac, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 57eec9e75508e354f8d240e6c7dfc96a, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 7
   specificType: 1
   width: 1
   height: 1
+  isLarge: 0

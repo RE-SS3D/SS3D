@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: PosterVertical
   m_EditorClassIdentifier: 
   prefab: {fileID: 5927714388255546572, guid: 0d6ab6288624c7348bdcbfb81d07088f, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: ab8a961ad18f29e4da434bd050dc52c9, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 6
   genericType: 0
   specificType: 0

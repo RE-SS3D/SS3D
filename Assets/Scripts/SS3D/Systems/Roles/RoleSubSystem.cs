@@ -11,6 +11,8 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Core;
+using SS3D.Data;
+using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Inventory.Items.Generic;
 
 namespace SS3D.Systems.Roles
@@ -166,8 +168,8 @@ namespace SS3D.Systems.Roles
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
-            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, container);
-            Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab.name, Vector3.zero, Quaternion.identity);
+            Item pdaItem = SpawnItemInSlot(role.PDAAsset, true, container);
+            Item idCardItem = itemSystem.SpawnItem(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
 
             PDA pda = (PDA)pdaItem;
             IDCard idCard = (IDCard)idCardItem;
@@ -207,9 +209,9 @@ namespace SS3D.Systems.Roles
                 containers.Add(inventoryContainer.ContainerType, inventoryContainer);
             }
 
-            foreach (KeyValuePair<ContainerType, GameObject> itemToEquip in loadout.Equipment)
+            foreach (KeyValuePair<ContainerType, ObjectAssetReference> itemToEquip in loadout.EquipmentAssets)
             {
-                if (itemToEquip.Value == null)
+                if (!itemToEquip.Value)
                 {
                     continue;
                 }
@@ -220,16 +222,15 @@ namespace SS3D.Systems.Roles
                 }
             }
 
-            if (loadout.HandLeft != null)
+            if (loadout.HandLeftAsset)
             {
-                SpawnItemInSlot(loadout.HandLeft, true, handContainers[0]);
+                SpawnItemInSlot(loadout.HandLeftAsset, true, handContainers[0]);
             }
 
-            if (loadout.HandRight != null)
+            if (loadout.HandRightAsset)
             {
-                SpawnItemInSlot(loadout.HandRight, true, handContainers[1]);
+                SpawnItemInSlot(loadout.HandRightAsset, true, handContainers[1]);
             }
-            
 
             inventory.TriggerInventorySetup();
         }
@@ -237,18 +238,19 @@ namespace SS3D.Systems.Roles
         /// <summary>
         /// Spawns an item inside a container slot after checking for boolean
         /// </summary>
-        /// <param name="itemId">The id of the item to be spawned</param>
+        /// <param name="assetReference"></param>
         /// <param name="shouldSpawn">Condition indicating if the item should be spawned</param>
         /// <param name="container">Container the item will be spawned in</param>
-        private void SpawnItemInSlot(GameObject itemId, bool shouldSpawn, AttachedContainer container)
+        private Item SpawnItemInSlot(ObjectAssetReference assetReference, bool shouldSpawn, AttachedContainer container)
         {
             if (!shouldSpawn)
             {
-                return;
+                return null;
             }
 
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
-            itemSystem.SpawnItemInContainer(itemId, container);
+            GameObject gameObjectToSpawn = Assets.Get<GameObject>(assetReference);
+            return itemSystem.SpawnItemInContainer(gameObjectToSpawn, container);
         }
     }
 }

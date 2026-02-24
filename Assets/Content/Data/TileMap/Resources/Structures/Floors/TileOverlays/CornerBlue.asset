@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: CornerBlue
   m_EditorClassIdentifier: 
-  nameString: overlay_blue
   prefab: {fileID: 6767447678079105841, guid: 821d0946be816bb42a0eed24631d57ee, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 65c0502418577df42af3550984f4d3e4, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 9
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

@@ -1,8 +1,7 @@
-﻿using SS3D.Data.Generated;
-using SS3D.Systems.Entities;
+﻿using SS3D.Data;
+using SS3D.Data.Generated;
 using SS3D.Systems.Health;
 using System.Collections;
-using UnityEngine;
 
 public class HumanTorso : BodyPart
 {
@@ -33,21 +32,17 @@ public class HumanTorso : BodyPart
 
     protected override void SpawnOrgans()
     {
-        GameObject heartPrefab = Items.HumanHeart;
-        GameObject leftLungPrefab = Items.HumanLungLeft;
-        GameObject rightLungPrefab = Items.HumanLungRight;;
-        
-        GameObject heartGameObject = Instantiate(heartPrefab);
-        GameObject leftLungGameObject = Instantiate(leftLungPrefab);
-        GameObject rightLungGameObject = Instantiate(rightLungPrefab);
-        
-        Heart = heartGameObject.GetComponent<Heart>();
-        LeftLung = leftLungGameObject.GetComponent<Lungs>();
-        RightLung = rightLungGameObject.gameObject.GetComponent<Lungs>();
-        
-        Spawn(heartGameObject, Owner);
-        Spawn(leftLungGameObject, Owner);
-        Spawn(rightLungGameObject, Owner);
+        Heart heartPrefab = Assets.Get<Heart>(AssetDatabases.Items, Items.HumanHeart);
+        Lungs leftLungPrefab = Assets.Get<Lungs>(AssetDatabases.Items, Items.HumanLungLeft);
+        Lungs rightLungPrefab = Assets.Get<Lungs>(AssetDatabases.Items, Items.HumanLungRight);
+
+        Heart = Instantiate(heartPrefab);
+        LeftLung = Instantiate(leftLungPrefab);
+        RightLung = Instantiate(rightLungPrefab);
+
+        Spawn(Heart.GameObject, Owner);
+        Spawn(LeftLung.GameObject, Owner);
+        Spawn(RightLung.GameObject, Owner);
     }
 
     protected override void AddInitialLayers()

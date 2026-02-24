@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: GlassSheet
   m_EditorClassIdentifier: 
   prefab: {fileID: 7125681683583715523, guid: e2a06f02e6a7e0348bdc535344bfe1f3, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 3c8e8f4d958f81744a729dc344342955, type: 2}
   icon: {fileID: 0}
+  _nameString: 

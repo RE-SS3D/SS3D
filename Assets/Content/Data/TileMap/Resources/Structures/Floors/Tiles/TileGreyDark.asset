@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TileGreyDark
   m_EditorClassIdentifier: 
-  nameString: tile_greydark
   prefab: {fileID: 5554428447677395221, guid: 6873d7cf62d6ebc42966423161b799f1, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: cf2d801ddd077fc42824b5fbfb3f4dec, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 1
   genericType: 9
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

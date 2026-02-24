@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: WoodLog
   m_EditorClassIdentifier: 
   prefab: {fileID: 7125681683583715523, guid: 2767aeb6e6fd53b43a1cb305789834d4, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: e6c3ae3d10a33e240832b7bc90d7b11c, type: 2}
   icon: {fileID: 0}
+  _nameString: 

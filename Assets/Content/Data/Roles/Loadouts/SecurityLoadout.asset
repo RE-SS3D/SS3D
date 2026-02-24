@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
   m_Name: SecurityLoadout
   m_EditorClassIdentifier: 
-  HandLeft: {fileID: 8197868818743549203, guid: 1d2cf546d53e3fe4c9103007427aaec7, type: 3}
-  HandRight: {fileID: 0}
-  Equipment:
+  HandLeftAsset: {fileID: 11400000, guid: d81d46f903aad014aa4728a8b47ab7ea, type: 2}
+  HandRightAsset: {fileID: 0}
+  EquipmentAssets:
     _list:
     - _key: 512
-      _value: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      _value: {fileID: 11400000, guid: 620dc53a5608be44a975c990e69ddba5, type: 2}
     - _key: 16
-      _value: {fileID: 2653363475000095017, guid: 535ed7c02b5cbdc43ae2b234a963c5cc, type: 3}
+      _value: {fileID: 11400000, guid: 7514f2bc5fd84a14095929761da0a4dd, type: 2}
     - _key: 32
-      _value: {fileID: 2653363475000095017, guid: 535ed7c02b5cbdc43ae2b234a963c5cc, type: 3}
+      _value: {fileID: 11400000, guid: 7514f2bc5fd84a14095929761da0a4dd, type: 2}
     _new: 0

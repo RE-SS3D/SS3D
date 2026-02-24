@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Data;
+using System;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -34,7 +35,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : InteractionIcons.Discard;
+            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

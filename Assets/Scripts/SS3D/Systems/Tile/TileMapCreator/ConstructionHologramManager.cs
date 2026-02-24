@@ -4,6 +4,8 @@ using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data;
+using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Utils;
@@ -62,7 +64,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _selectedObject = genericObjectSo;
 
             DestroyHolograms();
-            CreateHologram(genericObjectSo.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
+            CreateHologram(genericObjectSo.PrefabAsset, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
         protected override void OnAwake()
@@ -142,7 +144,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 {
                     for (int i = 0; i < -difference; i++)
                     {
-                        CreateHologram(_selectedObject.prefab, new());
+                        CreateHologram(_selectedObject.PrefabAsset, new());
                     }
                 }
 
@@ -172,8 +174,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// <summary>
         /// Instantiate in the correct position and rotation a single hologram.
         /// </summary>
-        public ConstructionHologram CreateHologram(GameObject prefab, Vector3 position)
+        public ConstructionHologram CreateHologram(ObjectAssetReference prefabAsset, Vector3 position)
         {
+            GameObject prefab = Assets.Get<GameObject>(prefabAsset);
             GameObject tileObject = Instantiate(prefab);
             ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
@@ -239,8 +242,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             DestroyHolograms();
 
-            if (_selectedObject == null) return;
-            CreateHologram(_selectedObject.prefab, TileHelper.GetPointedPosition(!_isPlacingItem));
+            if (_selectedObject == null)
+            {
+                return;
+            }
+
+            CreateHologram(_selectedObject.PrefabAsset, TileHelper.GetPointedPosition(!_isPlacingItem));
         }
 
         /// <summary>

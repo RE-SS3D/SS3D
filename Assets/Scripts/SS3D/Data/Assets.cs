@@ -1,10 +1,17 @@
-﻿using System.Collections.Generic;
-using Coimbra;
+﻿using Coimbra;
 using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System;
+using System.Collections.Generic;
+using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
+#if UNITY_EDITOR
+using System.IO;
+using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+#endif
 
 namespace SS3D.Data
 {
@@ -27,7 +34,17 @@ namespace SS3D.Data
         public static TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
             where TAsset : Object
         {
-            return GetDatabase(databaseId).Get<TAsset>(assetId);
+            return GetDatabase(databaseId)?.Get<TAsset>(assetId);
+        }
+
+        /// <summary>
+        /// Returns an asset from a  database casting the object found to TAsset.
+        /// </summary>
+        [CanBeNull]
+        public static TAsset Get<TAsset>([NotNull] ObjectAssetReference assetReference)
+            where TAsset : Object
+        {
+            return GetDatabase(assetReference.Database)?.Get<TAsset>(assetReference.Id);
         }
 
         /// <summary>
@@ -51,7 +68,7 @@ namespace SS3D.Data
             for (int index = 0; index < assetDatabases.Count; index++)
             {
                 AssetDatabase database = assetDatabases[index];
-                Databases.Add(database.DatabaseName, database);
+                Databases.Add(database.DatabaseID, database);
             }
 
             Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
@@ -85,5 +102,21 @@ namespace SS3D.Data
 
             return database;
         }
+
+#if UNITY_EDITOR
+        public static bool AddToAddressables(string databaseID, Object asset)
+        {
+            AssetDatabase database = GetDatabase(databaseID);
+
+            if (database)
+            {
+                return database.AddToAddressables(asset);
+            }
+
+            Log.Error(typeof(Assets), $"Database of type {databaseID} not found cannot add to addressables");
+            return false;
+
+        }
+#endif
     }
 }

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: JumpsuitSecurity
   m_EditorClassIdentifier: 
   prefab: {fileID: 6330158209413936013, guid: 93ad90421a3b2f64e8fdb9e95a42ba90, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 9abef62d6f4edd443b3fa81a32f9a5ba, type: 2}
   icon: {fileID: 0}
+  _nameString: 

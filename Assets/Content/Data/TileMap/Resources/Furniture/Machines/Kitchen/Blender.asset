@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Blender
   m_EditorClassIdentifier: 
-  nameString: blender
   prefab: {fileID: 1918783493706165866, guid: 5a09b3e93f0022b468da150e3c4a78c6, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: c106e3753ddf7bf478a44b1b84e29a75, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

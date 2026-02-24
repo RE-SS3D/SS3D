@@ -4,6 +4,7 @@ using SS3D.Interactions;
 using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Core;
+using SS3D.Data.AssetDatabases;
 using System.Electricity;
 using UnityEngine.Serialization;
 
@@ -18,7 +19,7 @@ namespace SS3D.Systems.Audio
         private MachinePowerConsumer _powerConsumer;
         
         [SerializeField]
-        private List<AudioClip> _songs;
+        private List<ObjectAssetReference> _songReferences;
 
         [SyncVar]
         public bool AudioOn;
@@ -54,7 +55,7 @@ namespace SS3D.Systems.Audio
             
             if (AudioOn)
             {
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject,
+                SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, _songReferences[CurrentMusic].Id, GameObject.transform.position, NetworkObject,
                     false, 0.7f, 1, 1, 5);
             }
             else
@@ -86,8 +87,8 @@ namespace SS3D.Systems.Audio
             
             SubSystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
             SubSystems.Get<AudioSubSystem>().SetTimeAudioSource(NetworkObject, 0f);
-            CurrentMusic = (CurrentMusic + 1) % (_songs.Count);
-            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, _songs[CurrentMusic], GameObject.transform.position, NetworkObject,
+            CurrentMusic = (CurrentMusic + 1) % _songReferences.Count;
+            SubSystems.Get<AudioSubSystem>().PlayAudioSource(AudioType.Music, _songReferences[CurrentMusic].Id, GameObject.transform.position, NetworkObject,
                 false, 0.7f, 1, 1, 5);
         }
 

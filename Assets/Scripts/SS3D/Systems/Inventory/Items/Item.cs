@@ -6,6 +6,7 @@ using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
+using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -38,7 +39,7 @@ namespace SS3D.Systems.Inventory.Items
         [ReadOnly]
         [Header("This field is filled automatically by the AssetData system.")]
 #endif
-        private WorldObjectAssetReference _asset;
+        private ObjectAssetReference _asset;
 
         #region Item
         [Header("Item settings")]
@@ -106,7 +107,7 @@ namespace SS3D.Systems.Inventory.Items
             set => _nativeColliders = value;
         }
 
-        public WorldObjectAssetReference Asset
+        public ObjectAssetReference Asset
         {
             get => _asset;
             set
@@ -119,7 +120,7 @@ namespace SS3D.Systems.Inventory.Items
             }
         }
 
-        public Item Prefab => Asset.Get<Item>();
+        public Item Prefab => Asset ? Assets.Get<Item>(Asset) : null;
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.

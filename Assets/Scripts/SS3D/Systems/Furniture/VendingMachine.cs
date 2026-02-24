@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
@@ -55,37 +56,40 @@ namespace SS3D.Systems.Furniture
             {
                 return;
             }
-            
+
             if (productIndex >= _productsToDispense.Length)
             {
-                Log.Error(this, $"Product with index {productIndex} not found in products to dispense in {gameObject.name}. "
-                    + $"Max possible index is {_productsToDispense.Length - 1}");
+                Log.Error(this, $"Product with index {productIndex} not found in products to dispense in {gameObject.name}. Max possible index is {_productsToDispense.Length - 1}");
+
                 return;
             }
-            
+
             if (productIndex < 0)
             {
                 Log.Error(this, $"Invalid product index, value must be between 0 and {_productsToDispense.Length - 1}");
+
                 return;
             }
 
             VendingMachineProductStock productToDispenseStock = _productsToDispense[productIndex];
+            AudioSubSystem audioSubSystem = SubSystems.Get<AudioSubSystem>();
+
             if (productToDispenseStock.Stock <= 0)
             {
-                SubSystems.Get<AudioSubSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.BikeHorn, Position, NetworkObject,
-                    false, 0.7f, 1, 1, 3);
+                audioSubSystem.PlayAudioSource(Audio.AudioType.Sfx, Sounds.BikeHorn, Position, NetworkObject, false, 0.7f, 1, 1, 3);
+
                 return;
             }
 
             _powerConsumer.UseMachineOnce();
             productToDispenseStock.Stock--;
-            SubSystems.Get<AudioSubSystem>().PlayAudioSource(Audio.AudioType.Sfx, Sounds.Can1, Position, NetworkObject,
-                false, 0.7f, 1, 1, 3);
-            
+
+            audioSubSystem.PlayAudioSource(Audio.AudioType.Sfx, Sounds.Can1, Position, NetworkObject, false, 0.7f, 1, 1, 3);
+
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
-            itemSystem.SpawnItem(productToDispenseStock.Product.name, _dispensingTransform.position, quaternion);
+            itemSystem.SpawnItem(productToDispenseStock.Product.PrefabAsset.Id, _dispensingTransform.position, quaternion);
         }
 
         /// <inheritdoc />
@@ -95,6 +99,8 @@ namespace SS3D.Systems.Furniture
             {
                 return Array.Empty<IInteraction>();
             }
+
+            Sprite takeIcon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
             
             IInteraction[] interactions = new IInteraction[_productsToDispense.Length];
             for (int i = 0; i < _productsToDispense.Length; i++)
@@ -104,7 +110,7 @@ namespace SS3D.Systems.Furniture
                     ProductName = _productsToDispense[i].Product.NameString,
                     ProductIndex = i,
                     ProductStock = _productsToDispense[i].Stock,
-                    Icon = InteractionIcons.Take
+                    Icon = takeIcon,
                 };
             }
 

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: SecurityIDCard
   m_EditorClassIdentifier: 
-  nameString: security_idcard
   prefab: {fileID: 5261116577612792016, guid: ff95abc9c2b779340a1b50f1a128a934, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: bca8d36802b3dbc47bc479151a3f7ea1, type: 2}
   icon: {fileID: 0}
+  _nameString: 

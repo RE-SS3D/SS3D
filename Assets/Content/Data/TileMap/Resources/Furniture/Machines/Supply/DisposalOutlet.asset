@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: DisposalOutlet
   m_EditorClassIdentifier: 
-  nameString: disposal_outlet
   prefab: {fileID: 2658310835758749969, guid: 7c6bebf2e12702d48abd76acad4d1272, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 6fa242ef9bd905b4b8ba6b969a50c17e, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

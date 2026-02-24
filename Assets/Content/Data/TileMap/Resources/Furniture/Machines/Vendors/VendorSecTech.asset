@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: VendorSecTech
   m_EditorClassIdentifier: 
-  nameString: vendor_sectech
   prefab: {fileID: 2658310835758749969, guid: 6f2976f635940684da7f7f4ed7855a8d, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 32c17bc4bdd2e8a43a4957440b5a1822, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

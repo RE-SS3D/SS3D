@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: FuelTank
   m_EditorClassIdentifier: 
   prefab: {fileID: 1918783493706165866, guid: 852d57bdb0508494fb6047f36e813c69, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 96ca9ccd597fc434d8b4c00f1143ebee, type: 2}
   icon: {fileID: 0}
+  _nameString: 
   layer: 7
   genericType: 0
   specificType: 0
   width: 1
   height: 1
+  isLarge: 0

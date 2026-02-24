@@ -6,10 +6,10 @@ namespace SS3D.Systems.Crafting
     [Serializable]
     public struct SecondaryResult
     {
-        public WorldObjectAssetReference Asset;
+        public ObjectAssetReference Asset;
         public uint Amount;
         
-        public SecondaryResult(WorldObjectAssetReference asset, uint amount)
+        public SecondaryResult(ObjectAssetReference asset, uint amount)
         {
             Asset = asset;
             Amount = amount;

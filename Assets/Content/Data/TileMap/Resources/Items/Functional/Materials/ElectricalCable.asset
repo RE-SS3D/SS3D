@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: ElectricalCable
   m_EditorClassIdentifier: 
   prefab: {fileID: 7125681683583715523, guid: 0e69918696f58e04f846e985ec7405fe, type: 3}
+  PrefabAsset: {fileID: 11400000, guid: 40f2a5ef12396ce469ae6fa7474a6bc6, type: 2}
   icon: {fileID: 0}
+  _nameString: 
