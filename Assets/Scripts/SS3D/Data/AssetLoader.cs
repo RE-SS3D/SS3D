@@ -120,14 +120,22 @@ namespace SS3D.Data
             return Databases.Any(pair => pair.Value.Has(assetId));
         }
 
+        /// <summary>
+        /// Unloads an ObjectAssetReference prefab.
+        /// </summary>
+        /// <param name="assetReference">ObjectAssetReference of the object to be unloaded</param>
         public static void Unload([NotNull] ObjectAssetReference assetReference)
         {
             Unload(assetReference.Id);
         }
 
-        public static void Unload([NotNull] string assetId)
+        /// <summary>
+        /// Unloads a prefab with specified guid
+        /// </summary>
+        /// <param name="guid">guid of the prefab</param>
+        public static void Unload([NotNull] string guid)
         {
-            if (LoadingOperations.TryGetValue(assetId, out AsyncOperationHandle<Object> loadingOperation))
+            if (LoadingOperations.TryGetValue(guid, out AsyncOperationHandle<Object> loadingOperation))
             {
                 Addressables.Release(loadingOperation);
             }
