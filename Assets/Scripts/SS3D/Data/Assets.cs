@@ -23,6 +23,11 @@ namespace SS3D.Data
     public static class Assets
     {
         /// <summary>
+        /// Event invoked when a asset is loaded using Addressables.
+        /// </summary>
+        internal static event Action<KeyValuePair<string, Object>> OnAssetLoaded;
+
+        /// <summary>
         /// A dictionary of the loaded databases, useful to get the databases quickly with the name of it.
         /// </summary>
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
@@ -199,6 +204,17 @@ namespace SS3D.Data
             })
             {
                 LoadingOperations.Remove(reference.AssetGUID);
+
+                return null;
+            }
+
+            try
+            {
+                OnAssetLoaded?.Invoke(new(reference.AssetGUID, loadedAsset));
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(Assets), e, "An exception occurred while invoking the OnAssetLoaded event in GetAsync");
             }
 
             TAsset asset = CastAsset<TAsset>(loadedAsset);
