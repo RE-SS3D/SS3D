@@ -1,7 +1,9 @@
 ﻿using QuikGraph;
 using SS3D.Core;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Systems.Crafting;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,8 +48,16 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
     /// <returns>If the interaction can be executed</returns>
     public bool CanInteract(InteractionEvent interactionEvent)
     {
-        if (!SubSystems.TryGet(out CraftingSubSystem craftingSystem))
+        if (interactionEvent?.Target == null || !interactionEvent.Target.GetGameObject())
+        {
             return false;
+        }
+
+        if (!SubSystems.TryGet(out CraftingSubSystem craftingSystem))
+        {
+            Log.Warning(this, "OpenCraftingMenuInteraction.CanInteract could not find CraftingSubSystem.");
+            return false;
+        }
 
         bool recipesAvailable = true;
         recipesAvailable &= craftingSystem.AvailableRecipeLinks(_craftingInteractionType, interactionEvent, out List<TaggedEdge<RecipeStep, RecipeStepLink>> _);

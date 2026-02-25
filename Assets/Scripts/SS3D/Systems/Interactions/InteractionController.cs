@@ -5,6 +5,7 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
@@ -33,7 +34,7 @@ namespace SS3D.Systems.Interactions
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
         private InputSubSystem _inputSystem;
-        
+
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
 
@@ -54,10 +55,10 @@ namespace SS3D.Systems.Interactions
         protected override void OnAwake()
         {
             base.OnAwake();
-            
+
             _radialView = SubSystems.Get<RadialInteractionSubSystem>();
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
-            
+
             _inputSystem = SubSystems.Get<InputSubSystem>();
             Controls controls = _inputSystem.Inputs;
             _controls = controls.Interactions;
@@ -106,7 +107,6 @@ namespace SS3D.Systems.Interactions
         [Client]
         public void HandleRunPrimary(InputAction.CallbackContext callbackContext)
         {
-            Debug.Log("run primary : " + Mouse.current.position.ReadValue());
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 return;
@@ -123,6 +123,7 @@ namespace SS3D.Systems.Interactions
             string interactionName = interaction.Interaction.GetName(interactionEvent);
             interactionEvent.Target = interaction.Target;
 
+            Log.Information(this, "Running interaction {interactionName} on target {target}", Logs.Generic, interactionName, interaction.Target);
             CmdRunInteraction(ray, interactionName);
         }
 
@@ -325,7 +326,7 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = new();
 
             // Get all target components which are not disabled and the source can interact with
-            targets.AddRange(targetGameObject.GetComponents<IInteractionTarget>().Where(x =>(x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
+            targets.AddRange(targetGameObject.GetComponents<IInteractionTarget>().Where(x => (x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
             if (targets.Count < 1)
             {
                 targets.Add(new InteractionTargetGameObject(targetGameObject));
@@ -388,7 +389,7 @@ namespace SS3D.Systems.Interactions
         }
 
         [ServerRpc]
-        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject,  int index, string interactionName)
+        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string interactionName)
         {
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
