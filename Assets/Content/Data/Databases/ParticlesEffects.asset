@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: ParticlesEffects
   DatabaseID: 099b9943e9299d54b82d2c1163500458
-  AssetGroup: {fileID: 11400000, guid: d700978032e12a647b8734863a0bf7c2, type: 2}
   Assets:
     _list:
     - _key: 17b0d9163e9cdf14aa557557e7d9d76b
@@ -45,3 +44,4 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
     _new: 
+  AssetGroup: {fileID: 11400000, guid: d700978032e12a647b8734863a0bf7c2, type: 2}

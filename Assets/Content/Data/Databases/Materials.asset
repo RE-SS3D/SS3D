@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: Materials
   DatabaseID: acbbffb4c89caec469bb21b6197c7626
-  AssetGroup: {fileID: 11400000, guid: 2caa591261a883b4183d04829ce705fd, type: 2}
   Assets:
     _list:
     - _key: ed5a1263eb564c94abc6407ac0919ea7
@@ -45,3 +44,4 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
     _new: 
+  AssetGroup: {fileID: 11400000, guid: 2caa591261a883b4183d04829ce705fd, type: 2}

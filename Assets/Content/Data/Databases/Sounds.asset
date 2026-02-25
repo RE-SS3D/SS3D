@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: Sounds
   DatabaseID: 43b69e36c49203a44bf20042cd83de81
-  AssetGroup: {fileID: 11400000, guid: d640c8e212e7a5349999a9ddd6ffb5b5, type: 2}
   Assets:
     _list:
     - _key: 8c8823796bbcb23438fcf68260070383
@@ -109,3 +108,4 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
     _new: 
+  AssetGroup: {fileID: 11400000, guid: d640c8e212e7a5349999a9ddd6ffb5b5, type: 2}

@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: CraftingRecipes
   DatabaseID: c8a3b9b514b2f7543a544259c3c97b81
-  AssetGroup: {fileID: 11400000, guid: ead2cce9e35a7304ab5b8cc67d03347b, type: 2}
   Assets:
     _list:
     - _key: 5069902a314070f4ca869692cbc791fa
@@ -69,3 +68,4 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
     _new: 
+  AssetGroup: {fileID: 11400000, guid: ead2cce9e35a7304ab5b8cc67d03347b, type: 2}

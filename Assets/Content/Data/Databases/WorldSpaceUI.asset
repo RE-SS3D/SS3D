@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: WorldSpaceUI
   DatabaseID: 830650063081cdf4d90087fc2ac74d24
-  AssetGroup: {fileID: 11400000, guid: dd394b793b56e43418a2c11a61130663, type: 2}
   Assets:
     _list:
     - _key: 03bcc1824d3b20748b912ca532f86bb9
@@ -29,3 +28,4 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
     _new: 
+  AssetGroup: {fileID: 11400000, guid: dd394b793b56e43418a2c11a61130663, type: 2}

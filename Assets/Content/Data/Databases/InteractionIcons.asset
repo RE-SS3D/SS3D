@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DatabaseName: InteractionIcons
   DatabaseID: cdf9511d9049fa14ab0433934f3537ec
-  AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}
   Assets:
     _list:
     - _key: b22067d36fa963b4bbaf8d6085b0ebc9
@@ -69,3 +68,4 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
     _new: 
+  AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}
