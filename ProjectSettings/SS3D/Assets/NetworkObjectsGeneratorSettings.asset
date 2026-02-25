@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ab1079ddfb54d0fb7338c45b4cfa07e, type: 3}
+  m_Name: NetworkObjectsGeneratorSettings
+  m_EditorClassIdentifier: 
+  _preload: 0
+  _type: 1
+  <Enabled>k__BackingField: 1
+  <LogToConsole>k__BackingField: 1
+  <FullRebuild>k__BackingField: 0
+  <SaveChanges>k__BackingField: 1
+  <NetworkObjectsPath>k__BackingField: Assets\Content\Data\Databases\NetworkObjects.asset

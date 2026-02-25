@@ -8,14 +8,16 @@
         "SS3D.Attributes",
         "SS3D.CodeGeneration",
         "Coimbra",
+        "Coimbra.Editor",
         "Coimbra.Services",
         "Coimbra.Services.Events",
         "Unity.Addressables",
+        "Unity.Addressables.Editor",
         "Unity.ResourceManager",
         "UniTask",
         "Unity.InputSystem",
-        "Unity.Addressables.Editor",
-        "ParrelSync"
+        "ParrelSync",
+        "FishNet.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

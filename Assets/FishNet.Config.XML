@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfigurationData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Loaded>false</Loaded>
+  <PrefabGenerator>
+    <Enabled>false</Enabled>
+    <LogToConsole>true</LogToConsole>
+    <FullRebuild>false</FullRebuild>
+    <SaveChanges>true</SaveChanges>
+    <DefaultPrefabObjectsPath>Assets\DefaultPrefabObjects.asset</DefaultPrefabObjectsPath>
+    <SearchScope>0</SearchScope>
+    <ExcludedFolders />
+    <IncludedFolders />
+  </PrefabGenerator>
+  <CodeStripping>
+    <IsBuilding>false</IsBuilding>
+    <IsDevelopment>false</IsDevelopment>
+    <IsHeadless>false</IsHeadless>
+    <StripReleaseBuilds>false</StripReleaseBuilds>
+    <StrippingType>0</StrippingType>
+  </CodeStripping>
+</ConfigurationData>
