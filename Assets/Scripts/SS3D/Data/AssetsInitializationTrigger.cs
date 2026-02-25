@@ -21,7 +21,7 @@ namespace SS3D.Data
         {
             Log.Information(this, "Loading asset databases", Logs.Important);
             
-			Assets.InitializeAsync();
+			AssetLoader.InitializeAsync();
 		}
 	}
 }

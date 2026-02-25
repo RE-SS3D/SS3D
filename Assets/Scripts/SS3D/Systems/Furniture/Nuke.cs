@@ -21,7 +21,7 @@ namespace SS3D.Systems.Furniture
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new NukeDetonateInteraction { Icon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke) } };
+            return new IInteraction[] { new NukeDetonateInteraction { Icon = AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke) } };
         }
     }
 }

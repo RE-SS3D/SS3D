@@ -79,7 +79,7 @@ namespace SS3D.Systems.Health
 
         protected override void SpawnOrgans()
         {
-            Brain brainPrefab = Assets.Get<Brain>(AssetDatabases.Items, Items.HumanBrain);
+            Brain brainPrefab = AssetLoader.Get<Brain>(AssetDatabases.Items, Items.HumanBrain);
             Brain = Instantiate(brainPrefab);
             Brain.HealthController = HealthController;
             Spawn(Brain.GameObject, Owner);

@@ -38,7 +38,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                GameObject itemPrefab = await Assets.GetAsync<GameObject>(itemSo.PrefabAsset);
+                GameObject itemPrefab = await AssetLoader.GetAsync<GameObject>(itemSo.PrefabAsset);
                 placedGameObject = Instantiate(itemPrefab);
             }
 

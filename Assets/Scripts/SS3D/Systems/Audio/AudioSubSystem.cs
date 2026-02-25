@@ -106,7 +106,7 @@ namespace SS3D.Systems.Audio
             AudioSource audioSource = FindAvailableAudioSource(type);
 
             audioSource.gameObject.transform.position = position;
-            audioSource.clip = Assets.Get<AudioClip>(AssetDatabases.Sounds, audioClipID);
+            audioSource.clip = AssetLoader.Get<AudioClip>(AssetDatabases.Sounds, audioClipID);
             audioSource.volume = volume;
             audioSource.pitch = pitch;
             audioSource.minDistance = minRange;

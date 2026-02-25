@@ -38,7 +38,7 @@ namespace SS3D.Interactions
                 return true;
             }
 
-            LoadingBar loadingBarPrefab = Assets.Get<LoadingBar>(AssetDatabases.WorldSpaceUI, WorldSpaceUI.LoadingBar);
+            LoadingBar loadingBarPrefab = AssetLoader.Get<LoadingBar>(AssetDatabases.WorldSpaceUI, WorldSpaceUI.LoadingBar);
             _loadingBarInstance = Object.Instantiate(loadingBarPrefab, source.GameObject.transform);
             
             _loadingBarInstance.LocalPosition = LoadingBarOffset;

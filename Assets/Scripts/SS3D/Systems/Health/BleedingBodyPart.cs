@@ -44,7 +44,7 @@ namespace SS3D.Systems.Health
 
             if (next && _bloodEffect == null)
             {
-                GameObject bleedingEffect = Assets.Get<GameObject>(AssetDatabases.ParticlesEffects, ParticlesEffects.BleedingParticle);
+                GameObject bleedingEffect = AssetLoader.Get<GameObject>(AssetDatabases.ParticlesEffects, ParticlesEffects.BleedingParticle);
                 GameObject bloodDisplayer;
                 Transform bloodParent;
                 if (_bodyPart.BodyCollider != null)

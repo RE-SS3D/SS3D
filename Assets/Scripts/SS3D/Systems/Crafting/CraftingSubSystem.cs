@@ -62,7 +62,7 @@ namespace SS3D.Systems.Crafting
         [ServerOrClient]
         private void FillRecipeOrganiser()
         {
-            AssetDatabase recipesDataBase = Assets.GetDatabase(AssetDatabases.CraftingRecipes);
+            AssetDatabase recipesDataBase = AssetLoader.GetDatabase(AssetDatabases.CraftingRecipes);
 
             if (!recipesDataBase)
             {
@@ -159,7 +159,7 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
                     
-                GameObject secondaryResultPrefab = await Assets.GetAsync<GameObject>(secondaryResult.Asset);
+                GameObject secondaryResultPrefab = await AssetLoader.GetAsync<GameObject>(secondaryResult.Asset);
 
                 if (!secondaryResultPrefab)
                 {
@@ -201,7 +201,7 @@ namespace SS3D.Systems.Crafting
 
         private async Task SpawnOrModifyMainResultAsync(ObjectAssetReference result, CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            GameObject resultPrefab = await Assets.GetAsync<GameObject>(result);
+            GameObject resultPrefab = await AssetLoader.GetAsync<GameObject>(result);
 
             if (!resultPrefab)
             {
@@ -605,7 +605,7 @@ namespace SS3D.Systems.Crafting
         [ObserversRpc]
         private void AddCraftingSmoke(GameObject target, int referenceId)
         {
-            ParticleSystem particlePrefab = Assets.Get<ParticleSystem>(AssetDatabases.ParticlesEffects, ParticlesEffects.ConstructionParticle);
+            ParticleSystem particlePrefab = AssetLoader.Get<ParticleSystem>(AssetDatabases.ParticlesEffects, ParticlesEffects.ConstructionParticle);
             ParticleSystem particles = Instantiate(particlePrefab, target.transform.position, Quaternion.identity);
 
             // Get the shape module of the dust cloud particle system

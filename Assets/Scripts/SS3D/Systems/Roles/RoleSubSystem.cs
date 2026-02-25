@@ -240,7 +240,7 @@ namespace SS3D.Systems.Roles
             }
 
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
-            GameObject gameObjectToSpawn = await Assets.GetAsync<GameObject>(assetReference);
+            GameObject gameObjectToSpawn = await AssetLoader.GetAsync<GameObject>(assetReference);
             
             return itemSystem.SpawnItemInContainer(gameObjectToSpawn, container);
         }

@@ -100,7 +100,7 @@ namespace SS3D.Systems.Furniture
                 return Array.Empty<IInteraction>();
             }
 
-            Sprite takeIcon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
+            Sprite takeIcon = AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
             
             IInteraction[] interactions = new IInteraction[_productsToDispense.Length];
             for (int i = 0; i < _productsToDispense.Length; i++)

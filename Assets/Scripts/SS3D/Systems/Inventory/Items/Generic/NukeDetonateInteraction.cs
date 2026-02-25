@@ -24,7 +24,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke);
+            return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

@@ -177,7 +177,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public async void CreateHologram([NotNull] ObjectAssetReference prefabAsset, Vector3 position)
         {
-            GameObject prefab = await Assets.GetAsync<GameObject>(prefabAsset);
+            GameObject prefab = await AssetLoader.GetAsync<GameObject>(prefabAsset);
             if (!prefab)
             {
                 Log.Error(this, "Cannot create hologram, prefab asset is not found");

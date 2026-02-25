@@ -29,8 +29,8 @@ namespace SS3D.Systems.Inventory.Containers
 
             List<IInteraction> interactions = new();
 
-            Sprite takeIcon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
-            Sprite openIcon = Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
+            Sprite takeIcon = AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
+            Sprite openIcon = AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
 
             StoreInteraction storeInteraction = new(attachedContainer)
             {

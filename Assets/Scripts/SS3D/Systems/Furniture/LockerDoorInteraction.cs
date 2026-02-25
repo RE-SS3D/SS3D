@@ -22,7 +22,7 @@ namespace SS3D.Systems.Furniture
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
+            return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

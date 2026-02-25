@@ -20,7 +20,7 @@ namespace SS3D.Data
     ///
     /// A more concise and in depth explanation on how this system works and how to use is present on the GitBook page for AssetData.
     /// </summary>
-    public static class Assets
+    public static class AssetLoader
     {
         /// <summary>
         /// Event invoked when a asset is loaded using Addressables.
@@ -49,7 +49,7 @@ namespace SS3D.Data
             }
             catch (Exception e)
             {
-                Log.Error(typeof(Assets), e, "An exception occurred while initializing the Addressables system.");
+                Log.Error(typeof(AssetLoader), e, "An exception occurred while initializing the Addressables system.");
             }
         }
 
@@ -86,7 +86,7 @@ namespace SS3D.Data
             }
             catch (Exception e)
             {
-                Log.Error(typeof(Assets), e, "An exception occurred while invoking the onAssetLoaded callback in GetAsync");
+                Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the onAssetLoaded callback in GetAsync");
             }
 
             return asset;
@@ -156,7 +156,7 @@ namespace SS3D.Data
 
             if (!databaseExists)
             {
-                Log.Warning(typeof(Assets), $"Database of type {databaseId} not found", Logs.Important);
+                Log.Warning(typeof(AssetLoader), $"Database of type {databaseId} not found", Logs.Important);
             }
 
             return database;
@@ -176,7 +176,7 @@ namespace SS3D.Data
                 Databases.Add(database.DatabaseID, database);
             }
 
-            Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+            Log.Information(typeof(AssetLoader), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace SS3D.Data
             }
             catch (Exception e)
             {
-                Log.Error(typeof(Assets), e, "An exception occurred while invoking the OnAssetLoaded event in GetAsync");
+                Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the OnAssetLoaded event in GetAsync");
             }
 
             TAsset asset = CastAsset<TAsset>(loadedAsset);
@@ -243,7 +243,7 @@ namespace SS3D.Data
                 return database.AddToAddressables(asset);
             }
 
-            Log.Error(typeof(Assets), $"Database of type {databaseID} not found cannot add to addressables");
+            Log.Error(typeof(AssetLoader), $"Database of type {databaseID} not found cannot add to addressables");
 
             return false;
         }

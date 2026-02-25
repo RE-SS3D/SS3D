@@ -73,7 +73,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
             if (ghostMatName != null)
             {
-                ghostMat = Assets.Get<Material>(AssetDatabases.Materials, ghostMatName);
+                ghostMat = AssetLoader.Get<Material>(AssetDatabases.Materials, ghostMatName);
             }
 
             foreach (MeshRenderer mr in Hologram.GetComponentsInChildren<MeshRenderer>())

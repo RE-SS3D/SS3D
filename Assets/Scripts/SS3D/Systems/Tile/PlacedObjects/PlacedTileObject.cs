@@ -33,7 +33,7 @@ namespace SS3D.Systems.Tile
         [ItemNotNull]
         public static async Task<PlacedTileObject> CreateAsync(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
-            GameObject tileObjectPrefab = await Assets.GetAsync<GameObject>(tileObjectSo.PrefabAsset);
+            GameObject tileObjectPrefab = await AssetLoader.GetAsync<GameObject>(tileObjectSo.PrefabAsset);
             GameObject placedGameObject = Instantiate(tileObjectPrefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 

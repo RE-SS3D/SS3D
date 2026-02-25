@@ -32,7 +32,7 @@ namespace SS3D.Systems.Furniture
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Assets.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
+            return AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

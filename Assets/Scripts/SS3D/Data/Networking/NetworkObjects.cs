@@ -229,14 +229,14 @@ namespace SS3D.Data.Networking
 
         private void OnEnable()
         {
-            Assets.OnAssetLoaded += OnAssetLoaded;
+            AssetLoader.OnAssetLoaded += OnAssetLoaded;
 
             Initialize();
         }
 
         private void OnDisable()
         {
-            Assets.OnAssetLoaded -= OnAssetLoaded;
+            AssetLoader.OnAssetLoaded -= OnAssetLoaded;
         }
 
         /// <summary>

@@ -44,7 +44,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             Player Player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
             Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(Player);
 
-            Hand leftHandPrefab = Assets.Get<Hand>(AssetDatabases.Items, Items.HumanHandLeft);
+            Hand leftHandPrefab = AssetLoader.Get<Hand>(AssetDatabases.Items, Items.HumanHandLeft);
             Hand leftHand = Object.Instantiate(leftHandPrefab, entity.transform);
             leftHand.Transform.localPosition = position;
             leftHand.Transform.localEulerAngles = rotation;
