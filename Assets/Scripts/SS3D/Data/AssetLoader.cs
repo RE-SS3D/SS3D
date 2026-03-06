@@ -54,6 +54,18 @@ namespace SS3D.Data
         }
 
         /// <summary>
+        /// Function to check if an asset is loaded
+        /// </summary>
+        /// <param name="guid">the guid of the asset</param>
+        /// <returns>True if asset is loaded</returns>
+        public static bool IsLoaded([NotNull] string guid) => LoadingOperations.TryGetValue(guid, out AsyncOperationHandle<Object> loadingOperation)
+            && loadingOperation is
+            {
+                IsDone: true,
+                Status: AsyncOperationStatus.Succeeded,
+            };
+
+        /// <summary>
         /// Returns an asset from a  database casting the object found to TAsset.
         /// </summary>
         [CanBeNull]
@@ -145,7 +157,7 @@ namespace SS3D.Data
         /// Helper function to find a database in the database dict.
         /// </summary>
         /// <param name="databaseId">The id used to identify which database to load.</param>
-        /// <returns></returns>
+        /// <returns>the database corresponding to the ID provided</returns>
         [CanBeNull]
         public static AssetDatabase GetDatabase([NotNull] string databaseId)
         {
@@ -186,6 +198,8 @@ namespace SS3D.Data
 
             Log.Information(typeof(AssetLoader), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
         }
+
+        // ReSharper disable Unity.PerformanceAnalysis
 
         /// <summary>
         /// Function to get an asset asynchronously from an AssetReference.

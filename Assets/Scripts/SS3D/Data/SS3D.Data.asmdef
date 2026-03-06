@@ -3,10 +3,11 @@
     "rootNamespace": "",
     "references": [
         "SS3D.Application",
-        "SS3D.Core",
-        "SS3D.Logging",
         "SS3D.Attributes",
         "SS3D.CodeGeneration",
+        "SS3D.Core",
+        "SS3D.Logging",
+        "SS3D.Utils",
         "Coimbra",
         "Coimbra.Editor",
         "Coimbra.Services",
