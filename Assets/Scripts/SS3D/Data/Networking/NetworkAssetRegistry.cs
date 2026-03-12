@@ -1,5 +1,6 @@
 using FishNet.Object;
 using JetBrains.Annotations;
+using SS3D.Data;
 using SS3D.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace SS3D.Data.Networking
         /// Raised when the last live spawned instance for an addressable asset has been released.
         /// Consumers typically use this to trigger synchronized unload across clients.
         /// </summary>
-        internal static event Action<string, string> OnAssetNoLongerActive;
+        internal static event Action<AssetKey> OnAssetNoLongerActive;
 
-        private static readonly Dictionary<(string DatabaseId, string AssetId), int> ActiveAssetRefCounts = new();
+        private static readonly Dictionary<AssetKey, int> ActiveAssetRefCounts = new();
 
         static NetworkAssetRegistry()
         {
@@ -35,29 +36,43 @@ namespace SS3D.Data.Networking
         /// <param name="networkObject">Spawned network instance that should contribute to the active refcount.</param>
         internal static void Register([CanBeNull] string databaseId, [CanBeNull] string assetId, [CanBeNull] NetworkObject networkObject)
         {
-            if (!IsValidRequest(databaseId, assetId))
+            Register(new AssetKey(databaseId, assetId), networkObject);
+        }
+
+        /// <summary>
+        /// Registers a spawned addressable network object as an active user of its backing asset.
+        /// Multiple spawned instances of the same prefab share a single asset key and are refcounted.
+        /// </summary>
+        internal static void Register(AssetKey assetKey, [CanBeNull] NetworkObject networkObject)
+        {
+            if (!assetKey.IsValid)
             {
-                Log.Warning(typeof(NetworkAssetRegistry), $"Ignoring invalid active asset registration. Database: '{databaseId}', Asset: '{assetId}'.");
+                Log.Warning(typeof(NetworkAssetRegistry), $"Ignoring invalid active asset registration '{assetKey}'.");
+
+                return;
+            }
+
+            if (!AssetLoader.Has(assetKey))
+            {
+                Log.Warning(typeof(NetworkAssetRegistry), $"Ignoring active asset registration for '{assetKey}' because it is outside the async synchronized loading path.");
 
                 return;
             }
 
             if (!networkObject)
             {
-                Log.Warning(typeof(NetworkAssetRegistry), $"Cannot register active asset '{databaseId}/{assetId}' because the network object is null.");
+                Log.Warning(typeof(NetworkAssetRegistry), $"Cannot register active asset '{assetKey}' because the network object is null.");
 
                 return;
             }
 
-            (string DatabaseId, string AssetId) key = (databaseId, assetId);
-
-            if (ActiveAssetRefCounts.TryGetValue(key, out int activeCount))
+            if (ActiveAssetRefCounts.TryGetValue(assetKey, out int activeCount))
             {
-                ActiveAssetRefCounts[key] = activeCount + 1;
+                ActiveAssetRefCounts[assetKey] = activeCount + 1;
             }
             else
             {
-                ActiveAssetRefCounts.Add(key, 1);
+                ActiveAssetRefCounts.Add(assetKey, 1);
             }
 
             AssetLifetimeTracker tracker = networkObject.GetComponent<AssetLifetimeTracker>();
@@ -69,7 +84,7 @@ namespace SS3D.Data.Networking
                 tracker = networkObject.gameObject.AddComponent<AssetLifetimeTracker>();
             }
 
-            tracker.Initialize(databaseId, assetId);
+            tracker.Initialize(assetKey);
         }
 
         /// <summary>
@@ -77,7 +92,7 @@ namespace SS3D.Data.Networking
         /// This is used for late-join replay and intentionally does not expose refcounts.
         /// </summary>
         [NotNull]
-        internal static (string DatabaseId, string AssetId)[] GetActiveAssets() => ActiveAssetRefCounts.Keys.ToArray();
+        internal static AssetKey[] GetActiveAssets() => ActiveAssetRefCounts.Keys.ToArray();
 
         /// <summary>
         /// Clears all server-side active asset state, typically during shutdown/reset paths.
@@ -91,16 +106,14 @@ namespace SS3D.Data.Networking
         /// Handles one instance-level release notification from <see cref="AssetLifetimeTracker"/>
         /// and decrements the shared refcount for the corresponding addressable asset.
         /// </summary>
-        private static void HandleAssetReleased(string databaseId, string assetId)
+        private static void HandleAssetReleased(AssetKey assetKey)
         {
-            if (!IsValidRequest(databaseId, assetId))
+            if (!assetKey.IsValid)
             {
                 return;
             }
 
-            (string DatabaseId, string AssetId) key = (databaseId, assetId);
-
-            if (!ActiveAssetRefCounts.TryGetValue(key, out int activeCount))
+            if (!ActiveAssetRefCounts.TryGetValue(assetKey, out int activeCount))
             {
                 return;
             }
@@ -108,22 +121,14 @@ namespace SS3D.Data.Networking
             if (activeCount > 1)
             {
                 // Other live instances still depend on this asset, so only the count changes.
-                ActiveAssetRefCounts[key] = activeCount - 1;
+                ActiveAssetRefCounts[assetKey] = activeCount - 1;
 
                 return;
             }
 
             // The final live instance is gone, so the asset can leave the active manifest.
-            ActiveAssetRefCounts.Remove(key);
-            OnAssetNoLongerActive?.Invoke(databaseId, assetId);
-        }
-
-        /// <summary>
-        /// Ensures the registry only tracks addressable keys that can be safely replayed and unloaded.
-        /// </summary>
-        private static bool IsValidRequest([CanBeNull] string databaseId, [CanBeNull] string assetId)
-        {
-            return !string.IsNullOrWhiteSpace(databaseId) && !string.IsNullOrWhiteSpace(assetId);
+            ActiveAssetRefCounts.Remove(assetKey);
+            OnAssetNoLongerActive?.Invoke(assetKey);
         }
     }
 }

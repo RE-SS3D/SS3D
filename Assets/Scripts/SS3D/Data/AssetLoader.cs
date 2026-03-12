@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
@@ -76,14 +75,16 @@ namespace SS3D.Data
 
         /// <summary>
         /// Returns an asset from a database using its direct serialized reference.
-        /// This path does not go through Addressables and assumes the asset is already part of the loaded content set.
+        /// This is the legacy direct-reference path and does not go through Addressables.
+        /// Synchronized multiplayer loading should use <see cref="Has(string,string)"/> and <see cref="GetAsync{TAsset}(string,string,Action{TAsset})"/> instead.
         /// </summary>
         [CanBeNull]
         public static TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
             where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
 
         /// <summary>
-        /// Resolves an asset by logical database and asset IDs, loading it through Addressables when needed.
+        /// Resolves an asset by logical database and asset IDs through the async runtime-loading path.
+        /// This is the path used by synchronized multiplayer asset loading and late-join preloading.
         /// </summary>
         /// <param name="databaseId">ID of the Database the asset is to be loaded from.</param>
         /// <param name="assetId">ID of the asset to be loaded.</param>
@@ -94,13 +95,34 @@ namespace SS3D.Data
         public static async Task<TAsset> GetAsync<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] Action<TAsset> onAssetLoaded = null)
             where TAsset : class
         {
-            TAsset asset = null;
-            AssetReference reference = GetDatabase(databaseId)?.GetReference(assetId);
+            return await GetAsync(new(databaseId, assetId), onAssetLoaded);
+        }
 
-            if (reference != null)
+        /// <summary>
+        /// Resolves an asset by <see cref="AssetKey"/> through the async runtime-loading path.
+        /// This is the path used by synchronized multiplayer asset loading and late-join preloading.
+        /// </summary>
+        [ItemCanBeNull]
+        public static async Task<TAsset> GetAsync<TAsset>(AssetKey assetKey, [CanBeNull] Action<TAsset> onAssetLoaded = null)
+            where TAsset : class
+        {
+            if (!TryGetAsyncReference(assetKey, out AssetReference reference))
             {
-                asset = await GetAsync<TAsset>(reference);
+                Log.Warning(typeof(AssetLoader), $"Asset '{assetKey}' is not available through the async runtime-loading path.");
+
+                try
+                {
+                    onAssetLoaded?.Invoke(null);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the onAssetLoaded callback in GetAsync");
+                }
+
+                return null;
             }
+
+            TAsset asset = await GetAsync<TAsset>(reference);
 
             try
             {
@@ -122,30 +144,33 @@ namespace SS3D.Data
         /// <returns>Task for the asset to be loaded.</returns>
         [ItemCanBeNull]
         public static async Task<TAsset> GetAsync<TAsset>([NotNull] ObjectAssetReference reference)
-            where TAsset : class => await GetAsync<TAsset>(reference.Database, reference.Id);
+            where TAsset : class => await GetAsync<TAsset>(new AssetKey(reference.Database, reference.Id));
 
         /// <summary>
-        /// Checks whether the specified database contains an entry for the given asset ID.
-        /// This is a metadata query and does not indicate whether the asset is currently loaded.
+        /// Checks whether the asset can be resolved through the async runtime-loading path used by synchronized multiplayer systems.
+        /// This is intentionally separate from <see cref="Get{TAsset}(string,string)"/>, which serves legacy direct references.
         /// </summary>
         /// <param name="databaseId">Database to check in</param>
         /// <param name="assetId">Asset ID to check</param>
         /// <returns>True if specified database has that asset</returns>
-        public static bool Has([NotNull] string databaseId, [NotNull] string assetId)
+        public static bool Has([CanBeNull] string databaseId, [CanBeNull] string assetId)
         {
-            AssetDatabase database = GetDatabase(databaseId);
-
-            return database && database.Has(assetId);
+            return Has(new(databaseId, assetId));
         }
 
         /// <summary>
-        /// Checks whether any registered database contains an entry for the given asset ID.
+        /// Checks whether the specified asset key has an async-loadable asset reference.
         /// </summary>
-        /// <param name="assetId">Asset ID to check</param>
-        /// <returns>True if any database has that asset</returns>
-        public static bool Has([NotNull] string assetId)
+        public static bool Has(AssetKey assetKey)
         {
-            return Databases.Any(pair => pair.Value.Has(assetId));
+            if (!assetKey.IsValid)
+            {
+                return false;
+            }
+
+            AssetDatabase database = GetDatabase(assetKey.DatabaseId);
+
+            return database && database.Has(assetKey.AssetId);
         }
 
         /// <summary>
@@ -154,7 +179,20 @@ namespace SS3D.Data
         /// <param name="assetReference">ObjectAssetReference of the object to be unloaded</param>
         public static void Unload([NotNull] ObjectAssetReference assetReference)
         {
-            Unload(assetReference.Id);
+            Unload(new AssetKey(assetReference.Database, assetReference.Id));
+        }
+
+        /// <summary>
+        /// Releases the cached Addressables handle associated with the given asset key.
+        /// </summary>
+        public static void Unload(AssetKey assetKey)
+        {
+            if (!assetKey.IsValid)
+            {
+                return;
+            }
+
+            Unload(assetKey.AssetId);
         }
 
         /// <summary>
@@ -273,6 +311,30 @@ namespace SS3D.Data
             TAsset asset = CastAsset<TAsset>(loadedAsset);
 
             return asset;
+        }
+
+        /// <summary>
+        /// Resolves the async asset reference for a logical asset ID without conflating it with the legacy direct-reference path.
+        /// </summary>
+        private static bool TryGetAsyncReference(AssetKey assetKey, out AssetReference reference)
+        {
+            reference = null;
+
+            if (!assetKey.IsValid)
+            {
+                return false;
+            }
+
+            AssetDatabase database = GetDatabase(assetKey.DatabaseId);
+
+            if (!database || !database.Has(assetKey.AssetId))
+            {
+                return false;
+            }
+
+            reference = database.GetReference(assetKey.AssetId);
+
+            return reference != null;
         }
 
         /// <summary>

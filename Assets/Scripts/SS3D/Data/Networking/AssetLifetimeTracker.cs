@@ -1,6 +1,5 @@
 using System;
 using FishNet.Object;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace SS3D.Data.Networking
@@ -15,13 +14,9 @@ namespace SS3D.Data.Networking
         /// <summary>
         /// Raised once when this tracked instance is no longer considered an active spawned user of its asset.
         /// </summary>
-        internal static event Action<string, string> OnReleased;
+        internal static event Action<AssetKey> OnReleased;
 
-        [CanBeNull]
-        private string _databaseId;
-
-        [CanBeNull]
-        private string _assetId;
+        private AssetKey _assetKey;
 
         private bool _released;
         private NetworkObject _networkObject;
@@ -29,12 +24,10 @@ namespace SS3D.Data.Networking
         /// <summary>
         /// Arms the tracker for the currently associated addressable asset and resets the one-shot release guard.
         /// </summary>
-        /// <param name="databaseId">Database containing the tracked asset.</param>
-        /// <param name="assetId">Identifier of the tracked asset within the database.</param>
-        internal void Initialize([CanBeNull] string databaseId, [CanBeNull] string assetId)
+        /// <param name="assetKey">Identity of the tracked asset.</param>
+        internal void Initialize(AssetKey assetKey)
         {
-            _databaseId = databaseId;
-            _assetId = assetId;
+            _assetKey = assetKey;
             _released = false;
             _networkObject = GetComponent<NetworkObject>();
         }
@@ -63,7 +56,7 @@ namespace SS3D.Data.Networking
             }
 
             _released = true;
-            OnReleased?.Invoke(_databaseId, _assetId);
+            OnReleased?.Invoke(_assetKey);
         }
     }
 }

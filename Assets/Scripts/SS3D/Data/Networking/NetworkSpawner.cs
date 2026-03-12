@@ -60,10 +60,9 @@ namespace SS3D.Data.Networking
 
             if (assetReference)
             {
-                string databaseId = assetReference.Database;
-                string assetId = assetReference.Id;
+                AssetKey assetKey = new(assetReference.Database, assetReference.Id);
 
-                if (!await EnsureAddressableLoadedOnAllClientsAsync(databaseId, assetId))
+                if (!await EnsureAddressableLoadedOnAllClientsAsync(assetKey))
                 {
                     // Errors are logged inside EnsureAddressableLoadedOnAllClients.
                     return;
@@ -81,9 +80,8 @@ namespace SS3D.Data.Networking
         /// Spawns a networked object from an addressable <see cref="ObjectAssetReference"/>.
         ///
         /// Flow:
-        /// - Confirms whether the asset is addressable via <see cref="AssetLoader.Has(string, string)"/>.
-        /// - If addressable, uses <see cref="AssetSynchronizer"/> to ensure it is
-        ///   loaded on all clients before spawning.
+        /// - Confirms whether the asset can be resolved through the async runtime-loading path via <see cref="AssetLoader.Has(string,string)"/>.
+        /// - Uses <see cref="AssetSynchronizer"/> to ensure it is loaded on all clients before spawning.
         /// - Instantiates the loaded prefab and spawns it using
         ///   <see cref="InstanceFinder.ServerManager.Spawn(NetworkObject, NetworkConnection)"/>.
         /// </summary>
@@ -106,10 +104,9 @@ namespace SS3D.Data.Networking
                 return null;
             }
 
-            string databaseId = assetReference.Database;
-            string assetId = assetReference.Id;
+            AssetKey assetKey = new(assetReference.Database, assetReference.Id);
 
-            if (!await EnsureAddressableLoadedOnAllClientsAsync(databaseId, assetId))
+            if (!await EnsureAddressableLoadedOnAllClientsAsync(assetKey))
             {
                 // Errors are logged inside EnsureAddressableLoadedOnAllClients.
                 return null;
@@ -120,7 +117,7 @@ namespace SS3D.Data.Networking
 
             if (!prefab)
             {
-                Log.Error(typeof(NetworkSpawner), $"Failed to load prefab for asset '{databaseId}/{assetId}'.");
+                Log.Error(typeof(NetworkSpawner), $"Failed to load prefab for asset '{assetKey}'.");
 
                 return null;
             }
@@ -129,7 +126,7 @@ namespace SS3D.Data.Networking
 
             if (!instance || !instance.TryGetComponent(out NetworkObject networkObject))
             {
-                Log.Error(typeof(NetworkSpawner), $"Loaded prefab for asset '{databaseId}/{assetId}' does not contain a NetworkObject component.");
+                Log.Error(typeof(NetworkSpawner), $"Loaded prefab for asset '{assetKey}' does not contain a NetworkObject component.");
                 instance.Dispose(true);
 
                 return null;
@@ -145,31 +142,28 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Ensures that an addressable asset identified by database and asset IDs
-        /// is loaded on all connected clients. If the asset is not addressable,
-        /// this method returns true without performing any work.
+        /// Ensures that an async-loadable asset identified by database and asset IDs
+        /// is loaded on all connected clients before the spawn proceeds.
+        /// Legacy direct-reference assets should use the overload that spawns an existing instance instead of entering this synchronized path.
         /// </summary>
-        /// <param name="databaseId">The database identifier.</param>
-        /// <param name="assetId">The asset identifier within the database.</param>
         /// <returns>
-        /// True if the asset is either non-addressable or successfully loaded
-        /// on all clients; false if loading failed.
+        /// True if the asset was successfully loaded on all clients; false if the
+        /// asset is invalid for the synchronized path or loading failed.
         /// </returns>
-        private static async Task<bool> EnsureAddressableLoadedOnAllClientsAsync([CanBeNull] string databaseId, [CanBeNull] string assetId)
+        private static async Task<bool> EnsureAddressableLoadedOnAllClientsAsync(AssetKey assetKey)
         {
-            if (string.IsNullOrWhiteSpace(databaseId) || string.IsNullOrWhiteSpace(assetId))
+            if (!assetKey.IsValid)
             {
                 Log.Error(typeof(NetworkSpawner), "Cannot ensure addressable load because database or asset id is invalid.");
 
                 return false;
             }
 
-            bool isAddressable = AssetLoader.Has(databaseId, assetId);
-
-            // Not addressable, nothing to do.
-            if (!isAddressable)
+            if (!AssetLoader.Has(assetKey))
             {
-                return true;
+                Log.Error(typeof(NetworkSpawner), $"Asset '{assetKey}' is not available through the async runtime-loading path required for synchronized spawning.");
+
+                return false;
             }
 
             AssetSynchronizer synchronizer = AssetSynchronizer.Instance;
@@ -181,19 +175,19 @@ namespace SS3D.Data.Networking
                 return false;
             }
 
-            if (await synchronizer.EnsureLoadedOnAllClientsAsync(databaseId, assetId))
+            if (await synchronizer.EnsureLoadedOnAllClientsAsync(assetKey))
             {
                 return true;
             }
 
-            Log.Error(typeof(NetworkSpawner), $"Failed to ensure addressable asset '{databaseId}/{assetId}' is loaded on all clients before spawning.");
+            Log.Error(typeof(NetworkSpawner), $"Failed to ensure addressable asset '{assetKey}' is loaded on all clients before spawning.");
 
             return false;
         }
 
         /// <summary>
         /// Registers a successfully spawned addressable instance with the active asset registry.
-        /// Non-addressable prefabs are ignored because they do not participate in synchronized
+        /// Assets outside the async runtime-loading path are ignored because they do not participate in synchronized
         /// load and unload flow for late joiners.
         /// </summary>
         /// <param name="assetReference">Addressable prefab reference associated with the spawned object.</param>
@@ -205,16 +199,15 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            string databaseId = assetReference.Database;
-            string assetId = assetReference.Id;
+            AssetKey assetKey = new(assetReference.Database, assetReference.Id);
 
-            // Only addressable assets are mirrored through the network residency registry.
-            if (!AssetLoader.Has(databaseId, assetId))
+            // Only assets that use the async synchronized loading path are mirrored through the network residency registry.
+            if (!AssetLoader.Has(assetKey))
             {
                 return;
             }
 
-            NetworkAssetRegistry.Register(databaseId, assetId, networkObject);
+            NetworkAssetRegistry.Register(assetKey, networkObject);
         }
     }
 }
