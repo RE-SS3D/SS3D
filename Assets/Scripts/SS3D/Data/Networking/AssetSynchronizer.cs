@@ -1,3 +1,4 @@
+using Coimbra;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Observing;
@@ -16,26 +17,53 @@ using Object = UnityEngine.Object;
 
 namespace SS3D.Data.Networking
 {
+    /// <summary>
+    /// Coordinates addressable asset residency across the network.
+    /// The server owns synchronized load barriers, clients report local load results,
+    /// and late joiners are instructed to preload assets that are still active in the world.
+    /// </summary>
     [RequireComponent(typeof(NetworkObserver))]
     internal sealed class AssetSynchronizer : NetworkActor
     {
-        private sealed class PendingLoad : TaskCompletionSource<bool>
+        /// <summary>
+        /// Tracks one in-flight synchronized load and the clients that still need to acknowledge it.
+        /// </summary>
+        private sealed class LoadRequest
         {
             private bool _failed;
+            private TaskCompletionSource<bool> _taskSource;
+            private HashSet<int> _pendingClientIds;
 
-            internal PendingLoad(HashSet<int> pendingClientIds)
-                : base(TaskCreationOptions.RunContinuationsAsynchronously)
+            internal LoadRequest([NotNull] HashSet<int> pendingClientIds)
             {
-                PendingClientIds = pendingClientIds;
+                Setup(pendingClientIds);
             }
 
-            internal HashSet<int> PendingClientIds { get; }
+            internal Task<bool> Task => _taskSource.Task;
+
+            internal void AddClient(int clientId)
+            {
+                if (Task.IsCompleted)
+                {
+                    _taskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                }
+
+                _pendingClientIds.Add(clientId);
+            }
+
+            internal void RemoveClient(int clientId)
+            {
+                if (_pendingClientIds.Remove(clientId))
+                {
+                    UpdateState();
+                }
+            }
 
             internal void Acknowledge(int clientId, bool loaded)
             {
                 if (loaded)
                 {
-                    PendingClientIds.Remove(clientId);
+                    _pendingClientIds.Remove(clientId);
                 }
                 else
                 {
@@ -45,28 +73,50 @@ namespace SS3D.Data.Networking
                 UpdateState();
             }
 
-            internal void UpdateState()
+            internal bool TrySetCanceled() => _taskSource.TrySetCanceled();
+
+            private void Setup([CanBeNull] HashSet<int> pendingClientIds)
+            {
+                _taskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                _pendingClientIds = pendingClientIds ?? new HashSet<int>();
+
+                if (_pendingClientIds.Count == 0)
+                {
+                    _taskSource.TrySetResult(true);
+                }
+            }
+
+            private void UpdateState()
             {
                 if (_failed)
                 {
-                    TrySetResult(false);
+                    _taskSource.TrySetResult(false);
                 }
 
-                if (PendingClientIds.Count == 0)
+                if (_pendingClientIds.Count == 0)
                 {
-                    TrySetResult(true);
+                    _taskSource.TrySetResult(true);
                 }
             }
         }
 
         private const float ClientWaitResponseGraceSeconds = 1f;
-        private const int RetryAttempts = 5;
 
-        private readonly HashSet<(string DatabaseId, string AssetId)> _loadHistory = new();
+        /// <summary>
+        /// Server-side synchronized load barriers keyed by logical asset identity.
+        /// Entries exist only while a coordinated load is still unresolved.
+        /// </summary>
+        private readonly Dictionary<(string DatabaseId, string AssetId), LoadRequest> _loadRequests = new();
 
+        /// <summary>
+        /// Client-side awaiters used when a client asks the server for the result of an in-flight load barrier.
+        /// </summary>
         private readonly Dictionary<(string DatabaseId, string AssetId), TaskCompletionSource<bool>> _clientWaitRequests = new();
 
-        private readonly Dictionary<(string DatabaseId, string AssetId), PendingLoad> _pendingAssetLoads = new();
+        [SerializeField]
+        private int _retryAttempts = 5;
+
+        public static AssetSynchronizer Instance { get; private set; }
 
         // ReSharper disable Unity.PerformanceAnalysis
         public override void OnStartServer()
@@ -74,6 +124,7 @@ namespace SS3D.Data.Networking
             base.OnStartServer();
             SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
+            NetworkAssetRegistry.OnAssetNoLongerActive += HandleAssetNoLongerActive;
         }
 
         public override void OnStopClient()
@@ -93,19 +144,58 @@ namespace SS3D.Data.Networking
             base.OnStopServer();
             SceneManager.OnClientLoadedStartScenes -= HandleClientLoadedStartScenes;
             ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
+            NetworkAssetRegistry.OnAssetNoLongerActive -= HandleAssetNoLongerActive;
 
-            _loadHistory.Clear();
-
-            foreach (PendingLoad pendingLoad in _pendingAssetLoads.Values)
+            foreach (LoadRequest loadRequest in _loadRequests.Values)
             {
-                pendingLoad.TrySetCanceled();
+                loadRequest.TrySetCanceled();
             }
 
-            _pendingAssetLoads.Clear();
+            _loadRequests.Clear();
+            NetworkAssetRegistry.Clear();
         }
 
-        [ServerRpc]
-        internal void SynchronizedLoad(ObjectAssetReference assetReference)
+        /// <summary>
+        /// Ensures an addressable asset is loaded on every connected client before dependent server logic proceeds.
+        /// Servers create or join the authoritative barrier, while clients await that barrier through the server.
+        /// </summary>
+        internal async Task<bool> EnsureLoadedOnAllClientsAsync(string databaseId, string assetId, float timeoutSeconds = 15f)
+        {
+            if (!IsServer)
+            {
+                return await WaitForLoadClientAsync(databaseId, assetId, timeoutSeconds);
+            }
+
+            StartSynchronizedLoad(databaseId, assetId);
+
+            return await WaitForLoadServerAsync(databaseId, assetId, timeoutSeconds);
+
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            if (Instance)
+            {
+                Log.Error(this, $"Multiple instances of {nameof(AssetSynchronizer)} detected. Destroying the new one.");
+
+                GameObject.Dispose(true);
+
+                return;
+            }
+
+            Instance = this;
+        }
+
+        private static bool IsValidRequest([CanBeNull] string databaseId, [CanBeNull] string assetId) =>
+            !string.IsNullOrWhiteSpace(databaseId) && !string.IsNullOrWhiteSpace(assetId);
+
+        /// <summary>
+        /// Starts a synchronized load using a serialized asset reference.
+        /// </summary>
+        [Server]
+        private void StartSynchronizedLoad(ObjectAssetReference assetReference)
         {
             if (!assetReference)
             {
@@ -114,11 +204,15 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            SynchronizedLoad(assetReference.Database, assetReference.Id);
+            StartSynchronizedLoad(assetReference.Database, assetReference.Id);
         }
 
-        [ServerRpc]
-        internal void SynchronizedLoad(string databaseId, string assetId)
+        /// <summary>
+        /// Creates a server-owned load barrier and broadcasts the local load request to all observers.
+        /// Duplicate requests reuse the existing barrier instead of re-broadcasting.
+        /// </summary>
+        [Server]
+        private void StartSynchronizedLoad(string databaseId, string assetId)
         {
             if (!IsValidRequest(databaseId, assetId))
             {
@@ -132,24 +226,8 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            PendingLoad pendingLoad = new(GetConnectedClientIds());
-            _pendingAssetLoads.Add((databaseId, assetId), pendingLoad);
-
             RpcSynchronizedLoad(databaseId, assetId);
         }
-
-        internal async Task<bool> WaitForLoadAsync(string databaseId, string assetId, float timeoutSeconds = 15f)
-        {
-            if (IsServer)
-            {
-                return await WaitForLoadServerAsync(databaseId, assetId, timeoutSeconds);
-            }
-
-            return await WaitForLoadClientAsync(databaseId, assetId, timeoutSeconds);
-        }
-
-        private static bool IsValidRequest([CanBeNull] string databaseId, [CanBeNull] string assetId) =>
-            !string.IsNullOrWhiteSpace(databaseId) && !string.IsNullOrWhiteSpace(assetId);
 
         [ObserversRpc]
         private void RpcSynchronizedLoad([NotNull] string databaseId, [NotNull] string assetId)
@@ -157,6 +235,9 @@ namespace SS3D.Data.Networking
             StartLoadAsync(databaseId, assetId);
         }
 
+        /// <summary>
+        /// Waits for the server-owned load barrier to resolve for the requested asset.
+        /// </summary>
         [Server]
         private async Task<bool> WaitForLoadServerAsync(string databaseId, string assetId, float timeoutSeconds)
         {
@@ -167,34 +248,45 @@ namespace SS3D.Data.Networking
                 return false;
             }
 
-            if (!_pendingAssetLoads.TryGetValue((databaseId, assetId), out PendingLoad pendingLoad))
+            if (!_loadRequests.TryGetValue((databaseId, assetId), out LoadRequest request))
             {
-                SynchronizedLoad(databaseId, assetId);
-                pendingLoad = _pendingAssetLoads[(databaseId, assetId)];
+                Log.Error(this, $"No load request found for '{databaseId}/{assetId}' on server.");
+
+                return false;
             }
+
+            (string DatabaseId, string AssetId) key = (databaseId, assetId);
 
             try
             {
-                return await pendingLoad.Task.WaitWithTimeout(timeoutSeconds);
+                return await request.Task.WaitWithTimeout(timeoutSeconds);
             }
             catch (TimeoutException)
             {
-                Log.Error(this, $"Timed out waiting for pending load '{databaseId}/{assetId}' after {timeoutSeconds:0.##} seconds.");
+                Log.Error(this, $"Timed out waiting for load request '{databaseId}/{assetId}' after {timeoutSeconds:0.##} seconds.");
+                _loadRequests.Remove(key);
 
                 return false;
             }
             catch (Exception e)
             {
-                Log.Error(this, e, $"Failed while waiting for pending load '{databaseId}/{assetId}'.");
+                Log.Error(this, e, $"Failed while waiting for load request '{databaseId}/{assetId}'.");
+                _loadRequests.Remove(key);
 
                 return false;
             }
             finally
             {
-                _pendingAssetLoads.Remove((databaseId, assetId));
+                if (request.Task.IsCompleted)
+                {
+                    _loadRequests.Remove(key);
+                }
             }
         }
 
+        /// <summary>
+        /// Waits on a client for the server to report the result of a synchronized load barrier.
+        /// </summary>
         [Client]
         private async Task<bool> WaitForLoadClientAsync(string databaseId, string assetId, float timeoutSeconds)
         {
@@ -238,12 +330,15 @@ namespace SS3D.Data.Networking
             }
         }
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         private void RpcWaitForLoadClient(string databaseId, string assetId, float timeoutSeconds, NetworkConnection connection)
         {
             ProcessLoadResult(databaseId, assetId, connection, timeoutSeconds);
         }
 
+        /// <summary>
+        /// Resolves a client wait request by awaiting the authoritative server-side load barrier and replying to that client.
+        /// </summary>
         [Server]
         private async void ProcessLoadResult(string databaseId, string assetId, NetworkConnection connection, float timeoutSeconds)
         {
@@ -271,74 +366,98 @@ namespace SS3D.Data.Networking
             }
         }
 
+        /// <summary>
+        /// Loads the requested asset locally on this peer and reports the outcome back to the server.
+        /// </summary>
         private async void StartLoadAsync([NotNull] string databaseId, [NotNull] string assetId)
         {
             try
             {
-                for (int attempt = 0; attempt < RetryAttempts; attempt++)
+                for (int attempt = 0; attempt < _retryAttempts; attempt++)
                 {
                     Object asset = await AssetLoader.GetAsync<Object>(databaseId, assetId);
 
                     if (!asset)
                     {
+                        Log.Warning(this, $"Attempt {attempt + 1} to load asset '{databaseId}/{assetId}' returned null. Retrying...");
+
                         continue;
                     }
 
-                    if (IsClient)
+                    if (!IsClient)
                     {
-                        RpcHandleAssetLoaded(databaseId, assetId, asset);
+                        return;
                     }
+
+                    RpcHandleAssetLoaded(databaseId, assetId, true);
 
                     return;
                 }
 
-                Log.Error(this, $"Failed to load asset '{databaseId}/{assetId}' after {RetryAttempts} attempts.");
+                Log.Error(this, $"Failed to load asset '{databaseId}/{assetId}' after {_retryAttempts} attempts.");
+                RpcHandleAssetLoaded(databaseId, assetId, false);
             }
             catch (Exception e)
             {
                 Log.Error(this, e, $"Failed to load asset '{databaseId}/{assetId}'.");
+                RpcHandleAssetLoaded(databaseId, assetId, false);
             }
         }
 
         [Server]
         private void HandleRemoteConnectionState(NetworkConnection connection, RemoteConnectionStateArgs stateData)
         {
-            switch (stateData.ConnectionState)
+            if (stateData.ConnectionState != RemoteConnectionState.Stopped)
             {
-                case RemoteConnectionState.Stopped:
-                    foreach (PendingLoad pendingAssetLoad in _pendingAssetLoads.Values)
-                    {
-                        pendingAssetLoad.PendingClientIds.Remove(connection.ClientId);
-                        pendingAssetLoad.UpdateState();
-                    }
-
-                    break;
-                case RemoteConnectionState.Started:
-                    foreach (PendingLoad pendingAssetLoad in _pendingAssetLoads.Values)
-                    {
-                        pendingAssetLoad.PendingClientIds.Add(connection.ClientId);
-                        pendingAssetLoad.UpdateState();
-                    }
-
-                    break;
-                default:
-                    Log.Error(this, $"Unknown connection state for ClientID {connection.ClientId}: {stateData.ConnectionState}");
-
-                    break;
+                return;
             }
+
+            // A disconnected client can no longer acknowledge pending loads, so remove it from every active barrier.
+            foreach (LoadRequest request in _loadRequests.Values)
+            {
+                request.RemoveClient(connection.ClientId);
+            }
+
+            // Don't if I have to handle added as well
+            // Action<LoadRequest> actionToTake = stateData.ConnectionState switch
+            // {
+            //     RemoteConnectionState.Started => loadRequest => loadRequest.AddClient(connection.ClientId),
+            //     RemoteConnectionState.Stopped => loadRequest => loadRequest.RemoveClient(connection.ClientId),
+            //     _ => null,
+            // };
+            //
+            // if (actionToTake == null)
+            // {
+            //     Log.Error(this, $"Unknown connection state for ClientID {connection.ClientId}: {stateData.ConnectionState}");
+            //
+            //     return;
+            // }
+            //
+            // foreach (LoadRequest request in _loadRequests.Values.Where(request => !request.Task.IsCompleted))
+            // {
+            //     actionToTake(request);
+            // }
         }
 
         [Server]
         private void HandleClientLoadedStartScenes([CanBeNull] NetworkConnection connection, bool asServer)
         {
-            if (!asServer || connection == null || _loadHistory.Count == 0)
+            if (!asServer || connection == null)
             {
                 return;
             }
 
-            foreach ((string DatabaseId, string AssetId) request in _loadHistory)
+            // Re-attach the late joiner to any barrier still in progress so the current synchronized load can finish cleanly.
+            foreach (((string databaseId, string assetId), LoadRequest request) in _loadRequests)
             {
-                RpcLoadForClient(connection, request.DatabaseId, request.AssetId);
+                request.AddClient(connection.ClientId);
+                RpcLoadForClient(connection, databaseId, assetId);
+            }
+
+            // Replay the live addressable manifest so currently spawned addressable prefabs can be instantiated on the joining client.
+            foreach ((string databaseId, string assetId) in NetworkAssetRegistry.GetActiveAssets())
+            {
+                RpcLoadForClient(connection, databaseId, assetId);
             }
         }
 
@@ -349,7 +468,7 @@ namespace SS3D.Data.Networking
             StartLoadAsync(databaseId, assetId);
         }
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         private void RpcHandleAssetLoaded([NotNull] string databaseId, [NotNull] string assetId, bool loaded, [CanBeNull] NetworkConnection connection = null)
         {
             if (connection == null || !IsValidRequest(databaseId, assetId))
@@ -357,27 +476,77 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            (string DatabaseId, string AssetId) request = (databaseId, assetId);
+            (string DatabaseId, string AssetId) key = (databaseId, assetId);
 
-            if (!_pendingAssetLoads.TryGetValue(request, out PendingLoad pendingAssetLoad))
+            if (!_loadRequests.TryGetValue(key, out LoadRequest request))
             {
                 return;
             }
 
-            pendingAssetLoad.Acknowledge(connection.ClientId, loaded);
+            request.Acknowledge(connection.ClientId, loaded);
 
-            if (pendingAssetLoad.Task.IsCompleted)
+            if (request.Task.IsCompleted)
             {
-                _pendingAssetLoads.Remove(request);
+                _loadRequests.Remove(key);
             }
         }
 
-        private bool TryRegisterSynchronizedLoad(string databaseId, string assetId) => _loadHistory.Add((databaseId, assetId));
+        /// <summary>
+        /// Registers a new server-owned load barrier for the given asset.
+        /// </summary>
+        /// <returns><see langword="true"/> when a new request was created; otherwise <see langword="false"/>.</returns>
+        private bool TryRegisterSynchronizedLoad(string databaseId, string assetId)
+        {
+            if (_loadRequests.TryGetValue((databaseId, assetId), out LoadRequest request))
+            {
+                return false;
+            }
+
+            request = new(GetConnectedClientIds());
+            _loadRequests.Add((databaseId, assetId), request);
+
+            return true;
+        }
 
         [NotNull]
         private HashSet<int> GetConnectedClientIds()
         {
             return ServerManager.Clients.Values.Where(connection => connection != null && connection.IsActive).Select(connection => connection.ClientId).ToHashSet();
+        }
+
+        /// <summary>
+        /// Broadcasts an unload once the asset falls out of the active world manifest.
+        /// </summary>
+        [Server]
+        internal void SynchronizeUnload(string databaseId, string assetId)
+        {
+            if (!IsValidRequest(databaseId, assetId))
+            {
+                return;
+            }
+
+            RpcSynchronizedUnload(databaseId, assetId);
+            AssetLoader.Unload(assetId);
+        }
+
+        /// <summary>
+        /// Releases an asset across the network when the registry reports that its final live instance is gone.
+        /// </summary>
+        [Server]
+        private void HandleAssetNoLongerActive(string databaseId, string assetId)
+        {
+            SynchronizeUnload(databaseId, assetId);
+        }
+
+        [ObserversRpc]
+        private void RpcSynchronizedUnload([NotNull] string databaseId, [NotNull] string assetId)
+        {
+            if (!IsClient || !IsValidRequest(databaseId, assetId))
+            {
+                return;
+            }
+
+            AssetLoader.Unload(assetId);
         }
     }
 }

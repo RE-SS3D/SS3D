@@ -1,0 +1,104 @@
+﻿#if UNITY_EDITOR
+using FishNet.Object;
+using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEngine;
+
+namespace SS3D.Data.Networking
+{
+    public partial class NetworkObjects
+    {
+        /// <summary>
+        /// Editor-only prefab cache keyed by GUID.
+        /// The sorted order is what ultimately produces stable runtime prefab IDs in the generated arrays.
+        /// </summary>
+        private SortedDictionary<string, NetworkObject> _prefabs = new();
+
+        /// <summary>
+        /// Prevents repeated editor-side reconstruction of <see cref="_prefabs"/> while the asset stays loaded.
+        /// </summary>
+        private bool _isInitialized;
+
+        /// <summary>
+        /// Rebuilds the serialized GUID list and prefab array from the sorted editor cache.
+        /// Addressable entries keep their GUID slot but leave the runtime prefab slot empty for play mode loading.
+        /// </summary>
+        internal void Generate()
+        {
+            // Preserve sorted GUID order so prefab IDs remain deterministic across machines.
+            _objectGuids = _prefabs.Keys.ToList();
+
+            // Non-addressable prefabs can be serialized directly. Addressable prefabs are resolved at runtime by GUID.
+            AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+            _loadedPrefabs = new NetworkObject[_prefabs.Count];
+
+            for (int i = 0; i < _prefabs.Count; i++)
+            {
+                string guid = _objectGuids[i];
+
+                if (settings.FindAssetEntry(guid) == null)
+                {
+                    _loadedPrefabs[i] = _prefabs[guid];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes a prefab entry from the editor-side cache using its GUID.
+        /// </summary>
+        /// <param name="guid">GUID of the prefab to remove.</param>
+        /// <returns><see langword="true"/> when an entry was removed.</returns>
+        internal bool RemoveObject([NotNull] string guid)
+        {
+            Initialize();
+
+            return _prefabs.Remove(guid);
+        }
+
+        /// <summary>
+        /// Returns a copy of the generated GUID order currently serialized on this asset.
+        /// Tests use this to validate deterministic generation without reaching into serialized fields directly.
+        /// </summary>
+        [NotNull]
+        internal string[] GetObjectGuidsSnapshot()
+        {
+            return _objectGuids.ToArray();
+        }
+
+        /// <summary>
+        /// Reconstructs the sorted editor cache from the serialized GUID list, removing stale or invalid entries on the way.
+        /// </summary>
+        private void Initialize()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            _prefabs = new();
+
+            for (int i = 0; i < _objectGuids.Count;)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(_objectGuids[i]);
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+
+                // Strip stale GUIDs and prefabs that no longer expose a NetworkObject so the generated collection stays valid.
+                if (!prefab || !prefab.TryGetComponent(out NetworkObject networkObject) || !_prefabs.TryAdd(_objectGuids[i], networkObject))
+                {
+                    _objectGuids.RemoveAt(i);
+
+                    continue;
+                }
+
+                i++;
+            }
+            
+            _isInitialized = true;
+        }
+    }
+}
+#endif

@@ -4,38 +4,29 @@ using JetBrains.Annotations;
 using SS3D.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
-#endif
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data.Networking
 {
     /// <summary>
-    /// A ScriptableObject that holds references to NetworkObjects that can be spawned in the game, and their corresponding GUIDs. This is used to load the prefabs at runtime and get them by their ID, which is determined by their index in the list of prefabs.
+    /// FishNet prefab collection backed by a deterministic GUID order.
+    /// Editor generation produces the ordered GUID list, non-addressable prefabs are serialized directly,
+    /// and addressable prefabs fill their runtime slots when <see cref="AssetLoader"/> loads them.
     /// </summary>
     [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/SS3D Data", order = 0)]
-    public sealed class NetworkObjects : PrefabObjects
+    public sealed partial class NetworkObjects : PrefabObjects
     {
-#if UNITY_EDITOR
         /// <summary>
-        /// A sorted dictionary that holds the GUIDs of the prefabs as keys and the NetworkObject references as values.
-        /// </summary>
-        private SortedDictionary<string, NetworkObject> _prefabs = new();
-#endif
-
-        /// <summary>
-        /// A list of the GUIDs of the prefabs, used to load the prefabs at runtime. 
+        /// Serialized GUID order used to derive stable FishNet prefab IDs across editor generation and runtime loading.
         /// </summary>
         [SerializeField]
         [HideInInspector]
         private List<string> _objectGuids = new();
 
         /// <summary>
-        /// An array of the loaded prefabs, used to get the prefabs at runtime. The index of the prefab in the array is determined by its index in the list of GUIDs.
+        /// Runtime prefab slots aligned with <see cref="_objectGuids"/>.
+        /// Non-addressable prefabs are populated during generation; addressable prefabs are inserted when their asset is loaded.
         /// </summary>
         [SerializeField]
         [HideInInspector]
@@ -57,7 +48,14 @@ namespace SS3D.Data.Networking
         /// Gets the count of prefabs in the collection.
         /// </summary>
         /// <returns>Number of objects in collection</returns>
-        public override int GetObjectCount() => _objectGuids.Count;
+        public override int GetObjectCount()
+        {
+#if UNITY_EDITOR
+            return _prefabs.Count;
+#else
+            return _objectGuids.Count;
+#endif
+        }
 
         /// <summary>
         /// Gets a prefab based on its ID (index). The ID is determined by the index of the prefab in the list of GUIDs.
@@ -67,10 +65,8 @@ namespace SS3D.Data.Networking
         /// <returns>NetworkObject for the ID</returns>
         public override NetworkObject GetObject(bool asServer, int id)
         {
-            if (id < 0 || id >= _loadedPrefabs.Length)
+            if (!CheckId(id))
             {
-                Log.Error(this, $"PrefabId {id} is out of range.");
-
                 return null;
             }
 
@@ -81,6 +77,11 @@ namespace SS3D.Data.Networking
 
             return _loadedPrefabs[id];
         }
+
+        /// <summary>
+        /// Checks whether a runtime prefab slot currently contains a loaded network prefab.
+        /// </summary>
+        public bool IsLoaded(int id) => !CheckId(id) ? false : _loadedPrefabs[id];
 
         /// <summary>
         /// Removes null references from the collection of prefabs.
@@ -199,75 +200,27 @@ namespace SS3D.Data.Networking
             }
         }
 
-#if UNITY_EDITOR
-        /// <summary>
-        /// Generate the asset added objects. (Editor Only)
-        /// </summary>
-        internal void Generate()
-        {
-            // Generate the _objectGuids list based on the keys of the _prefabs dictionary, which are the GUIDs of the prefabs.
-            _objectGuids = _prefabs.Keys.ToList();
-
-            // Generate the _loadedPrefabs array based on whether the prefabs are included in the Addressable Asset System or not.
-            // If they are included, they will be loaded at runtime using their GUIDs, so we don't need to include them in the _loadedPrefabs array.
-            AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
-            _loadedPrefabs = new NetworkObject[_prefabs.Count];
-
-            for (int i = 0; i < _prefabs.Count; i++)
-            {
-                string guid = _objectGuids[i];
-
-                if (settings.FindAssetEntry(guid) != null)
-                {
-                    continue;
-                }
-
-                _loadedPrefabs[i] = _prefabs[guid];
-            }
-        }
-#endif
-
         private void OnEnable()
         {
-            AssetLoader.OnAssetLoaded += OnAssetLoaded;
-
+#if UNITY_EDITOR
             Initialize();
+#endif
+
+            // Addressable prefabs are inserted and removed from runtime slots as the shared asset loader changes residency.
+            AssetLoader.OnAssetLoaded += OnAssetLoaded;
+            AssetLoader.OnAssetUnloaded += OnAssetUnloaded;
         }
 
         private void OnDisable()
         {
             AssetLoader.OnAssetLoaded -= OnAssetLoaded;
+            AssetLoader.OnAssetUnloaded -= OnAssetUnloaded;
         }
 
         /// <summary>
-        /// Initializes the _prefabs dictionary. (Editor Only)
+        /// Registers a loaded addressable prefab into its deterministic runtime slot when the asset exposes a <see cref="NetworkObject"/>.
         /// </summary>
-        private void Initialize()
-        {
-#if UNITY_EDITOR
-            _prefabs = new();
-
-            for (int i = 0; i < _objectGuids.Count;)
-            {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(_objectGuids[i]);
-                GameObject prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
-
-                if (!prefab.TryGetComponent(out NetworkObject networkObject) || !_prefabs.TryAdd(_objectGuids[i], networkObject))
-                {
-                    _objectGuids.RemoveAt(i);
-
-                    continue;
-                }
-
-                i++;
-            }
-#endif
-        }
-
-        /// <summary>
-        /// Event handler for when asset is loaded by Assets class.
-        /// </summary>
-        /// <param name="loadedAssetData">GUID and the object loaded</param>
+        /// <param name="loadedAssetData">GUID and object returned by <see cref="AssetLoader"/>.</param>
         private void OnAssetLoaded(KeyValuePair<string, Object> loadedAssetData)
         {
             if (loadedAssetData.Value is GameObject gameObject && gameObject.TryGetComponent(out NetworkObject networkObject))
@@ -277,10 +230,24 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Attempts to add a prefab to collection. (Runtime only)
+        /// Clears the runtime prefab slot when an addressable prefab is unloaded.
         /// </summary>
-        /// <param name="networkObject"></param>
-        /// <param name="guid"></param>
+        /// <param name="guid">GUID of the unloaded asset.</param>
+        private void OnAssetUnloaded(string guid)
+        {
+            int index = _objectGuids.IndexOf(guid);
+
+            if (index >= 0 && index < _loadedPrefabs.Length)
+            {
+                _loadedPrefabs[index] = null;
+            }
+        }
+
+        /// <summary>
+        /// Inserts a runtime-loaded addressable prefab into the slot derived from its GUID.
+        /// </summary>
+        /// <param name="networkObject">Loaded prefab root that exposes a <see cref="NetworkObject"/>.</param>
+        /// <param name="guid">GUID used to find the prefab's deterministic runtime slot.</param>
         private void AddObject(NetworkObject networkObject, string guid)
         {
             if (!UnityEngine.Application.isPlaying)
@@ -303,15 +270,36 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Initializes a prefab in loaded prefabs at a specified index.
+        /// Initializes a loaded prefab slot with FishNet so the prefab ID matches the generated collection index.
         /// </summary>
         /// <param name="id">ID of the prefab</param>
         private void InitializePrefab(int id)
         {
+            if (!CheckId(id))
+            {
+                return;
+            }
+
             if (_loadedPrefabs[id])
             {
                 ManagedObjects.InitializePrefab(_loadedPrefabs[id], id, CollectionId);
             }
+        }
+
+        /// <summary>
+        /// Validates that the requested prefab ID maps to a slot inside the generated collection.
+        /// </summary>
+        private bool CheckId(int id)
+        {
+            if (id < _loadedPrefabs.Length && id >= 0)
+            {
+                return true;
+            }
+
+            Log.Error(this, $"PrefabId {id} is out of range.");
+
+            return false;
+
         }
     }
 }

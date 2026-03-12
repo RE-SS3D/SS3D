@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
@@ -16,29 +16,38 @@ using Object = UnityEngine.Object;
 namespace SS3D.Data
 {
     /// <summary>
-    /// A class to get specific assets on the project, without having to assign them on the inspector or hardcoding Resources.Load.
-    ///
-    /// A more concise and in depth explanation on how this system works and how to use is present on the GitBook page for AssetData.
+    /// Central entry point for resolving assets referenced by SS3D asset databases.
+    /// It provides synchronous lookup for directly referenced assets and asynchronous
+    /// Addressables-backed loading with a shared per-GUID handle cache.
     /// </summary>
     public static class AssetLoader
     {
         /// <summary>
-        /// Event invoked when a asset is loaded using Addressables.
+        /// Raised after an addressable asset finishes loading through this loader.
+        /// The key is the asset GUID used by Addressables.
         /// </summary>
         internal static event Action<KeyValuePair<string, Object>> OnAssetLoaded;
 
         /// <summary>
-        /// A dictionary of the loaded databases, useful to get the databases quickly with the name of it.
+        /// Raised after a cached addressable handle is released through <see cref="Unload(string)"/>.
+        /// </summary>
+        internal static event Action<string> OnAssetUnloaded;
+
+        /// <summary>
+        /// Asset database registry keyed by database ID. The databases describe how logical
+        /// asset IDs map to direct object references and Addressables references.
         /// </summary>
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
 
         /// <summary>
-        /// A dictionary to keep track of the loading operations for each asset, so we don't load the same asset multiple times if multiple requests are made before the asset is done loading.
+        /// Shared Addressables handle cache keyed by asset GUID.
+        /// The same handle is reused for concurrent requests and remains resident until <see cref="Unload(string)"/> releases it.
         /// </summary>
         private static readonly Dictionary<string, AsyncOperationHandle<Object>> LoadingOperations = new();
 
         /// <summary>
-        /// Initializes the Addressables system and loads the asset databases in the project.
+        /// Boots Addressables and populates the in-memory asset database registry.
+        /// This method is intentionally fire-and-forget because it is used during project startup.
         /// </summary>
         public static async void InitializeAsync()
         {
@@ -54,10 +63,10 @@ namespace SS3D.Data
         }
 
         /// <summary>
-        /// Function to check if an asset is loaded
+        /// Checks whether this loader currently holds a successful Addressables handle for the given GUID.
         /// </summary>
-        /// <param name="guid">the guid of the asset</param>
-        /// <returns>True if asset is loaded</returns>
+        /// <param name="guid">GUID of the addressable asset.</param>
+        /// <returns><see langword="true"/> when the cached handle completed successfully.</returns>
         public static bool IsLoaded([NotNull] string guid) => LoadingOperations.TryGetValue(guid, out AsyncOperationHandle<Object> loadingOperation)
             && loadingOperation is
             {
@@ -66,19 +75,20 @@ namespace SS3D.Data
             };
 
         /// <summary>
-        /// Returns an asset from a  database casting the object found to TAsset.
+        /// Returns an asset from a database using its direct serialized reference.
+        /// This path does not go through Addressables and assumes the asset is already part of the loaded content set.
         /// </summary>
         [CanBeNull]
         public static TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
             where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
 
         /// <summary>
-        /// Function to get an asset asynchronously from a database.
+        /// Resolves an asset by logical database and asset IDs, loading it through Addressables when needed.
         /// </summary>
         /// <param name="databaseId">ID of the Database the asset is to be loaded from.</param>
         /// <param name="assetId">ID of the asset to be loaded.</param>
-        /// <param name="onAssetLoaded">Callback to be called after the asset is loaded. (Optional)</param>
-        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
+        /// <param name="onAssetLoaded">Optional callback invoked after the load attempt completes.</param>
+        /// <typeparam name="TAsset">Requested asset type or component type.</typeparam>
         /// <returns>Task for the asset to be loaded.</returns>
         [ItemCanBeNull]
         public static async Task<TAsset> GetAsync<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] Action<TAsset> onAssetLoaded = null)
@@ -105,25 +115,31 @@ namespace SS3D.Data
         }
 
         /// <summary>
-        /// Function to get an asset asynchronously from a WorldObjectAssetReference.
+        /// Convenience overload that resolves an asset from a serialized SS3D asset reference.
         /// </summary>
-        /// <param name="reference">WorldObjectAssetReference object for the asset.</param>
-        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
+        /// <param name="reference">ObjectAssetReference object for the asset.</param>
+        /// <typeparam name="TAsset">Requested asset type or component type.</typeparam>
         /// <returns>Task for the asset to be loaded.</returns>
         [ItemCanBeNull]
         public static async Task<TAsset> GetAsync<TAsset>([NotNull] ObjectAssetReference reference)
             where TAsset : class => await GetAsync<TAsset>(reference.Database, reference.Id);
 
         /// <summary>
-        /// Checks if an asset exists in a database with the given id.
+        /// Checks whether the specified database contains an entry for the given asset ID.
+        /// This is a metadata query and does not indicate whether the asset is currently loaded.
         /// </summary>
         /// <param name="databaseId">Database to check in</param>
         /// <param name="assetId">Asset ID to check</param>
         /// <returns>True if specified database has that asset</returns>
-        public static bool Has([NotNull] string databaseId, [NotNull] string assetId) => GetDatabase(databaseId)!.Has(assetId);
+        public static bool Has([NotNull] string databaseId, [NotNull] string assetId)
+        {
+            AssetDatabase database = GetDatabase(databaseId);
+
+            return database && database.Has(assetId);
+        }
 
         /// <summary>
-        /// Checks if an asset exists in any database
+        /// Checks whether any registered database contains an entry for the given asset ID.
         /// </summary>
         /// <param name="assetId">Asset ID to check</param>
         /// <returns>True if any database has that asset</returns>
@@ -133,7 +149,7 @@ namespace SS3D.Data
         }
 
         /// <summary>
-        /// Unloads an ObjectAssetReference prefab.
+        /// Releases the cached Addressables handle associated with the given asset reference.
         /// </summary>
         /// <param name="assetReference">ObjectAssetReference of the object to be unloaded</param>
         public static void Unload([NotNull] ObjectAssetReference assetReference)
@@ -142,19 +158,32 @@ namespace SS3D.Data
         }
 
         /// <summary>
-        /// Unloads a prefab with specified guid
+        /// Releases the cached Addressables handle associated with the given asset GUID.
+        /// This only affects assets loaded through <see cref="GetAsync{TAsset}(string,string,Action{TAsset})"/> or its overloads.
         /// </summary>
         /// <param name="guid">guid of the prefab</param>
         public static void Unload([NotNull] string guid)
         {
-            if (LoadingOperations.TryGetValue(guid, out AsyncOperationHandle<Object> loadingOperation))
+            if (!LoadingOperations.TryGetValue(guid, out AsyncOperationHandle<Object> loadingOperation))
             {
-                Addressables.Release(loadingOperation);
+                return;
+            }
+
+            Addressables.Release(loadingOperation);
+            LoadingOperations.Remove(guid);
+            try
+            {
+                OnAssetUnloaded?.Invoke(guid);
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the OnAssetUnloaded event in Unload");
             }
         }
 
         /// <summary>
-        /// Helper function to find a database in the database dict.
+        /// Resolves a registered asset database by ID.
+        /// The registry is lazily initialized as a fallback for call sites that run before the normal boot path.
         /// </summary>
         /// <param name="databaseId">The id used to identify which database to load.</param>
         /// <returns>the database corresponding to the ID provided</returns>
@@ -183,7 +212,8 @@ namespace SS3D.Data
         }
 
         /// <summary>
-        /// Loads the databases in the project from the AssetDatabaseSettings, saves it in a Dictionary for easy & performant access.
+        /// Rebuilds the in-memory asset database registry from project settings.
+        /// This loads database metadata only; it does not load any addressable assets.
         /// </summary>
         private static void LoadAssetDatabases()
         {
@@ -202,10 +232,10 @@ namespace SS3D.Data
         // ReSharper disable Unity.PerformanceAnalysis
 
         /// <summary>
-        /// Function to get an asset asynchronously from an AssetReference.
+        /// Loads an Addressables asset by reference while deduplicating concurrent requests for the same GUID.
         /// </summary>
         /// <param name="reference">Asset Reference object for the asset.</param>
-        /// <typeparam name="TAsset">Type of the asset (UnityEngine.Object).</typeparam>
+        /// <typeparam name="TAsset">Requested asset type or component type.</typeparam>
         /// <returns>Task for the asset to be loaded.</returns>
         [ItemCanBeNull]
         private static async Task<TAsset> GetAsync<TAsset>([NotNull] AssetReference reference)
@@ -213,6 +243,7 @@ namespace SS3D.Data
         {
             if (!LoadingOperations.TryGetValue(reference.AssetGUID, out AsyncOperationHandle<Object> loadingOperation))
             {
+                // Cache the handle immediately so later requests await the same operation instead of kicking off a duplicate load.
                 loadingOperation = reference.LoadAssetAsync<Object>();
                 LoadingOperations.Add(reference.AssetGUID, loadingOperation);
             }
@@ -244,6 +275,10 @@ namespace SS3D.Data
             return asset;
         }
 
+        /// <summary>
+        /// Adapts a loaded Unity object to the requested API surface.
+        /// Prefab GameObjects can be requested as one of their components for convenience.
+        /// </summary>
         private static TAsset CastAsset<TAsset>(Object obj)
             where TAsset : class
         {
