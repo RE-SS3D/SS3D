@@ -100,6 +100,84 @@ namespace SS3D.Data.Networking
             }
         }
 
+        /// <summary>
+        /// Tracks the one-time late-join preload snapshot for a specific client.
+        /// This is separate from synchronized load barriers so new live-world loads
+        /// do not mutate the original catch-up snapshot created when the client joined.
+        /// </summary>
+        private sealed class ClientPreloadSession
+        {
+            private readonly HashSet<AssetKey> _pendingAssets;
+            private readonly TaskCompletionSource<bool> _taskSource;
+            private bool? _result;
+
+            internal ClientPreloadSession([CanBeNull] HashSet<AssetKey> pendingAssets)
+            {
+                _pendingAssets = pendingAssets ?? new HashSet<AssetKey>();
+                _taskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                if (_pendingAssets.Count == 0)
+                {
+                    Complete(true);
+                }
+            }
+
+            internal Task<bool> Task => _taskSource.Task;
+
+            internal int PendingCount => _pendingAssets.Count;
+
+            internal bool Succeeded => _result == true;
+
+            internal bool TryAcknowledge(AssetKey assetKey, bool loaded)
+            {
+                if (Task.IsCompleted || !_pendingAssets.Contains(assetKey))
+                {
+                    return false;
+                }
+
+                if (!loaded)
+                {
+                    Complete(false);
+
+                    return true;
+                }
+
+                _pendingAssets.Remove(assetKey);
+
+                if (_pendingAssets.Count == 0)
+                {
+                    Complete(true);
+                }
+
+                return true;
+            }
+
+            internal bool TrySetCanceled() => _taskSource.TrySetCanceled();
+
+            internal bool TrySetFailed()
+            {
+                if (Task.IsCompleted)
+                {
+                    return false;
+                }
+
+                Complete(false);
+
+                return true;
+            }
+
+            private void Complete(bool result)
+            {
+                if (Task.IsCompleted)
+                {
+                    return;
+                }
+
+                _result = result;
+                _taskSource.TrySetResult(result);
+            }
+        }
+
         private const float ClientWaitResponseGraceSeconds = 1f;
 
         /// <summary>
@@ -113,8 +191,23 @@ namespace SS3D.Data.Networking
         /// </summary>
         private readonly Dictionary<AssetKey, TaskCompletionSource<bool>> _clientWaitRequests = new();
 
+        /// <summary>
+        /// Server-side late-join preload sessions keyed by client ID.
+        /// Each session represents the fixed asset snapshot that client still needs to acknowledge before
+        /// it is considered caught up with the currently active addressable world state.
+        /// </summary>
+        private readonly Dictionary<int, ClientPreloadSession> _clientPreloadSessions = new();
+
+        /// <summary>
+        /// Tracks clients that completed their most recent late-join preload session successfully.
+        /// </summary>
+        private readonly HashSet<int> _clientsWithCompletedPreload = new();
+
         [SerializeField]
         private int _retryAttempts = 5;
+
+        [SerializeField]
+        private float _lateJoinPreloadTimeoutSeconds = 15f;
 
         public static AssetSynchronizer Instance { get; private set; }
 
@@ -151,7 +244,14 @@ namespace SS3D.Data.Networking
                 loadRequest.TrySetCanceled();
             }
 
+            foreach (ClientPreloadSession preloadSession in _clientPreloadSessions.Values)
+            {
+                preloadSession.TrySetCanceled();
+            }
+
             _loadRequests.Clear();
+            _clientPreloadSessions.Clear();
+            _clientsWithCompletedPreload.Clear();
             NetworkAssetRegistry.Clear();
         }
 
@@ -404,7 +504,7 @@ namespace SS3D.Data.Networking
             {
                 for (int attempt = 0; attempt < _retryAttempts; attempt++)
                 {
-                    Object asset = await AssetLoader.GetAsync<Object>(assetKey);
+                    Object asset = await AssetLoader.AcquireNetworkAssetAsync<Object>(assetKey);
 
                     if (!asset)
                     {
@@ -447,6 +547,8 @@ namespace SS3D.Data.Networking
                 request.RemoveClient(connection.ClientId);
             }
 
+            ClearClientPreloadState(connection.ClientId, cancelSession: true);
+
             // Don't if I have to handle added as well
             // Action<LoadRequest> actionToTake = stateData.ConnectionState switch
             // {
@@ -476,20 +578,7 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            // Re-attach the late joiner to any barrier still in progress so the current synchronized load can finish cleanly.
-            foreach (KeyValuePair<AssetKey, LoadRequest> pair in _loadRequests)
-            {
-                AssetKey assetKey = pair.Key;
-                LoadRequest request = pair.Value;
-                request.AddClient(connection.ClientId);
-                RpcLoadForClient(connection, assetKey.DatabaseId, assetKey.AssetId);
-            }
-
-            // Replay the live addressable manifest so currently spawned addressable prefabs can be instantiated on the joining client.
-            foreach (AssetKey assetKey in NetworkAssetRegistry.GetActiveAssets())
-            {
-                RpcLoadForClient(connection, assetKey.DatabaseId, assetKey.AssetId);
-            }
+            StartClientPreloadSession(connection);
         }
 
         // ReSharper disable once UnusedParameter.Local
@@ -509,16 +598,20 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            if (!_loadRequests.TryGetValue(assetKey, out LoadRequest request))
+            if (_loadRequests.TryGetValue(assetKey, out LoadRequest request))
             {
-                return;
+                request.Acknowledge(connection.ClientId, loaded);
+
+                if (request.Task.IsCompleted)
+                {
+                    _loadRequests.Remove(assetKey);
+                }
             }
 
-            request.Acknowledge(connection.ClientId, loaded);
-
-            if (request.Task.IsCompleted)
+            if (_clientPreloadSessions.TryGetValue(connection.ClientId, out ClientPreloadSession preloadSession)
+                && preloadSession.TryAcknowledge(assetKey, loaded))
             {
-                _loadRequests.Remove(assetKey);
+                TryFinalizeClientPreloadSession(connection.ClientId, preloadSession);
             }
         }
 
@@ -546,7 +639,58 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Broadcasts an unload once the asset falls out of the active world manifest.
+        /// Returns <see langword="true"/> once the latest late-join preload session for the specified client
+        /// completed successfully.
+        /// </summary>
+        [Server]
+        internal bool IsClientPreloadComplete(int clientId) => _clientsWithCompletedPreload.Contains(clientId);
+
+        /// <summary>
+        /// Waits for the specified client's late-join preload snapshot to finish.
+        /// This is the server-side hook future join/world-ready flow should await before granting
+        /// full participation in addressable-backed world state.
+        /// </summary>
+        [Server]
+        internal async Task<bool> WaitForClientPreloadAsync(int clientId, float timeoutSeconds = -1f)
+        {
+            if (!_clientPreloadSessions.TryGetValue(clientId, out ClientPreloadSession preloadSession))
+            {
+                return _clientsWithCompletedPreload.Contains(clientId);
+            }
+
+            float effectiveTimeout = timeoutSeconds > 0f ? timeoutSeconds : _lateJoinPreloadTimeoutSeconds;
+
+            try
+            {
+                return await preloadSession.Task.WaitWithTimeout(effectiveTimeout);
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            catch (TimeoutException)
+            {
+                Log.Error(this, $"Timed out waiting for late-join preload for ClientID {clientId} after {effectiveTimeout:0.##} seconds.");
+                preloadSession.TrySetFailed();
+
+                return false;
+            }
+            catch (Exception e)
+            {
+                Log.Error(this, e, $"Unexpected exception while waiting for late-join preload for ClientID {clientId}.");
+                preloadSession.TrySetFailed();
+
+                return false;
+            }
+            finally
+            {
+                TryFinalizeClientPreloadSession(clientId, preloadSession);
+            }
+        }
+
+        /// <summary>
+        /// Broadcasts a network residency release once the asset falls out of the active world manifest.
+        /// The underlying asset is only fully unloaded when no other loader owners still retain it.
         /// </summary>
         [Server]
         internal void SynchronizeUnload(AssetKey assetKey)
@@ -557,7 +701,7 @@ namespace SS3D.Data.Networking
             }
 
             RpcSynchronizedUnload(assetKey.DatabaseId, assetKey.AssetId);
-            AssetLoader.Unload(assetKey);
+            AssetLoader.ReleaseNetworkAsset(assetKey);
         }
 
         /// <summary>
@@ -579,7 +723,115 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            AssetLoader.Unload(assetKey);
+            AssetLoader.ReleaseNetworkAsset(assetKey);
+        }
+
+        /// <summary>
+        /// Starts one fixed late-join preload session for the client by merging:
+        /// - assets that are already active in the live world
+        /// - synchronized loads that are still in progress
+        /// Acknowledgements for assets already in that snapshot satisfy both the client preload session
+        /// and any matching synchronized load barrier.
+        /// </summary>
+        [Server]
+        private void StartClientPreloadSession([NotNull] NetworkConnection connection)
+        {
+            int clientId = connection.ClientId;
+            ClearClientPreloadState(clientId, cancelSession: true);
+
+            HashSet<AssetKey> preloadAssets = new();
+
+            foreach ((AssetKey assetKey, LoadRequest request) in _loadRequests.Where(pair => !pair.Value.Task.IsCompleted))
+            {
+                request.AddClient(clientId);
+                preloadAssets.Add(assetKey);
+            }
+
+            foreach (AssetKey assetKey in NetworkAssetRegistry.GetActiveAssets())
+            {
+                preloadAssets.Add(assetKey);
+            }
+
+            ClientPreloadSession preloadSession = new(preloadAssets);
+            _clientPreloadSessions[clientId] = preloadSession;
+
+            if (preloadAssets.Count == 0)
+            {
+                TryFinalizeClientPreloadSession(clientId, preloadSession);
+
+                return;
+            }
+
+            Log.Information(this, $"Starting late-join preload for ClientID {clientId} with {preloadSession.PendingCount} addressable assets.");
+
+            foreach (AssetKey assetKey in preloadAssets)
+            {
+                RpcLoadForClient(connection, assetKey.DatabaseId, assetKey.AssetId);
+            }
+
+            MonitorClientPreloadAsync(clientId);
+        }
+
+        [Server]
+        private void ClearClientPreloadState(int clientId, bool cancelSession)
+        {
+            _clientsWithCompletedPreload.Remove(clientId);
+
+            if (!_clientPreloadSessions.TryGetValue(clientId, out ClientPreloadSession preloadSession))
+            {
+                return;
+            }
+
+            if (cancelSession)
+            {
+                preloadSession.TrySetCanceled();
+            }
+
+            _clientPreloadSessions.Remove(clientId);
+        }
+
+        [Server]
+        private void TryFinalizeClientPreloadSession(int clientId, [NotNull] ClientPreloadSession preloadSession)
+        {
+            if (!preloadSession.Task.IsCompleted
+                || !_clientPreloadSessions.TryGetValue(clientId, out ClientPreloadSession currentSession)
+                || !ReferenceEquals(currentSession, preloadSession))
+            {
+                return;
+            }
+
+            _clientPreloadSessions.Remove(clientId);
+
+            if (preloadSession.Task.IsCanceled)
+            {
+                _clientsWithCompletedPreload.Remove(clientId);
+
+                return;
+            }
+
+            if (preloadSession.Succeeded)
+            {
+                _clientsWithCompletedPreload.Add(clientId);
+                Log.Information(this, $"Late-join preload completed for ClientID {clientId}.");
+
+                return;
+            }
+
+            _clientsWithCompletedPreload.Remove(clientId);
+            Log.Error(this, $"Late-join preload failed for ClientID {clientId}.");
+        }
+
+        [Server]
+        private async void MonitorClientPreloadAsync(int clientId)
+        {
+            try
+            {
+                await WaitForClientPreloadAsync(clientId);
+            }
+            catch (Exception e)
+            {
+                Log.Error(this, e, $"Failed while monitoring late-join preload for ClientID {clientId}.");
+            }
         }
     }
 }

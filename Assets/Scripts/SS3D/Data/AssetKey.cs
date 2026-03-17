@@ -13,13 +13,11 @@ namespace SS3D.Data
         /// <summary>
         /// ID of the asset database that owns the asset.
         /// </summary>
-        [CanBeNull]
         public readonly string DatabaseId;
 
         /// <summary>
         /// ID of the asset inside the owning database.
         /// </summary>
-        [CanBeNull]
         public readonly string AssetId;
 
         public AssetKey([CanBeNull] string databaseId, [CanBeNull] string assetId)

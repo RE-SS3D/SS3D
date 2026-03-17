@@ -1,23 +1,19 @@
-using Coimbra;
-using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
-using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Threading.Tasks;
+using UnityEngine.AddressableAssets;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data
 {
     /// <summary>
-    /// Central entry point for resolving assets referenced by SS3D asset databases.
-    /// It provides synchronous lookup for directly referenced assets and asynchronous
-    /// Addressables-backed loading with a shared per-GUID handle cache.
+    /// Facade for SS3D asset lookup and addressable residency.
+    /// Database resolution and addressable residency are handled by dedicated internal services,
+    /// while this class preserves the public compatibility surface used across the project.
     /// </summary>
     public static class AssetLoader
     {
@@ -25,134 +21,148 @@ namespace SS3D.Data
         /// Raised after an addressable asset finishes loading through this loader.
         /// The key is the asset GUID used by Addressables.
         /// </summary>
-        internal static event Action<KeyValuePair<string, Object>> OnAssetLoaded;
+        internal static event Action<KeyValuePair<string, Object>> OnAssetLoaded
+        {
+            add => AssetResidencyRegistry.OnAssetLoaded += value;
+            remove => AssetResidencyRegistry.OnAssetLoaded -= value;
+        }
 
         /// <summary>
-        /// Raised after a cached addressable handle is released through <see cref="Unload(string)"/>.
+        /// Raised after the final ownership claim for a shared addressable residency record is released.
         /// </summary>
-        internal static event Action<string> OnAssetUnloaded;
+        internal static event Action<string> OnAssetUnloaded
+        {
+            add => AssetResidencyRegistry.OnAssetUnloaded += value;
+            remove => AssetResidencyRegistry.OnAssetUnloaded -= value;
+        }
 
         /// <summary>
-        /// Asset database registry keyed by database ID. The databases describe how logical
-        /// asset IDs map to direct object references and Addressables references.
+        /// Compatibility owner used by the legacy async loading path. Assets loaded through
+        /// <see cref="GetAsync{TAsset}(string,string,Action{TAsset})"/> stay resident until
+        /// the matching compatibility unload path releases this owner.
         /// </summary>
-        private static readonly Dictionary<string, AssetDatabase> Databases = new();
+        private static readonly AssetOwnerToken LegacyAsyncOwner = AssetOwnerToken.Create("AssetLoader.LegacyAsync");
 
         /// <summary>
-        /// Shared Addressables handle cache keyed by asset GUID.
-        /// The same handle is reused for concurrent requests and remains resident until <see cref="Unload(string)"/> releases it.
+        /// Shared owner token used by the synchronized network path.
+        /// Network residency is kept alive until the active network world manifest releases it.
         /// </summary>
-        private static readonly Dictionary<string, AsyncOperationHandle<Object>> LoadingOperations = new();
+        private static readonly AssetOwnerToken NetworkAsyncOwner = AssetOwnerToken.Create("AssetLoader.Network");
+
+        private static Task InitializationTask;
+
+        /// <summary>
+        /// Returns <see langword="true"/> when the asset system finished initialization successfully.
+        /// </summary>
+        public static bool IsInitialized => AssetDatabaseCatalog.IsInitialized && InitializationTask is { IsCompletedSuccessfully: true };
 
         /// <summary>
         /// Boots Addressables and populates the in-memory asset database registry.
-        /// This method is intentionally fire-and-forget because it is used during project startup.
+        /// Callers are expected to trigger this explicitly during application startup.
         /// </summary>
-        public static async void InitializeAsync()
+        [NotNull]
+        public static Task InitializeAsync()
         {
-            try
+            if (InitializationTask == null || InitializationTask.IsCanceled || InitializationTask.IsFaulted)
             {
-                await Addressables.InitializeAsync();
-                LoadAssetDatabases();
+                InitializationTask = InitializeInternalAsync();
             }
-            catch (Exception e)
-            {
-                Log.Error(typeof(AssetLoader), e, "An exception occurred while initializing the Addressables system.");
-            }
+
+            return InitializationTask;
         }
 
         /// <summary>
         /// Checks whether this loader currently holds a successful Addressables handle for the given GUID.
         /// </summary>
-        /// <param name="guid">GUID of the addressable asset.</param>
-        /// <returns><see langword="true"/> when the cached handle completed successfully.</returns>
-        public static bool IsLoaded([NotNull] string guid) => LoadingOperations.TryGetValue(guid, out AsyncOperationHandle<Object> loadingOperation)
-            && loadingOperation is
-            {
-                IsDone: true,
-                Status: AsyncOperationStatus.Succeeded,
-            };
+        public static bool IsLoaded([NotNull] string guid) => AssetResidencyRegistry.IsLoaded(guid);
 
         /// <summary>
         /// Returns an asset from a database using its direct serialized reference.
         /// This is the legacy direct-reference path and does not go through Addressables.
-        /// Synchronized multiplayer loading should use <see cref="Has(string,string)"/> and <see cref="GetAsync{TAsset}(string,string,Action{TAsset})"/> instead.
         /// </summary>
         [CanBeNull]
         public static TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
-            where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
+            where TAsset : Object => AssetDatabaseCatalog.GetDatabase(databaseId)?.Get<TAsset>(assetId);
 
         /// <summary>
-        /// Resolves an asset by logical database and asset IDs through the async runtime-loading path.
-        /// This is the path used by synchronized multiplayer asset loading and late-join preloading.
+        /// Resolves an asset by logical database and asset IDs through the legacy compatibility async path.
+        /// This keeps a shared compatibility owner claim so existing GetAsync/Unload callers keep their previous behavior
+        /// while newer systems migrate to the explicit ownership API.
         /// </summary>
-        /// <param name="databaseId">ID of the Database the asset is to be loaded from.</param>
-        /// <param name="assetId">ID of the asset to be loaded.</param>
-        /// <param name="onAssetLoaded">Optional callback invoked after the load attempt completes.</param>
-        /// <typeparam name="TAsset">Requested asset type or component type.</typeparam>
-        /// <returns>Task for the asset to be loaded.</returns>
         [ItemCanBeNull]
         public static async Task<TAsset> GetAsync<TAsset>([NotNull] string databaseId, [NotNull] string assetId, [CanBeNull] Action<TAsset> onAssetLoaded = null)
-            where TAsset : class
-        {
-            return await GetAsync(new(databaseId, assetId), onAssetLoaded);
-        }
+            where TAsset : class => await AcquireAsync(new AssetKey(databaseId, assetId), LegacyAsyncOwner, onAssetLoaded);
 
         /// <summary>
-        /// Resolves an asset by <see cref="AssetKey"/> through the async runtime-loading path.
-        /// This is the path used by synchronized multiplayer asset loading and late-join preloading.
+        /// Resolves an asset by <see cref="AssetKey"/> through the legacy compatibility async path.
+        /// This keeps a shared compatibility owner claim so existing GetAsync/Unload callers keep their previous behavior
+        /// while newer systems migrate to the explicit ownership API.
         /// </summary>
         [ItemCanBeNull]
         public static async Task<TAsset> GetAsync<TAsset>(AssetKey assetKey, [CanBeNull] Action<TAsset> onAssetLoaded = null)
+            where TAsset : class => await AcquireAsync(assetKey, LegacyAsyncOwner, onAssetLoaded);
+
+        /// <summary>
+        /// Convenience overload that resolves an asset from a serialized SS3D asset reference.
+        /// </summary>
+        [ItemCanBeNull]
+        public static async Task<TAsset> GetAsync<TAsset>([NotNull] ObjectAssetReference reference)
+            where TAsset : class => await AcquireAsync<TAsset>(new AssetKey(reference.Database, reference.Id), LegacyAsyncOwner);
+
+        /// <summary>
+        /// Resolves an asset through the Addressables residency system while registering an explicit ownership claim.
+        /// Owners keep one shared claim until <see cref="Release(AssetKey,AssetOwnerToken)"/> removes it.
+        /// </summary>
+        [ItemCanBeNull]
+        public static async Task<TAsset> AcquireAsync<TAsset>(AssetKey assetKey, AssetOwnerToken owner, [CanBeNull] Action<TAsset> onAssetLoaded = null)
             where TAsset : class
         {
-            if (!TryGetAsyncReference(assetKey, out AssetReference reference))
+            if (!owner.IsValid)
             {
-                Log.Warning(typeof(AssetLoader), $"Asset '{assetKey}' is not available through the async runtime-loading path.");
-
-                try
-                {
-                    onAssetLoaded?.Invoke(null);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the onAssetLoaded callback in GetAsync");
-                }
+                Log.Warning(typeof(AssetLoader), $"Cannot acquire asset '{assetKey}' because the owner token is invalid.");
+                InvokeOnAssetLoadedCallback(onAssetLoaded, null);
 
                 return null;
             }
 
-            TAsset asset = await GetAsync<TAsset>(reference);
+            if (!await EnsureInitializedAsync())
+            {
+                InvokeOnAssetLoadedCallback(onAssetLoaded, null);
 
-            try
-            {
-                onAssetLoaded?.Invoke(asset);
+                return null;
             }
-            catch (Exception e)
+
+            if (!AssetDatabaseCatalog.TryGetAsyncReference(assetKey, out AssetReference reference))
             {
-                Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the onAssetLoaded callback in GetAsync");
+                Log.Warning(typeof(AssetLoader), $"Asset '{assetKey}' is not available through the async runtime-loading path.");
+                InvokeOnAssetLoadedCallback(onAssetLoaded, null);
+
+                return null;
             }
+
+            TAsset asset = await AssetResidencyRegistry.AcquireAsync<TAsset>(reference, owner);
+            InvokeOnAssetLoadedCallback(onAssetLoaded, asset);
 
             return asset;
         }
 
         /// <summary>
-        /// Convenience overload that resolves an asset from a serialized SS3D asset reference.
+        /// Convenience overload that acquires explicit ownership from a serialized SS3D asset reference.
         /// </summary>
-        /// <param name="reference">ObjectAssetReference object for the asset.</param>
-        /// <typeparam name="TAsset">Requested asset type or component type.</typeparam>
-        /// <returns>Task for the asset to be loaded.</returns>
         [ItemCanBeNull]
-        public static async Task<TAsset> GetAsync<TAsset>([NotNull] ObjectAssetReference reference)
-            where TAsset : class => await GetAsync<TAsset>(new AssetKey(reference.Database, reference.Id));
+        public static async Task<TAsset> AcquireAsync<TAsset>([NotNull] ObjectAssetReference reference, AssetOwnerToken owner, [CanBeNull] Action<TAsset> onAssetLoaded = null)
+            where TAsset : class => await AcquireAsync(new AssetKey(reference.Database, reference.Id), owner, onAssetLoaded);
+
+        /// <summary>
+        /// Resolves an asset through the shared network ownership claim used by synchronized loads and late-join preloading.
+        /// </summary>
+        [ItemCanBeNull]
+        internal static async Task<TAsset> AcquireNetworkAssetAsync<TAsset>(AssetKey assetKey, [CanBeNull] Action<TAsset> onAssetLoaded = null)
+            where TAsset : class => await AcquireAsync(assetKey, NetworkAsyncOwner, onAssetLoaded);
 
         /// <summary>
         /// Checks whether the asset can be resolved through the async runtime-loading path used by synchronized multiplayer systems.
-        /// This is intentionally separate from <see cref="Get{TAsset}(string,string)"/>, which serves legacy direct references.
         /// </summary>
-        /// <param name="databaseId">Database to check in</param>
-        /// <param name="assetId">Asset ID to check</param>
-        /// <returns>True if specified database has that asset</returns>
         public static bool Has([CanBeNull] string databaseId, [CanBeNull] string assetId)
         {
             return Has(new(databaseId, assetId));
@@ -163,199 +173,70 @@ namespace SS3D.Data
         /// </summary>
         public static bool Has(AssetKey assetKey)
         {
-            if (!assetKey.IsValid)
+            if (!EnsureInitialized())
             {
                 return false;
             }
 
-            AssetDatabase database = GetDatabase(assetKey.DatabaseId);
-
-            return database && database.Has(assetKey.AssetId);
+            return AssetDatabaseCatalog.Has(assetKey);
         }
 
         /// <summary>
-        /// Releases the cached Addressables handle associated with the given asset reference.
+        /// Releases the legacy compatibility ownership claim associated with the given asset reference.
         /// </summary>
-        /// <param name="assetReference">ObjectAssetReference of the object to be unloaded</param>
         public static void Unload([NotNull] ObjectAssetReference assetReference)
         {
-            Unload(new AssetKey(assetReference.Database, assetReference.Id));
+            Release(new AssetKey(assetReference.Database, assetReference.Id), LegacyAsyncOwner);
         }
 
         /// <summary>
-        /// Releases the cached Addressables handle associated with the given asset key.
+        /// Releases the legacy compatibility ownership claim associated with the given asset key.
         /// </summary>
         public static void Unload(AssetKey assetKey)
         {
-            if (!assetKey.IsValid)
-            {
-                return;
-            }
-
-            Unload(assetKey.AssetId);
+            Release(assetKey, LegacyAsyncOwner);
         }
 
         /// <summary>
-        /// Releases the cached Addressables handle associated with the given asset GUID.
-        /// This only affects assets loaded through <see cref="GetAsync{TAsset}(string,string,Action{TAsset})"/> or its overloads.
+        /// Releases the legacy compatibility ownership claim associated with the given asset GUID.
+        /// This preserves the old GetAsync/Unload pairing while allowing other systems to keep the same asset resident.
         /// </summary>
-        /// <param name="guid">guid of the prefab</param>
         public static void Unload([NotNull] string guid)
         {
-            if (!LoadingOperations.TryGetValue(guid, out AsyncOperationHandle<Object> loadingOperation))
-            {
-                return;
-            }
-
-            Addressables.Release(loadingOperation);
-            LoadingOperations.Remove(guid);
-            try
-            {
-                OnAssetUnloaded?.Invoke(guid);
-            }
-            catch (Exception e)
-            {
-                Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the OnAssetUnloaded event in Unload");
-            }
+            AssetResidencyRegistry.Release(guid, LegacyAsyncOwner);
         }
 
         /// <summary>
-        /// Resolves a registered asset database by ID.
-        /// The registry is lazily initialized as a fallback for call sites that run before the normal boot path.
+        /// Releases one explicit ownership claim for the specified asset key.
+        /// The shared Addressables handle is only released once the final owner is gone.
         /// </summary>
-        /// <param name="databaseId">The id used to identify which database to load.</param>
-        /// <returns>the database corresponding to the ID provided</returns>
-        [CanBeNull]
-        public static AssetDatabase GetDatabase([NotNull] string databaseId)
+        public static bool Release(AssetKey assetKey, AssetOwnerToken owner)
         {
-            // TODO: Move this to the new initialization flow.
-            if (Databases.Count == 0)
-            {
-                LoadAssetDatabases();
-            }
-
-            if (string.IsNullOrEmpty(databaseId))
-            {
-                return null;
-            }
-
-            bool databaseExists = Databases.TryGetValue(databaseId, out AssetDatabase database);
-
-            if (!databaseExists)
-            {
-                Log.Warning(typeof(AssetLoader), $"Database of type {databaseId} not found", Logs.Important);
-            }
-
-            return database;
-        }
-
-        /// <summary>
-        /// Rebuilds the in-memory asset database registry from project settings.
-        /// This loads database metadata only; it does not load any addressable assets.
-        /// </summary>
-        private static void LoadAssetDatabases()
-        {
-            List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
-
-            Databases.Clear();
-
-            foreach (AssetDatabase database in assetDatabases)
-            {
-                Databases.Add(database.DatabaseID, database);
-            }
-
-            Log.Information(typeof(AssetLoader), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
-        }
-
-        // ReSharper disable Unity.PerformanceAnalysis
-
-        /// <summary>
-        /// Loads an Addressables asset by reference while deduplicating concurrent requests for the same GUID.
-        /// </summary>
-        /// <param name="reference">Asset Reference object for the asset.</param>
-        /// <typeparam name="TAsset">Requested asset type or component type.</typeparam>
-        /// <returns>Task for the asset to be loaded.</returns>
-        [ItemCanBeNull]
-        private static async Task<TAsset> GetAsync<TAsset>([NotNull] AssetReference reference)
-            where TAsset : class
-        {
-            if (!LoadingOperations.TryGetValue(reference.AssetGUID, out AsyncOperationHandle<Object> loadingOperation))
-            {
-                // Cache the handle immediately so later requests await the same operation instead of kicking off a duplicate load.
-                loadingOperation = reference.LoadAssetAsync<Object>();
-                LoadingOperations.Add(reference.AssetGUID, loadingOperation);
-            }
-
-            Object loadedAsset = await loadingOperation.Task;
-
-            if (loadingOperation is
-            {
-                IsDone: true,
-                Status: AsyncOperationStatus.Failed,
-            })
-            {
-                LoadingOperations.Remove(reference.AssetGUID);
-
-                return null;
-            }
-
-            try
-            {
-                OnAssetLoaded?.Invoke(new(reference.AssetGUID, loadedAsset));
-            }
-            catch (Exception e)
-            {
-                Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the OnAssetLoaded event in GetAsync");
-            }
-
-            TAsset asset = CastAsset<TAsset>(loadedAsset);
-
-            return asset;
-        }
-
-        /// <summary>
-        /// Resolves the async asset reference for a logical asset ID without conflating it with the legacy direct-reference path.
-        /// </summary>
-        private static bool TryGetAsyncReference(AssetKey assetKey, out AssetReference reference)
-        {
-            reference = null;
-
-            if (!assetKey.IsValid)
+            if (!owner.IsValid || !EnsureInitialized())
             {
                 return false;
             }
 
-            AssetDatabase database = GetDatabase(assetKey.DatabaseId);
-
-            if (!database || !database.Has(assetKey.AssetId))
+            if (!AssetDatabaseCatalog.TryGetAsyncReference(assetKey, out AssetReference reference))
             {
                 return false;
             }
 
-            reference = database.GetReference(assetKey.AssetId);
-
-            return reference != null;
+            return AssetResidencyRegistry.Release(reference.AssetGUID, owner);
         }
 
         /// <summary>
-        /// Adapts a loaded Unity object to the requested API surface.
-        /// Prefab GameObjects can be requested as one of their components for convenience.
+        /// Releases one explicit ownership claim for a serialized SS3D asset reference.
         /// </summary>
-        private static TAsset CastAsset<TAsset>(Object obj)
-            where TAsset : class
+        public static bool Release([NotNull] ObjectAssetReference reference, AssetOwnerToken owner)
         {
-            if (obj is GameObject gameObject && typeof(TAsset) != typeof(GameObject))
-            {
-                return gameObject.GetComponent<TAsset>();
-            }
-
-            return obj as TAsset;
+            return Release(new AssetKey(reference.Database, reference.Id), owner);
         }
 
 #if UNITY_EDITOR
         public static bool AddToAddressables(string databaseID, Object asset)
         {
-            AssetDatabase database = GetDatabase(databaseID);
+            AssetDatabase database = AssetDatabaseCatalog.EditorGetDatabase(databaseID);
 
             if (database)
             {
@@ -367,5 +248,102 @@ namespace SS3D.Data
             return false;
         }
 #endif
+
+        /// <summary>
+        /// Releases the shared network ownership claim used by synchronized addressable residency.
+        /// </summary>
+        internal static bool ReleaseNetworkAsset(AssetKey assetKey)
+        {
+            return Release(assetKey, NetworkAsyncOwner);
+        }
+
+        private static async Task InitializeInternalAsync()
+        {
+            try
+            {
+                await Addressables.InitializeAsync().Task;
+                AssetDatabaseCatalog.Initialize();
+            }
+            catch (Exception e)
+            {
+                AssetDatabaseCatalog.Reset();
+                AssetResidencyRegistry.Clear();
+                Log.Error(typeof(AssetLoader), e, "An exception occurred while initializing the Addressables system.");
+
+                throw;
+            }
+        }
+
+        private static bool EnsureInitialized()
+        {
+            if (AssetDatabaseCatalog.IsInitialized)
+            {
+                return true;
+            }
+
+            LogInitializationState();
+
+            return false;
+        }
+
+        private static async Task<bool> EnsureInitializedAsync()
+        {
+            if (InitializationTask == null)
+            {
+                LogInitializationState();
+
+                return false;
+            }
+
+            try
+            {
+                await InitializationTask;
+
+                return AssetDatabaseCatalog.IsInitialized;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static void LogInitializationState()
+        {
+            if (InitializationTask == null)
+            {
+                Log.Error(typeof(AssetLoader), "AssetLoader was used before initialization started.");
+
+                return;
+            }
+
+            if (!InitializationTask.IsCompleted)
+            {
+                Log.Error(typeof(AssetLoader), "AssetLoader was used while initialization is still in progress.");
+
+                return;
+            }
+
+            if (InitializationTask.IsFaulted)
+            {
+                Log.Error(typeof(AssetLoader), "AssetLoader initialization previously failed.");
+
+                return;
+            }
+
+            Log.Error(typeof(AssetLoader), "AssetLoader is not initialized.");
+        }
+
+        private static void InvokeOnAssetLoadedCallback<TAsset>([CanBeNull] Action<TAsset> onAssetLoaded, [CanBeNull] TAsset asset)
+            where TAsset : class
+        {
+            try
+            {
+                onAssetLoaded?.Invoke(asset);
+            }
+            catch (Exception e)
+            {
+                Log.Error(typeof(AssetLoader), e, "An exception occurred while invoking the onAssetLoaded callback in AssetLoader");
+            }
+        }
     }
 }

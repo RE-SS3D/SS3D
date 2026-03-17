@@ -112,12 +112,14 @@ namespace SS3D.Data.Networking
                 return null;
             }
 
-            // Load the prefab locally (this uses the Addressables pipeline when applicable).
-            GameObject prefab = await AssetLoader.GetAsync<GameObject>(assetReference);
+            // Load the prefab locally using the shared network ownership claim so the synchronized
+            // preload and the spawned live world object contribute to the same loader residency.
+            GameObject prefab = await AssetLoader.AcquireNetworkAssetAsync<GameObject>(assetKey);
 
             if (!prefab)
             {
                 Log.Error(typeof(NetworkSpawner), $"Failed to load prefab for asset '{assetKey}'.");
+                ReleaseFailedAddressableSpawn(assetKey);
 
                 return null;
             }
@@ -128,6 +130,7 @@ namespace SS3D.Data.Networking
             {
                 Log.Error(typeof(NetworkSpawner), $"Loaded prefab for asset '{assetKey}' does not contain a NetworkObject component.");
                 instance.Dispose(true);
+                ReleaseFailedAddressableSpawn(assetKey);
 
                 return null;
             }
@@ -208,6 +211,24 @@ namespace SS3D.Data.Networking
             }
 
             NetworkAssetRegistry.Register(assetKey, networkObject);
+        }
+
+        /// <summary>
+        /// Releases the shared network residency claim when a synchronized preload succeeded
+        /// but the server could not turn that asset into a live spawned world object.
+        /// </summary>
+        private static void ReleaseFailedAddressableSpawn(AssetKey assetKey)
+        {
+            AssetSynchronizer synchronizer = AssetSynchronizer.Instance;
+
+            if (synchronizer)
+            {
+                synchronizer.SynchronizeUnload(assetKey);
+
+                return;
+            }
+
+            AssetLoader.ReleaseNetworkAsset(assetKey);
         }
     }
 }

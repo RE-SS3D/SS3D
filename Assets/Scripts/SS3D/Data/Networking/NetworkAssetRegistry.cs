@@ -36,7 +36,7 @@ namespace SS3D.Data.Networking
         /// <param name="networkObject">Spawned network instance that should contribute to the active refcount.</param>
         internal static void Register([CanBeNull] string databaseId, [CanBeNull] string assetId, [CanBeNull] NetworkObject networkObject)
         {
-            Register(new AssetKey(databaseId, assetId), networkObject);
+            Register(new(databaseId, assetId), networkObject);
         }
 
         /// <summary>
