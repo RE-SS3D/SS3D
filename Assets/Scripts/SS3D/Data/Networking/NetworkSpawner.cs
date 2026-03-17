@@ -80,7 +80,7 @@ namespace SS3D.Data.Networking
         /// Spawns a networked object from an addressable <see cref="ObjectAssetReference"/>.
         ///
         /// Flow:
-        /// - Confirms whether the asset can be resolved through the async runtime-loading path via <see cref="AssetLoader.Has(string,string)"/>.
+        /// - Confirms whether the asset can be resolved through the async runtime-loading path via <see cref="AssetSubSystem.Has(string,string)"/>.
         /// - Uses <see cref="AssetSynchronizer"/> to ensure it is loaded on all clients before spawning.
         /// - Instantiates the loaded prefab and spawns it using
         ///   <see cref="InstanceFinder.ServerManager.Spawn(NetworkObject, NetworkConnection)"/>.
@@ -114,7 +114,14 @@ namespace SS3D.Data.Networking
 
             // Load the prefab locally using the shared network ownership claim so the synchronized
             // preload and the spawned live world object contribute to the same loader residency.
-            GameObject prefab = await AssetLoader.AcquireNetworkAssetAsync<GameObject>(assetKey);
+            if (!TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                Log.Error(typeof(NetworkSpawner), $"Failed to load prefab for asset '{assetKey}' because {nameof(AssetSubSystem)} instance is missing.");
+
+                return null;
+            }
+
+            GameObject prefab = await assetSubSystem.AcquireNetworkAssetAsync<GameObject>(assetKey);
 
             if (!prefab)
             {
@@ -162,7 +169,14 @@ namespace SS3D.Data.Networking
                 return false;
             }
 
-            if (!AssetLoader.Has(assetKey))
+            if (!TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                Log.Error(typeof(NetworkSpawner), $"Cannot ensure addressable load for '{assetKey}' because {nameof(AssetSubSystem)} instance is missing.");
+
+                return false;
+            }
+
+            if (!assetSubSystem.Has(assetKey))
             {
                 Log.Error(typeof(NetworkSpawner), $"Asset '{assetKey}' is not available through the async runtime-loading path required for synchronized spawning.");
 
@@ -205,7 +219,12 @@ namespace SS3D.Data.Networking
             AssetKey assetKey = new(assetReference.Database, assetReference.Id);
 
             // Only assets that use the async synchronized loading path are mirrored through the network residency registry.
-            if (!AssetLoader.Has(assetKey))
+            if (!TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                return;
+            }
+
+            if (!assetSubSystem.Has(assetKey))
             {
                 return;
             }
@@ -228,7 +247,17 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            AssetLoader.ReleaseNetworkAsset(assetKey);
+            if (TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                assetSubSystem.ReleaseNetworkAsset(assetKey);
+            }
+        }
+
+        private static bool TryGetAssetSubSystem([CanBeNull] out AssetSubSystem assetSubSystem)
+        {
+            assetSubSystem = AssetSubSystem.Instance;
+
+            return assetSubSystem;
         }
     }
 }

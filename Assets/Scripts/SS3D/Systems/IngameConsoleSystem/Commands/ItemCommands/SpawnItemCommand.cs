@@ -51,7 +51,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
 
             string id = args[0];
 
-            if (!AssetLoader.Has(AssetDatabases.Items, id))
+            if (!SubSystems.Get<AssetSubSystem>().Has(AssetDatabases.Items, id))
             {
                 response.IsValid = false;
                 response.InvalidArgs = $"item with name {id} not found";

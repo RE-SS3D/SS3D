@@ -1,51 +1,33 @@
 using JetBrains.Annotations;
 using SS3D.Logging;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data
 {
     /// <summary>
-    /// Owns shared Addressables residency records and explicit ownership claims for loaded assets.
+    /// Owns asset residency policy and explicit ownership claims for loaded assets.
+    /// This class decides when an asset should remain resident and when the backend loader
+    /// may unload it, but does not perform the backend-specific load/unload itself.
     /// </summary>
     internal static class AssetResidencyRegistry
     {
         /// <summary>
-        /// Tracks one shared Addressables residency entry for a loaded GUID.
-        /// Multiple systems can share the same load task and loaded handle while
-        /// each keeping its own ownership claim on the asset.
+        /// Tracks one shared residency entry for a GUID.
+        /// Multiple logical owners can share the same load task while keeping separate ownership claims.
         /// </summary>
         private sealed class ResidencyRecord
         {
-            internal ResidencyRecord(AsyncOperationHandle<Object> loadingOperation)
-            {
-                LoadingOperation = loadingOperation;
-            }
-
-            internal AsyncOperationHandle<Object> LoadingOperation { get; }
-
-            internal Task<Object> LoadTask { get; init; }
+            internal Task<Object> LoadTask { get; set; }
 
             internal HashSet<AssetOwnerToken> Owners { get; } = new();
         }
 
-        internal static event Action<KeyValuePair<string, Object>> OnAssetLoaded;
-
-        internal static event Action<string> OnAssetUnloaded;
-
         private static readonly Dictionary<string, ResidencyRecord> ResidencyRecords = new();
 
-        internal static bool IsLoaded([NotNull] string guid) => ResidencyRecords.TryGetValue(guid, out ResidencyRecord residencyRecord)
-            && residencyRecord.LoadingOperation is
-            {
-                IsDone: true,
-                Status: AsyncOperationStatus.Succeeded,
-            };
+        internal static bool IsLoaded([NotNull] string guid) => ResidencyRecords.ContainsKey(guid) && AssetLoader.IsAssetLoaded(guid);
 
         [ItemCanBeNull]
         internal static async Task<TAsset> AcquireAsync<TAsset>([NotNull] AssetReference reference, AssetOwnerToken owner)
@@ -58,30 +40,28 @@ namespace SS3D.Data
                 return null;
             }
 
-            if (!ResidencyRecords.TryGetValue(reference.AssetGUID, out ResidencyRecord residencyRecord))
+            string guid = reference.AssetGUID;
+
+            if (!ResidencyRecords.TryGetValue(guid, out ResidencyRecord residencyRecord))
             {
-                AsyncOperationHandle<Object> loadingOperation = reference.LoadAssetAsync<Object>();
-                residencyRecord = new(loadingOperation)
-                {
-                    LoadTask = LoadAsync(reference.AssetGUID, loadingOperation),
-                };
-                ResidencyRecords.Add(reference.AssetGUID, residencyRecord);
+                residencyRecord = new();
+                residencyRecord.Owners.Add(owner);
+                ResidencyRecords.Add(guid, residencyRecord);
+                residencyRecord.LoadTask = CompleteAcquireAsync(guid, reference, residencyRecord);
+            }
+            else
+            {
+                residencyRecord.Owners.Add(owner);
             }
 
-            residencyRecord.Owners.Add(owner);
             Object loadedAsset = await residencyRecord.LoadTask;
 
-            return CastAsset<TAsset>(loadedAsset);
+            return AssetLoader.CastAsset<TAsset>(loadedAsset);
         }
 
         internal static bool Release([NotNull] string guid, AssetOwnerToken owner)
         {
-            if (string.IsNullOrWhiteSpace(guid) || !owner.IsValid)
-            {
-                return false;
-            }
-
-            if (!ResidencyRecords.TryGetValue(guid, out ResidencyRecord residencyRecord))
+            if (string.IsNullOrWhiteSpace(guid) || !owner.IsValid || !ResidencyRecords.TryGetValue(guid, out ResidencyRecord residencyRecord))
             {
                 return false;
             }
@@ -91,94 +71,50 @@ namespace SS3D.Data
                 return false;
             }
 
-            if (residencyRecord.Owners.Count == 0 && residencyRecord.LoadingOperation is
-                {
-                    IsDone: true,
-                    Status: AsyncOperationStatus.Succeeded,
-                })
+            if (residencyRecord.Owners.Count == 0 && residencyRecord.LoadTask.IsCompleted)
             {
-                ReleaseResidencyRecord(guid, residencyRecord);
+                ResidencyRecords.Remove(guid);
+                if (AssetLoader.IsAssetLoaded(guid))
+                {
+                    AssetLoader.Unload(guid);
+                }
             }
 
             return true;
         }
 
+        internal static bool Release([CanBeNull] AssetReference reference, AssetOwnerToken owner) => reference != null && Release(reference.AssetGUID, owner);
+
         internal static void Clear()
         {
-            foreach ((string _, ResidencyRecord residencyRecord) in ResidencyRecords)
-            {
-                if (residencyRecord.LoadingOperation.IsValid())
-                {
-                    Addressables.Release(residencyRecord.LoadingOperation);
-                }
-            }
-
             ResidencyRecords.Clear();
+            AssetLoader.Clear();
         }
 
         [ItemCanBeNull]
-        private static async Task<Object> LoadAsync([NotNull] string guid, AsyncOperationHandle<Object> loadingOperation)
+        private static async Task<Object> CompleteAcquireAsync([NotNull] string guid, [NotNull] AssetReference reference, [NotNull] ResidencyRecord residencyRecord)
         {
-            Object loadedAsset = await loadingOperation.Task;
+            Object loadedAsset = await AssetLoader.LoadAsync(reference);
 
-            if (loadingOperation is
-                {
-                    IsDone: true,
-                    Status: AsyncOperationStatus.Failed,
-                })
+            if (loadedAsset == null)
             {
-                Addressables.Release(loadingOperation);
-                ResidencyRecords.Remove(guid);
+                if (ResidencyRecords.TryGetValue(guid, out ResidencyRecord currentRecord) && ReferenceEquals(currentRecord, residencyRecord))
+                {
+                    ResidencyRecords.Remove(guid);
+                }
 
                 return null;
             }
 
-            try
+            if (ResidencyRecords.TryGetValue(guid, out ResidencyRecord activeRecord)
+                && ReferenceEquals(activeRecord, residencyRecord)
+                && residencyRecord.Owners.Count == 0)
             {
-                OnAssetLoaded?.Invoke(new(guid, loadedAsset));
-            }
-            catch (Exception e)
-            {
-                Log.Error(typeof(AssetResidencyRegistry), e, "An exception occurred while invoking the AssetLoaded event.");
-            }
-
-            if (ResidencyRecords.TryGetValue(guid, out ResidencyRecord residencyRecord) && residencyRecord.Owners.Count == 0)
-            {
-                ReleaseResidencyRecord(guid, residencyRecord);
+                ResidencyRecords.Remove(guid);
+                AssetLoader.Unload(guid);
             }
 
             return loadedAsset;
-        }
-
-        private static void ReleaseResidencyRecord([NotNull] string guid, [NotNull] ResidencyRecord residencyRecord)
-        {
-            if (!ResidencyRecords.TryGetValue(guid, out ResidencyRecord currentRecord) || !ReferenceEquals(currentRecord, residencyRecord))
-            {
-                return;
-            }
-
-            Addressables.Release(residencyRecord.LoadingOperation);
-            ResidencyRecords.Remove(guid);
-
-            try
-            {
-                OnAssetUnloaded?.Invoke(guid);
-            }
-            catch (Exception e)
-            {
-                Log.Error(typeof(AssetResidencyRegistry), e, "An exception occurred while invoking the AssetUnloaded event.");
-            }
-        }
-
-        private static TAsset CastAsset<TAsset>(Object obj)
-            where TAsset : class
-        {
-            if (obj is GameObject gameObject && typeof(TAsset) != typeof(GameObject))
-            {
-                return gameObject.GetComponent<TAsset>();
-            }
-
-            return obj as TAsset;
         }
     }
 }

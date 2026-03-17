@@ -327,7 +327,14 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            if (!AssetLoader.Has(assetKey))
+            if (!TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                Log.Error(this, $"Cannot synchronize asset '{assetKey}' because {nameof(AssetSubSystem)} instance is missing.");
+
+                return;
+            }
+
+            if (!assetSubSystem.Has(assetKey))
             {
                 Log.Error(this, $"Cannot synchronize asset '{assetKey}' because it is not available through the async runtime-loading path.");
 
@@ -488,7 +495,19 @@ namespace SS3D.Data.Networking
         {
             AssetKey assetKey = new(databaseId, assetId);
 
-            if (!AssetLoader.Has(assetKey))
+            if (!TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                Log.Error(this, $"Cannot start synchronized load for '{assetKey}' because {nameof(AssetSubSystem)} instance is missing.");
+
+                if (IsClient)
+                {
+                    RpcHandleAssetLoaded(databaseId, assetId, false);
+                }
+
+                return;
+            }
+
+            if (!assetSubSystem.Has(assetKey))
             {
                 Log.Error(this, $"Cannot start synchronized load for '{assetKey}' because it is not available through the async runtime-loading path.");
 
@@ -504,7 +523,7 @@ namespace SS3D.Data.Networking
             {
                 for (int attempt = 0; attempt < _retryAttempts; attempt++)
                 {
-                    Object asset = await AssetLoader.AcquireNetworkAssetAsync<Object>(assetKey);
+                    Object asset = await assetSubSystem.AcquireNetworkAssetAsync<Object>(assetKey);
 
                     if (!asset)
                     {
@@ -701,7 +720,10 @@ namespace SS3D.Data.Networking
             }
 
             RpcSynchronizedUnload(assetKey.DatabaseId, assetKey.AssetId);
-            AssetLoader.ReleaseNetworkAsset(assetKey);
+            if (TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                assetSubSystem.ReleaseNetworkAsset(assetKey);
+            }
         }
 
         /// <summary>
@@ -723,7 +745,10 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            AssetLoader.ReleaseNetworkAsset(assetKey);
+            if (TryGetAssetSubSystem(out AssetSubSystem assetSubSystem))
+            {
+                assetSubSystem.ReleaseNetworkAsset(assetKey);
+            }
         }
 
         /// <summary>
@@ -741,8 +766,10 @@ namespace SS3D.Data.Networking
 
             HashSet<AssetKey> preloadAssets = new();
 
-            foreach ((AssetKey assetKey, LoadRequest request) in _loadRequests.Where(pair => !pair.Value.Task.IsCompleted))
+            foreach (KeyValuePair<AssetKey, LoadRequest> pair in _loadRequests.Where(pair => !pair.Value.Task.IsCompleted))
             {
+                AssetKey assetKey = pair.Key;
+                LoadRequest request = pair.Value;
                 request.AddClient(clientId);
                 preloadAssets.Add(assetKey);
             }
@@ -832,6 +859,13 @@ namespace SS3D.Data.Networking
             {
                 Log.Error(this, e, $"Failed while monitoring late-join preload for ClientID {clientId}.");
             }
+        }
+
+        private bool TryGetAssetSubSystem([CanBeNull] out AssetSubSystem assetSubSystem)
+        {
+            assetSubSystem = AssetSubSystem.Instance;
+
+            return assetSubSystem;
         }
     }
 }

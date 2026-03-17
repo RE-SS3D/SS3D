@@ -22,7 +22,7 @@ namespace SS3D.Data
         {
             if (!IsInitialized)
             {
-                Log.Error(typeof(AssetDatabaseCatalog), "Asset databases were requested before AssetLoader initialization completed.");
+                Log.Error(typeof(AssetDatabaseCatalog), "Asset databases were requested before AssetSubSystem initialization completed.");
 
                 return null;
             }

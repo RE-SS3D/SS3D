@@ -1,4 +1,4 @@
-﻿using FishNet.Managing.Object;
+using FishNet.Managing.Object;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Logging;
@@ -12,7 +12,7 @@ namespace SS3D.Data.Networking
     /// <summary>
     /// FishNet prefab collection backed by a deterministic GUID order.
     /// Editor generation produces the ordered GUID list, non-addressable prefabs are serialized directly,
-    /// and addressable prefabs fill their runtime slots when <see cref="AssetLoader"/> loads them.
+    /// and addressable prefabs fill their runtime slots when <see cref="AssetSubSystem"/> changes shared asset residency.
     /// </summary>
     [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/SS3D Data", order = 0)]
     public sealed partial class NetworkObjects : PrefabObjects
@@ -206,26 +206,27 @@ namespace SS3D.Data.Networking
             Initialize();
 #endif
 
-            // Addressable prefabs are inserted and removed from runtime slots as the shared asset loader changes residency.
-            AssetLoader.OnAssetLoaded += OnAssetLoaded;
-            AssetLoader.OnAssetUnloaded += OnAssetUnloaded;
+            // Addressable prefabs are inserted and removed from runtime slots as the asset subsystem changes shared residency.
+            AssetSubSystem.OnAssetLoaded += HandleAssetLoaded;
+            AssetSubSystem.OnAssetUnloaded += HandleAssetUnloaded;
         }
 
         private void OnDisable()
         {
-            AssetLoader.OnAssetLoaded -= OnAssetLoaded;
-            AssetLoader.OnAssetUnloaded -= OnAssetUnloaded;
+            AssetSubSystem.OnAssetLoaded -= HandleAssetLoaded;
+            AssetSubSystem.OnAssetUnloaded -= HandleAssetUnloaded;
         }
 
         /// <summary>
         /// Registers a loaded addressable prefab into its deterministic runtime slot when the asset exposes a <see cref="NetworkObject"/>.
         /// </summary>
-        /// <param name="loadedAssetData">GUID and object returned by <see cref="AssetLoader"/>.</param>
-        private void OnAssetLoaded(KeyValuePair<string, Object> loadedAssetData)
+        /// <param name="guid">GUID of the asset loaded.</param>
+        /// <param name="asset">Asset loaded.</param>
+        private void HandleAssetLoaded(string guid, Object asset)
         {
-            if (loadedAssetData.Value is GameObject gameObject && gameObject.TryGetComponent(out NetworkObject networkObject))
+            if (asset is GameObject gameObject && gameObject.TryGetComponent(out NetworkObject networkObject))
             {
-                AddObject(networkObject, loadedAssetData.Key);
+                AddObject(networkObject, guid);
             }
         }
 
@@ -233,7 +234,7 @@ namespace SS3D.Data.Networking
         /// Clears the runtime prefab slot when an addressable prefab is unloaded.
         /// </summary>
         /// <param name="guid">GUID of the unloaded asset.</param>
-        private void OnAssetUnloaded(string guid)
+        private void HandleAssetUnloaded(string guid)
         {
             int index = _objectGuids.IndexOf(guid);
 
@@ -299,7 +300,6 @@ namespace SS3D.Data.Networking
             Log.Error(this, $"PrefabId {id} is out of range.");
 
             return false;
-
         }
     }
 }

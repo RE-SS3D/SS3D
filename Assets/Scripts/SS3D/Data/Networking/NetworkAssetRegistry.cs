@@ -52,7 +52,16 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            if (!AssetLoader.Has(assetKey))
+            AssetSubSystem assetSubSystem = AssetSubSystem.Instance;
+
+            if (!assetSubSystem)
+            {
+                Log.Warning(typeof(NetworkAssetRegistry), $"Ignoring active asset registration for '{assetKey}' because {nameof(AssetSubSystem)} instance is missing.");
+
+                return;
+            }
+
+            if (!assetSubSystem.Has(assetKey))
             {
                 Log.Warning(typeof(NetworkAssetRegistry), $"Ignoring active asset registration for '{assetKey}' because it is outside the async synchronized loading path.");
 
