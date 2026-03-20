@@ -55,6 +55,20 @@ namespace SS3D.Data
         /// <inheritdoc/>
         public bool IsValid => !_disposed && Asset != null;
 
+        /// <summary>
+        /// Ties this handle's lifetime to a <see cref="Component"/>.
+        /// The handle is automatically disposed when the component's GameObject is destroyed.
+        /// </summary>
+        public void TieLifetimeTo([NotNull] Component owner)
+        {
+            if (!owner.TryGetComponent(out HandleGuard guard))
+            {
+                guard = owner.gameObject.AddComponent<HandleGuard>();
+            }
+
+            guard.Track(this);
+        }
+
         /// <inheritdoc/>
         public void Dispose()
         {
