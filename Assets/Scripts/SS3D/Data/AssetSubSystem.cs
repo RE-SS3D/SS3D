@@ -1,4 +1,3 @@
-using Coimbra;
 using Coimbra.Services.Events;
 using JetBrains.Annotations;
 using SS3D.Application.Events;
@@ -14,12 +13,80 @@ using Object = UnityEngine.Object;
 namespace SS3D.Data
 {
     /// <summary>
-    /// Scene-owned facade for the SS3D asset system.
-    /// It owns initialization and coordinates catalog lookup, ownership-aware addressable loading,
-    /// and temporary compatibility behavior while callers migrate away from <see cref="AssetLoader"/>.
+    /// Scene-owned facade and composition root for the SS3D asset system.
+    /// Owns backends, the asset store, and manages their lifecycle.
     /// </summary>
     public class AssetSubSystem : SubSystem
     {
+        // ── New system ──────────────────────────────────────────────────
+
+        private IAssetStore _store;
+        private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
+
+        /// <summary>
+        /// Raised after an asset is loaded for the first time via the store.
+        /// </summary>
+        public event Action<string, Object> OnStoreAssetLoaded
+        {
+            add { if (_store != null) _store.OnLoaded += value; }
+            remove { if (_store != null) _store.OnLoaded -= value; }
+        }
+
+        /// <summary>
+        /// Raised after an asset's last handle is disposed via the store.
+        /// </summary>
+        public event Action<string> OnStoreAssetUnloaded
+        {
+            add { if (_store != null) _store.OnUnloaded += value; }
+            remove { if (_store != null) _store.OnUnloaded -= value; }
+        }
+
+        /// <summary>
+        /// Acquires a ref-counted handle for an asset via the specified backend.
+        /// The key format depends on the backend: GUID for Addressables, path for Resources, filepath for File.
+        /// </summary>
+        [ItemCanBeNull]
+        public Task<AssetHandle<T>> AcquireAsync<T>(
+            [NotNull] string key,
+            AssetBackendType backendType = AssetBackendType.Addressables)
+            where T : class
+        {
+            if (!IsInitialized)
+            {
+                return Task.FromResult<AssetHandle<T>>(null);
+            }
+
+            if (!_backends.TryGetValue(backendType, out IAssetBackend backend))
+            {
+                return Task.FromResult<AssetHandle<T>>(null);
+            }
+
+            return _store.AcquireAsync<T>(key, backend);
+        }
+
+        /// <inheritdoc cref="AcquireAsync{T}(string, AssetBackendType)"/>
+        [ItemCanBeNull]
+        public Task<AssetHandle<T>> AcquireAsync<T>(
+            [NotNull] ObjectAssetReference reference,
+            AssetBackendType backendType = AssetBackendType.Addressables)
+            where T : class
+            => AcquireAsync<T>(reference.Id, backendType);
+
+        protected override void OnDestroyed()
+        {
+            _store?.Dispose();
+
+            foreach (IAssetBackend backend in _backends.Values)
+            {
+                backend.Dispose();
+            }
+
+            _backends.Clear();
+            base.OnDestroyed();
+        }
+
+        // ── Legacy system (to be removed in migration step) ─────────
+
         internal static event Action<string, Object> OnAssetLoaded
         {
             add => AssetLoader.OnAssetLoaded += value;
@@ -35,69 +102,21 @@ namespace SS3D.Data
         private static readonly AssetOwnerToken LegacyAsyncOwner = AssetOwnerToken.Create("AssetSubSystem.LegacyAsync");
         private static readonly AssetOwnerToken NetworkAsyncOwner = AssetOwnerToken.Create("AssetSubSystem.Network");
 
-        public static AssetSubSystem Instance { get; private set; }
-
-        // TODO: Replace AssetLoader.IsInitialized callers with AssetSubSystem.IsInitialized.
         public bool IsInitialized => AssetDatabaseCatalog.IsInitialized && InitializationTask is { IsCompletedSuccessfully: true };
 
-        public Task InitializationTask { get; private set; }
-
-#if UNITY_EDITOR
-        public static bool AddToAddressables(string databaseID, Object asset)
-        {
-            AssetDatabase database = AssetDatabaseCatalog.EditorGetDatabase(databaseID);
-
-            if (database)
-            {
-                return database.AddToAddressables(asset);
-            }
-
-            Log.Error(typeof(AssetSubSystem), $"Database of type {databaseID} not found cannot add to addressables");
-
-            return false;
-        }
-#endif
+        private Task InitializationTask { get; set; }
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
-            if (Instance && Instance != this)
-            {
-                Log.Error(this, $"Multiple instances of {nameof(AssetSubSystem)} detected. Destroying the new one.");
-                GameObject.Dispose(true);
-
-                return;
-            }
-
-            Instance = this;
             ApplicationInitializing.AddListener(HandleApplicationInitializing);
         }
 
-        protected override void OnDestroyed()
-        {
-            if (Instance == this)
-            {
-                Instance = null;
-            }
+        public bool IsLoaded([NotNull] string guid) => AssetResidencyRegistry.HasRecord(guid) && AssetLoader.IsLoaded(guid);
 
-            base.OnDestroyed();
-        }
-
-        // TODO: Replace AssetLoader.InitializeAsync() callers with AssetSubSystem.InitializeAsync().
-        [NotNull]
-        public Task InitializeAsync()
-        {
-            if (InitializationTask == null || InitializationTask.IsCanceled || InitializationTask.IsFaulted)
-            {
-                InitializationTask = InitializeInternalAsync();
-            }
-
-            return InitializationTask;
-        }
-
-        // TODO: Replace AssetLoader.IsLoaded(string) callers with AssetSubSystem.IsLoaded(string).
-        public bool IsLoaded([NotNull] string guid) => AssetResidencyRegistry.IsLoaded(guid);
+        [CanBeNull]
+        public AssetDatabase GetDatabase(string databaseID) => AssetDatabaseCatalog.GetDatabase(databaseID);
 
         // TODO: Replace AssetLoader.Get(...) callers with AssetSubSystem.Get(...).
         [CanBeNull]
@@ -119,7 +138,6 @@ namespace SS3D.Data
         public async Task<TAsset> GetAsync<TAsset>([NotNull] ObjectAssetReference reference)
             where TAsset : class => await AcquireAsync<TAsset>(new AssetKey(reference.Database, reference.Id), LegacyAsyncOwner);
 
-        // TODO: Replace AssetLoader.AcquireAsync(...) callers with AssetSubSystem.AcquireAsync(...).
         [ItemCanBeNull]
         public async Task<TAsset> AcquireAsync<TAsset>(AssetKey assetKey, AssetOwnerToken owner, [CanBeNull] Action<TAsset> onAssetLoaded = null)
             where TAsset : class
@@ -153,44 +171,20 @@ namespace SS3D.Data
             return asset;
         }
 
-        // TODO: Replace AssetLoader.AcquireAsync(...) callers with AssetSubSystem.AcquireAsync(...).
         [ItemCanBeNull]
         public async Task<TAsset> AcquireAsync<TAsset>([NotNull] ObjectAssetReference reference, AssetOwnerToken owner, [CanBeNull] Action<TAsset> onAssetLoaded = null)
             where TAsset : class => await AcquireAsync(new AssetKey(reference.Database, reference.Id), owner, onAssetLoaded);
 
-        // TODO: Replace AssetLoader.Has(...) callers with AssetSubSystem.Has(...).
         public bool Has([CanBeNull] string databaseId, [CanBeNull] string assetId) => Has(new(databaseId, assetId));
 
-        // TODO: Replace AssetLoader.Has(...) callers with AssetSubSystem.Has(...).
-        public bool Has(AssetKey assetKey)
-        {
-            if (!EnsureInitialized())
-            {
-                return false;
-            }
+        public bool Has(AssetKey assetKey) => EnsureInitialized() && AssetDatabaseCatalog.Has(assetKey);
 
-            return AssetDatabaseCatalog.Has(assetKey);
-        }
+        public void Unload([NotNull] ObjectAssetReference assetReference) => Release(new AssetKey(assetReference.Database, assetReference.Id), LegacyAsyncOwner);
 
-        // TODO: Replace AssetLoader.Unload(...) callers with AssetSubSystem.Unload(...).
-        public void Unload([NotNull] ObjectAssetReference assetReference)
-        {
-            Release(new AssetKey(assetReference.Database, assetReference.Id), LegacyAsyncOwner);
-        }
+        public void Unload(AssetKey assetKey) => Release(assetKey, LegacyAsyncOwner);
 
-        // TODO: Replace AssetLoader.Unload(...) callers with AssetSubSystem.Unload(...).
-        public void Unload(AssetKey assetKey)
-        {
-            Release(assetKey, LegacyAsyncOwner);
-        }
+        public void Unload([NotNull] string guid) => AssetResidencyRegistry.Release(guid, LegacyAsyncOwner);
 
-        // TODO: Replace AssetLoader.Unload(...) callers with AssetSubSystem.Unload(...).
-        public void Unload([NotNull] string guid)
-        {
-            AssetResidencyRegistry.Release(guid, LegacyAsyncOwner);
-        }
-
-        // TODO: Replace AssetLoader.Release(...) callers with AssetSubSystem.Release(...).
         public bool Release(AssetKey assetKey, AssetOwnerToken owner)
         {
             if (!owner.IsValid || !EnsureInitialized())
@@ -198,39 +192,33 @@ namespace SS3D.Data
                 return false;
             }
 
-            if (!AssetDatabaseCatalog.TryGetAsyncReference(assetKey, out AssetReference reference))
-            {
-                return false;
-            }
-
-            return AssetResidencyRegistry.Release(reference, owner);
+            return AssetDatabaseCatalog.TryGetAsyncReference(assetKey, out AssetReference reference) && AssetResidencyRegistry.Release(reference, owner);
         }
 
-        // TODO: Replace AssetLoader.Release(...) callers with AssetSubSystem.Release(...).
-        public bool Release([NotNull] ObjectAssetReference reference, AssetOwnerToken owner)
-        {
-            return Release(new AssetKey(reference.Database, reference.Id), owner);
-        }
+        public bool Release([NotNull] ObjectAssetReference reference, AssetOwnerToken owner) => Release(new AssetKey(reference.Database, reference.Id), owner);
 
-        // TODO: Replace AssetLoader.AcquireNetworkAssetAsync(...) callers with AssetSubSystem.AcquireNetworkAssetAsync(...).
         [ItemCanBeNull]
         internal async Task<TAsset> AcquireNetworkAssetAsync<TAsset>(AssetKey assetKey, [CanBeNull] Action<TAsset> onAssetLoaded = null)
             where TAsset : class => await AcquireAsync(assetKey, NetworkAsyncOwner, onAssetLoaded);
 
-        // TODO: Replace AssetLoader.ReleaseNetworkAsset(...) callers with AssetSubSystem.ReleaseNetworkAsset(...).
         internal bool ReleaseNetworkAsset(AssetKey assetKey) => Release(assetKey, NetworkAsyncOwner);
 
         private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
         {
             Log.Information(this, "Loading asset databases", Logs.Important);
-            InitializeAssetsAsync();
+            InitializeAsync();
         }
 
-        private async void InitializeAssetsAsync()
+        private async void InitializeAsync()
         {
             try
             {
-                await InitializeAsync();
+                if (InitializationTask == null || InitializationTask.IsCanceled || InitializationTask.IsFaulted)
+                {
+                    InitializationTask = InitializeInternalAsync();
+                }
+
+                await InitializationTask;
             }
             catch (Exception exception)
             {
@@ -242,7 +230,12 @@ namespace SS3D.Data
         {
             try
             {
-                await Addressables.InitializeAsync().Task;
+                AddressablesBackend addressablesBackend = new();
+                await addressablesBackend.InitializeAsync();
+                _backends[AssetBackendType.Addressables] = addressablesBackend;
+
+                _store = new AssetStore();
+
                 AssetDatabaseCatalog.Initialize();
             }
             catch (Exception e)
