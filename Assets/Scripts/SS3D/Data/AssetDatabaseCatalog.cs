@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System.Collections.Generic;
-using UnityEngine.AddressableAssets;
 using AssetDatabase = SS3D.Data.AssetDatabases.AssetDatabase;
 
 namespace SS3D.Data
@@ -11,7 +10,7 @@ namespace SS3D.Data
     /// <summary>
     /// Holds the initialized set of SS3D asset databases and resolves logical asset keys to addressable references.
     /// </summary>
-    public static class AssetDatabaseCatalog
+    internal static class AssetDatabaseCatalog
     {
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
 
@@ -65,39 +64,6 @@ namespace SS3D.Data
         {
             Databases.Clear();
             IsInitialized = false;
-        }
-
-        internal static bool Has(AssetKey assetKey)
-        {
-            if (!assetKey.IsValid)
-            {
-                return false;
-            }
-
-            AssetDatabase database = GetDatabase(assetKey.DatabaseId);
-
-            return database && database.Has(assetKey.AssetId);
-        }
-
-        internal static bool TryGetAsyncReference(AssetKey assetKey, out AssetReference reference)
-        {
-            reference = null;
-
-            if (!assetKey.IsValid)
-            {
-                return false;
-            }
-
-            AssetDatabase database = GetDatabase(assetKey.DatabaseId);
-
-            if (!database || !database.Has(assetKey.AssetId))
-            {
-                return false;
-            }
-
-            reference = database.GetReference(assetKey.AssetId);
-
-            return reference != null;
         }
 
 #if UNITY_EDITOR
