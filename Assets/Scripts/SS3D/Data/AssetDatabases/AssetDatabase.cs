@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using JetBrains.Annotations;
 using Serilog;
 using UnityEngine;
@@ -12,7 +12,7 @@ namespace SS3D.Data.AssetDatabases
     /// It is used to find assets using IDs in a very convenient manner throughout the project.
     /// </summary>
     [CreateAssetMenu(menuName = "SS3D/AssetDatabase", fileName = "AssetDatabase", order = 0)]
-    public sealed partial class AssetDatabase : ScriptableObject
+    public sealed partial class AssetDatabase : ScriptableObject, IAssetDatabase
     {
         /// <summary>
         ///  The name that the generated enum will have;
@@ -81,5 +81,10 @@ namespace SS3D.Data.AssetDatabases
         /// <param name="id">ID to check</param>
         /// <returns>True if the database contains the ID</returns>
         public bool Has([NotNull] string id) => AssetReferences.ContainsKey(id);
+
+        /// <summary>
+        /// Returns the GUID itself — Addressables uses GUID as its native key.
+        /// </summary>
+        public string ResolveKey([NotNull] string guid) => guid;
     }
 }
