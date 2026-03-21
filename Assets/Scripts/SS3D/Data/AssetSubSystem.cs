@@ -85,19 +85,24 @@ namespace SS3D.Data
             base.OnDestroyed();
         }
 
-        // ── Legacy system (to be removed in migration step) ─────────
+        // ── Unified static events (fired by both legacy and new systems) ──
+
+        private static Action<string, Object> _onAssetLoaded;
+        private static Action<string> _onAssetUnloaded;
 
         internal static event Action<string, Object> OnAssetLoaded
         {
-            add => AssetLoader.OnAssetLoaded += value;
-            remove => AssetLoader.OnAssetLoaded -= value;
+            add => _onAssetLoaded += value;
+            remove => _onAssetLoaded -= value;
         }
 
         internal static event Action<string> OnAssetUnloaded
         {
-            add => AssetLoader.OnAssetUnloaded += value;
-            remove => AssetLoader.OnAssetUnloaded -= value;
+            add => _onAssetUnloaded += value;
+            remove => _onAssetUnloaded -= value;
         }
+
+        // ── Legacy system (to be removed in migration step) ─────────
 
         private static readonly AssetOwnerToken LegacyAsyncOwner = AssetOwnerToken.Create("AssetSubSystem.LegacyAsync");
         private static readonly AssetOwnerToken NetworkAsyncOwner = AssetOwnerToken.Create("AssetSubSystem.Network");
@@ -235,6 +240,12 @@ namespace SS3D.Data
                 _backends[AssetBackendType.Addressables] = addressablesBackend;
 
                 _store = new AssetStore();
+
+                // Bridge both event sources into the unified static events.
+                AssetLoader.OnAssetLoaded += (key, obj) => _onAssetLoaded?.Invoke(key, obj);
+                AssetLoader.OnAssetUnloaded += key => _onAssetUnloaded?.Invoke(key);
+                _store.OnLoaded += (key, obj) => _onAssetLoaded?.Invoke(key, obj);
+                _store.OnUnloaded += key => _onAssetUnloaded?.Invoke(key);
 
                 AssetDatabaseCatalog.Initialize();
             }
