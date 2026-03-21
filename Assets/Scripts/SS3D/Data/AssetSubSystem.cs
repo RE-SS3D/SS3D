@@ -1,3 +1,4 @@
+using Coimbra;
 using Coimbra.Services.Events;
 using JetBrains.Annotations;
 using SS3D.Application.Events;
@@ -6,6 +7,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Object = UnityEngine.Object;
 
@@ -19,6 +21,8 @@ namespace SS3D.Data
     {
         private IAssetStore _store;
         private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
+        private IAssetCatalog[] _catalogs;
+        private Dictionary<string, AssetDatabase> _databasesById;
         private Task _initTask;
 
         // Static reference to the active store so that static event accessors (needed by
@@ -60,13 +64,21 @@ namespace SS3D.Data
             => AcquireAsync<T>(reference.Id, backendType);
 
         [CanBeNull]
-        public AssetDatabase GetDatabase(string databaseID) => AssetDatabaseCatalog.GetDatabase(databaseID);
+        public AssetDatabase GetDatabase(string databaseID)
+        {
+            if (_databasesById == null || !_databasesById.TryGetValue(databaseID, out AssetDatabase database))
+            {
+                return null;
+            }
+
+            return database;
+        }
 
         [CanBeNull]
         public TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
-            where TAsset : Object => AssetDatabaseCatalog.GetDatabase(databaseId)?.Get<TAsset>(assetId);
+            where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
 
-        public bool Has([NotNull] string assetId) => IsInitialized && AssetDatabaseCatalog.Has(assetId);
+        public bool Has([NotNull] string assetId) => IsInitialized && _catalogs != null && _catalogs.Any(catalog => catalog.Has(assetId));
 
         protected override void OnAwake()
         {
@@ -86,6 +98,8 @@ namespace SS3D.Data
             }
 
             _backends.Clear();
+            _catalogs = null;
+            _databasesById = null;
             base.OnDestroyed();
         }
 
@@ -139,11 +153,35 @@ namespace SS3D.Data
                 _store = new AssetStore();
                 ActiveStore = _store;
 
-                AssetDatabaseCatalog.Initialize();
+                List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
+
+                _databasesById = new Dictionary<string, AssetDatabase>(assetDatabases.Count);
+                foreach (AssetDatabase database in assetDatabases)
+                {
+                    _databasesById[database.DatabaseID] = database;
+                }
+
+                AddressablesCatalog addressablesCatalog = new();
+                addressablesCatalog.Initialize(assetDatabases.Cast<IAssetDatabase>().ToArray());
+                _catalogs = new IAssetCatalog[] { addressablesCatalog };
+
+                Log.Information(this, "{Count} asset databases initialized.", Logs.Important, assetDatabases.Count);
             }
             catch (Exception e)
             {
-                AssetDatabaseCatalog.Reset();
+                if (_catalogs != null)
+                {
+                    foreach (IAssetCatalog catalog in _catalogs)
+                    {
+                        if (catalog is AddressablesCatalog addressablesCatalog)
+                        {
+                            addressablesCatalog.Reset();
+                        }
+                    }
+                }
+
+                _catalogs = null;
+                _databasesById = null;
                 Log.Error(this, e, "An exception occurred while initializing the asset system.");
 
                 throw;
