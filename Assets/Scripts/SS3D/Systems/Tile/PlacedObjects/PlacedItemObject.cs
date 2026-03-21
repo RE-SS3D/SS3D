@@ -1,4 +1,4 @@
-﻿using FishNet;
+using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
@@ -38,8 +38,19 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                GameObject itemPrefab = await AssetLoader.GetAsync<GameObject>(itemSo.PrefabAsset);
-                placedGameObject = Instantiate(itemPrefab);
+                AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
+                AssetHandle<GameObject> handle = await assetSubSystem.AcquireAsync<GameObject>(itemSo.PrefabAsset);
+
+                if (handle?.Asset == null)
+                {
+                    handle?.Dispose();
+                    Log.Error(typeof(PlacedItemObject), $"Failed to load prefab for item '{itemSo.NameString}'.");
+
+                    return null;
+                }
+
+                placedGameObject = Instantiate(handle.Asset);
+                handle.Dispose();
             }
 
             placedGameObject.transform.SetPositionAndRotation(worldPosition, rotation);

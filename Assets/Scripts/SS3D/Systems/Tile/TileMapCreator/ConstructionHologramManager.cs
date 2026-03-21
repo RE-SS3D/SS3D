@@ -177,14 +177,19 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public async void CreateHologram([NotNull] ObjectAssetReference prefabAsset, Vector3 position)
         {
-            GameObject prefab = await AssetLoader.GetAsync<GameObject>(prefabAsset);
-            if (!prefab)
+            AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
+            AssetHandle<GameObject> handle = await assetSubSystem.AcquireAsync<GameObject>(prefabAsset);
+
+            if (handle?.Asset == null)
             {
+                handle?.Dispose();
                 Log.Error(this, "Cannot create hologram, prefab asset is not found");
+
                 return;
             }
 
-            GameObject tileObject = Instantiate(prefab);
+            GameObject tileObject = Instantiate(handle.Asset);
+            handle.Dispose();
             ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
             tileObject.transform.position = hologram.TargetPosition;

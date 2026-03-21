@@ -1,4 +1,4 @@
-﻿using FishNet;
+using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Attributes;
@@ -20,7 +20,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Component that is added to every tile object that is part of the tilemap. Tiles are more restrictive and need to have an origin, fixed grid position and direction to face.
     /// </summary>
-    public class PlacedTileObject: NetworkBehaviour, IWorldObjectAsset
+    public class PlacedTileObject : NetworkBehaviour, IWorldObjectAsset
     {
         /// <summary>
         /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. 
@@ -29,12 +29,23 @@ namespace SS3D.Systems.Tile
         /// <param name="worldPosition"></param>
         /// <param name="dir"></param>
         /// <param name="tileObjectSo"></param>
-        /// <returns></returns>
-        [ItemNotNull]
+        /// <returns>Instance of the object TileObjectSO is referring to</returns>
+        [ItemCanBeNull]
         public static async Task<PlacedTileObject> CreateAsync(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
-            GameObject tileObjectPrefab = await AssetLoader.GetAsync<GameObject>(tileObjectSo.PrefabAsset);
-            GameObject placedGameObject = Instantiate(tileObjectPrefab);
+            AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
+            AssetHandle<GameObject> handle = await assetSubSystem.AcquireAsync<GameObject>(tileObjectSo.PrefabAsset);
+
+            if (handle == null || !handle.Asset)
+            {
+                handle?.Dispose();
+                Log.Error(typeof(PlacedTileObject), $"Failed to load prefab for tile object '{tileObjectSo.NameString}'.");
+
+                return null;
+            }
+
+            GameObject placedGameObject = Instantiate(handle.Asset);
+            handle.Dispose();
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             if (!placedGameObject.TryGetComponent(out PlacedTileObject placedObject))

@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
@@ -62,7 +62,7 @@ namespace SS3D.Systems.Crafting
         [ServerOrClient]
         private void FillRecipeOrganiser()
         {
-            AssetDatabase recipesDataBase = AssetDatabaseCatalog.GetDatabase(AssetDatabases.CraftingRecipes);
+            AssetDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
 
             if (!recipesDataBase)
             {
@@ -159,18 +159,22 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
                     
-                GameObject secondaryResultPrefab = await AssetLoader.GetAsync<GameObject>(secondaryResult.Asset);
+                AssetHandle<GameObject> secondaryHandle = await SubSystems.Get<AssetSubSystem>().AcquireAsync<GameObject>(secondaryResult.Asset);
 
-                if (!secondaryResultPrefab)
+                if (!secondaryHandle?.Asset)
                 {
+                    secondaryHandle?.Dispose();
                     Log.Error(this, $"Secondary result {secondaryResult} has no prefab associated, skipping");
+
                     continue;
                 }
-                
+
                 for (int i = 0; i < secondaryResult.Amount; i++)
                 {
-                    await DefaultCraftAsync(interaction, interactionEvent, secondaryResultPrefab, link.Target);
+                    await DefaultCraftAsync(interaction, interactionEvent, secondaryHandle.Asset, link.Target);
                 }
+
+                secondaryHandle.Dispose();
             }
 
             ModifyOrConsumeRecipeTarget(recipeTarget, interaction, interactionEvent, link);
@@ -201,14 +205,17 @@ namespace SS3D.Systems.Crafting
 
         private async Task SpawnOrModifyMainResultAsync(ObjectAssetReference result, CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            GameObject resultPrefab = await AssetLoader.GetAsync<GameObject>(result);
+            AssetHandle<GameObject> handle = await SubSystems.Get<AssetSubSystem>().AcquireAsync<GameObject>(result);
 
-            if (!resultPrefab)
+            if (handle == null || !handle.Asset)
             {
+                handle?.Dispose();
                 Log.Error(this, $"World object reference {result} has no prefab associated");
+
                 return;
             }
-                
+
+            GameObject resultPrefab = handle.Asset;
             GameObject resultInstance;
 
             if (link.Target.CustomCraft)
@@ -220,18 +227,19 @@ namespace SS3D.Systems.Crafting
                 resultInstance = await DefaultCraftAsync(interaction, interactionEvent, resultPrefab, link.Target);
             }
 
-            if (link.Tag is not { ModifyResult: true })
+            if (link.Tag is { ModifyResult: true })
             {
-                return;
+                if (resultInstance)
+                {
+                    resultInstance.GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
+                }
+                else
+                {
+                    Log.Error(this, "could not craft an instance for the recipe result");
+                }
             }
 
-            if (!resultInstance)
-            {
-                Log.Error(this, "could not craft an instance for the recipe result");
-                return;
-            }
-            
-            resultInstance.GetComponent<ICraftable>()?.Modify(interaction, interactionEvent, link.Target.Name);
+            handle.Dispose();
         }
 
         /// <summary>
