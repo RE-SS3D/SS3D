@@ -22,7 +22,7 @@ namespace SS3D.Data
         private IAssetStore _store;
         private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
         private IAssetCatalog[] _catalogs;
-        private Dictionary<string, AssetDatabase> _databasesById;
+        private Dictionary<string, AddressablesDatabase> _databasesById;
         private Task _initTask;
 
         // Static reference to the active store so that static event accessors (needed by
@@ -74,9 +74,9 @@ namespace SS3D.Data
         }
 
         [CanBeNull]
-        public AssetDatabase GetDatabase(string databaseID)
+        public AddressablesDatabase GetDatabase(string databaseID)
         {
-            if (_databasesById == null || !_databasesById.TryGetValue(databaseID, out AssetDatabase database))
+            if (_databasesById == null || !_databasesById.TryGetValue(databaseID, out AddressablesDatabase database))
             {
                 return null;
             }
@@ -163,10 +163,10 @@ namespace SS3D.Data
                 _store = new AssetStore();
                 ActiveStore = _store;
 
-                List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
+                List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
-                _databasesById = new Dictionary<string, AssetDatabase>(assetDatabases.Count);
-                foreach (AssetDatabase database in assetDatabases)
+                _databasesById = new Dictionary<string, AddressablesDatabase>(assetDatabases.Count);
+                foreach (AddressablesDatabase database in assetDatabases)
                 {
                     _databasesById[database.DatabaseID] = database;
                 }

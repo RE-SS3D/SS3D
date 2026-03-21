@@ -21,7 +21,7 @@ namespace AssetAudit
         /// Test to confirm all included asset databases are not null.
         /// </summary>
         [Test, TestCaseSource(nameof(AllAssetDatabases))]
-        public void IncludedAssetDatabasesAreNotNull(AssetDatabase database)
+        public void IncludedAssetDatabasesAreNotNull(AddressablesDatabase database)
         {
             Assert.IsTrue(database != null);
         }
@@ -32,7 +32,7 @@ namespace AssetAudit
         [Test]
         public void IncludedAssetDatabasesAreNotEmpty()
         {
-            List<AssetDatabase> databases = _assetDatabaseSettings.IncludedAssetDatabases;
+            List<AddressablesDatabase> databases = _assetDatabaseSettings.IncludedAssetDatabases;
 
             bool databasesAreEmpty = databases.Count == 0;
             Assert.IsFalse(databasesAreEmpty);
@@ -44,13 +44,13 @@ namespace AssetAudit
         [Test]
         public void AllProjectAssetDatabasesAreOnIncludedDatabases()
         {
-            List<AssetDatabase> projectAssetDatabases = AssetDatabase.FindAllAssetDatabases();
-            List<AssetDatabase> loadedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
+            List<AddressablesDatabase> projectAssetDatabases = AddressablesDatabase.FindAllAssetDatabases();
+            List<AddressablesDatabase> loadedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
 
             bool hasMissingDatabases = false;
-            List<AssetDatabase> missingDatabases = new();
+            List<AddressablesDatabase> missingDatabases = new();
 
-            foreach (AssetDatabase projectAssetDatabase in projectAssetDatabases)
+            foreach (AddressablesDatabase projectAssetDatabase in projectAssetDatabases)
             {
                 if (loadedAssetDatabases.Contains(projectAssetDatabase))
                 {
@@ -63,7 +63,7 @@ namespace AssetAudit
 
             if (hasMissingDatabases)
             {
-                foreach (AssetDatabase missingDatabase in missingDatabases)
+                foreach (AddressablesDatabase missingDatabase in missingDatabases)
                 { 
                     Debug.Log($"Added asset database {missingDatabase.name} to included asset databases");
                 }
@@ -76,15 +76,15 @@ namespace AssetAudit
         /// Test to see if there is any null references on any database assets.
         /// </summary>
         [Test, TestCaseSource(nameof(AllAssetDatabases))]
-        public void IncludedAssetDatabasesDoNotContainNullObjects(AssetDatabase assetDatabase)
+        public void IncludedAssetDatabasesDoNotContainNullObjects(AddressablesDatabase addressablesDatabase)
         {
             bool hasNullAssets = false;
-            Dictionary<AssetDatabase, List<int>> assetDatabasesNullRefIndexes = new();
+            Dictionary<AddressablesDatabase, List<int>> assetDatabasesNullRefIndexes = new();
 
 
-            for (int index = 0; index < assetDatabase.Assets.Count; index++)
+            for (int index = 0; index < addressablesDatabase.Assets.Count; index++)
             {
-                Object asset = assetDatabase.Assets.Values.ToList()[index];
+                Object asset = addressablesDatabase.Assets.Values.ToList()[index];
 
                 if (asset != null)
                 {
@@ -92,9 +92,9 @@ namespace AssetAudit
                 }
 
                 hasNullAssets = true;
-                assetDatabasesNullRefIndexes.Add(assetDatabase, new List<int>());
+                assetDatabasesNullRefIndexes.Add(addressablesDatabase, new List<int>());
 
-                assetDatabasesNullRefIndexes.TryGetValue(assetDatabase, out List<int> assetIndexes);
+                assetDatabasesNullRefIndexes.TryGetValue(addressablesDatabase, out List<int> assetIndexes);
                 assetIndexes!.Add(index);
             }
 
@@ -110,9 +110,9 @@ namespace AssetAudit
         /// Debugs all the null assets in databases.
         /// </summary>
         /// <param name="assetDatabasesNullRefIndexes"></param>
-        private static void DebugNullAssets(Dictionary<AssetDatabase, List<int>> assetDatabasesNullRefIndexes)
+        private static void DebugNullAssets(Dictionary<AddressablesDatabase, List<int>> assetDatabasesNullRefIndexes)
         {
-            foreach (AssetDatabase assetDatabase in assetDatabasesNullRefIndexes.Keys)
+            foreach (AddressablesDatabase assetDatabase in assetDatabasesNullRefIndexes.Keys)
             {
                 assetDatabasesNullRefIndexes.TryGetValue(assetDatabase, out List<int> assetIndexes);
 
@@ -128,7 +128,7 @@ namespace AssetAudit
             }
         }
 
-        public static List<AssetDatabase> AllAssetDatabases()
+        public static List<AddressablesDatabase> AllAssetDatabases()
         {
             return ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
         }

@@ -62,7 +62,7 @@ namespace SS3D.Systems.Crafting
         [ServerOrClient]
         private void FillRecipeOrganiser()
         {
-            AssetDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
+            AddressablesDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
 
             if (!recipesDataBase)
             {

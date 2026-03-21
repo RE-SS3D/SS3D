@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using JetBrains.Annotations;
 using SS3D.CodeGeneration.Creators;
 using SS3D.Logging;
@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
 {
-    public partial class AssetDatabase
+    public partial class AddressablesDatabase
     {
         /// <summary>
         /// The path that the enum will be generated to.
@@ -24,7 +24,7 @@ namespace SS3D.Data.AssetDatabases
         public const string DatabaseAssetNamespaceName = "SS3D.Data.Generated";
 
         /// <summary>
-        /// The asset group that constitutes this AssetDatabase, the system gets every asset from it and adds to an asset list.
+        /// The asset group that constitutes this AddressablesDatabase, the system gets every asset from it and adds to an asset list.
         /// </summary>
         public AddressableAssetGroup AssetGroup;
 
@@ -63,19 +63,19 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// Initializes all asset databases in the project and adds to the databases list.
         /// </summary>
-        public static List<AssetDatabase> FindAllAssetDatabases()
+        public static List<AddressablesDatabase> FindAllAssetDatabases()
         {
-            string[] assets = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(AssetDatabase)}");
+            string[] assets = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(AddressablesDatabase)}");
 
-            List<AssetDatabase> databases = new();
+            List<AddressablesDatabase> databases = new();
 
             for (int index = 0; index < assets.Length; index++)
             {
                 string database = assets[index];
                 string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(database);
-                AssetDatabase assetDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<AssetDatabase>(assetPath);
+                AddressablesDatabase addressablesDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<AddressablesDatabase>(assetPath);
 
-                databases.Add(assetDatabase);
+                databases.Add(addressablesDatabase);
             }
 
             return databases;

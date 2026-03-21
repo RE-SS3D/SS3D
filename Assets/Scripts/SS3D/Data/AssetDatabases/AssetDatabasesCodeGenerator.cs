@@ -46,7 +46,7 @@ namespace SS3D.Data.AssetDatabases
 
             LoadAllWorldObjectAssetReferences();
 
-            foreach (AssetDatabase includedAssetDatabase in settings.IncludedAssetDatabases)
+            foreach (AddressablesDatabase includedAssetDatabase in settings.IncludedAssetDatabases)
             {
                 CreateDatabaseCode(includedAssetDatabase);
 
@@ -59,27 +59,27 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// Calls the method to generate all the code for a database.
         /// </summary>
-        private static void CreateDatabaseCode(AssetDatabase assetDatabase)
+        private static void CreateDatabaseCode(AddressablesDatabase addressablesDatabase)
         {
-            assetDatabase.GenerateDatabaseCode();
+            addressablesDatabase.GenerateDatabaseCode();
         }
 
         /// <summary>
         /// Creates all the WorldObjectAssetReferences for a database. 
         /// </summary>
-        private static void CreateWorldObjectAssetReferences(AssetDatabase assetDatabase)
+        private static void CreateWorldObjectAssetReferences(AddressablesDatabase addressablesDatabase)
         {
             int createdAssets = 0;
             int modifiedAssets = 0;
 
-            foreach ((string guid, Object asset) in assetDatabase.Assets)
+            foreach ((string guid, Object asset) in addressablesDatabase.Assets)
             {
                 if (asset is not GameObject gameObject)
                 {
                     continue;
                 }
                 
-                ObjectAssetReference objectAssetReference = SavedAssetReferences.Values.ToList().Find(reference => reference.Id == guid && reference.Database == assetDatabase.DatabaseID);
+                ObjectAssetReference objectAssetReference = SavedAssetReferences.Values.ToList().Find(reference => reference.Id == guid && reference.Database == addressablesDatabase.DatabaseID);
 
                 if (objectAssetReference)
                 {
@@ -87,7 +87,7 @@ namespace SS3D.Data.AssetDatabases
                 }
                 else
                 {
-                    objectAssetReference = CreateWorldObjectAssetReference(gameObject.name, guid, assetDatabase.DatabaseID);
+                    objectAssetReference = CreateWorldObjectAssetReference(gameObject.name, guid, addressablesDatabase.DatabaseID);
 
                     string key = $"{ObjectAssetReference.ObjectAssetPath}{gameObject.name}.asset";
 
@@ -103,17 +103,17 @@ namespace SS3D.Data.AssetDatabases
 
             if (createdAssets > 0)
             {
-                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {CreatedAssets} {ObjectAssetReferenceName} created for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), createdAssets, nameof(ObjectAssetReference), assetDatabase.DatabaseName);
+                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {CreatedAssets} {ObjectAssetReferenceName} created for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), createdAssets, nameof(ObjectAssetReference), addressablesDatabase.DatabaseName);
             }
 
             if (modifiedAssets > 0)
             {
-                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {ModifiedAssets} {ObjectAssetReferenceName} modified for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), modifiedAssets, nameof(ObjectAssetReference), assetDatabase.DatabaseName);
+                Log.Information("[{AssetDatabasesCodeGeneratorName}] - {ModifiedAssets} {ObjectAssetReferenceName} modified for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), modifiedAssets, nameof(ObjectAssetReference), addressablesDatabase.DatabaseName);
             }
 
             if (modifiedAssets == 0 && createdAssets == 0)
             {
-                Log.Information("[{AssetDatabasesCodeGeneratorName}] - No {ObjectAssetReferenceName} were modified or created for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), nameof(ObjectAssetReference), assetDatabase.DatabaseName);
+                Log.Information("[{AssetDatabasesCodeGeneratorName}] - No {ObjectAssetReferenceName} were modified or created for {AssetDatabaseDatabaseName}.", nameof(AssetDatabasesCodeGenerator), nameof(ObjectAssetReference), addressablesDatabase.DatabaseName);
             }
         }
 
@@ -134,7 +134,7 @@ namespace SS3D.Data.AssetDatabases
             return objectAssetReference;
         }
 
-        private static void CleanupWorldObjectAssetReferences(List<AssetDatabase> assetDatabases)
+        private static void CleanupWorldObjectAssetReferences(List<AddressablesDatabase> assetDatabases)
         {
             List<KeyValuePair<string, ObjectAssetReference>> assetsToDestroy = new();
             List<KeyValuePair<string, ObjectAssetReference>> nullSavedAssetReferences = SavedAssetReferences.Where(pair => !pair.Value).ToList();
@@ -146,7 +146,7 @@ namespace SS3D.Data.AssetDatabases
 
             Dictionary<string, string> assetsInDatabases = new();
 
-            foreach (AssetDatabase database in assetDatabases)
+            foreach (AddressablesDatabase database in assetDatabases)
             {
                 foreach (string key in database.Assets.Keys)
                 {

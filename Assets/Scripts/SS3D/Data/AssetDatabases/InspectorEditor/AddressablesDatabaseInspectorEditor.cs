@@ -9,10 +9,10 @@ using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
-    [CustomEditor(typeof(AssetDatabase))]
-    public class AssetDatabaseInspectorEditor : Editor
+    [CustomEditor(typeof(AddressablesDatabase))]
+    public class AddressablesDatabaseInspectorEditor : Editor
     {
-        private AssetDatabase _assetDatabase;
+        private AddressablesDatabase _addressablesDatabase;
 
         public VisualTreeAsset _assetDatabaseVisualTree;
 
@@ -27,7 +27,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void OnEnable()
         {
-            _assetDatabase = (AssetDatabase)target;
+            _addressablesDatabase = (AddressablesDatabase)target;
         }
 
 #if UNITY_EDITOR
@@ -35,14 +35,14 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             if (_enumNameTextField != null)
             {
-                _assetDatabase.DatabaseName = _enumNameTextField.value;
+                _addressablesDatabase.DatabaseName = _enumNameTextField.value;
             }
 
-            _assetDatabase.DatabaseID = GetDatabaseID();
+            _addressablesDatabase.DatabaseID = GetDatabaseID();
 
             if (_assetGroupObjectField != null)
             {
-                _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+                _addressablesDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             }
         }
 #endif
@@ -68,20 +68,20 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetsListView = root.Q<ScrollView>("assets-list");
             _assetReferencesListView = root.Q<PropertyField>("asset-references-field");
 
-            _assetDatabaseLabel.text = $"{_assetDatabase.name} ASSET DATABASE";
-            _enumNameTextField.value = _assetDatabase.DatabaseName;
-            _assetGroupObjectField.value = _assetDatabase.AssetGroup;
-            _referencesProperty = serializedObject.FindProperty(nameof(_assetDatabase.AssetReferences));
+            _assetDatabaseLabel.text = $"{_addressablesDatabase.name} ASSET DATABASE";
+            _enumNameTextField.value = _addressablesDatabase.DatabaseName;
+            _assetGroupObjectField.value = _addressablesDatabase.AssetGroup;
+            _referencesProperty = serializedObject.FindProperty(nameof(_addressablesDatabase.AssetReferences));
 
-            _assetDatabase.LoadAssetsFromAssetGroup();
+            _addressablesDatabase.LoadAssetsFromAssetGroup();
 
-            EditorUtility.SetDirty(_assetDatabase);
+            EditorUtility.SetDirty(_addressablesDatabase);
 
-            _assetDatabase.GenerateDatabaseCode();
+            _addressablesDatabase.GenerateDatabaseCode();
 
-            if (_assetDatabase.Assets != null)
+            if (_addressablesDatabase.Assets != null)
             {
-                foreach (KeyValuePair<string, Object> asset in _assetDatabase.Assets)
+                foreach (KeyValuePair<string, Object> asset in _addressablesDatabase.Assets)
                 {
                     ObjectField objectField = new()
                     {
@@ -93,7 +93,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             }
 
             // Todo: Find a way to show just the asset references without showing the whole dictionary.
-            if (_assetDatabase.AssetReferences != null && _referencesProperty != null)
+            if (_addressablesDatabase.AssetReferences != null && _referencesProperty != null)
             {
                 _assetReferencesListView.BindProperty(_referencesProperty);
             }
@@ -105,14 +105,14 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void HandleLoadAssetsButtonPressed()
         {
-            _assetDatabase.DatabaseName = _enumNameTextField.value;
-            _assetDatabase.DatabaseID = GetDatabaseID();
+            _addressablesDatabase.DatabaseName = _enumNameTextField.value;
+            _addressablesDatabase.DatabaseID = GetDatabaseID();
 
-            _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
-            _assetDatabase.LoadAssetsFromAssetGroup();
+            _addressablesDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+            _addressablesDatabase.LoadAssetsFromAssetGroup();
             _assetsListView.Clear();
 
-            foreach (KeyValuePair<string, Object> asset in _assetDatabase.Assets)
+            foreach (KeyValuePair<string, Object> asset in _addressablesDatabase.Assets)
             {
                 ObjectField objectField = new()
                 {
@@ -122,14 +122,14 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 _assetsListView.Add(objectField);
             }   
 
-            EditorUtility.SetDirty(_assetDatabase);
+            EditorUtility.SetDirty(_addressablesDatabase);
 
-            _assetDatabase.GenerateDatabaseCode();
+            _addressablesDatabase.GenerateDatabaseCode();
         }
 
         private string GetDatabaseID()
         {
-            string assetPath = UnityEditor.AssetDatabase.GetAssetPath(_assetDatabase);
+            string assetPath = UnityEditor.AssetDatabase.GetAssetPath(_addressablesDatabase);
 
             if (!File.Exists(assetPath))
             {

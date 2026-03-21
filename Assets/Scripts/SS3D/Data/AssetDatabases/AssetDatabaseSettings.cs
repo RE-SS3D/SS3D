@@ -15,7 +15,7 @@ namespace SS3D.Data.AssetDatabases
 #if UNITY_EDITOR
         [ReadOnly]
 #endif
-        public List<AssetDatabase> IncludedAssetDatabases;
+        public List<AddressablesDatabase> IncludedAssetDatabases;
 
 #if UNITY_EDITOR
         [SerializeField]
@@ -38,9 +38,9 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            const string dataPath = AssetDatabase.DatabaseAssetPath;
+            const string dataPath = AddressablesDatabase.DatabaseAssetPath;
 
-            DatabaseScriptCreator.CreateAtPath(dataPath, "AssetDatabases", new(IncludedAssetDatabases), AssetDatabase.DatabaseAssetNamespaceName);
+            DatabaseScriptCreator.CreateAtPath(dataPath, "AssetDatabases", new(IncludedAssetDatabases), AddressablesDatabase.DatabaseAssetNamespaceName);
         }
 #endif
     }

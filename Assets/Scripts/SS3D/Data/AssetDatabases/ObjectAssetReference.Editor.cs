@@ -68,7 +68,7 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            foreach (AssetDatabase database in databaseSettings.IncludedAssetDatabases.Where(database => database.AssetGroup == entry.parentGroup))
+            foreach (AddressablesDatabase database in databaseSettings.IncludedAssetDatabases.Where(database => database.AssetGroup == entry.parentGroup))
             {
                 Id = guid;
                 Database = database.DatabaseID;

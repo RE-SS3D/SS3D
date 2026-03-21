@@ -68,7 +68,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void LoadDatabases()
         {
-            List<AssetDatabase> foundDatabases = AssetDatabase.FindAllAssetDatabases();
+            List<AddressablesDatabase> foundDatabases = AddressablesDatabase.FindAllAssetDatabases();
             _assetDatabaseSettings.IncludedAssetDatabases = foundDatabases;
         }
 
@@ -78,9 +78,9 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
             LoadDatabases();
 
-            List<AssetDatabase> includedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
+            List<AddressablesDatabase> includedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
 
-            foreach (AssetDatabase assetDatabase in includedAssetDatabases)
+            foreach (AddressablesDatabase assetDatabase in includedAssetDatabases)
             {
                 assetDatabase.LoadAssetsFromAssetGroup();
             }
@@ -97,7 +97,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             _databaseListView.Clear();
 
-            foreach (AssetDatabase database in _assetDatabaseSettings.IncludedAssetDatabases)
+            foreach (AddressablesDatabase database in _assetDatabaseSettings.IncludedAssetDatabases)
             {
                 ObjectField objectField = new()
                 {
