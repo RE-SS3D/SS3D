@@ -1,3 +1,4 @@
+using Coimbra;
 using FishNet.Managing.Object;
 using FishNet.Object;
 using JetBrains.Annotations;
@@ -18,14 +19,15 @@ namespace SS3D.Data.Networking
     public sealed partial class NetworkObjects : PrefabObjects
     {
         /// <summary>
-        /// Serialized GUID order used to derive stable FishNet prefab IDs across editor generation and runtime loading.
+        /// Serialized GUID-to-index map for O(1) lookup of deterministic FishNet prefab IDs.
+        /// Editor generation populates this from the sorted prefab cache.
         /// </summary>
         [SerializeField]
         [HideInInspector]
-        private List<string> _objectGuids = new();
+        private SerializableDictionary<string, int> _guidToIndex = new();
 
         /// <summary>
-        /// Runtime prefab slots aligned with <see cref="_objectGuids"/>.
+        /// Runtime prefab slots aligned with <see cref="_guidToIndex"/> values.
         /// Non-addressable prefabs are populated during generation; addressable prefabs are inserted when their asset is loaded.
         /// </summary>
         [SerializeField]
@@ -40,7 +42,7 @@ namespace SS3D.Data.Networking
 #if UNITY_EDITOR
             _prefabs.Clear();
 #endif
-            _objectGuids.Clear();
+            _guidToIndex.Clear();
             Array.Clear(_loadedPrefabs, 0, _loadedPrefabs.Length);
         }
 
@@ -53,7 +55,7 @@ namespace SS3D.Data.Networking
 #if UNITY_EDITOR
             return _prefabs.Count;
 #else
-            return _objectGuids.Count;
+            return _loadedPrefabs.Length;
 #endif
         }
 
@@ -224,28 +226,29 @@ namespace SS3D.Data.Networking
         /// <param name="asset">Asset loaded.</param>
         private void HandleAssetLoaded(string guid, Object asset)
         {
-            if (asset is GameObject gameObject && gameObject.TryGetComponent(out NetworkObject networkObject))
+            if (asset is GameObject gameObject
+                && gameObject.TryGetComponent(out NetworkObject networkObject)
+                && _guidToIndex.TryGetValue(guid, out int index))
             {
-                AddObject(networkObject, guid);
+                _loadedPrefabs[index] = networkObject;
+                InitializePrefab(index);
             }
         }
 
         /// <summary>
-        /// Clears the runtime prefab slot when an addressable prefab is unloaded.
+        /// Clears the runtime prefab slot when an asset is unloaded.
         /// </summary>
         /// <param name="guid">GUID of the unloaded asset.</param>
         private void HandleAssetUnloaded(string guid)
         {
-            int index = _objectGuids.IndexOf(guid);
-
-            if (index >= 0 && index < _loadedPrefabs.Length)
+            if (_guidToIndex.TryGetValue(guid, out int index) && index < _loadedPrefabs.Length)
             {
                 _loadedPrefabs[index] = null;
             }
         }
 
         /// <summary>
-        /// Inserts a runtime-loaded addressable prefab into the slot derived from its GUID.
+        /// Inserts a runtime-loaded prefab into the slot derived from its GUID.
         /// </summary>
         /// <param name="networkObject">Loaded prefab root that exposes a <see cref="NetworkObject"/>.</param>
         /// <param name="guid">GUID used to find the prefab's deterministic runtime slot.</param>
@@ -258,14 +261,13 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            if (!_objectGuids.Contains(guid))
+            if (!_guidToIndex.TryGetValue(guid, out int index))
             {
                 Log.Error(this, "GUID not found in collection.");
 
                 return;
             }
 
-            int index = _objectGuids.IndexOf(guid);
             _loadedPrefabs[index] = networkObject;
             InitializePrefab(index);
         }

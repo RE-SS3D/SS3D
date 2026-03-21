@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using FishNet.Object;
 using JetBrains.Annotations;
 using System.Collections.Generic;
@@ -30,15 +30,22 @@ namespace SS3D.Data.Networking
         internal void Generate()
         {
             // Preserve sorted GUID order so prefab IDs remain deterministic across machines.
-            _objectGuids = _prefabs.Keys.ToList();
+            List<string> sortedGuids = _prefabs.Keys.ToList();
+
+            _guidToIndex = new();
+
+            for (int i = 0; i < sortedGuids.Count; i++)
+            {
+                _guidToIndex[sortedGuids[i]] = i;
+            }
 
             // Non-addressable prefabs can be serialized directly. Addressable prefabs are resolved at runtime by GUID.
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
             _loadedPrefabs = new NetworkObject[_prefabs.Count];
 
-            for (int i = 0; i < _prefabs.Count; i++)
+            for (int i = 0; i < sortedGuids.Count; i++)
             {
-                string guid = _objectGuids[i];
+                string guid = sortedGuids[i];
 
                 if (settings.FindAssetEntry(guid) == null)
                 {
@@ -66,7 +73,16 @@ namespace SS3D.Data.Networking
         [NotNull]
         internal string[] GetObjectGuidsSnapshot()
         {
-            return _objectGuids.ToArray();
+            // Dictionary key enumeration order is not guaranteed, so keys are placed
+            // at their index position to match the original sorted generation order.
+            string[] guids = new string[_guidToIndex.Count];
+
+            foreach (KeyValuePair<string, int> pair in _guidToIndex)
+            {
+                guids[pair.Value] = pair.Key;
+            }
+
+            return guids;
         }
 
         /// <summary>
@@ -80,23 +96,33 @@ namespace SS3D.Data.Networking
             }
 
             _prefabs = new();
+            List<string> staleGuids = new();
 
-            for (int i = 0; i < _objectGuids.Count;)
+            foreach (string guid in _guidToIndex.Keys)
             {
-                string path = AssetDatabase.GUIDToAssetPath(_objectGuids[i]);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
 
                 // Strip stale GUIDs and prefabs that no longer expose a NetworkObject so the generated collection stays valid.
-                if (!prefab || !prefab.TryGetComponent(out NetworkObject networkObject) || !_prefabs.TryAdd(_objectGuids[i], networkObject))
+                if (!prefab || !prefab.TryGetComponent(out NetworkObject networkObject) || !_prefabs.TryAdd(guid, networkObject))
                 {
-                    _objectGuids.RemoveAt(i);
-
-                    continue;
+                    staleGuids.Add(guid);
                 }
-
-                i++;
             }
-            
+
+            foreach (string guid in staleGuids)
+            {
+                _guidToIndex.Remove(guid);
+            }
+
+            // Recompact indices to be contiguous after stale removal.
+            int newIndex = 0;
+
+            foreach (string guid in _prefabs.Keys)
+            {
+                _guidToIndex[guid] = newIndex++;
+            }
+
             _isInitialized = true;
         }
     }
