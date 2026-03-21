@@ -32,36 +32,46 @@ namespace SS3D.Data
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
 
+        /// <inheritdoc cref="AcquireAsync{T}(string)"/>
+        [ItemCanBeNull]
+        public Task<AssetHandle<T>> AcquireAsync<T>([NotNull] ObjectAssetReference reference)
+            where T : class
+            => AcquireAsync<T>(reference.Id);
+
         /// <summary>
-        /// Acquires a ref-counted handle for an asset via the specified backend.
-        /// The key format depends on the backend: GUID for Addressables, path for Resources, filepath for File.
+        /// Acquires a ref-counted handle for an asset by GUID.
+        /// The system auto-routes to the correct backend via registered catalogs.
         /// </summary>
         [ItemCanBeNull]
-        public Task<AssetHandle<T>> AcquireAsync<T>(
-            [NotNull] string key,
-            AssetBackendType backendType = AssetBackendType.Addressables)
+        public Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string guid)
             where T : class
         {
-            if (!IsInitialized)
+            if (!IsInitialized || _catalogs == null)
             {
                 return Task.FromResult<AssetHandle<T>>(null);
             }
 
-            if (!_backends.TryGetValue(backendType, out IAssetBackend backend))
+            foreach (IAssetCatalog catalog in _catalogs)
             {
-                return Task.FromResult<AssetHandle<T>>(null);
+                if (!catalog.Has(guid))
+                {
+                    continue;
+                }
+
+                string resolvedKey = catalog.ResolveKey(guid);
+
+                if (!_backends.TryGetValue(catalog.BackendType, out IAssetBackend backend))
+                {
+                    Log.Error(this, "No backend registered for {BackendType} while resolving GUID '{Guid}'.", Logs.Important, catalog.BackendType, guid);
+                    return Task.FromResult<AssetHandle<T>>(null);
+                }
+
+                return _store.AcquireAsync<T>(resolvedKey, backend);
             }
 
-            return _store.AcquireAsync<T>(key, backend);
+            Log.Warning(this, "No catalog contains GUID '{Guid}'.", Logs.Important, guid);
+            return Task.FromResult<AssetHandle<T>>(null);
         }
-
-        /// <inheritdoc cref="AcquireAsync{T}(string, AssetBackendType)"/>
-        [ItemCanBeNull]
-        public Task<AssetHandle<T>> AcquireAsync<T>(
-            [NotNull] ObjectAssetReference reference,
-            AssetBackendType backendType = AssetBackendType.Addressables)
-            where T : class
-            => AcquireAsync<T>(reference.Id, backendType);
 
         [CanBeNull]
         public AssetDatabase GetDatabase(string databaseID)

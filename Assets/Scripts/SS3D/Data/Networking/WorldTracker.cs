@@ -20,7 +20,6 @@ namespace SS3D.Data.Networking
         {
             internal int InstanceCount;
             internal IAssetHandle Handle;
-            internal AssetBackendType BackendType;
         }
 
         /// <summary>
@@ -55,7 +54,6 @@ namespace SS3D.Data.Networking
         /// </summary>
         internal async Task RegisterAsync(
             [NotNull] string key,
-            AssetBackendType backendType,
             [NotNull] NetworkObject instance)
         {
             if (_activeAssets.TryGetValue(key, out ActiveAsset active))
@@ -65,8 +63,8 @@ namespace SS3D.Data.Networking
             else
             {
                 // Asset is already loaded (spawner holds a handle), so this completes near-instantly.
-                AssetHandle<Object> handle = await _assetSubSystem.AcquireAsync<Object>(key, backendType);
-                _activeAssets[key] = new ActiveAsset { InstanceCount = 1, Handle = handle, BackendType = backendType };
+                AssetHandle<Object> handle = await _assetSubSystem.AcquireAsync<Object>(key);
+                _activeAssets[key] = new ActiveAsset { InstanceCount = 1, Handle = handle };
             }
 
             InstanceLifetimeTracker tracker = instance.gameObject.AddComponent<InstanceLifetimeTracker>();
@@ -74,13 +72,13 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Returns a snapshot of currently active asset keys and their backend types.
+        /// Returns a snapshot of currently active asset keys.
         /// Used for late-join replay.
         /// </summary>
         [NotNull]
-        internal (string Key, AssetBackendType BackendType)[] GetActiveAssets()
+        internal string[] GetActiveAssets()
         {
-            return _activeAssets.Select(pair => (pair.Key, pair.Value.BackendType)).ToArray();
+            return _activeAssets.Keys.ToArray();
         }
 
         private void HandleInstanceReleased(string key)

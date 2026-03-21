@@ -1,8 +1,8 @@
 namespace SS3D.Data
 {
     /// <summary>
-    /// Identifies which asset loading backend to use when acquiring an asset.
-    /// Passed by callers to <see cref="AssetSubSystem.AcquireAsync{T}"/> for explicit backend selection.
+    /// Identifies which asset loading backend to use.
+    /// Used internally by <see cref="IAssetCatalog"/> to route asset resolution to the correct backend.
     /// </summary>
     public enum AssetBackendType
     {

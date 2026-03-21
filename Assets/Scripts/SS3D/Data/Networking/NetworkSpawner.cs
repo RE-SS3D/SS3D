@@ -14,7 +14,6 @@ namespace SS3D.Data.Networking
     /// <summary>
     /// Helper for spawning networked objects while ensuring assets
     /// are loaded on all clients before the spawn occurs.
-    /// Backend-agnostic: callers specify which <see cref="AssetBackendType"/> to use.
     /// </summary>
     public static class NetworkSpawner
     {
@@ -42,12 +41,10 @@ namespace SS3D.Data.Networking
         /// When provided, the asset will be synchronized and loaded on all clients before spawning.
         /// </param>
         /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
-        /// <param name="backendType">Which asset backend to use for loading.</param>
         public static async Task SpawnAsync(
             NetworkObject networkObject,
             [CanBeNull] ObjectAssetReference assetReference,
-            NetworkConnection ownerConnection = null,
-            AssetBackendType backendType = AssetBackendType.Addressables)
+            NetworkConnection ownerConnection = null)
         {
             if (!InstanceFinder.IsServer)
             {
@@ -76,7 +73,7 @@ namespace SS3D.Data.Networking
                     return;
                 }
 
-                if (!await barrier.EnsureAllClientsReadyAsync(key, backendType))
+                if (!await barrier.EnsureAllClientsReadyAsync(key))
                 {
                     Log.Error(typeof(NetworkSpawner), $"Failed to ensure asset '{key}' is loaded on all clients before spawning.");
 
@@ -90,7 +87,7 @@ namespace SS3D.Data.Networking
             // reflects live world objects rather than attempted spawns.
             if (assetReference)
             {
-                await TrackSpawnedInstanceAsync(key, backendType, networkObject);
+                await TrackSpawnedInstanceAsync(key, networkObject);
             }
         }
 
@@ -105,12 +102,10 @@ namespace SS3D.Data.Networking
         /// </summary>
         /// <param name="assetReference">Asset reference for the prefab to spawn.</param>
         /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
-        /// <param name="backendType">Which asset backend to use for loading.</param>
         /// <returns>The spawned <see cref="NetworkObject"/>, or <c>null</c> if spawn failed.</returns>
         public static async Task<NetworkObject> SpawnAsync(
             ObjectAssetReference assetReference,
-            NetworkConnection ownerConnection = null,
-            AssetBackendType backendType = AssetBackendType.Addressables)
+            NetworkConnection ownerConnection = null)
         {
             if (!InstanceFinder.IsServer)
             {
@@ -136,7 +131,7 @@ namespace SS3D.Data.Networking
             }
 
             // 1. Acquire prefab handle (keeps bundle alive through the entire operation).
-            AssetHandle<GameObject> spawnHandle = await assetSubSystem.AcquireAsync<GameObject>(key, backendType);
+            AssetHandle<GameObject> spawnHandle = await assetSubSystem.AcquireAsync<GameObject>(key);
 
             if (spawnHandle?.Asset == null)
             {
@@ -149,7 +144,7 @@ namespace SS3D.Data.Networking
             // 2. Barrier: ensure all clients have the asset.
             NetworkBarrier barrier = NetworkBarrier.Instance;
 
-            if (!barrier || !await barrier.EnsureAllClientsReadyAsync(key, backendType))
+            if (!barrier || !await barrier.EnsureAllClientsReadyAsync(key))
             {
                 Log.Error(typeof(NetworkSpawner), $"Failed to ensure asset '{key}' is loaded on all clients before spawning.");
                 spawnHandle.Dispose();
@@ -173,7 +168,7 @@ namespace SS3D.Data.Networking
             InstanceFinder.ServerManager.Spawn(networkObject, ownerConnection);
 
             // 4. Register with WorldTracker (acquires its own handle internally, keeping bundle alive).
-            await TrackSpawnedInstanceAsync(key, backendType, networkObject);
+            await TrackSpawnedInstanceAsync(key, networkObject);
 
             // 5. Release spawn handle — WorldTracker now keeps the asset resident.
             spawnHandle.Dispose();
@@ -184,7 +179,7 @@ namespace SS3D.Data.Networking
         /// <summary>
         /// Registers a successfully spawned instance with the <see cref="WorldTracker"/>.
         /// </summary>
-        private static async Task TrackSpawnedInstanceAsync(string key, AssetBackendType backendType, NetworkObject networkObject)
+        private static async Task TrackSpawnedInstanceAsync(string key, NetworkObject networkObject)
         {
             NetworkBarrier barrier = NetworkBarrier.Instance;
 
@@ -193,7 +188,7 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            await barrier.WorldTracker.RegisterAsync(key, backendType, networkObject);
+            await barrier.WorldTracker.RegisterAsync(key, networkObject);
         }
 
         private static bool TryGetAssetSubSystem(out AssetSubSystem assetSubSystem)

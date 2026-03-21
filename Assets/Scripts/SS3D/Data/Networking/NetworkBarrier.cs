@@ -18,10 +18,9 @@ using Object = UnityEngine.Object;
 namespace SS3D.Data.Networking
 {
     /// <summary>
-    /// Coordinates asset loading across the network using the new handle-based asset system.
+    /// Coordinates asset loading across the network using the handle-based asset system.
     /// The server owns synchronized load barriers, clients report local load results,
     /// and late joiners are instructed to preload assets that are still active in the world.
-    /// Backend-agnostic: RPCs carry the <see cref="AssetBackendType"/> so clients use the correct backend.
     /// </summary>
     [RequireComponent(typeof(NetworkObserver))]
     internal sealed class NetworkBarrier : NetworkActor
@@ -35,13 +34,10 @@ namespace SS3D.Data.Networking
             private TaskCompletionSource<bool> _taskSource;
             private HashSet<int> _pendingClientIds;
 
-            internal AssetBackendType BackendType { get; }
-
-            internal LoadBarrier([NotNull] HashSet<int> pendingClientIds, AssetBackendType backendType)
+            internal LoadBarrier([NotNull] HashSet<int> pendingClientIds)
             {
                 _taskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
                 _pendingClientIds = pendingClientIds ?? new HashSet<int>();
-                BackendType = backendType;
 
                 if (_pendingClientIds.Count == 0)
                 {
@@ -304,14 +300,14 @@ namespace SS3D.Data.Networking
         /// Ensures an asset is loaded on every connected client before dependent server logic proceeds.
         /// Servers create or join the authoritative barrier, while clients await that barrier through the server.
         /// </summary>
-        internal async Task<bool> EnsureAllClientsReadyAsync(string key, AssetBackendType backendType, float timeoutSeconds = 15f)
+        internal async Task<bool> EnsureAllClientsReadyAsync(string key, float timeoutSeconds = 15f)
         {
             if (!IsServer)
             {
                 return await WaitForLoadClientAsync(key, timeoutSeconds);
             }
 
-            StartSynchronizedLoad(key, backendType);
+            StartSynchronizedLoad(key);
 
             return await WaitForLoadServerAsync(key, timeoutSeconds);
         }
@@ -376,7 +372,7 @@ namespace SS3D.Data.Networking
         // ── Server-side synchronized load ────────────────────────────────
 
         [Server]
-        private void StartSynchronizedLoad(string key, AssetBackendType backendType)
+        private void StartSynchronizedLoad(string key)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -385,12 +381,12 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            if (!TryRegisterLoadBarrier(key, backendType))
+            if (!TryRegisterLoadBarrier(key))
             {
                 return;
             }
 
-            RpcLoadAsset(key, (byte)backendType);
+            RpcLoadAsset(key);
         }
 
         [Server]
@@ -437,14 +433,14 @@ namespace SS3D.Data.Networking
             }
         }
 
-        private bool TryRegisterLoadBarrier(string key, AssetBackendType backendType)
+        private bool TryRegisterLoadBarrier(string key)
         {
             if (_loadBarriers.ContainsKey(key))
             {
                 return false;
             }
 
-            LoadBarrier barrier = new(GetConnectedClientIds(), backendType);
+            LoadBarrier barrier = new(GetConnectedClientIds());
             _loadBarriers.Add(key, barrier);
 
             return true;
@@ -507,9 +503,9 @@ namespace SS3D.Data.Networking
         // ── RPCs ─────────────────────────────────────────────────────────
 
         [ObserversRpc]
-        private void RpcLoadAsset(string key, byte backendType)
+        private void RpcLoadAsset(string key)
         {
-            LoadLocallyAsync(key, (AssetBackendType)backendType);
+            LoadLocallyAsync(key);
         }
 
         [ObserversRpc]
@@ -566,14 +562,14 @@ namespace SS3D.Data.Networking
 
         // ReSharper disable once UnusedParameter.Local
         [TargetRpc]
-        private void RpcPreloadForClient(NetworkConnection connection, string key, byte backendType)
+        private void RpcPreloadForClient(NetworkConnection connection, string key)
         {
-            LoadLocallyAsync(key, (AssetBackendType)backendType);
+            LoadLocallyAsync(key);
         }
 
         // ── Client-side loading ──────────────────────────────────────────
 
-        private async void LoadLocallyAsync(string key, AssetBackendType backendType)
+        private async void LoadLocallyAsync(string key)
         {
             AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
 
@@ -593,7 +589,7 @@ namespace SS3D.Data.Networking
             {
                 for (int attempt = 0; attempt < _retryAttempts; attempt++)
                 {
-                    AssetHandle<Object> handle = await assetSubSystem.AcquireAsync<Object>(key, backendType);
+                    AssetHandle<Object> handle = await assetSubSystem.AcquireAsync<Object>(key);
 
                     if (handle?.Asset == null)
                     {
@@ -696,9 +692,9 @@ namespace SS3D.Data.Networking
                 preloadKeys.Add(pair.Key);
             }
 
-            (string Key, AssetBackendType BackendType)[] activeAssets = _worldTracker.GetActiveAssets();
+            string[] activeAssets = _worldTracker.GetActiveAssets();
 
-            foreach ((string key, _) in activeAssets)
+            foreach (string key in activeAssets)
             {
                 preloadKeys.Add(key);
             }
@@ -715,25 +711,19 @@ namespace SS3D.Data.Networking
 
             Log.Information(this, $"Starting late-join preload for ClientID {clientId} with {session.PendingCount} assets.");
 
-            // Send active world assets with their known backend type.
+            // Send active world assets.
             HashSet<string> sentKeys = new();
 
-            foreach ((string key, AssetBackendType backendType) in activeAssets)
+            foreach (string key in activeAssets.Where(key => preloadKeys.Contains(key)))
             {
-                if (preloadKeys.Contains(key))
-                {
-                    RpcPreloadForClient(connection, key, (byte)backendType);
-                    sentKeys.Add(key);
-                }
+                RpcPreloadForClient(connection, key);
+                sentKeys.Add(key);
             }
 
             // Send in-flight barrier assets not already covered by active world state.
-            foreach (KeyValuePair<string, LoadBarrier> pair in _loadBarriers.Where(pair => !pair.Value.Task.IsCompleted))
+            foreach (KeyValuePair<string, LoadBarrier> pair in _loadBarriers.Where(pair => !pair.Value.Task.IsCompleted).Where(pair => !sentKeys.Contains(pair.Key)))
             {
-                if (!sentKeys.Contains(pair.Key))
-                {
-                    RpcPreloadForClient(connection, pair.Key, (byte)pair.Value.BackendType);
-                }
+                RpcPreloadForClient(connection, pair.Key);
             }
 
             MonitorPreloadAsync(clientId);
