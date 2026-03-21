@@ -24,7 +24,7 @@ namespace SS3D.Data
         // Static reference to the active store so that static event accessors (needed by
         // ScriptableObjects like NetworkObjects that cannot hold instance references) can
         // forward subscriptions directly without a separate delegate or bridge.
-        private static IAssetStore _activeStore;
+        private static IAssetStore ActiveStore;
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
 
@@ -66,6 +66,8 @@ namespace SS3D.Data
         public TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
             where TAsset : Object => AssetDatabaseCatalog.GetDatabase(databaseId)?.Get<TAsset>(assetId);
 
+        public bool Has([NotNull] string assetId) => IsInitialized && AssetDatabaseCatalog.Has(assetId);
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -75,7 +77,7 @@ namespace SS3D.Data
 
         protected override void OnDestroyed()
         {
-            _activeStore = null;
+            ActiveStore = null;
             _store?.Dispose();
 
             foreach (IAssetBackend backend in _backends.Values)
@@ -91,14 +93,14 @@ namespace SS3D.Data
 
         internal static event Action<string, Object> OnAssetLoaded
         {
-            add { if (_activeStore != null) _activeStore.OnLoaded += value; }
-            remove { if (_activeStore != null) _activeStore.OnLoaded -= value; }
+            add { if (ActiveStore != null) ActiveStore.OnLoaded += value; }
+            remove { if (ActiveStore != null) ActiveStore.OnLoaded -= value; }
         }
 
         internal static event Action<string> OnAssetUnloaded
         {
-            add { if (_activeStore != null) _activeStore.OnUnloaded += value; }
-            remove { if (_activeStore != null) _activeStore.OnUnloaded -= value; }
+            add { if (ActiveStore != null) ActiveStore.OnUnloaded += value; }
+            remove { if (ActiveStore != null) ActiveStore.OnUnloaded -= value; }
         }
 
         // ── Initialization ─────────────────────────────────────────────
@@ -135,7 +137,7 @@ namespace SS3D.Data
                 _backends[AssetBackendType.Addressables] = addressablesBackend;
 
                 _store = new AssetStore();
-                _activeStore = _store;
+                ActiveStore = _store;
 
                 AssetDatabaseCatalog.Initialize();
             }

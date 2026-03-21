@@ -60,6 +60,19 @@ namespace SS3D.Data
             Log.Information(typeof(AssetDatabaseCatalog), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
         }
 
+        internal static bool Has([NotNull] string assetId)
+        {
+            foreach (AssetDatabase database in Databases.Values)
+            {
+                if (database.Has(assetId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         internal static void Reset()
         {
             Databases.Clear();

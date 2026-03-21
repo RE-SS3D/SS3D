@@ -1,7 +1,6 @@
-﻿using FishNet.Connection;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Data;
-using SS3D.Data.Generated;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
@@ -51,7 +50,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands.ItemCommands
 
             string id = args[0];
 
-            if (!SubSystems.Get<AssetSubSystem>().Has(AssetDatabases.Items, id))
+            if (!SubSystems.Get<AssetSubSystem>().Has(id))
             {
                 response.IsValid = false;
                 response.InvalidArgs = $"item with name {id} not found";
