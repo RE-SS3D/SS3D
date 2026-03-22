@@ -1,8 +1,8 @@
 using Coimbra;
 using JetBrains.Annotations;
 using Serilog;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases
@@ -27,10 +27,10 @@ namespace SS3D.Data.AssetDatabases
         public SerializableDictionary<string, Object> Assets;
 
         /// <summary>
-        /// All asset references for the assets in the database.
+        /// All asset GUIDs registered in this database.
         /// </summary>
         [SerializeField]
-        internal SerializableDictionary<string, AssetReference> AssetReferences;
+        internal List<string> AssetGuids;
 
         /// <summary>
         /// Gets an asset based on its ID (index).
@@ -58,11 +58,9 @@ namespace SS3D.Data.AssetDatabases
         }
 
         /// <summary>
-        /// Checks if the database has an asset with the given ID
+        /// Checks if the database has an asset with the given GUID.
         /// </summary>
-        /// <param name="id">ID to check</param>
-        /// <returns>True if the database contains the ID</returns>
-        public bool Has([NotNull] string id) => AssetReferences.ContainsKey(id);
+        public bool Has([NotNull] string guid) => AssetGuids != null && AssetGuids.Contains(guid);
 
         /// <summary>
         /// Returns the GUID itself — Addressables uses GUID as its native key.

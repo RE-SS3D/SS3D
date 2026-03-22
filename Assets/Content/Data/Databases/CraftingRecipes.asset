@@ -29,43 +29,11 @@ MonoBehaviour:
     - _key: 3decef2c351e13b4194d1994c485a170
       _value: {fileID: 11400000, guid: 3decef2c351e13b4194d1994c485a170, type: 2}
     _new: 
-  AssetReferences:
-    _list:
-    - _key: 5069902a314070f4ca869692cbc791fa
-      _value:
-        m_AssetGUID: 5069902a314070f4ca869692cbc791fa
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 41ed3a9a199817b47b7ba22ecb7c1ab4
-      _value:
-        m_AssetGUID: 41ed3a9a199817b47b7ba22ecb7c1ab4
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: b7f1e5d68b05f6743a606736245ff481
-      _value:
-        m_AssetGUID: b7f1e5d68b05f6743a606736245ff481
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 115e1db3f2858c14fa6b736f67e552be
-      _value:
-        m_AssetGUID: 115e1db3f2858c14fa6b736f67e552be
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 3d6dc37a96797e442bafcb066f1f9aef
-      _value:
-        m_AssetGUID: 3d6dc37a96797e442bafcb066f1f9aef
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 3decef2c351e13b4194d1994c485a170
-      _value:
-        m_AssetGUID: 3decef2c351e13b4194d1994c485a170
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    _new: 
+  AssetGuids:
+  - 5069902a314070f4ca869692cbc791fa
+  - 41ed3a9a199817b47b7ba22ecb7c1ab4
+  - b7f1e5d68b05f6743a606736245ff481
+  - 115e1db3f2858c14fa6b736f67e552be
+  - 3d6dc37a96797e442bafcb066f1f9aef
+  - 3decef2c351e13b4194d1994c485a170
   AssetGroup: {fileID: 11400000, guid: ead2cce9e35a7304ab5b8cc67d03347b, type: 2}

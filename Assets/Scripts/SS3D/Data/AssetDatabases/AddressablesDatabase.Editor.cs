@@ -34,30 +34,34 @@ namespace SS3D.Data.AssetDatabases
         public void LoadAssetsFromAssetGroup()
         {
             Assets = new();
-            AssetReferences = new();
+            AssetGuids = new();
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)
             {
                 Assets.TryAdd(entry.guid, entry.MainAsset);
-                AssetReferences.TryAdd(entry.guid, new(entry.guid));
+
+                if (!AssetGuids.Contains(entry.guid))
+                {
+                    AssetGuids.Add(entry.guid);
+                }
             }
 
             EditorUtility.SetDirty(this);
         }
 
         /// <summary>
-        /// Adds abd asset to the asset database. Should be used only for additional content or runtime stuff.
+        /// Adds an asset to the asset database. Should be used only for additional content or runtime stuff.
         /// </summary>
-        /// <param name="asset"></param>
-        /// <typeparam name="TAsset"></typeparam>
+        /// <param name="asset">The asset to add to the database.</param>
+        /// <typeparam name="TAsset">The type of the asset to add.</typeparam>
         public void Add<TAsset>([NotNull] TAsset asset)
             where TAsset : Object
         {
-            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(asset.name);
-            string guid = UnityEditor.AssetDatabase.GUIDFromAssetPath(path).ToString();
+            string path = AssetDatabase.GUIDToAssetPath(asset.name);
+            string guid = AssetDatabase.GUIDFromAssetPath(path).ToString();
 
             Assets.Add(guid, asset);
-            AssetReferences.Add(guid, new(guid));
+            AssetGuids.Add(guid);
         }
 
         /// <summary>
@@ -65,20 +69,9 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public static List<AddressablesDatabase> FindAllAssetDatabases()
         {
-            string[] assets = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(AddressablesDatabase)}");
+            string[] assets = AssetDatabase.FindAssets($"t:{typeof(AddressablesDatabase)}");
 
-            List<AddressablesDatabase> databases = new();
-
-            for (int index = 0; index < assets.Length; index++)
-            {
-                string database = assets[index];
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(database);
-                AddressablesDatabase addressablesDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<AddressablesDatabase>(assetPath);
-
-                databases.Add(addressablesDatabase);
-            }
-
-            return databases;
+            return assets.Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<AddressablesDatabase>).ToList();
         }
 
         /// <summary>
@@ -96,7 +89,7 @@ namespace SS3D.Data.AssetDatabases
 
         public bool AddToAddressables([NotNull] Object asset)
         {
-            string path = UnityEditor.AssetDatabase.GetAssetPath(asset);
+            string path = AssetDatabase.GetAssetPath(asset);
 
             if (string.IsNullOrEmpty(path))
             {
@@ -105,7 +98,7 @@ namespace SS3D.Data.AssetDatabases
                 return false;
             }
 
-            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(path);
+            string guid = AssetDatabase.AssetPathToGUID(path);
 
             if (!AssetGroup)
             {
@@ -131,8 +124,8 @@ namespace SS3D.Data.AssetDatabases
             EditorUtility.SetDirty(asset);
             EditorUtility.SetDirty(this);
 
-            UnityEditor.AssetDatabase.SaveAssetIfDirty(asset);
-            UnityEditor.AssetDatabase.SaveAssetIfDirty(this);
+            AssetDatabase.SaveAssetIfDirty(asset);
+            AssetDatabase.SaveAssetIfDirty(this);
 
             return true;
         }

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -17,13 +17,13 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         public VisualTreeAsset _assetDatabaseVisualTree;
 
         private ScrollView _assetsListView;
-        private PropertyField _assetReferencesListView;
+        private PropertyField _assetGuidsListView;
         private Button _loadAssetsButton;
         private ObjectField _assetGroupObjectField;
         private Label _assetDatabaseLabel;
         private TextField _enumNameTextField;
 
-        private SerializedProperty _referencesProperty;
+        private SerializedProperty _guidsProperty;
 
         private void OnEnable()
         {
@@ -66,12 +66,12 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetGroupObjectField = root.Q<ObjectField>("asset-group-field");
             _loadAssetsButton = root.Q<Button>("load-assets-from-addressables-group-button");
             _assetsListView = root.Q<ScrollView>("assets-list");
-            _assetReferencesListView = root.Q<PropertyField>("asset-references-field");
+            _assetGuidsListView = root.Q<PropertyField>("asset-guids-field");
 
             _assetDatabaseLabel.text = $"{_addressablesDatabase.name} ASSET DATABASE";
             _enumNameTextField.value = _addressablesDatabase.DatabaseName;
             _assetGroupObjectField.value = _addressablesDatabase.AssetGroup;
-            _referencesProperty = serializedObject.FindProperty(nameof(_addressablesDatabase.AssetReferences));
+            _guidsProperty = serializedObject.FindProperty(nameof(_addressablesDatabase.AssetGuids));
 
             _addressablesDatabase.LoadAssetsFromAssetGroup();
 
@@ -92,10 +92,9 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 }
             }
 
-            // Todo: Find a way to show just the asset references without showing the whole dictionary.
-            if (_addressablesDatabase.AssetReferences != null && _referencesProperty != null)
+            if (_addressablesDatabase.AssetGuids != null && _guidsProperty != null)
             {
-                _assetReferencesListView.BindProperty(_referencesProperty);
+                _assetGuidsListView.BindProperty(_guidsProperty);
             }
 
             _loadAssetsButton.clicked += HandleLoadAssetsButtonPressed;

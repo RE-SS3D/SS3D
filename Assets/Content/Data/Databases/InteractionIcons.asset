@@ -29,43 +29,11 @@ MonoBehaviour:
     - _key: 3030468639c4d15459be5f65d30a42df
       _value: {fileID: 21300000, guid: 3030468639c4d15459be5f65d30a42df, type: 2}
     _new: 
-  AssetReferences:
-    _list:
-    - _key: b22067d36fa963b4bbaf8d6085b0ebc9
-      _value:
-        m_AssetGUID: b22067d36fa963b4bbaf8d6085b0ebc9
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 2db953f2ae8f41d4e9842d9144a9e396
-      _value:
-        m_AssetGUID: 2db953f2ae8f41d4e9842d9144a9e396
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 1f97d7fac1be1b448824c85e156d9746
-      _value:
-        m_AssetGUID: 1f97d7fac1be1b448824c85e156d9746
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: e4d142ab75244e24c89d0c2aec36dbed
-      _value:
-        m_AssetGUID: e4d142ab75244e24c89d0c2aec36dbed
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 88c0c549992b597489791caf4a12f18c
-      _value:
-        m_AssetGUID: 88c0c549992b597489791caf4a12f18c
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    - _key: 3030468639c4d15459be5f65d30a42df
-      _value:
-        m_AssetGUID: 3030468639c4d15459be5f65d30a42df
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-    _new: 
+  AssetGuids:
+  - b22067d36fa963b4bbaf8d6085b0ebc9
+  - 2db953f2ae8f41d4e9842d9144a9e396
+  - 1f97d7fac1be1b448824c85e156d9746
+  - e4d142ab75244e24c89d0c2aec36dbed
+  - 88c0c549992b597489791caf4a12f18c
+  - 3030468639c4d15459be5f65d30a42df
   AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}
