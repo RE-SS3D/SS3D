@@ -206,9 +206,7 @@ namespace SS3D.Data.Networking
 
         public static NetworkBarrier Instance { get; private set; }
 
-        private WorldTracker _worldTracker;
-
-        internal WorldTracker WorldTracker => _worldTracker;
+        private readonly Dictionary<string, int> _networkInstanceCounts = new();
 
         // ── Lifecycle ────────────────────────────────────────────────────
 
@@ -242,8 +240,7 @@ namespace SS3D.Data.Networking
         {
             base.OnStartServer();
 
-            _worldTracker = new WorldTracker(SubSystems.Get<AssetSubSystem>());
-            _worldTracker.OnLastInstanceDestroyed += HandleLastInstanceDestroyed;
+            InstanceLifetimeTracker.OnReleased += HandleNetworkInstanceReleased;
 
             SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
@@ -256,9 +253,8 @@ namespace SS3D.Data.Networking
             SceneManager.OnClientLoadedStartScenes -= HandleClientLoadedStartScenes;
             ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
 
-            _worldTracker.OnLastInstanceDestroyed -= HandleLastInstanceDestroyed;
-            _worldTracker.Shutdown();
-            _worldTracker = null;
+            InstanceLifetimeTracker.OnReleased -= HandleNetworkInstanceReleased;
+            _networkInstanceCounts.Clear();
 
             foreach (LoadBarrier barrier in _loadBarriers.Values)
             {
@@ -670,10 +666,33 @@ namespace SS3D.Data.Networking
             StartPreloadSession(connection);
         }
 
-        [Server]
-        private void HandleLastInstanceDestroyed(string key)
+        /// <summary>
+        /// Registers a network-spawned instance for late-join tracking.
+        /// </summary>
+        internal void TrackNetworkInstance(string key)
         {
-            BroadcastUnload(key);
+            _networkInstanceCounts[key] = _networkInstanceCounts.GetValueOrDefault(key) + 1;
+        }
+
+        [Server]
+        private void HandleNetworkInstanceReleased(string key)
+        {
+            if (!_networkInstanceCounts.TryGetValue(key, out int count))
+            {
+                return;
+            }
+
+            count--;
+
+            if (count <= 0)
+            {
+                _networkInstanceCounts.Remove(key);
+                BroadcastUnload(key);
+            }
+            else
+            {
+                _networkInstanceCounts[key] = count;
+            }
         }
 
         // ── Late-join preload ────────────────────────────────────────────
@@ -692,7 +711,7 @@ namespace SS3D.Data.Networking
                 preloadKeys.Add(pair.Key);
             }
 
-            string[] activeAssets = _worldTracker.GetActiveAssets();
+            string[] activeAssets = _networkInstanceCounts.Keys.ToArray();
 
             foreach (string key in activeAssets)
             {

@@ -83,11 +83,16 @@ namespace SS3D.Data.Networking
 
             InstanceFinder.ServerManager.Spawn(networkObject, ownerConnection);
 
-            // Residency is tracked only after a successful spawn so the late-join manifest
-            // reflects live world objects rather than attempted spawns.
+            // Track network instance for late-join manifest. AssetLifecycleTracker keeps
+            // the asset resident via InstanceLifetimeTracker on the instance.
             if (assetReference)
             {
-                await TrackSpawnedInstanceAsync(key, networkObject);
+                if (!networkObject.gameObject.TryGetComponent<InstanceLifetimeTracker>(out _))
+                {
+                    networkObject.gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
+                }
+
+                NetworkBarrier.Instance?.TrackNetworkInstance(key);
             }
         }
 
@@ -98,7 +103,7 @@ namespace SS3D.Data.Networking
         /// - Acquires a handle to the prefab via <see cref="AssetSubSystem"/>.
         /// - Uses <see cref="NetworkBarrier"/> to ensure it is loaded on all clients before spawning.
         /// - Instantiates the loaded prefab and spawns it using FishNet.
-        /// - Registers the instance with <see cref="WorldTracker"/> for lifetime tracking.
+        /// - Registers the instance with <see cref="NetworkBarrier"/> for late-join tracking.
         /// </summary>
         /// <param name="assetReference">Asset reference for the prefab to spawn.</param>
         /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
@@ -167,28 +172,14 @@ namespace SS3D.Data.Networking
 
             InstanceFinder.ServerManager.Spawn(networkObject, ownerConnection);
 
-            // 4. Register with WorldTracker (acquires its own handle internally, keeping bundle alive).
-            await TrackSpawnedInstanceAsync(key, networkObject);
+            // 4. Register with NetworkBarrier for late-join tracking.
+            NetworkBarrier.Instance?.TrackNetworkInstance(key);
 
-            // 5. Release spawn handle — WorldTracker now keeps the asset resident.
+            // 5. Release spawn handle — AssetLifecycleTracker keeps the asset resident
+            // via InstanceLifetimeTracker on the instantiated copy.
             spawnHandle.Dispose();
 
             return networkObject;
-        }
-
-        /// <summary>
-        /// Registers a successfully spawned instance with the <see cref="WorldTracker"/>.
-        /// </summary>
-        private static async Task TrackSpawnedInstanceAsync(string key, NetworkObject networkObject)
-        {
-            NetworkBarrier barrier = NetworkBarrier.Instance;
-
-            if (!barrier || barrier.WorldTracker == null)
-            {
-                return;
-            }
-
-            await barrier.WorldTracker.RegisterAsync(key, networkObject);
         }
 
         private static bool TryGetAssetSubSystem(out AssetSubSystem assetSubSystem)
