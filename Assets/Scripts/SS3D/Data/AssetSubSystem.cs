@@ -15,20 +15,20 @@ namespace SS3D.Data
 {
     /// <summary>
     /// Scene-owned facade and composition root for the SS3D asset system.
-    /// Owns backends, the asset store, and manages their lifecycle.
+    /// Owns backends, the asset provider, and manages their lifecycle.
     /// </summary>
     public class AssetSubSystem : SubSystem
     {
-        private IAssetStore _store;
+        private IAssetProvider _provider;
         private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
         private IAssetCatalog[] _catalogs;
         private Dictionary<string, AddressablesDatabase> _databasesById;
         private Task _initTask;
 
-        // Static reference to the active store so that static event accessors (needed by
+        // Static reference to the active provider so that static event accessors (needed by
         // ScriptableObjects like NetworkObjects that cannot hold instance references) can
         // forward subscriptions directly without a separate delegate or bridge.
-        private static IAssetStore ActiveStore;
+        private static IAssetProvider ActiveProvider;
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
 
@@ -66,7 +66,7 @@ namespace SS3D.Data
                     return Task.FromResult<AssetHandle<T>>(null);
                 }
 
-                return _store.AcquireAsync<T>(resolvedKey, backend);
+                return _provider.AcquireAsync<T>(resolvedKey, backend);
             }
 
             Log.Warning(this, "No catalog contains GUID '{Guid}'.", Logs.Important, guid);
@@ -99,8 +99,8 @@ namespace SS3D.Data
 
         protected override void OnDestroyed()
         {
-            ActiveStore = null;
-            _store?.Dispose();
+            ActiveProvider = null;
+            _provider?.Dispose();
 
             foreach (IAssetBackend backend in _backends.Values)
             {
@@ -117,14 +117,14 @@ namespace SS3D.Data
 
         internal static event Action<string, Object> OnAssetLoaded
         {
-            add { if (ActiveStore != null) ActiveStore.OnLoaded += value; }
-            remove { if (ActiveStore != null) ActiveStore.OnLoaded -= value; }
+            add { if (ActiveProvider != null) ActiveProvider.OnLoaded += value; }
+            remove { if (ActiveProvider != null) ActiveProvider.OnLoaded -= value; }
         }
 
         internal static event Action<string> OnAssetUnloaded
         {
-            add { if (ActiveStore != null) ActiveStore.OnUnloaded += value; }
-            remove { if (ActiveStore != null) ActiveStore.OnUnloaded -= value; }
+            add { if (ActiveProvider != null) ActiveProvider.OnUnloaded += value; }
+            remove { if (ActiveProvider != null) ActiveProvider.OnUnloaded -= value; }
         }
 
         // ── Initialization ─────────────────────────────────────────────
@@ -160,8 +160,8 @@ namespace SS3D.Data
                 await addressablesBackend.InitializeAsync();
                 _backends[AssetBackendType.Addressables] = addressablesBackend;
 
-                _store = new AssetStore();
-                ActiveStore = _store;
+                _provider = new AssetProvider(_ => { });
+                ActiveProvider = _provider;
 
                 List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 

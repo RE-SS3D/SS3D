@@ -5,26 +5,33 @@ using Object = UnityEngine.Object;
 namespace SS3D.Data
 {
     /// <summary>
-    /// Ref-counted resource manager. Single source of truth for loaded asset state.
+    /// Pure asset loader. Single source of truth for loaded asset state.
     /// The backend to use is passed per-call by the caller.
+    /// Does not make lifecycle decisions — an external owner decides when to unload.
     /// </summary>
-    public interface IAssetStore : IDisposable
+    public interface IAssetProvider : IDisposable
     {
         /// <summary>
-        /// Raised after an asset is successfully loaded for the first time (first acquire).
+        /// Raised after an asset is successfully loaded for the first time.
         /// </summary>
         event Action<string, Object> OnLoaded;
 
         /// <summary>
-        /// Raised after an asset's last handle is disposed and the backend releases it.
+        /// Raised after an asset is unloaded from the backend.
         /// </summary>
         event Action<string> OnUnloaded;
 
         /// <summary>
-        /// Acquires a ref-counted handle for the asset identified by <paramref name="key"/>.
+        /// Loads the asset identified by <paramref name="key"/> and returns a handle.
         /// If the asset is already loaded the existing instance is reused regardless of the backend parameter.
         /// </summary>
         Task<AssetHandle<T>> AcquireAsync<T>(string key, IAssetBackend backend) where T : class;
+
+        /// <summary>
+        /// Unloads the asset identified by <paramref name="key"/> from its backend
+        /// and removes it from the loaded set.
+        /// </summary>
+        void Unload(string key);
 
         /// <summary>
         /// Returns <see langword="true"/> if the asset identified by <paramref name="key"/> is currently loaded.

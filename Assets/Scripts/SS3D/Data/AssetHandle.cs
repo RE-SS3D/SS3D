@@ -8,7 +8,7 @@ namespace SS3D.Data
     /// RAII ownership handle for a loaded asset. One handle equals one ref-count contribution.
     /// Disposing the handle releases the ref count. If the count drops to zero the asset is unloaded.
     /// <para>
-    /// Handles are decoupled from the store via a release delegate injected at creation time.
+    /// Handles are decoupled from the provider via a release delegate injected at creation time.
     /// </para>
     /// </summary>
     /// <typeparam name="T">The type of the loaded asset (e.g. <see cref="GameObject"/>).</typeparam>
