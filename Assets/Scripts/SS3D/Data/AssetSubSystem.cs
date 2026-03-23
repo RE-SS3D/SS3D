@@ -20,6 +20,7 @@ namespace SS3D.Data
     public class AssetSubSystem : SubSystem
     {
         private IAssetProvider _provider;
+        private AssetLifecycleTracker _lifecycleTracker;
         private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
         private IAssetCatalog[] _catalogs;
         private Dictionary<string, AddressablesDatabase> _databasesById;
@@ -43,12 +44,12 @@ namespace SS3D.Data
         /// The system auto-routes to the correct backend via registered catalogs.
         /// </summary>
         [ItemCanBeNull]
-        public Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string guid)
+        public async Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string guid)
             where T : class
         {
             if (!IsInitialized || _catalogs == null)
             {
-                return Task.FromResult<AssetHandle<T>>(null);
+                return null;
             }
 
             foreach (IAssetCatalog catalog in _catalogs)
@@ -63,14 +64,24 @@ namespace SS3D.Data
                 if (!_backends.TryGetValue(catalog.BackendType, out IAssetBackend backend))
                 {
                     Log.Error(this, "No backend registered for {BackendType} while resolving GUID '{Guid}'.", Logs.Important, catalog.BackendType, guid);
-                    return Task.FromResult<AssetHandle<T>>(null);
+                    return null;
                 }
 
-                return _provider.AcquireAsync<T>(resolvedKey, backend);
+                _lifecycleTracker.TrackAcquire(resolvedKey);
+
+                try
+                {
+                    return await _provider.AcquireAsync<T>(resolvedKey, backend);
+                }
+                catch
+                {
+                    _lifecycleTracker.TrackRelease(resolvedKey);
+                    throw;
+                }
             }
 
             Log.Warning(this, "No catalog contains GUID '{Guid}'.", Logs.Important, guid);
-            return Task.FromResult<AssetHandle<T>>(null);
+            return null;
         }
 
         [CanBeNull]
@@ -99,6 +110,9 @@ namespace SS3D.Data
 
         protected override void OnDestroyed()
         {
+            _lifecycleTracker?.Shutdown();
+            _lifecycleTracker = null;
+
             ActiveProvider = null;
             _provider?.Dispose();
 
@@ -160,7 +174,10 @@ namespace SS3D.Data
                 await addressablesBackend.InitializeAsync();
                 _backends[AssetBackendType.Addressables] = addressablesBackend;
 
-                _provider = new AssetProvider(_ => { });
+                AssetLifecycleTracker tracker = null;
+                _provider = new AssetProvider(releaseCallback: key => tracker.TrackRelease(key));
+                tracker = new AssetLifecycleTracker(_provider);
+                _lifecycleTracker = tracker;
                 ActiveProvider = _provider;
 
                 List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
@@ -190,6 +207,8 @@ namespace SS3D.Data
                     }
                 }
 
+                _lifecycleTracker?.Shutdown();
+                _lifecycleTracker = null;
                 _catalogs = null;
                 _databasesById = null;
                 Log.Error(this, e, "An exception occurred while initializing the asset system.");
