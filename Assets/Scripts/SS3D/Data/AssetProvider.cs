@@ -16,9 +16,16 @@ namespace SS3D.Data
     {
         private sealed class Record
         {
-            public Task<Object> LoadTask;
-            public IAssetBackend Backend;
+            public Task<Object> LoadTask { get; init; }
+
+            public IAssetBackend Backend { get; init; }
         }
+
+        /// <inheritdoc/>
+        public event Action<string, Object> OnLoaded;
+
+        /// <inheritdoc/>
+        public event Action<string> OnUnloaded;
 
         private readonly Dictionary<string, Record> _records = new();
         private readonly Action<string> _releaseCallback;
@@ -29,25 +36,19 @@ namespace SS3D.Data
         }
 
         /// <inheritdoc/>
-        public event Action<string, Object> OnLoaded;
-
-        /// <inheritdoc/>
-        public event Action<string> OnUnloaded;
-
-        /// <inheritdoc/>
+        [ItemNotNull]
         public async Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string key, [NotNull] IAssetBackend backend)
             where T : class
         {
             if (!_records.TryGetValue(key, out Record record))
             {
-                record = new Record { Backend = backend };
+                record = new() { Backend = backend, LoadTask = LoadCoreAsync(key, backend) };
                 _records[key] = record;
-                record.LoadTask = LoadCoreAsync(key, backend);
             }
 
             Object obj = await record.LoadTask;
 
-            return new AssetHandle<T>(key, CastAsset<T>(obj), _releaseCallback);
+            return new(key, CastAsset<T>(obj), _releaseCallback);
         }
 
         /// <inheritdoc/>
@@ -84,18 +85,7 @@ namespace SS3D.Data
             _records.Clear();
         }
 
-        private async Task<Object> LoadCoreAsync([NotNull] string key, [NotNull] IAssetBackend backend)
-        {
-            Object asset = await backend.LoadAsync(key);
-
-            if (asset)
-            {
-                OnLoaded?.Invoke(key, asset);
-            }
-
-            return asset;
-        }
-
+        // ReSharper disable Unity.PerformanceAnalysis
         [CanBeNull]
         private static T CastAsset<T>([CanBeNull] Object obj)
             where T : class
@@ -106,6 +96,18 @@ namespace SS3D.Data
             }
 
             return obj as T;
+        }
+
+        private async Task<Object> LoadCoreAsync([NotNull] string key, [NotNull] IAssetBackend backend)
+        {
+            Object asset = await backend.LoadAsync(key);
+
+            if (asset)
+            {
+                OnLoaded?.Invoke(key, asset);
+            }
+
+            return asset;
         }
     }
 }

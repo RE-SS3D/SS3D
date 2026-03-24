@@ -8,7 +8,7 @@ namespace SS3D.Data
     /// can react when the instance is created or destroyed.
     /// <para>
     /// Uses <see cref="ISerializationCallbackReceiver"/> to detect
-    /// <see cref="UnityEngine.Object.Instantiate(Object)"/> copies — works for
+    /// <see cref="UnityEngine.Object.Instantiate(UnityEngine.Object)"/> copies — works for
     /// both active and inactive GameObjects.
     /// </para>
     /// </summary>
@@ -16,7 +16,7 @@ namespace SS3D.Data
     internal sealed class InstanceLifetimeTracker : MonoBehaviour, ISerializationCallbackReceiver
     {
         /// <summary>
-        /// Raised when a new instance is created via <see cref="UnityEngine.Object.Instantiate(Object)"/>
+        /// Raised when a new instance is created via <see cref="UnityEngine.Object.Instantiate(UnityEngine.Object)"/>
         /// (detected by <see cref="OnAfterDeserialize"/>) or via manual
         /// <see cref="Initialize"/> on a scene instance.
         /// </summary>
@@ -35,24 +35,6 @@ namespace SS3D.Data
 
         private bool _released;
 
-        /// <summary>
-        /// Arms the tracker for the specified asset key and resets the one-shot release guard.
-        /// For manual <c>AddComponent</c> on scene instances (e.g. pre-instantiated NetworkObject path).
-        /// Does NOT fire <see cref="OnInstantiated"/> on loaded-but-not-instantiated prefabs
-        /// because their scene is not valid.
-        /// </summary>
-        internal void Initialize(string key)
-        {
-            _key = key;
-            _released = false;
-
-            if (!_announced && gameObject.scene.IsValid())
-            {
-                _announced = true;
-                OnInstantiated?.Invoke(_key);
-            }
-        }
-
         public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize()
@@ -65,6 +47,26 @@ namespace SS3D.Data
 #endif
 
             if (_announced || string.IsNullOrEmpty(_key))
+            {
+                return;
+            }
+
+            _announced = true;
+            OnInstantiated?.Invoke(_key);
+        }
+
+        /// <summary>
+        /// Arms the tracker for the specified asset key and resets the one-shot release guard.
+        /// For manual <c>AddComponent</c> on scene instances (e.g. pre-instantiated NetworkObject path).
+        /// Does NOT fire <see cref="OnInstantiated"/> on loaded-but-not-instantiated prefabs
+        /// because their scene is not valid.
+        /// </summary>
+        internal void Initialize(string key)
+        {
+            _key = key;
+            _released = false;
+
+            if (_announced || !gameObject.scene.IsValid())
             {
                 return;
             }

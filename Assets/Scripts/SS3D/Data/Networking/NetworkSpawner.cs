@@ -26,7 +26,8 @@ namespace SS3D.Data.Networking
         /// asset is loaded on all clients before spawning,
         /// use the overload that also takes an <see cref="ObjectAssetReference"/>.
         /// </summary>
-        public static Task SpawnAsync(NetworkObject networkObject, NetworkConnection ownerConnection = null)
+        [NotNull]
+        public static Task SpawnAsync(NetworkObject networkObject, [CanBeNull] NetworkConnection ownerConnection = null)
         {
             return SpawnAsync(networkObject, null, ownerConnection);
         }
@@ -44,7 +45,7 @@ namespace SS3D.Data.Networking
         public static async Task SpawnAsync(
             NetworkObject networkObject,
             [CanBeNull] ObjectAssetReference assetReference,
-            NetworkConnection ownerConnection = null)
+            [CanBeNull] NetworkConnection ownerConnection = null)
         {
             if (!InstanceFinder.IsServer)
             {

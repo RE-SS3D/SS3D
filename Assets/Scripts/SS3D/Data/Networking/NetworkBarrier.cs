@@ -30,14 +30,14 @@ namespace SS3D.Data.Networking
         /// </summary>
         private sealed class LoadBarrier
         {
+            private readonly HashSet<int> _pendingClientIds;
             private bool _failed;
             private TaskCompletionSource<bool> _taskSource;
-            private HashSet<int> _pendingClientIds;
 
             internal LoadBarrier([NotNull] HashSet<int> pendingClientIds)
             {
                 _taskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-                _pendingClientIds = pendingClientIds ?? new HashSet<int>();
+                _pendingClientIds = pendingClientIds;
 
                 if (_pendingClientIds.Count == 0)
                 {
@@ -198,18 +198,17 @@ namespace SS3D.Data.Networking
         /// </summary>
         private readonly Dictionary<string, IAssetHandle> _clientHandles = new();
 
-        [UnityEngine.SerializeField]
+        private readonly Dictionary<string, int> _networkInstanceCounts = new();
+
+        [SerializeField]
         private int _retryAttempts = 5;
 
-        [UnityEngine.SerializeField]
+        [SerializeField]
         private float _lateJoinPreloadTimeoutSeconds = 15f;
 
         public static NetworkBarrier Instance { get; private set; }
 
-        private readonly Dictionary<string, int> _networkInstanceCounts = new();
-
         // ── Lifecycle ────────────────────────────────────────────────────
-
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -291,6 +290,14 @@ namespace SS3D.Data.Networking
         }
 
         // ── Internal API ─────────────────────────────────────────────────
+
+        /// <summary>
+        /// Registers a network-spawned instance for late-join tracking.
+        /// </summary>
+        internal void TrackNetworkInstance(string key)
+        {
+            _networkInstanceCounts[key] = _networkInstanceCounts.GetValueOrDefault(key) + 1;
+        }
 
         /// <summary>
         /// Ensures an asset is loaded on every connected client before dependent server logic proceeds.
@@ -664,14 +671,6 @@ namespace SS3D.Data.Networking
             }
 
             StartPreloadSession(connection);
-        }
-
-        /// <summary>
-        /// Registers a network-spawned instance for late-join tracking.
-        /// </summary>
-        internal void TrackNetworkInstance(string key)
-        {
-            _networkInstanceCounts[key] = _networkInstanceCounts.GetValueOrDefault(key) + 1;
         }
 
         [Server]

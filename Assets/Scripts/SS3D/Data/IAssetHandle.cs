@@ -9,7 +9,7 @@ namespace SS3D.Data
     public interface IAssetHandle : IDisposable
     {
         /// <summary>
-        /// The key that identifies the loaded asset in the store.
+        /// The key that identifies the loaded asset in the provider.
         /// </summary>
         [NotNull]
         string Key { get; }

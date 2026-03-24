@@ -25,7 +25,8 @@ namespace SS3D.Data
         /// Loads the asset identified by <paramref name="key"/> and returns a handle.
         /// If the asset is already loaded the existing instance is reused regardless of the backend parameter.
         /// </summary>
-        Task<AssetHandle<T>> AcquireAsync<T>(string key, IAssetBackend backend) where T : class;
+        Task<AssetHandle<T>> AcquireAsync<T>(string key, IAssetBackend backend)
+            where T : class;
 
         /// <summary>
         /// Unloads the asset identified by <paramref name="key"/> from its backend

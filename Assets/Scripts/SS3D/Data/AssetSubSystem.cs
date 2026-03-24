@@ -19,17 +19,56 @@ namespace SS3D.Data
     /// </summary>
     public class AssetSubSystem : SubSystem
     {
-        private IAssetProvider _provider;
-        private AssetLifecycleTracker _lifecycleTracker;
-        private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
-        private IAssetCatalog[] _catalogs;
-        private Dictionary<string, AddressablesDatabase> _databasesById;
-        private Task _initTask;
+        internal static event Action<string, Object> OnAssetLoaded
+        {
+            add
+            {
+                if (ActiveProvider != null)
+                {
+                    ActiveProvider.OnLoaded += value;
+                }
+            }
+
+            remove
+            {
+                if (ActiveProvider != null)
+                {
+                    ActiveProvider.OnLoaded -= value;
+                }
+            }
+        }
+
+        internal static event Action<string> OnAssetUnloaded
+        {
+            add
+            {
+                if (ActiveProvider != null)
+                {
+                    ActiveProvider.OnUnloaded += value;
+                }
+            }
+
+            remove
+            {
+                if (ActiveProvider != null)
+                {
+                    ActiveProvider.OnUnloaded -= value;
+                }
+            }
+        }
 
         // Static reference to the active provider so that static event accessors (needed by
         // ScriptableObjects like NetworkObjects that cannot hold instance references) can
         // forward subscriptions directly without a separate delegate or bridge.
         private static IAssetProvider ActiveProvider;
+
+        private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
+
+        private IAssetProvider _provider;
+        private AssetLifecycleTracker _lifecycleTracker;
+        private IAssetCatalog[] _catalogs;
+        private Dictionary<string, AddressablesDatabase> _databasesById;
+        private Task _initTask;
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
 
@@ -127,22 +166,6 @@ namespace SS3D.Data
             base.OnDestroyed();
         }
 
-        // ── Static events ──────────────────────────────────────────────
-
-        internal static event Action<string, Object> OnAssetLoaded
-        {
-            add { if (ActiveProvider != null) ActiveProvider.OnLoaded += value; }
-            remove { if (ActiveProvider != null) ActiveProvider.OnLoaded -= value; }
-        }
-
-        internal static event Action<string> OnAssetUnloaded
-        {
-            add { if (ActiveProvider != null) ActiveProvider.OnUnloaded += value; }
-            remove { if (ActiveProvider != null) ActiveProvider.OnUnloaded -= value; }
-        }
-
-        // ── Initialization ─────────────────────────────────────────────
-
         private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
         {
             Log.Information(this, "Loading asset databases", Logs.Important);
@@ -175,14 +198,14 @@ namespace SS3D.Data
                 _backends[AssetBackendType.Addressables] = addressablesBackend;
 
                 AssetLifecycleTracker tracker = null;
-                _provider = new AssetProvider(releaseCallback: key => tracker.TrackRelease(key));
-                tracker = new AssetLifecycleTracker(_provider);
+                _provider = new AssetProvider(releaseCallback: key => tracker!.TrackRelease(key));
+                tracker = new(_provider);
                 _lifecycleTracker = tracker;
                 ActiveProvider = _provider;
 
                 List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
-                _databasesById = new Dictionary<string, AddressablesDatabase>(assetDatabases.Count);
+                _databasesById = new(assetDatabases.Count);
                 foreach (AddressablesDatabase database in assetDatabases)
                 {
                     _databasesById[database.DatabaseID] = database;
