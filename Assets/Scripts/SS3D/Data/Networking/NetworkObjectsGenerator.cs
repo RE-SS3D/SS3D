@@ -141,24 +141,7 @@ namespace SS3D.Data.Networking
                 return modified;
             }
 
-            foreach (string importedAsset in importedAssets)
-            {
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(importedAsset);
-
-                if (!prefab || prefab.TryGetComponent(out NetworkObject _))
-                {
-                    continue;
-                }
-
-                string guid = AssetDatabase.AssetPathToGUID(importedAsset);
-
-                // Imported prefabs that still exist but no longer expose a NetworkObject have to be
-                // removed explicitly because they will not show up as deleted assets.
-                modified = nobDatabase.RemoveObject(guid) || modified;
-            }
-
-            NetworkObject[] possibleNewPrefabs = importedAssets.Select(AssetDatabase.LoadAssetAtPath<GameObject>).
-                Select(go => go?.GetComponent<NetworkObject>()).
+            NetworkObject[] possibleNewPrefabs = importedAssets.Select(AssetDatabase.LoadAssetAtPath<NetworkObject>).
                 Where(nob => nob).
                 ToArray();
 

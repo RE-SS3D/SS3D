@@ -55,18 +55,6 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Removes a prefab entry from the editor-side cache using its GUID.
-        /// </summary>
-        /// <param name="guid">GUID of the prefab to remove.</param>
-        /// <returns><see langword="true"/> when an entry was removed.</returns>
-        internal bool RemoveObject([NotNull] string guid)
-        {
-            Initialize();
-
-            return _prefabs.Remove(guid);
-        }
-
-        /// <summary>
         /// Returns a copy of the generated GUID order currently serialized on this asset.
         /// Tests use this to validate deterministic generation without reaching into serialized fields directly.
         /// </summary>
