@@ -6,6 +6,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Containers;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
