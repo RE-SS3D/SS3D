@@ -82,7 +82,6 @@ namespace SS3D.Data
         /// Acquires a ref-counted handle for an asset by GUID.
         /// The system auto-routes to the correct backend via registered catalogs.
         /// </summary>
-        [ItemCanBeNull]
         public async Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string guid)
             where T : class
         {
