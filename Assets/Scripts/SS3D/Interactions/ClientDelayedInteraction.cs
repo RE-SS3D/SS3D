@@ -1,4 +1,5 @@
 ﻿using Coimbra;
+using SS3D.Core;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
@@ -14,12 +15,56 @@ namespace SS3D.Interactions
     {
         private static readonly Vector3 LoadingBarOffset = new(0, 0.5f, 0);
 
+        private static AssetHandle<LoadingBar> LoadingBarPrefabHandle;
+
+        private static bool TryingToLoadPrefab;
+
         private LoadingBar _loadingBarInstance;
+
+        public ClientDelayedInteraction()
+        {
+            if (LoadingBarPrefabHandle is not { IsValid: true })
+            {
+                AcquireLoadingBar();
+            }
+
+            Application.quitting += OnApplicationQuit;
+        }
 
         /// <summary>
         /// The duration of the loading bar in seconds
         /// </summary>
-        public float Delay { get; set; }
+        public float Delay { get; init; }
+
+        private void OnApplicationQuit()
+        {
+            ReleaseLoadingBarHandle();
+        }
+
+        private async void AcquireLoadingBar()
+        {
+            if (TryingToLoadPrefab || !SubSystems.TryGet(out AssetSubSystem assetSubSystem))
+            {
+                return;
+            }
+
+            TryingToLoadPrefab = true;
+            LoadingBarPrefabHandle = await assetSubSystem.AcquireAsync<LoadingBar>(WorldSpaceUI.LoadingBar);
+
+            if (LoadingBarPrefabHandle is { IsValid: true })
+            {
+                return;
+            }
+            
+            LoadingBarPrefabHandle.Dispose();
+            LoadingBarPrefabHandle = null;
+            TryingToLoadPrefab = false;
+        }
+
+        private void ReleaseLoadingBarHandle()
+        {
+            LoadingBarPrefabHandle?.Dispose();
+        }
 
         /// <summary>
         /// Starts the interaction on the client side
@@ -28,7 +73,7 @@ namespace SS3D.Interactions
         /// <returns>True if started successfully</returns>
         public bool ClientStart(InteractionEvent interactionEvent)
         {
-            if (_loadingBarInstance != null)
+            if (_loadingBarInstance)
             {
                 _loadingBarInstance.GameObject.Dispose(true);
             }
@@ -38,9 +83,16 @@ namespace SS3D.Interactions
                 return true;
             }
 
-            LoadingBar loadingBarPrefab = AssetLoader.Get<LoadingBar>(AssetDatabases.WorldSpaceUI, WorldSpaceUI.LoadingBar);
-            _loadingBarInstance = Object.Instantiate(loadingBarPrefab, source.GameObject.transform);
-            
+            // Check if loading bar prefab is valid or not.
+            if (LoadingBarPrefabHandle is not { IsValid: true })
+            {
+                AcquireLoadingBar();
+
+                return true;
+            }
+
+            _loadingBarInstance = Object.Instantiate(LoadingBarPrefabHandle.Asset, source.GameObject.transform);
+
             _loadingBarInstance.LocalPosition = LoadingBarOffset;
             _loadingBarInstance.Duration = Delay;
 
@@ -56,7 +108,7 @@ namespace SS3D.Interactions
         /// <inheritdoc />
         public void ClientCancel(InteractionEvent interactionEvent)
         {
-            if (_loadingBarInstance != null)
+            if (_loadingBarInstance)
             {
                 _loadingBarInstance.GameObject.Dispose(true);
             }
