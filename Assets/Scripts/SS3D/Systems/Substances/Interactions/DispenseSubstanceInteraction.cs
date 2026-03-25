@@ -29,11 +29,6 @@ namespace SS3D.Substances
             return Name;
         }
 
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
-
         public string GetName(InteractionEvent interactionEvent)
         {
             return Name;
@@ -85,16 +80,6 @@ namespace SS3D.Substances
             }
 
             return false;
-        }
-
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
-
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return;
         }
     }
 }

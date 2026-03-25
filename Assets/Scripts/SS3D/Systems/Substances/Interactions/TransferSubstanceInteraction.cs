@@ -1,48 +1,48 @@
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
-using SS3D.Substances;
 using System;
 using UnityEngine;
 
 namespace SS3D.Substances
 {
-    public class TransferSubstanceInteraction : Interaction
+    public class TransferSubstanceInteraction : IInteraction
     {
+        public string Name;
+        public Sprite Icon;
         /// <summary>
         /// Checks if the interaction should be possible
         /// </summary>
         public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
 
-        public override IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return null;
-        }
-
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Transfer";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return null;
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }
 
-            IGameObjectProvider provider = interactionEvent.Source as IGameObjectProvider;
+            IGameObjectProvider provider = interactionEvent.Source;
+
             if (provider == null)
             {
                 return false;
             }
 
             SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
+
             if (container == null)
             {
                 return false;
@@ -61,11 +61,12 @@ namespace SS3D.Substances
             return CanInteractCallback.Invoke(interactionEvent);
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             if (interactionEvent.Source is IGameObjectProvider provider)
             {
                 var container = provider.GameObject.GetComponent<SubstanceContainer>();
+
                 if (container != null)
                 {
                     var targetContainer = interactionEvent.Target.GetComponent<SubstanceContainer>();
@@ -76,6 +77,6 @@ namespace SS3D.Substances
             }
 
             return false;
-        } 
+        }
     }
 }

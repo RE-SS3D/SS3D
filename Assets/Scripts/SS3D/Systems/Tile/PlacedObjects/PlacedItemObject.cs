@@ -26,7 +26,7 @@ namespace SS3D.Systems.Tile
         /// <param name="itemSo"></param>
         /// <param name="existingItem">The existing Item GameObject to add the PlacedItemObject component to</param>
         /// <returns></returns>
-        [ItemNotNull]
+        [ItemCanBeNull]
         public static async Task<PlacedItemObject> CreateAsync(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
         {
             GameObject placedGameObject;
@@ -41,7 +41,7 @@ namespace SS3D.Systems.Tile
                 AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
                 AssetHandle<GameObject> handle = await assetSubSystem.AcquireAsync<GameObject>(itemSo.PrefabAsset);
 
-                if (handle?.Asset == null)
+                if (!handle?.Asset)
                 {
                     handle?.Dispose();
                     Log.Error(typeof(PlacedItemObject), $"Failed to load prefab for item '{itemSo.NameString}'.");

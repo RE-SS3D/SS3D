@@ -10,8 +10,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
-    public sealed class LockLockerInteraction : Interaction
+    public sealed class LockLockerInteraction : IInteraction, IClientInteractionSource
     {
+        public string Name;
+        public Sprite Icon;
         private readonly IDPermission _permissionToUnlock;
         private readonly Locker _locker;
 
@@ -21,23 +23,25 @@ namespace SS3D.Systems.Inventory.Interactions
             _permissionToUnlock = permission;
         }
 
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Lock Locker";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }
-            
+
             if (!_locker.Lockable)
             {
                 return false;
@@ -46,7 +50,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return !_locker.IsLocked && !_locker.IsOpen;
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             IInteractionSource source = interactionEvent.Source;
 
@@ -56,6 +60,7 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+
             if (hands == null)
             {
                 return true;
@@ -65,10 +70,11 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 Log.Information(this, "Locker has been locked!");
                 _locker.IsLocked = true;
-            } 
-            else 
+            }
+            else
             {
                 Log.Information(this, "No permission to lock Locker!");
+
                 return false;
             }
 

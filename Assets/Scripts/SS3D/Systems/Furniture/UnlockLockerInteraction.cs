@@ -11,8 +11,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
-    public sealed class UnlockLockerInteraction : Interaction
+    public sealed class UnlockLockerInteraction : IInteraction, IClientInteractionSource
     {
+        public string Name;
+        public Sprite Icon;
         private readonly IDPermission _permissionToUnlock;
         private readonly Locker _locker;
 
@@ -23,17 +25,20 @@ namespace SS3D.Systems.Inventory.Interactions
             _locker = locker;
             _permissionToUnlock = permission;
         }
-        public override string GetName(InteractionEvent interactionEvent)
+
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Unlock Locker";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -44,24 +49,26 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 return false;
             }
-            
+
             return _locker.IsLocked && !_locker.IsOpen;
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             IInteractionSource source = interactionEvent.Source;
+
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
                 Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                
+
                 if (hands != null)
                 {
                     if (hands.Inventory.HasPermission(_permissionToUnlock))
                     {
                         Log.Information(this, "Locker has been unlocked!");
                         _locker.IsLocked = false;
-                    } else
+                    }
+                    else
                     {
                         Log.Information(this, "No permission to unlock Locker!");
                     }
@@ -69,6 +76,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
                 return true;
             }
+
             return false;
         }
     }

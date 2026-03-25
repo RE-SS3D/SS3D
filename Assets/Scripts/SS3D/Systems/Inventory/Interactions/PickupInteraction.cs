@@ -13,19 +13,24 @@ namespace SS3D.Systems.Inventory.Interactions
     // A pickup interaction is when you pick an item and
     // add it into a container (in this case, the hands)
     // you can only pick things that are not in a container
-    public class PickupInteraction : Interaction
+    public class PickupInteraction : IInteraction, IClientInteractionSource
     {
-        public override string GetName(InteractionEvent interactionEvent)
+        public string Name;
+        public Sprite Icon;
+
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Pick up";
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new System.NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             IInteractionTarget target = interactionEvent.Target;
             IInteractionSource source = interactionEvent.Source;
@@ -36,7 +41,9 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 // check that the item is within range
                 bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
-                if (!isInRange) {
+
+                if (!isInRange)
+                {
                     return false;
                 }
 
@@ -49,6 +56,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 // try to get the Item component from the GameObject we just interacted with
                 // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
                 Item item = targetBehaviour.GameObject.GetComponent<Item>();
+
                 if (item == null)
                 {
                     return false;
@@ -66,7 +74,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return false;
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             // remember that when we call this Start, we are starting the interaction per se
             // so we check if the source of the interaction is a Hand, and if the target is an Item
@@ -76,13 +84,17 @@ namespace SS3D.Systems.Inventory.Interactions
                 hand.Pickup(target);
 
 
-                try {
+                try
+                {
                     string ckey = hand.HandsController.Inventory.Body.Mind.player.Ckey;
 
                     // and call the event for picking up items for the Game Mode System
                     new ItemPickedUpEvent(target, ckey).Invoke(this);
                 }
-                catch { Debug.Log("Couldn't get Player Ckey"); }
+                catch
+                {
+                    Debug.Log("Couldn't get Player Ckey");
+                }
             }
 
             return false;

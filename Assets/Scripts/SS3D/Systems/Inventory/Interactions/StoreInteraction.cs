@@ -9,8 +9,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Interactions
 {
-    public sealed class StoreInteraction : Interaction
+    public sealed class StoreInteraction : IInteraction, IClientInteractionSource
     {
+        public string Name;
+        public Sprite Icon;
         private readonly AttachedContainer _attachedContainer;
 
         public StoreInteraction(AttachedContainer attachedContainer)
@@ -18,17 +20,19 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
-        public override string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Store in " + _attachedContainer.ContainerName;
         }
 
-        public override Sprite GetIcon(InteractionEvent interactionEvent)
+        public string GetGenericName() => throw new System.NotImplementedException();
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Discard);
         }
 
-        public override bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -36,23 +40,26 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             IInteractionSource source = interactionEvent.Source;
+
             if (source is not IGameObjectProvider sourceGameObjectProvider)
             {
                 return false;
             }
 
             Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+
             if (!hands || !_attachedContainer)
             {
                 return false;
             }
 
             Item item = interactionEvent.Source.GetComponent<Item>();
+
             if (!item)
             {
                 return false;
             }
-            
+
             return !hands.SelectedHand.IsEmpty() && CanStore(item, _attachedContainer);
         }
 
@@ -61,9 +68,10 @@ namespace SS3D.Systems.Inventory.Interactions
             return target.CanContainItem(item);
         }
 
-        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             IInteractionSource source = interactionEvent.Source;
+
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
                 Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();

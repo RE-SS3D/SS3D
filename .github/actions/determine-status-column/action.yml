@@ -10,5 +10,5 @@ outputs:
   COLUMN:
     description: 'The appropriate column to place the issue in.'
 runs:
-  using: 'node16'
-  main: 'index.js'
+  using: 'node24'
+  main: 'dist/index.js'

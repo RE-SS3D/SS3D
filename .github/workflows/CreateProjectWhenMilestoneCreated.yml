@@ -11,7 +11,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 'lts/*'
       - run: npm install @actions/core
       - run: npm install @actions/github
       - name: Get list of projects

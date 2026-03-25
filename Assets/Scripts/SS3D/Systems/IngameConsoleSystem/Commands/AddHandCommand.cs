@@ -58,6 +58,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
 
             return "hand added";
         }
+
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
             CheckArgsResponse response = new CheckArgsResponse();

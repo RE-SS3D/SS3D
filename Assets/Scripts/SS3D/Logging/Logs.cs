@@ -2,12 +2,13 @@
 {
     public enum Logs
     {
-         None = 0,
-         Generic = 1,
-         Important = 2,
-         ServerOnly = 3,
-         External = 4,
-         ClientOnly = 5,
-         Physics = 6,
+        None = 0,
+        Generic = 1,
+        Important = 2,
+        ServerOnly = 3,
+        External = 4,
+        ClientOnly = 5,
+        Physics = 6,
+        UI = 7,
     }
 }

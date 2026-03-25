@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SS3D.Interactions.Interfaces
 {
@@ -8,11 +7,6 @@ namespace SS3D.Interactions.Interfaces
     /// </summary>
     public interface IInteraction
     {
-        /// <summary>
-        /// Creates a client interaction (client-side)
-        /// </summary>
-        IClientInteraction CreateClient(InteractionEvent interactionEvent);
-
         /// <summary>
         /// Gets the name when interacted with a source
         /// </summary>
@@ -46,20 +40,5 @@ namespace SS3D.Interactions.Interfaces
         /// <param name="reference"></param>
         /// <returns>If the interaction should continue running</returns>
         bool Start(InteractionEvent interactionEvent, InteractionReference reference);
-
-        /// <summary>
-        /// Continues the interaction (server-side)
-        /// </summary>
-        /// <param name="interactionEvent">The source used in the interaction</param>
-        /// <param name="reference"></param>
-        /// <returns>If the interaction should continue running</returns>
-        bool Update(InteractionEvent interactionEvent, InteractionReference reference);
-
-        /// <summary>
-        /// Called when the interaction is cancelled (server-side)
-        /// </summary>
-        /// <param name="interactionEvent">The source used in the interaction</param>
-        /// <param name="reference"></param>
-        void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
     }
 }
