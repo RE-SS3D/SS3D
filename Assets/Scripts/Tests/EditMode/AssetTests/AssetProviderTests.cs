@@ -6,38 +6,32 @@ using Object = UnityEngine.Object;
 
 namespace SS3D.Tests.EditMode.AssetTests
 {
-    public sealed class AssetProviderTests
+    public sealed class AssetProviderTests : EditModeTest
     {
-        private readonly List<GameObject> _created = new();
         private FakeAssetBackend _backend;
         private AssetProvider _provider;
         private List<string> _releasedKeys;
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
             _releasedKeys = new List<string>();
             _backend = new FakeAssetBackend();
             _provider = new AssetProvider(key => _releasedKeys.Add(key));
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
             _provider.Dispose();
-
-            foreach (GameObject go in _created)
-            {
-                Object.DestroyImmediate(go);
-            }
-
-            _created.Clear();
+            base.TearDown();
         }
 
         [Test]
         public void AcquireAsync_LoadsFromBackend()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             _backend.RegisterAsset("key1", go);
 
             using AssetHandle<GameObject> handle = Acquire<GameObject>("key1");
@@ -49,7 +43,7 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void AcquireAsync_DeduplicatesConcurrentLoads()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             _backend.RegisterAsset("key1", go);
 
             using AssetHandle<GameObject> handle1 = Acquire<GameObject>("key1");
@@ -62,7 +56,7 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void AcquireAsync_RaisesOnLoaded()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             _backend.RegisterAsset("key1", go);
 
             string loadedKey = null;
@@ -82,7 +76,7 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void AcquireAsync_OnLoaded_FiresOnlyOnce()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             _backend.RegisterAsset("key1", go);
 
             int fireCount = 0;
@@ -97,7 +91,8 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void Unload_CallsBackendUnload()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
             using AssetHandle<GameObject> handle = Acquire<GameObject>("key1");
 
             _provider.Unload("key1");
@@ -108,7 +103,8 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void Unload_RaisesOnUnloaded()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
             using AssetHandle<GameObject> handle = Acquire<GameObject>("key1");
 
             string unloadedKey = null;
@@ -128,7 +124,8 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void IsLoaded_TrueAfterAcquire()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
             using AssetHandle<GameObject> handle = Acquire<GameObject>("key1");
 
             Assert.That(_provider.IsLoaded("key1"), Is.True);
@@ -137,7 +134,8 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void IsLoaded_FalseAfterUnload()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
             using AssetHandle<GameObject> handle = Acquire<GameObject>("key1");
             _provider.Unload("key1");
 
@@ -153,8 +151,10 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void Dispose_UnloadsAllLoadedAssets()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
-            _backend.RegisterAsset("key2", CreateGameObject());
+            CreateGameObject(out GameObject go1);
+            CreateGameObject(out GameObject go2);
+            _backend.RegisterAsset("key1", go1);
+            _backend.RegisterAsset("key2", go2);
 
             using AssetHandle<GameObject> h1 = Acquire<GameObject>("key1");
             using AssetHandle<GameObject> h2 = Acquire<GameObject>("key2");
@@ -168,7 +168,8 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void Handle_Dispose_InvokesReleaseCallback()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
             AssetHandle<GameObject> handle = Acquire<GameObject>("key1");
             handle.Dispose();
 
@@ -179,13 +180,6 @@ namespace SS3D.Tests.EditMode.AssetTests
             where T : class
         {
             return _provider.AcquireAsync<T>(key, _backend).GetAwaiter().GetResult();
-        }
-
-        private GameObject CreateGameObject()
-        {
-            GameObject go = new("TestAsset");
-            _created.Add(go);
-            return go;
         }
     }
 }

@@ -1,22 +1,20 @@
 using JetBrains.Annotations;
-using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Data;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace SS3D.Tests.EditMode.AssetTests
 {
-    public sealed class AssetLifecycleTrackerTests
+    public sealed class AssetLifecycleTrackerTests : EditModeTest
     {
-        private readonly List<GameObject> _created = new();
         private FakeAssetBackend _backend;
         private AssetProvider _provider;
         private AssetLifecycleTracker _tracker;
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
             _backend = new();
 
             AssetLifecycleTracker tracker = null;
@@ -26,26 +24,18 @@ namespace SS3D.Tests.EditMode.AssetTests
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
             _tracker.Shutdown();
             _provider.Dispose();
-
-            foreach (GameObject go in _created)
-            {
-                if (go)
-                {
-                    Object.DestroyImmediate(go);
-                }
-            }
-
-            _created.Clear();
+            base.TearDown();
         }
 
         [Test]
         public void TrackAcquire_ThenRelease_AssetSurvivesWhenInstanceExists()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
 
             _tracker.TrackAcquire("key1");
             Acquire<GameObject>("key1");
@@ -62,7 +52,8 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void AllRefsReleased_UnloadsAsset()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
 
             _tracker.TrackAcquire("key1");
             Acquire<GameObject>("key1");
@@ -85,7 +76,8 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void MultipleAcquires_RequireMatchingReleases()
         {
-            _backend.RegisterAsset("key1", CreateGameObject());
+            CreateGameObject(out GameObject go);
+            _backend.RegisterAsset("key1", go);
 
             _tracker.TrackAcquire("key1");
             _tracker.TrackAcquire("key1");
@@ -108,7 +100,7 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void HandleAssetLoaded_InjectsTrackerOnGameObject()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             _backend.RegisterAsset("key1", go);
 
             Acquire<GameObject>("key1");
@@ -119,7 +111,7 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void HandleAssetLoaded_InitializesTrackerWithKey()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             _backend.RegisterAsset("key1", go);
 
             string instantiatedKey = null;
@@ -147,13 +139,5 @@ namespace SS3D.Tests.EditMode.AssetTests
 
         private AssetHandle<T> Acquire<T>([NotNull] string key)
             where T : class => _provider.AcquireAsync<T>(key, _backend).GetAwaiter().GetResult();
-
-        [NotNull]
-        private GameObject CreateGameObject()
-        {
-            GameObject go = new("TestAsset");
-            _created.Add(go);
-            return go;
-        }
     }
 }

@@ -13,38 +13,29 @@ namespace SS3D.Tests.EditMode.AssetTests
     /// for MonoBehaviours without <c>[ExecuteInEditMode]</c>.
     /// PlayMode tests cover both paths.
     /// </summary>
-    public sealed class InstanceLifetimeTrackerTests
+    public sealed class InstanceLifetimeTrackerTests : EditModeTest
     {
-        private readonly List<GameObject> _created = new();
         private readonly List<string> _instantiatedKeys = new();
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
             InstanceLifetimeTracker.OnInstantiated += HandleInstantiated;
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
             InstanceLifetimeTracker.OnInstantiated -= HandleInstantiated;
-
-            foreach (GameObject go in _created)
-            {
-                if (go)
-                {
-                    Object.DestroyImmediate(go);
-                }
-            }
-
-            _created.Clear();
             _instantiatedKeys.Clear();
+            base.TearDown();
         }
 
         [Test]
         public void Initialize_RaisesOnInstantiated()
         {
-            InstanceLifetimeTracker tracker = CreateTracker();
+            CreateGameObject<InstanceLifetimeTracker>(out _, out InstanceLifetimeTracker tracker);
             tracker.Initialize("key1");
 
             Assert.That(_instantiatedKeys, Contains.Item("key1"));
@@ -53,18 +44,11 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void Initialize_DoesNotFireTwice()
         {
-            InstanceLifetimeTracker tracker = CreateTracker();
+            CreateGameObject<InstanceLifetimeTracker>(out _, out InstanceLifetimeTracker tracker);
             tracker.Initialize("key1");
             tracker.Initialize("key1");
 
             Assert.That(_instantiatedKeys.Count, Is.EqualTo(1));
-        }
-
-        private InstanceLifetimeTracker CreateTracker()
-        {
-            GameObject go = new("TrackerTest");
-            _created.Add(go);
-            return go.AddComponent<InstanceLifetimeTracker>();
         }
 
         private void HandleInstantiated(string key) => _instantiatedKeys.Add(key);

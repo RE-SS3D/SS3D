@@ -3,16 +3,16 @@ using System.Threading.Tasks;
 using SS3D.Data;
 using Object = UnityEngine.Object;
 
-namespace SS3D.Tests.EditMode.AssetTests
+namespace SS3D.Tests
 {
-    internal sealed class FakeAssetBackend : IAssetBackend
+    public sealed class FakeAssetBackend : IAssetBackend
     {
         private readonly Dictionary<string, Object> _assets = new();
 
-        internal List<string> UnloadedKeys { get; } = new();
-        internal int LoadCallCount { get; private set; }
+        public List<string> UnloadedKeys { get; } = new();
+        public int LoadCallCount { get; private set; }
 
-        internal void RegisterAsset(string key, Object asset) => _assets[key] = asset;
+        public void RegisterAsset(string key, Object asset) => _assets[key] = asset;
 
         public Task InitializeAsync() => Task.CompletedTask;
 

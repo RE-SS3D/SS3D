@@ -1,29 +1,15 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Data;
 using UnityEngine;
 
 namespace SS3D.Tests.EditMode.AssetTests
 {
-    public sealed class AssetHandleTests
+    public sealed class AssetHandleTests : EditModeTest
     {
-        private readonly List<GameObject> _created = new();
-
-        [TearDown]
-        public void TearDown()
-        {
-            foreach (GameObject go in _created)
-            {
-                Object.DestroyImmediate(go);
-            }
-
-            _created.Clear();
-        }
-
         [Test]
         public void IsValid_TrueWhenAssetPresent()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             using AssetHandle<GameObject> handle = new("key", go, null);
 
             Assert.That(handle.IsValid, Is.True);
@@ -40,7 +26,7 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void IsValid_FalseAfterDispose()
         {
-            GameObject go = CreateGameObject();
+            CreateGameObject(out GameObject go);
             AssetHandle<GameObject> handle = new("key", go, null);
             handle.Dispose();
 
@@ -50,8 +36,9 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void Dispose_InvokesReleaseCallback()
         {
+            CreateGameObject(out GameObject go);
             string releasedKey = null;
-            AssetHandle<GameObject> handle = new("my-key", CreateGameObject(), key => releasedKey = key);
+            AssetHandle<GameObject> handle = new("my-key", go, key => releasedKey = key);
             handle.Dispose();
 
             Assert.That(releasedKey, Is.EqualTo("my-key"));
@@ -60,8 +47,9 @@ namespace SS3D.Tests.EditMode.AssetTests
         [Test]
         public void Dispose_DoesNotInvokeCallbackTwice()
         {
+            CreateGameObject(out GameObject go);
             int callCount = 0;
-            AssetHandle<GameObject> handle = new("key", CreateGameObject(), _ => callCount++);
+            AssetHandle<GameObject> handle = new("key", go, _ => callCount++);
             handle.Dispose();
             handle.Dispose();
 
@@ -74,13 +62,6 @@ namespace SS3D.Tests.EditMode.AssetTests
             using AssetHandle<GameObject> handle = new("expected-key", null, null);
 
             Assert.That(handle.Key, Is.EqualTo("expected-key"));
-        }
-
-        private GameObject CreateGameObject()
-        {
-            GameObject go = new("TestAsset");
-            _created.Add(go);
-            return go;
         }
     }
 }
