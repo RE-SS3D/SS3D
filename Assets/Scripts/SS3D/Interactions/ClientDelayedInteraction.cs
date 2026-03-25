@@ -51,13 +51,12 @@ namespace SS3D.Interactions
             TryingToLoadPrefab = true;
             LoadingBarPrefabHandle = await assetSubSystem.AcquireAsync<LoadingBar>(WorldSpaceUI.LoadingBar);
 
-            if (LoadingBarPrefabHandle is { IsValid: true })
+            if (LoadingBarPrefabHandle is { IsValid: false })
             {
-                return;
+                LoadingBarPrefabHandle.Dispose();
+                LoadingBarPrefabHandle = null;
             }
-            
-            LoadingBarPrefabHandle.Dispose();
-            LoadingBarPrefabHandle = null;
+
             TryingToLoadPrefab = false;
         }
 
