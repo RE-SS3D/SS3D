@@ -2,6 +2,8 @@
 using FishNet.Object.Synchronizing;
 using UnityEngine;
 using Coimbra;
+using JetBrains.Annotations;
+using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using System;
@@ -19,23 +21,13 @@ namespace SS3D.Systems.Health
         [SyncVar(OnChange = nameof(SyncBleedEffect))]
         public bool isBleeding;
 
+        private AssetHandle<GameObject> _bleedingEffectHandle;
         private GameObject _bloodEffect;
 
         public override void OnStartServer()
         {
             _bodyPart.OnBodyPartDestroyed += HandleBodyPartDestroyedOrDetached;
             _bodyPart.OnBodyPartDetached += HandleBodyPartDestroyedOrDetached;
-        }
-
-        private void OnDestroy()
-        {
-            _bodyPart.OnBodyPartDestroyed -= HandleBodyPartDestroyedOrDetached;
-            _bodyPart.OnBodyPartDetached -= HandleBodyPartDestroyedOrDetached;
-        }
-
-        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
-        {
-            isBleeding = false;
         }
 
         public void SyncBleedEffect(bool prev, bool next, bool asServer)
@@ -65,6 +57,56 @@ namespace SS3D.Systems.Health
             {
                 _bloodEffect.Dispose(true);
             }
+        }
+
+        private void Awake()
+        {
+            AcquireAssets();
+        }
+
+        private void OnDestroy()
+        {
+            _bodyPart.OnBodyPartDestroyed -= HandleBodyPartDestroyedOrDetached;
+            _bodyPart.OnBodyPartDetached -= HandleBodyPartDestroyedOrDetached;
+
+            ReleaseAssets();
+        }
+
+        private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
+        {
+            isBleeding = false;
+        }
+
+        private async void AcquireAssets()
+        {
+            if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            {
+                return;
+            }
+
+            _bleedingEffectHandle = await assetSubSystem.AcquireAsync<GameObject>(ParticlesEffects.BleedingParticle);
+            ValidateHandle(ref _bleedingEffectHandle);
+        }
+        
+        private void ValidateHandle([CanBeNull] ref AssetHandle<GameObject> handle)
+        {
+            if (handle is { IsValid: true })
+            {
+                return;
+            }
+            
+            ReleaseHandle(ref handle);
+        }
+
+        private void ReleaseAssets()
+        {
+            ReleaseHandle(ref _bleedingEffectHandle);
+        }
+
+        private void ReleaseHandle([CanBeNull] ref AssetHandle<GameObject> handle)
+        {
+            handle?.Dispose();
+            handle = null;
         }
     }
 }
