@@ -12,6 +12,20 @@ namespace SS3D.Systems.Furniture
 {
     public class Nuke : InteractionSource, IInteractionTarget
     {
+        private AssetHandle<Sprite> _nukeIconHandle;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireIcon();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ReleaseIcon();
+        }
+
         [ServerRpc(RequireOwnership = false)]
         public void Detonate()
         {
@@ -21,7 +35,32 @@ namespace SS3D.Systems.Furniture
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new NukeDetonateInteraction { Icon = AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke) } };
+            return new IInteraction[]
+            {
+                new NukeDetonateInteraction
+                {
+                    Icon = _nukeIconHandle?.Asset,
+                },
+            };
+        }
+
+        private async void AcquireIcon()
+        {
+            if (_nukeIconHandle is not { IsValid: true } && SubSystems.TryGet(out AssetSubSystem assetSubSystem) && assetSubSystem)
+            {
+                _nukeIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Nuke);
+            }
+        }
+
+        private void ReleaseIcon()
+        {
+            if (_nukeIconHandle is not { IsValid: true })
+            {
+                return;
+            }
+
+            _nukeIconHandle.Dispose();
+            _nukeIconHandle = null;
         }
     }
 }
