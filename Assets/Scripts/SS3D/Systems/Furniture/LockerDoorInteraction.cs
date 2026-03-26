@@ -1,4 +1,5 @@
-﻿using SS3D.Data;
+﻿using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -9,6 +10,9 @@ namespace SS3D.Systems.Furniture
 {
     public class LockerDoorInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadDefaultIcon;
+
         public string Name;
         public Sprite Icon;
         private readonly Locker _locker;
@@ -16,6 +20,14 @@ namespace SS3D.Systems.Furniture
         public LockerDoorInteraction(Locker locker)
         {
             _locker = locker;
+
+            if (DefaultIconHandle is { IsValid: true })
+            {
+                return;
+            }
+            
+            AcquireDefaultIcon();
+            UnityEngine.Application.quitting += OnApplicationQuit;
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -27,7 +39,7 @@ namespace SS3D.Systems.Furniture
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
+            return Icon ? Icon : DefaultIconHandle?.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -45,6 +57,36 @@ namespace SS3D.Systems.Furniture
             _locker.IsOpen = !_locker.IsOpen;
 
             return true;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            ReleaseDefaultIcon();
+            UnityEngine.Application.quitting -= OnApplicationQuit;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            if (TryingToLoadDefaultIcon || DefaultIconHandle is { IsValid: true } || SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            {
+                return;
+            }
+            
+            TryingToLoadDefaultIcon = true;
+            DefaultIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Open);
+
+            if (DefaultIconHandle is { IsValid: false })
+            {
+                ReleaseDefaultIcon();
+            }
+            
+            TryingToLoadDefaultIcon = false;
+        }
+
+        private static void ReleaseDefaultIcon()
+        {
+            DefaultIconHandle?.Dispose();
+            DefaultIconHandle = null;
         }
     }
 }
