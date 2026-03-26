@@ -96,7 +96,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         private static async void AcquireDefaultIcon()
         {
-            if (TryingToLoadIcon || DefaultIconHandle is { IsValid: true } || SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            if (TryingToLoadIcon || DefaultIconHandle is { IsValid: true } || !SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
             {
                 return;
             }

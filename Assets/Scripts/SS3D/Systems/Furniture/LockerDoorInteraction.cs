@@ -67,7 +67,7 @@ namespace SS3D.Systems.Furniture
 
         private static async void AcquireDefaultIcon()
         {
-            if (TryingToLoadDefaultIcon || DefaultIconHandle is { IsValid: true } || SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            if (TryingToLoadDefaultIcon || DefaultIconHandle is { IsValid: true } || !SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
             {
                 return;
             }
