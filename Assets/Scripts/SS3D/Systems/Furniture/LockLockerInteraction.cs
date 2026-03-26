@@ -1,4 +1,5 @@
-﻿using SS3D.Data;
+﻿using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -13,6 +14,9 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public sealed class LockLockerInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+        
         public string Name;
         public Sprite Icon;
         private readonly IDPermission _permissionToUnlock;
@@ -22,6 +26,14 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             _locker = locker;
             _permissionToUnlock = permission;
+
+            if (DefaultIconHandle is { IsValid: true })
+            {
+                return;
+            }
+
+            AcquireDefaultIcon();
+            UnityEngine.Application.quitting += OnApplicationQuit;
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -80,6 +92,36 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             return true;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            if (TryingToLoadIcon || DefaultIconHandle is { IsValid: true } || SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            {
+                return;
+            }
+            
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Open);
+
+            if (DefaultIconHandle is { IsValid: false })
+            {
+                ReleaseDefaultIcon();
+            }
+            
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            ReleaseDefaultIcon();
+            UnityEngine.Application.quitting -= OnApplicationQuit;
+        }
+
+        private static void ReleaseDefaultIcon()
+        {
+            DefaultIconHandle?.Dispose();
+            DefaultIconHandle = null;
         }
     }
 }
