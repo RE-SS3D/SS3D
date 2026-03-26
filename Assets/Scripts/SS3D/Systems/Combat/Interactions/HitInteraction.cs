@@ -1,4 +1,5 @@
-﻿using SS3D.Data;
+﻿using SS3D.Core;
+using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -15,8 +16,43 @@ namespace SS3D.Systems.Combat.Interactions
     /// </summary>
     public class HitInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+
         public string Name;
         public Sprite Icon;
+        
+        public HitInteraction()
+        {
+            AcquireDefaultIcon();
+            UnityEngine.Application.quitting += OnApplicationQuit;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            if (TryingToLoadIcon || DefaultIconHandle is { IsValid: true } || !SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            {
+                return;
+            }
+
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Nuke);
+
+            if (DefaultIconHandle is { IsValid: false })
+            {
+                DefaultIconHandle = null;
+            }
+
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            DefaultIconHandle?.Dispose();
+            DefaultIconHandle = null;
+            
+            UnityEngine.Application.quitting -= OnApplicationQuit;
+        }
 
         public string GetName(InteractionEvent interactionEvent)
         {
@@ -27,7 +63,7 @@ namespace SS3D.Systems.Combat.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Nuke);
+            return Icon ? Icon : DefaultIconHandle?.Asset;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
