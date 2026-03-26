@@ -24,6 +24,11 @@ namespace SS3D.Systems.Combat.Interactions
         
         public HitInteraction()
         {
+            if (DefaultIconHandle is { IsValid: true })
+            {
+                return;
+            }
+
             AcquireDefaultIcon();
             UnityEngine.Application.quitting += OnApplicationQuit;
         }
