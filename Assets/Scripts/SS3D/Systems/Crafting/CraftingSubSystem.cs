@@ -47,12 +47,49 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         private readonly Dictionary<InteractionReference, ParticleSystem> _craftingSmokes = new();
 
+        /// <summary>
+        /// Asset handle for the crafting smoke particle system, to spawn and despawn it during crafting interactions.
+        /// </summary>
+        private AssetHandle<ParticleSystem> _craftingSmokeHandle;
+
         public override void OnStartNetwork()
         {
             // Need to be called both on server and client,
             // they both need access to recipes.
             base.OnStartNetwork();
             FillRecipeOrganiser();
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            
+            AcquireAssets();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _craftingSmokes.Values.ToList().ForEach(x => x.Dispose(true));
+            _craftingSmokes.Clear();
+
+            ReleaseAssets();
+        }
+
+        private void ReleaseAssets()
+        {
+            _craftingSmokeHandle?.Dispose();
+        }
+
+        private async void AcquireAssets()
+        {
+            if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            {
+                return;
+            }
+
+            _craftingSmokeHandle = await assetSubSystem.AcquireAsync<ParticleSystem>(ParticlesEffects.ConstructionParticle);
         }
 
         /// <summary>
@@ -622,8 +659,12 @@ namespace SS3D.Systems.Crafting
         [ObserversRpc]
         private void AddCraftingSmoke(GameObject target, int referenceId)
         {
-            ParticleSystem particlePrefab = AssetLoader.Get<ParticleSystem>(AssetDatabases.ParticlesEffects, ParticlesEffects.ConstructionParticle);
-            ParticleSystem particles = Instantiate(particlePrefab, target.transform.position, Quaternion.identity);
+            if (_craftingSmokeHandle is not { IsValid: true })
+            {
+                return;
+            }
+            
+            ParticleSystem particles = Instantiate(_craftingSmokeHandle.Asset, target.transform.position, Quaternion.identity);
 
             // Get the shape module of the dust cloud particle system
             ParticleSystem.ShapeModule shapeModule = particles.shape;
