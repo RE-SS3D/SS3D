@@ -40,6 +40,7 @@ namespace SS3D.Systems.Combat.Interactions
 
             if (DefaultIconHandle is { IsValid: false })
             {
+                DefaultIconHandle.Dispose();
                 DefaultIconHandle = null;
             }
 
