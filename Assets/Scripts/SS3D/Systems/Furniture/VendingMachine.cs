@@ -35,6 +35,23 @@ namespace SS3D.Systems.Furniture
         /// </summary>
         [SerializeField]
         private Transform _dispensingTransform;
+        
+        /// <summary>
+        /// The asset handle for the take icon.
+        /// </summary>
+        private AssetHandle<Sprite> _takeIconHandle;
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireAssets();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ReleaseAssets();
+        }
 
         /// <summary>
         /// Requests the server to dispense a specific product.
@@ -100,7 +117,7 @@ namespace SS3D.Systems.Furniture
                 return Array.Empty<IInteraction>();
             }
 
-            Sprite takeIcon = AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Take);
+            Sprite takeIcon = _takeIconHandle?.Asset;
             
             IInteraction[] interactions = new IInteraction[_productsToDispense.Length];
             for (int i = 0; i < _productsToDispense.Length; i++)
@@ -115,6 +132,20 @@ namespace SS3D.Systems.Furniture
             }
 
             return interactions;
+        }
+
+        private async void AcquireAssets()
+        {
+            if (SubSystems.TryGet(out AssetSubSystem assetSubSystem) && assetSubSystem)
+            {
+                _takeIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Take);
+            }
+        }
+
+        private void ReleaseAssets()
+        {
+            _takeIconHandle?.Dispose();
+            _takeIconHandle = null;
         }
     }
 }
