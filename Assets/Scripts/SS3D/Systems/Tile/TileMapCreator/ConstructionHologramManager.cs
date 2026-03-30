@@ -7,6 +7,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Generated;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Utils;
@@ -53,6 +54,10 @@ namespace SS3D.Systems.Tile.TileMapCreator
         private List<ConstructionHologram> _holograms = new();
         [SerializeField]
         private TileMapMenuSubSystem _menu;
+        
+        private AssetHandle<Material> _validMaterialHandle;
+        private AssetHandle<Material> _invalidMaterialHandle;
+        private AssetHandle<Material> _deleteMaterialHandle;
 
         public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
@@ -71,6 +76,8 @@ namespace SS3D.Systems.Tile.TileMapCreator
         protected override void OnAwake()
         {
             base.OnAwake();
+            
+            AcquireAssets();
             
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
@@ -98,6 +105,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _controls.Replace.performed -= HandleReplace;
             _controls.Replace.canceled -= HandleReplace;
             _controls.Rotate.performed -= HandleRotate;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            ReleaseAssets();
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
@@ -427,6 +441,30 @@ namespace SS3D.Systems.Tile.TileMapCreator
                     SubSystems.Get<TileSubSystem>().RpcClearItemObject(placedItem.NameString, placedItem.gameObject.transform.position);
                 }
             }
+        }
+
+        private async void AcquireAssets()
+        {
+            _validMaterialHandle = await new AssetRequest<Material>(Materials.ValidConstruction).ExecuteAsync();
+            _invalidMaterialHandle = await new AssetRequest<Material>(Materials.InvalidConstruction).ExecuteAsync();
+            _deleteMaterialHandle = await new AssetRequest<Material>(Materials.DeleteConstruction).ExecuteAsync();
+            
+            ConstructionHologram.ValidMaterial = _validMaterialHandle?.Asset;
+            ConstructionHologram.InvalidMaterial = _invalidMaterialHandle?.Asset;
+            ConstructionHologram.DeleteMaterial = _deleteMaterialHandle?.Asset;
+        }
+
+        private void ReleaseAssets()
+        {
+            ReleaseMaterial(ref _validMaterialHandle);
+            ReleaseMaterial(ref _invalidMaterialHandle);
+            ReleaseMaterial(ref _deleteMaterialHandle);
+        }
+
+        private void ReleaseMaterial([CanBeNull] ref AssetHandle<Material> materialHandle)
+        {
+            materialHandle?.Dispose();
+            materialHandle = null;
         }
     }
 }
