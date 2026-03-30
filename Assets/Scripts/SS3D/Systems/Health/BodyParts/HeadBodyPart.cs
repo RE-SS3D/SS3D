@@ -1,7 +1,9 @@
-﻿using FishNet.Object;
+using FishNet.Object;
+using Serilog;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Data.Networking;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using System.Collections;
@@ -77,12 +79,22 @@ namespace SS3D.Systems.Health
             GetComponentInParent<Human>()?.DeactivateComponents();
         }
 
-        protected override void SpawnOrgans()
+        protected override async void SpawnOrgans()
         {
-            Brain brainPrefab = AssetLoader.Get<Brain>(AssetDatabases.Items, Items.HumanBrain);
-            Brain = Instantiate(brainPrefab);
+            AssetHandle<Brain> brainPrefabHandle = await new AssetRequest<Brain>(Items.HumanBrain).ExecuteAsync();
+
+            if (!brainPrefabHandle)
+            {
+                Log.Error("brain prefab was not loaded");
+                return;
+            }
+
+            Brain = Instantiate(brainPrefabHandle.Asset);
             Brain.HealthController = HealthController;
-            Spawn(Brain.GameObject, Owner);
+
+            await NetworkSpawner.SpawnAsync(Brain, Items.HumanBrain, Owner);
+
+            brainPrefabHandle.Dispose();
         }
     }
 }
