@@ -31,14 +31,16 @@ namespace SS3D.Systems.Health
 
         public void SyncBleedEffect(bool prev, bool next, bool asServer)
         {
-            if (prev == next) return;
-
-            if (next && _bloodEffect == null)
+            if (prev == next)
             {
-                GameObject bleedingEffect = AssetLoader.Get<GameObject>(AssetDatabases.ParticlesEffects, ParticlesEffects.BleedingParticle);
+                return;
+            }
+
+            if (next && !_bloodEffect && _bleedingEffectHandle)
+            {
                 GameObject bloodDisplayer;
                 Transform bloodParent;
-                if (_bodyPart.BodyCollider != null)
+                if (_bodyPart.BodyCollider)
                 {
                     bloodDisplayer = _bodyPart.BodyCollider.gameObject;
                     bloodParent = _bodyPart.BodyCollider.gameObject.transform;
@@ -49,10 +51,10 @@ namespace SS3D.Systems.Health
                     bloodParent = gameObject.transform;
                 }
 
-                _bloodEffect = Instantiate(bleedingEffect, bloodDisplayer.transform.position, Quaternion.identity);
+                _bloodEffect = Instantiate(_bleedingEffectHandle.Asset, bloodDisplayer.transform.position, Quaternion.identity);
                 _bloodEffect.transform.parent = bloodParent;
             }
-            else if (!next && _bloodEffect != null)
+            else if (!next && _bloodEffect)
             {
                 _bloodEffect.Dispose(true);
             }
