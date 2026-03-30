@@ -1,4 +1,5 @@
-﻿using SS3D.Data;
+﻿using JetBrains.Annotations;
+using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -11,6 +12,9 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public class ViewContainerInteraction : IInteraction, IClientInteractionSource
     {
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+
         public string Name;
         public Sprite Icon;
 
@@ -21,6 +25,11 @@ namespace SS3D.Systems.Inventory.Interactions
         public ViewContainerInteraction(AttachedContainer attachedContainer)
         {
             AttachedContainer = attachedContainer;
+
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -30,10 +39,8 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public string GetGenericName() => throw new System.NotImplementedException();
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
-        }
+        [CanBeNull]
+        public Sprite GetIcon(InteractionEvent interactionEvent) => Icon ? Icon : DefaultIconHandle?.Asset;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -71,6 +78,35 @@ namespace SS3D.Systems.Inventory.Interactions
             containerViewer.ShowContainerUI(AttachedContainer);
 
             return false;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
+
+            if (DefaultIconHandle)
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+            else
+            {
+                ReleaseDefaultIcon();
+            }
+
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            ReleaseDefaultIcon();
+            UnityEngine.Application.quitting -= OnApplicationQuit;
+        }
+
+        private static void ReleaseDefaultIcon()
+        {
+            DefaultIconHandle?.Dispose();
+            DefaultIconHandle = null;
         }
     }
 }
