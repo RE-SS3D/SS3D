@@ -1,4 +1,3 @@
-﻿using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
@@ -105,23 +104,13 @@ namespace SS3D.Systems.Furniture
         
         private async void AcquireIcon()
         {
-            if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
-            {
-                return;
-            }
+            _iconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).ExecuteAsync();
 
-            _iconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Discard);
-
-            if (_iconHandle == null)
-            {
-                return;
-            }
-
-            if (_iconHandle.IsValid)
+            if (_iconHandle)
             {
                 Icon = _iconHandle.Asset;
             }
-            else
+            else if (_iconHandle != null)
             {
                 _iconHandle.Dispose();
                 _iconHandle = null;

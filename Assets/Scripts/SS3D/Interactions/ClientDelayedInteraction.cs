@@ -1,5 +1,4 @@
-﻿using Coimbra;
-using SS3D.Core;
+using Coimbra;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
@@ -59,20 +58,13 @@ namespace SS3D.Interactions
 
         private async void AcquireLoadingBar()
         {
-            if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem))
+            _loadingBarPrefabHandle = await new AssetRequest<LoadingBar>(WorldSpaceUI.LoadingBar).ExecuteAsync();
+
+            if (!_loadingBarPrefabHandle)
             {
-                return;
+                _loadingBarPrefabHandle?.Dispose();
+                _loadingBarPrefabHandle = null;
             }
-
-            _loadingBarPrefabHandle = await assetSubSystem.AcquireAsync<LoadingBar>(WorldSpaceUI.LoadingBar);
-
-            if (_loadingBarPrefabHandle is not { IsValid: false })
-            {
-                return;
-            }
-
-            _loadingBarPrefabHandle.Dispose();
-            _loadingBarPrefabHandle = null;
         }
 
         /// <summary>

@@ -33,10 +33,9 @@ namespace SS3D.Systems.Tile
         [ItemCanBeNull]
         public static async Task<PlacedTileObject> CreateAsync(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
-            AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
-            AssetHandle<GameObject> handle = await assetSubSystem.AcquireAsync<GameObject>(tileObjectSo.PrefabAsset);
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(tileObjectSo.PrefabAsset).ExecuteAsync();
 
-            if (handle == null || !handle.Asset)
+            if (!handle)
             {
                 handle?.Dispose();
                 Log.Error(typeof(PlacedTileObject), $"Failed to load prefab for tile object '{tileObjectSo.NameString}'.");

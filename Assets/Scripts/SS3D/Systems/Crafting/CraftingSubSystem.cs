@@ -1,4 +1,4 @@
-﻿using Coimbra;
+using Coimbra;
 using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
@@ -84,12 +84,7 @@ namespace SS3D.Systems.Crafting
 
         private async void AcquireAssets()
         {
-            if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
-            {
-                return;
-            }
-
-            _craftingSmokeHandle = await assetSubSystem.AcquireAsync<ParticleSystem>(ParticlesEffects.ConstructionParticle);
+            _craftingSmokeHandle = await new AssetRequest<ParticleSystem>(ParticlesEffects.ConstructionParticle).ExecuteAsync();
         }
 
         /// <summary>
@@ -198,9 +193,9 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
                     
-                AssetHandle<GameObject> secondaryHandle = await SubSystems.Get<AssetSubSystem>().AcquireAsync<GameObject>(secondaryResult.Asset);
+                AssetHandle<GameObject> secondaryHandle = await new AssetRequest<GameObject>(secondaryResult.Asset).ExecuteAsync();
 
-                if (!secondaryHandle?.Asset)
+                if (!secondaryHandle)
                 {
                     secondaryHandle?.Dispose();
                     Log.Error(this, $"Secondary result {secondaryResult} has no prefab associated, skipping");
@@ -244,9 +239,9 @@ namespace SS3D.Systems.Crafting
 
         private async Task SpawnOrModifyMainResultAsync(ObjectAssetReference result, CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            AssetHandle<GameObject> handle = await SubSystems.Get<AssetSubSystem>().AcquireAsync<GameObject>(result);
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(result).ExecuteAsync();
 
-            if (handle == null || !handle.Asset)
+            if (!handle)
             {
                 handle?.Dispose();
                 Log.Error(this, $"World object reference {result} has no prefab associated");

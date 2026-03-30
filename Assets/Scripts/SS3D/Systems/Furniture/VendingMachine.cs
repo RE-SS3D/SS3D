@@ -1,4 +1,4 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
@@ -136,10 +136,7 @@ namespace SS3D.Systems.Furniture
 
         private async void AcquireAssets()
         {
-            if (SubSystems.TryGet(out AssetSubSystem assetSubSystem) && assetSubSystem)
-            {
-                _takeIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Take);
-            }
+            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).ExecuteAsync();
         }
 
         private void ReleaseAssets()

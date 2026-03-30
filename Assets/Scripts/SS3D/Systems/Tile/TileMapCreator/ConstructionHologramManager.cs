@@ -1,4 +1,4 @@
-﻿using Coimbra.Services.Events;
+using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Connection;
 using FishNet.Object;
@@ -177,10 +177,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public async void CreateHologram([NotNull] ObjectAssetReference prefabAsset, Vector3 position)
         {
-            AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
-            AssetHandle<GameObject> handle = await assetSubSystem.AcquireAsync<GameObject>(prefabAsset);
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(prefabAsset).ExecuteAsync();
 
-            if (handle?.Asset == null)
+            if (!handle)
             {
                 handle?.Dispose();
                 Log.Error(this, "Cannot create hologram, prefab asset is not found");

@@ -4,7 +4,6 @@ using FishNet.Object;
 using FishNet.Observing;
 using FishNet.Transporting;
 using JetBrains.Annotations;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Utils;
@@ -574,27 +573,13 @@ namespace SS3D.Data.Networking
 
         private async void LoadLocallyAsync(string key)
         {
-            AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
-
-            if (!assetSubSystem)
-            {
-                Log.Error(this, $"Cannot start synchronized load for '{key}' because {nameof(AssetSubSystem)} instance is missing.");
-
-                if (IsClient)
-                {
-                    RpcAcknowledgeLoad(key, false);
-                }
-
-                return;
-            }
-
             try
             {
                 for (int attempt = 0; attempt < _retryAttempts; attempt++)
                 {
-                    AssetHandle<Object> handle = await assetSubSystem.AcquireAsync<Object>(key);
+                    AssetHandle<Object> handle = await new AssetRequest<Object>(key).ExecuteAsync();
 
-                    if (handle?.Asset == null)
+                    if (!handle)
                     {
                         Log.Warning(this, $"Attempt {attempt + 1} to load asset '{key}' returned null. Retrying...");
                         handle?.Dispose();

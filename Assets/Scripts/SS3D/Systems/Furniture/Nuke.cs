@@ -1,4 +1,4 @@
-﻿using SS3D.Interactions;
+using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using FishNet.Object;
 using SS3D.Core;
@@ -46,9 +46,9 @@ namespace SS3D.Systems.Furniture
 
         private async void AcquireIcon()
         {
-            if (_nukeIconHandle is not { IsValid: true } && SubSystems.TryGet(out AssetSubSystem assetSubSystem) && assetSubSystem)
+            if (!_nukeIconHandle)
             {
-                _nukeIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Nuke);
+                _nukeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).ExecuteAsync();
             }
         }
 

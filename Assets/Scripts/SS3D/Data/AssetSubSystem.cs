@@ -72,17 +72,33 @@ namespace SS3D.Data
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
 
+        [CanBeNull]
+        public AddressablesDatabase GetDatabase(string databaseID)
+        {
+            if (_databasesById == null || !_databasesById.TryGetValue(databaseID, out AddressablesDatabase database))
+            {
+                return null;
+            }
+
+            return database;
+        }
+
+        [CanBeNull]
+        public TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
+            where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
+
+        public bool Has([NotNull] string assetId) => IsInitialized && _catalogs != null && _catalogs.Any(catalog => catalog.Has(assetId));
+
         /// <inheritdoc cref="AcquireAsync{T}(string)"/>
-        [ItemCanBeNull]
-        public Task<AssetHandle<T>> AcquireAsync<T>([NotNull] ObjectAssetReference reference)
-            where T : class
-            => AcquireAsync<T>(reference.Id);
+        [NotNull]
+        internal Task<AssetHandle<T>> AcquireAsync<T>([NotNull] ObjectAssetReference reference)
+            where T : class => AcquireAsync<T>(reference.Id);
 
         /// <summary>
         /// Acquires a ref-counted handle for an asset by GUID.
         /// The system auto-routes to the correct backend via registered catalogs.
         /// </summary>
-        public async Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string guid)
+        internal async Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string guid)
             where T : class
         {
             if (!IsInitialized || _catalogs == null)
@@ -102,6 +118,7 @@ namespace SS3D.Data
                 if (!_backends.TryGetValue(catalog.BackendType, out IAssetBackend backend))
                 {
                     Log.Error(this, "No backend registered for {BackendType} while resolving GUID '{Guid}'.", Logs.Important, catalog.BackendType, guid);
+
                     return null;
                 }
 
@@ -114,30 +131,15 @@ namespace SS3D.Data
                 catch
                 {
                     _lifecycleTracker.TrackRelease(resolvedKey);
+
                     throw;
                 }
             }
 
             Log.Warning(this, "No catalog contains GUID '{Guid}'.", Logs.Important, guid);
+
             return null;
         }
-
-        [CanBeNull]
-        public AddressablesDatabase GetDatabase(string databaseID)
-        {
-            if (_databasesById == null || !_databasesById.TryGetValue(databaseID, out AddressablesDatabase database))
-            {
-                return null;
-            }
-
-            return database;
-        }
-
-        [CanBeNull]
-        public TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
-            where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
-
-        public bool Has([NotNull] string assetId) => IsInitialized && _catalogs != null && _catalogs.Any(catalog => catalog.Has(assetId));
 
         protected override void OnAwake()
         {
@@ -205,6 +207,7 @@ namespace SS3D.Data
                 List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
                 _databasesById = new(assetDatabases.Count);
+
                 foreach (AddressablesDatabase database in assetDatabases)
                 {
                     _databasesById[database.DatabaseID] = database;
@@ -212,7 +215,11 @@ namespace SS3D.Data
 
                 AddressablesCatalog addressablesCatalog = new();
                 addressablesCatalog.Initialize(assetDatabases.Cast<IAssetDatabase>().ToArray());
-                _catalogs = new IAssetCatalog[] { addressablesCatalog };
+
+                _catalogs = new IAssetCatalog[]
+                {
+                    addressablesCatalog
+                };
 
                 Log.Information(this, "{Count} asset databases initialized.", Logs.Important, assetDatabases.Count);
             }

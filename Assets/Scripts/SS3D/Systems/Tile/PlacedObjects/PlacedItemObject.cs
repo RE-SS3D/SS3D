@@ -38,10 +38,9 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                AssetSubSystem assetSubSystem = SubSystems.Get<AssetSubSystem>();
-                AssetHandle<GameObject> handle = await assetSubSystem.AcquireAsync<GameObject>(itemSo.PrefabAsset);
+                AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(itemSo.PrefabAsset).ExecuteAsync();
 
-                if (!handle?.Asset)
+                if (!handle)
                 {
                     handle?.Dispose();
                     Log.Error(typeof(PlacedItemObject), $"Failed to load prefab for item '{itemSo.NameString}'.");

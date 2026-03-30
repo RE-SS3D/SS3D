@@ -1,4 +1,3 @@
-﻿using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
@@ -67,19 +66,19 @@ namespace SS3D.Systems.Furniture
 
         private static async void AcquireDefaultIcon()
         {
-            if (TryingToLoadDefaultIcon || DefaultIconHandle is { IsValid: true } || !SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            if (TryingToLoadDefaultIcon || DefaultIconHandle)
             {
                 return;
             }
-            
-            TryingToLoadDefaultIcon = true;
-            DefaultIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Open);
 
-            if (DefaultIconHandle is { IsValid: false })
+            TryingToLoadDefaultIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
+
+            if (!DefaultIconHandle)
             {
                 ReleaseDefaultIcon();
             }
-            
+
             TryingToLoadDefaultIcon = false;
         }
 

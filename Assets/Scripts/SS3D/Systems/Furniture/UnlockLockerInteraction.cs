@@ -1,4 +1,3 @@
-﻿using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
@@ -94,15 +93,15 @@ namespace SS3D.Systems.Inventory.Interactions
 
         private async void AcquireDefaultIcon()
         {
-            if (TryingToLoadDefaultIcon || !SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            if (TryingToLoadDefaultIcon)
             {
                 return;
             }
 
             TryingToLoadDefaultIcon = true;
-            DefaultIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Open);
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
 
-            if (DefaultIconHandle is { IsValid: false })
+            if (!DefaultIconHandle)
             {
                 ReleaseDefaultIcon();
             }

@@ -1,4 +1,3 @@
-﻿using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
@@ -137,28 +136,20 @@ namespace SS3D.Systems.Inventory.Containers
 
         private async void AcquireAssets()
         {
-            if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
+            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).ExecuteAsync();
+            _openIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
+
+            if (!_takeIconHandle)
             {
-                return;
+                _takeIconHandle?.Dispose();
+                _takeIconHandle = null;
             }
 
-            _takeIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Take);
-            _openIconHandle = await assetSubSystem.AcquireAsync<Sprite>(InteractionIcons.Open);
-            
-            ValidateHandle(ref _takeIconHandle);
-            ValidateHandle(ref _openIconHandle);
-        }
-
-        private void ValidateHandle<T>(ref AssetHandle<T> handle)
-            where T : class
-        {
-            if (handle is { IsValid: true })
+            if (!_openIconHandle)
             {
-                return;
+                _openIconHandle?.Dispose();
+                _openIconHandle = null;
             }
-            
-            handle.Dispose();
-            handle = null;
         }
 
         private void ReleaseAssets()

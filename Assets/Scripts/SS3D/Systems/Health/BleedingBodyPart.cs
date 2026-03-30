@@ -1,9 +1,8 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
 using Coimbra;
 using JetBrains.Annotations;
-using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using System;
@@ -79,23 +78,12 @@ namespace SS3D.Systems.Health
 
         private async void AcquireAssets()
         {
-            if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
-            {
-                return;
-            }
+            _bleedingEffectHandle = await new AssetRequest<GameObject>(ParticlesEffects.BleedingParticle).ExecuteAsync();
 
-            _bleedingEffectHandle = await assetSubSystem.AcquireAsync<GameObject>(ParticlesEffects.BleedingParticle);
-            ValidateHandle(ref _bleedingEffectHandle);
-        }
-        
-        private void ValidateHandle([CanBeNull] ref AssetHandle<GameObject> handle)
-        {
-            if (handle is { IsValid: true })
+            if (!_bleedingEffectHandle)
             {
-                return;
+                ReleaseHandle(ref _bleedingEffectHandle);
             }
-            
-            ReleaseHandle(ref handle);
         }
 
         private void ReleaseAssets()
