@@ -1,4 +1,5 @@
-﻿using SS3D.Data;
+﻿using JetBrains.Annotations;
+using SS3D.Data;
 using System;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
@@ -13,18 +14,33 @@ namespace SS3D.Systems.Inventory.Interactions
     [Serializable]
     public class OpenInteraction : IInteraction, IClientInteractionSource
     {
+        public event EventHandler<bool> OnOpenStateChanged;
+
+        private static AssetHandle<Sprite> DefaultIconHandle;
+        private static bool TryingToLoadIcon;
+        protected static readonly int OpenId = Animator.StringToHash("Open");
+
         public string Name;
         public Sprite Icon;
-        public event EventHandler<bool> OnOpenStateChanged;
-        protected static readonly int OpenId = Animator.StringToHash("Open");
 
         private AttachedContainer _attachedContainer;
 
-        public OpenInteraction() { }
+        public OpenInteraction()
+        {
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
+        }
 
         public OpenInteraction(AttachedContainer attachedContainer)
         {
             _attachedContainer = attachedContainer;
+            
+            if (!TryingToLoadIcon && !DefaultIconHandle)
+            {
+                AcquireDefaultIcon();
+            }
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -43,10 +59,8 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public string GetGenericName() => throw new NotImplementedException();
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return Icon ? Icon : AssetLoader.Get<Sprite>(AssetDatabases.InteractionIcons, InteractionIcons.Open);
-        }
+        [CanBeNull]
+        public Sprite GetIcon(InteractionEvent interactionEvent) => Icon ? Icon : DefaultIconHandle.Asset;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -117,6 +131,33 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             Debug.Log("In OpenInteraction, OnOpenStateChange");
             OnOpenStateChanged?.Invoke(this, e);
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
+
+            if (DefaultIconHandle)
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+            else
+            {
+                ReleaseDefaultIcon();
+            }
+        }
+
+        private static void OnApplicationQuit()
+        {
+            ReleaseDefaultIcon();
+            UnityEngine.Application.quitting -= OnApplicationQuit;
+        }
+
+        private static void ReleaseDefaultIcon()
+        {
+            DefaultIconHandle?.Dispose();
+            DefaultIconHandle = null;
         }
     }
 }
