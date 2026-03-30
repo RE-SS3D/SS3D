@@ -192,7 +192,11 @@ namespace SS3D.Tests
 
             foreach (Hand hand in inventory.Hands.PlayerHands.Where(hand => hand.Container.Empty))
             {
-                Item itemToSpawn = AssetLoader.Get<GameObject>(AssetDatabases.Items, item)?.GetComponent<Item>();
+                AssetHandle<Item> itemHandle = new AssetRequest<Item>(item).Execute();
+                
+                Assert.IsTrue(itemHandle, "Failed to load asset " + item);
+
+                Item itemToSpawn = itemHandle.Asset; 
 
                 itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
 
