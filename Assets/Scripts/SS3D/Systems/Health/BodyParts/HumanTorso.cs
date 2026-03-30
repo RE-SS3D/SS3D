@@ -1,7 +1,10 @@
 ﻿using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Data.Networking;
 using SS3D.Systems.Health;
 using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class HumanTorso : BodyPart
 {
@@ -30,19 +33,42 @@ public class HumanTorso : BodyPart
         AddInternalBodyPart(RightLung);
     }
 
-    protected override void SpawnOrgans()
+    protected override async void SpawnOrgans()
     {
-        Heart heartPrefab = AssetLoader.Get<Heart>(AssetDatabases.Items, Items.HumanHeart);
-        Lungs leftLungPrefab = AssetLoader.Get<Lungs>(AssetDatabases.Items, Items.HumanLungLeft);
-        Lungs rightLungPrefab = AssetLoader.Get<Lungs>(AssetDatabases.Items, Items.HumanLungRight);
+        Task<AssetHandle<Heart>> loadHeartTask = new AssetRequest<Heart>(Items.HumanHeart).ExecuteAsync();
+        Task<AssetHandle<Lungs>> loadLeftLungTask = new AssetRequest<Lungs>(Items.HumanLungLeft).ExecuteAsync();
+        Task<AssetHandle<Lungs>> loadRightTask = new AssetRequest<Lungs>(Items.HumanLungRight).ExecuteAsync();
+        
+        await Task.WhenAll(loadHeartTask, loadLeftLungTask, loadRightTask);
+        
+        AssetHandle<Heart> heartHandle = loadHeartTask.Result;
+        AssetHandle<Lungs> leftLungHandle = loadLeftLungTask.Result;
+        AssetHandle<Lungs> rightLungHandle = loadRightTask.Result;
 
-        Heart = Instantiate(heartPrefab);
-        LeftLung = Instantiate(leftLungPrefab);
-        RightLung = Instantiate(rightLungPrefab);
+        List<Task> spawnTasks = new();
+        if (heartHandle)
+        {
+            Heart = Instantiate(heartHandle.Asset);
+            spawnTasks.Add(NetworkSpawner.SpawnAsync(Heart, Items.HumanHeart, Owner));
+        }
 
-        Spawn(Heart.GameObject, Owner);
-        Spawn(LeftLung.GameObject, Owner);
-        Spawn(RightLung.GameObject, Owner);
+        if (leftLungHandle)
+        {
+            LeftLung = Instantiate(leftLungHandle.Asset);
+            spawnTasks.Add(NetworkSpawner.SpawnAsync(LeftLung, Items.HumanLungLeft, Owner));
+        }
+
+        if (rightLungHandle)
+        {
+            RightLung = Instantiate(rightLungHandle.Asset);
+            spawnTasks.Add(NetworkSpawner.SpawnAsync(RightLung, Items.HumanLungRight, Owner));
+        }
+        
+        await Task.WhenAll(spawnTasks);
+        
+        heartHandle.Dispose();
+        leftLungHandle.Dispose();
+        rightLungHandle.Dispose();
     }
 
     protected override void AddInitialLayers()
