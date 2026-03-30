@@ -55,6 +55,8 @@ namespace SS3D.Data
         /// <inheritdoc/>
         public bool IsValid => !_disposed && Asset != null;
 
+        public static implicit operator bool(AssetHandle<T> handle) => handle is { IsValid: true };
+
         /// <summary>
         /// Ties this handle's lifetime to a <see cref="Component"/>.
         /// The handle is automatically disposed when the component's GameObject is destroyed.
