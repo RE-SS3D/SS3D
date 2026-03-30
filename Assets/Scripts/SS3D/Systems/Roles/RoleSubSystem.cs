@@ -168,7 +168,7 @@ namespace SS3D.Systems.Roles
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
             Item pdaItem = await SpawnItemInSlotAsync(role.PDAAsset, true, container);
-            Item idCardItem = itemSystem.SpawnItem(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
+            Item idCardItem = await itemSystem.SpawnItemAsync(role.IDCardAsset.Id, Vector3.zero, Quaternion.identity);
 
             PDA pda = (PDA)pdaItem;
             IDCard idCard = (IDCard)idCardItem;
@@ -250,7 +250,7 @@ namespace SS3D.Systems.Roles
             }
 
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
-            Item result = itemSystem.SpawnItemInContainer(handle.Asset, container);
+            Item result = await itemSystem.SpawnItemInContainerAsync(handle.Asset, assetReference.Id, container);
             handle.Dispose();
 
             return result;

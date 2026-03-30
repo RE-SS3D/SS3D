@@ -106,7 +106,7 @@ namespace SS3D.Systems.Furniture
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
-            itemSystem.SpawnItem(productToDispenseStock.Product.PrefabAsset.Id, _dispensingTransform.position, quaternion);
+            itemSystem.SpawnItemAsync(productToDispenseStock.Product.PrefabAsset.Id, _dispensingTransform.position, quaternion);
         }
 
         /// <inheritdoc />

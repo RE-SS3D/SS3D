@@ -1,10 +1,13 @@
 ﻿using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.Generated;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Items
@@ -23,7 +26,7 @@ namespace SS3D.Systems.Inventory.Items
         [ServerRpc(RequireOwnership = false)]
         public void CmdSpawnItem(string id, Vector3 position, Quaternion rotation)
         {
-            SpawnItem(id, position, rotation);
+            SpawnItemAsync(id, position, rotation);
         }
 
         /// <summary>
@@ -35,17 +38,25 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="position">The desired position to spawn.</param>
         /// <param name="rotation">The desired rotation to apply.</param>
         [Server]
-        public Item SpawnItem(string id, Vector3 position, Quaternion rotation)
+        [ItemCanBeNull]
+        public async Task<Item> SpawnItemAsync(string id, Vector3 position, Quaternion rotation)
         {
-            Item itemPrefab = AssetLoader.Get<Item>(AssetDatabases.Items, id);
+            AssetHandle<Item> itemHandle = await new AssetRequest<Item>(id).ExecuteAsync();
 
-            Item itemInstance = Instantiate(itemPrefab, position, rotation);
-            ServerManager.Spawn(itemInstance.GameObject);
+            if (!itemHandle)
+            {
+                Log.Error(this, "Item with id {id} not found in database!", Logs.ServerOnly, id);
+
+                return null;
+            }
+
+            Item itemInstance = Instantiate(itemHandle.Asset, position, rotation);
+            await NetworkSpawner.SpawnAsync(itemInstance, id);
 
             Log.Information(this, "Item {itemInstance} spawned at {position}", Logs.ServerOnly, itemInstance.name, position);
+
             return itemInstance;
         }
-
 
         /// <summary>
         /// Requests to spawn an item in a given container.
@@ -56,7 +67,7 @@ namespace SS3D.Systems.Inventory.Items
         [ServerRpc(RequireOwnership = false)]
         public void CmdSpawnItemInContainer(Item id, AttachedContainer attachedContainer)
         {
-            SpawnItemInContainer(id.Name, attachedContainer);
+            SpawnItemInContainerAsync(id.Name, attachedContainer);
         }
 
         /// <summary>
@@ -67,13 +78,21 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="container">The container to spawn into.</param>
         [Server]
-        public Item SpawnItemInContainer(string id, AttachedContainer attachedContainer)
+        public async Task<Item> SpawnItemInContainerAsync(string id, AttachedContainer attachedContainer)
         {
-            Item itemPrefab = AssetLoader.Get<Item>(AssetDatabases.Items, id);
+            AssetHandle<Item> itemHandle = await new AssetRequest<Item>(id).ExecuteAsync();
+
+            if (!itemHandle)
+            {
+                Log.Error(this, "Item with id {id} not found in database!", Logs.ServerOnly, id);
+                return null;
+            }
+            
+            Item itemPrefab = itemHandle.Asset;
 
             if (attachedContainer is not null && itemPrefab is not null)
             {
-                return SpawnItemInContainer(itemPrefab.GameObject, attachedContainer);
+                return await SpawnItemInContainerAsync(itemPrefab.GameObject, id, attachedContainer);
             }
 
             Log.Error(this, "Container does not found!", Logs.ServerOnly);
@@ -83,16 +102,21 @@ namespace SS3D.Systems.Inventory.Items
 
         // <summary>
         /// Spawns an Item inside a container.
-        ///
+        /// 
         /// TODO: Create a ItemSpawnOptions struct.
         /// </summary>
+        /// <param name="item"></param>
+        /// <param name="key"></param>
+        /// <param name="attachedContainer"></param>
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="container">The container to spawn into.</param>
         [Server]
-        public Item SpawnItemInContainer(GameObject item, AttachedContainer attachedContainer)
+        public async Task<Item> SpawnItemInContainerAsync(GameObject item, string key, AttachedContainer attachedContainer)
         {
             Item itemInstance = Instantiate(item, Vector3.zero, Quaternion.identity).GetComponent<Item>();
-            ServerManager.Spawn(itemInstance.GameObject);
+
+            await NetworkSpawner.SpawnAsync(itemInstance, key);
+            
             attachedContainer.AddItem(itemInstance);
 
             Log.Information(this, "Item {item} spawned in container {container}", Logs.ServerOnly, itemInstance.name, attachedContainer.ContainerName);
