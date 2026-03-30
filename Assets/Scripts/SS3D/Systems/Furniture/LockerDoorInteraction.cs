@@ -20,13 +20,10 @@ namespace SS3D.Systems.Furniture
         {
             _locker = locker;
 
-            if (DefaultIconHandle is { IsValid: true })
+            if (!TryingToLoadDefaultIcon && !DefaultIconHandle)
             {
-                return;
+                AcquireDefaultIcon();
             }
-            
-            AcquireDefaultIcon();
-            UnityEngine.Application.quitting += OnApplicationQuit;
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -58,19 +55,8 @@ namespace SS3D.Systems.Furniture
             return true;
         }
 
-        private static void OnApplicationQuit()
-        {
-            ReleaseDefaultIcon();
-            UnityEngine.Application.quitting -= OnApplicationQuit;
-        }
-
         private static async void AcquireDefaultIcon()
         {
-            if (TryingToLoadDefaultIcon || DefaultIconHandle)
-            {
-                return;
-            }
-
             TryingToLoadDefaultIcon = true;
             DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
 
@@ -78,8 +64,18 @@ namespace SS3D.Systems.Furniture
             {
                 ReleaseDefaultIcon();
             }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
 
             TryingToLoadDefaultIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            ReleaseDefaultIcon();
+            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
 
         private static void ReleaseDefaultIcon()

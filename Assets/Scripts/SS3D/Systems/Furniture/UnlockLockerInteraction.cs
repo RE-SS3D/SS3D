@@ -28,13 +28,10 @@ namespace SS3D.Systems.Inventory.Interactions
             _locker = locker;
             _permissionToUnlock = permission;
 
-            if (DefaultIconHandle is { IsValid: true })
+            if (!TryingToLoadDefaultIcon && !DefaultIconHandle)
             {
-                return;
+                AcquireDefaultIcon();
             }
-
-            AcquireDefaultIcon();
-            UnityEngine.Application.quitting += OnApplicationQuit;
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -93,17 +90,16 @@ namespace SS3D.Systems.Inventory.Interactions
 
         private async void AcquireDefaultIcon()
         {
-            if (TryingToLoadDefaultIcon)
-            {
-                return;
-            }
-
             TryingToLoadDefaultIcon = true;
             DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
 
             if (!DefaultIconHandle)
             {
                 ReleaseDefaultIcon();
+            }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
             }
 
             TryingToLoadDefaultIcon = false;

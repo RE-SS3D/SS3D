@@ -23,40 +23,10 @@ namespace SS3D.Systems.Combat.Interactions
         
         public HitInteraction()
         {
-            if (DefaultIconHandle is { IsValid: true })
+            if (!DefaultIconHandle && !TryingToLoadIcon)
             {
-                return;
+                AcquireDefaultIcon();
             }
-
-            AcquireDefaultIcon();
-            UnityEngine.Application.quitting += OnApplicationQuit;
-        }
-
-        private static async void AcquireDefaultIcon()
-        {
-            if (TryingToLoadIcon || DefaultIconHandle)
-            {
-                return;
-            }
-
-            TryingToLoadIcon = true;
-            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).ExecuteAsync();
-
-            if (!DefaultIconHandle)
-            {
-                DefaultIconHandle?.Dispose();
-                DefaultIconHandle = null;
-            }
-
-            TryingToLoadIcon = false;
-        }
-
-        private static void OnApplicationQuit()
-        {
-            DefaultIconHandle?.Dispose();
-            DefaultIconHandle = null;
-            
-            UnityEngine.Application.quitting -= OnApplicationQuit;
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -117,6 +87,40 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             return false;
+        }
+
+        private static async void AcquireDefaultIcon()
+        {
+            if (TryingToLoadIcon || DefaultIconHandle)
+            {
+                return;
+            }
+
+            TryingToLoadIcon = true;
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).ExecuteAsync();
+
+            if (!DefaultIconHandle)
+            {
+                ReleaseDefaultIcon();
+            }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
+
+            TryingToLoadIcon = false;
+        }
+
+        private static void OnApplicationQuit()
+        {
+            ReleaseDefaultIcon();
+            UnityEngine.Application.quitting -= OnApplicationQuit;
+        }
+
+        private static void ReleaseDefaultIcon()
+        {
+            DefaultIconHandle?.Dispose();
+            DefaultIconHandle = null;
         }
     }
 }

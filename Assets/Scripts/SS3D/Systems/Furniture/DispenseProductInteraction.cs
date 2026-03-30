@@ -23,13 +23,10 @@ namespace SS3D.Systems.Furniture
         
         public DispenseProductInteraction()
         {
-            if (DefaultIconHandle is { IsValid: true })
+            if (!TryingToLoadIcon && !DefaultIconHandle)
             {
-                return;
+                AcquireDefaultIcon();
             }
-
-            AcquireDefaultIcon();
-            UnityEngine.Application.quitting += OnApplicationQuit;
         }
 
         /// <inheritdoc />
@@ -76,11 +73,6 @@ namespace SS3D.Systems.Furniture
         
         private static async void AcquireDefaultIcon()
         {
-            if (TryingToLoadIcon || DefaultIconHandle)
-            {
-                return;
-            }
-
             TryingToLoadIcon = true;
             DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).ExecuteAsync();
 
@@ -89,11 +81,15 @@ namespace SS3D.Systems.Furniture
                 DefaultIconHandle?.Dispose();
                 DefaultIconHandle = null;
             }
+            else
+            {
+                UnityEngine.Application.quitting += OnApplicationQuit;
+            }
 
             TryingToLoadIcon = false;
         }
 
-        private void OnApplicationQuit()
+        private static void OnApplicationQuit()
         {
             DefaultIconHandle?.Dispose();
             DefaultIconHandle = null;
