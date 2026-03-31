@@ -13,7 +13,7 @@ namespace SS3D.CodeGeneration.Creators
         /// <summary>
         /// Creates a list of database assets in the object path, with the defined class name and using a list of provided assets as its elements.
         /// </summary>
-        public static void CreateAtPath(string path, string className, [NotNull] List<Object> assets, string namespaceName)
+        public static void CreateAtPath(string path, string className, [NotNull] List<string> guids, string namespaceName)
         {
             string dataPath = Application.dataPath;
             string fullPath = dataPath + path;
@@ -23,9 +23,9 @@ namespace SS3D.CodeGeneration.Creators
                 Directory.CreateDirectory(fullPath);
             }
 
-            DatabaseScriptWriter.Write(fullPath, className, assets, namespaceName);
+            DatabaseScriptWriter.Write(fullPath, className, guids, namespaceName);
 
-            if (EditorWindow.focusedWindow != null)
+            if (EditorWindow.focusedWindow)
             {
                 EditorWindow.focusedWindow.ShowNotification(new GUIContent($"All assets loaded and {namespaceName}.{className} class created at {path}."));
             }

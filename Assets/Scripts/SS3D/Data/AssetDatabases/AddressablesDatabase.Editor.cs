@@ -84,7 +84,7 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            DatabaseScriptCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, Assets.Values.ToList(), DatabaseAssetNamespaceName);
+            DatabaseScriptCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, AssetGuids, DatabaseAssetNamespaceName);
         }
 
         public bool AddToAddressables([NotNull] Object asset)

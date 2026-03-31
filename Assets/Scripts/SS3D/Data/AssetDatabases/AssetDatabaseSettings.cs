@@ -2,6 +2,7 @@
 using Coimbra;
 using SS3D.Attributes;
 using SS3D.CodeGeneration.Creators;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -40,7 +41,11 @@ namespace SS3D.Data.AssetDatabases
 
             const string dataPath = AddressablesDatabase.DatabaseAssetPath;
 
-            DatabaseScriptCreator.CreateAtPath(dataPath, "AssetDatabases", new(IncludedAssetDatabases), AddressablesDatabase.DatabaseAssetNamespaceName);
+            DatabaseScriptCreator.CreateAtPath(
+                dataPath,
+                "AssetDatabases",
+                IncludedAssetDatabases.Select(db => db.DatabaseID).ToList(),
+                AddressablesDatabase.DatabaseAssetNamespaceName);
         }
 #endif
     }
