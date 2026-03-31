@@ -33,17 +33,11 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public void LoadAssetsFromAssetGroup()
         {
-            Assets = new();
             AssetGuids = new();
 
-            foreach (AddressableAssetEntry entry in AssetGroup.entries)
+            foreach (AddressableAssetEntry entry in AssetGroup.entries.Where(entry => !AssetGuids.Contains(entry.guid)))
             {
-                Assets.TryAdd(entry.guid, entry.MainAsset);
-
-                if (!AssetGuids.Contains(entry.guid))
-                {
-                    AssetGuids.Add(entry.guid);
-                }
+                AssetGuids.Add(entry.guid);
             }
 
             EditorUtility.SetDirty(this);
@@ -60,7 +54,6 @@ namespace SS3D.Data.AssetDatabases
             string path = AssetDatabase.GUIDToAssetPath(asset.name);
             string guid = AssetDatabase.GUIDFromAssetPath(path).ToString();
 
-            Assets.Add(guid, asset);
             AssetGuids.Add(guid);
         }
 
