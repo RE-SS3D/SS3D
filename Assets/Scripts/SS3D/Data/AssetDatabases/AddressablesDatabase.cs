@@ -1,9 +1,5 @@
-using Coimbra;
-using JetBrains.Annotations;
-using Serilog;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases
 {
@@ -19,52 +15,25 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public string DatabaseName;
 
-        public string DatabaseID;
-
         /// <summary>
-        /// All loaded assets that will be included in the built game.
+        /// The GUID of this <see cref="ScriptableObject"/>
         /// </summary>
-        public SerializableDictionary<string, Object> Assets;
+        public string DatabaseID;
 
         /// <summary>
         /// All asset GUIDs registered in this database.
         /// </summary>
         [SerializeField]
-        internal List<string> AssetGuids;
-
-        /// <summary>
-        /// Gets an asset based on its ID (index).
-        /// </summary>
-        /// <param name="id">Uses the ID of the asset cast into a int to get the asset from a list position.</param>
-        /// <typeparam name="T">The type of asset to get.</typeparam>
-        /// <returns></returns>
-        [CanBeNull]
-        public T Get<T>([NotNull] string id)
-            where T : Object
-        {
-            if (!Assets.TryGetValue(id, out Object asset))
-            {
-                Log.Error($"{nameof(AddressablesDatabase)} Asset of {id} is not found on the {DatabaseName} database.");
-
-                return null;
-            }
-
-            if (typeof(T) != typeof(MonoBehaviour) && asset is GameObject gameObject && gameObject.TryGetComponent(out T component))
-            {
-                return component;
-            }
-
-            return asset as T;
-        }
+        public List<string> AssetGuids;
 
         /// <summary>
         /// Checks if the database has an asset with the given GUID.
         /// </summary>
-        public bool Has([NotNull] string guid) => AssetGuids != null && AssetGuids.Contains(guid);
+        public bool Has(string guid) => AssetGuids != null && AssetGuids.Contains(guid);
 
         /// <summary>
         /// Returns the GUID itself — Addressables uses GUID as its native key.
         /// </summary>
-        public string ResolveKey([NotNull] string guid) => guid;
+        public string ResolveKey(string guid) => guid;
     }
 }
