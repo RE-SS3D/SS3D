@@ -8,6 +8,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
+using SS3D.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -63,6 +64,7 @@ namespace SS3D.Systems.Audio
 
         /// <summary>
         /// Grabs a free audio source and parents it to a specific object before playing it.
+        /// The <see cref="AudioClip"/> has to be loaded before passing to this function.
         /// </summary>
         [Server]
         public void PlayAudioSource(AudioType audioType, string audioClipId, NetworkObject parent)
@@ -73,10 +75,19 @@ namespace SS3D.Systems.Audio
         /// <summary>
         /// Plays a sound clip at a position, parent, with specific volume, pitch, and ranges.
         /// Volume, pitch, and ranges are optional.
+        /// The <see cref="AudioClip"/> has to be loaded before passing to this function.
         /// </summary>
         [Server]
-        public void PlayAudioSource(AudioType audioType, string audioClipId, Vector3 position, NetworkObject parent,
-            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void PlayAudioSource(
+            AudioType audioType,
+            string audioClipId,
+            Vector3 position,
+            NetworkObject parent,
+            bool isLooping = false,
+            float volume = 0.7f,
+            float pitch = 1f,
+            float minRange = 1f,
+            float maxRange = 500f)
         {
             RpcPlayAudioSource(audioType, audioClipId, position, parent, isLooping, volume, pitch, minRange, maxRange);
         }
@@ -100,22 +111,39 @@ namespace SS3D.Systems.Audio
         }
 
         [ObserversRpc]
-        public void RpcPlayAudioSource(AudioType type, string audioClipID, Vector3 position, NetworkObject parent,
-            bool isLooping = false, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
+        public void RpcPlayAudioSource(
+            AudioType type,
+            string audioClipID,
+            Vector3 position,
+            NetworkObject parent,
+            bool isLooping = false,
+            float volume = 0.7f,
+            float pitch = 1f,
+            float minRange = 1f,
+            float maxRange = 500f)
         {
             AudioSource audioSource = FindAvailableAudioSource(type);
+            
+            AssetHandle<AudioClip> clipHandle = new AssetRequest<AudioClip>(audioClipID).Execute();
+
+            if (!clipHandle)
+            {
+                Log.Error(this, $"Audio clip not found.\t {audioClipID}");
+                
+                return;
+            }
 
             audioSource.gameObject.transform.position = position;
-            audioSource.clip = AssetLoader.Get<AudioClip>(AssetDatabases.Sounds, audioClipID);
+            audioSource.clip = clipHandle.Asset;
             audioSource.volume = volume;
             audioSource.pitch = pitch;
             audioSource.minDistance = minRange;
             audioSource.maxDistance = maxRange;
 
-            //If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
-            //This is useful for things that are obviously creating the sound, like a mouse's squeak
+            // If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
+            // This is useful for things that are obviously creating the sound, like a mouse's squeak
             //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
-            audioSource.transform.parent = parent == null ? null : parent.transform;
+            audioSource.transform.parent = parent ? parent.transform : null;
             audioSource.loop = isLooping;
             audioSource.Play();
         }

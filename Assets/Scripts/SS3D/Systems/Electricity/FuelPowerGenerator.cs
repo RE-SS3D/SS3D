@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
@@ -29,6 +30,8 @@ namespace System.Electricity
         [SyncVar(OnChange = nameof(SyncGeneratorToggle))]
         private bool _enabled = false; // If the generator is working.
         private float _onPowerProduction = 10f;
+        
+        private AssetHandle<AudioClip> _generatorClipHandle;
 
         public override void OnStartClient()
         {
@@ -36,6 +39,18 @@ namespace System.Electricity
             GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleGeneratorToggle;
             _onPowerProduction = _powerProduction;
             HandlePowerGenerated(false);
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireAudioClips();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ReleaseAudioClips();
         }
 
         [Server]
@@ -93,6 +108,28 @@ namespace System.Electricity
         private void HandlePowerGenerated(bool isEnabled)
         {
             _powerProduction = isEnabled ? _onPowerProduction : 0f; 
+        }
+
+        private async void AcquireAudioClips()
+        {
+            _generatorClipHandle = await new AssetRequest<AudioClip>(Sounds.FuelPowerGenerator).ExecuteAsync();
+
+            if (!_generatorClipHandle)
+            {
+                ReleaseHandle(ref _generatorClipHandle);
+            }
+        }
+
+        private void ReleaseAudioClips()
+        {
+            ReleaseHandle(ref _generatorClipHandle);
+        }
+        
+        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> handle) 
+            where T : class
+        {
+            handle?.Dispose();
+            handle = null;
         }
     }
 }

@@ -1,4 +1,5 @@
 using FishNet.Object;
+using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
@@ -40,6 +41,9 @@ namespace SS3D.Systems.Furniture
         /// The asset handle for the take icon.
         /// </summary>
         private AssetHandle<Sprite> _takeIconHandle;
+        
+        private AssetHandle<AudioClip> _emptyClipHandle;
+        private AssetHandle<AudioClip> _dispenseClipHandle;
 
         protected override void OnAwake()
         {
@@ -67,7 +71,7 @@ namespace SS3D.Systems.Furniture
         /// If there's not enough stock, a sound is played and the product isn't dispensed.
         /// </summary>
         [Server]
-        public void DispenseProduct(int productIndex)
+        public async void DispenseProduct(int productIndex)
         {
             if (_powerConsumer.PowerStatus == PowerStatus.Inactive)
             {
@@ -106,7 +110,7 @@ namespace SS3D.Systems.Furniture
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
-            itemSystem.SpawnItemAsync(productToDispenseStock.Product.PrefabAsset.Id, _dispensingTransform.position, quaternion);
+            await itemSystem.SpawnItemAsync(productToDispenseStock.Product.PrefabAsset.Id, _dispensingTransform.position, quaternion);
         }
 
         /// <inheritdoc />
@@ -137,12 +141,39 @@ namespace SS3D.Systems.Furniture
         private async void AcquireAssets()
         {
             _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).ExecuteAsync();
+
+            if (!_takeIconHandle)
+            {
+                ReleaseHandle(ref _takeIconHandle);
+            }
+
+            _emptyClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).ExecuteAsync();
+
+            if (!_emptyClipHandle)
+            {
+                ReleaseHandle(ref _emptyClipHandle);
+            }
+
+            _dispenseClipHandle = await new AssetRequest<AudioClip>(Sounds.Can1).ExecuteAsync();
+
+            if (!_dispenseClipHandle)
+            {
+                ReleaseHandle(ref _dispenseClipHandle);
+            }
         }
 
         private void ReleaseAssets()
         {
-            _takeIconHandle?.Dispose();
-            _takeIconHandle = null;
+            ReleaseHandle(ref _takeIconHandle);
+            ReleaseHandle(ref _emptyClipHandle);
+            ReleaseHandle(ref _dispenseClipHandle);
+        }
+
+        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> handle)
+            where T : class
+        {
+            handle?.Dispose();
+            handle = null;
         }
     }
 }

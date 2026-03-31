@@ -1,9 +1,11 @@
 ﻿using FishNet.Object.Synchronizing;
+using JetBrains.Annotations;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
 using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Core;
+using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using System.Electricity;
 using UnityEngine.Serialization;
@@ -30,17 +32,12 @@ namespace SS3D.Systems.Audio
         // TODO: Update this file with boombox icons from asset data.
         public Sprite InteractionIcon;
         public Sprite InteractionIconOn;
+        
+        private AssetHandle<AudioClip>[] _songHandles;
 
         public bool GetState()
         {
             return AudioOn;
-        }
-        
-        protected override void OnEnabled()
-        {
-            base.OnEnabled();
-            
-            _powerConsumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
         }
 
         public void Toggle()
@@ -60,20 +57,6 @@ namespace SS3D.Systems.Audio
             }
             else
             {
-                SubSystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
-            }
-        }
-
-        private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)
-        {
-            UpdateMusic(newStatus);
-        }
-
-        private void UpdateMusic(PowerStatus powerStatus)
-        {
-            if (AudioOn && powerStatus != PowerStatus.Powered)
-            {
-                AudioOn = false;
                 SubSystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
             }
         }
@@ -106,6 +89,68 @@ namespace SS3D.Systems.Audio
 
             interactions.Insert(GetState() ? interactions.Count : interactions.Count - 1, toggleInteraction);
             return interactions.ToArray();
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireAudioClips();
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            _powerConsumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ReleaseAudioClips();
+        }
+
+        private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)
+        {
+            UpdateMusic(newStatus);
+        }
+
+        private void UpdateMusic(PowerStatus powerStatus)
+        {
+            if (AudioOn && powerStatus != PowerStatus.Powered)
+            {
+                AudioOn = false;
+                SubSystems.Get<AudioSubSystem>().StopAudioSource(NetworkObject);
+            }
+        }
+
+        private async void AcquireAudioClips()
+        {
+            _songHandles = new AssetHandle<AudioClip>[_songReferences.Count];
+
+            for (int i = 0; i < _songReferences.Count; i++)
+            {
+                _songHandles[i] = await new AssetRequest<AudioClip>(_songReferences[i]).ExecuteAsync();
+
+                if (!_songHandles[i])
+                {
+                    ReleaseAudioClip(ref _songHandles[i]);
+                }
+            }
+        }
+
+        private void ReleaseAudioClips()
+        {
+            for (int i = 0; i < _songHandles.Length; i++)
+            {
+                ReleaseAudioClip(ref _songHandles[i]);
+            }
+        }
+
+        private void ReleaseAudioClip([CanBeNull] ref AssetHandle<AudioClip> clipHandle)
+        {
+            clipHandle?.Dispose();
+            clipHandle = null;
         }
     }
 }

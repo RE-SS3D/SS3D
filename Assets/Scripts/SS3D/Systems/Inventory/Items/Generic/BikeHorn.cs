@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.Linq;
 using SS3D.Core;
 using SS3D.Data;
@@ -22,6 +23,8 @@ namespace SS3D.Systems.Inventory.Items.Generic
         [SerializeField] private Sprite _honkIcon;
 
         private static readonly int HonkAnimation = Animator.StringToHash("Honk");
+        
+        private AssetHandle<AudioClip> _honkClipHandle;
 
         public void Honk()
         {
@@ -44,6 +47,40 @@ namespace SS3D.Systems.Inventory.Items.Generic
             interactions.Add(honk);
 
             return interactions.ToArray();
+        }
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            AcquireAudioClips();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            ReleaseAudioClips();
+        }
+
+        private async void AcquireAudioClips()
+        {
+            _honkClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).ExecuteAsync();
+
+            if (!_honkClipHandle)
+            {
+                ReleaseHandle(ref _honkClipHandle);
+            }
+        }
+        
+        private void ReleaseAudioClips()
+        {
+            ReleaseHandle(ref _honkClipHandle);
+        }
+
+        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> assetHandle)
+            where T : Object
+        {
+            assetHandle?.Dispose();
+            assetHandle = null;
         }
     }
 }

@@ -2,8 +2,12 @@
 using FishNet.Object;
 using SS3D.Core;
 using FishNet;
+using JetBrains.Annotations;
+using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using System;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace SS3D.Systems.Audio
 {
@@ -62,6 +66,19 @@ namespace SS3D.Systems.Audio
         [SerializeField]
         [Tooltip("List of references of possible sounds that will play when this object collides heavily.")]
         private ObjectAssetReference[] _hardImpactSoundReferences;
+        
+        private AssetHandle<AudioClip>[] _lightImpactSoundHandles;
+        private AssetHandle<AudioClip>[] _hardImpactSoundHandles;
+
+        private void Awake()
+        {
+            AcquireAudioClips();
+        }
+
+        private void OnDestroy()
+        {
+            ReleaseAudioClips();
+        }
 
         //For some reason, this is needed to have an enable/disable feature. Peculiar.
         private void FixedUpdate() { }
@@ -114,6 +131,52 @@ namespace SS3D.Systems.Audio
             ObjectAssetReference currentClipReference = availableSounds[Random.Range(0, availableSounds.Length)];
 
             return currentClipReference;
+        }
+
+        private async void AcquireAudioClips()
+        {
+            _lightImpactSoundHandles = new AssetHandle<AudioClip>[_lightImpactSoundReferences.Length];
+
+            for (int i = 0; i < _lightImpactSoundReferences.Length; i++)
+            {
+                _lightImpactSoundHandles[i] = await new AssetRequest<AudioClip>(_lightImpactSoundReferences[i]).ExecuteAsync();
+
+                if (!_lightImpactSoundHandles[i])
+                {
+                    ReleaseAudioClip(ref _lightImpactSoundHandles[i]);
+                }
+            }
+
+            _hardImpactSoundHandles = new AssetHandle<AudioClip>[_hardImpactSoundReferences.Length];
+
+            for (int i = 0; i < _hardImpactSoundReferences.Length; i++)
+            {
+                _hardImpactSoundHandles[i] = await new AssetRequest<AudioClip>(_hardImpactSoundReferences[i]).ExecuteAsync();
+
+                if (!_hardImpactSoundHandles[i])
+                {
+                    ReleaseAudioClip(ref _hardImpactSoundHandles[i]);
+                }
+            }
+        }
+
+        private void ReleaseAudioClips()
+        {
+            for (int i = 0; i < _lightImpactSoundHandles.Length; i++)
+            {
+                ReleaseAudioClip(ref _lightImpactSoundHandles[i]);
+            }
+
+            for (int i = 0; i < _hardImpactSoundHandles.Length; i++)
+            {
+                ReleaseAudioClip(ref _hardImpactSoundHandles[i]);
+            }
+        }
+
+        private void ReleaseAudioClip([CanBeNull] ref AssetHandle<AudioClip> clipHandle)
+        {
+            clipHandle?.Dispose();
+            clipHandle = null;
         }
     }
 }
