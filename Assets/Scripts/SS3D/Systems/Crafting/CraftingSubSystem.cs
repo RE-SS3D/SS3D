@@ -52,6 +52,16 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         private AssetHandle<ParticleSystem> _craftingSmokeHandle;
 
+        /// <summary>
+        /// The array of asset handles for the recipe.
+        /// </summary>
+        private AssetHandle<CraftingRecipe>[] _recipeHandles;
+        
+        /// <summary>
+        /// Flag to check before filling recipes in.
+        /// </summary>
+        private bool _recipesLoaded;
+
         public override void OnStartNetwork()
         {
             // Need to be called both on server and client,
@@ -77,14 +87,58 @@ namespace SS3D.Systems.Crafting
             ReleaseAssets();
         }
 
-        private void ReleaseAssets()
-        {
-            _craftingSmokeHandle?.Dispose();
-        }
-
         private async void AcquireAssets()
         {
             _craftingSmokeHandle = await new AssetRequest<ParticleSystem>(ParticlesEffects.ConstructionParticle).LoadAsync();
+
+            if (!_craftingSmokeHandle)
+            {
+                ReleaseHandle(ref _craftingSmokeHandle);
+            }
+
+            AddressablesDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
+
+            if (!recipesDataBase)
+            {
+                Log.Error(this, "recipeDatabase is null");
+
+                return;
+            }
+
+            _recipeHandles = new AssetHandle<CraftingRecipe>[recipesDataBase.AssetGuids.Count];
+
+            for (int i = 0; i < recipesDataBase.AssetGuids.Count; i++)
+            {
+                string guid = recipesDataBase.AssetGuids[i];
+                _recipeHandles[i] = await new AssetRequest<CraftingRecipe>(guid).LoadAsync();
+
+                if (_recipeHandles[i])
+                {
+                    continue;
+                }
+
+                ReleaseHandle(ref _recipeHandles[i]);
+                Log.Error(this, $"Crafting recipe with guid {guid} could not be loaded");
+            }
+            
+            _recipesLoaded = true;
+        }
+
+        private void ReleaseAssets()
+        {
+            ReleaseHandle(ref _craftingSmokeHandle);
+
+            for (int i = 0; i < _recipeHandles.Length; i++)
+            {
+                ReleaseHandle(ref _recipeHandles[i]);
+            }
+        }
+        
+        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> handle)
+            where T : class
+        {
+            handle?.Dispose();
+            handle = null;
         }
 
         /// <summary>
@@ -92,24 +146,15 @@ namespace SS3D.Systems.Crafting
         /// up which recipes are available for a given interaction and target.
         /// </summary>
         [ServerOrClient]
-        private void FillRecipeOrganiser()
+        private async void FillRecipeOrganiser()
         {
-            AddressablesDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
-
-            if (!recipesDataBase)
+            while (!_recipesLoaded)
             {
-                Log.Error(this, "recipeDatabase is null");
-                return;
+                await Task.Yield();
             }
 
-            foreach (Object asset in recipesDataBase.Assets.Values)
+            foreach (CraftingRecipe recipe in from recipeHandle in _recipeHandles where recipeHandle select recipeHandle.Asset)
             {
-                if (asset is not CraftingRecipe recipe)
-                {
-                    Log.Error(this, "Crafting recipe database contains object which is not recipe");
-                    continue;
-                }
-
                 _recipeOrganiser.TryAdd(recipe.Target.Id, new());
                 _recipeOrganiser[recipe.Target.Id].Add(recipe);
             }
