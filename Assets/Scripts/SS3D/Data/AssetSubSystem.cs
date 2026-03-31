@@ -83,10 +83,6 @@ namespace SS3D.Data
             return database;
         }
 
-        [CanBeNull]
-        public TAsset Get<TAsset>([NotNull] string databaseId, [NotNull] string assetId)
-            where TAsset : Object => GetDatabase(databaseId)?.Get<TAsset>(assetId);
-
         public bool Has([NotNull] string assetId) => IsInitialized && _catalogs != null && _catalogs.Any(catalog => catalog.Has(assetId));
 
         /// <inheritdoc cref="AcquireAsync{T}(string)"/>
