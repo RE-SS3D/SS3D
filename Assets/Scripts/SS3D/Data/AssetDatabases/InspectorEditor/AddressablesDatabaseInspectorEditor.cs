@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
@@ -17,13 +17,10 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         public VisualTreeAsset _assetDatabaseVisualTree;
 
         private ScrollView _assetsListView;
-        private PropertyField _assetGuidsListView;
         private Button _loadAssetsButton;
         private ObjectField _assetGroupObjectField;
         private Label _assetDatabaseLabel;
         private TextField _enumNameTextField;
-
-        private SerializedProperty _guidsProperty;
 
         private void OnEnable()
         {
@@ -58,7 +55,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 return null;
             }
 
-            VisualElement root = new VisualElement();
+            VisualElement root = new();
             _assetDatabaseVisualTree.CloneTree(root);
 
             _assetDatabaseLabel = root.Q<Label>("asset-database-label");
@@ -66,12 +63,10 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetGroupObjectField = root.Q<ObjectField>("asset-group-field");
             _loadAssetsButton = root.Q<Button>("load-assets-from-addressables-group-button");
             _assetsListView = root.Q<ScrollView>("assets-list");
-            _assetGuidsListView = root.Q<PropertyField>("asset-guids-field");
 
             _assetDatabaseLabel.text = $"{_addressablesDatabase.name} ASSET DATABASE";
             _enumNameTextField.value = _addressablesDatabase.DatabaseName;
             _assetGroupObjectField.value = _addressablesDatabase.AssetGroup;
-            _guidsProperty = serializedObject.FindProperty(nameof(_addressablesDatabase.AssetGuids));
 
             _addressablesDatabase.LoadAssetsFromAssetGroup();
 
@@ -79,22 +74,9 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
             _addressablesDatabase.GenerateDatabaseCode();
 
-            if (_addressablesDatabase.Assets != null)
+            if (_addressablesDatabase.AssetGuids != null)
             {
-                foreach (KeyValuePair<string, Object> asset in _addressablesDatabase.Assets)
-                {
-                    ObjectField objectField = new()
-                    {
-                        value = asset.Value
-                    };
-
-                    _assetsListView.Add(objectField);
-                }
-            }
-
-            if (_addressablesDatabase.AssetGuids != null && _guidsProperty != null)
-            {
-                _assetGuidsListView.BindProperty(_guidsProperty);
+                PopulateAssetListView();
             }
 
             _loadAssetsButton.clicked += HandleLoadAssetsButtonPressed;
@@ -111,31 +93,34 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _addressablesDatabase.LoadAssetsFromAssetGroup();
             _assetsListView.Clear();
 
-            foreach (KeyValuePair<string, Object> asset in _addressablesDatabase.Assets)
-            {
-                ObjectField objectField = new()
-                {
-                    value = asset.Value
-                };
-
-                _assetsListView.Add(objectField);
-            }   
+            PopulateAssetListView();
 
             EditorUtility.SetDirty(_addressablesDatabase);
 
             _addressablesDatabase.GenerateDatabaseCode();
         }
 
+        private void PopulateAssetListView()
+        {
+            foreach (ObjectField objectField in _addressablesDatabase.AssetGuids.Select(AssetDatabase.GUIDToAssetPath).
+                Select(AssetDatabase.LoadAssetAtPath<Object>).
+                Select(asset => new ObjectField { value = asset, }))
+            {
+                _assetsListView.Add(objectField);
+            }
+        }
+
         private string GetDatabaseID()
         {
-            string assetPath = UnityEditor.AssetDatabase.GetAssetPath(_addressablesDatabase);
+            string assetPath = AssetDatabase.GetAssetPath(_addressablesDatabase);
 
             if (!File.Exists(assetPath))
             {
                 return null;
             }
 
-            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+            string guid = AssetDatabase.AssetPathToGUID(assetPath);
+
             return guid;
         }
     }

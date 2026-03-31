@@ -28,7 +28,6 @@
                     <ui:Label tabindex="-1" text="LOADED ASSETS" display-tooltip-when-elided="true" name="asset-database-label" style="-unity-font: url(&quot;project://database/Assets/Art/Font/Fonts/SquareDeal.ttf?fileID=12800000&amp;guid=e63f6323c0213cc47bf08bbcfe46a239&amp;type=3#SquareDeal&quot;); color: rgb(255, 255, 255); -unity-font-style: normal; -unity-font-definition: url(&quot;project://database/Assets/Content/Systems/UI/Font/Fonts/OdetoIdleGamingSDF.asset?fileID=11400000&amp;guid=85349eec352cce944bfbd828955be891&amp;type=2#OdetoIdleGamingSDF&quot;); margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; height: 4px;" />
                 </ui:VisualElement>
                 <ui:ScrollView name="assets-list" mode="Vertical" horizontal-scroller-visibility="Hidden" style="padding-top: 0; background-color: rgba(46, 46, 46, 0.36); padding-left: 20px; padding-right: 20px; padding-bottom: 20px; margin-top: 0; align-self: stretch; height: auto; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; margin-left: 0; margin-right: 0; margin-bottom: 0;" />
-                <uie:PropertyField name="asset-guids-field" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
