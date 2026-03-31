@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using SS3D.Logging;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
@@ -31,8 +32,8 @@ namespace SS3D.Data.AssetDatabases
 
             string assetPath = System.IO.Path.Combine(ObjectAssetPath, $"{asset.name}.asset");
 
-            UnityEditor.AssetDatabase.CreateAsset(assetReference, assetPath);
-            UnityEditor.AssetDatabase.SaveAssetIfDirty(assetReference);
+            AssetDatabase.CreateAsset(assetReference, assetPath);
+            AssetDatabase.SaveAssetIfDirty(assetReference);
 
             return assetReference;
         }
@@ -46,8 +47,8 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            string assetPath = UnityEditor.AssetDatabase.GetAssetPath(asset);
-            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+            string assetPath = AssetDatabase.GetAssetPath(asset);
+            string guid = AssetDatabase.AssetPathToGUID(assetPath);
 
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
             AddressableAssetEntry entry = settings.FindAssetEntry(guid);
