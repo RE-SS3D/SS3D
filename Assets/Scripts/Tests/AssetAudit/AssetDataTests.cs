@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Coimbra;
+using JetBrains.Annotations;
 using NUnit.Framework;
 using SS3D.Data.AssetDatabases;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace AssetAudit
@@ -20,7 +22,8 @@ namespace AssetAudit
         /// <summary>
         /// Test to confirm all included asset databases are not null.
         /// </summary>
-        [Test, TestCaseSource(nameof(AllAssetDatabases))]
+        [Test]
+        [TestCaseSource(nameof(AllAssetDatabases))]
         public void IncludedAssetDatabasesAreNotNull(AddressablesDatabase database)
         {
             Assert.IsTrue(database != null);
@@ -75,62 +78,39 @@ namespace AssetAudit
         /// <summary>
         /// Test to see if there is any null references on any database assets.
         /// </summary>
-        [Test, TestCaseSource(nameof(AllAssetDatabases))]
-        public void IncludedAssetDatabasesDoNotContainNullObjects(AddressablesDatabase addressablesDatabase)
+        [Test]
+        [TestCaseSource(nameof(AllAssetDatabases))]
+        public void IncludedAssetDatabasesDoNotContainNullObjects([NotNull] AddressablesDatabase addressablesDatabase)
         {
             bool hasNullAssets = false;
-            Dictionary<AddressablesDatabase, List<int>> assetDatabasesNullRefIndexes = new();
+            List<string> nullGuids = new();
 
-
-            for (int index = 0; index < addressablesDatabase.Assets.Count; index++)
+            foreach (string guid in
+                from guid in addressablesDatabase.AssetGuids
+                let path = AssetDatabase.GUIDToAssetPath(guid)
+                let asset = AssetDatabase.LoadAssetAtPath<Object>(path)
+                where !asset
+                select guid)
             {
-                Object asset = addressablesDatabase.Assets.Values.ToList()[index];
-
-                if (asset != null)
-                {
-                    continue;
-                }
-
                 hasNullAssets = true;
-                assetDatabasesNullRefIndexes.Add(addressablesDatabase, new List<int>());
-
-                assetDatabasesNullRefIndexes.TryGetValue(addressablesDatabase, out List<int> assetIndexes);
-                assetIndexes!.Add(index);
+                nullGuids.Add(guid);
             }
 
-            if (hasNullAssets)
+            if (!hasNullAssets)
             {
-                DebugNullAssets(assetDatabasesNullRefIndexes);
+                Assert.Pass();
+
+                return;
             }
 
-            Assert.IsFalse(hasNullAssets);
-        }
-
-        /// <summary>
-        /// Debugs all the null assets in databases.
-        /// </summary>
-        /// <param name="assetDatabasesNullRefIndexes"></param>
-        private static void DebugNullAssets(Dictionary<AddressablesDatabase, List<int>> assetDatabasesNullRefIndexes)
-        {
-            foreach (AddressablesDatabase assetDatabase in assetDatabasesNullRefIndexes.Keys)
+            foreach (string nullGuid in nullGuids)
             {
-                assetDatabasesNullRefIndexes.TryGetValue(assetDatabase, out List<int> assetIndexes);
-
-                if (assetIndexes == null)
-                {
-                    continue;
-                }
-
-                foreach (int assetIndex in assetIndexes)
-                {
-                    Debug.Log($"Asset is null on {assetDatabase.name} at index {assetIndex}");
-                }
+                Debug.LogError($"Asset is null on {addressablesDatabase.name} : {nullGuid}");
             }
+
+            Assert.Fail($"{addressablesDatabase.name} has null assets");
         }
 
-        public static List<AddressablesDatabase> AllAssetDatabases()
-        {
-            return ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
-        }
+        private static List<AddressablesDatabase> AllAssetDatabases() => ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
     }
 }
