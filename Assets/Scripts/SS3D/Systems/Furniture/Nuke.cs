@@ -48,7 +48,7 @@ namespace SS3D.Systems.Furniture
         {
             if (!_nukeIconHandle)
             {
-                _nukeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).ExecuteAsync();
+                _nukeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).LoadAsync();
             }
         }
 

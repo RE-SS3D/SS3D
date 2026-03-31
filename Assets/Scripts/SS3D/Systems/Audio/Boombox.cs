@@ -130,7 +130,7 @@ namespace SS3D.Systems.Audio
 
             for (int i = 0; i < _songReferences.Count; i++)
             {
-                _songHandles[i] = await new AssetRequest<AudioClip>(_songReferences[i]).ExecuteAsync();
+                _songHandles[i] = await new AssetRequest<AudioClip>(_songReferences[i]).LoadAsync();
 
                 if (!_songHandles[i])
                 {

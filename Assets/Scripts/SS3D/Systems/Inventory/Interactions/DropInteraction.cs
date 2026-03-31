@@ -109,7 +109,7 @@ namespace SS3D.Systems.Inventory.Interactions
         private static async void AcquireDefaultIcon()
         {
             TryingToLoadIcon = true;
-            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).ExecuteAsync();
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).LoadAsync();
 
             if (!DefaultIconHandle)
             {

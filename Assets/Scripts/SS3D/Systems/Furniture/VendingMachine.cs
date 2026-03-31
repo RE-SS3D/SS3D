@@ -140,21 +140,21 @@ namespace SS3D.Systems.Furniture
 
         private async void AcquireAssets()
         {
-            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).ExecuteAsync();
+            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).LoadAsync();
 
             if (!_takeIconHandle)
             {
                 ReleaseHandle(ref _takeIconHandle);
             }
 
-            _emptyClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).ExecuteAsync();
+            _emptyClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).LoadAsync();
 
             if (!_emptyClipHandle)
             {
                 ReleaseHandle(ref _emptyClipHandle);
             }
 
-            _dispenseClipHandle = await new AssetRequest<AudioClip>(Sounds.Can1).ExecuteAsync();
+            _dispenseClipHandle = await new AssetRequest<AudioClip>(Sounds.Can1).LoadAsync();
 
             if (!_dispenseClipHandle)
             {

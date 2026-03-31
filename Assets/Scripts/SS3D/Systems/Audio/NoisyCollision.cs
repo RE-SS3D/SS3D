@@ -139,7 +139,7 @@ namespace SS3D.Systems.Audio
 
             for (int i = 0; i < _lightImpactSoundReferences.Length; i++)
             {
-                _lightImpactSoundHandles[i] = await new AssetRequest<AudioClip>(_lightImpactSoundReferences[i]).ExecuteAsync();
+                _lightImpactSoundHandles[i] = await new AssetRequest<AudioClip>(_lightImpactSoundReferences[i]).LoadAsync();
 
                 if (!_lightImpactSoundHandles[i])
                 {
@@ -151,7 +151,7 @@ namespace SS3D.Systems.Audio
 
             for (int i = 0; i < _hardImpactSoundReferences.Length; i++)
             {
-                _hardImpactSoundHandles[i] = await new AssetRequest<AudioClip>(_hardImpactSoundReferences[i]).ExecuteAsync();
+                _hardImpactSoundHandles[i] = await new AssetRequest<AudioClip>(_hardImpactSoundReferences[i]).LoadAsync();
 
                 if (!_hardImpactSoundHandles[i])
                 {

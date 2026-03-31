@@ -33,7 +33,7 @@ namespace SS3D.Systems.Tile
         [ItemCanBeNull]
         public static async Task<PlacedTileObject> CreateAsync(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
-            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(tileObjectSo.PrefabAsset).ExecuteAsync();
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(tileObjectSo.PrefabAsset).LoadAsync();
 
             if (!handle)
             {

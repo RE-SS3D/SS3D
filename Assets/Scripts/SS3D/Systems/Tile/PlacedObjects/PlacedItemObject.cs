@@ -38,7 +38,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(itemSo.PrefabAsset).ExecuteAsync();
+                AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(itemSo.PrefabAsset).LoadAsync();
 
                 if (!handle)
                 {

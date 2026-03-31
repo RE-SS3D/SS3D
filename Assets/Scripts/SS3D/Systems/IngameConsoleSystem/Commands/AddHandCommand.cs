@@ -44,7 +44,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             Player Player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
             Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(Player);
 
-            AssetHandle<Hand> leftHandHandle = new AssetRequest<Hand>(Items.HumanHandLeft).Execute();
+            AssetHandle<Hand> leftHandHandle = new AssetRequest<Hand>(Items.HumanHandLeft).Load();
 
             if (!leftHandHandle)
             {

@@ -136,8 +136,8 @@ namespace SS3D.Systems.Inventory.Containers
 
         private async void AcquireAssets()
         {
-            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).ExecuteAsync();
-            _openIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
+            _takeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Take).LoadAsync();
+            _openIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).LoadAsync();
 
             if (!_takeIconHandle)
             {

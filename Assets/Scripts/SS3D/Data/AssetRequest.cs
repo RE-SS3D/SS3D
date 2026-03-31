@@ -29,7 +29,7 @@ namespace SS3D.Data
         /// Executes the request: resolves the asset subsystem, loads the asset, and returns a ref-counted handle.
         /// Returns <see langword="null"/> if the subsystem is unavailable or the asset is not found.
         /// </summary>
-        public async Task<AssetHandle<T>> ExecuteAsync()
+        public async Task<AssetHandle<T>> LoadAsync()
         {
             if (!SubSystems.TryGet(out AssetSubSystem assetSubSystem) || !assetSubSystem)
             {
@@ -39,6 +39,10 @@ namespace SS3D.Data
             return await assetSubSystem.AcquireAsync<T>(_key);
         }
 
-        public AssetHandle<T> Execute() => ExecuteAsync().GetAwaiter().GetResult();
+        /// <summary>
+        /// Executes the request: resolves the asset subsystem, loads the asset, and returns a ref-counted handle.
+        /// Returns <see langword="null"/> if the subsystem is unavailable or the asset is not found.
+        /// </summary>
+        public AssetHandle<T> Load() => LoadAsync().GetAwaiter().GetResult();
     }
 }

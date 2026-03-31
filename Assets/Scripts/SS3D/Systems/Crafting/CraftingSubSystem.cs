@@ -84,7 +84,7 @@ namespace SS3D.Systems.Crafting
 
         private async void AcquireAssets()
         {
-            _craftingSmokeHandle = await new AssetRequest<ParticleSystem>(ParticlesEffects.ConstructionParticle).ExecuteAsync();
+            _craftingSmokeHandle = await new AssetRequest<ParticleSystem>(ParticlesEffects.ConstructionParticle).LoadAsync();
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
                     
-                AssetHandle<GameObject> secondaryHandle = await new AssetRequest<GameObject>(secondaryResult.Asset).ExecuteAsync();
+                AssetHandle<GameObject> secondaryHandle = await new AssetRequest<GameObject>(secondaryResult.Asset).LoadAsync();
 
                 if (!secondaryHandle)
                 {
@@ -239,7 +239,7 @@ namespace SS3D.Systems.Crafting
 
         private async Task SpawnOrModifyMainResultAsync(ObjectAssetReference result, CraftingInteraction interaction, InteractionEvent interactionEvent, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
-            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(result).ExecuteAsync();
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(result).LoadAsync();
 
             if (!handle)
             {

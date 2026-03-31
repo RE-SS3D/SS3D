@@ -75,7 +75,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
         private static async void AcquireDefaultIcon()
         {
             TryingToLoadIcon = true;
-            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Honk).ExecuteAsync();
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Honk).LoadAsync();
 
             if (DefaultIconHandle)
             {

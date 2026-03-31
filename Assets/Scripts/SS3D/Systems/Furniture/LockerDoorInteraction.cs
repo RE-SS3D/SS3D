@@ -58,7 +58,7 @@ namespace SS3D.Systems.Furniture
         private static async void AcquireDefaultIcon()
         {
             TryingToLoadDefaultIcon = true;
-            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).ExecuteAsync();
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Open).LoadAsync();
 
             if (!DefaultIconHandle)
             {

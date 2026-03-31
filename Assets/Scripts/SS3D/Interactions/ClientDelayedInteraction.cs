@@ -58,7 +58,7 @@ namespace SS3D.Interactions
 
         private async void AcquireLoadingBar()
         {
-            _loadingBarPrefabHandle = await new AssetRequest<LoadingBar>(WorldSpaceUI.LoadingBar).ExecuteAsync();
+            _loadingBarPrefabHandle = await new AssetRequest<LoadingBar>(WorldSpaceUI.LoadingBar).LoadAsync();
 
             if (!_loadingBarPrefabHandle)
             {

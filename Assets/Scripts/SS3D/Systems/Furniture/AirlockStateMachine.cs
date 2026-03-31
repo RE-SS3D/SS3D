@@ -60,14 +60,14 @@ namespace SS3D.Systems.Furniture
 
         private async void AcquireAssets()
         {
-            _openSoundHandle = await new AssetRequest<AudioClip>(Sounds.AirlockOpen).ExecuteAsync();
+            _openSoundHandle = await new AssetRequest<AudioClip>(Sounds.AirlockOpen).LoadAsync();
 
             if (!_openSoundHandle)
             {
                 ReleaseClipHandle(ref _openSoundHandle);
             }
 
-            _closeSoundHandle = await new AssetRequest<AudioClip>(Sounds.AirlockClose).ExecuteAsync();
+            _closeSoundHandle = await new AssetRequest<AudioClip>(Sounds.AirlockClose).LoadAsync();
 
             if (!_closeSoundHandle)
             {

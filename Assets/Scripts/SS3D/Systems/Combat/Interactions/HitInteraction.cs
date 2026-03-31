@@ -97,7 +97,7 @@ namespace SS3D.Systems.Combat.Interactions
             }
 
             TryingToLoadIcon = true;
-            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).ExecuteAsync();
+            DefaultIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).LoadAsync();
 
             if (!DefaultIconHandle)
             {

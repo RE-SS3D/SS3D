@@ -577,7 +577,7 @@ namespace SS3D.Data.Networking
             {
                 for (int attempt = 0; attempt < _retryAttempts; attempt++)
                 {
-                    AssetHandle<Object> handle = await new AssetRequest<Object>(key).ExecuteAsync();
+                    AssetHandle<Object> handle = await new AssetRequest<Object>(key).LoadAsync();
 
                     if (!handle)
                     {

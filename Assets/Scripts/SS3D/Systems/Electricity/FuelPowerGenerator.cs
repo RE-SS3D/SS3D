@@ -112,7 +112,7 @@ namespace System.Electricity
 
         private async void AcquireAudioClips()
         {
-            _generatorClipHandle = await new AssetRequest<AudioClip>(Sounds.FuelPowerGenerator).ExecuteAsync();
+            _generatorClipHandle = await new AssetRequest<AudioClip>(Sounds.FuelPowerGenerator).LoadAsync();
 
             if (!_generatorClipHandle)
             {

@@ -41,7 +41,7 @@ namespace SS3D.Systems.Inventory.Items
         [ItemCanBeNull]
         public async Task<Item> SpawnItemAsync(string id, Vector3 position, Quaternion rotation)
         {
-            AssetHandle<Item> itemHandle = await new AssetRequest<Item>(id).ExecuteAsync();
+            AssetHandle<Item> itemHandle = await new AssetRequest<Item>(id).LoadAsync();
 
             if (!itemHandle)
             {
@@ -80,7 +80,7 @@ namespace SS3D.Systems.Inventory.Items
         [Server]
         public async Task<Item> SpawnItemInContainerAsync(string id, AttachedContainer attachedContainer)
         {
-            AssetHandle<Item> itemHandle = await new AssetRequest<Item>(id).ExecuteAsync();
+            AssetHandle<Item> itemHandle = await new AssetRequest<Item>(id).LoadAsync();
 
             if (!itemHandle)
             {

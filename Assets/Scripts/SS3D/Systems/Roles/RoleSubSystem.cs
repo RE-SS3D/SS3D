@@ -239,7 +239,7 @@ namespace SS3D.Systems.Roles
                 return null;
             }
 
-            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(assetReference).ExecuteAsync();
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(assetReference).LoadAsync();
 
             if (!handle)
             {

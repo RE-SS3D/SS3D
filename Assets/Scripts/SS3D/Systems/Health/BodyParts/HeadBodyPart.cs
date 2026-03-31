@@ -81,7 +81,7 @@ namespace SS3D.Systems.Health
 
         protected override async void SpawnOrgans()
         {
-            AssetHandle<Brain> brainPrefabHandle = await new AssetRequest<Brain>(Items.HumanBrain).ExecuteAsync();
+            AssetHandle<Brain> brainPrefabHandle = await new AssetRequest<Brain>(Items.HumanBrain).LoadAsync();
 
             if (!brainPrefabHandle)
             {

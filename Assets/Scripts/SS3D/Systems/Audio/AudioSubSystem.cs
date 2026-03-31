@@ -124,7 +124,7 @@ namespace SS3D.Systems.Audio
         {
             AudioSource audioSource = FindAvailableAudioSource(type);
             
-            AssetHandle<AudioClip> clipHandle = new AssetRequest<AudioClip>(audioClipID).Execute();
+            AssetHandle<AudioClip> clipHandle = new AssetRequest<AudioClip>(audioClipID).Load();
 
             if (!clipHandle)
             {

@@ -63,7 +63,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         private async void AcquireAudioClips()
         {
-            _honkClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).ExecuteAsync();
+            _honkClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).LoadAsync();
 
             if (!_honkClipHandle)
             {

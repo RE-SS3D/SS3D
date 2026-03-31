@@ -208,7 +208,7 @@ namespace SS3D.Data.Networking
             }
 
             // 1. Acquire prefab handle (keeps bundle alive through the entire operation).
-            AssetHandle<GameObject> spawnHandle = await new AssetRequest<GameObject>(key).ExecuteAsync();
+            AssetHandle<GameObject> spawnHandle = await new AssetRequest<GameObject>(key).LoadAsync();
 
             if (!spawnHandle)
             {

@@ -35,9 +35,9 @@ public class HumanTorso : BodyPart
 
     protected override async void SpawnOrgans()
     {
-        Task<AssetHandle<Heart>> loadHeartTask = new AssetRequest<Heart>(Items.HumanHeart).ExecuteAsync();
-        Task<AssetHandle<Lungs>> loadLeftLungTask = new AssetRequest<Lungs>(Items.HumanLungLeft).ExecuteAsync();
-        Task<AssetHandle<Lungs>> loadRightTask = new AssetRequest<Lungs>(Items.HumanLungRight).ExecuteAsync();
+        Task<AssetHandle<Heart>> loadHeartTask = new AssetRequest<Heart>(Items.HumanHeart).LoadAsync();
+        Task<AssetHandle<Lungs>> loadLeftLungTask = new AssetRequest<Lungs>(Items.HumanLungLeft).LoadAsync();
+        Task<AssetHandle<Lungs>> loadRightTask = new AssetRequest<Lungs>(Items.HumanLungRight).LoadAsync();
         
         await Task.WhenAll(loadHeartTask, loadLeftLungTask, loadRightTask);
         

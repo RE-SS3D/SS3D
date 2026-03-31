@@ -104,7 +104,7 @@ namespace SS3D.Systems.Furniture
         
         private async void AcquireIcon()
         {
-            _iconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).ExecuteAsync();
+            _iconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).LoadAsync();
 
             if (_iconHandle)
             {

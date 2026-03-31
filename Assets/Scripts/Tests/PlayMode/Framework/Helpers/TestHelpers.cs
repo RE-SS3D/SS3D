@@ -192,7 +192,7 @@ namespace SS3D.Tests
 
             foreach (Hand hand in inventory.Hands.PlayerHands.Where(hand => hand.Container.Empty))
             {
-                AssetHandle<Item> itemHandle = new AssetRequest<Item>(item).Execute();
+                AssetHandle<Item> itemHandle = new AssetRequest<Item>(item).Load();
                 
                 Assert.IsTrue(itemHandle, "Failed to load asset " + item);
 

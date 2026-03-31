@@ -191,7 +191,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public async void CreateHologram([NotNull] ObjectAssetReference prefabAsset, Vector3 position)
         {
-            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(prefabAsset).ExecuteAsync();
+            AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(prefabAsset).LoadAsync();
 
             if (!handle)
             {
@@ -445,9 +445,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private async void AcquireAssets()
         {
-            _validMaterialHandle = await new AssetRequest<Material>(Materials.ValidConstruction).ExecuteAsync();
-            _invalidMaterialHandle = await new AssetRequest<Material>(Materials.InvalidConstruction).ExecuteAsync();
-            _deleteMaterialHandle = await new AssetRequest<Material>(Materials.DeleteConstruction).ExecuteAsync();
+            _validMaterialHandle = await new AssetRequest<Material>(Materials.ValidConstruction).LoadAsync();
+            _invalidMaterialHandle = await new AssetRequest<Material>(Materials.InvalidConstruction).LoadAsync();
+            _deleteMaterialHandle = await new AssetRequest<Material>(Materials.DeleteConstruction).LoadAsync();
             
             ConstructionHologram.ValidMaterial = _validMaterialHandle?.Asset;
             ConstructionHologram.InvalidMaterial = _invalidMaterialHandle?.Asset;

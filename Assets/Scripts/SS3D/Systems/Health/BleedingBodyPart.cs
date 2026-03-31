@@ -80,7 +80,7 @@ namespace SS3D.Systems.Health
 
         private async void AcquireAssets()
         {
-            _bleedingEffectHandle = await new AssetRequest<GameObject>(ParticlesEffects.BleedingParticle).ExecuteAsync();
+            _bleedingEffectHandle = await new AssetRequest<GameObject>(ParticlesEffects.BleedingParticle).LoadAsync();
 
             if (!_bleedingEffectHandle)
             {
