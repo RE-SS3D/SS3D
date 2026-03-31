@@ -18,7 +18,8 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// The GUID of this <see cref="ScriptableObject"/>
         /// </summary>
-        public string DatabaseID;
+        [field: SerializeField]
+        public string DatabaseID { get; internal set; }
 
         /// <summary>
         /// All asset GUIDs registered in this database.

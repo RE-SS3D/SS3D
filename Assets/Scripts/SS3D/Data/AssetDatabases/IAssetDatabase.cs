@@ -9,6 +9,11 @@ namespace SS3D.Data
     public interface IAssetDatabase
     {
         /// <summary>
+        /// The ID of the database with which to identify it.
+        /// </summary>
+        string DatabaseID { get; }
+
+        /// <summary>
         /// Returns true if this database contains the given GUID.
         /// </summary>
         bool Has([NotNull] string guid);
