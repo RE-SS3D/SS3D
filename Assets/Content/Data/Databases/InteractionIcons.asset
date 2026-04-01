@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: InteractionIcons
   m_EditorClassIdentifier: 
   DatabaseName: InteractionIcons
-  DatabaseID: cdf9511d9049fa14ab0433934f3537ec
+  <DatabaseID>k__BackingField: cdf9511d9049fa14ab0433934f3537ec
   AssetGuids:
   - b22067d36fa963b4bbaf8d6085b0ebc9
   - 2db953f2ae8f41d4e9842d9144a9e396

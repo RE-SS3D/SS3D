@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CraftingRecipes
   m_EditorClassIdentifier: 
   DatabaseName: CraftingRecipes
-  DatabaseID: c8a3b9b514b2f7543a544259c3c97b81
+  <DatabaseID>k__BackingField: c8a3b9b514b2f7543a544259c3c97b81
   AssetGuids:
   - 5069902a314070f4ca869692cbc791fa
   - 41ed3a9a199817b47b7ba22ecb7c1ab4

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Items
   m_EditorClassIdentifier: 
   DatabaseName: Items
-  DatabaseID: c2644d7b34e956743a0bc485e7ca5e37
+  <DatabaseID>k__BackingField: c2644d7b34e956743a0bc485e7ca5e37
   AssetGuids:
   - 11f824c472e04854e95065dda095e8f4
   - 1ae18785d74e9fa4699b6f6de889c243

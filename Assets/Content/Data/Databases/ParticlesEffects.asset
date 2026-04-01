@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ParticlesEffects
   m_EditorClassIdentifier: 
   DatabaseName: ParticlesEffects
-  DatabaseID: 099b9943e9299d54b82d2c1163500458
+  <DatabaseID>k__BackingField: 099b9943e9299d54b82d2c1163500458
   AssetGuids:
   - 17b0d9163e9cdf14aa557557e7d9d76b
   - a6a77c26ee7edd94c804f4ddd851c8ba

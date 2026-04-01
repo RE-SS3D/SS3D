@@ -69,9 +69,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetGroupObjectField.value = _addressablesDatabase.AssetGroup;
 
             _addressablesDatabase.LoadAssetsFromAssetGroup();
-
-            EditorUtility.SetDirty(_addressablesDatabase);
-
             _addressablesDatabase.GenerateDatabaseCode();
 
             if (_addressablesDatabase.AssetGuids != null)
@@ -80,6 +77,9 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             }
 
             _loadAssetsButton.clicked += HandleLoadAssetsButtonPressed;
+
+            EditorUtility.SetDirty(_addressablesDatabase);
+            AssetDatabase.SaveAssetIfDirty(_addressablesDatabase);
 
             return root;
         }
@@ -95,9 +95,10 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
             PopulateAssetListView();
 
-            EditorUtility.SetDirty(_addressablesDatabase);
-
             _addressablesDatabase.GenerateDatabaseCode();
+
+            EditorUtility.SetDirty(_addressablesDatabase);
+            AssetDatabase.SaveAssetIfDirty(_addressablesDatabase);
         }
 
         private void PopulateAssetListView()
