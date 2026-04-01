@@ -25,16 +25,80 @@ namespace SS3D.Data.Networking
         /// asset is loaded on all clients before spawning,
         /// use the overload that also takes an <see cref="ObjectAssetReference"/>.
         /// </summary>
-        [NotNull]
-        public static Task SpawnAsync(NetworkObject networkObject, [CanBeNull] NetworkConnection ownerConnection = null) =>
-            SpawnAsync(networkObject, string.Empty, ownerConnection);
+        public static void Spawn(NetworkObject networkObject, [CanBeNull] NetworkConnection ownerConnection = null)
+        {
+            InstanceFinder.ServerManager.Spawn(networkObject, ownerConnection);
+        }
+
+        /// <summary>
+        /// Spawns an existing <see cref="NetworkObject"/> instance, optionally
+        /// ensuring that its backing asset is loaded on all clients before the spawn occurs.
+        /// </summary>
+        /// <param name="networkBehaviour">
+        /// The behaviour whose owning <see cref="NetworkObject"/> will be spawned.
+        /// </param>
+        /// <param name="assetReference">
+        /// Asset reference used to derive the synchronization key before spawning.
+        /// </param>
+        /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
+        public static async Task SpawnAsync(
+            NetworkBehaviour networkBehaviour,
+            [CanBeNull] ObjectAssetReference assetReference,
+            [CanBeNull] NetworkConnection ownerConnection = null)
+        {
+            if (ValidateNetworkBehaviour(networkBehaviour, out NetworkObject networkObject) && ValidateObjectAssetReference(assetReference, out string key))
+            {
+                await SpawnAsync(networkObject, key, ownerConnection);
+            }
+        }
+
+        /// <summary>
+        /// Spawns an existing <see cref="NetworkObject"/> instance, optionally
+        /// ensuring that its backing asset is loaded on all clients before the spawn occurs.
+        /// </summary>
+        /// <param name="networkBehaviour">
+        /// The behaviour whose owning <see cref="NetworkObject"/> will be spawned.
+        /// </param>
+        /// <param name="key">
+        /// Optional asset key used by <see cref="NetworkBarrier"/> to ensure clients
+        /// have loaded the asset before spawning.
+        /// </param>
+        /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
+        public static async Task SpawnAsync(NetworkBehaviour networkBehaviour, [CanBeNull] string key, [CanBeNull] NetworkConnection ownerConnection = null)
+        {
+            if (ValidateNetworkBehaviour(networkBehaviour, out NetworkObject networkObject))
+            {
+                await SpawnAsync(networkObject, key, ownerConnection);
+            }
+        }
 
         /// <summary>
         /// Spawns an existing <see cref="NetworkObject"/> instance, optionally
         /// ensuring that its backing asset is loaded on all clients before the spawn occurs.
         /// </summary>
         /// <param name="networkObject">The already-instantiated network object to spawn.</param>
-        /// <param name="key"></param>
+        /// <param name="assetReference">
+        /// Optional asset reference for the prefab this object belongs to.
+        /// When provided, the asset will be synchronized and loaded on all clients before spawning.
+        /// </param>
+        /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
+        public static async Task SpawnAsync(NetworkObject networkObject, [CanBeNull] ObjectAssetReference assetReference, [CanBeNull] NetworkConnection ownerConnection = null)
+        {
+            if (ValidateObjectAssetReference(assetReference, out string key))
+            {
+                await SpawnAsync(networkObject, key, ownerConnection);
+            }
+        }
+
+        /// <summary>
+        /// Spawns an existing <see cref="NetworkObject"/> instance, optionally
+        /// ensuring that its backing asset is loaded on all clients before the spawn occurs.
+        /// </summary>
+        /// <param name="networkObject">The already-instantiated network object to spawn.</param>
+        /// <param name="key">
+        /// Optional asset key used by <see cref="NetworkBarrier"/> to ensure clients
+        /// have loaded the asset before spawning.
+        /// </param>
         /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
         public static async Task SpawnAsync(NetworkObject networkObject, [CanBeNull] string key, [CanBeNull] NetworkConnection ownerConnection = null)
         {
@@ -52,131 +116,39 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            if (!string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrWhiteSpace(key))
             {
-                NetworkBarrier barrier = NetworkBarrier.Instance;
-
-                if (!barrier)
-                {
-                    Log.Error(typeof(NetworkSpawner), $"Cannot ensure asset load for '{key}' because {nameof(NetworkBarrier)} instance is missing.");
-
-                    return;
-                }
-
-                if (!await barrier.EnsureAllClientsReadyAsync(key))
-                {
-                    Log.Error(typeof(NetworkSpawner), $"Failed to ensure asset '{key}' is loaded on all clients before spawning.");
-
-                    return;
-                }
+                Log.Error(typeof(NetworkSpawner), "Cannot spawn network object because the key is null or whitespace.");
+                
+                return;
             }
 
-            InstanceFinder.ServerManager.Spawn(networkObject, ownerConnection);
+            NetworkBarrier barrier = NetworkBarrier.Instance;
+
+            if (!barrier)
+            {
+                Log.Error(typeof(NetworkSpawner), $"Cannot ensure asset load for '{key}' because {nameof(NetworkBarrier)} instance is missing.");
+
+                return;
+            }
+
+            if (!await barrier.EnsureAllClientsReadyAsync(key))
+            {
+                Log.Error(typeof(NetworkSpawner), $"Failed to ensure asset '{key}' is loaded on all clients before spawning.");
+
+                return;
+            }
+
+            Spawn(networkObject, ownerConnection);
 
             // Track network instance for late-join manifest. AssetLifecycleTracker keeps
             // the asset resident via InstanceLifetimeTracker on the instance.
-            if (!string.IsNullOrWhiteSpace(key))
+            if (!networkObject.gameObject.TryGetComponent<InstanceLifetimeTracker>(out _))
             {
-                if (!networkObject.gameObject.TryGetComponent<InstanceLifetimeTracker>(out _))
-                {
-                    networkObject.gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
-                }
-
-                NetworkBarrier.Instance?.TrackNetworkInstance(key);
-            }
-        }
-
-        /// <summary>
-        /// Spawns an existing <see cref="NetworkObject"/> instance, optionally
-        /// ensuring that its backing asset is loaded on all clients before the spawn occurs.
-        /// </summary>
-        /// <param name="networkBehaviour"></param>
-        /// <param name="key"></param>
-        /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
-        public static async Task SpawnAsync(NetworkBehaviour networkBehaviour, [CanBeNull] string key, [CanBeNull] NetworkConnection ownerConnection = null)
-        {
-            if (!InstanceFinder.IsServer)
-            {
-                Log.Error(typeof(NetworkSpawner), "NetworkSpawner.SpawnAsync(NetworkObject, ObjectAssetReference) can only be called on the server.");
-
-                return;
+                networkObject.gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
             }
 
-            if (!networkBehaviour)
-            {
-                Log.Error(typeof(NetworkSpawner), "Cannot spawn network behaviour because the instance is null.");
-
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(key))
-            {
-                NetworkBarrier barrier = NetworkBarrier.Instance;
-
-                if (!barrier)
-                {
-                    Log.Error(typeof(NetworkSpawner), $"Cannot ensure asset load for '{key}' because {nameof(NetworkBarrier)} instance is missing.");
-
-                    return;
-                }
-
-                if (!await barrier.EnsureAllClientsReadyAsync(key))
-                {
-                    Log.Error(typeof(NetworkSpawner), $"Failed to ensure asset '{key}' is loaded on all clients before spawning.");
-
-                    return;
-                }
-            }
-
-            InstanceFinder.ServerManager.Spawn(networkBehaviour.NetworkObject, ownerConnection);
-
-            // Track network instance for late-join manifest. AssetLifecycleTracker keeps
-            // the asset resident via InstanceLifetimeTracker on the instance.
-            if (!string.IsNullOrWhiteSpace(key))
-            {
-                if (!networkBehaviour.gameObject.TryGetComponent<InstanceLifetimeTracker>(out _))
-                {
-                    networkBehaviour.gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
-                }
-
-                NetworkBarrier.Instance?.TrackNetworkInstance(key);
-            }
-        }
-
-        /// <summary>
-        /// Spawns an existing <see cref="NetworkObject"/> instance, optionally
-        /// ensuring that its backing asset is loaded on all clients before the spawn occurs.
-        /// </summary>
-        /// <param name="networkObject">The already-instantiated network object to spawn.</param>
-        /// <param name="assetReference">
-        /// Optional asset reference for the prefab this object belongs to.
-        /// When provided, the asset will be synchronized and loaded on all clients before spawning.
-        /// </param>
-        /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
-        public static async Task SpawnAsync(NetworkObject networkObject, [CanBeNull] ObjectAssetReference assetReference, [CanBeNull] NetworkConnection ownerConnection = null)
-        {
-            if (!InstanceFinder.IsServer)
-            {
-                Log.Error(typeof(NetworkSpawner), "NetworkSpawner.SpawnAsync(NetworkObject, ObjectAssetReference) can only be called on the server.");
-
-                return;
-            }
-
-            if (!networkObject)
-            {
-                Log.Error(typeof(NetworkSpawner), "Cannot spawn network object because the instance is null.");
-
-                return;
-            }
-
-            if (assetReference)
-            {
-                Log.Error(typeof(NetworkSpawner), "Cannot spawn network object because the asset reference is null.");
-
-                return;
-            }
-
-            await SpawnAsync(networkObject, assetReference?.Id, ownerConnection);
+            NetworkBarrier.Instance?.TrackNetworkInstance(key);
         }
 
         /// <summary>
@@ -188,7 +160,29 @@ namespace SS3D.Data.Networking
         /// - Instantiates the loaded prefab and spawns it using FishNet.
         /// - Registers the instance with <see cref="NetworkBarrier"/> for late-join tracking.
         /// </summary>
-        /// <param name="key">The key to use to spawn the item.</param>
+        /// <param name="assetReference">Asset reference for the prefab to spawn.</param>
+        /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
+        /// <returns>The spawned <see cref="NetworkObject"/>, or <c>null</c> if spawn failed.</returns>
+        public static async Task<NetworkObject> SpawnAsync(ObjectAssetReference assetReference, NetworkConnection ownerConnection = null)
+        {
+            if (ValidateObjectAssetReference(assetReference, out string key))
+            {
+                return await SpawnAsync(key, ownerConnection);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Spawns a networked object from an asset key.
+        /// 
+        /// Flow:
+        /// - Acquires a handle to the prefab via <see cref="AssetSubSystem"/>.
+        /// - Uses <see cref="NetworkBarrier"/> to ensure it is loaded on all clients before spawning.
+        /// - Instantiates the loaded prefab and spawns it using FishNet.
+        /// - Registers the instance with <see cref="NetworkBarrier"/> for late-join tracking.
+        /// </summary>
+        /// <param name="key">Asset key of the prefab to spawn.</param>
         /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
         /// <returns>The spawned <see cref="NetworkObject"/>, or <c>null</c> if spawn failed.</returns>
         public static async Task<NetworkObject> SpawnAsync(string key, [CanBeNull] NetworkConnection ownerConnection = null)
@@ -242,7 +236,7 @@ namespace SS3D.Data.Networking
                 return null;
             }
 
-            InstanceFinder.ServerManager.Spawn(networkObject, ownerConnection);
+            Spawn(networkObject, ownerConnection);
 
             // 4. Register with NetworkBarrier for late-join tracking.
             NetworkBarrier.Instance?.TrackNetworkInstance(key);
@@ -255,34 +249,52 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Spawns a networked object from an <see cref="ObjectAssetReference"/>.
-        ///
-        /// Flow:
-        /// - Acquires a handle to the prefab via <see cref="AssetSubSystem"/>.
-        /// - Uses <see cref="NetworkBarrier"/> to ensure it is loaded on all clients before spawning.
-        /// - Instantiates the loaded prefab and spawns it using FishNet.
-        /// - Registers the instance with <see cref="NetworkBarrier"/> for late-join tracking.
+        /// Validates a <see cref="NetworkBehaviour"/> and extracts its owning
+        /// <see cref="NetworkObject"/>.
         /// </summary>
-        /// <param name="assetReference">Asset reference for the prefab to spawn.</param>
-        /// <param name="ownerConnection">Optional owner connection for the spawned object.</param>
-        /// <returns>The spawned <see cref="NetworkObject"/>, or <c>null</c> if spawn failed.</returns>
-        public static async Task<NetworkObject> SpawnAsync(ObjectAssetReference assetReference, NetworkConnection ownerConnection = null)
+        /// <param name="networkBehaviour">The behaviour to validate.</param>
+        /// <param name="networkObject">
+        /// When this method returns, contains the associated network object if validation
+        /// succeeded; otherwise <c>null</c>.
+        /// </param>
+        /// <returns><c>true</c> if <paramref name="networkBehaviour"/> is valid; otherwise <c>false</c>.</returns>
+        private static bool ValidateNetworkBehaviour(NetworkBehaviour networkBehaviour, out NetworkObject networkObject)
         {
-            if (!InstanceFinder.IsServer)
+            if (networkBehaviour)
             {
-                Log.Error(typeof(NetworkSpawner), "NetworkSpawner.SpawnAsync(ObjectAssetReference) can only be called on the server.");
+                networkObject = networkBehaviour.NetworkObject;
 
-                return null;
+                return true;
             }
 
+            Log.Error(typeof(NetworkSpawner), "Cannot spawn, invalid NetworkBehaviour");
+            networkObject = null;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Validates an <see cref="ObjectAssetReference"/> and extracts its asset key.
+        /// </summary>
+        /// <param name="assetReference">The asset reference to validate.</param>
+        /// <param name="key">
+        /// When this method returns, contains the asset key if validation succeeded;
+        /// otherwise <c>null</c>.
+        /// </param>
+        /// <returns><c>true</c> if <paramref name="assetReference"/> is valid; otherwise <c>false</c>.</returns>
+        private static bool ValidateObjectAssetReference(ObjectAssetReference assetReference, out string key)
+        {
             if (assetReference)
             {
-                return await SpawnAsync(assetReference.Id, ownerConnection);
+                key = assetReference.Id;
+
+                return true;
             }
 
-            Log.Error(typeof(NetworkSpawner), "Cannot spawn network object because the asset reference is null.");
+            Log.Error(typeof(NetworkSpawner), "Cannot spawn, invalid ObjectAssetReference");
+            key = null;
 
-            return null;
+            return false;
         }
     }
 }
