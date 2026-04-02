@@ -6,6 +6,7 @@ using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 using Coimbra;
 using SS3D.Core;
+using SS3D.Data.Networking;
 
 namespace SS3D.Systems.Entities
 {
@@ -74,7 +75,7 @@ namespace SS3D.Systems.Entities
 			EntitySubSystem entitySystem = SubSystems.Get<EntitySubSystem>();
 			if(entitySystem.TryTransferEntity(GetComponentInParent<Entity>(), _spawnedGhost.GetComponent<Entity>()))
             {
-                ServerManager.Spawn(_spawnedGhost);
+                NetworkSpawner.Spawn(_spawnedGhost);
                 BecomeGhost(gameObject, _spawnedGhost);
             }
             else

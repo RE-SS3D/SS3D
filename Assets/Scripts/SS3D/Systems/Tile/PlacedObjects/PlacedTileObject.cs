@@ -5,6 +5,7 @@ using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
 using System;
@@ -68,7 +69,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                InstanceFinder.ServerManager.Spawn(placedGameObject);
+                await NetworkSpawner.SpawnAsync(placedObject, tileObjectSo.PrefabAsset);
             }
 
             return placedObject;

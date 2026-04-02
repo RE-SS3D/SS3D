@@ -2,6 +2,7 @@
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Inventory.Items;
@@ -34,11 +35,8 @@ namespace SS3D.Systems.Tile
 
             TileMap map = mapObject.AddComponent<TileMap>();
             map.Setup(name);
-
-            if (InstanceFinder.ServerManager != null && mapObject.GetComponent<NetworkObject>() != null)
-            {
-                InstanceFinder.ServerManager.Spawn(mapObject);
-            }
+            
+            NetworkSpawner.Spawn(map);
 
             return map;
         }

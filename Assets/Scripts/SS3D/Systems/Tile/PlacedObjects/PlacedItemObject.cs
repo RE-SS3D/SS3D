@@ -3,6 +3,7 @@ using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
 using SS3D.Data;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using System;
 using System.Collections;
@@ -21,22 +22,15 @@ namespace SS3D.Systems.Tile
         ///  Places an item on the tilemap at a given position and rotation
         /// </summary>
         /// <param name="worldPosition"></param>
-        /// <param name="origin"></param>
         /// <param name="rotation"></param>
         /// <param name="itemSo"></param>
-        /// <param name="existingItem">The existing Item GameObject to add the PlacedItemObject component to</param>
+        /// <param name="placedGameObject"></param>
+        /// <param name="origin"></param>
         /// <returns></returns>
         [ItemCanBeNull]
-        public static async Task<PlacedItemObject> CreateAsync(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject existingItem = null)
+        public static async Task<PlacedItemObject> CreateAsync(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemSo, GameObject placedGameObject = null)
         {
-            GameObject placedGameObject;
-            
-            if (existingItem)
-            {
-                // Use the existing item GameObject
-                placedGameObject = existingItem;
-            }
-            else
+            if (!placedGameObject)
             {
                 AssetHandle<GameObject> handle = await new AssetRequest<GameObject>(itemSo.PrefabAsset).LoadAsync();
 
@@ -73,7 +67,7 @@ namespace SS3D.Systems.Tile
             }
             else
             {
-                InstanceFinder.ServerManager.Spawn(placedGameObject);
+                await NetworkSpawner.SpawnAsync(placedObject, itemSo.PrefabAsset);
             }
 
             return placedObject;

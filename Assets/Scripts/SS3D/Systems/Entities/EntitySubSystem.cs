@@ -9,6 +9,7 @@ using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Settings;
+using SS3D.Data.Networking;
 using SS3D.Engine.Chat;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
@@ -201,7 +202,7 @@ namespace SS3D.Systems.Entities
             mindSystem.TryCreateMind(player, out Mind createdMind);
 
             Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
-            ServerManager.Spawn(entity.NetworkObject, player.Owner);
+            NetworkSpawner.Spawn(entity, player.Owner);
 
             createdMind.SetPlayer(player);
             entity.SetMind(createdMind);

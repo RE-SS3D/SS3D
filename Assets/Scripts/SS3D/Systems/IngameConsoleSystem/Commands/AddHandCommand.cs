@@ -8,6 +8,7 @@ using FishNet.Connection;
 using SS3D.Data;
 using SS3D.Permissions;
 using SS3D.Data.Generated;
+using SS3D.Data.Networking;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
@@ -41,8 +42,8 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 rotation = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
             }
 
-            Player Player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
-            Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(Player);
+            Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(ckey);
+            Entity entity = SubSystems.Get<EntitySubSystem>().GetSpawnedEntity(player);
 
             AssetHandle<Hand> leftHandHandle = new AssetRequest<Hand>(Items.HumanHandLeft).Load();
 
@@ -55,7 +56,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             leftHand.Transform.localPosition = position;
             leftHand.Transform.localEulerAngles = rotation;
 
-            InstanceFinder.ServerManager.Spawn(leftHand.GameObject, Player.Owner);
+            NetworkSpawner.SpawnAsync(leftHand, Items.HumanHandLeft, player.Owner).GetAwaiter().GetResult();
 
             Hands hands = entity.GetComponent<Hands>();
             HumanInventory inventory = entity.GetComponent<HumanInventory>();

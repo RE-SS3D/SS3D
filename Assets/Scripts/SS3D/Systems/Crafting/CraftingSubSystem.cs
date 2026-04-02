@@ -21,6 +21,7 @@ using Hand = SS3D.Systems.Inventory.Containers.Hand;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using SS3D.Data.Networking;
 using SS3D.Systems.Inventory.Containers;
 using System.Threading.Tasks;
 
@@ -250,7 +251,7 @@ namespace SS3D.Systems.Crafting
 
                 for (int i = 0; i < secondaryResult.Amount; i++)
                 {
-                    await DefaultCraftAsync(interaction, interactionEvent, secondaryHandle.Asset, link.Target);
+                    await DefaultCraftAsync(interaction, interactionEvent, secondaryHandle.Asset, link.Target, secondaryResult.Asset);
                 }
 
                 secondaryHandle.Dispose();
@@ -302,7 +303,7 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                resultInstance = await DefaultCraftAsync(interaction, interactionEvent, resultPrefab, link.Target);
+                resultInstance = await DefaultCraftAsync(interaction, interactionEvent, resultPrefab, link.Target, result);
             }
 
             if (link.Tag is { ModifyResult: true })
@@ -518,14 +519,19 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         [Server]
         [ItemCanBeNull]
-        private async Task<GameObject> DefaultCraftAsync(CraftingInteraction interaction, InteractionEvent interactionEvent, GameObject prefab, RecipeStep recipeStep)
+        private async Task<GameObject> DefaultCraftAsync(
+            CraftingInteraction interaction,
+            [NotNull] InteractionEvent interactionEvent,
+            GameObject prefab,
+            RecipeStep recipeStep,
+            ObjectAssetReference assetReference)
         {
             GameObject instance;
 
             // If result is an item held in hand, either put the crafting result in hand or in front of the crafter.
             if (interactionEvent.Target is Item targetItem && interactionEvent.Source is Hand hand && targetItem.Container == hand.Container)
             {
-                instance = DefaultCraftItemHeldInHand(prefab, hand, recipeStep, interaction);
+                instance = await DefaultCraftItemHeldInHandAsync(prefab, hand, recipeStep, interaction, assetReference);
             }
             
             // If result is a placed tile object, just place it on the tilemap.
@@ -537,7 +543,7 @@ namespace SS3D.Systems.Crafting
             {
                 instance = Instantiate(prefab);
                 instance.transform.position = interactionEvent.Target.GetGameObject().transform.position;
-                InstanceFinder.ServerManager.Spawn(instance);
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
                 instance.SetActive(true);
             }
             else
@@ -546,7 +552,7 @@ namespace SS3D.Systems.Crafting
                 Vector3 characterGround = interaction.CharacterTransform.position;
                 characterGround.y = 0.1f;
                 instance.transform.position = characterGround + interaction.CharacterTransform.forward;
-                InstanceFinder.ServerManager.Spawn(instance);
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
                 instance.SetActive(true);
             }
 
@@ -575,7 +581,13 @@ namespace SS3D.Systems.Crafting
         /// Handles spawning item, when the target is an item held in hand, and the result is whatever.
         /// </summary>>
         [Server]
-        private GameObject DefaultCraftItemHeldInHand(GameObject prefab, Hand hand, RecipeStep recipeStep, CraftingInteraction interaction)
+        [ItemNotNull]
+        private async Task<GameObject> DefaultCraftItemHeldInHandAsync(
+            GameObject prefab,
+            Hand hand,
+            RecipeStep recipeStep,
+            CraftingInteraction interaction,
+            ObjectAssetReference assetReference)
         {
             GameObject instance = Instantiate(prefab);
 
@@ -594,7 +606,7 @@ namespace SS3D.Systems.Crafting
                     instance.transform.position = characterGround + interaction.CharacterTransform.forward;
                 }
                 
-                InstanceFinder.ServerManager.Spawn(instance);
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
             }
             else
             {
@@ -602,7 +614,7 @@ namespace SS3D.Systems.Crafting
                 characterGround.y = 0;
                 instance.transform.position = characterGround + interaction.CharacterTransform.forward;
 
-                InstanceFinder.ServerManager.Spawn(instance);
+                await NetworkSpawner.SpawnAsync(instance, assetReference);
                 instance.SetActive(true);
             }
 

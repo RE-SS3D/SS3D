@@ -10,6 +10,7 @@ using SS3D.Systems.Health;
 using System.Linq;
 using System.Collections.ObjectModel;
 using FishNet;
+using SS3D.Data.Networking;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System;
@@ -222,10 +223,12 @@ public abstract class BodyPart : InteractionTargetNetworkBehaviour
     private BodyPart SpawnDetachedBodyPart()
     {
         GameObject go = Instantiate(_bodyPartItem, Position, Rotation);
-        InstanceFinder.ServerManager.Spawn(go, null);
         BodyPart bodyPart = go.GetComponent<BodyPart>();
         CopyValuesToBodyPart(bodyPart);
         bodyPart._isDetached = true;
+        
+        NetworkSpawner.Spawn(bodyPart);
+
         return bodyPart;
     }
 

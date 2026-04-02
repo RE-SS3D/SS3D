@@ -36,8 +36,6 @@ namespace SS3D.Systems.Tile
 
         private void LoadAssetsWithIcon(GenericObjectSo[] assets)
         {
-            RuntimePreviewGenerator.OrthographicMode = true;
-
             foreach (GenericObjectSo asset in assets)
             {
                 asset.icon = asset.icon ? asset.icon : _missingIcon;
