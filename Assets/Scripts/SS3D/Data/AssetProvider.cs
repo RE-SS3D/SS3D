@@ -42,7 +42,7 @@ namespace SS3D.Data
         {
             if (!_records.TryGetValue(key, out Record record))
             {
-                record = new() { Backend = backend, LoadTask = LoadCoreAsync(key, backend) };
+                record = new() { Backend = backend, LoadTask = LoadAsync(key, backend) };
                 _records[key] = record;
             }
 
@@ -98,7 +98,7 @@ namespace SS3D.Data
             return obj as T;
         }
 
-        private async Task<Object> LoadCoreAsync([NotNull] string key, [NotNull] IAssetBackend backend)
+        private async Task<Object> LoadAsync([NotNull] string key, [NotNull] IAssetBackend backend)
         {
             Object asset = await backend.LoadAsync(key);
 
