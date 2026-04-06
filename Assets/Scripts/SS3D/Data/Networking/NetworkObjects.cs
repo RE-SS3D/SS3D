@@ -226,13 +226,13 @@ namespace SS3D.Data.Networking
         /// <param name="asset">Asset loaded.</param>
         private void HandleAssetLoaded(string guid, Object asset)
         {
-            if (asset is GameObject gameObject
-                && gameObject.TryGetComponent(out NetworkObject networkObject)
-                && _guidToIndex.TryGetValue(guid, out int index))
+            if (asset is not GameObject gameObject || !gameObject.TryGetComponent(out NetworkObject networkObject) || !_guidToIndex.TryGetValue(guid, out int index))
             {
-                _loadedPrefabs[index] = networkObject;
-                InitializePrefab(index);
+                return;
             }
+
+            _loadedPrefabs[index] = networkObject;
+            InitializePrefab(index);
         }
 
         /// <summary>
@@ -245,31 +245,6 @@ namespace SS3D.Data.Networking
             {
                 _loadedPrefabs[index] = null;
             }
-        }
-
-        /// <summary>
-        /// Inserts a runtime-loaded prefab into the slot derived from its GUID.
-        /// </summary>
-        /// <param name="networkObject">Loaded prefab root that exposes a <see cref="NetworkObject"/>.</param>
-        /// <param name="guid">GUID used to find the prefab's deterministic runtime slot.</param>
-        private void AddObject(NetworkObject networkObject, string guid)
-        {
-            if (!UnityEngine.Application.isPlaying)
-            {
-                Log.Error(this, new InvalidOperationException("Adding objects is not supported while not in play mode"), "Use AddObject(NetworkObject, int) instead.");
-
-                return;
-            }
-
-            if (!_guidToIndex.TryGetValue(guid, out int index))
-            {
-                Log.Error(this, "GUID not found in collection.");
-
-                return;
-            }
-
-            _loadedPrefabs[index] = networkObject;
-            InitializePrefab(index);
         }
 
         /// <summary>
