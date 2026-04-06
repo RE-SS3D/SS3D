@@ -304,14 +304,16 @@ namespace SS3D.Data.Networking
         /// </summary>
         internal async Task<bool> EnsureAllClientsReadyAsync(string key, float timeoutSeconds = 15f)
         {
-            if (!IsServer)
+            if (IsServer)
             {
-                return await WaitForLoadClientAsync(key, timeoutSeconds);
+                BeginSynchronizedLoad(key);
+
+                return await WaitForLoadServerAsync(key, timeoutSeconds);
             }
 
             StartSynchronizedLoad(key);
 
-            return await WaitForLoadServerAsync(key, timeoutSeconds);
+            return await WaitForLoadClientAsync(key, timeoutSeconds);
         }
 
         /// <summary>
@@ -372,9 +374,8 @@ namespace SS3D.Data.Networking
         }
 
         // ── Server-side synchronized load ────────────────────────────────
-
         [Server]
-        private void StartSynchronizedLoad(string key)
+        private void BeginSynchronizedLoad([CanBeNull] string key)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -392,7 +393,7 @@ namespace SS3D.Data.Networking
         }
 
         [Server]
-        private async Task<bool> WaitForLoadServerAsync(string key, float timeoutSeconds)
+        private async Task<bool> WaitForLoadServerAsync([CanBeNull] string key, float timeoutSeconds)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -435,7 +436,7 @@ namespace SS3D.Data.Networking
             }
         }
 
-        private bool TryRegisterLoadBarrier(string key)
+        private bool TryRegisterLoadBarrier([NotNull] string key)
         {
             if (_loadBarriers.ContainsKey(key))
             {
@@ -458,7 +459,6 @@ namespace SS3D.Data.Networking
         }
 
         // ── Client-side wait flow ────────────────────────────────────────
-
         [Client]
         private async Task<bool> WaitForLoadClientAsync(string key, float timeoutSeconds)
         {
@@ -503,8 +503,13 @@ namespace SS3D.Data.Networking
         }
 
         // ── RPCs ─────────────────────────────────────────────────────────
+        [ServerRpc(RequireOwnership = false)]
+        private void StartSynchronizedLoad(string key)
+        {
+            BeginSynchronizedLoad(key);
+        }
 
-        [ObserversRpc]
+        [ObserversRpc(RunLocally = true)]
         private void RpcLoadAsset(string key)
         {
             LoadLocallyAsync(key);
@@ -522,7 +527,7 @@ namespace SS3D.Data.Networking
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void RpcAcknowledgeLoad(string key, bool success, [CanBeNull] NetworkConnection connection = null)
+        private void RpcAcknowledgeLoad([CanBeNull] string key, bool success, [CanBeNull] NetworkConnection connection = null)
         {
             if (connection == null || string.IsNullOrEmpty(key))
             {
@@ -570,11 +575,16 @@ namespace SS3D.Data.Networking
         }
 
         // ── Client-side loading ──────────────────────────────────────────
-
         private async void LoadLocallyAsync(string key)
         {
             try
             {
+                if (_clientHandles.ContainsKey(key))
+                {
+                    RpcAcknowledgeLoad(key, true, LocalConnection);
+                    return;
+                }
+
                 for (int attempt = 0; attempt < _retryAttempts; attempt++)
                 {
                     AssetHandle<Object> handle = await new AssetRequest<Object>(key).LoadAsync();
@@ -588,36 +598,19 @@ namespace SS3D.Data.Networking
                     }
 
                     // Store handle to keep the asset alive on this client.
-                    if (_clientHandles.TryGetValue(key, out IAssetHandle existing))
-                    {
-                        existing?.Dispose();
-                    }
-
                     _clientHandles[key] = handle;
-
-                    if (IsClient)
-                    {
-                        RpcAcknowledgeLoad(key, true);
-                    }
+                    RpcAcknowledgeLoad(key, true, LocalConnection);
 
                     return;
                 }
 
                 Log.Error(this, $"Failed to load asset '{key}' after {_retryAttempts} attempts.");
-
-                if (IsClient)
-                {
-                    RpcAcknowledgeLoad(key, false);
-                }
+                RpcAcknowledgeLoad(key, false, LocalConnection);
             }
             catch (Exception e)
             {
                 Log.Error(this, e, $"Failed to load asset '{key}'.");
-
-                if (IsClient)
-                {
-                    RpcAcknowledgeLoad(key, false);
-                }
+                RpcAcknowledgeLoad(key, false, LocalConnection);
             }
         }
 
@@ -630,7 +623,6 @@ namespace SS3D.Data.Networking
         }
 
         // ── Server-side event handlers ───────────────────────────────────
-
         [Server]
         private void HandleRemoteConnectionState(NetworkConnection connection, RemoteConnectionStateArgs stateData)
         {
@@ -680,7 +672,6 @@ namespace SS3D.Data.Networking
         }
 
         // ── Late-join preload ────────────────────────────────────────────
-
         [Server]
         private void StartPreloadSession([NotNull] NetworkConnection connection)
         {
@@ -717,7 +708,7 @@ namespace SS3D.Data.Networking
             // Send active world assets.
             HashSet<string> sentKeys = new();
 
-            foreach (string key in activeAssets.Where(key => preloadKeys.Contains(key)))
+            foreach (string key in activeAssets.Where(preloadKeys.Contains))
             {
                 RpcPreloadForClient(connection, key);
                 sentKeys.Add(key);
