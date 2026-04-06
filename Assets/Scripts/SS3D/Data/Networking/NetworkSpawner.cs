@@ -31,6 +31,10 @@ namespace SS3D.Data.Networking
             {
                 Spawn(networkObject, ownerConnection);
             }
+            else
+            {
+                Log.Error(typeof(NetworkSpawner), $"Cannot spawn, invalid NetworkBehaviour {networkBehaviour.name}");
+            }
         }
 
         /// <summary>
@@ -75,11 +79,19 @@ namespace SS3D.Data.Networking
         public static async Task SpawnAsync(
             NetworkBehaviour networkBehaviour,
             [CanBeNull] ObjectAssetReference assetReference,
-            [CanBeNull] NetworkConnection ownerConnection = null)
+            [CanBeNull] NetworkConnection ownerConnection = null
+        )
         {
-            if (ValidateNetworkBehaviour(networkBehaviour, out NetworkObject networkObject) && ValidateObjectAssetReference(assetReference, out string key))
+            if (ValidateObjectAssetReference(assetReference, out string key))
             {
-                await SpawnAsync(networkObject, key, ownerConnection);
+                if (ValidateNetworkBehaviour(networkBehaviour, out NetworkObject networkObject))
+                {
+                    await SpawnAsync(networkObject, key, ownerConnection);
+                }
+                else
+                {
+                    Log.Error(typeof(NetworkSpawner), $"Cannot spawn {key}, invalid NetworkBehaviour");
+                }
             }
         }
 
@@ -100,6 +112,10 @@ namespace SS3D.Data.Networking
             if (ValidateNetworkBehaviour(networkBehaviour, out NetworkObject networkObject))
             {
                 await SpawnAsync(networkObject, key, ownerConnection);
+            }
+            else
+            {
+                Log.Error(typeof(NetworkSpawner), $"Cannot spawn {key}, invalid NetworkBehaviour");
             }
         }
 
@@ -140,7 +156,7 @@ namespace SS3D.Data.Networking
 
             if (!networkObject)
             {
-                Log.Error(typeof(NetworkSpawner), "Cannot spawn network object because the instance is null.");
+                Log.Error(typeof(NetworkSpawner), $"Cannot spawn {key} network object because the instance is null.");
 
                 return;
             }
@@ -203,7 +219,7 @@ namespace SS3D.Data.Networking
 
             if (!gameObject)
             {
-                Log.Error(typeof(NetworkSpawner), "Cannot spawn network object because the instance is null.");
+                Log.Error(typeof(NetworkSpawner), $"Cannot spawn {key} network object because the instance is null.");
 
                 return;
             }
@@ -329,19 +345,16 @@ namespace SS3D.Data.Networking
         /// succeeded; otherwise <c>null</c>.
         /// </param>
         /// <returns><c>true</c> if <paramref name="networkBehaviour"/> is valid; otherwise <c>false</c>.</returns>
-        private static bool ValidateNetworkBehaviour(NetworkBehaviour networkBehaviour, out NetworkObject networkObject)
+        private static bool ValidateNetworkBehaviour(NetworkBehaviour networkBehaviour, [CanBeNull] out NetworkObject networkObject)
         {
-            if (networkBehaviour)
-            {
-                networkObject = networkBehaviour.NetworkObject;
-
-                return true;
-            }
-
-            Log.Error(typeof(NetworkSpawner), "Cannot spawn, invalid NetworkBehaviour");
             networkObject = null;
 
-            return false;
+            if (networkBehaviour)
+            {
+                networkObject = networkBehaviour.NetworkObject ? networkBehaviour.NetworkObject : networkBehaviour.GetComponent<NetworkObject>();
+            }
+
+            return networkObject;
         }
 
         /// <summary>
@@ -353,7 +366,7 @@ namespace SS3D.Data.Networking
         /// otherwise <c>null</c>.
         /// </param>
         /// <returns><c>true</c> if <paramref name="assetReference"/> is valid; otherwise <c>false</c>.</returns>
-        private static bool ValidateObjectAssetReference(ObjectAssetReference assetReference, out string key)
+        private static bool ValidateObjectAssetReference([NotNull] ObjectAssetReference assetReference, out string key)
         {
             if (assetReference)
             {
@@ -362,7 +375,7 @@ namespace SS3D.Data.Networking
                 return true;
             }
 
-            Log.Error(typeof(NetworkSpawner), "Cannot spawn, invalid ObjectAssetReference");
+            Log.Error(typeof(NetworkSpawner), $"Cannot spawn {assetReference.name}\\{assetReference.Id}, invalid ObjectAssetReference");
             key = null;
 
             return false;
@@ -380,7 +393,7 @@ namespace SS3D.Data.Networking
             if (string.IsNullOrWhiteSpace(key))
             {
                 Log.Error(typeof(NetworkSpawner), "Cannot spawn network object because the key is null or whitespace.");
-                
+
                 return false;
             }
 
