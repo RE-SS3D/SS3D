@@ -19,48 +19,9 @@ namespace SS3D.Data
     /// </summary>
     public class AssetSubSystem : SubSystem
     {
-        internal static event Action<string, Object> OnAssetLoaded
-        {
-            add
-            {
-                if (ActiveProvider != null)
-                {
-                    ActiveProvider.OnLoaded += value;
-                }
-            }
+        internal static event Action<string, Object> OnAssetLoaded;
 
-            remove
-            {
-                if (ActiveProvider != null)
-                {
-                    ActiveProvider.OnLoaded -= value;
-                }
-            }
-        }
-
-        internal static event Action<string> OnAssetUnloaded
-        {
-            add
-            {
-                if (ActiveProvider != null)
-                {
-                    ActiveProvider.OnUnloaded += value;
-                }
-            }
-
-            remove
-            {
-                if (ActiveProvider != null)
-                {
-                    ActiveProvider.OnUnloaded -= value;
-                }
-            }
-        }
-
-        // Static reference to the active provider so that static event accessors (needed by
-        // ScriptableObjects like NetworkObjects that cannot hold instance references) can
-        // forward subscriptions directly without a separate delegate or bridge.
-        private static IAssetProvider ActiveProvider;
+        internal static event Action<string> OnAssetUnloaded;
 
         private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
 
@@ -149,8 +110,12 @@ namespace SS3D.Data
             _lifecycleTracker?.Shutdown();
             _lifecycleTracker = null;
 
-            ActiveProvider = null;
-            _provider?.Dispose();
+            if (_provider != null)
+            {
+                _provider.OnLoaded -= RelayAssetLoaded;
+                _provider.OnUnloaded -= RelayAssetUnloaded;
+                _provider.Dispose();
+            }
 
             foreach (IAssetBackend backend in _backends.Values)
             {
@@ -162,6 +127,10 @@ namespace SS3D.Data
             _databasesById = null;
             base.OnDestroyed();
         }
+
+        private static void RelayAssetLoaded(string key, Object asset) => OnAssetLoaded?.Invoke(key, asset);
+
+        private static void RelayAssetUnloaded(string key) => OnAssetUnloaded?.Invoke(key);
 
         private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
         {
@@ -198,7 +167,9 @@ namespace SS3D.Data
                 _provider = new AssetProvider(releaseCallback: key => tracker!.TrackRelease(key));
                 tracker = new(_provider);
                 _lifecycleTracker = tracker;
-                ActiveProvider = _provider;
+
+                _provider.OnLoaded += RelayAssetLoaded;
+                _provider.OnUnloaded += RelayAssetUnloaded;
 
                 List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
