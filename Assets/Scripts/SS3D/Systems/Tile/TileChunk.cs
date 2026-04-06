@@ -43,7 +43,10 @@ namespace SS3D.Systems.Tile
 
             chunk.Setup(chunkKey, originPosition);
 
-            NetworkSpawner.Spawn(chunk);
+            if (chunk.GetComponent<NetworkObject>())
+            {
+                NetworkSpawner.Spawn(chunk);
+            }
 
             return chunk;
         }

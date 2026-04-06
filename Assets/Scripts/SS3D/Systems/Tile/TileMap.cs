@@ -35,8 +35,11 @@ namespace SS3D.Systems.Tile
 
             TileMap map = mapObject.AddComponent<TileMap>();
             map.Setup(name);
-            
-            NetworkSpawner.Spawn(map);
+
+            if (map.GetComponent<NetworkObject>())
+            {
+                NetworkSpawner.Spawn(map);
+            }
 
             return map;
         }
