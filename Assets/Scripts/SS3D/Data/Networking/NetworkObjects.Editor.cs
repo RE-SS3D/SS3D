@@ -76,7 +76,7 @@ namespace SS3D.Data.Networking
         /// <summary>
         /// Reconstructs the sorted editor cache from the serialized GUID list, removing stale or invalid entries on the way.
         /// </summary>
-        private void Initialize()
+        private void EditorInitialize()
         {
             if (_isInitialized)
             {

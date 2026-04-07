@@ -205,12 +205,25 @@ namespace SS3D.Data.Networking
         private void OnEnable()
         {
 #if UNITY_EDITOR
-            Initialize();
+            EditorInitialize();
 #endif
-
+            Initialize();
+            
             // Addressable prefabs are inserted and removed from runtime slots as the asset subsystem changes shared residency.
             AssetSubSystem.OnAssetLoaded += HandleAssetLoaded;
             AssetSubSystem.OnAssetUnloaded += HandleAssetUnloaded;
+        }
+
+        private void Initialize()
+        {
+            // Non-addressable prefabs are serialized directly into runtime slots during generation, so only addressable prefabs need to be initialized here.
+            for (int i = 0; i < _loadedPrefabs.Length; i++)
+            {
+                if (_loadedPrefabs[i])
+                {
+                    InitializePrefab(i);
+                }
+            }
         }
 
         private void OnDisable()
