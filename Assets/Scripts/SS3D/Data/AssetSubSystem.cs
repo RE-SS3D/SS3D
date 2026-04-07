@@ -1,14 +1,18 @@
 using Coimbra;
 using Coimbra.Services.Events;
+using FishNet;
+using FishNet.Transporting;
 using JetBrains.Annotations;
 using SS3D.Application.Events;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
+using SS3D.Data.Networking;
 using SS3D.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data
@@ -23,6 +27,9 @@ namespace SS3D.Data
 
         internal static event Action<string> OnAssetUnloaded;
 
+        [SerializeField]
+        private NetworkBarrier _networkBarrierPrefab;
+
         private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
 
         private IAssetProvider _provider;
@@ -32,6 +39,8 @@ namespace SS3D.Data
         private Task _initTask;
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
+        
+        internal NetworkBarrier NetworkBarrier { get; private set; }
 
         [CanBeNull]
         public AddressablesDatabase GetDatabase(string databaseID)
@@ -107,6 +116,11 @@ namespace SS3D.Data
 
         protected override void OnDestroyed()
         {
+            if (InstanceFinder.ServerManager != null)
+            {
+                InstanceFinder.ServerManager.OnServerConnectionState -= HandleServerConnectionState;
+            }
+
             _lifecycleTracker?.Shutdown();
             _lifecycleTracker = null;
 
@@ -152,7 +166,42 @@ namespace SS3D.Data
             catch (Exception exception)
             {
                 Log.Error(this, exception, "Asset system initialization failed during application startup.");
+
+                return;
             }
+
+            if (InstanceFinder.SceneManager)
+            {
+                if (InstanceFinder.ServerManager.Started)
+                {
+                    SpawnNetworkBarrier();
+                }
+                else
+                {
+                    InstanceFinder.ServerManager.OnServerConnectionState += HandleServerConnectionState;
+                }
+            }
+            else
+            {
+                Log.Error(this, "No SceneManager found. Cannot determine when to spawn NetworkBarrier.");
+            }
+        }
+
+        private void HandleServerConnectionState(ServerConnectionStateArgs args)
+        {
+            if (args.ConnectionState != LocalConnectionState.Started)
+            {
+                return;
+            }
+
+            InstanceFinder.ServerManager.OnServerConnectionState -= HandleServerConnectionState;
+            SpawnNetworkBarrier();
+        }
+
+        private void SpawnNetworkBarrier()
+        {
+            NetworkBarrier = Instantiate(_networkBarrierPrefab);
+            NetworkSpawner.Spawn(NetworkBarrier);
         }
 
         private async Task InitializeInternalAsync()

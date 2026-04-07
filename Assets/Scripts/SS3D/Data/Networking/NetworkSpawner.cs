@@ -3,6 +3,7 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using JetBrains.Annotations;
+using SS3D.Core;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System.Threading.Tasks;
@@ -16,6 +17,30 @@ namespace SS3D.Data.Networking
     /// </summary>
     public static class NetworkSpawner
     {
+        private static AssetSubSystem AssetSubSystem
+        {
+            get
+            {
+                if (AssetSubSystemInstance)
+                {
+                    return AssetSubSystemInstance;
+                }
+
+                AssetSubSystemInstance = SubSystems.Get<AssetSubSystem>();
+
+                if (AssetSubSystemInstance)
+                {
+                    return AssetSubSystemInstance;
+                }
+
+                Log.Error(typeof(NetworkSpawner), "Cannot find AssetSubSystem in the scene. Make sure one is present before using NetworkSpawner.");
+
+                return null;
+            }
+        }
+
+        private static AssetSubSystem AssetSubSystemInstance;
+
         /// <summary>
         /// Spawns an existing <see cref="NetworkObject"/> instance using FishNet.
         /// This is intended for prefabs that are guaranteed to be present on all clients
@@ -161,7 +186,7 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            NetworkBarrier barrier = NetworkBarrier.Instance;
+            NetworkBarrier barrier = AssetSubSystem?.NetworkBarrier;
 
             if (!barrier || !await barrier.EnsureAllClientsReadyAsync(key))
             {
@@ -179,7 +204,7 @@ namespace SS3D.Data.Networking
                 networkObject.gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
             }
 
-            NetworkBarrier.Instance?.TrackNetworkInstance(key);
+            AssetSubSystem?.NetworkBarrier.TrackNetworkInstance(key);
         }
 
         /// <summary>
@@ -224,7 +249,7 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            NetworkBarrier barrier = NetworkBarrier.Instance;
+            NetworkBarrier barrier = AssetSubSystem?.NetworkBarrier;
 
             if (!barrier || !await barrier.EnsureAllClientsReadyAsync(key))
             {
@@ -242,7 +267,7 @@ namespace SS3D.Data.Networking
                 gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
             }
 
-            NetworkBarrier.Instance?.TrackNetworkInstance(key);
+            AssetSubSystem?.NetworkBarrier.TrackNetworkInstance(key);
         }
 
         /// <summary>
@@ -300,7 +325,7 @@ namespace SS3D.Data.Networking
             }
 
             // 2. Barrier: ensure all clients have the asset.
-            NetworkBarrier barrier = NetworkBarrier.Instance;
+            NetworkBarrier barrier = AssetSubSystem?.NetworkBarrier;
 
             if (!barrier || !await barrier.EnsureAllClientsReadyAsync(key))
             {
@@ -326,7 +351,7 @@ namespace SS3D.Data.Networking
             Spawn(instance, ownerConnection);
 
             // 4. Register with NetworkBarrier for late-join tracking.
-            NetworkBarrier.Instance?.TrackNetworkInstance(key);
+            AssetSubSystem?.NetworkBarrier.TrackNetworkInstance(key);
 
             // 5. Release spawn handle — AssetLifecycleTracker keeps the asset resident
             // via InstanceLifetimeTracker on the instantiated copy.

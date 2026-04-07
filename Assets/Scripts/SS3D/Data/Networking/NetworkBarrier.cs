@@ -205,34 +205,6 @@ namespace SS3D.Data.Networking
         [SerializeField]
         private float _lateJoinPreloadTimeoutSeconds = 15f;
 
-        public static NetworkBarrier Instance { get; private set; }
-
-        // ── Lifecycle ────────────────────────────────────────────────────
-        protected override void OnAwake()
-        {
-            base.OnAwake();
-
-            if (Instance)
-            {
-                Log.Error(this, $"Multiple instances of {nameof(NetworkBarrier)} detected. Destroying the new one.");
-                GameObject.Dispose(true);
-
-                return;
-            }
-
-            Instance = this;
-        }
-
-        protected override void OnDestroyed()
-        {
-            if (ReferenceEquals(Instance, this))
-            {
-                Instance = null;
-            }
-
-            base.OnDestroyed();
-        }
-
         // ReSharper disable Unity.PerformanceAnalysis
         public override void OnStartServer()
         {
