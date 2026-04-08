@@ -103,8 +103,9 @@ namespace SS3D.Data.Networking
             private readonly TaskCompletionSource<bool> _taskSource;
             private bool? _result;
 
-            internal PreloadSession([CanBeNull] HashSet<string> pendingKeys)
+            internal PreloadSession([NotNull] NetworkConnection connection, [CanBeNull] HashSet<string> pendingKeys)
             {
+                Connection = connection;
                 _pendingKeys = pendingKeys ?? new HashSet<string>();
                 _taskSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -113,6 +114,8 @@ namespace SS3D.Data.Networking
                     Complete(true);
                 }
             }
+
+            internal NetworkConnection Connection { get; }
 
             internal Task<bool> Task => _taskSource.Task;
 
@@ -665,7 +668,7 @@ namespace SS3D.Data.Networking
                 preloadKeys.Add(key);
             }
 
-            PreloadSession session = new(preloadKeys);
+            PreloadSession session = new(connection, preloadKeys);
             _preloadSessions[clientId] = session;
 
             if (preloadKeys.Count == 0)
@@ -732,6 +735,8 @@ namespace SS3D.Data.Networking
             {
                 _clientsWithCompletedPreload.Add(clientId);
                 Log.Information(this, $"Late-join preload completed for ClientID {clientId}.");
+
+                ServerManager.Objects.RebuildObservers(session.Connection);
 
                 return;
             }
