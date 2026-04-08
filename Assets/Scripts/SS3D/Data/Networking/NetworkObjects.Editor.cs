@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using FishNet.Object;
+using FishNet.Observing;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
+using static FishNet.Observing.NetworkObserver;
 
 namespace SS3D.Data.Networking
 {
@@ -46,10 +48,13 @@ namespace SS3D.Data.Networking
             for (int i = 0; i < sortedGuids.Count; i++)
             {
                 string guid = sortedGuids[i];
+                NetworkObject prefab = _prefabs[guid];
+
+                TrySetOverride(prefab, !prefab.TryGetComponent(out NetworkBarrier _) ? ConditionOverrideType.UseManager : ConditionOverrideType.IgnoreManager);
 
                 if (settings.FindAssetEntry(guid) == null)
                 {
-                    _loadedPrefabs[i] = _prefabs[guid];
+                    _loadedPrefabs[i] = prefab;
                 }
             }
         }
@@ -71,6 +76,22 @@ namespace SS3D.Data.Networking
             }
 
             return guids;
+        }
+
+        /// <summary>
+        /// Ensures an addressable prefab's <see cref="NetworkObserver"/> uses <see cref="ConditionOverrideType.UseManager"/>
+        /// so the <see cref="PreloadCondition"/> from the <c>ObserverManager</c> is applied at spawn time.
+        /// </summary>
+        private static void TrySetOverride([NotNull] NetworkObject networkObject, ConditionOverrideType overrideType)
+        {
+            if (!networkObject.TryGetComponent(out NetworkObserver observer) || observer.OverrideType == overrideType)
+            {
+                return;
+            }
+
+            SerializedObject serializedObserver = new(observer);
+            serializedObserver.FindProperty("_overrideType").intValue = (int)overrideType;
+            serializedObserver.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>
