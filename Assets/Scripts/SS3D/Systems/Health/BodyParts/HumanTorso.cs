@@ -5,6 +5,7 @@ using SS3D.Systems.Health;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class HumanTorso : BodyPart
 {
@@ -27,6 +28,7 @@ public class HumanTorso : BodyPart
     /// </summary>
     private IEnumerator AddInternalOrgans()
     {
+        yield return new WaitUntil(() => Heart && LeftLung && RightLung);
         yield return null;
         AddInternalBodyPart(Heart);
         AddInternalBodyPart(LeftLung);

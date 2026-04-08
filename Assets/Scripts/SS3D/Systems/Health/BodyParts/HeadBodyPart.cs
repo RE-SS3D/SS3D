@@ -7,6 +7,7 @@ using SS3D.Data.Networking;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Humanoid;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Health
@@ -32,6 +33,7 @@ namespace SS3D.Systems.Health
         /// </summary>
         private IEnumerator AddInternalOrgans()
         {
+            yield return new WaitUntil(() => Brain);
             yield return null;
             AddInternalBodyPart(Brain);
         }
