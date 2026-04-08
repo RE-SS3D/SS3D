@@ -40,7 +40,7 @@ namespace SS3D.Data
         public void OnAfterDeserialize()
         {
 #if UNITY_EDITOR
-            if (!UnityEditor.EditorApplication.isPlaying)
+            if (!UnityEngine.Application.isPlaying)
             {
                 return;
             }
