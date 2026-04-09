@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Data
@@ -40,9 +41,23 @@ namespace SS3D.Data
         public void OnAfterDeserialize()
         {
 #if UNITY_EDITOR
-            if (!UnityEngine.Application.isPlaying)
+            try
             {
-                return;
+                if (!EditorApplication.isPlaying)
+                {
+                    return;
+                }
+            }
+            catch (UnityException e)
+            {
+                if (e.Message.Contains("get_isPlaying is not allowed to be called during serialization"))
+                {
+                    return;
+                }
+
+                Debug.LogException(e);
+
+                throw;
             }
 #endif
 
