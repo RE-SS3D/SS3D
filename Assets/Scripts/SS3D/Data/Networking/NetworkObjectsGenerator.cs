@@ -65,10 +65,12 @@ namespace SS3D.Data.Networking
 
             NetworkObjects nobDatabase = GetOrCreateDatabase();
 
-            if (Settings!.FullRebuild ? !GenerateFull(nobDatabase) : !GenerateChanged(nobDatabase, importedAssets))
-            {
-                return;
-            }
+            // ToDo: Fix the Generate changed workflow. The GenerateChanged(...) has some issue, so currently using full rebuild.
+            // if (Settings!.FullRebuild ? !GenerateFull(nobDatabase) : !GenerateChanged(nobDatabase, importedAssets))
+            // {
+            //     return;
+            // }
+            GenerateFull(nobDatabase);
 
             // Always rebuild the serialized arrays from the editor cache before persisting the asset.
             Generate(nobDatabase);
