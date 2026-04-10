@@ -101,7 +101,7 @@ namespace SS3D.Systems.Combat.Interactions
 
             if (!DefaultIconHandle)
             {
-                ReleaseDefaultIcon();
+                AssetHandle.Release(ref DefaultIconHandle);
             }
             else
             {
@@ -113,14 +113,8 @@ namespace SS3D.Systems.Combat.Interactions
 
         private static void OnApplicationQuit()
         {
-            ReleaseDefaultIcon();
+            AssetHandle.Release(ref DefaultIconHandle);
             UnityEngine.Application.quitting -= OnApplicationQuit;
-        }
-
-        private static void ReleaseDefaultIcon()
-        {
-            DefaultIconHandle?.Dispose();
-            DefaultIconHandle = null;
         }
     }
 }

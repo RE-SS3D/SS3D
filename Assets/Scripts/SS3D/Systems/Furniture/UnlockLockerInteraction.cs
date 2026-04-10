@@ -95,7 +95,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
             if (!DefaultIconHandle)
             {
-                ReleaseDefaultIcon();
+                AssetHandle.Release(ref DefaultIconHandle);
             }
             else
             {
@@ -107,14 +107,8 @@ namespace SS3D.Systems.Inventory.Interactions
 
         private void OnApplicationQuit()
         {
-            ReleaseDefaultIcon();
+            AssetHandle.Release(ref DefaultIconHandle);
             UnityEngine.Application.quitting -= OnApplicationQuit;
-        }
-
-        private void ReleaseDefaultIcon()
-        {
-            DefaultIconHandle?.Dispose();
-            DefaultIconHandle = null;
         }
     }
 }

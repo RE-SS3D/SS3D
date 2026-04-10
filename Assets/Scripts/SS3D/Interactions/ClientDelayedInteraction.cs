@@ -62,8 +62,7 @@ namespace SS3D.Interactions
 
             if (!_loadingBarPrefabHandle)
             {
-                _loadingBarPrefabHandle?.Dispose();
-                _loadingBarPrefabHandle = null;
+                AssetHandle.Release(ref _loadingBarPrefabHandle);
             }
         }
 
@@ -85,13 +84,15 @@ namespace SS3D.Interactions
             }
 
             // Check if loading bar prefab is valid or not.
-            if (_loadingBarPrefabHandle is { IsValid: true })
+            if (!_loadingBarPrefabHandle)
             {
-                _loadingBarInstance = Object.Instantiate(_loadingBarPrefabHandle.Asset, source.GameObject.transform);
-
-                _loadingBarInstance.LocalPosition = LoadingBarOffset;
-                _loadingBarInstance.Duration = Delay;
+                return true;
             }
+
+            _loadingBarInstance = Object.Instantiate(_loadingBarPrefabHandle.Asset, source.GameObject.transform);
+
+            _loadingBarInstance.LocalPosition = LoadingBarOffset;
+            _loadingBarInstance.Duration = Delay;
 
             return true;
         }

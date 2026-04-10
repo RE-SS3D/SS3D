@@ -23,7 +23,7 @@ namespace SS3D.Systems.Furniture
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            ReleaseIcon();
+            AssetHandle.Release(ref _nukeIconHandle);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -46,21 +46,12 @@ namespace SS3D.Systems.Furniture
 
         private async void AcquireIcon()
         {
+            _nukeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).LoadAsync();
+
             if (!_nukeIconHandle)
             {
-                _nukeIconHandle = await new AssetRequest<Sprite>(InteractionIcons.Nuke).LoadAsync();
+                AssetHandle.Release(ref _nukeIconHandle);
             }
-        }
-
-        private void ReleaseIcon()
-        {
-            if (_nukeIconHandle is not { IsValid: true })
-            {
-                return;
-            }
-
-            _nukeIconHandle.Dispose();
-            _nukeIconHandle = null;
         }
     }
 }

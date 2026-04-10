@@ -70,7 +70,7 @@ namespace SS3D.Systems.Health
             _bodyPart.OnBodyPartDestroyed -= HandleBodyPartDestroyedOrDetached;
             _bodyPart.OnBodyPartDetached -= HandleBodyPartDestroyedOrDetached;
 
-            ReleaseAssets();
+            AssetHandle.Release(ref _bleedingEffectHandle);
         }
 
         private void HandleBodyPartDestroyedOrDetached(object sender, EventArgs eventArgs)
@@ -84,19 +84,8 @@ namespace SS3D.Systems.Health
 
             if (!_bleedingEffectHandle)
             {
-                ReleaseHandle(ref _bleedingEffectHandle);
+                AssetHandle.Release(ref _bleedingEffectHandle);
             }
-        }
-
-        private void ReleaseAssets()
-        {
-            ReleaseHandle(ref _bleedingEffectHandle);
-        }
-
-        private void ReleaseHandle([CanBeNull] ref AssetHandle<GameObject> handle)
-        {
-            handle?.Dispose();
-            handle = null;
         }
     }
 }

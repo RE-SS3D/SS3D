@@ -2,11 +2,8 @@
 using FishNet.Object;
 using SS3D.Core;
 using FishNet;
-using JetBrains.Annotations;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
-using System;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace SS3D.Systems.Audio
@@ -16,8 +13,7 @@ namespace SS3D.Systems.Audio
     /// </summary>
     public class NoisyCollision : MonoBehaviour
     {
-
-        //Variables!!! Wow!
+        // Variables!!! Wow!
         [Header("Collision Noises Setup")]
         [Range(0f, 1f)]
         [SerializeField]
@@ -143,7 +139,7 @@ namespace SS3D.Systems.Audio
 
                 if (!_lightImpactSoundHandles[i])
                 {
-                    ReleaseAudioClip(ref _lightImpactSoundHandles[i]);
+                    AssetHandle.Release(ref _lightImpactSoundHandles[i]);
                 }
             }
 
@@ -155,7 +151,7 @@ namespace SS3D.Systems.Audio
 
                 if (!_hardImpactSoundHandles[i])
                 {
-                    ReleaseAudioClip(ref _hardImpactSoundHandles[i]);
+                    AssetHandle.Release(ref _hardImpactSoundHandles[i]);
                 }
             }
         }
@@ -164,19 +160,13 @@ namespace SS3D.Systems.Audio
         {
             for (int i = 0; i < _lightImpactSoundHandles.Length; i++)
             {
-                ReleaseAudioClip(ref _lightImpactSoundHandles[i]);
+                AssetHandle.Release(ref _lightImpactSoundHandles[i]);
             }
 
             for (int i = 0; i < _hardImpactSoundHandles.Length; i++)
             {
-                ReleaseAudioClip(ref _hardImpactSoundHandles[i]);
+                AssetHandle.Release(ref _hardImpactSoundHandles[i]);
             }
-        }
-
-        private void ReleaseAudioClip([CanBeNull] ref AssetHandle<AudioClip> clipHandle)
-        {
-            clipHandle?.Dispose();
-            clipHandle = null;
         }
     }
 }

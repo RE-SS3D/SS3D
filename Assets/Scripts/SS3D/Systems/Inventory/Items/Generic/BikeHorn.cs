@@ -58,7 +58,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
-            ReleaseAudioClips();
+            AssetHandle.Release(ref _honkClipHandle);
         }
 
         private async void AcquireAudioClips()
@@ -67,20 +67,8 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
             if (!_honkClipHandle)
             {
-                ReleaseHandle(ref _honkClipHandle);
+                AssetHandle.Release(ref _honkClipHandle);
             }
-        }
-        
-        private void ReleaseAudioClips()
-        {
-            ReleaseHandle(ref _honkClipHandle);
-        }
-
-        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> assetHandle)
-            where T : Object
-        {
-            assetHandle?.Dispose();
-            assetHandle = null;
         }
     }
 }

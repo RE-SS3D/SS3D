@@ -116,20 +116,13 @@ namespace System.Electricity
 
             if (!_generatorClipHandle)
             {
-                ReleaseHandle(ref _generatorClipHandle);
+                AssetHandle.Release(ref _generatorClipHandle);
             }
         }
 
         private void ReleaseAudioClips()
         {
-            ReleaseHandle(ref _generatorClipHandle);
-        }
-        
-        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> handle) 
-            where T : class
-        {
-            handle?.Dispose();
-            handle = null;
+            AssetHandle.Release(ref _generatorClipHandle);
         }
     }
 }

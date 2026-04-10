@@ -38,7 +38,7 @@ namespace SS3D.Systems.Furniture
 
         public void Dispose()
         {
-            ReleaseIcon();
+            AssetHandle.Release(ref _iconHandle);
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -106,21 +106,14 @@ namespace SS3D.Systems.Furniture
         {
             _iconHandle = await new AssetRequest<Sprite>(InteractionIcons.Discard).LoadAsync();
 
-            if (_iconHandle)
+            if (!_iconHandle)
             {
-                Icon = _iconHandle.Asset;
+                AssetHandle.Release(ref _iconHandle);
+                
+                return;
             }
-            else if (_iconHandle != null)
-            {
-                _iconHandle.Dispose();
-                _iconHandle = null;
-            }
-        }
-        
-        private void ReleaseIcon()
-        {
-            _iconHandle?.Dispose();
-            _iconHandle = null;
+
+            Icon = _iconHandle.Asset;
         }
     }
 }

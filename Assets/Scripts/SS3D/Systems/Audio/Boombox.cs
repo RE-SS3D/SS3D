@@ -1,5 +1,4 @@
 ﻿using FishNet.Object.Synchronizing;
-using JetBrains.Annotations;
 using SS3D.Interactions.Interfaces;
 using SS3D.Interactions;
 using System.Collections.Generic;
@@ -8,7 +7,6 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using System.Electricity;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Audio
 {
@@ -134,7 +132,7 @@ namespace SS3D.Systems.Audio
 
                 if (!_songHandles[i])
                 {
-                    ReleaseAudioClip(ref _songHandles[i]);
+                    AssetHandle.Release(ref _songHandles[i]);
                 }
             }
         }
@@ -143,14 +141,8 @@ namespace SS3D.Systems.Audio
         {
             for (int i = 0; i < _songHandles.Length; i++)
             {
-                ReleaseAudioClip(ref _songHandles[i]);
+                AssetHandle.Release(ref _songHandles[i]);
             }
-        }
-
-        private void ReleaseAudioClip([CanBeNull] ref AssetHandle<AudioClip> clipHandle)
-        {
-            clipHandle?.Dispose();
-            clipHandle = null;
         }
     }
 }

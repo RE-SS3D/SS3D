@@ -456,15 +456,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
 
         private void ReleaseAssets()
         {
-            ReleaseMaterial(ref _validMaterialHandle);
-            ReleaseMaterial(ref _invalidMaterialHandle);
-            ReleaseMaterial(ref _deleteMaterialHandle);
-        }
-
-        private void ReleaseMaterial([CanBeNull] ref AssetHandle<Material> materialHandle)
-        {
-            materialHandle?.Dispose();
-            materialHandle = null;
+            AssetHandle.Release(ref _validMaterialHandle);
+            AssetHandle.Release(ref _invalidMaterialHandle);
+            AssetHandle.Release(ref _deleteMaterialHandle);
         }
     }
 }

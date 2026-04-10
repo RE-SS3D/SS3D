@@ -144,36 +144,29 @@ namespace SS3D.Systems.Furniture
 
             if (!_takeIconHandle)
             {
-                ReleaseHandle(ref _takeIconHandle);
+                AssetHandle.Release(ref _takeIconHandle);
             }
 
             _emptyClipHandle = await new AssetRequest<AudioClip>(Sounds.BikeHorn).LoadAsync();
 
             if (!_emptyClipHandle)
             {
-                ReleaseHandle(ref _emptyClipHandle);
+                AssetHandle.Release(ref _emptyClipHandle);
             }
 
             _dispenseClipHandle = await new AssetRequest<AudioClip>(Sounds.Can1).LoadAsync();
 
             if (!_dispenseClipHandle)
             {
-                ReleaseHandle(ref _dispenseClipHandle);
+                AssetHandle.Release(ref _dispenseClipHandle);
             }
         }
 
         private void ReleaseAssets()
         {
-            ReleaseHandle(ref _takeIconHandle);
-            ReleaseHandle(ref _emptyClipHandle);
-            ReleaseHandle(ref _dispenseClipHandle);
-        }
-
-        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> handle)
-            where T : class
-        {
-            handle?.Dispose();
-            handle = null;
+            AssetHandle.Release(ref _takeIconHandle);
+            AssetHandle.Release(ref _emptyClipHandle);
+            AssetHandle.Release(ref _dispenseClipHandle);
         }
     }
 }

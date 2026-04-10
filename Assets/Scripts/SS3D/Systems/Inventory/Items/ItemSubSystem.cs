@@ -45,6 +45,7 @@ namespace SS3D.Systems.Inventory.Items
 
             if (!itemHandle)
             {
+                itemHandle?.Dispose();
                 Log.Error(this, "Item with id {id} not found in database!", Logs.ServerOnly, id);
 
                 return null;
@@ -52,6 +53,7 @@ namespace SS3D.Systems.Inventory.Items
 
             Item itemInstance = Instantiate(itemHandle.Asset, position, rotation);
             await NetworkSpawner.SpawnAsync(itemInstance, id);
+            itemHandle.Dispose();
 
             Log.Information(this, "Item {itemInstance} spawned at {position}", Logs.ServerOnly, itemInstance.name, position);
 
@@ -85,19 +87,26 @@ namespace SS3D.Systems.Inventory.Items
             if (!itemHandle)
             {
                 Log.Error(this, "Item with id {id} not found in database!", Logs.ServerOnly, id);
+                itemHandle?.Dispose();
+
                 return null;
             }
-            
+
             Item itemPrefab = itemHandle.Asset;
 
             if (attachedContainer is not null && itemPrefab is not null)
             {
-                return await SpawnItemInContainerAsync(itemPrefab.GameObject, id, attachedContainer);
+                Item spawnedItem = await SpawnItemInContainerAsync(itemPrefab.GameObject, id, attachedContainer);
+                itemHandle.Dispose();
+
+                return spawnedItem;
             }
 
             Log.Error(this, "Container does not found!", Logs.ServerOnly);
-            return null;
+            
+            itemHandle.Dispose();
 
+            return null;
         }
 
         // <summary>

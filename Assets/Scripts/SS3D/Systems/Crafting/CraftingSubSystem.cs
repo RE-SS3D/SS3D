@@ -94,7 +94,7 @@ namespace SS3D.Systems.Crafting
 
             if (!_craftingSmokeHandle)
             {
-                ReleaseHandle(ref _craftingSmokeHandle);
+                AssetHandle.Release(ref _craftingSmokeHandle);
             }
 
             AddressablesDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
@@ -118,7 +118,7 @@ namespace SS3D.Systems.Crafting
                     continue;
                 }
 
-                ReleaseHandle(ref _recipeHandles[i]);
+                AssetHandle.Release(ref _recipeHandles[i]);
                 Log.Error(this, $"Crafting recipe with guid {guid} could not be loaded");
             }
             
@@ -127,19 +127,12 @@ namespace SS3D.Systems.Crafting
 
         private void ReleaseAssets()
         {
-            ReleaseHandle(ref _craftingSmokeHandle);
+            AssetHandle.Release(ref _craftingSmokeHandle);
 
             for (int i = 0; i < _recipeHandles.Length; i++)
             {
-                ReleaseHandle(ref _recipeHandles[i]);
+                AssetHandle.Release(ref _recipeHandles[i]);
             }
-        }
-        
-        private void ReleaseHandle<T>([CanBeNull] ref AssetHandle<T> handle)
-            where T : class
-        {
-            handle?.Dispose();
-            handle = null;
         }
 
         /// <summary>

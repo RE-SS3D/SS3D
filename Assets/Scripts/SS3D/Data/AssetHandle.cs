@@ -5,6 +5,26 @@ using UnityEngine;
 namespace SS3D.Data
 {
     /// <summary>
+    /// Non-generic companion providing convenience helpers for <see cref="AssetHandle{T}"/>.
+    /// </summary>
+    public static class AssetHandle
+    {
+        /// <summary>
+        /// Disposes the given handle and sets the reference to <see langword="null"/>,
+        /// ensuring the caller cannot accidentally reuse a released handle.
+        /// Safe to call even when <paramref name="handle"/> is already <see langword="null"/>.
+        /// </summary>
+        /// <param name="handle">The handle to release. Set to <see langword="null"/> after disposal.</param>
+        /// <typeparam name="T">The asset type held by the handle.</typeparam>
+        public static void Release<T>([CanBeNull] ref AssetHandle<T> handle)
+            where T : class
+        {
+            handle?.Dispose();
+            handle = null;
+        }
+    }
+
+    /// <summary>
     /// RAII ownership handle for a loaded asset. One handle equals one ref-count contribution.
     /// Disposing the handle releases the ref count. If the count drops to zero the asset is unloaded.
     /// <para>

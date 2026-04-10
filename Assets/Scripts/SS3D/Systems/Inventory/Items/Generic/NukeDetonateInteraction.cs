@@ -87,7 +87,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
             }
             else
             {
-                ReleaseDefaultIcon();
+                AssetHandle.Release(ref DefaultIconHandle);
             }
 
             TryingToLoadIcon = false;
@@ -95,14 +95,8 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         private static void OnApplicationQuit()
         {
-            ReleaseDefaultIcon();
+            AssetHandle.Release(ref DefaultIconHandle);
             UnityEngine.Application.quitting -= OnApplicationQuit;
-        }
-
-        private static void ReleaseDefaultIcon()
-        {
-            DefaultIconHandle?.Dispose();
-            DefaultIconHandle = null;
         }
     }
 }

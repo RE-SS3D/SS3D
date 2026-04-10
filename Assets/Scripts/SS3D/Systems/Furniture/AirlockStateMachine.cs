@@ -64,27 +64,21 @@ namespace SS3D.Systems.Furniture
 
             if (!_openSoundHandle)
             {
-                ReleaseClipHandle(ref _openSoundHandle);
+                AssetHandle.Release(ref _openSoundHandle);
             }
 
             _closeSoundHandle = await new AssetRequest<AudioClip>(Sounds.AirlockClose).LoadAsync();
 
             if (!_closeSoundHandle)
             {
-                ReleaseClipHandle(ref _closeSoundHandle);
+                AssetHandle.Release(ref _closeSoundHandle);
             }
         }
 
         private void ReleaseAssets()
         {
-            ReleaseClipHandle(ref _openSoundHandle);
-            ReleaseClipHandle(ref _closeSoundHandle);
-        }
-
-        private void ReleaseClipHandle([CanBeNull] ref AssetHandle<AudioClip> clipHandle)
-        {
-            clipHandle?.Dispose();
-            clipHandle = null;
+            AssetHandle.Release(ref _openSoundHandle);
+            AssetHandle.Release(ref _closeSoundHandle);
         }
 
         private void ChangeColors(Color color, Animator animator)

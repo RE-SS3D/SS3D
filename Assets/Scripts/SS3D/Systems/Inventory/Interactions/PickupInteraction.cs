@@ -122,20 +122,14 @@ namespace SS3D.Systems.Inventory.Interactions
             }
             else
             {
-                ReleaseDefaultIcon();
+                AssetHandle.Release(ref DefaultIconHandle);
             }
         }
         
         private static void OnApplicationQuit()
         {
-            ReleaseDefaultIcon();
+            AssetHandle.Release(ref DefaultIconHandle);
             UnityEngine.Application.quitting -= OnApplicationQuit;
-        }
-        
-        private static void ReleaseDefaultIcon()
-        {
-            DefaultIconHandle?.Dispose();
-            DefaultIconHandle = null;
         }
     }
 }

@@ -78,8 +78,7 @@ namespace SS3D.Systems.Furniture
 
             if (!DefaultIconHandle)
             {
-                DefaultIconHandle?.Dispose();
-                DefaultIconHandle = null;
+                AssetHandle.Release(ref DefaultIconHandle);
             }
             else
             {
@@ -91,9 +90,7 @@ namespace SS3D.Systems.Furniture
 
         private static void OnApplicationQuit()
         {
-            DefaultIconHandle?.Dispose();
-            DefaultIconHandle = null;
-            
+            AssetHandle.Release(ref DefaultIconHandle);
             UnityEngine.Application.quitting -= OnApplicationQuit;
         }
     }
