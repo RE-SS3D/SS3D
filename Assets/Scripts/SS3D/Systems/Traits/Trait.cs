@@ -43,7 +43,7 @@ namespace SS3D.Systems
         protected bool Equals(Trait other)
         {
             // Use Hash instead of hash to prevent uninitialized hashes in clients
-            return Hash == other.hash;
+            return Hash == other.Hash;
         }
 
         public override bool Equals(object obj)
@@ -55,7 +55,7 @@ namespace SS3D.Systems
 
         public override int GetHashCode()
         {
-            return hash;
+            return Hash;
         }
 
         [ExecuteInEditMode]
@@ -66,7 +66,7 @@ namespace SS3D.Systems
 
         private void GenerateHash()
         {
-            hash = Animator.StringToHash(name.ToUpper());
+            Hash = Animator.StringToHash(name.ToUpper());
         }
     }
 
