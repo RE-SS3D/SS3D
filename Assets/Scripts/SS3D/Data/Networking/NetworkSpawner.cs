@@ -337,17 +337,6 @@ namespace SS3D.Data.Networking
 
             // 3. Instantiate + spawn.
             NetworkObject instance = Object.Instantiate(spawnHandle.Asset);
-
-            if (!instance)
-            {
-                Log.Error(typeof(NetworkSpawner), $"Loaded prefab for asset '{key}' does not contain a NetworkObject component.");
-                instance.Dispose(true);
-                spawnHandle.Dispose();
-                barrier.BroadcastUnload(key);
-
-                return null;
-            }
-
             Spawn(instance, ownerConnection);
 
             // 4. Register with NetworkBarrier for late-join tracking.
