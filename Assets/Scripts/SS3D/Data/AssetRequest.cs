@@ -39,10 +39,5 @@ namespace SS3D.Data
             return await assetSubSystem.AcquireAsync<T>(_key);
         }
 
-        /// <summary>
-        /// Executes the request: resolves the asset subsystem, loads the asset, and returns a ref-counted handle.
-        /// Returns <see langword="null"/> if the subsystem is unavailable or the asset is not found.
-        /// </summary>
-        public AssetHandle<T> Load() => LoadAsync().GetAwaiter().GetResult();
     }
 }
