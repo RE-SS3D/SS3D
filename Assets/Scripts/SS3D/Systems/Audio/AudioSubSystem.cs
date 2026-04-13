@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
@@ -9,6 +9,7 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Generated;
 using SS3D.Logging;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -122,30 +123,51 @@ namespace SS3D.Systems.Audio
             float minRange = 1f,
             float maxRange = 500f)
         {
+            PlayAudioSourceAsync(type, audioClipID, position, parent, isLooping, volume, pitch, minRange, maxRange);
+        }
+
+        private async void PlayAudioSourceAsync(
+            AudioType type,
+            string audioClipID,
+            Vector3 position,
+            NetworkObject parent,
+            bool isLooping,
+            float volume,
+            float pitch,
+            float minRange,
+            float maxRange)
+        {
             AudioSource audioSource = FindAvailableAudioSource(type);
-            
-            AssetHandle<AudioClip> clipHandle = new AssetRequest<AudioClip>(audioClipID).Load();
 
-            if (!clipHandle)
+            try
             {
-                Log.Error(this, $"Audio clip not found.\t {audioClipID}");
-                
-                return;
+                AssetHandle<AudioClip> clipHandle = await new AssetRequest<AudioClip>(audioClipID).LoadAsync();
+
+                if (!clipHandle)
+                {
+                    Log.Error(this, $"Audio clip not found.\t {audioClipID}");
+
+                    return;
+                }
+
+                audioSource.gameObject.transform.position = position;
+                audioSource.clip = clipHandle.Asset;
+                audioSource.volume = volume;
+                audioSource.pitch = pitch;
+                audioSource.minDistance = minRange;
+                audioSource.maxDistance = maxRange;
+
+                // If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
+                // This is useful for things that are obviously creating the sound, like a mouse's squeak
+                //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
+                audioSource.transform.parent = parent ? parent.transform : null;
+                audioSource.loop = isLooping;
+                audioSource.Play();
             }
-
-            audioSource.gameObject.transform.position = position;
-            audioSource.clip = clipHandle.Asset;
-            audioSource.volume = volume;
-            audioSource.pitch = pitch;
-            audioSource.minDistance = minRange;
-            audioSource.maxDistance = maxRange;
-
-            // If we want to attach the audio source to something specific, do that. Otherwise, detach it from any parents.
-            // This is useful for things that are obviously creating the sound, like a mouse's squeak
-            //-- we don't want the mouse to leave the squeak behind as it travels, but a flying soda can making a sound at the site of impact is probably fine.
-            audioSource.transform.parent = parent ? parent.transform : null;
-            audioSource.loop = isLooping;
-            audioSource.Play();
+            catch (Exception e)
+            {
+                Log.Error(this, $"Failed to play audio clip {audioClipID}: {e.Message}");
+            }
         }
 
         [ObserversRpc]
