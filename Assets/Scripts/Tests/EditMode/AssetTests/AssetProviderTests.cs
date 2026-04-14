@@ -61,7 +61,7 @@ namespace SS3D.Tests.EditMode.AssetTests
 
             string loadedKey = null;
             Object loadedAsset = null;
-            _provider.OnLoaded += (key, asset) =>
+            _backend.OnLoaded += (key, asset) =>
             {
                 loadedKey = key;
                 loadedAsset = asset;
@@ -80,7 +80,7 @@ namespace SS3D.Tests.EditMode.AssetTests
             _backend.RegisterAsset("key1", go);
 
             int fireCount = 0;
-            _provider.OnLoaded += (_, _) => fireCount++;
+            _backend.OnLoaded += (_, _) => fireCount++;
 
             using AssetHandle<GameObject> h1 = Acquire<GameObject>("key1");
             using AssetHandle<GameObject> h2 = Acquire<GameObject>("key1");
@@ -108,7 +108,7 @@ namespace SS3D.Tests.EditMode.AssetTests
             using AssetHandle<GameObject> handle = Acquire<GameObject>("key1");
 
             string unloadedKey = null;
-            _provider.OnUnloaded += key => unloadedKey = key;
+            _backend.OnUnloaded += key => unloadedKey = key;
             _provider.Unload("key1");
 
             Assert.That(unloadedKey, Is.EqualTo("key1"));

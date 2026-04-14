@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS3D.Data;
@@ -7,6 +8,9 @@ namespace SS3D.Tests
 {
     public sealed class FakeAssetBackend : IAssetBackend
     {
+        public event Action<string, Object> OnLoaded;
+        public event Action<string> OnUnloaded;
+
         private readonly Dictionary<string, Object> _assets = new();
 
         public List<string> UnloadedKeys { get; } = new();
@@ -20,10 +24,20 @@ namespace SS3D.Tests
         {
             LoadCallCount++;
             _assets.TryGetValue(key, out Object asset);
+
+            if (asset)
+            {
+                OnLoaded?.Invoke(key, asset);
+            }
+
             return Task.FromResult(asset);
         }
 
-        public void Unload(string key) => UnloadedKeys.Add(key);
+        public void Unload(string key)
+        {
+            UnloadedKeys.Add(key);
+            OnUnloaded?.Invoke(key);
+        }
 
         public void Dispose() { }
     }
