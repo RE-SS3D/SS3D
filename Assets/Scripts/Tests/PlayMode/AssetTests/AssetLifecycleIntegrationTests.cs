@@ -127,7 +127,7 @@ namespace SS3D.Tests.PlayMode.AssetTests
         private AssetHandle<T> Acquire<T>(string key)
             where T : class
         {
-            return _provider.AcquireAsync<T>(key, _backend).GetAwaiter().GetResult();
+            return _provider.AcquireAsync<T>(key, key, _backend).GetAwaiter().GetResult();
         }
     }
 }

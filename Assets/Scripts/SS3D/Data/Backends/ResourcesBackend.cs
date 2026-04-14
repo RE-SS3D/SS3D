@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using System;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -14,35 +16,43 @@ namespace SS3D.Data
     /// </summary>
     internal sealed class ResourcesBackend : IAssetBackend
     {
+        /// <inheritdoc/>>
+        public event Action<string, Object> OnLoaded;
+
+        /// <inheritdoc/>>
+        public event Action<string> OnUnloaded;
+
         private readonly Dictionary<string, Object> _loaded = new();
 
         /// <inheritdoc/>
         public Task InitializeAsync() => Task.CompletedTask;
 
         /// <inheritdoc/>
-        public async Task<Object> LoadAsync([NotNull] string key)
+        public async Task<Object> LoadAsync([NotNull] string guid, [NotNull] string resolvedKey)
         {
-            ResourceRequest request = Resources.LoadAsync<Object>(key);
+            ResourceRequest request = Resources.LoadAsync<Object>(resolvedKey);
 
             while (!request.isDone)
             {
                 await Task.Yield();
             }
 
-            if (request.asset != null)
+            if (request.asset)
             {
-                _loaded[key] = request.asset;
+                _loaded[guid] = request.asset;
+                OnLoaded?.Invoke(guid, request.asset);
             }
 
             return request.asset;
         }
 
         /// <inheritdoc/>
-        public void Unload([NotNull] string key)
+        public void Unload([NotNull] string guid, [NotNull] string resolvedKey)
         {
-            if (_loaded.Remove(key, out Object asset) && asset is not GameObject)
+            if (_loaded.Remove(guid, out Object asset) && asset is not GameObject)
             {
                 Resources.UnloadAsset(asset);
+                OnUnloaded?.Invoke(guid);
             }
         }
 

@@ -26,18 +26,15 @@ namespace SS3D.Data
         /// <inheritdoc/>>
         public event Action<string> OnUnloaded;
 
-        /// <summary>
-        /// 
-        /// </summary>
         private readonly Dictionary<string, AsyncOperationHandle<Object>> _handles = new();
 
         /// <inheritdoc/>
         public async Task InitializeAsync() => await Addressables.InitializeAsync().Task;
 
         /// <inheritdoc/>
-        public async Task<Object> LoadAsync([NotNull] string guid)
+        public async Task<Object> LoadAsync([NotNull] string guid, [NotNull] string resolvedKey)
         {
-            AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(guid);
+            AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(resolvedKey);
             _handles[guid] = handle;
 
             Object result = await handle.Task;
@@ -55,7 +52,7 @@ namespace SS3D.Data
         }
 
         /// <inheritdoc/>
-        public void Unload([NotNull] string guid)
+        public void Unload([NotNull] string guid, [NotNull] string resolvedKey)
         {
             if (!_handles.Remove(guid, out AsyncOperationHandle<Object> handle) || !handle.IsValid())
             {

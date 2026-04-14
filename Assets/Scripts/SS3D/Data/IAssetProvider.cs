@@ -12,21 +12,22 @@ namespace SS3D.Data
     public interface IAssetProvider : IDisposable
     {
         /// <summary>
-        /// Loads the asset identified by <paramref name="key"/> and returns a handle.
+        /// Loads the asset identified by <paramref name="guid"/> and returns a handle.
         /// If the asset is already loaded the existing instance is reused regardless of the backend parameter.
+        /// The <paramref name="resolvedKey"/> is only used for backend loading and unloading.
         /// </summary>
-        Task<AssetHandle<T>> AcquireAsync<T>(string key, IAssetBackend backend)
+        Task<AssetHandle<T>> AcquireAsync<T>(string guid, string resolvedKey, IAssetBackend backend)
             where T : class;
 
         /// <summary>
-        /// Unloads the asset identified by <paramref name="key"/> from its backend
+        /// Unloads the asset identified by <paramref name="guid"/> from its backend
         /// and removes it from the loaded set.
         /// </summary>
-        void Unload(string key);
+        void Unload(string guid);
 
         /// <summary>
-        /// Returns <see langword="true"/> if the asset identified by <paramref name="key"/> is currently loaded.
+        /// Returns <see langword="true"/> if the asset identified by <paramref name="guid"/> is currently loaded.
         /// </summary>
-        bool IsLoaded(string key);
+        bool IsLoaded(string guid);
     }
 }

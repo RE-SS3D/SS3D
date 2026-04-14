@@ -19,6 +19,8 @@ namespace SS3D.Data
             public Task<Object> LoadTask { get; init; }
 
             public IAssetBackend Backend { get; init; }
+
+            public string ResolvedKey { get; init; }
         }
 
         private readonly Dictionary<string, Record> _records = new();
@@ -31,46 +33,46 @@ namespace SS3D.Data
 
         /// <inheritdoc/>
         [ItemNotNull]
-        public async Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string key, [NotNull] IAssetBackend backend)
+        public async Task<AssetHandle<T>> AcquireAsync<T>([NotNull] string guid, [NotNull] string resolvedKey, [NotNull] IAssetBackend backend)
             where T : class
         {
-            if (!_records.TryGetValue(key, out Record record))
+            if (!_records.TryGetValue(guid, out Record record))
             {
-                record = new() { Backend = backend, LoadTask = LoadAsync(key, backend) };
-                _records[key] = record;
+                record = new() { Backend = backend, ResolvedKey = resolvedKey, LoadTask = LoadAsync(guid, resolvedKey, backend) };
+                _records[guid] = record;
             }
 
             Object obj = await record.LoadTask;
 
-            return new(key, CastAsset<T>(obj), _releaseCallback);
+            return new(guid, CastAsset<T>(obj), _releaseCallback);
         }
 
         /// <inheritdoc/>
-        public void Unload([NotNull] string key)
+        public void Unload([NotNull] string guid)
         {
-            if (!_records.Remove(key, out Record record))
+            if (!_records.Remove(guid, out Record record))
             {
                 return;
             }
 
             if (record.LoadTask is { IsCompletedSuccessfully: true })
             {
-                record.Backend.Unload(key);
+                record.Backend.Unload(guid, record.ResolvedKey);
             }
         }
 
         /// <inheritdoc/>
-        public bool IsLoaded([NotNull] string key)
-            => _records.TryGetValue(key, out Record r) && r.LoadTask is { IsCompletedSuccessfully: true };
+        public bool IsLoaded([NotNull] string guid)
+            => _records.TryGetValue(guid, out Record r) && r.LoadTask is { IsCompletedSuccessfully: true };
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            foreach ((string key, Record record) in _records)
+            foreach ((string guid, Record record) in _records)
             {
                 if (record.LoadTask is { IsCompletedSuccessfully: true })
                 {
-                    record.Backend.Unload(key);
+                    record.Backend.Unload(guid, record.ResolvedKey);
                 }
             }
 
@@ -90,9 +92,9 @@ namespace SS3D.Data
             return obj as T;
         }
 
-        private async Task<Object> LoadAsync([NotNull] string key, [NotNull] IAssetBackend backend)
+        private async Task<Object> LoadAsync([NotNull] string guid, [NotNull] string resolvedKey, [NotNull] IAssetBackend backend)
         {
-            return await backend.LoadAsync(key);
+            return await backend.LoadAsync(guid, resolvedKey);
         }
     }
 }

@@ -20,23 +20,23 @@ namespace SS3D.Tests
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public Task<Object> LoadAsync(string key)
+        public Task<Object> LoadAsync(string guid, string resolvedKey)
         {
             LoadCallCount++;
-            _assets.TryGetValue(key, out Object asset);
+            _assets.TryGetValue(guid, out Object asset);
 
             if (asset)
             {
-                OnLoaded?.Invoke(key, asset);
+                OnLoaded?.Invoke(guid, asset);
             }
 
             return Task.FromResult(asset);
         }
 
-        public void Unload(string key)
+        public void Unload(string guid, string resolvedKey)
         {
-            UnloadedKeys.Add(key);
-            OnUnloaded?.Invoke(key);
+            UnloadedKeys.Add(guid);
+            OnUnloaded?.Invoke(guid);
         }
 
         public void Dispose() { }

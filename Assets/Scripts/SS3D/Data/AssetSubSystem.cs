@@ -88,15 +88,15 @@ namespace SS3D.Data
                     return null;
                 }
 
-                _lifecycleTracker.TrackAcquire(resolvedKey);
+                _lifecycleTracker.TrackAcquire(guid);
 
                 try
                 {
-                    return await _provider.AcquireAsync<T>(resolvedKey, backend);
+                    return await _provider.AcquireAsync<T>(guid, resolvedKey, backend);
                 }
                 catch
                 {
-                    _lifecycleTracker.TrackRelease(resolvedKey);
+                    _lifecycleTracker.TrackRelease(guid);
 
                     throw;
                 }

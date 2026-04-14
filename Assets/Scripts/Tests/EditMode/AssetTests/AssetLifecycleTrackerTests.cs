@@ -138,6 +138,6 @@ namespace SS3D.Tests.EditMode.AssetTests
         }
 
         private AssetHandle<T> Acquire<T>([NotNull] string key)
-            where T : class => _provider.AcquireAsync<T>(key, _backend).GetAwaiter().GetResult();
+            where T : class => _provider.AcquireAsync<T>(key, key, _backend).GetAwaiter().GetResult();
     }
 }
