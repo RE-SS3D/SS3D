@@ -124,17 +124,14 @@ namespace SS3D.Data
             _lifecycleTracker?.Shutdown();
             _lifecycleTracker = null;
 
-            if (_provider != null)
-            {
-                _provider.OnLoaded -= RelayAssetLoaded;
-                _provider.OnUnloaded -= RelayAssetUnloaded;
-                _provider.Dispose();
-            }
-
             foreach (IAssetBackend backend in _backends.Values)
             {
+                backend.OnLoaded -= RelayAssetLoaded;
+                backend.OnUnloaded -= RelayAssetUnloaded;
                 backend.Dispose();
             }
+
+            _provider?.Dispose();
 
             _backends.Clear();
             _catalogs = null;
@@ -217,8 +214,11 @@ namespace SS3D.Data
                 tracker = new(_provider);
                 _lifecycleTracker = tracker;
 
-                _provider.OnLoaded += RelayAssetLoaded;
-                _provider.OnUnloaded += RelayAssetUnloaded;
+                foreach (IAssetBackend backend in _backends.Values)
+                {
+                    backend.OnLoaded += RelayAssetLoaded;
+                    backend.OnUnloaded += RelayAssetUnloaded;
+                }
 
                 List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
