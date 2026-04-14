@@ -21,12 +21,6 @@ namespace SS3D.Data
             public IAssetBackend Backend { get; init; }
         }
 
-        /// <inheritdoc/>
-        public event Action<string, Object> OnLoaded;
-
-        /// <inheritdoc/>
-        public event Action<string> OnUnloaded;
-
         private readonly Dictionary<string, Record> _records = new();
         private readonly Action<string> _releaseCallback;
 
@@ -63,8 +57,6 @@ namespace SS3D.Data
             {
                 record.Backend.Unload(key);
             }
-
-            OnUnloaded?.Invoke(key);
         }
 
         /// <inheritdoc/>
@@ -100,14 +92,7 @@ namespace SS3D.Data
 
         private async Task<Object> LoadAsync([NotNull] string key, [NotNull] IAssetBackend backend)
         {
-            Object asset = await backend.LoadAsync(key);
-
-            if (asset)
-            {
-                OnLoaded?.Invoke(key, asset);
-            }
-
-            return asset;
+            return await backend.LoadAsync(key);
         }
     }
 }

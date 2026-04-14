@@ -12,16 +12,6 @@ namespace SS3D.Data
     public interface IAssetProvider : IDisposable
     {
         /// <summary>
-        /// Raised after an asset is successfully loaded for the first time.
-        /// </summary>
-        event Action<string, Object> OnLoaded;
-
-        /// <summary>
-        /// Raised after an asset is unloaded from the backend.
-        /// </summary>
-        event Action<string> OnUnloaded;
-
-        /// <summary>
         /// Loads the asset identified by <paramref name="key"/> and returns a handle.
         /// If the asset is already loaded the existing instance is reused regardless of the backend parameter.
         /// </summary>
