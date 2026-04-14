@@ -17,7 +17,7 @@ namespace SS3D.Data
         internal AssetLifecycleTracker(IAssetProvider provider)
         {
             _provider = provider;
-            provider.OnLoaded += HandleAssetLoaded;
+            AssetSubSystem.OnAssetLoaded += HandleAssetLoaded;
             InstanceLifetimeTracker.OnInstantiated += HandleInstanceCreated;
             InstanceLifetimeTracker.OnReleased += HandleInstanceReleased;
         }
@@ -55,7 +55,7 @@ namespace SS3D.Data
 
         internal void Shutdown()
         {
-            _provider.OnLoaded -= HandleAssetLoaded;
+            AssetSubSystem.OnAssetLoaded -= HandleAssetLoaded;
             InstanceLifetimeTracker.OnInstantiated -= HandleInstanceCreated;
             InstanceLifetimeTracker.OnReleased -= HandleInstanceReleased;
             _refCounts.Clear();
@@ -67,7 +67,7 @@ namespace SS3D.Data
         /// </summary>
         private void HandleAssetLoaded(string key, Object asset)
         {
-            if (asset is GameObject go)
+            if (asset is GameObject go && _refCounts.ContainsKey(key))
             {
                 go.AddComponent<InstanceLifetimeTracker>().Initialize(key);
             }
