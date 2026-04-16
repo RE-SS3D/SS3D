@@ -34,8 +34,11 @@ namespace SS3D.Data
         /// <inheritdoc/>
         public async Task<Object> LoadAsync([NotNull] string guid, [NotNull] string resolvedKey)
         {
-            AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(resolvedKey);
-            _handles[guid] = handle;
+            if (!_handles.TryGetValue(guid, out AsyncOperationHandle<Object> handle))
+            {
+                handle = Addressables.LoadAssetAsync<Object>(resolvedKey);
+                _handles.Add(guid, handle);
+            }
 
             Object result = await handle.Task;
 
