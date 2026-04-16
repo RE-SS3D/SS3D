@@ -48,8 +48,10 @@ namespace SS3D.Data
                 return result;
             }
 
-            Addressables.Release(handle);
-            _handles.Remove(guid);
+            if (_handles.Remove(guid))
+            {
+                Addressables.Release(handle);
+            }
 
             return null;
         }
