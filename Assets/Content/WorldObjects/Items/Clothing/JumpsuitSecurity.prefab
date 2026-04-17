@@ -83,6 +83,10 @@ PrefabInstance:
       propertyPath: <AssetPathHash>k__BackingField
       value: 5199498103544181230
       objectReference: {fileID: 0}
+    - target: {fileID: 4313929657248544974, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: <Guid>k__BackingField
+      value: 93ad90421a3b2f64e8fdb9e95a42ba90
+      objectReference: {fileID: 0}
     - target: {fileID: 7201402233169256053, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: _clothMeshes._list.Array.data[0]._value
       value: 

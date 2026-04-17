@@ -15,6 +15,10 @@ PrefabInstance:
       propertyPath: _asset
       value: 
       objectReference: {fileID: 11400000, guid: e41bbba3e5f86d342a514665e8eeba56, type: 2}
+    - target: {fileID: -5990724460312493469, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: <Guid>k__BackingField
+      value: 4e6899916bc8fd742a07f32b3a04de12
+      objectReference: {fileID: 0}
     - target: {fileID: 1335663030982295525, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: key
       value: 

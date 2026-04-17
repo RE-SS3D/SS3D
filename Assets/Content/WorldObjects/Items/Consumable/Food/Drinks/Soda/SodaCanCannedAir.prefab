@@ -15,6 +15,10 @@ PrefabInstance:
       propertyPath: _asset
       value: 
       objectReference: {fileID: 11400000, guid: d5ed3684908f1d846815d39a4ae98418, type: 2}
+    - target: {fileID: -5990724460312493469, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: <Guid>k__BackingField
+      value: e4281cb43d1443d4388737777fdd98d8
+      objectReference: {fileID: 0}
     - target: {fileID: -1409642175327164469, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: InitialSubstances.Array.size
       value: 0

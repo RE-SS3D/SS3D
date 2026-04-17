@@ -19,6 +19,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: OfficeChairGrey
       objectReference: {fileID: 0}
+    - target: {fileID: 7021504784942186080, guid: 7a895b269e3f67241af148d25331f5af, type: 3}
+      propertyPath: <Guid>k__BackingField
+      value: 7e7706a54d61daa47857aadd94b37002
+      objectReference: {fileID: 0}
     - target: {fileID: 8213111319263450463, guid: 7a895b269e3f67241af148d25331f5af, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -65,21 +69,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a895b269e3f67241af148d25331f5af, type: 3}
---- !u!1 &425175355485335577 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5161561551087789900, guid: 7a895b269e3f67241af148d25331f5af, type: 3}
-  m_PrefabInstance: {fileID: 4775797309836547925}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &-7852866102167573629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 425175355485335577}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 7e7706a54d61daa47857aadd94b37002

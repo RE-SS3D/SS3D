@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: -1249622556924268356, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
+    - target: {fileID: 1482905360075112934, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
+      propertyPath: <Guid>k__BackingField
+      value: ad124dd2ec7d83344a20a44fad208ca0
+      objectReference: {fileID: 0}
     - target: {fileID: 5161561551087789900, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
       propertyPath: m_Name
       value: PlasticChairBlue

@@ -31,6 +31,10 @@ PrefabInstance:
       propertyPath: _startingTraits.Array.data[3]
       value: 
       objectReference: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+    - target: {fileID: 1102122187666705822, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
+      propertyPath: <Guid>k__BackingField
+      value: a38ee818c953a404787757d8d20d2851
+      objectReference: {fileID: 0}
     - target: {fileID: 3346295071430447723, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 5198510698861928048
