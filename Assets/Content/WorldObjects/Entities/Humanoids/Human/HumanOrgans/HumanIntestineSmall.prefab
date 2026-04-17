@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 103478066480505861}
   - component: {fileID: 4081087857378720118}
   - component: {fileID: 8078190299072383431}
+  - component: {fileID: -6045924142228991845}
   m_Layer: 10
   m_Name: HumanIntestineSmall
   m_TagString: Untagged
@@ -308,3 +309,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-6045924142228991845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 9c5418cbebef419429574992d3e296a3

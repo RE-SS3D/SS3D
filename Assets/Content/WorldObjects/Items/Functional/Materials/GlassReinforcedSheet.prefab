@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 1034747657592807112}
   - component: {fileID: 1093385838975254555}
   - component: {fileID: 5305823004215370601}
+  - component: {fileID: 3319216201272021934}
   m_Layer: 10
   m_Name: GlassReinforcedSheet
   m_TagString: Untagged
@@ -396,6 +397,19 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1773710978803455870}
   _networkObjectCache: {fileID: 0}
+--- !u!114 &3319216201272021934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: a1a7407e08bb2914c97f431063bf83e2
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

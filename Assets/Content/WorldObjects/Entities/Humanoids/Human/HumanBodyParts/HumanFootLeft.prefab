@@ -117,6 +117,8 @@ GameObject:
   - component: {fileID: 583132518431860780}
   - component: {fileID: 7155506955987011765}
   - component: {fileID: 6503579652515287345}
+  - component: {fileID: 3846889472343399846}
+  - component: {fileID: -6255296745477841159}
   m_Layer: 10
   m_Name: HumanFootLeft
   m_TagString: Untagged
@@ -436,6 +438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!114 &6503579652515287345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,6 +456,31 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 6603268689893490928}
   _bodyPart: {fileID: 583132518431860780}
   isBleeding: 0
+--- !u!114 &3846889472343399846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6958959792659314810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6255296745477841159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6958959792659314810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 94aaf82bb6ab002418e01d9cc7c6eaaa
 --- !u!1 &8783848087632679008
 GameObject:
   m_ObjectHideFlags: 0

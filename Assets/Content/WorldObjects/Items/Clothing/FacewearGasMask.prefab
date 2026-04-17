@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 643085470722933952}
   - component: {fileID: 234574913902294794}
   - component: {fileID: 6165322108927456680}
+  - component: {fileID: -7340420851258650557}
   m_Layer: 10
   m_Name: FacewearGasMask
   m_TagString: Untagged
@@ -298,3 +299,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 1e04a445661c6cd4a8c13cfee7546926, type: 2}
+--- !u!114 &-7340420851258650557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687938131941834081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: bf177f8bab26bc84b87fd9a971004418

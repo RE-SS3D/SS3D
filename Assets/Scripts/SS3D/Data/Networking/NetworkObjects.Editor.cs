@@ -28,6 +28,8 @@ namespace SS3D.Data.Networking
         /// <summary>
         /// Rebuilds the serialized GUID list and prefab array from the sorted editor cache.
         /// Addressable entries keep their GUID slot but leave the runtime prefab slot empty for play mode loading.
+        /// Also stamps a <see cref="NetworkObjectTracker"/> onto each prefab so dependency prefabs
+        /// can be discovered at runtime, fixing any GUID mismatches from prefab moves or copies.
         /// </summary>
         internal void Generate()
         {
@@ -45,17 +47,27 @@ namespace SS3D.Data.Networking
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
             _loadedPrefabs = new NetworkObject[_prefabs.Count];
 
-            for (int i = 0; i < sortedGuids.Count; i++)
+            AssetDatabase.StartAssetEditing();
+
+            try
             {
-                string guid = sortedGuids[i];
-                NetworkObject prefab = _prefabs[guid];
-
-                TrySetOverride(prefab, !prefab.TryGetComponent(out NetworkBarrier _) ? ConditionOverrideType.UseManager : ConditionOverrideType.IgnoreManager);
-
-                if (settings.FindAssetEntry(guid) == null)
+                for (int i = 0; i < sortedGuids.Count; i++)
                 {
-                    _loadedPrefabs[i] = prefab;
+                    string guid = sortedGuids[i];
+                    NetworkObject prefab = _prefabs[guid];
+
+                    TrySetOverride(prefab, !prefab.TryGetComponent(out NetworkBarrier _) ? ConditionOverrideType.UseManager : ConditionOverrideType.IgnoreManager);
+                    EnsureTracker(prefab, guid);
+
+                    if (settings.FindAssetEntry(guid) == null)
+                    {
+                        _loadedPrefabs[i] = prefab;
+                    }
                 }
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
             }
         }
 
@@ -92,6 +104,32 @@ namespace SS3D.Data.Networking
             SerializedObject serializedObserver = new(observer);
             serializedObserver.FindProperty("_overrideType").intValue = (int)overrideType;
             serializedObserver.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// Ensures the prefab has a <see cref="NetworkObjectTracker"/> with the correct GUID.
+        /// Adds the component if missing, fixes mismatches, and saves the prefab if modified.
+        /// </summary>
+        private static void EnsureTracker([NotNull] NetworkObject prefab, [NotNull] string guid)
+        {
+            bool modified = false;
+
+            if (!prefab.TryGetComponent(out NetworkObjectTracker tracker))
+            {
+                tracker = prefab.gameObject.AddComponent<NetworkObjectTracker>();
+                modified = true;
+            }
+
+            if (tracker.Guid != guid)
+            {
+                tracker.SetGuid(guid);
+                modified = true;
+            }
+
+            if (modified)
+            {
+                PrefabUtility.SavePrefabAsset(prefab.gameObject);
+            }
         }
 
         /// <summary>

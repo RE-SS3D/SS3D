@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4628514723372063782}
   - component: {fileID: 4628514723372063781}
   - component: {fileID: 4628514723372063780}
+  - component: {fileID: 4409160592351310983}
   m_Layer: 0
   m_Name: NetworkBarrier
   m_TagString: Untagged
@@ -99,3 +100,16 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 4628514723372063782}
   _retryAttempts: 5
   _lateJoinPreloadTimeoutSeconds: 15
+--- !u!114 &4409160592351310983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4628514723372063786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: af2ec06c4c4b452459750b901bcb467f

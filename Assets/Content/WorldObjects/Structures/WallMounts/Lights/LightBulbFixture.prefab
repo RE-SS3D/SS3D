@@ -190,6 +190,7 @@ GameObject:
   - component: {fileID: 5299084947188572917}
   - component: {fileID: 8301714305325130111}
   - component: {fileID: -7419120924986984554}
+  - component: {fileID: 2288008886865533995}
   m_Layer: 0
   m_Name: LightBulbFixture
   m_TagString: Untagged
@@ -293,6 +294,19 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: -7828078595381397262}
   _networkObjectCache: {fileID: 0}
+--- !u!114 &2288008886865533995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 98ce0a84deb394b4bbd18f31f368317c
 --- !u!1 &6499595157872319857
 GameObject:
   m_ObjectHideFlags: 0

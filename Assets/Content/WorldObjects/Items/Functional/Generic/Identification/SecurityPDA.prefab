@@ -115,6 +115,7 @@ GameObject:
   - component: {fileID: 8691169782362177299}
   - component: {fileID: 3379094397588441500}
   - component: {fileID: -6257197335083171068}
+  - component: {fileID: -5473727571341837882}
   m_Layer: 10
   m_Name: SecurityPDA
   m_TagString: Untagged
@@ -364,6 +365,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 0dabe7c9e55169f4684cb75cd887ba8b, type: 2}
+--- !u!114 &-5473727571341837882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5261116577612792016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 2a63163a4db141744a802f3ff67087db
 --- !u!1 &5927379166768225886
 GameObject:
   m_ObjectHideFlags: 0

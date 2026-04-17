@@ -111,6 +111,7 @@ GameObject:
   - component: {fileID: -1017730440408669943}
   - component: {fileID: -1491345186458232959}
   - component: {fileID: 5186579856897673492}
+  - component: {fileID: 7609392639098584092}
   m_Layer: 0
   m_Name: SleeperBed
   m_TagString: Untagged
@@ -191,6 +192,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 88f8bf12539b114448b5d5aafac49c52, type: 2}
+--- !u!114 &7609392639098584092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7357446777869910137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: d27600b4734eb3a4284be037a2f9d02b
 --- !u!1 &7546536977238903038
 GameObject:
   m_ObjectHideFlags: 0

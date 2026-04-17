@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 5108938019209573932}
   - component: {fileID: 965431884132741063}
   - component: {fileID: 2197908233274138374}
+  - component: {fileID: 6553415060478583906}
+  - component: {fileID: -6606452263849475098}
   m_Layer: 10
   m_Name: HumanLungLeft
   m_TagString: Untagged
@@ -199,6 +201,31 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 3594199936646473495}
   _bodyPart: {fileID: 965431884132741063}
   isBleeding: 0
+--- !u!114 &6553415060478583906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705603677127675533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6606452263849475098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705603677127675533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: a019475d05ec8824494b0fa88e2282d8
 --- !u!1 &7962576220267135576
 GameObject:
   m_ObjectHideFlags: 0

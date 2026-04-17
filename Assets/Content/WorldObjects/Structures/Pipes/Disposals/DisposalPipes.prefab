@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4188904223884923263}
   - component: {fileID: -6743858448264233399}
   - component: {fileID: -5719492879188372624}
+  - component: {fileID: -6537065189334471652}
   m_Layer: 0
   m_Name: DisposalPipes
   m_TagString: Untagged
@@ -162,6 +163,8 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: -7727686409064562107}
   _networkObjectCache: {fileID: 0}
+  _asset: {fileID: 0}
+  _tileObjectSo: {fileID: 0}
 --- !u!114 &-6743858448264233399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,3 +190,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: e0b540ece8c1ac44ca3e48e9a9549064, type: 2}
+--- !u!114 &-6537065189334471652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 12a989ad41a83a3468d1ae9aff9628d3

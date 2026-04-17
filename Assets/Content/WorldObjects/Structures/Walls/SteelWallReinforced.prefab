@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 3011383631706744183}
   - component: {fileID: 6332977986281627431}
   - component: {fileID: -6351445020948675988}
+  - component: {fileID: 7759054934175027645}
   m_Layer: 0
   m_Name: SteelWallReinforced
   m_TagString: Untagged
@@ -339,6 +340,19 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 0}
   _asset: {fileID: 11400000, guid: 9b16536c8b6953b459e5906389bc4cdd, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: 8723b9e3524165d4abbbb6e295e85330, type: 2}
+--- !u!114 &7759054934175027645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: abcc60752234e584d8d98c9dec03e7cc
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 8205839649150205668}
   - component: {fileID: -5130697429605594861}
   - component: {fileID: 6547599388268295237}
+  - component: {fileID: -1531855090536973217}
   m_Layer: 0
   m_Name: AtmosPipesL2
   m_TagString: Untagged
@@ -183,3 +184,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 5a2551a45d79e874eb5e6be6a028dce0, type: 2}
+--- !u!114 &-1531855090536973217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 251dc2a5fbda518429c8205c3b62165f

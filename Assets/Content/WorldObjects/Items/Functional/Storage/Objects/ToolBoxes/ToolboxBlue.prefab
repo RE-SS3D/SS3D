@@ -363,6 +363,7 @@ GameObject:
   - component: {fileID: 7199567936746149742}
   - component: {fileID: 6954863941470117704}
   - component: {fileID: -594752012234974818}
+  - component: {fileID: -8929735238531443918}
   m_Layer: 10
   m_Name: ToolboxBlue
   m_TagString: Untagged
@@ -587,6 +588,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: f8d4d1baf366ce54c83e654f1d641a09, type: 2}
+--- !u!114 &-8929735238531443918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 264ea51d92067c14ebc6633999afac78
 --- !u!1 &8066562249021099569
 GameObject:
   m_ObjectHideFlags: 0

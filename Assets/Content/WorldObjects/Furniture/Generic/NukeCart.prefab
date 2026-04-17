@@ -52,7 +52,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  _sprite: {fileID: 21300000, guid: fcc25846241b9df449f4be72085beafb, type: 3}
 --- !u!33 &2658310834331958832
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -158,6 +157,7 @@ GameObject:
   - component: {fileID: 1871071288925904272}
   - component: {fileID: 5945353116987889375}
   - component: {fileID: 3080324587266757331}
+  - component: {fileID: -664804629451426572}
   m_Layer: 0
   m_Name: NukeCart
   m_TagString: Untagged
@@ -303,3 +303,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: b91847201bae2cb47a1945022a494134, type: 2}
+--- !u!114 &-664804629451426572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: add4d1bc2d874d94782d6b8c912af5e2

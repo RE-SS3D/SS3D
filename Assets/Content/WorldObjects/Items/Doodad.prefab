@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 4052990814619214022}
   - component: {fileID: 8540712827701727508}
   - component: {fileID: 246485557779806861}
+  - component: {fileID: 412218462031443676}
   m_Layer: 10
   m_Name: Doodad
   m_TagString: Untagged
@@ -264,3 +265,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &412218462031443676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792017003477948967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: f6528d8afa18fa14998a0158260ef26c

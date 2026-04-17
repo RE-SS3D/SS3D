@@ -593,6 +593,7 @@ GameObject:
   - component: {fileID: 4589576845049422419}
   - component: {fileID: 8279030983421420301}
   - component: {fileID: -5175420284929306602}
+  - component: {fileID: -3180104873819910138}
   m_Layer: 0
   m_Name: Gibber
   m_TagString: Untagged
@@ -680,6 +681,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 46b423eb0e859d04b87b73b62b2d654d, type: 2}
+--- !u!114 &-3180104873819910138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8859943380013583148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: ad055c3d74a711a4b9d9b31217883a03
 --- !u!1 &9099481634581126669
 GameObject:
   m_ObjectHideFlags: 0

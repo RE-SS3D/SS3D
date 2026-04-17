@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -8047018632482240439}
   - component: {fileID: 4096528702134766434}
   - component: {fileID: 782853747978071427}
+  - component: {fileID: 84595011319349014}
   m_Layer: 0
   m_Name: DinnerBooth
   m_TagString: Untagged
@@ -182,3 +183,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 060b8c4ac5cd7c44aa03a2dad22c20d3, type: 2}
+--- !u!114 &84595011319349014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8085678556641831659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 85fa4c9b76b4b23458dcf24a745a1dfe

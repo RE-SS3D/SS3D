@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 8174704186285038031}
   - component: {fileID: 8272970134100573020}
   - component: {fileID: 5978761350964980520}
+  - component: {fileID: -6235985554744958134}
   m_Layer: 0
   m_Name: JukeboxBlueGreen
   m_TagString: Untagged
@@ -196,3 +197,16 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 4294524822034227355}
   _networkObjectCache: {fileID: 4294524822034227355}
+--- !u!114 &-6235985554744958134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118765911134750290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 8dc5399c58290d54f9a6cc2f6c1c9d9f

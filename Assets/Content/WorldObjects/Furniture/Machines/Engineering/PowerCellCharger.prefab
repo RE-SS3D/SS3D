@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 3714168549636017425}
   - component: {fileID: 8164549329900377880}
   - component: {fileID: 98556955122913276}
+  - component: {fileID: -5000618248838643029}
   m_Layer: 0
   m_Name: PowerCellCharger
   m_TagString: Untagged
@@ -125,6 +126,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 26b1578c3ac26094faa16511d33a004e, type: 2}
+--- !u!114 &-5000618248838643029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4094910103892312607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: d32855055305ce5489c69379e2219a7d
 --- !u!1 &4098950247505109284
 GameObject:
   m_ObjectHideFlags: 0

@@ -183,6 +183,7 @@ GameObject:
   - component: {fileID: 7727612398117917681}
   - component: {fileID: -802098285113866164}
   - component: {fileID: 5133152519004721145}
+  - component: {fileID: -5293470041521461027}
   m_Layer: 0
   m_Name: SecurityLocker
   m_TagString: Untagged
@@ -240,7 +241,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 3258417366846669140}
   IsLocked: 0
   IsOpen: 0
-  _lockable: 1
+  Lockable: 1
   permissionToUnlock: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
   _door: {fileID: 4547560682629165049}
   _doorChangePunch: {x: -0.1, y: -0.05, z: 0}
@@ -362,6 +363,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: a12479471bde6bb449b7a91d59e3266e, type: 2}
+--- !u!114 &-5293470041521461027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: dd3ce5340ed4aba4babae7020f737084
 --- !u!1001 &1434399234288422990
 PrefabInstance:
   m_ObjectHideFlags: 0

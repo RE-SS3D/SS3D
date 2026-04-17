@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: -2473204136432335067}
   - component: {fileID: 1278048393882565784}
   - component: {fileID: -9109099915246017288}
+  - component: {fileID: -9043920700424808972}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -190,7 +191,7 @@ MeshCollider:
   m_Mesh: {fileID: -4761363251635094410, guid: 0ad4ea13dc590464db8b60a64bc7fc31, type: 3}
 --- !u!95 &7551927119831908791
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -207,7 +208,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &-2473204136432335067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,3 +267,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: d153c3c88de82c84bb201442ec2dc5ac, type: 2}
+--- !u!114 &-9043920700424808972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: bb2ccbe283c7a7d459f283a7483e04b9

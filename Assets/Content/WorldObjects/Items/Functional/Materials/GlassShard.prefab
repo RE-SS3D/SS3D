@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 5296084984690686628}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -1799063760009912254}
+  - component: {fileID: 5233903500993709807}
   m_Layer: 10
   m_Name: GlassShard
   m_TagString: Untagged
@@ -280,6 +281,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 0bce2d2cf99a1d84e89c602a3fdc9d35, type: 2}
+--- !u!114 &5233903500993709807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 5cab1a9f6c7f74948b84d0d625319efe
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

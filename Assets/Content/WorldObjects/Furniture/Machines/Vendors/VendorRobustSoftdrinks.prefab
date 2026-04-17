@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8086907785789700544}
   - component: {fileID: 2921440247678111929}
   - component: {fileID: -119891910764691591}
+  - component: {fileID: 2053323636589833054}
   m_Layer: 0
   m_Name: VendorRobustSoftdrinks
   m_TagString: Untagged
@@ -233,6 +234,19 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
+--- !u!114 &2053323636589833054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 93faf7e7a5c67b9478c57a0d03340256
 --- !u!1 &3671711954327816294
 GameObject:
   m_ObjectHideFlags: 0

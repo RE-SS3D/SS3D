@@ -82,6 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!1 &2057500350586200340
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,6 +234,7 @@ GameObject:
   - component: {fileID: 3617335994165229519}
   - component: {fileID: 5077178896765091160}
   - component: {fileID: 3325623441715482320}
+  - component: {fileID: -4540428825906822331}
   m_Layer: 10
   m_Name: HumanHandLeft
   m_TagString: Untagged
@@ -623,3 +625,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
+--- !u!114 &-4540428825906822331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2207730063960764759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 35dfc7c3f708a5b48a206b4a44e7ab49

@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 2293966627244539820}
   - component: {fileID: 8205762469322294721}
   - component: {fileID: -4134876114123449171}
+  - component: {fileID: 8327619323104615073}
   m_Layer: 10
   m_Name: ShoeHiTops
   m_TagString: Untagged
@@ -270,6 +271,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 95480bb2a621fc349be9e8f2e830604b, type: 2}
+--- !u!114 &8327619323104615073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930591319891399865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 81faf4debf00a0a478b924176f48d011
 --- !u!1 &2748908499357878881
 GameObject:
   m_ObjectHideFlags: 0

@@ -146,6 +146,8 @@ GameObject:
   - component: {fileID: 2869688339007017801}
   - component: {fileID: 1454556291825162564}
   - component: {fileID: 3401562901692904195}
+  - component: {fileID: 613150638240663937}
+  - component: {fileID: -8577577409089340312}
   m_Layer: 10
   m_Name: HumanLegRight
   m_TagString: Untagged
@@ -432,3 +434,28 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1103916381626794010}
   _bodyPart: {fileID: 1454556291825162564}
   isBleeding: 0
+--- !u!114 &613150638240663937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8256619991674398311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8577577409089340312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8256619991674398311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 242a937784a622f4f8a6e6d097e0737c

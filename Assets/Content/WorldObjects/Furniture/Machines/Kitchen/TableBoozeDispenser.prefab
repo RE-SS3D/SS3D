@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -5414623717715724467}
   - component: {fileID: 2037169381415984189}
   - component: {fileID: 2093762848364705952}
+  - component: {fileID: 6354572834458836776}
   m_Layer: 0
   m_Name: TableBoozeDispenser
   m_TagString: Untagged
@@ -92,6 +93,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c984341ce21a69e408ef8b1bbf914033, type: 2}
+--- !u!114 &6354572834458836776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 7b74e45100446b440b4b0a12cd6d05ef
 --- !u!1 &2266423437352020777
 GameObject:
   m_ObjectHideFlags: 0

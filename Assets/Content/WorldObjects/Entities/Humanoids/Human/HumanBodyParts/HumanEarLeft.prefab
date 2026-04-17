@@ -115,6 +115,8 @@ GameObject:
   - component: {fileID: 703057308930207394}
   - component: {fileID: 5613254179663885797}
   - component: {fileID: 2220908672758897322}
+  - component: {fileID: 44955526540156704}
+  - component: {fileID: 8511316263687842023}
   m_Layer: 10
   m_Name: HumanEarLeft
   m_TagString: Untagged
@@ -387,6 +389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!114 &2220908672758897322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,6 +413,31 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 1568396345363106444}
   AttachmentPointAlt: {fileID: 1568396345363106444}
   _container: {fileID: 0}
+--- !u!114 &44955526540156704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3861326785315191697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8511316263687842023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3861326785315191697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: e02f11b9239b52748a5ed5afd1c5cbd3
 --- !u!1 &7464748784573264830
 GameObject:
   m_ObjectHideFlags: 0

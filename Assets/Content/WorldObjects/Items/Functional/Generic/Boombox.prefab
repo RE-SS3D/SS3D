@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 3684970640593888479}
   - component: {fileID: 6232149895420462588}
   - component: {fileID: -2580189880636271799}
+  - component: {fileID: -3665696684614151452}
   m_Layer: 10
   m_Name: Boombox
   m_TagString: Untagged
@@ -355,6 +356,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c29d9bd4b2537794d853d40450283289, type: 2}
+--- !u!114 &-3665696684614151452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197868818743549203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 1d2cf546d53e3fe4c9103007427aaec7
 --- !u!1 &8730915866332464111
 GameObject:
   m_ObjectHideFlags: 0

@@ -275,6 +275,7 @@ GameObject:
   - component: {fileID: -6616120420594439688}
   - component: {fileID: -4222084348795127515}
   - component: {fileID: 7511827930197788799}
+  - component: {fileID: 1744025421858004879}
   m_Layer: 0
   m_Name: CivillianAirlockDouble
   m_TagString: Untagged
@@ -327,7 +328,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 129
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -378,6 +379,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 00e14286268ec42489b0ef82a97a859f, type: 2}
+--- !u!114 &1744025421858004879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7133738675197207439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 96f34e849ae8c5640a9343b5ef370179
 --- !u!1001 &2157331936072973061
 PrefabInstance:
   m_ObjectHideFlags: 0

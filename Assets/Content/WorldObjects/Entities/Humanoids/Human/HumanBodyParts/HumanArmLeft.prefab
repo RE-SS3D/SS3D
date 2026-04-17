@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 83842586426936894}
   - component: {fileID: 3396458195849632994}
   - component: {fileID: 368559856948010060}
+  - component: {fileID: 8560433685005156343}
+  - component: {fileID: 9103973989027032923}
   m_Layer: 10
   m_Name: HumanArmLeft
   m_TagString: Untagged
@@ -302,6 +304,31 @@ MonoBehaviour:
   AttachmentPoint: {fileID: 9160028094263019472}
   AttachmentPointAlt: {fileID: 9160028094263019472}
   _container: {fileID: 0}
+--- !u!114 &8560433685005156343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888615333292121711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9103973989027032923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888615333292121711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 06b6be83779804245b7f6411fe07b851
 --- !u!1 &3892664671836465895
 GameObject:
   m_ObjectHideFlags: 0

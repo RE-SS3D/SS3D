@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: -9079531721198773732}
   - component: {fileID: 3371975112976805248}
   - component: {fileID: -1287924033786746541}
+  - component: {fileID: -590939908307860478}
   m_Layer: 10
   m_Name: BrutePatch
   m_TagString: Untagged
@@ -278,3 +279,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 0b27128e94729fc4b8434ad8068c9838, type: 2}
+--- !u!114 &-590939908307860478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4068007204767187790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: b5be0a52925e2674193d081d2deb68cb

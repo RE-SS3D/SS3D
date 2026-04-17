@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -8129327122462613158}
   - component: {fileID: 4968245899799697575}
   - component: {fileID: -708232349023746562}
+  - component: {fileID: -454390841701207129}
   m_Layer: 0
   m_Name: FancyCarpetRed
   m_TagString: Untagged
@@ -208,3 +209,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 277312b7bd0e28b4eb59fec06b6084dd, type: 2}
+--- !u!114 &-454390841701207129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 9b8a1328991fc2846bc55a3d9a82e5c0

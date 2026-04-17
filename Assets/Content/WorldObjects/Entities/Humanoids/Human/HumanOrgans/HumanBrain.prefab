@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 6860733290513151876}
   - component: {fileID: 5523389637674955017}
   - component: {fileID: 6835036379474092373}
+  - component: {fileID: 8078190299072383431}
+  - component: {fileID: 2126155260976463956}
   m_Layer: 10
   m_Name: HumanBrain
   m_TagString: Untagged
@@ -264,3 +266,28 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -4447592549528698498, guid: f553c8289710b5e4dab99c3bcbbb802e, type: 3}
+--- !u!114 &8078190299072383431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2126155260976463956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774385816057912484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 7579883b8dd8801448a176adace4860b

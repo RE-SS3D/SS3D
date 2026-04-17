@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -1050425752236148804}
   - component: {fileID: -4220283477480413425}
   - component: {fileID: 6480422945158422398}
+  - component: {fileID: -5279616847614175694}
   m_Layer: 0
   m_Name: TileWhite
   m_TagString: Untagged
@@ -172,3 +173,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 14356f71371553a4b8ebea05ddbf6373, type: 2}
+--- !u!114 &-5279616847614175694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 61201f10ccc2856459a9de99d9cdc52e

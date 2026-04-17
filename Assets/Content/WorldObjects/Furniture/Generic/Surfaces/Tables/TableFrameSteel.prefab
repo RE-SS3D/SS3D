@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2673028181256196774}
   - component: {fileID: -4588329937835698490}
   - component: {fileID: 8545312545280390719}
+  - component: {fileID: 4119028280713534512}
   m_Layer: 0
   m_Name: TableFrameSteel
   m_TagString: Untagged
@@ -172,3 +173,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 9b2caff30e0dc814e8d2afdb48d6bf3b, type: 2}
+--- !u!114 &4119028280713534512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: e9009aff81f29eb429148fd71961539f

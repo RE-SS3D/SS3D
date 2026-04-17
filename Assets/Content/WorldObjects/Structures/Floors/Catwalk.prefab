@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 336780589156974666}
   - component: {fileID: -6669224933752954657}
   - component: {fileID: -4671964567063426021}
+  - component: {fileID: 6160086438580558703}
   m_Layer: 0
   m_Name: Catwalk
   m_TagString: Untagged
@@ -172,3 +173,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: a63b1c52ceaab8741a4a84607fa5eafb, type: 2}
+--- !u!114 &6160086438580558703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8178185248287418974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: a28267798293970468ab30803632a3f7

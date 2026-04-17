@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 2885876316184551953}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -4314387119993989545}
+  - component: {fileID: 6856657287784086452}
   m_Layer: 10
   m_Name: FloorTile
   m_TagString: Untagged
@@ -247,6 +248,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 1f4a49d69d36cd44d961d0e322889e4a, type: 2}
+--- !u!114 &6856657287784086452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 404443f7c306fc8469698745624fa3bf
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

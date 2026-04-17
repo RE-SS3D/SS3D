@@ -265,6 +265,7 @@ GameObject:
   - component: {fileID: -6887884230110343619}
   - component: {fileID: -4582053232594063701}
   - component: {fileID: -6016574257445858844}
+  - component: {fileID: -186659126214988467}
   m_Layer: 0
   m_Name: AirlockTile
   m_TagString: Untagged
@@ -329,7 +330,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 59
+  <PrefabId>k__BackingField: 98
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -373,6 +374,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: fa7a95c97c43eb14f842266b51fd1b51, type: 2}
+--- !u!114 &-186659126214988467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 778e6f90a9ad89d4b856955961745b56
 --- !u!1 &7227881070782284271
 GameObject:
   m_ObjectHideFlags: 0

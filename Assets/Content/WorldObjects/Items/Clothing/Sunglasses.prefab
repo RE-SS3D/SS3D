@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 5903053600117115308}
   - component: {fileID: 622373174144228207}
   - component: {fileID: -2199555817236745270}
+  - component: {fileID: -4979382884301055137}
   m_Layer: 10
   m_Name: Sunglasses
   m_TagString: Untagged
@@ -301,3 +302,16 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 3546473533537016869}
   _networkObjectCache: {fileID: 3546473533537016869}
+--- !u!114 &-4979382884301055137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667451333340596270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 9b9f6bd470226a74b903e74dbe9e423a

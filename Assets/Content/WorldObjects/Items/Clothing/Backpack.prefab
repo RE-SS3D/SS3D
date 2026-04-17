@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 7635664511184546154}
   - component: {fileID: 3118820370331042218}
   - component: {fileID: -4176528178480335388}
+  - component: {fileID: 77185358026776895}
   m_Layer: 10
   m_Name: Backpack
   m_TagString: Untagged
@@ -267,6 +268,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 434b2babf7e62e04db033a09ae6845dc, type: 2}
+--- !u!114 &77185358026776895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802333698458937824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: ddaa28fac1956b2428aff1dac1d89707
 --- !u!1 &8173373325555765133
 GameObject:
   m_ObjectHideFlags: 0

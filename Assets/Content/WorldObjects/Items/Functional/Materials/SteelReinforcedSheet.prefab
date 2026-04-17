@@ -210,6 +210,7 @@ GameObject:
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -3033005221563599559}
   - component: {fileID: 9058576779372462729}
+  - component: {fileID: -3050239716528850138}
   m_Layer: 10
   m_Name: SteelReinforcedSheet
   m_TagString: Untagged
@@ -394,6 +395,19 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 4037338737721612837}
   _networkObjectCache: {fileID: 0}
+--- !u!114 &-3050239716528850138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: f88a398ad3d01454f955de9c337d9b99
 --- !u!1 &7393894785072713980
 GameObject:
   m_ObjectHideFlags: 0

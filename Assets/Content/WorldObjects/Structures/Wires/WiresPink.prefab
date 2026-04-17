@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5883401737460451764}
   - component: {fileID: 8797091132429037414}
   - component: {fileID: 5363037869246176940}
+  - component: {fileID: -1431116586502910458}
   m_Layer: 0
   m_Name: WiresPink
   m_TagString: Untagged
@@ -64,7 +65,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 150
+  <PrefabId>k__BackingField: 138
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -158,3 +159,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 1980313d52ccd4147b836fa578da1ed6, type: 2}
+--- !u!114 &-1431116586502910458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 9f1f481cfc054374dbed94aa620ab4f6

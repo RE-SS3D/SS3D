@@ -112,6 +112,7 @@ GameObject:
   - component: {fileID: 5296084984690686628}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -8207281660736709934}
+  - component: {fileID: 2163422700291986137}
   m_Layer: 10
   m_Name: ElectricalCable
   m_TagString: Untagged
@@ -279,6 +280,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 4b38dd0a0271a2541bbbc4fa157c75ae, type: 2}
+--- !u!114 &2163422700291986137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 0e69918696f58e04f846e985ec7405fe
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 6800495836141411361}
   - component: {fileID: 8006545930481202674}
   - component: {fileID: -7296570193560198535}
+  - component: {fileID: -7982753930620695091}
   m_Layer: 10
   m_Name: Wirecutters
   m_TagString: Untagged
@@ -278,3 +279,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: ace64dc9007327f46a1be3f95894b9b4, type: 2}
+--- !u!114 &-7982753930620695091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 41a1c8c211dc32c4d8ffca5f0892f9dc

@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -8267408200744649365}
   - component: {fileID: 841301978942452613}
   - component: {fileID: -9197675886749755841}
+  - component: {fileID: 6048101746014391401}
   m_Layer: 0
   m_Name: TableWood
   m_TagString: Untagged
@@ -208,3 +209,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 68bd5d19fd549914a9126dbeba0fc89e, type: 2}
+--- !u!114 &6048101746014391401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 5e8a02c5ce0073644ac01bdb55d72a70

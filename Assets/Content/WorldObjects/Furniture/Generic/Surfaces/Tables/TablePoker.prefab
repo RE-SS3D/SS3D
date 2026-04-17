@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1137749360577783396}
   - component: {fileID: 3827733058681187247}
   - component: {fileID: -5347318951063967318}
+  - component: {fileID: 5887140957417713613}
   m_Layer: 0
   m_Name: TablePoker
   m_TagString: Untagged
@@ -208,3 +209,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 9964983e78af2cc4da764009a85b15c9, type: 2}
+--- !u!114 &5887140957417713613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: ebddb1721dcbe36499e4d093e5a7ff09

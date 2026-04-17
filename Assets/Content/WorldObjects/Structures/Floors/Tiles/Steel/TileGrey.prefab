@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -6759684073552117948}
   - component: {fileID: -2125953462637199249}
   - component: {fileID: 4269040840740301026}
+  - component: {fileID: -746609536750152708}
   m_Layer: 0
   m_Name: TileGrey
   m_TagString: Untagged
@@ -172,3 +173,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 3b3cae97515b85845a7166190c88009f, type: 2}
+--- !u!114 &-746609536750152708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 7a47e5b68d8bab647b3f99ee3af524c7

@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!1 &3164641185267799141
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,6 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!1 &3647313004604900237
 GameObject:
   m_ObjectHideFlags: 0
@@ -850,6 +852,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19f823e20acab740ba5150747863eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clothType: 0
 --- !u!1 &7668619292347844902
 GameObject:
   m_ObjectHideFlags: 0
@@ -1034,6 +1037,8 @@ GameObject:
   - component: {fileID: 996878099285015069}
   - component: {fileID: 3065600715364136503}
   - component: {fileID: 3854834578962148855}
+  - component: {fileID: 1711607012168321612}
+  - component: {fileID: -3034498066639335467}
   m_Layer: 10
   m_Name: HumanHead
   m_TagString: Untagged
@@ -1318,7 +1323,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 0}
   HealthController: {fileID: 0}
   _bodyPartVolume: 3800
-  brain: {fileID: 0}
+  Brain: {fileID: 0}
 --- !u!114 &7061527463298031025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1351,11 +1356,12 @@ MonoBehaviour:
   _componentIndexCache: 4
   _addedNetworkObject: {fileID: 4176238770325068939}
   _networkObjectCache: {fileID: 4176238770325068939}
+  ViewPoint: {fileID: 0}
   _mind: {fileID: 1256239026443271520, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
   Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
 --- !u!95 &3065600715364136503
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1372,7 +1378,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3854834578962148855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1391,6 +1398,31 @@ MonoBehaviour:
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
   attachedContainer: {fileID: 4722754123089352210}
+--- !u!114 &1711607012168321612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006468508714419156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-3034498066639335467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006468508714419156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: cc54bc74b2f4c2349b1f84b501b0a091
 --- !u!1 &8010198090661034686
 GameObject:
   m_ObjectHideFlags: 0

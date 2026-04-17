@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 8868060696172007296}
   - component: {fileID: 8006545930481202674}
   - component: {fileID: -4296955913176570747}
+  - component: {fileID: -5660152382105568151}
   m_Layer: 10
   m_Name: PowerCell
   m_TagString: Untagged
@@ -319,6 +320,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 5f62fad4d1f834142a93aa7307a23571, type: 2}
+--- !u!114 &-5660152382105568151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402587210622244651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: de67200a4c96d444f800399a033ddfef
 --- !u!1 &3296752347747623008
 GameObject:
   m_ObjectHideFlags: 0

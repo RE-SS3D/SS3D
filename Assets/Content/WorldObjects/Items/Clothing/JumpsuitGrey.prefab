@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 7201402233169256053}
   - component: {fileID: 173897779263585381}
   - component: {fileID: -9111137678263042396}
+  - component: {fileID: 4313929657248544974}
   m_Layer: 10
   m_Name: JumpsuitGrey
   m_TagString: Untagged
@@ -285,6 +286,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: e0f2e3fe7e3c8354f8dc7a49f831b017, type: 2}
+--- !u!114 &4313929657248544974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624365323667193292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 236b51ddc6f9aa94ca92579082370c06
 --- !u!1 &2306192207345831892
 GameObject:
   m_ObjectHideFlags: 0

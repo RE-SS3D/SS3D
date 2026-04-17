@@ -182,6 +182,7 @@ GameObject:
   - component: {fileID: -4835600395219085227}
   - component: {fileID: 6047447789156998695}
   - component: {fileID: 2063239018469568408}
+  - component: {fileID: 404321636771686877}
   m_Layer: 0
   m_Name: Locker
   m_TagString: Untagged
@@ -356,8 +357,21 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 3258417366846669140}
   IsLocked: 0
   IsOpen: 0
-  _lockable: 0
+  Lockable: 0
   permissionToUnlock: {fileID: 0}
   _door: {fileID: 4547560682629165049}
   _doorChangePunch: {x: -0.1, y: -0.05, z: 0}
   LockLight: {fileID: 0}
+--- !u!114 &404321636771686877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: fa1909e0d40b4cf408ff599df7a2043f

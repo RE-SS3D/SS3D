@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -5414623717715724467}
   - component: {fileID: -6669321997291469088}
   - component: {fileID: 8674837544632682587}
+  - component: {fileID: -4324070793807538386}
   m_Layer: 0
   m_Name: SolarTrackingBeacon
   m_TagString: Untagged
@@ -92,6 +93,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 7d36ef4f8966c1d4ba056713f6afab94, type: 2}
+--- !u!114 &-4324070793807538386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Guid>k__BackingField: 50405f05821f58c49a8badc89506b019
 --- !u!1 &4379219507269237858
 GameObject:
   m_ObjectHideFlags: 0
