@@ -18,6 +18,13 @@ namespace SS3D.Data.Networking
         [field: SerializeField]
         internal string Guid { get; private set; }
 
+        /// <summary>
+        /// Set by <see cref="NetworkObjects"/> once the prefab has been registered into FishNet's
+        /// runtime prefab slot. Used to skip this tracker on subsequent scans.
+        /// </summary>
+        [System.NonSerialized]
+        internal bool Initialized;
+
         private void Awake()
         {
             if (gameObject.scene.IsValid())

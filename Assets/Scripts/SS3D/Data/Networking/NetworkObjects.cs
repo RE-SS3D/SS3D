@@ -77,13 +77,6 @@ namespace SS3D.Data.Networking
                 return _loadedPrefabs[id];
             }
 
-            ScanForTrackers();
-
-            if (_loadedPrefabs[id])
-            {
-                return _loadedPrefabs[id];
-            }
-
             Log.Error(this, $"Prefab on id {id} is not loaded.");
 
             return null;
@@ -242,19 +235,15 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Registers a loaded addressable prefab into its deterministic runtime slot when the asset exposes a <see cref="NetworkObject"/>.
+        /// Registers the loaded asset and any addressable dependencies that were brought into memory
+        /// implicitly. Scanning on every load ensures dependency prefabs have their FishNet PrefabId
+        /// set before any spawn reads it.
         /// </summary>
         /// <param name="guid">GUID of the asset loaded.</param>
         /// <param name="asset">Asset loaded.</param>
         private void HandleAssetLoaded(string guid, Object asset)
         {
-            if (asset is not GameObject gameObject || !gameObject.TryGetComponent(out NetworkObject networkObject) || !_guidToIndex.TryGetValue(guid, out int index))
-            {
-                return;
-            }
-
-            _loadedPrefabs[index] = networkObject;
-            InitializePrefab(index);
+            ScanForTrackers();
         }
 
         /// <summary>
@@ -287,9 +276,11 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Scans all loaded <see cref="NetworkObjectTracker"/> instances to discover dependency prefabs
-        /// that were loaded implicitly by Addressables but never received an <c>OnLoaded</c> event.
-        /// Registers any unregistered prefabs into their deterministic runtime slots.
+        /// Scans all loaded <see cref="NetworkObjectTracker"/> instances and registers each one with
+        /// FishNet. A given GUID may have multiple <see cref="Object"/> copies in memory (e.g. a directly
+        /// referenced prefab plus the same prefab reloaded as an addressable dependency); every copy's
+        /// <see cref="NetworkObject"/> needs its own PrefabId set so spawn paths using either copy work.
+        /// The per-tracker <see cref="NetworkObjectTracker.Initialized"/> flag prevents re-processing.
         /// </summary>
         private void ScanForTrackers()
         {
@@ -297,17 +288,17 @@ namespace SS3D.Data.Networking
 
             foreach (NetworkObjectTracker tracker in trackers)
             {
+                if (tracker.Initialized)
+                {
+                    continue;
+                }
+
                 if (tracker.gameObject.scene.IsValid())
                 {
                     continue;
                 }
 
                 if (string.IsNullOrEmpty(tracker.Guid) || !_guidToIndex.TryGetValue(tracker.Guid, out int index))
-                {
-                    continue;
-                }
-
-                if (_loadedPrefabs[index])
                 {
                     continue;
                 }
@@ -319,6 +310,7 @@ namespace SS3D.Data.Networking
 
                 _loadedPrefabs[index] = networkObject;
                 InitializePrefab(index);
+                tracker.Initialized = true;
             }
         }
 
