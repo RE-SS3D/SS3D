@@ -67,9 +67,18 @@ namespace SS3D.Data
         /// </summary>
         private void HandleAssetLoaded(string key, Object asset)
         {
-            if (asset is GameObject go && _refCounts.ContainsKey(key))
+            if (asset is not GameObject go || !_refCounts.ContainsKey(key))
+            {
+                return;
+            }
+
+            if (!go.TryGetComponent(out InstanceLifetimeTracker tracker))
             {
                 go.AddComponent<InstanceLifetimeTracker>().Initialize(key);
+            }
+            else if (tracker.Key != key)
+            {
+                tracker.Initialize(key);
             }
         }
 

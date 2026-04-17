@@ -35,6 +35,8 @@ namespace SS3D.Data
         private bool _announced;
 
         private bool _released;
+        
+        internal string Key => _key;
 
         public void OnBeforeSerialize() { }
 
