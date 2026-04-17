@@ -37,14 +37,24 @@ namespace SS3D.Data
             {
                 handle = Addressables.LoadAssetAsync<Object>(resolvedKey);
                 _handles.Add(guid, handle);
+                
+                Action<AsyncOperationHandle<Object>> callback = null;
+                callback = operation =>
+                {
+                    handle.Completed -= callback;
+
+                    if (operation.Status == AsyncOperationStatus.Succeeded)
+                    {
+                        OnLoaded?.Invoke(guid, operation.Result);
+                    }
+                };
+                handle.Completed += callback;
             }
 
             Object result = await handle.Task;
 
-            if (handle.Status != AsyncOperationStatus.Failed)
+            if (handle.Status == AsyncOperationStatus.Succeeded)
             {
-                OnLoaded?.Invoke(guid, result);
-
                 return result;
             }
 
