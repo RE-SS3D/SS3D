@@ -9,6 +9,7 @@ namespace SS3D.Data.Networking
     /// Self-destructs on spawned instances since only the prefab asset reference is needed.
     /// </summary>
     [AddComponentMenu("")]
+    [DisallowMultipleComponent]
     internal sealed class NetworkObjectTracker : MonoBehaviour
     {
 #if UNITY_EDITOR

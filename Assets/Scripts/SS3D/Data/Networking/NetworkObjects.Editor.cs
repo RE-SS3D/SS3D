@@ -47,27 +47,18 @@ namespace SS3D.Data.Networking
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
             _loadedPrefabs = new NetworkObject[_prefabs.Count];
 
-            AssetDatabase.StartAssetEditing();
-
-            try
+            for (int i = 0; i < sortedGuids.Count; i++)
             {
-                for (int i = 0; i < sortedGuids.Count; i++)
+                string guid = sortedGuids[i];
+                NetworkObject prefab = _prefabs[guid];
+
+                TrySetOverride(prefab, !prefab.TryGetComponent(out NetworkBarrier _) ? ConditionOverrideType.UseManager : ConditionOverrideType.IgnoreManager);
+                EnsureTracker(prefab, guid);
+
+                if (settings.FindAssetEntry(guid) == null)
                 {
-                    string guid = sortedGuids[i];
-                    NetworkObject prefab = _prefabs[guid];
-
-                    TrySetOverride(prefab, !prefab.TryGetComponent(out NetworkBarrier _) ? ConditionOverrideType.UseManager : ConditionOverrideType.IgnoreManager);
-                    EnsureTracker(prefab, guid);
-
-                    if (settings.FindAssetEntry(guid) == null)
-                    {
-                        _loadedPrefabs[i] = prefab;
-                    }
+                    _loadedPrefabs[i] = prefab;
                 }
-            }
-            finally
-            {
-                AssetDatabase.StopAssetEditing();
             }
         }
 
