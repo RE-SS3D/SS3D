@@ -92,6 +92,41 @@ namespace EditorTests
         }
 
         /// <summary>
+        /// Verifies that the generator stamps a <see cref="NetworkObjectTracker"/> with the correct GUID onto each prefab.
+        /// </summary>
+        [Test]
+        public void ShouldAddNetworkObjectTrackerWithCorrectGuid()
+        {
+            string prefabPath = CreateNetworkPrefab("TrackedPrefab");
+            string guid = AssetDatabase.AssetPathToGUID(prefabPath);
+
+            RunGenerator(new[] { prefabPath }, Array.Empty<string>());
+
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            NetworkObjectTracker tracker = prefab.GetComponent<NetworkObjectTracker>();
+
+            Assert.That(tracker, Is.Not.Null, "Generator should add NetworkObjectTracker");
+            Assert.That(tracker.Guid, Is.EqualTo(guid));
+        }
+
+        /// <summary>
+        /// Verifies that running the generator multiple times does not duplicate the <see cref="NetworkObjectTracker"/> component.
+        /// </summary>
+        [Test]
+        public void ShouldNotDuplicateTrackerOnRegeneration()
+        {
+            string prefabPath = CreateNetworkPrefab("TrackedPrefab");
+
+            RunGenerator(new[] { prefabPath }, Array.Empty<string>());
+            RunGenerator(new[] { prefabPath }, Array.Empty<string>());
+
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            NetworkObjectTracker[] trackers = prefab.GetComponents<NetworkObjectTracker>();
+
+            Assert.That(trackers.Length, Is.EqualTo(1), "Generator should not duplicate NetworkObjectTracker");
+        }
+
+        /// <summary>
         /// Creates a temporary prefab asset with a <see cref="NetworkObject"/> component.
         /// </summary>
         /// <param name="prefabName">Name of the prefab asset to create.</param>
