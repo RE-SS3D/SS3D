@@ -5,7 +5,9 @@ using JetBrains.Annotations;
 using SS3D.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data.Networking
@@ -71,6 +73,16 @@ namespace SS3D.Data.Networking
             {
                 return null;
             }
+
+            if (_loadedPrefabs[id])
+            {
+                return _loadedPrefabs[id];
+            }
+
+            // The registered copy may have been destroyed as a transitive addressable dependency,
+            // which does not fire HandleAssetUnloaded. Recover by re-pointing at any surviving
+            // in-memory copy of the same prefab (e.g. a directly referenced scene prefab).
+            TryRecoverSlot(id);
 
             if (_loadedPrefabs[id])
             {
@@ -210,10 +222,16 @@ namespace SS3D.Data.Networking
             EditorInitialize();
 #endif
             Initialize();
-            
+
             // Addressable prefabs are inserted and removed from runtime slots as the asset subsystem changes shared residency.
             AssetSubSystem.OnAssetLoaded += HandleAssetLoaded;
             AssetSubSystem.OnAssetUnloaded += HandleAssetUnloaded;
+
+            // Scenes can carry directly referenced NetworkObject prefabs. Scan once for the currently
+            // loaded scene (the sceneLoaded callback may have already fired before we subscribed) and
+            // subscribe for future scene loads.
+            ScanForTrackers();
+            SceneManager.sceneLoaded += HandleSceneLoaded;
         }
 
         private void Initialize()
@@ -221,10 +239,7 @@ namespace SS3D.Data.Networking
             // Non-addressable prefabs are serialized directly into runtime slots during generation, so only addressable prefabs need to be initialized here.
             for (int i = 0; i < _loadedPrefabs.Length; i++)
             {
-                if (_loadedPrefabs[i])
-                {
-                    InitializePrefab(i);
-                }
+                InitializePrefab(i);
             }
         }
 
@@ -232,6 +247,16 @@ namespace SS3D.Data.Networking
         {
             AssetSubSystem.OnAssetLoaded -= HandleAssetLoaded;
             AssetSubSystem.OnAssetUnloaded -= HandleAssetUnloaded;
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+        }
+
+        /// <summary>
+        /// Scans for newly loaded <see cref="NetworkObjectTracker"/> instances when a scene finishes loading.
+        /// Scenes may carry directly referenced addressable prefabs that never fire <see cref="HandleAssetLoaded"/>.
+        /// </summary>
+        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            ScanForTrackers();
         }
 
         /// <summary>
@@ -259,7 +284,8 @@ namespace SS3D.Data.Networking
         }
 
         /// <summary>
-        /// Initializes a loaded prefab slot with FishNet so the prefab ID matches the generated collection index.
+        /// Initializes a loaded prefab slot with FishNet so the prefab ID matches the generated collection index,
+        /// and marks the prefab's <see cref="NetworkObjectTracker"/> as initialized so subsequent scans skip it.
         /// </summary>
         /// <param name="id">ID of the prefab</param>
         private void InitializePrefab(int id)
@@ -269,9 +295,50 @@ namespace SS3D.Data.Networking
                 return;
             }
 
-            if (_loadedPrefabs[id])
+            if (!_loadedPrefabs[id])
             {
-                ManagedObjects.InitializePrefab(_loadedPrefabs[id], id, CollectionId);
+                return;
+            }
+
+            ManagedObjects.InitializePrefab(_loadedPrefabs[id], id, CollectionId);
+
+            if (_loadedPrefabs[id].TryGetComponent(out NetworkObjectTracker tracker))
+            {
+                tracker.Initialized = true;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to re-point an empty prefab slot at any surviving in-memory copy of the prefab.
+        /// Used when the registered copy was destroyed as an implicit addressable dependency release
+        /// (no <see cref="HandleAssetUnloaded"/> event fires in that path). If the surviving tracker
+        /// was never initialized (e.g. a directly-referenced prefab that never triggered a scan),
+        /// its FishNet PrefabId is set here before the slot is returned.
+        /// </summary>
+        private void TryRecoverSlot(int index)
+        {
+            NetworkObjectTracker[] trackers = Resources.FindObjectsOfTypeAll<NetworkObjectTracker>();
+
+            foreach (NetworkObjectTracker tracker in trackers.Where(tracker => !tracker.gameObject.scene.IsValid()))
+            {
+                if (string.IsNullOrEmpty(tracker.Guid) || !_guidToIndex.TryGetValue(tracker.Guid, out int trackerIndex) || trackerIndex != index)
+                {
+                    continue;
+                }
+
+                if (!tracker.TryGetComponent(out NetworkObject networkObject))
+                {
+                    continue;
+                }
+
+                _loadedPrefabs[index] = networkObject;
+
+                if (!tracker.Initialized)
+                {
+                    InitializePrefab(index);
+                }
+
+                return;
             }
         }
 
@@ -286,18 +353,8 @@ namespace SS3D.Data.Networking
         {
             NetworkObjectTracker[] trackers = Resources.FindObjectsOfTypeAll<NetworkObjectTracker>();
 
-            foreach (NetworkObjectTracker tracker in trackers)
+            foreach (NetworkObjectTracker tracker in trackers.Where(tracker => !tracker.Initialized).Where(tracker => !tracker.gameObject.scene.IsValid()))
             {
-                if (tracker.Initialized)
-                {
-                    continue;
-                }
-
-                if (tracker.gameObject.scene.IsValid())
-                {
-                    continue;
-                }
-
                 if (string.IsNullOrEmpty(tracker.Guid) || !_guidToIndex.TryGetValue(tracker.Guid, out int index))
                 {
                     continue;
@@ -310,7 +367,6 @@ namespace SS3D.Data.Networking
 
                 _loadedPrefabs[index] = networkObject;
                 InitializePrefab(index);
-                tracker.Initialized = true;
             }
         }
 
