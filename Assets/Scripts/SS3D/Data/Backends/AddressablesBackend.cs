@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data
@@ -44,7 +43,8 @@ namespace SS3D.Data
 
             if (handle.Status != AsyncOperationStatus.Failed)
             {
-                await InvokeOnLoadedAsync(guid, result);
+                OnLoaded?.Invoke(guid, result);
+
                 return result;
             }
 
@@ -81,37 +81,6 @@ namespace SS3D.Data
             }
 
             _handles.Clear();
-        }
-
-        /// <summary>
-        /// Fires <see cref="OnLoaded"/> for each addressable dependency of <paramref name="guid"/>,
-        /// then for the root asset itself. Dependencies are temporarily loaded to obtain a reference
-        /// and immediately released so they remain under the root handle's ref count.
-        /// </summary>
-        private async Task InvokeOnLoadedAsync(string guid, Object rootAsset)
-        {
-            IList<IResourceLocation> locations =
-                await Addressables.LoadResourceLocationsAsync(guid, typeof(Object)).Task;
-
-            foreach (IResourceLocation location in locations)
-            {
-                if (location.PrimaryKey == guid)
-                {
-                    continue;
-                }
-
-                AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(location);
-                Object asset = await handle.Task;
-
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    await InvokeOnLoadedAsync(location.PrimaryKey, asset);
-                }
-
-                Addressables.Release(handle);
-            }
-
-            OnLoaded?.Invoke(guid, rootAsset);
         }
     }
 }
