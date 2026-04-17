@@ -72,12 +72,21 @@ namespace SS3D.Data.Networking
                 return null;
             }
 
-            if (!_loadedPrefabs[id])
+            if (_loadedPrefabs[id])
             {
-                Log.Error(this, $"Prefab on id {id} is not loaded.");
+                return _loadedPrefabs[id];
             }
 
-            return _loadedPrefabs[id];
+            ScanForTrackers();
+
+            if (_loadedPrefabs[id])
+            {
+                return _loadedPrefabs[id];
+            }
+
+            Log.Error(this, $"Prefab on id {id} is not loaded.");
+
+            return null;
         }
 
         /// <summary>
@@ -274,6 +283,42 @@ namespace SS3D.Data.Networking
             if (_loadedPrefabs[id])
             {
                 ManagedObjects.InitializePrefab(_loadedPrefabs[id], id, CollectionId);
+            }
+        }
+
+        /// <summary>
+        /// Scans all loaded <see cref="NetworkObjectTracker"/> instances to discover dependency prefabs
+        /// that were loaded implicitly by Addressables but never received an <c>OnLoaded</c> event.
+        /// Registers any unregistered prefabs into their deterministic runtime slots.
+        /// </summary>
+        private void ScanForTrackers()
+        {
+            NetworkObjectTracker[] trackers = Resources.FindObjectsOfTypeAll<NetworkObjectTracker>();
+
+            foreach (NetworkObjectTracker tracker in trackers)
+            {
+                if (tracker.gameObject.scene.IsValid())
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(tracker.Guid) || !_guidToIndex.TryGetValue(tracker.Guid, out int index))
+                {
+                    continue;
+                }
+
+                if (_loadedPrefabs[index])
+                {
+                    continue;
+                }
+
+                if (!tracker.TryGetComponent(out NetworkObject networkObject))
+                {
+                    continue;
+                }
+
+                _loadedPrefabs[index] = networkObject;
+                InitializePrefab(index);
             }
         }
 
