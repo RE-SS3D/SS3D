@@ -57,7 +57,7 @@ namespace SS3D.Data
                     return;
                 }
 
-                Debug.LogException(e);
+                Debug.LogError(e.Message + "\tThis can be ignored because it is only called in editor.");
 
                 throw;
             }
