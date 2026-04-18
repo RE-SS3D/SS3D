@@ -1,3 +1,4 @@
+using SS3D.Logging;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -52,14 +53,13 @@ namespace SS3D.Data
             }
             catch (UnityException e)
             {
-                if (e.Message.Contains("get_isPlaying is not allowed to be called during serialization"))
+                string message = e.Message;
+                if (e.Message.Contains("get_isPlaying"))
                 {
-                    return;
+                    message += "\tThis can be ignored because it is only called in editor.";
                 }
-
-                Debug.LogError(e.Message + "\tThis can be ignored because it is only called in editor.");
-
-                throw;
+                
+                Debug.LogError(message, this);
             }
 #endif
 
