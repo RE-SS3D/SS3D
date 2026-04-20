@@ -1,4 +1,4 @@
-using SS3D.Logging;
+using SS3D.Attributes;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -30,6 +30,7 @@ namespace SS3D.Data
         internal static event Action<string> OnReleased;
 
         [SerializeField]
+        [ReadOnly]
         private string _key;
 
         [NonSerialized]
