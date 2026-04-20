@@ -38,6 +38,5 @@ namespace SS3D.Data
 
             return await assetSubSystem.AcquireAsync<T>(_key);
         }
-
     }
 }
