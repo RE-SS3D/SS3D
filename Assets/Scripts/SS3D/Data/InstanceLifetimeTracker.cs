@@ -29,8 +29,10 @@ namespace SS3D.Data
         /// </summary>
         internal static event Action<string> OnReleased;
 
-        [SerializeField]
+#if UNITY_EDITOR
         [ReadOnly]
+#endif
+        [SerializeField]
         private string _key;
 
         [NonSerialized]
