@@ -18,6 +18,12 @@ namespace SS3D.Data.AssetDatabases
 #endif
         public List<AddressablesDatabase> IncludedAssetDatabases;
 
+        /// <summary>
+        /// Catalogs included in the game. Each catalog owns its own databases and produces the backend
+        /// that loads their assets.
+        /// </summary>
+        public List<AssetCatalog> IncludedCatalogs = new();
+
 #if UNITY_EDITOR
         [SerializeField]
         private bool _skipCodeGeneration;

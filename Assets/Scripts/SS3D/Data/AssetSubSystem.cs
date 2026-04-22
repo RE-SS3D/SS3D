@@ -27,19 +27,19 @@ namespace SS3D.Data
 
         internal static event Action<string> OnAssetUnloaded;
 
+        private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
+
         [SerializeField]
         private NetworkBarrier _networkBarrierPrefab;
 
-        private readonly Dictionary<AssetBackendType, IAssetBackend> _backends = new();
-
         private IAssetProvider _provider;
         private AssetLifecycleTracker _lifecycleTracker;
-        private IAssetCatalog[] _catalogs;
+        private AssetCatalog[] _catalogs;
         private Dictionary<string, AssetDatabase> _databasesById;
         private Task _initTask;
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
-        
+
         internal NetworkBarrier NetworkBarrier { get; private set; }
 
         [CanBeNull]
@@ -72,7 +72,7 @@ namespace SS3D.Data
                 return null;
             }
 
-            foreach (IAssetCatalog catalog in _catalogs)
+            foreach (AssetCatalog catalog in _catalogs)
             {
                 if (!catalog.Has(guid))
                 {
@@ -116,7 +116,7 @@ namespace SS3D.Data
 
         protected override void OnDestroyed()
         {
-            if (InstanceFinder.ServerManager != null)
+            if (InstanceFinder.ServerManager)
             {
                 InstanceFinder.ServerManager.OnServerConnectionState -= HandleServerConnectionState;
             }
@@ -205,53 +205,45 @@ namespace SS3D.Data
         {
             try
             {
-                AddressablesBackend addressablesBackend = new();
-                await addressablesBackend.InitializeAsync();
-                _backends[AssetBackendType.Addressables] = addressablesBackend;
+                List<AssetCatalog> catalogs = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedCatalogs;
+
+                if (catalogs == null || catalogs.Count == 0)
+                {
+                    Log.Error(this, "No catalogs are registered in AssetDatabaseSettings.IncludedCatalogs.", Logs.Important);
+
+                    return;
+                }
 
                 AssetLifecycleTracker tracker = null;
                 _provider = new AssetProvider(releaseCallback: key => tracker!.TrackRelease(key));
                 tracker = new(_provider);
                 _lifecycleTracker = tracker;
 
-                foreach (IAssetBackend backend in _backends.Values)
+                _databasesById = new();
+
+                foreach (AssetCatalog catalog in catalogs.Where(catalog => catalog))
                 {
-                    backend.OnLoaded += RelayAssetLoaded;
-                    backend.OnUnloaded += RelayAssetUnloaded;
-                }
-
-                List<AddressablesDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
-
-                _databasesById = new(assetDatabases.Count);
-
-                foreach (AddressablesDatabase database in assetDatabases)
-                {
-                    _databasesById[database.DatabaseID] = database;
-                }
-
-                AddressablesCatalog addressablesCatalog = new();
-                addressablesCatalog.Initialize(assetDatabases.Cast<AssetDatabase>().ToArray());
-
-                _catalogs = new IAssetCatalog[]
-                {
-                    addressablesCatalog
-                };
-
-                Log.Information(this, "{Count} asset databases initialized.", Logs.Important, assetDatabases.Count);
-            }
-            catch (Exception e)
-            {
-                if (_catalogs != null)
-                {
-                    foreach (IAssetCatalog catalog in _catalogs)
+                    if (!_backends.ContainsKey(catalog.BackendType))
                     {
-                        if (catalog is AddressablesCatalog addressablesCatalog)
-                        {
-                            addressablesCatalog.Reset();
-                        }
+                        IAssetBackend backend = catalog.CreateBackend();
+                        await backend.InitializeAsync();
+                        backend.OnLoaded += RelayAssetLoaded;
+                        backend.OnUnloaded += RelayAssetUnloaded;
+                        _backends[catalog.BackendType] = backend;
+                    }
+
+                    foreach (AssetDatabase database in catalog.Databases.Where(database => database))
+                    {
+                        _databasesById[database.DatabaseID] = database;
                     }
                 }
 
+                _catalogs = catalogs.ToArray();
+
+                Log.Information(this, "{Count} asset databases initialized.", Logs.Important, _databasesById.Count);
+            }
+            catch (Exception e)
+            {
                 _lifecycleTracker?.Shutdown();
                 _lifecycleTracker = null;
                 _catalogs = null;
