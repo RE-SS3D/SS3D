@@ -9,12 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a570c4891b24c7f999216c6f28f0751, type: 3}
-  m_Name: AssetDatabaseSettings
+  m_Script: {fileID: 11500000, guid: 00c2b4eef25d72648aa1990b3dc0f091, type: 3}
+  m_Name: AddressablesCatalog
   m_EditorClassIdentifier: 
-  _preload: 1
-  _type: 2
-  IncludedAssetDatabases:
+  _databases:
   - {fileID: 11400000, guid: c8a3b9b514b2f7543a544259c3c97b81, type: 2}
   - {fileID: 11400000, guid: cdf9511d9049fa14ab0433934f3537ec, type: 2}
   - {fileID: 11400000, guid: c2644d7b34e956743a0bc485e7ca5e37, type: 2}
@@ -22,6 +20,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 099b9943e9299d54b82d2c1163500458, type: 2}
   - {fileID: 11400000, guid: 43b69e36c49203a44bf20042cd83de81, type: 2}
   - {fileID: 11400000, guid: 830650063081cdf4d90087fc2ac74d24, type: 2}
-  IncludedCatalogs:
-  - {fileID: 11400000, guid: 241663b52ad65da47bb79fbae1670b8a, type: 2}
-  _skipCodeGeneration: 0
