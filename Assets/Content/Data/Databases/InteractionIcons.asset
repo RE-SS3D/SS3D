@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: InteractionIcons
   m_EditorClassIdentifier: 
-  DatabaseName: InteractionIcons
   <DatabaseID>k__BackingField: cdf9511d9049fa14ab0433934f3537ec
-  AssetGuids:
+  _assetGuids:
   - b22067d36fa963b4bbaf8d6085b0ebc9
   - 2db953f2ae8f41d4e9842d9144a9e396
   - 1f97d7fac1be1b448824c85e156d9746

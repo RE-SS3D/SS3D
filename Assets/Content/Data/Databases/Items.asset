@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: Items
   m_EditorClassIdentifier: 
-  DatabaseName: Items
   <DatabaseID>k__BackingField: c2644d7b34e956743a0bc485e7ca5e37
-  AssetGuids:
+  _assetGuids:
   - 11f824c472e04854e95065dda095e8f4
   - 1ae18785d74e9fa4699b6f6de889c243
   - 264ea51d92067c14ebc6633999afac78

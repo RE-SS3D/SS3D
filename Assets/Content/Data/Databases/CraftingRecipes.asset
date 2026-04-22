@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: CraftingRecipes
   m_EditorClassIdentifier: 
-  DatabaseName: CraftingRecipes
   <DatabaseID>k__BackingField: c8a3b9b514b2f7543a544259c3c97b81
-  AssetGuids:
+  _assetGuids:
   - 5069902a314070f4ca869692cbc791fa
   - 41ed3a9a199817b47b7ba22ecb7c1ab4
   - b7f1e5d68b05f6743a606736245ff481

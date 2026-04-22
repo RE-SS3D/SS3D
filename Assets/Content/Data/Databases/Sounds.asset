@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9b6c8ad6324c838c1743c2a2e2abc4, type: 3}
   m_Name: Sounds
   m_EditorClassIdentifier: 
-  DatabaseName: Sounds
   <DatabaseID>k__BackingField: 43b69e36c49203a44bf20042cd83de81
-  AssetGuids:
+  _assetGuids:
   - 8c8823796bbcb23438fcf68260070383
   - ec8b849764a7e9147b2a565f81a1ca42
   - 3f51862f0b88a5243a8cceb97147489d
