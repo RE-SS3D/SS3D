@@ -35,7 +35,7 @@ namespace SS3D.Data
         private IAssetProvider _provider;
         private AssetLifecycleTracker _lifecycleTracker;
         private IAssetCatalog[] _catalogs;
-        private Dictionary<string, AddressablesDatabase> _databasesById;
+        private Dictionary<string, AssetDatabase> _databasesById;
         private Task _initTask;
 
         public bool IsInitialized => _initTask is { IsCompletedSuccessfully: true };
@@ -43,9 +43,9 @@ namespace SS3D.Data
         internal NetworkBarrier NetworkBarrier { get; private set; }
 
         [CanBeNull]
-        public AddressablesDatabase GetDatabase(string databaseID)
+        public AssetDatabase GetDatabase(string databaseID)
         {
-            if (_databasesById == null || !_databasesById.TryGetValue(databaseID, out AddressablesDatabase database))
+            if (_databasesById == null || !_databasesById.TryGetValue(databaseID, out AssetDatabase database))
             {
                 return null;
             }
@@ -230,7 +230,7 @@ namespace SS3D.Data
                 }
 
                 AddressablesCatalog addressablesCatalog = new();
-                addressablesCatalog.Initialize(assetDatabases.Cast<IAssetDatabase>().ToArray());
+                addressablesCatalog.Initialize(assetDatabases.Cast<AssetDatabase>().ToArray());
 
                 _catalogs = new IAssetCatalog[]
                 {

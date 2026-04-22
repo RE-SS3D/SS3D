@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.IO;
 using System.Linq;
+using UnityAssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
@@ -27,14 +28,8 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _addressablesDatabase = (AddressablesDatabase)target;
         }
 
-#if UNITY_EDITOR
         private void OnValidate()
         {
-            if (_enumNameTextField != null)
-            {
-                _addressablesDatabase.DatabaseName = _enumNameTextField.value;
-            }
-
             _addressablesDatabase.DatabaseID = GetDatabaseID();
 
             if (_assetGroupObjectField != null)
@@ -42,7 +37,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 _addressablesDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
             }
         }
-#endif
 
         /// <summary>
         /// This sets ups the UI for the custom inspector using the UI Toolkit
@@ -65,13 +59,13 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetsListView = root.Q<ScrollView>("assets-list");
 
             _assetDatabaseLabel.text = $"{_addressablesDatabase.name} ASSET DATABASE";
-            _enumNameTextField.value = _addressablesDatabase.DatabaseName;
+            _enumNameTextField.value = _addressablesDatabase.name;
             _assetGroupObjectField.value = _addressablesDatabase.AssetGroup;
 
             _addressablesDatabase.LoadAssetsFromAssetGroup();
             _addressablesDatabase.GenerateDatabaseCode();
 
-            if (_addressablesDatabase.AssetGuids != null)
+            if (_addressablesDatabase.AssetGuids.Any())
             {
                 PopulateAssetListView();
             }
@@ -79,14 +73,13 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _loadAssetsButton.clicked += HandleLoadAssetsButtonPressed;
 
             EditorUtility.SetDirty(_addressablesDatabase);
-            AssetDatabase.SaveAssetIfDirty(_addressablesDatabase);
+            UnityAssetDatabase.SaveAssetIfDirty(_addressablesDatabase);
 
             return root;
         }
 
         private void HandleLoadAssetsButtonPressed()
         {
-            _addressablesDatabase.DatabaseName = _enumNameTextField.value;
             _addressablesDatabase.DatabaseID = GetDatabaseID();
 
             _addressablesDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
@@ -98,13 +91,13 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _addressablesDatabase.GenerateDatabaseCode();
 
             EditorUtility.SetDirty(_addressablesDatabase);
-            AssetDatabase.SaveAssetIfDirty(_addressablesDatabase);
+            UnityAssetDatabase.SaveAssetIfDirty(_addressablesDatabase);
         }
 
         private void PopulateAssetListView()
         {
-            foreach (ObjectField objectField in _addressablesDatabase.AssetGuids.Select(AssetDatabase.GUIDToAssetPath).
-                Select(AssetDatabase.LoadAssetAtPath<Object>).
+            foreach (ObjectField objectField in _addressablesDatabase.AssetGuids.Select(UnityAssetDatabase.GUIDToAssetPath).
+                Select(UnityAssetDatabase.LoadAssetAtPath<Object>).
                 Select(asset => new ObjectField { value = asset, }))
             {
                 _assetsListView.Add(objectField);
@@ -113,14 +106,14 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private string GetDatabaseID()
         {
-            string assetPath = AssetDatabase.GetAssetPath(_addressablesDatabase);
+            string assetPath = UnityAssetDatabase.GetAssetPath(_addressablesDatabase);
 
             if (!File.Exists(assetPath))
             {
                 return null;
             }
 
-            string guid = AssetDatabase.AssetPathToGUID(assetPath);
+            string guid = UnityAssetDatabase.AssetPathToGUID(assetPath);
 
             return guid;
         }

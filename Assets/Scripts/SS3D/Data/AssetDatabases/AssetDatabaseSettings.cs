@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Coimbra;
 using SS3D.Attributes;
 using SS3D.CodeGeneration.Creators;
@@ -39,13 +39,13 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            const string dataPath = AddressablesDatabase.DatabaseAssetPath;
+            const string dataPath = AssetDatabase.DatabaseAssetPath;
 
             DatabaseScriptCreator.CreateAtPath(
                 dataPath,
                 "AssetDatabases",
                 IncludedAssetDatabases.Select(db => db.DatabaseID).ToList(),
-                AddressablesDatabase.DatabaseAssetNamespaceName);
+                AssetDatabase.DatabaseAssetNamespaceName);
         }
 #endif
     }

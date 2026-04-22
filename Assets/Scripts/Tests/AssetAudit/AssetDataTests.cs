@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Coimbra;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using SS3D.Data.AssetDatabases;
 using System.Linq;
+using UnityAssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 using UnityEngine;
 
@@ -87,8 +88,8 @@ namespace AssetAudit
 
             foreach (string guid in
                 from guid in addressablesDatabase.AssetGuids
-                let path = AssetDatabase.GUIDToAssetPath(guid)
-                let asset = AssetDatabase.LoadAssetAtPath<Object>(path)
+                let path = UnityAssetDatabase.GUIDToAssetPath(guid)
+                let asset = UnityAssetDatabase.LoadAssetAtPath<Object>(path)
                 where !asset
                 select guid)
             {

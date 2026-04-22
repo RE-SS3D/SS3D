@@ -7,34 +7,17 @@ namespace SS3D.Data.AssetDatabases
     /// An AddressablesDatabase is a ScriptableObject used to hold an Asset list and to create an Enum based on this list.
     /// It is used to find assets using IDs in a very convenient manner throughout the project.
     /// </summary>
-    [CreateAssetMenu(menuName = "SS3D/AssetDatabase", fileName = "AddressablesDatabase", order = 0)]
-    public sealed partial class AddressablesDatabase : ScriptableObject, IAssetDatabase
+    [CreateAssetMenu(menuName = "SS3D/Asset Database/Addressables Database", fileName = "AddressablesDatabase", order = 0)]
+    public sealed partial class AddressablesDatabase : AssetDatabase
     {
-        /// <summary>
-        ///  The name that the generated enum will have;
-        /// </summary>
-        public string DatabaseName;
-
-        /// <summary>
-        /// The GUID of this <see cref="ScriptableObject"/>
-        /// </summary>
-        [field: SerializeField]
-        public string DatabaseID { get; internal set; }
-
-        /// <summary>
-        /// All asset GUIDs registered in this database.
-        /// </summary>
         [SerializeField]
-        public List<string> AssetGuids;
+        private List<string> _assetGuids = new();
 
-        /// <summary>
-        /// Checks if the database has an asset with the given GUID.
-        /// </summary>
-        public bool Has(string guid) => AssetGuids != null && AssetGuids.Contains(guid);
+        /// <inheritdoc />
+        public override IReadOnlyCollection<string> AssetGuids => _assetGuids;
 
-        /// <summary>
-        /// Returns the GUID itself — Addressables uses GUID as its native key.
-        /// </summary>
-        public string ResolveKey(string guid) => guid;
+        /// <inheritdoc />
+        /// <remarks>Addressables uses the GUID itself as its native key.</remarks>
+        public override string ResolveKey(string guid) => guid;
     }
 }

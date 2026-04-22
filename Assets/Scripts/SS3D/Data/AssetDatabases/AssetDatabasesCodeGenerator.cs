@@ -1,9 +1,10 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using Coimbra;
 using JetBrains.Annotations;
 using Serilog;
 using System.Collections.Generic;
 using System.Linq;
+using UnityAssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -76,8 +77,8 @@ namespace SS3D.Data.AssetDatabases
 
             foreach (string guid in addressablesDatabase.AssetGuids)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+                string path = UnityAssetDatabase.GUIDToAssetPath(guid);
+                Object asset = UnityAssetDatabase.LoadAssetAtPath<Object>(path);
                 
                 if (asset is not GameObject gameObject)
                 {
@@ -111,19 +112,19 @@ namespace SS3D.Data.AssetDatabases
             if (createdAssets > 0)
             {
                 Log.Information("[{AssetDatabasesCodeGeneratorName}] - {CreatedAssets} {ObjectAssetReferenceName} created for {AssetDatabaseDatabaseName}.",
-                    nameof(AssetDatabasesCodeGenerator), createdAssets, nameof(ObjectAssetReference), addressablesDatabase.DatabaseName);
+                    nameof(AssetDatabasesCodeGenerator), createdAssets, nameof(ObjectAssetReference), addressablesDatabase.name);
             }
 
             if (modifiedAssets > 0)
             {
                 Log.Information("[{AssetDatabasesCodeGeneratorName}] - {ModifiedAssets} {ObjectAssetReferenceName} modified for {AssetDatabaseDatabaseName}.",
-                    nameof(AssetDatabasesCodeGenerator), modifiedAssets, nameof(ObjectAssetReference), addressablesDatabase.DatabaseName);
+                    nameof(AssetDatabasesCodeGenerator), modifiedAssets, nameof(ObjectAssetReference), addressablesDatabase.name);
             }
 
             if (modifiedAssets == 0 && createdAssets == 0)
             {
                 Log.Information("[{AssetDatabasesCodeGeneratorName}] - No {ObjectAssetReferenceName} were modified or created for {AssetDatabaseDatabaseName}.",
-                    nameof(AssetDatabasesCodeGenerator), nameof(ObjectAssetReference), addressablesDatabase.DatabaseName);
+                    nameof(AssetDatabasesCodeGenerator), nameof(ObjectAssetReference), addressablesDatabase.name);
             }
         }
 

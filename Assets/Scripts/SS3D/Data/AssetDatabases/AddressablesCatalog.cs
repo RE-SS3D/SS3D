@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System.Linq;
 
@@ -6,12 +7,12 @@ namespace SS3D.Data
 {
     /// <summary>
     /// <see cref="IAssetCatalog"/> for Addressables assets.
-    /// Wraps a set of <see cref="IAssetDatabase"/> instances and resolves GUIDs
+    /// Wraps a set of <see cref="AssetDatabase"/> instances and resolves GUIDs
     /// using identity mapping (GUID is the Addressables key).
     /// </summary>
     internal sealed class AddressablesCatalog : IAssetCatalog
     {
-        private IAssetDatabase[] _databases;
+        private AssetDatabase[] _databases;
 
         public AssetBackendType BackendType => AssetBackendType.Addressables;
 
@@ -27,7 +28,7 @@ namespace SS3D.Data
         /// <summary>
         /// Initializes the catalog with the given databases.
         /// </summary>
-        internal void Initialize([NotNull] IAssetDatabase[] databases)
+        internal void Initialize([NotNull] AssetDatabase[] databases)
         {
             _databases = databases;
             Log.Information(typeof(AddressablesCatalog), "{Count} asset databases registered in Addressables catalog.", Logs.Important, databases.Length);

@@ -97,7 +97,7 @@ namespace SS3D.Systems.Crafting
                 AssetHandle.Release(ref _craftingSmokeHandle);
             }
 
-            AddressablesDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
+            AssetDatabase recipesDataBase = SubSystems.Get<AssetSubSystem>().GetDatabase(AssetDatabases.CraftingRecipes);
 
             if (!recipesDataBase)
             {
@@ -106,11 +106,12 @@ namespace SS3D.Systems.Crafting
                 return;
             }
 
-            _recipeHandles = new AssetHandle<CraftingRecipe>[recipesDataBase.AssetGuids.Count];
+            string[] recipeGuids = recipesDataBase.AssetGuids.ToArray();
+            _recipeHandles = new AssetHandle<CraftingRecipe>[recipeGuids.Length];
 
-            for (int i = 0; i < recipesDataBase.AssetGuids.Count; i++)
+            for (int i = 0; i < recipeGuids.Length; i++)
             {
-                string guid = recipesDataBase.AssetGuids[i];
+                string guid = recipeGuids[i];
                 _recipeHandles[i] = await new AssetRequest<CraftingRecipe>(guid).LoadAsync();
 
                 if (_recipeHandles[i])

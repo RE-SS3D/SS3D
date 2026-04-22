@@ -1,9 +1,9 @@
 #if UNITY_EDITOR
 using JetBrains.Annotations;
-using SS3D.CodeGeneration.Creators;
 using SS3D.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using UnityAssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -14,75 +14,41 @@ namespace SS3D.Data.AssetDatabases
     public partial class AddressablesDatabase
     {
         /// <summary>
-        /// The path that the enum will be generated to.
-        /// </summary>
-        public const string DatabaseAssetPath = @"\Scripts\SS3D\Data\Generated";
-
-        /// <summary>
-        ///  The namespace that will be included on the generated Enum.
-        /// </summary>
-        public const string DatabaseAssetNamespaceName = "SS3D.Data.Generated";
-
-        /// <summary>
-        /// The asset group that constitutes this AddressablesDatabase, the system gets every asset from it and adds to an asset list.
+        /// The asset group that constitutes this AddressablesDatabase. The system gets every asset from it and adds it to the asset list.
         /// </summary>
         public AddressableAssetGroup AssetGroup;
 
         /// <summary>
-        /// Loads all the assets from the asset group to the Assets list.
+        /// Finds all AddressablesDatabase assets in the project.
+        /// </summary>
+        public static List<AddressablesDatabase> FindAllAssetDatabases()
+        {
+            string[] assets = UnityAssetDatabase.FindAssets($"t:{typeof(AddressablesDatabase)}");
+
+            return assets.Select(UnityAssetDatabase.GUIDToAssetPath).Select(UnityAssetDatabase.LoadAssetAtPath<AddressablesDatabase>).ToList();
+        }
+
+        /// <summary>
+        /// Loads all the assets from the asset group into the stored GUID list.
         /// </summary>
         public void LoadAssetsFromAssetGroup()
         {
-            AssetGuids = new();
+            _assetGuids = new();
 
-            foreach (AddressableAssetEntry entry in AssetGroup.entries.Where(entry => !AssetGuids.Contains(entry.guid)))
+            foreach (AddressableAssetEntry entry in AssetGroup.entries.Where(entry => !_assetGuids.Contains(entry.guid)))
             {
-                AssetGuids.Add(entry.guid);
+                _assetGuids.Add(entry.guid);
             }
 
             EditorUtility.SetDirty(this);
         }
 
         /// <summary>
-        /// Adds an asset to the asset database. Should be used only for additional content or runtime stuff.
+        /// Registers an asset with the backing Addressable group and adds its GUID to this database.
         /// </summary>
-        /// <param name="asset">The asset to add to the database.</param>
-        /// <typeparam name="TAsset">The type of the asset to add.</typeparam>
-        public void Add<TAsset>([NotNull] TAsset asset)
-            where TAsset : Object
-        {
-            string path = AssetDatabase.GUIDToAssetPath(asset.name);
-            string guid = AssetDatabase.GUIDFromAssetPath(path).ToString();
-
-            AssetGuids.Add(guid);
-        }
-
-        /// <summary>
-        /// Initializes all asset databases in the project and adds to the databases list.
-        /// </summary>
-        public static List<AddressablesDatabase> FindAllAssetDatabases()
-        {
-            string[] assets = AssetDatabase.FindAssets($"t:{typeof(AddressablesDatabase)}");
-
-            return assets.Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<AddressablesDatabase>).ToList();
-        }
-
-        /// <summary>
-        /// Generates a script with the data of this database for easy access.
-        /// </summary>
-        public void GenerateDatabaseCode()
-        {
-            if (AssetDatabaseSettings.SkipCodeGeneration)
-            {
-                return;
-            }
-
-            DatabaseScriptCreator.CreateAtPath(DatabaseAssetPath, DatabaseName, AssetGuids, DatabaseAssetNamespaceName);
-        }
-
         public bool AddToAddressables([NotNull] Object asset)
         {
-            string path = AssetDatabase.GetAssetPath(asset);
+            string path = UnityAssetDatabase.GetAssetPath(asset);
 
             if (string.IsNullOrEmpty(path))
             {
@@ -91,7 +57,7 @@ namespace SS3D.Data.AssetDatabases
                 return false;
             }
 
-            string guid = AssetDatabase.AssetPathToGUID(path);
+            string guid = UnityAssetDatabase.AssetPathToGUID(path);
 
             if (!AssetGroup)
             {
@@ -117,11 +83,23 @@ namespace SS3D.Data.AssetDatabases
             EditorUtility.SetDirty(asset);
             EditorUtility.SetDirty(this);
 
-            AssetDatabase.SaveAssetIfDirty(asset);
-            AssetDatabase.SaveAssetIfDirty(this);
+            UnityAssetDatabase.SaveAssetIfDirty(asset);
+            UnityAssetDatabase.SaveAssetIfDirty(this);
 
             return true;
         }
+
+        /// <summary>
+        /// Records a GUID for the given asset by resolving its Addressables path.
+        /// </summary>
+        private void Add<TAsset>([NotNull] TAsset asset)
+            where TAsset : Object
+        {
+            string path = UnityAssetDatabase.GUIDToAssetPath(asset.name);
+            string guid = UnityAssetDatabase.GUIDFromAssetPath(path).ToString();
+
+            _assetGuids.Add(guid);
+        }
     }
 }
-  #endif
+#endif
