@@ -5,7 +5,6 @@ using NUnit.Framework;
 using SS3D.Data.AssetDatabases;
 using System.Linq;
 using UnityAssetDatabase = UnityEditor.AssetDatabase;
-using UnityEditor;
 using UnityEngine;
 
 namespace AssetAudit
@@ -21,13 +20,32 @@ namespace AssetAudit
         }
 
         /// <summary>
+        /// Test to confirm all included asset catalogs are not null.
+        /// </summary>
+        [Test]
+        [TestCaseSource(nameof(AllAssetCatalogs))]
+        public void IncludedAssetCatalogsAreNotNull(AssetCatalog catalog)
+        {
+            Assert.IsTrue(catalog);
+        }
+
+        /// <summary>
         /// Test to confirm all included asset databases are not null.
         /// </summary>
         [Test]
         [TestCaseSource(nameof(AllAssetDatabases))]
-        public void IncludedAssetDatabasesAreNotNull(AddressablesDatabase database)
+        public void IncludedAssetDatabasesAreNotNull(AssetDatabase database)
         {
-            Assert.IsTrue(database != null);
+            Assert.IsTrue(database);
+        }
+
+        /// <summary>
+        /// Test to check if there are any catalogs loaded.
+        /// </summary>
+        [Test]
+        public void IncludedAssetCatalogsAreNotEmpty()
+        {
+            Assert.IsTrue(_assetDatabaseSettings.IncludedCatalogs.Any());
         }
 
         /// <summary>
@@ -36,10 +54,7 @@ namespace AssetAudit
         [Test]
         public void IncludedAssetDatabasesAreNotEmpty()
         {
-            List<AddressablesDatabase> databases = _assetDatabaseSettings.IncludedAssetDatabases;
-
-            bool databasesAreEmpty = databases.Count == 0;
-            Assert.IsFalse(databasesAreEmpty);
+            Assert.IsTrue(_assetDatabaseSettings.AllDatabases.Any());
         }
 
         /// <summary>
@@ -48,32 +63,25 @@ namespace AssetAudit
         [Test]
         public void AllProjectAssetDatabasesAreOnIncludedDatabases()
         {
-            List<AddressablesDatabase> projectAssetDatabases = AddressablesDatabase.FindAllAssetDatabases();
-            List<AddressablesDatabase> loadedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
+            List<AssetDatabase> projectAssetDatabases = UnityAssetDatabase
+                .FindAssets($"t:{nameof(AssetDatabase)}")
+                .Select(UnityAssetDatabase.GUIDToAssetPath)
+                .Select(UnityAssetDatabase.LoadAssetAtPath<AssetDatabase>)
+                .Where(database => database)
+                .ToList();
 
-            bool hasMissingDatabases = false;
-            List<AddressablesDatabase> missingDatabases = new();
+            HashSet<AssetDatabase> loadedAssetDatabases = new(_assetDatabaseSettings.AllDatabases);
 
-            foreach (AddressablesDatabase projectAssetDatabase in projectAssetDatabases)
+            List<AssetDatabase> missingDatabases = projectAssetDatabases
+                .Where(database => !loadedAssetDatabases.Contains(database))
+                .ToList();
+
+            foreach (AssetDatabase missingDatabase in missingDatabases)
             {
-                if (loadedAssetDatabases.Contains(projectAssetDatabase))
-                {
-                    continue;
-                }
-
-                hasMissingDatabases = true;
-                missingDatabases.Add(projectAssetDatabase);
+                Debug.Log($"Missing asset database {missingDatabase.name} \u2014 add it to a catalog in AssetDatabaseSettings.");
             }
 
-            if (hasMissingDatabases)
-            {
-                foreach (AddressablesDatabase missingDatabase in missingDatabases)
-                { 
-                    Debug.Log($"Added asset database {missingDatabase.name} to included asset databases");
-                }
-            }
-
-            Assert.IsFalse(hasMissingDatabases);
+            Assert.IsFalse(missingDatabases.Any());
         }
 
         /// <summary>
@@ -81,23 +89,16 @@ namespace AssetAudit
         /// </summary>
         [Test]
         [TestCaseSource(nameof(AllAssetDatabases))]
-        public void IncludedAssetDatabasesDoNotContainNullObjects([NotNull] AddressablesDatabase addressablesDatabase)
+        public void IncludedAssetDatabasesDoNotContainNullObjects([NotNull] AssetDatabase database)
         {
-            bool hasNullAssets = false;
-            List<string> nullGuids = new();
-
-            foreach (string guid in
-                from guid in addressablesDatabase.AssetGuids
+            List<string> nullGuids = (
+                from guid in database.AssetGuids
                 let path = UnityAssetDatabase.GUIDToAssetPath(guid)
                 let asset = UnityAssetDatabase.LoadAssetAtPath<Object>(path)
                 where !asset
-                select guid)
-            {
-                hasNullAssets = true;
-                nullGuids.Add(guid);
-            }
+                select guid).ToList();
 
-            if (!hasNullAssets)
+            if (!nullGuids.Any())
             {
                 Assert.Pass();
 
@@ -106,12 +107,15 @@ namespace AssetAudit
 
             foreach (string nullGuid in nullGuids)
             {
-                Debug.LogError($"Asset is null on {addressablesDatabase.name} : {nullGuid}");
+                Debug.LogError($"Asset is null on {database.name} : {nullGuid}");
             }
 
-            Assert.Fail($"{addressablesDatabase.name} has null assets");
+            Assert.Fail($"{database.name} has null assets");
         }
 
-        private static List<AddressablesDatabase> AllAssetDatabases() => ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
+        [NotNull]
+        private static List<AssetDatabase> AllAssetDatabases() => ScriptableSettings.GetOrFind<AssetDatabaseSettings>().AllDatabases.ToList();
+        
+        private static List<AssetCatalog> AllAssetCatalogs() => ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedCatalogs;
     }
 }
