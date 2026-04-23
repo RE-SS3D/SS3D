@@ -11,7 +11,7 @@ namespace SS3D.Data.AssetDatabases
     /// databases (serialized reference list) and produces the backend that will
     /// load their assets, keeping <see cref="AssetSubSystem"/> backend-agnostic.
     /// </summary>
-    public abstract class AssetCatalog : ScriptableObject
+    public abstract partial class AssetCatalog : ScriptableObject
     {
         [SerializeField]
         private List<AssetDatabase> _databases = new();
@@ -55,4 +55,4 @@ namespace SS3D.Data.AssetDatabases
             return null;
         }
     }
-}
+}
