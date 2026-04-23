@@ -7,7 +7,7 @@ namespace SS3D.Data.AssetDatabases
     /// GUIDs using identity mapping (GUID is the Addressables key).
     /// </summary>
     [CreateAssetMenu(menuName = "SS3D/Asset Catalog/Addressables Catalog", fileName = "AddressablesCatalog", order = 0)]
-    public sealed class AddressablesCatalog : AssetCatalog
+    public sealed partial class AddressablesCatalog : AssetCatalog
     {
         /// <inheritdoc />
         public override AssetBackendType BackendType => AssetBackendType.Addressables;
@@ -15,4 +15,4 @@ namespace SS3D.Data.AssetDatabases
         /// <inheritdoc />
         public override IAssetBackend CreateBackend() => new AddressablesBackend();
     }
-}
+}
