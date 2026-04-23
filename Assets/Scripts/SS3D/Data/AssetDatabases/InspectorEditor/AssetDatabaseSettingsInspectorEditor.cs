@@ -1,10 +1,9 @@
 ﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
@@ -22,37 +21,26 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             _assetDatabaseSettings = (AssetDatabaseSettings)target;
         }
-        
+
         public override VisualElement CreateInspectorGUI()
-        { 
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
+        {
+            PopulateCatalogs();
 
             return SetupUIToolkitCustomInspectorEditor();
         }
 
         public override void OnInspectorGUI()
         {
-            SetupCustomInspectorEditor();
+            if (GUILayout.Button("Find and load asset catalogs", GUILayout.Width(350)))
+            {
+                PopulateCatalogs();
+            }
 
             base.OnInspectorGUI();
         }
 
-        private void SetupCustomInspectorEditor()
-        {
-            EditorApplication.projectChanged += HandleProjectChanged;
-
-            // FindAndLoadAllAssetsDatabasesAddressablesGroups();
-
-            if (GUILayout.Button("Find and load asset databases", GUILayout.Width(350)))
-            {
-                HandleLoadDatabasesButtonPressedGUI();
-            }
-        }
-
         private VisualElement SetupUIToolkitCustomInspectorEditor()
         {
-            EditorApplication.projectChanged += HandleProjectChanged;
-
             VisualElement root = new();
             _assetDatabaseSettingsVisualTree.CloneTree(root);
 
@@ -66,30 +54,18 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             return root;
         }
 
-        private void LoadDatabases()
-        {
-            List<AddressablesDatabase> foundDatabases = AddressablesDatabase.FindAllAssetDatabases();
-            _assetDatabaseSettings.IncludedAssetDatabases = foundDatabases;
-        }
-
-        private void FindAndLoadAllAssetsDatabasesAddressablesGroups()
+        /// <summary>
+        /// Asks each included catalog to re-discover its databases, then regenerates generated code.
+        /// </summary>
+        private void PopulateCatalogs()
         {
             _assetDatabaseSettings = (AssetDatabaseSettings)target;
 
-            LoadDatabases();
-
-            List<AddressablesDatabase> includedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
-
-            foreach (AddressablesDatabase assetDatabase in includedAssetDatabases)
+            foreach (AssetCatalog catalog in _assetDatabaseSettings.IncludedCatalogs.Where(catalog => catalog))
             {
-                assetDatabase.LoadAssetsFromAssetGroup();
+                catalog.PopulateFromProject();
             }
 
-            GenerateAssetDatabasesCode();
-        }
-
-        private void GenerateAssetDatabasesCode()
-        {
             AssetDatabasesCodeGenerator.GenerateAssetDatabasesCode();
         }
 
@@ -97,36 +73,21 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             _databaseListView.Clear();
 
-            foreach (AddressablesDatabase database in _assetDatabaseSettings.IncludedAssetDatabases)
-            {
-                ObjectField objectField = new()
+            foreach (ObjectField objectField in _assetDatabaseSettings.IncludedCatalogs.Where(catalog => catalog).
+                Select(catalog => new ObjectField
                 {
-                    value = database
-                };
-
+                    value = catalog,
+                }))
+            {
                 _databaseListView.Add(objectField);
             }
         }
 
         private void HandleLoadDatabasesButtonPressed()
         {
+            PopulateCatalogs();
             EditorUtility.SetDirty(_assetDatabaseSettings);
-
             UpdateListVisuals();
-        }
-
-        public void HandleProjectChanged()
-        {
-            LoadDatabases();
-
-            // FindAndLoadAllAssetsDatabasesAddressablesGroups();
-        }
-
-        private void HandleLoadDatabasesButtonPressedGUI()
-        {
-            LoadDatabases();
-
-            FindAndLoadAllAssetsDatabasesAddressablesGroups();
         }
     }
 }
