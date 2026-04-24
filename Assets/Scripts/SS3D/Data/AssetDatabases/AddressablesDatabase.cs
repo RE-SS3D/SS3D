@@ -7,7 +7,7 @@ namespace SS3D.Data.AssetDatabases
     /// An AddressablesDatabase is a ScriptableObject used to hold an Asset list and to create an Enum based on this list.
     /// It is used to find assets using IDs in a very convenient manner throughout the project.
     /// </summary>
-    [CreateAssetMenu(menuName = "SS3D/Asset Subsystem/Database/Addressables", fileName = "AddressablesDatabase", order = 0)]
+    [CreateAssetMenu(menuName = DatabaseMenuHierarchy + "Addressables", fileName = "AddressablesDatabase", order = 0)]
     public sealed partial class AddressablesDatabase : AssetDatabase
     {
         [SerializeField]

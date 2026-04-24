@@ -12,6 +12,11 @@ namespace SS3D.Data.AssetDatabases
     public abstract partial class AssetDatabase : ScriptableObject
     {
         /// <summary>
+        /// The menu hierarchy under which to create new database in the editor. Concrete catalogs should append their backend type.
+        /// </summary>
+        protected const string DatabaseMenuHierarchy = "SS3D/Asset Subsystem/Database/";
+
+        /// <summary>
         /// The ID of the database, derived from the asset's GUID on disk.
         /// </summary>
         [field: SerializeField]

@@ -13,6 +13,11 @@ namespace SS3D.Data.AssetDatabases
     /// </summary>
     public abstract partial class AssetCatalog : ScriptableObject
     {
+        /// <summary>
+        /// The menu hierarchy under which to create new catalogs in the editor. Concrete catalogs should append their backend type.
+        /// </summary>
+        protected const string CatalogMenuHierarchy = "SS3D/Asset Subsystem/Catalog/";
+        
         [SerializeField]
         private List<AssetDatabase> _databases = new();
 

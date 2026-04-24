@@ -6,7 +6,7 @@ namespace SS3D.Data.AssetDatabases
     /// <see cref="AssetCatalog"/> that routes to the Addressables backend and resolves
     /// GUIDs using identity mapping (GUID is the Addressables key).
     /// </summary>
-    [CreateAssetMenu(menuName = "SS3D/Asset Subsystem/Catalog/Addressables", fileName = "AddressablesCatalog", order = 0)]
+    [CreateAssetMenu(menuName = CatalogMenuHierarchy + "Addressables", fileName = "AddressablesCatalog", order = 0)]
     public sealed partial class AddressablesCatalog : AssetCatalog
     {
         /// <inheritdoc />
