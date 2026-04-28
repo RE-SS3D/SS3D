@@ -184,7 +184,9 @@ GameObject:
   - component: {fileID: -5171608925130170487}
   - component: {fileID: -5218382646515949466}
   - component: {fileID: -7928552370738798750}
-  - component: {fileID: 8239897061733834324}
+  - component: {fileID: 7546979437200009969}
+  - component: {fileID: -363090906195784971}
+  - component: {fileID: 1841568401938939583}
   m_Layer: 0
   m_Name: Plenum
   m_TagString: Untagged
@@ -300,7 +302,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 10
+  <PrefabId>k__BackingField: 46
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -378,7 +380,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 8158a12d6b88d6f46b377483f4cf22cf, type: 2}
---- !u!114 &8239897061733834324
+--- !u!114 &7546979437200009969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028539322119499722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 3b33b5cf16a677a4e85a110679cde32a
+--- !u!114 &-363090906195784971
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -390,4 +405,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 3b33b5cf16a677a4e85a110679cde32a
+--- !u!114 &1841568401938939583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028539322119499722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 7546979437200009969}
+  _armed: 0

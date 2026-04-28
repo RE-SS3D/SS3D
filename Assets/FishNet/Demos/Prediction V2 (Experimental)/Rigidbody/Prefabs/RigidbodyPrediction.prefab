@@ -96,7 +96,8 @@ GameObject:
   - component: {fileID: 303449598114786578}
   - component: {fileID: 201277550}
   - component: {fileID: 201277549}
-  - component: {fileID: -6264797426314574115}
+  - component: {fileID: 3779911409150719101}
+  - component: {fileID: 7190513730903659832}
   m_Layer: 0
   m_Name: RigidbodyPrediction
   m_TagString: Untagged
@@ -197,7 +198,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &-6264797426314574115
+--- !u!114 &3779911409150719101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303449598114786579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 8ef354bfc16ca8a459074c3fa9b6727e
+--- !u!114 &7190513730903659832
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -209,7 +223,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 8ef354bfc16ca8a459074c3fa9b6727e
 --- !u!1 &303449598207636365
 GameObject:
   m_ObjectHideFlags: 0

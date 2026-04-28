@@ -75,39 +75,26 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 8281616745360485254, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
+    - target: {fileID: 2355343268079052499, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _assetGuid
+      value: be3fcf1a74268ad49bfedb1edd9f5318
+      objectReference: {fileID: 0}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 29
+      value: 161
       objectReference: {fileID: 0}
     - target: {fileID: 2527334834019670621, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 2703128900779190152
       objectReference: {fileID: 0}
-    - target: {fileID: 4313929657248544974, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
-      propertyPath: <Guid>k__BackingField
+    - target: {fileID: 6496854825033079438, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
+      propertyPath: _assetGuid
       value: be3fcf1a74268ad49bfedb1edd9f5318
       objectReference: {fileID: 0}
     - target: {fileID: 7201402233169256053, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
       propertyPath: _clothMeshes._list.Array.data[0]._value
       value: 
       objectReference: {fileID: 8281616745360485254, guid: 76ba5420c179bb841858ed042df97ba2, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2355343268079052499, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
---- !u!1 &8312388220934557560 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 624365323667193292, guid: 236b51ddc6f9aa94ca92579082370c06, type: 3}
-  m_PrefabInstance: {fileID: 8931124044824261300}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7870642354790018445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8312388220934557560}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Guid>k__BackingField: be3fcf1a74268ad49bfedb1edd9f5318

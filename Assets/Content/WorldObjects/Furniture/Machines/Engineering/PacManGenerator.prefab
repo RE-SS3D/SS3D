@@ -17,7 +17,9 @@ GameObject:
   - component: {fileID: -2157900375506616301}
   - component: {fileID: 7239473696267242548}
   - component: {fileID: 4189468537532167386}
-  - component: {fileID: -8767589987964325042}
+  - component: {fileID: -1379514281874625035}
+  - component: {fileID: -8603931955224988237}
+  - component: {fileID: 5582729903058368663}
   m_Layer: 0
   m_Name: PacManGenerator
   m_TagString: Untagged
@@ -60,6 +62,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 219113547575591534}
   - {fileID: -2157900375506616301}
+  - {fileID: 4189468537532167386}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -71,7 +74,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 157
+  <PrefabId>k__BackingField: 54
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -173,11 +176,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b621d3404247f2e4da4ab459ad43eec7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: -5414623717715724467}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -5414623717715724467}
   _on: 0
---- !u!114 &-8767589987964325042
+--- !u!114 &-1379514281874625035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 45cc43b84ee58e644b9523cb27682b39
+--- !u!114 &-8603931955224988237
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,7 +205,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 45cc43b84ee58e644b9523cb27682b39
+--- !u!114 &5582729903058368663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -1379514281874625035}
+  _armed: 0
 --- !u!1 &4271595947011161493
 GameObject:
   m_ObjectHideFlags: 0

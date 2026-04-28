@@ -15,14 +15,14 @@ PrefabInstance:
       propertyPath: _asset
       value: 
       objectReference: {fileID: 11400000, guid: e6c8ce8c1b83a004389647756897a0c0, type: 2}
-    - target: {fileID: -5990724460312493469, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
-      propertyPath: <Guid>k__BackingField
-      value: dceb056e41b5c634f9933423de8e075c
-      objectReference: {fileID: 0}
     - target: {fileID: 1335663030982295525, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: 670b475527c81d34da12e5478b71c33a, type: 2}
+    - target: {fileID: 3146240193629008871, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _assetGuid
+      value: dceb056e41b5c634f9933423de8e075c
+      objectReference: {fileID: 0}
     - target: {fileID: 5596787203858443778, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -73,7 +73,7 @@ PrefabInstance:
       objectReference: {fileID: -2423680911938410841, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <PrefabId>k__BackingField
-      value: 88
+      value: 183
       objectReference: {fileID: 0}
     - target: {fileID: 5958074810027370513, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
@@ -83,18 +83,34 @@ PrefabInstance:
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: 670b475527c81d34da12e5478b71c33a, type: 2}
+    - target: {fileID: 8095916385686154216, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _assetGuid
+      value: dceb056e41b5c634f9933423de8e075c
+      objectReference: {fileID: 0}
     - target: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Name
       value: SodaCanCannedLaughter
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3146240193629008871, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+--- !u!114 &7714766260377170618 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8095916385686154216, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+  m_PrefabInstance: {fileID: 1966421592286517586}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8047892061280000217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8047892061280000217 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
   m_PrefabInstance: {fileID: 1966421592286517586}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3117189291106347170
+--- !u!114 &-7930934793407549106
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,7 +119,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 8047892061280000217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: dceb056e41b5c634f9933423de8e075c
+  _identifier: {fileID: 7714766260377170618}
+  _armed: 0

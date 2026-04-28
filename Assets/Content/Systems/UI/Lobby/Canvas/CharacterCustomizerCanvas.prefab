@@ -1943,7 +1943,8 @@ GameObject:
   - component: {fileID: 7860572305637640860}
   - component: {fileID: 7860572305637640861}
   - component: {fileID: 3206407796921847736}
-  - component: {fileID: -6225176405607676944}
+  - component: {fileID: 2980004677362391654}
+  - component: {fileID: 1641871541754280357}
   m_Layer: 5
   m_Name: CharacterCustomizerCanvas
   m_TagString: Untagged
@@ -2066,7 +2067,20 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 10661028350797218913
---- !u!114 &-6225176405607676944
+--- !u!114 &2980004677362391654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7860572305637640862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 3335d001fdfff824aa859b98f2fe564e
+--- !u!114 &1641871541754280357
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2078,4 +2092,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 3335d001fdfff824aa859b98f2fe564e

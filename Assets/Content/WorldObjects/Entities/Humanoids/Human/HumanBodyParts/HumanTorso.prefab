@@ -395,7 +395,9 @@ GameObject:
   - component: {fileID: 5308582014386986525}
   - component: {fileID: 2667861044257637155}
   - component: {fileID: 8049927839799613062}
-  - component: {fileID: -8237994657560156240}
+  - component: {fileID: 1071527651825949178}
+  - component: {fileID: 7105979873094868763}
+  - component: {fileID: 3662427276155504952}
   m_Layer: 10
   m_Name: HumanTorso
   m_TagString: Untagged
@@ -462,7 +464,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 55
+  <PrefabId>k__BackingField: 60
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -747,7 +749,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-8237994657560156240
+--- !u!114 &1071527651825949178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5562010227207703736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 4a9d34a6cf84ef045a740513d8ae30b1
+--- !u!114 &7105979873094868763
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -759,7 +774,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 4a9d34a6cf84ef045a740513d8ae30b1
+--- !u!114 &3662427276155504952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5562010227207703736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 1071527651825949178}
+  _armed: 0
 --- !u!1 &6030422096952570203
 GameObject:
   m_ObjectHideFlags: 0

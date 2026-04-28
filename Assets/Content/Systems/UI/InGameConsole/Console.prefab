@@ -91,7 +91,8 @@ GameObject:
   - component: {fileID: 4468402020721993861}
   - component: {fileID: 2462624425783740797}
   - component: {fileID: 6636680625000353110}
-  - component: {fileID: -5008216727895844570}
+  - component: {fileID: -1210317486656841215}
+  - component: {fileID: 5134582642352978561}
   m_Layer: 5
   m_Name: Console
   m_TagString: Untagged
@@ -250,7 +251,20 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17889965511288280426
---- !u!114 &-5008216727895844570
+--- !u!114 &-1210317486656841215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4468402020721993860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: cc5383d385556f443b2a7d3202f2b2c1
+--- !u!114 &5134582642352978561
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -262,7 +276,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: cc5383d385556f443b2a7d3202f2b2c1
 --- !u!1 &4468402021075484997
 GameObject:
   m_ObjectHideFlags: 0

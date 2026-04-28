@@ -1038,7 +1038,9 @@ GameObject:
   - component: {fileID: 3065600715364136503}
   - component: {fileID: 3854834578962148855}
   - component: {fileID: 1711607012168321612}
-  - component: {fileID: -3034498066639335467}
+  - component: {fileID: -6865135869305988649}
+  - component: {fileID: 7636469980191082158}
+  - component: {fileID: -6727470100648416155}
   m_Layer: 10
   m_Name: HumanHead
   m_TagString: Untagged
@@ -1410,7 +1412,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00534faac6488c47893490f2bf4c5a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-3034498066639335467
+--- !u!114 &-6865135869305988649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006468508714419156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: cc54bc74b2f4c2349b1f84b501b0a091
+--- !u!114 &7636469980191082158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1422,7 +1437,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: cc54bc74b2f4c2349b1f84b501b0a091
+--- !u!114 &-6727470100648416155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006468508714419156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -6865135869305988649}
+  _armed: 0
 --- !u!1 &8010198090661034686
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 4628514723372063782}
   - component: {fileID: 4628514723372063781}
   - component: {fileID: 4628514723372063780}
-  - component: {fileID: 4409160592351310983}
+  - component: {fileID: 6829000814602655442}
+  - component: {fileID: -4289430000361047140}
   m_Layer: 0
   m_Name: NetworkBarrier
   m_TagString: Untagged
@@ -100,7 +101,20 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 4628514723372063782}
   _retryAttempts: 5
   _lateJoinPreloadTimeoutSeconds: 15
---- !u!114 &4409160592351310983
+--- !u!114 &6829000814602655442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4628514723372063786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: af2ec06c4c4b452459750b901bcb467f
+--- !u!114 &-4289430000361047140
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,4 +126,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: af2ec06c4c4b452459750b901bcb467f

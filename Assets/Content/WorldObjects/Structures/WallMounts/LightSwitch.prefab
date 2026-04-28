@@ -14,7 +14,9 @@ GameObject:
   - component: {fileID: -7828078595381397262}
   - component: {fileID: -1805269809057551517}
   - component: {fileID: 4792652958643398202}
-  - component: {fileID: -6911791973994690876}
+  - component: {fileID: -7961578360333897381}
+  - component: {fileID: -6114267784986250676}
+  - component: {fileID: -8794449012844010671}
   m_Layer: 0
   m_Name: LightSwitch
   m_TagString: Untagged
@@ -115,7 +117,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 52
+  <PrefabId>k__BackingField: 171
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -145,7 +147,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 1a3e9b7e6e356ee4e806b2d6233676bd, type: 2}
---- !u!114 &-6911791973994690876
+--- !u!114 &-7961578360333897381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: d07b5fba3896ff448855d6e54356c365
+--- !u!114 &-6114267784986250676
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,4 +172,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: d07b5fba3896ff448855d6e54356c365
+--- !u!114 &-8794449012844010671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866668043303595546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -7961578360333897381}
+  _armed: 0

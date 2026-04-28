@@ -12,7 +12,9 @@ GameObject:
   - component: {fileID: -6797522191161373784}
   - component: {fileID: -1118624821665918217}
   - component: {fileID: 650730015144406892}
-  - component: {fileID: -8507847754912504082}
+  - component: {fileID: -7848242589263589200}
+  - component: {fileID: 8658344787155893377}
+  - component: {fileID: 1165036305141153451}
   m_Layer: 0
   m_Name: Microwave
   m_TagString: Untagged
@@ -63,7 +65,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 13
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -93,7 +95,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: b27ee926ae46aaa418aaf622f938fe73, type: 2}
---- !u!114 &-8507847754912504082
+--- !u!114 &-7848242589263589200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 11d64ed349b96ec4780c4dda0ad89daf
+--- !u!114 &8658344787155893377
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,7 +120,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 11d64ed349b96ec4780c4dda0ad89daf
+--- !u!114 &1165036305141153451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -7848242589263589200}
+  _armed: 0
 --- !u!1 &2266423437352020777
 GameObject:
   m_ObjectHideFlags: 0

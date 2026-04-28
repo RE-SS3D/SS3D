@@ -14,7 +14,9 @@ GameObject:
   - component: {fileID: 1121645015612626649}
   - component: {fileID: 4004765049813284735}
   - component: {fileID: -7011334430264795127}
-  - component: {fileID: -6939503229312097551}
+  - component: {fileID: -7821928163723554343}
+  - component: {fileID: -6515602521939013520}
+  - component: {fileID: 1906081031953255443}
   m_Layer: 0
   m_Name: TileReinforced
   m_TagString: Untagged
@@ -127,7 +129,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 153
+  <PrefabId>k__BackingField: 188
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -146,7 +148,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDirection: 0
   _allowedDirections: 00000000
---- !u!114 &-6939503229312097551
+--- !u!114 &-7821928163723554343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8597721773267636030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: df4cf328d472de046bcbc073cbda2868
+--- !u!114 &-6515602521939013520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,4 +173,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: df4cf328d472de046bcbc073cbda2868
+--- !u!114 &1906081031953255443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8597721773267636030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -7821928163723554343}
+  _armed: 0

@@ -11,10 +11,6 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 8639572715292815358, guid: 0ae381ae038ae134cbbf04a5a9124cb0, type: 3}
-    - target: {fileID: 1482905360075112934, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
-      propertyPath: <Guid>k__BackingField
-      value: 3a25eb0bd251b5847af05fb59feff383
-      objectReference: {fileID: 0}
     - target: {fileID: 5161561551087789900, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
       propertyPath: m_Name
       value: PlasticChairGrey
@@ -22,6 +18,10 @@ PrefabInstance:
     - target: {fileID: 5640352947892099654, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 11884068948999043030
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638395556686322663, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
+      propertyPath: _assetGuid
+      value: 3a25eb0bd251b5847af05fb59feff383
       objectReference: {fileID: 0}
     - target: {fileID: 8213111319263450463, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
       propertyPath: m_RootOrder
@@ -74,7 +74,20 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5161561551087789900, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
   m_PrefabInstance: {fileID: 5774446121705791083}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3857792183778413968
+--- !u!114 &-5115308492771214943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694330674204457255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 3a25eb0bd251b5847af05fb59feff383
+--- !u!114 &3903419159859100341
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,4 +99,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 3a25eb0bd251b5847af05fb59feff383
+--- !u!114 &7517492575767735107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694330674204457255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -5115308492771214943}
+  _armed: 0

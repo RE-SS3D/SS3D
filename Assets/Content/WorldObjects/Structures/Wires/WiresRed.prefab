@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: -50474570788092824}
   - component: {fileID: 4046440291961134153}
   - component: {fileID: -6644961461511853831}
-  - component: {fileID: 1924806890947820808}
+  - component: {fileID: 7919915781068166670}
+  - component: {fileID: 5531811492560334014}
   m_Layer: 0
   m_Name: WiresRed
   m_TagString: Untagged
@@ -159,7 +160,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 1980313d52ccd4147b836fa578da1ed6, type: 2}
---- !u!114 &1924806890947820808
+--- !u!114 &7919915781068166670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 14ef62e89f3613c4b9964b369e01c5f9
+--- !u!114 &5531811492560334014
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,4 +185,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 14ef62e89f3613c4b9964b369e01c5f9

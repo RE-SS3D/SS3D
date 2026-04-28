@@ -183,7 +183,9 @@ GameObject:
   - component: {fileID: 7727612398117917681}
   - component: {fileID: -7446731280164012348}
   - component: {fileID: 4254108774214416958}
-  - component: {fileID: 8084687079751079363}
+  - component: {fileID: -8273527810474994049}
+  - component: {fileID: 2019343376596991598}
+  - component: {fileID: 7301667074951142316}
   m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
@@ -320,7 +322,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 35
+  <PrefabId>k__BackingField: 41
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -363,7 +365,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 2a5aba53a318c5a40a737397dd3d6530, type: 2}
---- !u!114 &8084687079751079363
+--- !u!114 &-8273527810474994049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 330d85a67a5891145bd8037dde90f37b
+--- !u!114 &2019343376596991598
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -375,7 +390,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 330d85a67a5891145bd8037dde90f37b
+--- !u!114 &7301667074951142316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -8273527810474994049}
+  _armed: 0
 --- !u!1001 &1462619981128899051
 PrefabInstance:
   m_ObjectHideFlags: 0

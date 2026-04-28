@@ -14,7 +14,9 @@ GameObject:
   - component: {fileID: -5633820156739102180}
   - component: {fileID: 5345374821986185081}
   - component: {fileID: -1796937761032253921}
-  - component: {fileID: 609552875357890554}
+  - component: {fileID: 7136981800154709643}
+  - component: {fileID: 3576127012161297041}
+  - component: {fileID: 4525526709785450330}
   m_Layer: 0
   m_Name: APC
   m_TagString: Untagged
@@ -115,7 +117,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 54
+  <PrefabId>k__BackingField: 62
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -145,7 +147,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 6d8c584c9501d564b87b79071e15b4f7, type: 2}
---- !u!114 &609552875357890554
+--- !u!114 &7136981800154709643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 4c966398d6624164c910cd29c1faa980
+--- !u!114 &3576127012161297041
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,4 +172,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 4c966398d6624164c910cd29c1faa980
+--- !u!114 &4525526709785450330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 7136981800154709643}
+  _armed: 0

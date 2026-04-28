@@ -49,7 +49,9 @@ GameObject:
   - component: {fileID: -9079531721198773732}
   - component: {fileID: 3371975112976805248}
   - component: {fileID: -1287924033786746541}
-  - component: {fileID: -590939908307860478}
+  - component: {fileID: 7018847331554254565}
+  - component: {fileID: -9206396034250203133}
+  - component: {fileID: 6306083595929544902}
   m_Layer: 10
   m_Name: BrutePatch
   m_TagString: Untagged
@@ -181,7 +183,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 169
+  <PrefabId>k__BackingField: 156
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -279,7 +281,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 0b27128e94729fc4b8434ad8068c9838, type: 2}
---- !u!114 &-590939908307860478
+--- !u!114 &7018847331554254565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4068007204767187790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: b5be0a52925e2674193d081d2deb68cb
+--- !u!114 &-9206396034250203133
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -291,4 +306,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: b5be0a52925e2674193d081d2deb68cb
+--- !u!114 &6306083595929544902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4068007204767187790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 7018847331554254565}
+  _armed: 0

@@ -112,7 +112,9 @@ GameObject:
   - component: {fileID: 5296084984690686628}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -8207281660736709934}
-  - component: {fileID: -2127009939633039604}
+  - component: {fileID: -3041228618090747494}
+  - component: {fileID: -983461432738453723}
+  - component: {fileID: -2482175741864025188}
   m_Layer: 10
   m_Name: ElectricalWire
   m_TagString: Untagged
@@ -227,7 +229,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 170
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -280,7 +282,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: e2fce84dbd7018f48a3ca5845b532c86, type: 2}
---- !u!114 &-2127009939633039604
+--- !u!114 &-3041228618090747494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: cc71128d4bcc0c548ac11481000ac424
+--- !u!114 &-983461432738453723
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -292,7 +307,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: cc71128d4bcc0c548ac11481000ac424
+--- !u!114 &-2482175741864025188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -3041228618090747494}
+  _armed: 0
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

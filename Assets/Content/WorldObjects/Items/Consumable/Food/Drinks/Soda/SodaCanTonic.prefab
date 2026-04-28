@@ -15,14 +15,14 @@ PrefabInstance:
       propertyPath: _asset
       value: 
       objectReference: {fileID: 11400000, guid: 532f39f1310fc5d41b37195bc4d0ae11, type: 2}
-    - target: {fileID: -5990724460312493469, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
-      propertyPath: <Guid>k__BackingField
-      value: a7c35693adae32f43b4d7fe2eb8b091b
-      objectReference: {fileID: 0}
     - target: {fileID: 1335663030982295525, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: e39897a1a9aae9447b41b37f7ceda174, type: 2}
+    - target: {fileID: 3146240193629008871, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _assetGuid
+      value: a7c35693adae32f43b4d7fe2eb8b091b
+      objectReference: {fileID: 0}
     - target: {fileID: 5596787203858443778, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -83,6 +83,10 @@ PrefabInstance:
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: e39897a1a9aae9447b41b37f7ceda174, type: 2}
+    - target: {fileID: 8095916385686154216, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+      propertyPath: _assetGuid
+      value: a7c35693adae32f43b4d7fe2eb8b091b
+      objectReference: {fileID: 0}
     - target: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
       propertyPath: m_Name
       value: SodaCanTonic
@@ -94,7 +98,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8423412686940963211, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
   m_PrefabInstance: {fileID: 6138295040920424610}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-4226730186852773529
+--- !u!114 &-5378240954045581979
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,7 +107,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 2434868383632068905}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: a7c35693adae32f43b4d7fe2eb8b091b
+  _identifier: {fileID: 2699314095853468490}
+  _armed: 0
+--- !u!114 &2699314095853468490 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8095916385686154216, guid: 56ac854f77351fa46b6a17fbb1cf45d9, type: 3}
+  m_PrefabInstance: {fileID: 6138295040920424610}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2434868383632068905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1026,7 +1026,8 @@ GameObject:
   - component: {fileID: 8548522104926483527}
   - component: {fileID: 8883224489736837113}
   - component: {fileID: 8932735734697480342}
-  - component: {fileID: 3923891127556246339}
+  - component: {fileID: -2919760095158305123}
+  - component: {fileID: -5445930351446889999}
   m_Layer: 5
   m_Name: CraftingMenu
   m_TagString: Untagged
@@ -1147,7 +1148,20 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7104282468500981967
---- !u!114 &3923891127556246339
+--- !u!114 &-2919760095158305123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7189200350235399940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: d2e0ed0ea636629409f5ea4b10bedddd
+--- !u!114 &-5445930351446889999
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1159,7 +1173,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: d2e0ed0ea636629409f5ea4b10bedddd
 --- !u!1 &8090865547143251753
 GameObject:
   m_ObjectHideFlags: 0

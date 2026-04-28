@@ -11,10 +11,6 @@ PrefabInstance:
       propertyPath: key
       value: 
       objectReference: {fileID: 11400000, guid: 4ba80a8b1184cff428cc3d8870beba53, type: 2}
-    - target: {fileID: -5660152382105568151, guid: de67200a4c96d444f800399a033ddfef, type: 3}
-      propertyPath: <Guid>k__BackingField
-      value: c69ed93dc225ea049bbf1a02662c48c0
-      objectReference: {fileID: 0}
     - target: {fileID: -4296955913176570747, guid: de67200a4c96d444f800399a033ddfef, type: 3}
       propertyPath: key
       value: 
@@ -75,6 +71,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PowerCellAdmin
       objectReference: {fileID: 0}
+    - target: {fileID: 5654890975618985163, guid: de67200a4c96d444f800399a033ddfef, type: 3}
+      propertyPath: _assetGuid
+      value: c69ed93dc225ea049bbf1a02662c48c0
+      objectReference: {fileID: 0}
     - target: {fileID: 6800495836141411361, guid: de67200a4c96d444f800399a033ddfef, type: 3}
       propertyPath: _asset
       value: 
@@ -94,7 +94,20 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2402587210622244651, guid: de67200a4c96d444f800399a033ddfef, type: 3}
   m_PrefabInstance: {fileID: 5716091763563409464}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6943762524324287494
+--- !u!114 &-3358963421121822625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7927487060350510867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: c69ed93dc225ea049bbf1a02662c48c0
+--- !u!114 &-11334873050379730
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,4 +119,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: c69ed93dc225ea049bbf1a02662c48c0
+--- !u!114 &-3775834503554602915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7927487060350510867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -3358963421121822625}
+  _armed: 0

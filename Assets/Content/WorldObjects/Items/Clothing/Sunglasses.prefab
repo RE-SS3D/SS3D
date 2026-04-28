@@ -50,7 +50,9 @@ GameObject:
   - component: {fileID: 5903053600117115308}
   - component: {fileID: 622373174144228207}
   - component: {fileID: -2199555817236745270}
-  - component: {fileID: -4979382884301055137}
+  - component: {fileID: 4673539931194376449}
+  - component: {fileID: -4326588501523245327}
+  - component: {fileID: -7796504305665712430}
   m_Layer: 10
   m_Name: Sunglasses
   m_TagString: Untagged
@@ -215,7 +217,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 189
+  <PrefabId>k__BackingField: 133
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -302,7 +304,20 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 3546473533537016869}
   _networkObjectCache: {fileID: 3546473533537016869}
---- !u!114 &-4979382884301055137
+--- !u!114 &4673539931194376449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667451333340596270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 9b9f6bd470226a74b903e74dbe9e423a
+--- !u!114 &-4326588501523245327
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -314,4 +329,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 9b9f6bd470226a74b903e74dbe9e423a
+--- !u!114 &-7796504305665712430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667451333340596270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 4673539931194376449}
+  _armed: 0

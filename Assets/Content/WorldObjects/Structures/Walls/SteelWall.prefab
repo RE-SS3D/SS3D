@@ -153,7 +153,9 @@ GameObject:
   - component: {fileID: 6072928490511251397}
   - component: {fileID: -6923105539505770605}
   - component: {fileID: -7978277362494375466}
-  - component: {fileID: 8307702373919749104}
+  - component: {fileID: 3796244691959344303}
+  - component: {fileID: 3280523900835427245}
+  - component: {fileID: 2701116662009032659}
   m_Layer: 0
   m_Name: SteelWall
   m_TagString: Untagged
@@ -273,7 +275,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 120
+  <PrefabId>k__BackingField: 55
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -368,7 +370,20 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -2900075557854325373}
   _asset: {fileID: 11400000, guid: afd2790edc5c26a48ae1e0f45ecb1f32, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: a0b4e2f901dd14b429586c816b29b97f, type: 2}
---- !u!114 &8307702373919749104
+--- !u!114 &3796244691959344303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 45d13347efae0f54882e0e56dd770bb1
+--- !u!114 &3280523900835427245
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -380,7 +395,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 45d13347efae0f54882e0e56dd770bb1
+--- !u!114 &2701116662009032659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 3796244691959344303}
+  _armed: 0
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,7 +15,9 @@ GameObject:
   - component: {fileID: 8320282919264059031}
   - component: {fileID: -4875395221588572409}
   - component: {fileID: -4890938248637254493}
-  - component: {fileID: 2232318055178948783}
+  - component: {fileID: -1264852591363058617}
+  - component: {fileID: -513991458743220288}
+  - component: {fileID: -1049020300756476752}
   m_Layer: 0
   m_Name: Plant7
   m_TagString: Untagged
@@ -130,7 +132,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 118
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -160,7 +162,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: a3caf5a557dc09d4a9e8b9e150e7898a, type: 2}
---- !u!114 &2232318055178948783
+--- !u!114 &-1264852591363058617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4182798096333233391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 8ae2f499d25bfcd41bf26b735c852ab1
+--- !u!114 &-513991458743220288
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,4 +187,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 8ae2f499d25bfcd41bf26b735c852ab1
+--- !u!114 &-1049020300756476752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4182798096333233391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -1264852591363058617}
+  _armed: 0

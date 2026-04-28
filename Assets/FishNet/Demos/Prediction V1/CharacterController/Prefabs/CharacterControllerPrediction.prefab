@@ -98,7 +98,8 @@ GameObject:
   - component: {fileID: 9144896207351220583}
   - component: {fileID: 4742920392281400910}
   - component: {fileID: -947403508163804576}
-  - component: {fileID: -5694201360108292146}
+  - component: {fileID: -3102643999693200073}
+  - component: {fileID: -105066207234640172}
   m_Layer: 0
   m_Name: CharacterControllerPrediction
   m_TagString: Untagged
@@ -292,7 +293,20 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!114 &-5694201360108292146
+--- !u!114 &-3102643999693200073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9117857247562382221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: b2991431a5f893e49937d01b6da44ff8
+--- !u!114 &-105066207234640172
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -304,4 +318,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: b2991431a5f893e49937d01b6da44ff8

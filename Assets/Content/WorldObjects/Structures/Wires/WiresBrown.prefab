@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 8694642638364730290}
   - component: {fileID: 6888302497345263241}
   - component: {fileID: -1706046055872334054}
-  - component: {fileID: -8615603158917024610}
+  - component: {fileID: 7469188408995575986}
+  - component: {fileID: -7769528726180659637}
   m_Layer: 0
   m_Name: WiresBrown
   m_TagString: Untagged
@@ -159,7 +160,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 1980313d52ccd4147b836fa578da1ed6, type: 2}
---- !u!114 &-8615603158917024610
+--- !u!114 &7469188408995575986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: cc48c05d209320541af6b8785c1eec62
+--- !u!114 &-7769528726180659637
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,4 +185,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: cc48c05d209320541af6b8785c1eec62

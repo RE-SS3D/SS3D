@@ -52,7 +52,8 @@ GameObject:
   - component: {fileID: 844800983004635204}
   - component: {fileID: 2460252798676826451}
   - component: {fileID: 1335663030982295525}
-  - component: {fileID: -5990724460312493469}
+  - component: {fileID: 8095916385686154216}
+  - component: {fileID: -776503011735973628}
   m_Layer: 10
   m_Name: SodaCanGeneric
   m_TagString: Untagged
@@ -348,7 +349,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 4ae07ac1297905a44ab1d66984e20c86, type: 2}
---- !u!114 &-5990724460312493469
+--- !u!114 &8095916385686154216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423412686940963211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 56ac854f77351fa46b6a17fbb1cf45d9
+--- !u!114 &-776503011735973628
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -360,4 +374,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 56ac854f77351fa46b6a17fbb1cf45d9

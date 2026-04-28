@@ -12,7 +12,9 @@ GameObject:
   - component: {fileID: 6421321388902000205}
   - component: {fileID: 1095773677197063761}
   - component: {fileID: 4986056284301255038}
-  - component: {fileID: -1471250382744706236}
+  - component: {fileID: 180955020086365827}
+  - component: {fileID: -6010834333603885547}
+  - component: {fileID: 1606135109389297050}
   m_Layer: 0
   m_Name: ChemicalDispenser
   m_TagString: Untagged
@@ -64,7 +66,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 111
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -94,7 +96,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c5cbe3171c12dc244a7be5d019bf067c, type: 2}
---- !u!114 &-1471250382744706236
+--- !u!114 &180955020086365827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2314780735993174911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 829e74fee2b909242821055cc2b096e0
+--- !u!114 &-6010834333603885547
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,7 +121,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 829e74fee2b909242821055cc2b096e0
+--- !u!114 &1606135109389297050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2314780735993174911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 180955020086365827}
+  _armed: 0
 --- !u!1 &3518580019346823106
 GameObject:
   m_ObjectHideFlags: 0

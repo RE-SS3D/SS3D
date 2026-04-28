@@ -16,7 +16,9 @@ GameObject:
   - component: {fileID: 121780152226316693}
   - component: {fileID: 2162692529022263333}
   - component: {fileID: -1515705713001572490}
-  - component: {fileID: -3551448630558335623}
+  - component: {fileID: 5013526831596047506}
+  - component: {fileID: 3332008329488400819}
+  - component: {fileID: -2634714197212651124}
   m_Layer: 0
   m_Name: TileKitchen
   m_TagString: Untagged
@@ -129,7 +131,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 91
+  <PrefabId>k__BackingField: 81
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -173,7 +175,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 3dbcc19b5cd7dff4abdf7389d6a58873, type: 2}
---- !u!114 &-3551448630558335623
+--- !u!114 &5013526831596047506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 5ecf13819099b014eb5f731155540586
+--- !u!114 &3332008329488400819
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -185,4 +200,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 5ecf13819099b014eb5f731155540586
+--- !u!114 &-2634714197212651124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 5013526831596047506}
+  _armed: 0

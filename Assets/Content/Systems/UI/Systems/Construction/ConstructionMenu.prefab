@@ -1732,7 +1732,8 @@ GameObject:
   - component: {fileID: 7905051701867171426}
   - component: {fileID: 1491239721071242638}
   - component: {fileID: 9166408236732744578}
-  - component: {fileID: 7236524227606038573}
+  - component: {fileID: 7411317759065809657}
+  - component: {fileID: 7137466124081786839}
   m_Layer: 5
   m_Name: ConstructionMenu
   m_TagString: Untagged
@@ -1949,7 +1950,20 @@ MonoBehaviour:
   _menu: {fileID: 6924109542537538210}
   _mapNameSlotPrefab: {fileID: 4285405521571209506, guid: d0e705283923c5d4cb92f0ef7c1c9953, type: 3}
   _loadMapContentRoot: {fileID: 8725877649914006875}
---- !u!114 &7236524227606038573
+--- !u!114 &7411317759065809657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965414683581951142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: af039f84b4a245049b5b62799af01384
+--- !u!114 &7137466124081786839
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1961,7 +1975,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: af039f84b4a245049b5b62799af01384
 --- !u!1 &2420290731705129391
 GameObject:
   m_ObjectHideFlags: 0

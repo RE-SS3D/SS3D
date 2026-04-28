@@ -99,7 +99,9 @@ GameObject:
   - component: {fileID: -2473204136432335067}
   - component: {fileID: 1278048393882565784}
   - component: {fileID: -9109099915246017288}
-  - component: {fileID: -9043920700424808972}
+  - component: {fileID: -2717299267422174606}
+  - component: {fileID: 2921308990669070729}
+  - component: {fileID: 5812562909712192500}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -237,7 +239,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 159
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -267,7 +269,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: d153c3c88de82c84bb201442ec2dc5ac, type: 2}
---- !u!114 &-9043920700424808972
+--- !u!114 &-2717299267422174606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: bb2ccbe283c7a7d459f283a7483e04b9
+--- !u!114 &2921308990669070729
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -279,4 +294,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: bb2ccbe283c7a7d459f283a7483e04b9
+--- !u!114 &5812562909712192500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -2717299267422174606}
+  _armed: 0

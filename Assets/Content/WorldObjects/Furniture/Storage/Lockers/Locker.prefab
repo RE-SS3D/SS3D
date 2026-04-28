@@ -182,7 +182,9 @@ GameObject:
   - component: {fileID: -4835600395219085227}
   - component: {fileID: 6047447789156998695}
   - component: {fileID: 2063239018469568408}
-  - component: {fileID: 404321636771686877}
+  - component: {fileID: 4689504660691419587}
+  - component: {fileID: 7168658619505219940}
+  - component: {fileID: -4598417095414119664}
   m_Layer: 0
   m_Name: Locker
   m_TagString: Untagged
@@ -297,7 +299,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 200
+  <PrefabId>k__BackingField: 207
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -362,7 +364,20 @@ MonoBehaviour:
   _door: {fileID: 4547560682629165049}
   _doorChangePunch: {x: -0.1, y: -0.05, z: 0}
   LockLight: {fileID: 0}
---- !u!114 &404321636771686877
+--- !u!114 &4689504660691419587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: fa1909e0d40b4cf408ff599df7a2043f
+--- !u!114 &7168658619505219940
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -374,4 +389,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: fa1909e0d40b4cf408ff599df7a2043f
+--- !u!114 &-4598417095414119664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 4689504660691419587}
+  _armed: 0

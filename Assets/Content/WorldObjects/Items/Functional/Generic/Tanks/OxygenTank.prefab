@@ -19,7 +19,9 @@ GameObject:
   - component: {fileID: -4941992892754288966}
   - component: {fileID: 1034747657592807112}
   - component: {fileID: -11363172995805795}
-  - component: {fileID: -8600773742780790145}
+  - component: {fileID: 2340035884447006818}
+  - component: {fileID: 3979323479959278617}
+  - component: {fileID: 8626984423275387607}
   m_Layer: 10
   m_Name: OxygenTank
   m_TagString: Untagged
@@ -197,7 +199,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 121
+  <PrefabId>k__BackingField: 72
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -272,7 +274,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: e29dc4ded52a0934185272d57d64c54c, type: 2}
---- !u!114 &-8600773742780790145
+--- !u!114 &2340035884447006818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 5479411218b869144b7d09d6db6dc58e
+--- !u!114 &3979323479959278617
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -284,7 +299,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 5479411218b869144b7d09d6db6dc58e
+--- !u!114 &8626984423275387607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: 2340035884447006818}
+  _armed: 0
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

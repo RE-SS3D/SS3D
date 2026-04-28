@@ -16,7 +16,9 @@ GameObject:
   - component: {fileID: 2363650261748645387}
   - component: {fileID: -3044062599094225265}
   - component: {fileID: 8276002785223364561}
-  - component: {fileID: 1782973666852471241}
+  - component: {fileID: -8499271350018962793}
+  - component: {fileID: 3000761682414748507}
+  - component: {fileID: 9173007004565918897}
   m_Layer: 0
   m_Name: TileBar
   m_TagString: Untagged
@@ -129,7 +131,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 34
+  <PrefabId>k__BackingField: 95
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -173,7 +175,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: d45d6304d59333149a65671f6299fa75, type: 2}
---- !u!114 &1782973666852471241
+--- !u!114 &-8499271350018962793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 75680e6a1df5ff547bdb5b8f116f766b
+--- !u!114 &3000761682414748507
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -185,4 +200,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 75680e6a1df5ff547bdb5b8f116f766b
+--- !u!114 &9173007004565918897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -8499271350018962793}
+  _armed: 0

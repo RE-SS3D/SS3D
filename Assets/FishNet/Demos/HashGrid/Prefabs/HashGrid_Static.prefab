@@ -94,7 +94,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4512293259955182957}
   - component: {fileID: 4512293259955182956}
-  - component: {fileID: 2592245124955944266}
+  - component: {fileID: -7207598499642695165}
+  - component: {fileID: -5820207904090761379}
   m_Layer: 0
   m_Name: HashGrid_Static
   m_TagString: Untagged
@@ -150,7 +151,20 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17472515426990886281
---- !u!114 &2592245124955944266
+--- !u!114 &-7207598499642695165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512293259955182959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 0d6d0f48b03b17f49a6340103cd9b9d0
+--- !u!114 &-5820207904090761379
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,4 +176,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 0d6d0f48b03b17f49a6340103cd9b9d0

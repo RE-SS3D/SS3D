@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4375840642210699753}
   - component: {fileID: 7312020312521146968}
   - component: {fileID: 3047508006038554643}
+  - component: {fileID: -2170377681092052692}
+  - component: {fileID: -8532832235215496080}
   m_Layer: 0
   m_Name: BleedingParticle
   m_TagString: Untagged
@@ -4812,3 +4814,30 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-2170377681092052692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6016476664605660376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: a6a77c26ee7edd94c804f4ddd851c8ba
+--- !u!114 &-8532832235215496080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6016476664605660376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -2170377681092052692}
+  _armed: 0

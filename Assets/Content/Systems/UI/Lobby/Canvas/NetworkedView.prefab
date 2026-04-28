@@ -58,7 +58,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4302234173120300220}
   - component: {fileID: 4302234173120300195}
-  - component: {fileID: 2327564268720377614}
+  - component: {fileID: -4501164973742649212}
+  - component: {fileID: -3474032747455218510}
   m_Layer: 0
   m_Name: NetworkedView
   m_TagString: Untagged
@@ -121,7 +122,20 @@ MonoBehaviour:
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7943887241591805521
---- !u!114 &2327564268720377614
+--- !u!114 &-4501164973742649212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4302234173120300221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 313c7a6f7eaaf4f4cb80cbe0fe77005d
+--- !u!114 &-3474032747455218510
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,7 +147,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 313c7a6f7eaaf4f4cb80cbe0fe77005d
 --- !u!1 &4302234173136898546
 GameObject:
   m_ObjectHideFlags: 0

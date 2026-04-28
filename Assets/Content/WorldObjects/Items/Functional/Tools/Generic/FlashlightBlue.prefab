@@ -16,7 +16,9 @@ GameObject:
   - component: {fileID: 1227241197653347230}
   - component: {fileID: 3376887510551786535}
   - component: {fileID: -4932296110890435082}
-  - component: {fileID: 2335054150173409665}
+  - component: {fileID: -712715238653961444}
+  - component: {fileID: -565672126422698616}
+  - component: {fileID: 7853439667367887865}
   m_Layer: 10
   m_Name: FlashlightBlue
   m_TagString: Untagged
@@ -144,7 +146,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 71
+  <PrefabId>k__BackingField: 99
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -197,7 +199,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 03f32128bc706b8418414a9881cae9d1, type: 2}
---- !u!114 &2335054150173409665
+--- !u!114 &-712715238653961444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833752496874958856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d17451624f45f49b4a8e42b991373f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _assetGuid: 781dd9024aaa53444bc3deeaa9708fbb
+--- !u!114 &-565672126422698616
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -209,7 +224,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c571b9eb801dcc943a001dd54a2b2b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Guid>k__BackingField: 781dd9024aaa53444bc3deeaa9708fbb
+--- !u!114 &7853439667367887865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833752496874958856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228a3039c03766b4c85d1c0ad4771a81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: {fileID: -712715238653961444}
+  _armed: 0
 --- !u!1 &3531470905858699050
 GameObject:
   m_ObjectHideFlags: 0
