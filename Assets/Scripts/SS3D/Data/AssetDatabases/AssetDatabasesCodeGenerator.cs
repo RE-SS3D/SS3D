@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using Coimbra;
 using JetBrains.Annotations;
+using SS3D.Data;
 using Serilog;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,6 +86,11 @@ namespace SS3D.Data.AssetDatabases
                 if (asset is not GameObject gameObject)
                 {
                     continue;
+                }
+
+                if (AssetPrefabStamper.StampAssetPrefab(gameObject, guid))
+                {
+                    HasModifiedAssetsWhenGenerating = true;
                 }
 
                 ObjectAssetReference objectAssetReference =

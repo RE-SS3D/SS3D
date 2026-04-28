@@ -321,7 +321,9 @@ namespace SS3D.Data.Networking
 
             foreach (NetworkObjectTracker tracker in trackers.Where(tracker => !tracker.gameObject.scene.IsValid()))
             {
-                if (string.IsNullOrEmpty(tracker.Guid) || !_guidToIndex.TryGetValue(tracker.Guid, out int trackerIndex) || trackerIndex != index)
+                string trackerGuid = tracker.AssetGuid;
+
+                if (string.IsNullOrEmpty(trackerGuid) || !_guidToIndex.TryGetValue(trackerGuid, out int trackerIndex) || trackerIndex != index)
                 {
                     continue;
                 }
@@ -355,7 +357,9 @@ namespace SS3D.Data.Networking
 
             foreach (NetworkObjectTracker tracker in trackers.Where(tracker => !tracker.Initialized).Where(tracker => !tracker.gameObject.scene.IsValid()))
             {
-                if (string.IsNullOrEmpty(tracker.Guid) || !_guidToIndex.TryGetValue(tracker.Guid, out int index))
+                string trackerGuid = tracker.AssetGuid;
+
+                if (string.IsNullOrEmpty(trackerGuid) || !_guidToIndex.TryGetValue(trackerGuid, out int index))
                 {
                     continue;
                 }

@@ -1,3 +1,4 @@
+using SS3D.Data;
 using UnityEngine;
 
 namespace SS3D.Data.Networking
@@ -10,13 +11,25 @@ namespace SS3D.Data.Networking
     /// </summary>
     [AddComponentMenu("")]
     [DisallowMultipleComponent]
+    [RequireComponent(typeof(AssetIdentifier))]
     internal sealed class NetworkObjectTracker : MonoBehaviour
     {
-#if UNITY_EDITOR
-        [field: SS3D.Attributes.ReadOnly]
-#endif
-        [field: SerializeField]
-        internal string Guid { get; private set; }
+        /// <summary>
+        /// GUID used to place this prefab into the generated FishNet prefab collection.
+        /// The value is owned by <see cref="AssetIdentifier"/> to avoid serializing the same GUID twice.
+        /// </summary>
+        internal string AssetGuid
+        {
+            get
+            {
+                if (TryGetComponent(out AssetIdentifier identifier) && !string.IsNullOrEmpty(identifier.AssetGuid))
+                {
+                    return identifier.AssetGuid;
+                }
+
+                return null;
+            }
+        }
 
         /// <summary>
         /// Set by <see cref="NetworkObjects"/> once the prefab has been registered into FishNet's
@@ -27,17 +40,11 @@ namespace SS3D.Data.Networking
 
         private void Awake()
         {
+            // Scene instances no longer need editor discovery metadata after FishNet spawns them.
             if (gameObject.scene.IsValid())
             {
                 Destroy(this);
             }
         }
-
-#if UNITY_EDITOR
-        internal void SetGuid(string guid)
-        {
-            Guid = guid;
-        }
-#endif
     }
 }

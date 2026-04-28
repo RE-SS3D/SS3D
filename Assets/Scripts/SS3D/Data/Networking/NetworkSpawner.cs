@@ -197,12 +197,7 @@ namespace SS3D.Data.Networking
 
             Spawn(networkObject, ownerConnection);
 
-            // Track network instance for late-join manifest. AssetLifecycleTracker keeps
-            // the asset resident via InstanceLifetimeTracker on the instance.
-            if (!networkObject.gameObject.TryGetComponent<InstanceLifetimeTracker>(out _))
-            {
-                networkObject.gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
-            }
+            TrackInstanceLifetime(networkObject.gameObject, key);
 
             AssetSubSystem?.NetworkBarrier.TrackNetworkInstance(key);
         }
@@ -260,12 +255,7 @@ namespace SS3D.Data.Networking
 
             Spawn(gameObject, ownerConnection);
 
-            // Track network instance for late-join manifest. AssetLifecycleTracker keeps
-            // the asset resident via InstanceLifetimeTracker on the instance.
-            if (!gameObject.TryGetComponent<InstanceLifetimeTracker>(out _))
-            {
-                gameObject.AddComponent<InstanceLifetimeTracker>().Initialize(key);
-            }
+            TrackInstanceLifetime(gameObject, key);
 
             AssetSubSystem?.NetworkBarrier.TrackNetworkInstance(key);
         }
@@ -369,6 +359,17 @@ namespace SS3D.Data.Networking
             }
 
             return networkObject;
+        }
+
+        private static void TrackInstanceLifetime(GameObject gameObject, string key)
+        {
+            if (!gameObject.TryGetComponent(out InstanceLifetimeTracker tracker))
+            {
+                Debug.LogWarning($"Network object '{gameObject.name}' is missing {nameof(InstanceLifetimeTracker)}. Runtime fallback added it for GUID '{key}'. Run the asset prefab migration before removing compatibility fallback.", gameObject);
+                tracker = gameObject.AddComponent<InstanceLifetimeTracker>();
+            }
+
+            tracker.Initialize(key);
         }
 
         /// <summary>

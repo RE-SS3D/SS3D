@@ -20,12 +20,16 @@ namespace SS3D.Tests.EditMode.AssetTests
             AssetLifecycleTracker tracker = null;
             _provider = new(key => tracker!.TrackRelease(key));
             tracker = new(_provider);
+
+            // Production relays backend load events through AssetSubSystem; tests wire the fake backend directly.
+            _backend.OnLoaded += tracker.TrackLoadedAsset;
             _tracker = tracker;
         }
 
         [TearDown]
         public override void TearDown()
         {
+            _backend.OnLoaded -= _tracker.TrackLoadedAsset;
             _tracker.Shutdown();
             _provider.Dispose();
             base.TearDown();
@@ -103,6 +107,7 @@ namespace SS3D.Tests.EditMode.AssetTests
             CreateGameObject(out GameObject go);
             _backend.RegisterAsset("key1", go);
 
+            _tracker.TrackAcquire("key1");
             Acquire<GameObject>("key1");
 
             Assert.That(go.GetComponent<InstanceLifetimeTracker>(), Is.Not.Null);
@@ -120,6 +125,7 @@ namespace SS3D.Tests.EditMode.AssetTests
 
             try
             {
+                _tracker.TrackAcquire("key1");
                 Acquire<GameObject>("key1");
             }
             finally

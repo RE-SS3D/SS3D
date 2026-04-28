@@ -4,6 +4,7 @@ using System.Linq;
 using FishNet.Object;
 using JetBrains.Annotations;
 using NUnit.Framework;
+using SS3D.Data;
 using SS3D.Data.Networking;
 using UnityEditor;
 using UnityEngine;
@@ -92,10 +93,10 @@ namespace EditorTests
         }
 
         /// <summary>
-        /// Verifies that the generator stamps a <see cref="NetworkObjectTracker"/> with the correct GUID onto each prefab.
+        /// Verifies that the generator stamps network discovery components with the correct GUID onto each prefab.
         /// </summary>
         [Test]
-        public void ShouldAddNetworkObjectTrackerWithCorrectGuid()
+        public void ShouldStampNetworkPrefabIdentifierAndNetworkTracker()
         {
             string prefabPath = CreateNetworkPrefab("TrackedPrefab");
             string guid = AssetDatabase.AssetPathToGUID(prefabPath);
@@ -103,14 +104,17 @@ namespace EditorTests
             RunGenerator(new[] { prefabPath }, Array.Empty<string>());
 
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            AssetIdentifier identifier = prefab.GetComponent<AssetIdentifier>();
             NetworkObjectTracker tracker = prefab.GetComponent<NetworkObjectTracker>();
 
+            Assert.That(identifier, Is.Not.Null, "Generator should add AssetIdentifier");
+            Assert.That(identifier.AssetGuid, Is.EqualTo(guid));
             Assert.That(tracker, Is.Not.Null, "Generator should add NetworkObjectTracker");
-            Assert.That(tracker.Guid, Is.EqualTo(guid));
+            Assert.That(tracker.AssetGuid, Is.EqualTo(guid));
         }
 
         /// <summary>
-        /// Verifies that running the generator multiple times does not duplicate the <see cref="NetworkObjectTracker"/> component.
+        /// Verifies that running the generator multiple times does not duplicate network discovery components.
         /// </summary>
         [Test]
         public void ShouldNotDuplicateTrackerOnRegeneration()
@@ -121,9 +125,31 @@ namespace EditorTests
             RunGenerator(new[] { prefabPath }, Array.Empty<string>());
 
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            AssetIdentifier[] identifiers = prefab.GetComponents<AssetIdentifier>();
             NetworkObjectTracker[] trackers = prefab.GetComponents<NetworkObjectTracker>();
 
+            Assert.That(identifiers.Length, Is.EqualTo(1), "Generator should not duplicate AssetIdentifier");
             Assert.That(trackers.Length, Is.EqualTo(1), "Generator should not duplicate NetworkObjectTracker");
+        }
+
+        [Test]
+        public void ShouldStampPlainAssetPrefabWithIdentifierAndLifetimeTracker()
+        {
+            string prefabPath = CreatePlainPrefab("PlainAssetPrefab");
+            string guid = AssetDatabase.AssetPathToGUID(prefabPath);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+
+            AssetPrefabStamper.StampAssetPrefab(prefab, guid);
+
+            prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            AssetIdentifier identifier = prefab.GetComponent<AssetIdentifier>();
+            InstanceLifetimeTracker tracker = prefab.GetComponent<InstanceLifetimeTracker>();
+
+            Assert.That(identifier, Is.Not.Null);
+            Assert.That(identifier.AssetGuid, Is.EqualTo(guid));
+            Assert.That(tracker, Is.Not.Null);
+            Assert.That(tracker.Identifier, Is.EqualTo(identifier));
+            Assert.That(tracker.IsArmed, Is.False);
         }
 
         /// <summary>
@@ -134,9 +160,24 @@ namespace EditorTests
         [NotNull]
         private static string CreateNetworkPrefab(string prefabName)
         {
-            string prefabPath = $"{PrefabsFolder}/{prefabName}.prefab";
             GameObject root = new(prefabName);
             root.AddComponent<NetworkObject>();
+
+            return SavePrefab(root, prefabName);
+        }
+
+        [NotNull]
+        private static string CreatePlainPrefab(string prefabName)
+        {
+            GameObject root = new(prefabName);
+
+            return SavePrefab(root, prefabName);
+        }
+
+        [NotNull]
+        private static string SavePrefab(GameObject root, string prefabName)
+        {
+            string prefabPath = $"{PrefabsFolder}/{prefabName}.prefab";
 
             try
             {

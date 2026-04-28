@@ -1,7 +1,9 @@
 #if UNITY_EDITOR
+using Coimbra;
 using FishNet.Object;
 using FishNet.Observing;
 using JetBrains.Annotations;
+using SS3D.Data;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -34,32 +36,38 @@ namespace SS3D.Data.Networking
         internal void Generate()
         {
             // Preserve sorted GUID order so prefab IDs remain deterministic across machines.
-            List<string> sortedGuids = _prefabs.Keys.ToList();
+            List<KeyValuePair<string, NetworkObject>> sortedPrefabs = _prefabs.ToList();
 
-            _guidToIndex = new();
+            SerializableDictionary<string, int> guidToIndex = new();
 
-            for (int i = 0; i < sortedGuids.Count; i++)
+            for (int i = 0; i < sortedPrefabs.Count; i++)
             {
-                _guidToIndex[sortedGuids[i]] = i;
+                guidToIndex[sortedPrefabs[i].Key] = i;
             }
 
             // Non-addressable prefabs can be serialized directly. Addressable prefabs are resolved at runtime by GUID.
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
-            _loadedPrefabs = new NetworkObject[_prefabs.Count];
 
-            for (int i = 0; i < sortedGuids.Count; i++)
+            // Fill local collections first: saving stamped prefabs can trigger imports that reload this asset mid-generation.
+            NetworkObject[] loadedPrefabs = new NetworkObject[sortedPrefabs.Count];
+
+            for (int i = 0; i < sortedPrefabs.Count; i++)
             {
-                string guid = sortedGuids[i];
-                NetworkObject prefab = _prefabs[guid];
+                KeyValuePair<string, NetworkObject> pair = sortedPrefabs[i];
+                string guid = pair.Key;
+                NetworkObject prefab = pair.Value;
 
                 TrySetOverride(prefab, !prefab.TryGetComponent(out NetworkBarrier _) ? ConditionOverrideType.UseManager : ConditionOverrideType.IgnoreManager);
-                EnsureTracker(prefab, guid);
+                AssetPrefabStamper.StampAssetPrefab(prefab.gameObject, guid, requireInstanceLifetimeTracker: false, requireNetworkObjectTracker: true, savePrefab: true);
 
                 if (settings.FindAssetEntry(guid) == null)
                 {
-                    _loadedPrefabs[i] = prefab;
+                    loadedPrefabs[i] = prefab;
                 }
             }
+
+            _guidToIndex = guidToIndex;
+            _loadedPrefabs = loadedPrefabs;
         }
 
         /// <summary>
@@ -95,32 +103,6 @@ namespace SS3D.Data.Networking
             SerializedObject serializedObserver = new(observer);
             serializedObserver.FindProperty("_overrideType").intValue = (int)overrideType;
             serializedObserver.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        /// <summary>
-        /// Ensures the prefab has a <see cref="NetworkObjectTracker"/> with the correct GUID.
-        /// Adds the component if missing, fixes mismatches, and saves the prefab if modified.
-        /// </summary>
-        private static void EnsureTracker([NotNull] NetworkObject prefab, [NotNull] string guid)
-        {
-            bool modified = false;
-
-            if (!prefab.TryGetComponent(out NetworkObjectTracker tracker))
-            {
-                tracker = prefab.gameObject.AddComponent<NetworkObjectTracker>();
-                modified = true;
-            }
-
-            if (tracker.Guid != guid)
-            {
-                tracker.SetGuid(guid);
-                modified = true;
-            }
-
-            if (modified)
-            {
-                PrefabUtility.SavePrefabAsset(prefab.gameObject);
-            }
         }
 
         /// <summary>

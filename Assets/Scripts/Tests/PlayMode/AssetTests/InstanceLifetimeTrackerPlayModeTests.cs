@@ -65,6 +65,17 @@ namespace SS3D.Tests.PlayMode.AssetTests
         }
 
         [UnityTest]
+        public IEnumerator Destroy_UnannouncedTracker_DoesNotRelease()
+        {
+            CreateGameObject(out GameObject go, out InstanceLifetimeTracker _);
+            Object.DestroyImmediate(go);
+
+            yield return null;
+
+            Assert.That(_releasedKeys, Is.Empty);
+        }
+
+        [UnityTest]
         public IEnumerator Instantiate_RaisesOnInstantiated_ViaDeserialization()
         {
             CreateGameObject(out GameObject prefab, out InstanceLifetimeTracker tracker);

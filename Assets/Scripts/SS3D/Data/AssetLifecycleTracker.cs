@@ -17,7 +17,7 @@ namespace SS3D.Data
         internal AssetLifecycleTracker(IAssetProvider provider)
         {
             _provider = provider;
-            AssetSubSystem.OnAssetLoaded += HandleAssetLoaded;
+            AssetSubSystem.OnAssetLoaded += TrackLoadedAsset;
             InstanceLifetimeTracker.OnInstantiated += HandleInstanceCreated;
             InstanceLifetimeTracker.OnReleased += HandleInstanceReleased;
         }
@@ -55,17 +55,17 @@ namespace SS3D.Data
 
         internal void Shutdown()
         {
-            AssetSubSystem.OnAssetLoaded -= HandleAssetLoaded;
+            AssetSubSystem.OnAssetLoaded -= TrackLoadedAsset;
             InstanceLifetimeTracker.OnInstantiated -= HandleInstanceCreated;
             InstanceLifetimeTracker.OnReleased -= HandleInstanceReleased;
             _refCounts.Clear();
         }
 
         /// <summary>
-        /// Injects <see cref="InstanceLifetimeTracker"/> onto loaded GameObject prefabs
-        /// so that future <see cref="Object.Instantiate(Object)"/> copies inherit it via serialization.
+        /// Arms the loaded GameObject prefab's <see cref="InstanceLifetimeTracker"/>
+        /// so that future <see cref="Object.Instantiate(Object)"/> copies inherit the armed state via serialization.
         /// </summary>
-        private void HandleAssetLoaded(string key, Object asset)
+        internal void TrackLoadedAsset(string key, Object asset)
         {
             if (asset is not GameObject go || !_refCounts.ContainsKey(key))
             {
@@ -74,12 +74,11 @@ namespace SS3D.Data
 
             if (!go.TryGetComponent(out InstanceLifetimeTracker tracker))
             {
-                go.AddComponent<InstanceLifetimeTracker>().Initialize(key);
+                Debug.LogWarning($"Asset prefab '{go.name}' is missing {nameof(InstanceLifetimeTracker)}. Runtime fallback added it for GUID '{key}'. Run the asset prefab migration before removing compatibility fallback.", go);
+                tracker = go.AddComponent<InstanceLifetimeTracker>();
             }
-            else if (tracker.Key != key)
-            {
-                tracker.Initialize(key);
-            }
+
+            tracker.Initialize(key);
         }
 
         private void HandleInstanceCreated(string key)

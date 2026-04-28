@@ -27,12 +27,16 @@ namespace SS3D.Tests.PlayMode.AssetTests
             AssetLifecycleTracker tracker = null;
             _provider = new AssetProvider(key => tracker!.TrackRelease(key));
             tracker = new AssetLifecycleTracker(_provider);
+
+            // Production relays backend load events through AssetSubSystem; tests wire the fake backend directly.
+            _backend.OnLoaded += tracker.TrackLoadedAsset;
             _tracker = tracker;
         }
 
         [TearDown]
         public override void TearDown()
         {
+            _backend.OnLoaded -= _tracker.TrackLoadedAsset;
             _tracker.Shutdown();
             _provider.Dispose();
             base.TearDown();
