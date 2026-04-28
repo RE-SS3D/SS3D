@@ -18,4 +18,4 @@ MonoBehaviour:
   <LogToConsole>k__BackingField: 1
   <FullRebuild>k__BackingField: 0
   <SaveChanges>k__BackingField: 1
-  <NetworkObjectsPath>k__BackingField: Assets\Content\Data\Databases\NetworkObjects.asset
+  <NetworkObjectsPath>k__BackingField: Assets/Content/Data/AssetSystem/NetworkObjects.asset
