@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using JetBrains.Annotations;
 using SS3D.Logging;
-using System.Collections.Generic;
 using System.Linq;
 using UnityAssetDatabase = UnityEditor.AssetDatabase;
 using UnityEditor;
@@ -17,16 +16,6 @@ namespace SS3D.Data.AssetDatabases
         /// The asset group that constitutes this AddressablesDatabase. The system gets every asset from it and adds it to the asset list.
         /// </summary>
         public AddressableAssetGroup AssetGroup;
-
-        /// <summary>
-        /// Finds all AddressablesDatabase assets in the project.
-        /// </summary>
-        public static List<AddressablesDatabase> FindAllAssetDatabases()
-        {
-            string[] assets = UnityAssetDatabase.FindAssets($"t:{typeof(AddressablesDatabase)}");
-
-            return assets.Select(UnityAssetDatabase.GUIDToAssetPath).Select(UnityAssetDatabase.LoadAssetAtPath<AddressablesDatabase>).ToList();
-        }
 
         /// <summary>
         /// Loads all the assets from the asset group into the stored GUID list.
