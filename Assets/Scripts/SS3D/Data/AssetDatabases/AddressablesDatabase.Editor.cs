@@ -84,8 +84,8 @@ namespace SS3D.Data.AssetDatabases
         private void Add<TAsset>([NotNull] TAsset asset)
             where TAsset : Object
         {
-            string path = UnityAssetDatabase.GUIDToAssetPath(asset.name);
-            string guid = UnityAssetDatabase.GUIDFromAssetPath(path).ToString();
+            string path = UnityAssetDatabase.GetAssetPath(asset);
+            string guid = UnityAssetDatabase.AssetPathToGUID(path);
 
             _assetGuids.Add(guid);
         }
