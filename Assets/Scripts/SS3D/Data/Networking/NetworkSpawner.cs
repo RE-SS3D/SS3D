@@ -1,4 +1,3 @@
-using Coimbra;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
@@ -7,6 +6,7 @@ using SS3D.Core;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Data.Networking
@@ -390,7 +390,7 @@ namespace SS3D.Data.Networking
                 return true;
             }
 
-            Log.Error(typeof(NetworkSpawner), $"Cannot spawn {assetReference.name}\\{assetReference.Id}, invalid ObjectAssetReference");
+            Log.Error(typeof(NetworkSpawner), "Cannot spawn, invalid ObjectAssetReference");
             key = null;
 
             return false;
