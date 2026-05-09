@@ -58,7 +58,7 @@ namespace SS3D.Systems.Inventory.UI
         {
             Item item = display.Item;
 
-            if (!_container.CanContainItem(display.Item))
+            if (!CanDropItem(display.Item))
             {
                 return;
             }
@@ -70,6 +70,19 @@ namespace SS3D.Systems.Inventory.UI
             display.ShouldDrop = true;
 			display.MakeVisible(false);
             Inventory.ClientTransferItem(display.Item, Vector2Int.zero, Container);
+        }
+
+        private bool CanDropItem(Item item)
+        {
+            Item targetItem = _container.ItemAt(Vector2Int.zero);
+            if (targetItem == null)
+            {
+                return _container.CanContainItem(item);
+            }
+
+            return targetItem.TryGetStackable(out Stackable targetStack)
+                   && item.TryGetStackable(out Stackable sourceStack)
+                   && targetStack.CanMergeFrom(sourceStack);
         }
 
         /// <summary>
@@ -105,7 +118,7 @@ namespace SS3D.Systems.Inventory.UI
 
         private void ContainerContentsChanged(AttachedContainer _, Item oldItem, Item newItem, ContainerChangeType type)
         {
-            if (type != ContainerChangeType.Move)
+            if (type != ContainerChangeType.Move || oldItem == newItem)
             {
                 UpdateDisplay();
             }

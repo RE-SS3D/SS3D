@@ -65,7 +65,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
         private bool CanStore(Item item, AttachedContainer target)
         {
-            return target.CanContainItem(item);
+            return target.CanAcceptItem(item);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
@@ -77,8 +77,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
                 Item item = hands.SelectedHand.ItemInHand;
 
-                hands.SelectedHand.Container.Dump();
-                _attachedContainer.AddItem(item);
+                hands.SelectedHand.Container.TransferItemToOther(item, _attachedContainer);
             }
 
             return false;

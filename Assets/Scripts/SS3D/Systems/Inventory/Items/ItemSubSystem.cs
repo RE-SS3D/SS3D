@@ -59,6 +59,12 @@ namespace SS3D.Systems.Inventory.Items
             SpawnItemInContainer(id.Name, attachedContainer);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void CmdSpawnItemInContainerById(string id, AttachedContainer attachedContainer)
+        {
+            SpawnItemInContainer(id, attachedContainer);
+        }
+
         /// <summary>
         /// Spawns an Item inside a container.
         ///

@@ -15,7 +15,8 @@
         "Unity.InputSystem.TestFramework",
         "SS3D.Data",
         "SS3D.Networking",
-        "SS3D.CommandLine"
+        "SS3D.CommandLine",
+        "SS3D.Interactions"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -192,9 +192,7 @@ namespace SS3D.Tests
 
             foreach (Hand hand in inventory.Hands.PlayerHands.Where(hand => hand.Container.Empty))
             {
-                Item itemToSpawn = Assets.Get<GameObject>(AssetDatabases.Items, item)?.GetComponent<Item>();
-
-                itemSystem.CmdSpawnItemInContainer(itemToSpawn, hand.Container);
+                itemSystem.CmdSpawnItemInContainerById(item, hand.Container);
 
                 return hand.Container;
             }

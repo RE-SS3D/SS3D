@@ -86,6 +86,8 @@ namespace SS3D.Systems.Inventory.Items
         public AttachedContainer Container => _container;
 
         private bool _initialised = false;
+
+        private bool _visible = true;
         
         /// <summary>
         /// All colliders, related to the item, except of colliders, related to stored items
@@ -121,6 +123,13 @@ namespace SS3D.Systems.Inventory.Items
         }
 
         public Item Prefab => Asset ? Assets.Get<Item>(Asset) : null;
+
+        public bool IsStackable => TryGetStackable(out _);
+
+        public bool TryGetStackable(out Stackable stackable)
+        {
+            return TryGetComponent(out stackable);
+        }
 
         /// <summary>
         /// Initialise this item fields. Can only be called once.
@@ -178,6 +187,13 @@ namespace SS3D.Systems.Inventory.Items
                 collidersToExcept.AddRange(item.GetComponentsInChildren<Collider>());
             }
             return GetComponentsInChildren<Collider>().Except(collidersToExcept).ToArray();
+        }
+
+        private Renderer[] GetNativeRenderers()
+        {
+            return GetComponentsInChildren<Renderer>(true)
+                .Where(renderer => renderer.GetComponentInParent<Item>() == this)
+                .ToArray();
         }
 
         public override void OnStartServer()
@@ -255,9 +271,8 @@ namespace SS3D.Systems.Inventory.Items
         [ServerOrClient]
         public void SetVisibility(bool visible)
         {
-            // TODO: Make this handle multiple renderers, with different states
-            Renderer[] renderers = GetComponentsInChildren<Renderer>();
-            foreach (Renderer childRenderer in renderers)
+            _visible = visible;
+            foreach (Renderer childRenderer in GetNativeRenderers())
             {
                 childRenderer.enabled = visible;
             }
@@ -265,13 +280,16 @@ namespace SS3D.Systems.Inventory.Items
 
         public bool IsVisible()
         {
-            // TODO: Make this handle multiple renderers
-            Renderer component = GetComponent<Renderer>();
-            return component != null && component.enabled;
+            return _visible;
         }
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
+            if (TryGetStackable(out Stackable stackable) && stackable.Amount > 1)
+            {
+                return new IInteraction[] { new PickupInteraction { Icon = null }, new TakeOneFromStackInteraction(stackable) };
+            }
+
             return new IInteraction[] { new PickupInteraction { Icon = null } };
         }
 
