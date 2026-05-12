@@ -34,8 +34,11 @@ namespace SS3D.Data
         }
 
         public PaletteColor Key { get; }
+
         public string DisplayName { get; }
+
         public Color Color { get; }
+
         public string Hex => "#" + ColorUtility.ToHtmlStringRGBA(Color);
     }
 
