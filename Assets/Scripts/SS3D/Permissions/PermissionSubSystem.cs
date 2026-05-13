@@ -1,4 +1,5 @@
-﻿using FishNet.Object;
+﻿using FishNet.Connection;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
@@ -28,6 +29,11 @@ namespace SS3D.Permissions
         /// </summary>
         [SyncVar]
         public bool HasLoadedPermissions;
+
+        [SyncVar(OnChange = nameof(SyncAdminFunctionsEnabledForAll))]
+        private bool _adminFunctionsEnabledForAll;
+
+        public bool AdminFunctionsEnabledForAll => _adminFunctionsEnabledForAll;
 
         /// <summary>
         /// File name to the permissions file.
@@ -197,6 +203,51 @@ namespace SS3D.Permissions
 
             return userPermission >= permissionLevelCheck;
 
+        }
+
+        public bool CanUseAdminFunctions(string ckey)
+        {
+            if (_adminFunctionsEnabledForAll)
+            {
+                return true;
+            }
+
+            return IsAtLeast(ckey, ServerRoleTypes.Administrator);
+        }
+
+        [Server]
+        public void SetAdminFunctionsEnabledForAll(bool enabled)
+        {
+            if (_adminFunctionsEnabledForAll == enabled)
+            {
+                return;
+            }
+
+            Log.Information(this, "Setting admin functions for all users to {enabled}", Logs.ServerOnly, enabled);
+            _adminFunctionsEnabledForAll = enabled;
+            SyncUserPermissions();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void CmdSetAdminFunctionsEnabledForAll(bool enabled, NetworkConnection conn = null)
+        {
+            if (conn == null || !conn.IsHost)
+            {
+                Log.Warning(this, "Rejected admin functions toggle request from non-host connection", Logs.ServerOnly);
+                return;
+            }
+
+            SetAdminFunctionsEnabledForAll(enabled);
+        }
+
+        private void SyncAdminFunctionsEnabledForAll(bool oldValue, bool newValue, bool asServer)
+        {
+            if (!asServer && IsHost)
+            {
+                return;
+            }
+
+            SyncUserPermissions();
         }
     }
 }

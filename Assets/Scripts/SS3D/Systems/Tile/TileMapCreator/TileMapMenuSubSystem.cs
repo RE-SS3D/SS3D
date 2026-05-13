@@ -1,8 +1,12 @@
 ﻿using Coimbra;
+using Coimbra.Services.Events;
 using DynamicPanels;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
+using SS3D.Permissions;
+using SS3D.Permissions.Events;
 using SS3D.Data.Management;
 using SS3D.Systems.Inputs;
 using TMPro;
@@ -119,8 +123,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             ShowUI(false);
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _controls = _inputSystem.Inputs.TileCreator;
-            _inputSystem.ToggleAction(_controls.ToggleMenu, true);
             _controls.ToggleMenu.performed += HandleToggleMenu;
+            AddHandle(UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated));
+            UpdateTileMapMenuActionAvailability();
         }
 
         /// <summary>
@@ -128,22 +133,63 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
-            if (_enabled)
+            if (!_enabled && !CanUseTileMapEditor())
             {
-                _inputSystem.ToggleActionMap(_controls, false, new[] { _controls.ToggleMenu });
-                _inputSystem.ToggleCollisions(_controls, true);
+                Log.Warning(this, "Local player cannot open the tilemap editor", Logs.UI);
+                return;
             }
-            else
+
+            SetMenuEnabled(!_enabled);
+
+            if (!_enabled)
             {
-                _inputSystem.ToggleActionMap(_controls, true, new[] { _controls.ToggleMenu });
-                _inputSystem.ToggleCollisions(_controls, false);
+                return;
             }
-            _enabled = !_enabled;
-            ShowUI(_enabled);
 
             _currentTab = TileMapMenuTab.Build;
             ClearAllTab();
             _tileMapBuildTab.Display();
+        }
+
+        private void HandleUserPermissionsUpdated(ref EventContext context, in UserPermissionsChangedEvent e)
+        {
+            UpdateTileMapMenuActionAvailability();
+        }
+
+        private void UpdateTileMapMenuActionAvailability()
+        {
+            if (_inputSystem == null)
+            {
+                return;
+            }
+
+            bool canUseTileMapEditor = CanUseTileMapEditor();
+            _inputSystem.ToggleAction(_controls.ToggleMenu, canUseTileMapEditor);
+
+            if (_enabled && !canUseTileMapEditor)
+            {
+                SetMenuEnabled(false);
+            }
+        }
+
+        private bool CanUseTileMapEditor()
+        {
+            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
+
+            if (permissionSystem == null || !permissionSystem.HasLoadedPermissions)
+            {
+                return false;
+            }
+
+            return permissionSystem.CanUseAdminFunctions(SS3D.Core.Settings.LocalPlayer.Ckey);
+        }
+
+        private void SetMenuEnabled(bool enabled)
+        {
+            _inputSystem.ToggleActionMap(_controls, enabled, new[] { _controls.ToggleMenu });
+            _inputSystem.ToggleCollisions(_controls, !enabled);
+            _enabled = enabled;
+            ShowUI(_enabled);
         }
        
         /// <summary>

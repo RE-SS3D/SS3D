@@ -1,9 +1,12 @@
 ﻿using Cysharp.Threading.Tasks;
+using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Management;
 using SS3D.Logging;
+using SS3D.Permissions;
+using SS3D.Systems.PlayerControl;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -103,8 +106,13 @@ namespace SS3D.Systems.Tile
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
+        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn = null)
         {
+            if (!CanConnectionUseTileMapEditor(conn))
+            {
+                return;
+            }
+
             GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
             PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
         }
@@ -112,8 +120,13 @@ namespace SS3D.Systems.Tile
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
+        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir, NetworkConnection conn = null)
         {
+            if (!CanConnectionUseTileMapEditor(conn))
+            {
+                return;
+            }
+
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
             _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
         }
@@ -121,10 +134,35 @@ namespace SS3D.Systems.Tile
         // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition)
+        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition, NetworkConnection conn = null)
         {
+            if (!CanConnectionUseTileMapEditor(conn))
+            {
+                return;
+            }
+
             ItemObjectSo itemObjectSo = (ItemObjectSo)GetAsset(itemObjectSoName);
             _currentMap.ClearItemObject(placePosition, itemObjectSo);
+        }
+
+        [Server]
+        private bool CanConnectionUseTileMapEditor(NetworkConnection conn)
+        {
+            if (conn == null)
+            {
+                Log.Warning(this, "Rejected tilemap editor request without a connection", Logs.ServerOnly);
+                return false;
+            }
+
+            string ckey = SubSystems.Get<PlayerSubSystem>().GetCkey(conn);
+            bool canUseTileMapEditor = SubSystems.Get<PermissionSubSystem>().CanUseAdminFunctions(ckey);
+
+            if (!canUseTileMapEditor)
+            {
+                Log.Warning(this, "Rejected tilemap editor request from {ckey}", Logs.ServerOnly, ckey);
+            }
+
+            return canUseTileMapEditor;
         }
 
         [Server]

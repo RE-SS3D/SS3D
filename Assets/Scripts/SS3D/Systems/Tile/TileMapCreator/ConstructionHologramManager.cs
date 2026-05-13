@@ -7,7 +7,9 @@ using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
+using SS3D.Permissions;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.PlayerControl;
 using SS3D.Utils;
 using System;
 using System.Collections.Generic;
@@ -366,6 +368,15 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [ServerRpc(RequireOwnership = false)]
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
+            if (!CanConnectionUseTileMapEditor(conn))
+            {
+                if (conn != null)
+                {
+                    RpcReceiveCanBuild(conn, placePosition, false);
+                }
+
+                return;
+            }
 
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
@@ -400,6 +411,26 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 }
                 return;
             }
+        }
+
+        [Server]
+        private bool CanConnectionUseTileMapEditor(NetworkConnection conn)
+        {
+            if (conn == null)
+            {
+                Log.Warning(this, "Rejected tilemap build check without a connection", Logs.ServerOnly);
+                return false;
+            }
+
+            string ckey = SubSystems.Get<PlayerSubSystem>().GetCkey(conn);
+            bool canUseTileMapEditor = SubSystems.Get<PermissionSubSystem>().CanUseAdminFunctions(ckey);
+
+            if (!canUseTileMapEditor)
+            {
+                Log.Warning(this, "Rejected tilemap build check from {ckey}", Logs.ServerOnly, ckey);
+            }
+
+            return canUseTileMapEditor;
         }
 
         /// <summary>
