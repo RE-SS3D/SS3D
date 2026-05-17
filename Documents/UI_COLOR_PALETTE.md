@@ -1,7 +1,7 @@
 # UI Color Palette
 
 SS3D keeps shared UI colors in `Assets/Scripts/SS3D/Data/PaletteColors.cs`.
-Use this palette instead of hard-coded color literals when a color is shared by more than one UI component.
+Use this palette instead of adding a new hard-coded color when the same UI color is reused in more than one place.
 
 ## Code usage
 
@@ -16,30 +16,20 @@ public sealed class ReadyStateView : MonoBehaviour
     public void SetReady(bool ready)
     {
         _background.color = ready
-            ? PaletteColors.Get(PaletteColor.LightBlue)
-            : PaletteColors.Get(PaletteColor.UiOverlay);
+            ? PaletteColors.LightBlue
+            : PaletteColors.ButtonBackground;
     }
 }
 ```
 
-Existing direct static colors still work:
+## Available shared colors
 
-```csharp
-_label.color = PaletteColors.TextPrimary;
-_button.image.color = PaletteColors.UiOverlayHighlighted;
-```
-
-## Choosing colors
-
-- `TextPrimary` and `TextDisabled` are for text states.
-- `UiOverlay`, `UiOverlayHighlighted`, and `UiOverlayDisabled` match the existing generic button asset.
-- `LightGreen`, `NormalGreen`, `LightBlue`, and `LightRed` are gameplay/UI accent colors.
-- `Log*` colors mirror the existing log color set so UI and logs can share the same semantic colors when needed.
+- `TextPrimary`, `TextInverted`, and `TextDisabled` match the text states already used by shared button styles.
+- `ButtonBackground`, `ButtonBackgroundHighlighted`, `ButtonBackgroundPressed`, and `ButtonBackgroundDisabled` match the existing generic button style values.
+- `LightGreen`, `NormalGreen`, `LightBlue`, and `LightRed` are the existing reusable accent colors.
 
 ## Adding colors
 
-1. Add a new key to the `PaletteColor` enum.
-2. Add a static `Color` value in `PaletteColors`.
-3. Add it to the `_colors` array so editor/debug tools can enumerate it.
+Add a color here only when it is genuinely shared by UI code or assets. Colors that belong to one subsystem, such as logging colors, should stay with that subsystem instead of growing the UI palette.
 
 Prefer `Color32` for byte-based RGB values, for example `new Color32(80, 115, 216, 255)`. Unity's `Color` constructor expects normalized `0f..1f` channel values.
