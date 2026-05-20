@@ -10,6 +10,12 @@ namespace SS3D.Systems.Gamemodes.Objectives
     [CreateAssetMenu(menuName = "Gamemode/Objectives/DetonateNuke", fileName = "DetonateNuke")]
     public class DetonateNukeObjective : GamemodeObjective
     {
+        /// <summary>
+        /// Detonating the nuke is the traitor win condition, so its success ends
+        /// the round with an antagonist victory.
+        /// </summary>
+        public override bool EndsRoundWithAntagonistVictory => true;
+
         /// <inheritdoc />
         public override void InitializeObjective()
         {
