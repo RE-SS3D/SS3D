@@ -2,6 +2,7 @@ using Coimbra.Services.Events;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
+using SS3D.Utils;
 using TMPro;
 using UnityEngine;
 
@@ -10,11 +11,12 @@ namespace SS3D.Systems.Gamemodes.UI
     /// <summary>
     /// Persistent round result banner (for example "The traitors have won!").
     /// Driven by a server gamemode announcement and visible without holding the
-    /// Fade input. Clears itself when the round stops.
+    /// Fade input. Fades in on Show and fades out when the round stops.
     /// </summary>
     public class RoundResultView : View
     {
         [SerializeField] private TMP_Text _text;
+        [SerializeField] private UiFade _fade;
 
         protected override void OnAwake()
         {
@@ -36,23 +38,23 @@ namespace SS3D.Systems.Gamemodes.UI
         /// <param name="message">The message to display.</param>
         public void Show(string message)
         {
-            if (_text == null)
+            if (_text == null || _fade == null)
             {
                 return;
             }
 
             _text.SetText(message);
-            _text.gameObject.SetActive(true);
+            _fade.SetFade(true);
         }
 
         private void Hide()
         {
-            if (_text == null)
+            if (_fade == null)
             {
                 return;
             }
 
-            _text.gameObject.SetActive(false);
+            _fade.SetFade(false);
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
