@@ -38,6 +38,14 @@ namespace SS3D.Systems.Gamemodes.UI
                 return;
             }
 
+            // Only show the indicator while the antagonist objective is still
+            // being pursued. Skipping success/fail/cancel updates keeps the
+            // banner from re-appearing under the round-result banner at round end.
+            if (!gamemodeObjective.InProgress)
+            {
+                return;
+            }
+
             _traitorIndicatorView = _traitorIndicatorView ? _traitorIndicatorView : ViewLocator.Get<TraitorIndicatorView>()?.FirstOrDefault();
             _traitorIndicatorView?.Show();
         }
