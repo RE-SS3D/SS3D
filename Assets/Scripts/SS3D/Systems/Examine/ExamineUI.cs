@@ -1,7 +1,5 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization.Tables;
@@ -52,18 +50,18 @@ namespace SS3D.Systems.Examine
 
         private string GetHoverText(IExaminable examinable, bool showDetailedText)
         {
-            if (examinable?.GetData() == null)
-            {
-                return string.Empty;
-            }
-
-            ExamineData data = examinable.GetData();
-            if (data.LocalizationTable == null)
+            ExamineData data = examinable?.GetData();
+            if (data == null || data.LocalizationTable == null)
             {
                 return string.Empty;
             }
 
             _currentStringTable = data.LocalizationTable.GetTable();
+            if (_currentStringTable == null)
+            {
+                return string.Empty;
+            }
+
             string name = GetLocalizedValue(data.NameKey);
 
             if (!showDetailedText)
