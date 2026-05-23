@@ -228,6 +228,8 @@ namespace SS3D.Systems.Tile
                     placedObject.UpdateAdjacencies();
                 }
 
+                RefreshAirlockFloorTilesNear(tileObjectSo.layer, placePosition);
+
                 placedObjectGo = placedObject.gameObject;
             }
 
@@ -268,6 +270,48 @@ namespace SS3D.Systems.Tile
                 }
 
                 clearLocation.ClearAllPlacedObject();
+            }
+
+            RefreshAirlockFloorTilesNear(layer, placePosition);
+        }
+
+        private void RefreshAirlockFloorTilesNear(TileLayer layer, Vector3 worldPosition)
+        {
+            if (layer != TileLayer.Turf)
+            {
+                return;
+            }
+
+            HashSet<DoorAdjacencyConnector> refreshedConnectors = new();
+            RefreshAirlockFloorTileAt(worldPosition, refreshedConnectors);
+
+            foreach (PlacedTileObject neighbour in GetCardinalNeighbourPlacedObjects(TileLayer.Turf, worldPosition))
+            {
+                if (neighbour != null && neighbour.TryGetComponent(out DoorAdjacencyConnector connector))
+                {
+                    RefreshAirlockFloorTile(connector, refreshedConnectors);
+                }
+            }
+        }
+
+        private void RefreshAirlockFloorTileAt(Vector3 worldPosition, HashSet<DoorAdjacencyConnector> refreshedConnectors)
+        {
+            foreach (PlacedTileObject placedObject in GetTileLocation(TileLayer.Turf, worldPosition).GetAllPlacedObject())
+            {
+                if (placedObject != null && placedObject.TryGetComponent(out DoorAdjacencyConnector connector))
+                {
+                    RefreshAirlockFloorTile(connector, refreshedConnectors);
+                }
+            }
+        }
+
+        private void RefreshAirlockFloorTile(
+            DoorAdjacencyConnector connector,
+            HashSet<DoorAdjacencyConnector> refreshedConnectors)
+        {
+            if (connector != null && refreshedConnectors.Add(connector))
+            {
+                connector.RefreshAirlockFloorTiles();
             }
         }
 

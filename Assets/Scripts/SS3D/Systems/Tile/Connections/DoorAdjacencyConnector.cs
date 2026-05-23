@@ -1,14 +1,15 @@
 ﻿
+using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using Coimbra;
 using FishNet.Object;
+using SS3D.Core;
 
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Connector for doors, handling adding wall caps, creating custom floor tile under the door.
-    /// TODO : add the custom floor.
     /// </summary>
     public class DoorAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
     {
@@ -32,14 +33,36 @@ namespace SS3D.Systems.Tile.Connections
         [SerializeField]
         private DoorType doorType;
 
+        [SerializeField]
+        private GameObject airlockFloorPrefab = null;
+
+        [SerializeField]
+        private Material transparentFloorMaterial = null;
+
         // WallCap gameobjects, North, East, South, West. Null if not present.
         private GameObject[] wallCaps = new GameObject[4];
+
+        private GameObject _airlockFloor;
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            RefreshAirlockFloorTiles();
+        }
+
+        private void Start()
+        {
+            RefreshAirlockFloorTiles();
+        }
 
         public override bool UpdateSingleConnection(Direction dir, PlacedTileObject placedObject, bool updateNeighbours)
         {
             bool update = base.UpdateSingleConnection(dir, placedObject, updateNeighbours);
             if (update)
                 UpdateWallCaps();
+
+            RefreshAirlockFloorTiles();
+
             return update;
         }
 
@@ -47,6 +70,61 @@ namespace SS3D.Systems.Tile.Connections
         {
             base.UpdateAllConnections();
             UpdateWallCaps();
+            RefreshAirlockFloorTiles();
+        }
+
+        public void RefreshAirlockFloorTiles()
+        {
+            if (_placedObject == null)
+            {
+                return;
+            }
+
+            if (!TryGetAirlockFloorNeighbours(out List<PlacedTileObject> neighbours))
+            {
+                return;
+            }
+
+            GameObject floorTile = GetOrCreateAirlockFloor();
+            if (floorTile == null)
+            {
+                return;
+            }
+
+            MeshRenderer activeFloorRenderer = GetActiveAirlockFloorRenderer(floorTile);
+            if (activeFloorRenderer == null)
+            {
+                return;
+            }
+
+            _placedObject.HasNeighbourFrontBack(neighbours, out PlacedTileObject frontTile, true);
+            _placedObject.HasNeighbourFrontBack(neighbours, out PlacedTileObject backTile, false);
+
+            SetRendererMaterial(activeFloorRenderer, 0, GetFloorMaterialOrDefault(frontTile, transparentFloorMaterial));
+            SetRendererMaterial(activeFloorRenderer, 1, GetFloorMaterialOrDefault(backTile, transparentFloorMaterial));
+        }
+
+        private bool TryGetAirlockFloorNeighbours(out List<PlacedTileObject> floorNeighbours)
+        {
+            floorNeighbours = new List<PlacedTileObject>();
+            if (!SubSystems.TryGet(out TileSubSystem tileSystem) || tileSystem.CurrentMap == null)
+            {
+                return false;
+            }
+
+            PlacedTileObject[] neighbours = tileSystem.CurrentMap.GetNeighbourPlacedObjects(
+                TileLayer.Turf,
+                _placedObject.gameObject.transform.position);
+
+            foreach (PlacedTileObject neighbour in neighbours)
+            {
+                if (neighbour != null)
+                {
+                    floorNeighbours.Add(neighbour);
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -104,6 +182,99 @@ namespace SS3D.Systems.Tile.Connections
         {
             return (neighbourObject && neighbourObject.HasAdjacencyConnector &&
                 neighbourObject.GenericType == TileObjectGenericType.Wall);
+        }
+
+        private GameObject GetOrCreateAirlockFloor()
+        {
+            if (_airlockFloor != null)
+            {
+                return _airlockFloor;
+            }
+
+            if (airlockFloorPrefab == null)
+            {
+                return null;
+            }
+
+            _airlockFloor = Instantiate(airlockFloorPrefab, transform);
+            _airlockFloor.name = "AirlockFloorTile";
+            _airlockFloor.transform.localPosition = Vector3.zero;
+            _airlockFloor.transform.localRotation = Quaternion.identity;
+            _airlockFloor.transform.localScale = Vector3.one;
+            RemoveTileRuntimeComponents(_airlockFloor);
+
+            return _airlockFloor;
+        }
+
+        private void RemoveTileRuntimeComponents(GameObject floorTile)
+        {
+            foreach (Collider collider in floorTile.GetComponents<Collider>())
+            {
+                Destroy(collider);
+            }
+
+            foreach (MonoBehaviour component in floorTile.GetComponents<MonoBehaviour>())
+            {
+                Destroy(component);
+            }
+        }
+
+        private MeshRenderer GetActiveAirlockFloorRenderer(GameObject floorTile)
+        {
+            bool doorRunsNorthSouth = IsNorthSouth(_placedObject.Direction);
+            Transform northSouthTile = floorTile.transform.Find("AirlockTileNS");
+            Transform eastWestTile = floorTile.transform.Find("AirlockTileEW");
+
+            if (northSouthTile != null)
+            {
+                northSouthTile.gameObject.SetActive(doorRunsNorthSouth);
+            }
+
+            if (eastWestTile != null)
+            {
+                eastWestTile.gameObject.SetActive(!doorRunsNorthSouth);
+            }
+
+            Transform activeTile = doorRunsNorthSouth ? northSouthTile : eastWestTile;
+            return activeTile != null ? activeTile.GetComponent<MeshRenderer>() : null;
+        }
+
+        public static bool IsNorthSouth(Direction direction)
+        {
+            return direction == Direction.North || direction == Direction.South;
+        }
+
+        public static Material GetFloorMaterialOrDefault(PlacedTileObject tileObject, Material defaultMaterial)
+        {
+            if (tileObject == null || tileObject.GenericType != TileObjectGenericType.Floor)
+            {
+                return defaultMaterial;
+            }
+
+            MeshRenderer floorRenderer = tileObject.GetComponentInChildren<MeshRenderer>();
+            if (floorRenderer == null || floorRenderer.sharedMaterials.Length == 0)
+            {
+                return defaultMaterial;
+            }
+
+            return floorRenderer.sharedMaterials[0] ?? defaultMaterial;
+        }
+
+        public static void SetRendererMaterial(MeshRenderer renderer, int materialIndex, Material material)
+        {
+            if (renderer == null || material == null)
+            {
+                return;
+            }
+
+            Material[] materials = renderer.sharedMaterials;
+            if (materialIndex < 0 || materialIndex >= materials.Length)
+            {
+                return;
+            }
+
+            materials[materialIndex] = material;
+            renderer.sharedMaterials = materials;
         }
 
         /// <summary>
