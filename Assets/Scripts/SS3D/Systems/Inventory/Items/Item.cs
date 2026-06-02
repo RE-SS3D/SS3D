@@ -153,7 +153,7 @@ namespace SS3D.Systems.Inventory.Items
 
             foreach (Animator animator in GetComponents<Animator>())
             {
-                animator.keepAnimatorControllerStateOnDisable = true;
+                animator.keepAnimatorStateOnDisable = true;
             }
 
             // Clients don't need to calculate physics for rigidbodies as this is handled by the server
