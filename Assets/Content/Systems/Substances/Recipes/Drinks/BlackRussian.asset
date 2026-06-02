@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: BlackRussian
   m_EditorClassIdentifier: 
   Ingredients:
-  - Id: Vodka
+  - Type: 0
     RelativeAmount: 1.3815789
-  - Id: Kahlua
+  - Type: 0
     RelativeAmount: 1
   Results:
-  - Id: BlackRussian
+  - Type: 0
     RelativeAmount: 1
   MinimalTemperature: -3.4028235e+38
   MaximalTemperature: 3.4028235e+38
