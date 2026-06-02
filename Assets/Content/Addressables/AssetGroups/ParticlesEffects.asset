@@ -13,22 +13,23 @@ MonoBehaviour:
   m_Name: ParticlesEffects
   m_EditorClassIdentifier: 
   m_GroupName: ParticlesEffects
-  m_Data:
-    m_SerializedData: []
   m_GUID: 90d7cf41494026c4899d24b5f410eb0a
   m_SerializeEntries:
   - m_GUID: 17b0d9163e9cdf14aa557557e7d9d76b
     m_Address: Assets/Content/WorldObjects/World/VFX/Health/AttackParticles.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a6a77c26ee7edd94c804f4ddd851c8ba
     m_Address: Assets/Content/WorldObjects/World/VFX/Health/BleedingParticle.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ca5e6b5f7c6c5054a8f8155ef44e3e43
     m_Address: Assets/Content/WorldObjects/World/VFX/Construction/ConstructionParticle.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

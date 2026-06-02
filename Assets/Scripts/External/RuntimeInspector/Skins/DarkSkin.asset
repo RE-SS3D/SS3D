@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -22,10 +23,8 @@ MonoBehaviour:
   m_textColor: {r: 0.83823526, g: 0.84439874, b: 0.84439874, a: 1}
   m_scrollbarColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
   m_expandArrowColor: {r: 0.40784317, g: 0.40784317, b: 0.40784317, a: 1}
-  m_inputFieldNormalBackgroundColor: {r: 0.25490198, g: 0.25490198, b: 0.25490198,
-    a: 1}
-  m_inputFieldInvalidBackgroundColor: {r: 0.6156863, g: 0.23529412, b: 0.23529412,
-    a: 1}
+  m_inputFieldNormalBackgroundColor: {r: 0.25490198, g: 0.25490198, b: 0.25490198, a: 1}
+  m_inputFieldInvalidBackgroundColor: {r: 0.6156863, g: 0.23529412, b: 0.23529412, a: 1}
   m_inputFieldTextColor: {r: 0.88884085, g: 0.88235295, b: 0.88235295, a: 1}
   m_toggleCheckmarkColor: {r: 0.9411765, g: 0.9342561, b: 0.9342561, a: 1}
   m_sliderBackgroundColor: {r: 0.43529412, g: 0.43529412, b: 0.43529412, a: 1}

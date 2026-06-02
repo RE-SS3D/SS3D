@@ -13,706 +13,878 @@ MonoBehaviour:
   m_Name: Items
   m_EditorClassIdentifier: 
   m_GroupName: Items
-  m_Data:
-    m_SerializedData: []
   m_GUID: 0c7a929acec0e9043a37792976e35e97
   m_SerializeEntries:
-  - m_GUID: 11f824c472e04854e95065dda095e8f4
-    m_Address: Assets/Content/WorldObjects/Items/Cosmetic/BikeHorn/BikeHorn.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1ae18785d74e9fa4699b6f6de889c243
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Command/NuclearAuthenticationDisk.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 264ea51d92067c14ebc6633999afac78
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/ToolBoxes/ToolboxBlue.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2a63163a4db141744a802f3ff67087db
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityPDA.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: ff95abc9c2b779340a1b50f1a128a934
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityIDCard.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 79260483ae5d3e04fa272e092b49abac
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/PDA.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d8b0c8d1ddcdeb24d9763054c103c9fe
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/IDCard.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d9aabfd5d726a7f499b8e360d919eba4
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Substances/Mug.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 92d6696a323ef66448190e8e9d69fd22
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCola.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: dceb056e41b5c634f9933423de8e075c
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedLaughter.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e4281cb43d1443d4388737777fdd98d8
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedAir.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a7c35693adae32f43b4d7fe2eb8b091b
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanTonic.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4e6899916bc8fd742a07f32b3a04de12
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f490a74616c067c4f83995017e10b420
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepsSoda.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 177428b73bad0fb4a89d1a64b85629bf
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanDukePurpleTea.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: b044d7bdb55405046a9055726a779eb1
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Poster.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2332a158259900e4f8a237fa8daff266
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/MedicalPatch.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: b5be0a52925e2674193d081d2deb68cb
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/BrutePatch.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 162e188d33a82b440a239f20901c716a
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/BurnPatch.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 56b1aff2041026242bed0f064dee56bb
-    m_Address: Assets/Content/WorldObjects/Items/Consumable/Food/General/Snacks/DonkPocket.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1d2cf546d53e3fe4c9103007427aaec7
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Boombox.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 404443f7c306fc8469698745624fa3bf
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/GreyFloorTile.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f88a398ad3d01454f955de9c337d9b99
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelReinforcedSheet.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4cb99cf2fee96f944abbacc51b0b701c
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelSheet.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7becfab153276864f9fc7636a839d837
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Crowbar.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9c8363ee7f934bd4b8ee5a2e30da1269
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/ScrewdriverBlue.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 772da386eb7b01745913050fee544c32
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Wrench.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 781dd9024aaa53444bc3deeaa9708fbb
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Generic/FlashlightBlue.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 411b513efc8f06a40aecfc47d0c5fc5a
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Kitchen/KitchenKnife.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1ef3c21a685ec2d4e9f0876719839d5f
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/TruckerCap.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9b9f6bd470226a74b903e74dbe9e423a
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/Sunglasses.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: bf177f8bab26bc84b87fd9a971004418
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/FacewearGasMask.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 06b6be83779804245b7f6411fe07b851
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 432a4ad70e41e5c4f8f913f76fe0e66c
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e02f11b9239b52748a5ed5afd1c5cbd3
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanEarLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 30794a01d5f4c174a9d20b2c632f2dca
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanEarRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 94aaf82bb6ab002418e01d9cc7c6eaaa
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e60ba1e09be8316448e419ecbdfb64a6
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 35dfc7c3f708a5b48a206b4a44e7ab49
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7f5954f009d06b2439ca637b43920440
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: cc54bc74b2f4c2349b1f84b501b0a091
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHead.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: ecaf79b0a74bdb443a350e88daa94a66
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4a9d34a6cf84ef045a740513d8ae30b1
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanTorso.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 242a937784a622f4f8a6e6d097e0737c
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a8b265034e3f79344a6067b406e1bff6
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungRight.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a019475d05ec8824494b0fa88e2282d8
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungLeft.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2bc6f6a968d5ba04c919ba56d0ccdab4
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanStomach.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d75ff9a3ac207a84487ec1ee73a676fc
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLiver.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1e304f9a331c2ba419514ef8afb8a13c
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineLarge.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 071581df025e1ba49a8a75eb39611ff6
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanEye.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7579883b8dd8801448a176adace4860b
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanBrain.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 40d904629802fc942860ce878e78efef
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/Toolbelt.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: ddaa28fac1956b2428aff1dac1d89707
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: fccdc78a6cf916047ba52f2877f755e5
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f6528d8afa18fa14998a0158260ef26c
-    m_Address: Assets/Content/WorldObjects/Items/DoodadTestItem.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 41a1c8c211dc32c4d8ffca5f0892f9dc
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Wirecutters.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2ca5f2886cf2f19428b50bf284689b86
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Multitool.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: c69ed93dc225ea049bbf1a02662c48c0
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCellAdmin.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: de67200a4c96d444f800399a033ddfef
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCell.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 45d13347efae0f54882e0e56dd770bb1
-    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWall.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6c2559c2017ada740b245951a23c2e1d
-    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirder.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3b33b5cf16a677a4e85a110679cde32a
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Plenum.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5dba4171f2124fb48b0e32c0e10841e0
-    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirderUnbolted.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a1a7407e08bb2914c97f431063bf83e2
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheetReinforced.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e2a06f02e6a7e0348bdc535344bfe1f3
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheet.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2767aeb6e6fd53b43a1cb305789834d4
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodLog.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4aee3fb97a6a2d442804c8c0b8347a92
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodPlank.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 48fa93e2da7acb3499e400becf2afc26
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelRod.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 06d944205e6b6dd489af078fa85fb878
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Welder.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e3fb39f0a84acf541b6ee828550a1708
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/PlasmaTank.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5479411218b869144b7d09d6db6dc58e
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitGrey.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 93ad90421a3b2f64e8fdb9e95a42ba90
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitSecurity.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: be3fcf1a74268ad49bfedb1edd9f5318
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitBotany.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9c5418cbebef419429574992d3e296a3
-    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineSmall.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5cab1a9f6c7f74948b84d0d625319efe
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassShard.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7436f4976849b994aaee40df1bca7d89
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineer.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 84cec183559b4954c883b11f20f767c9
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MicroLaser.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: ed77d98d3e75b7946b404face1fe8f82
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MatterBin.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1e64a1c37be1f7c44a5d242d6ec6da10
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Medkits/Medkit.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e9f99df80a74fd242aa46e53c7ec0376
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Medical/HealthScanner.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9e967cb4084bf064c8a0ca5f57a33b0c
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Botany/Hatchet.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: cc71128d4bcc0c548ac11481000ac424
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalWire.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 0e69918696f58e04f846e985ec7405fe
-    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalCable.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: b9c224febb4233f4e912745553097652
-    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindow.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: abcc60752234e584d8d98c9dec03e7cc
-    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWallReinforced.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f2493b5478dd8e946ba98861f533362e
-    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindowReinforced.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a38ee818c953a404787757d8d20d2851
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurity.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: db15899bc1eb2794fb2b24129852a209
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/Headset.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 65679cf5a30d6dd458666804af7c3ca3
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/GlovesInsulated.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 81faf4debf00a0a478b924176f48d011
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoeHiTops.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 535ed7c02b5cbdc43ae2b234a963c5cc
-    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoeJackboots.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: fdaaabc96a55d824a86a3636906240c1
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Posters/Horizontal/PosterHorizontal.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 85fa4c9b76b4b23458dcf24a745a1dfe
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/DinnerBooth.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5e24183c4537dcf47b16fde5ab1ce0ea
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayRed.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4d48472d06930bd42a15897e6a1794ac
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableGlass.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: ebddb1721dcbe36499e4d093e5a7ff09
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TablePoker.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 75680e6a1df5ff547bdb5b8f116f766b
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileBar.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: bdeac5e9a27546348a584caa74f00ec7
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/MachineFrame.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d32855055305ce5489c69379e2219a7d
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/PowerCellCharger.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7c6bebf2e12702d48abd76acad4d1272
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Supply/DisposalOutlet.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 98ce0a84deb394b4bbd18f31f368317c
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Lights/LightBulbFixture.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a777a6da30f0704478e25312963a8151
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Mirror.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: fa1909e0d40b4cf408ff599df7a2043f
-    m_Address: Assets/Content/WorldObjects/Furniture/Storage/Lockers/Locker.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 854451834f026fb4f860bf0e977a104c
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Lattice.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5a09b3e93f0022b468da150e3c4a78c6
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/Blender.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3a25eb0bd251b5847af05fb59feff383
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Plastic/PlasticChairGrey.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7a47e5b68d8bab647b3f99ee3af524c7
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileGrey.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 081d9ee3e54295d49a4970a88f4943a9
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Medical/Cryotube.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 8686fbdb413e33b4395a775c4f2ba990
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/TilePlating.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 50405f05821f58c49a8badc89506b019
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SolarTrackingBeacon.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6f2976f635940684da7f7f4ed7855a8d
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorSecTech.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5ecf13819099b014eb5f731155540586
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileKitchen.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 821d0946be816bb42a0eed24631d57ee
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayBlue.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: add4d1bc2d874d94782d6b8c912af5e2
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/NukeCart.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4a1bd08646e8e1f4a861960d9b7485f8
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Plastic/PlasticChair.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7a895b269e3f67241af148d25331f5af
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Office/OfficeChair.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: dd3ce5340ed4aba4babae7020f737084
-    m_Address: Assets/Content/WorldObjects/Furniture/Storage/Lockers/SecurityLocker.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6873d7cf62d6ebc42966423161b799f1
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileGreyDark.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 8ae2f499d25bfcd41bf26b735c852ab1
-    m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/Plant7.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: de6f06ad18d50134295959f438ba9c5d
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL1.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9b8a1328991fc2846bc55a3d9a82e5c0
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Carpet/FancyCarpetRed.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 66f6206faf2f7fb4a993d935c83fc239
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Lights/LightTubeFixture.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e9009aff81f29eb429148fd71961539f
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableFrameSteel.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1e0936c2ffa28eb419deda61c5c1cb8a
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Sink.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 12a989ad41a83a3468d1ae9aff9628d3
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Disposals/DisposalPipes.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: be5174cd6c3daf64a9739aff0f747a91
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/Scrubber/Scrubber.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 829e74fee2b909242821055cc2b096e0
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Medical/ChemicalDispenser.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: df4cf328d472de046bcbc073cbda2868
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Reinforced/TileReinforced.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: b7976a98a25be4543ba45f1d5e26c072
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorHotDrinks.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 84a5596b28f449e49bb34741abf89d30
-    m_Address: Assets/Content/WorldObjects/Structures/Doors/CivillianAirlock.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9f028e95d4196b141acf363c01d24806
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/SlotMachine.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 11d64ed349b96ec4780c4dda0ad89daf
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/Microwave.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d675e0c37e3147a4b8501314b5106f13
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/Tanks/WaterTank.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 14df766b77b0daf4b82ad93125f66782
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayPurple.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7b74e45100446b440b4b0a12cd6d05ef
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/TableBoozeDispenser.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 49f2097d4710d114a89821d9164dfce2
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Wood/TileWood.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: cc1b7e8558e50594089a64af537ff781
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorYouTool.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 330d85a67a5891145bd8037dde90f37b
-    m_Address: Assets/Content/WorldObjects/Furniture/Storage/Lockers/LockerSecure.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7e7706a54d61daa47857aadd94b37002
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Office/OfficeChairGrey.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 672b544ba53de0144aab307a16b085cb
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableFrameWood.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 61201f10ccc2856459a9de99d9cdc52e
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileWhite.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3a7b793253e1a0f4587097192998c361
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayBrown.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: ad124dd2ec7d83344a20a44fad208ca0
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Plastic/PlasticChairBlue.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5e8a02c5ce0073644ac01bdb55d72a70
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableWood.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 23a169aefca62c4418b6efec13df595e
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Supply/DisposalBin.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f0eca2b8867709749bc10f61917c4bdf
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SolarPanel.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 501391c27a7f94c4d8c937f00a9ceb9f
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Grass/TileGrass.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6caa99f8281726e40a793826d5c047db
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableSteel.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 45cc43b84ee58e644b9523cb27682b39
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/PacManGenerator.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 11a2276338ebc64429dfc565b491e437
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/AirAlarm.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 51049866c35db47418dfe5e78bee76e7
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Office/OfficeChairBlue.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: b38ae683afaacc4419ac13936cecd1a5
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SMES.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 852d57bdb0508494fb6047f36e813c69
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/Tanks/FuelTank.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 93faf7e7a5c67b9478c57a0d03340256
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorRobustSoftdrinks.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: adc07a7f0fee8304691f45a201509b13
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL3.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d25b39d1e2379b64cba47629530ada78
-    m_Address: Assets/Content/WorldObjects/Structures/Doors/SecurityAirlock.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d27600b4734eb3a4284be037a2f9d02b
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Medical/SleeperBed.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 0d6ab6288624c7348bdcbfb81d07088f
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Posters/Vertical/PosterVertical.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 251dc2a5fbda518429c8205c3b62165f
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL2.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d07b5fba3896ff448855d6e54356c365
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/LightSwitch.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 8dc5399c58290d54f9a6cc2f6c1c9d9f
-    m_Address: Assets/Content/WorldObjects/Furniture/Generic/JukeboxBlueGreen.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 0188e95eec8518246940499957802de9
     m_Address: Assets/Content/WorldObjects/Furniture/Generic/WaterCooler.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 48efd00c91c310e4bb965d025c63b3ba
-    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL4.prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06b6be83779804245b7f6411fe07b851
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmLeft.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: ad055c3d74a711a4b9d9b31217883a03
-    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/Gibber.prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06d944205e6b6dd489af078fa85fb878
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Welder.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 50dd6be959d44844ab1abf8a3f2adb01
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/FireAlarm.prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 071581df025e1ba49a8a75eb39611ff6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanEye.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 6cd51fc127b8aac40b2accd3e2666202
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayOrange.prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 081d9ee3e54295d49a4970a88f4943a9
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Medical/Cryotube.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 4c966398d6624164c910cd29c1faa980
-    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/APC.prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d6ab6288624c7348bdcbfb81d07088f
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Posters/Vertical/PosterVertical.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: b3e652487789fe54d8d24245d5962c3a
-    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayGreen.prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0e69918696f58e04f846e985ec7405fe
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalCable.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0ef9cea3bb74e6c4788f77e711f92d4d
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Dirt/TileDirt1.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 92d3eb280886ba74cb1e19f4e01669a7
-    m_Address: Assets/Content/WorldObjects/Structures/Wires/Cables.prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11a2276338ebc64429dfc565b491e437
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/AirAlarm.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11d64ed349b96ec4780c4dda0ad89daf
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/Microwave.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11f824c472e04854e95065dda095e8f4
+    m_Address: Assets/Content/WorldObjects/Items/Cosmetic/BikeHorn/BikeHorn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12a989ad41a83a3468d1ae9aff9628d3
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Disposals/DisposalPipes.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14df766b77b0daf4b82ad93125f66782
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayPurple.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 162e188d33a82b440a239f20901c716a
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/BurnPatch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 177428b73bad0fb4a89d1a64b85629bf
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanDukePurpleTea.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ae18785d74e9fa4699b6f6de889c243
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Command/NuclearAuthenticationDisk.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d2cf546d53e3fe4c9103007427aaec7
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Boombox.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e0936c2ffa28eb419deda61c5c1cb8a
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Sink.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e304f9a331c2ba419514ef8afb8a13c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineLarge.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e64a1c37be1f7c44a5d242d6ec6da10
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/Medkits/Medkit.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ef3c21a685ec2d4e9f0876719839d5f
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/TruckerCap.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2332a158259900e4f8a237fa8daff266
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/MedicalPatch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 236b51ddc6f9aa94ca92579082370c06
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitGrey.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23a169aefca62c4418b6efec13df595e
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Supply/DisposalBin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 242a937784a622f4f8a6e6d097e0737c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 251dc2a5fbda518429c8205c3b62165f
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 264ea51d92067c14ebc6633999afac78
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Objects/ToolBoxes/ToolboxBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2767aeb6e6fd53b43a1cb305789834d4
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodLog.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a63163a4db141744a802f3ff67087db
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityPDA.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2bc6f6a968d5ba04c919ba56d0ccdab4
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanStomach.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ca5f2886cf2f19428b50bf284689b86
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Multitool.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30794a01d5f4c174a9d20b2c632f2dca
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanEarRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 330d85a67a5891145bd8037dde90f37b
+    m_Address: Assets/Content/WorldObjects/Furniture/Storage/Lockers/LockerSecure.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 35dfc7c3f708a5b48a206b4a44e7ab49
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a25eb0bd251b5847af05fb59feff383
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Plastic/PlasticChairGrey.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a7b793253e1a0f4587097192998c361
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayBrown.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b33b5cf16a677a4e85a110679cde32a
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Plenum.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 404443f7c306fc8469698745624fa3bf
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/GreyFloorTile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40d904629802fc942860ce878e78efef
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/Toolbelt.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 411b513efc8f06a40aecfc47d0c5fc5a
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Kitchen/KitchenKnife.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41a1c8c211dc32c4d8ffca5f0892f9dc
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Wirecutters.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 41d7af24659a0d3439668aeb4c46d9bc
     m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/Plant0.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 432a4ad70e41e5c4f8f913f76fe0e66c
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanArmRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45cc43b84ee58e644b9523cb27682b39
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/PacManGenerator.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45d13347efae0f54882e0e56dd770bb1
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48efd00c91c310e4bb965d025c63b3ba
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48fa93e2da7acb3499e400becf2afc26
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelRod.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49f2097d4710d114a89821d9164dfce2
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Wood/TileWood.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a1bd08646e8e1f4a861960d9b7485f8
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Plastic/PlasticChair.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a9d34a6cf84ef045a740513d8ae30b1
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanTorso.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4aee3fb97a6a2d442804c8c0b8347a92
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/WoodPlank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c966398d6624164c910cd29c1faa980
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/APC.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4cb99cf2fee96f944abbacc51b0b701c
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d48472d06930bd42a15897e6a1794ac
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableGlass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e6899916bc8fd742a07f32b3a04de12
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepyLime.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 501391c27a7f94c4d8c937f00a9ceb9f
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Grass/TileGrass.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50405f05821f58c49a8badc89506b019
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SolarTrackingBeacon.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50dd6be959d44844ab1abf8a3f2adb01
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/FireAlarm.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 51049866c35db47418dfe5e78bee76e7
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Office/OfficeChairBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 535ed7c02b5cbdc43ae2b234a963c5cc
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoeJackboots.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5479411218b869144b7d09d6db6dc58e
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/OxygenTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56b1aff2041026242bed0f064dee56bb
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Food/General/Snacks/DonkPocket.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a09b3e93f0022b468da150e3c4a78c6
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/Blender.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5cab1a9f6c7f74948b84d0d625319efe
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassShard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5dba4171f2124fb48b0e32c0e10841e0
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirderUnbolted.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e24183c4537dcf47b16fde5ab1ce0ea
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayRed.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e8a02c5ce0073644ac01bdb55d72a70
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableWood.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ecf13819099b014eb5f731155540586
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileKitchen.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61201f10ccc2856459a9de99d9cdc52e
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileWhite.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65679cf5a30d6dd458666804af7c3ca3
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/GlovesInsulated.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66f6206faf2f7fb4a993d935c83fc239
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Lights/LightTubeFixture.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 672b544ba53de0144aab307a16b085cb
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableFrameWood.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6873d7cf62d6ebc42966423161b799f1
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileGreyDark.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c2559c2017ada740b245951a23c2e1d
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelGirder.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6caa99f8281726e40a793826d5c047db
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableSteel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cd51fc127b8aac40b2accd3e2666202
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayOrange.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f2976f635940684da7f7f4ed7855a8d
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorSecTech.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7436f4976849b994aaee40df1bca7d89
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitEngineer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 75680e6a1df5ff547bdb5b8f116f766b
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileBar.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7579883b8dd8801448a176adace4860b
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanBrain.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 772da386eb7b01745913050fee544c32
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Wrench.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 781dd9024aaa53444bc3deeaa9708fbb
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Generic/FlashlightBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 79260483ae5d3e04fa272e092b49abac
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/PDA.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a47e5b68d8bab647b3f99ee3af524c7
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Steel/TileGrey.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a895b269e3f67241af148d25331f5af
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Office/OfficeChair.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b74e45100446b440b4b0a12cd6d05ef
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/TableBoozeDispenser.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7becfab153276864f9fc7636a839d837
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/Crowbar.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c6bebf2e12702d48abd76acad4d1272
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Supply/DisposalOutlet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e7706a54d61daa47857aadd94b37002
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Office/OfficeChairGrey.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f5954f009d06b2439ca637b43920440
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHandRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81faf4debf00a0a478b924176f48d011
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/ShoeHiTops.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 821d0946be816bb42a0eed24631d57ee
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 829e74fee2b909242821055cc2b096e0
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Medical/ChemicalDispenser.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84a5596b28f449e49bb34741abf89d30
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/CivillianAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84cec183559b4954c883b11f20f767c9
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MicroLaser.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 852d57bdb0508494fb6047f36e813c69
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/Tanks/FuelTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 854451834f026fb4f860bf0e977a104c
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Lattice.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85fa4c9b76b4b23458dcf24a745a1dfe
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/DinnerBooth.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8686fbdb413e33b4395a775c4f2ba990
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/TilePlating.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ae2f499d25bfcd41bf26b735c852ab1
+    m_Address: Assets/Content/WorldObjects/Furniture/Flora/PottedPlants/Plant7.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8dc5399c58290d54f9a6cc2f6c1c9d9f
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/JukeboxBlueGreen.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92d3eb280886ba74cb1e19f4e01669a7
+    m_Address: Assets/Content/WorldObjects/Structures/Wires/Cables.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92d6696a323ef66448190e8e9d69fd22
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCola.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93ad90421a3b2f64e8fdb9e95a42ba90
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitSecurity.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93faf7e7a5c67b9478c57a0d03340256
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorRobustSoftdrinks.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94aaf82bb6ab002418e01d9cc7c6eaaa
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98ce0a84deb394b4bbd18f31f368317c
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Lights/LightBulbFixture.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b8a1328991fc2846bc55a3d9a82e5c0
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Carpet/FancyCarpetRed.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b9f6bd470226a74b903e74dbe9e423a
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/Sunglasses.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c5418cbebef419429574992d3e296a3
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanIntestineSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c8363ee7f934bd4b8ee5a2e30da1269
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Engineering/ScrewdriverBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e967cb4084bf064c8a0ca5f57a33b0c
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Botany/Hatchet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f028e95d4196b141acf363c01d24806
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/SlotMachine.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a019475d05ec8824494b0fa88e2282d8
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1a7407e08bb2914c97f431063bf83e2
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheetReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a28267798293970468ab30803632a3f7
     m_Address: Assets/Content/WorldObjects/Structures/Floors/Catwalk.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a38ee818c953a404787757d8d20d2851
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/HeadsetSecurity.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a777a6da30f0704478e25312963a8151
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Mirror.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7c35693adae32f43b4d7fe2eb8b091b
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanTonic.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8b265034e3f79344a6067b406e1bff6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLungRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: abcc60752234e584d8d98c9dec03e7cc
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWallReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad055c3d74a711a4b9d9b31217883a03
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Kitchen/Gibber.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad124dd2ec7d83344a20a44fad208ca0
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Seats/Chairs/Plastic/PlasticChairBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: adc07a7f0fee8304691f45a201509b13
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: add4d1bc2d874d94782d6b8c912af5e2
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/NukeCart.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b044d7bdb55405046a9055726a779eb1
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Poster.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b38ae683afaacc4419ac13936cecd1a5
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SMES.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3e652487789fe54d8d24245d5962c3a
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/TileOverlays/TileOverlayGreen.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5be0a52925e2674193d081d2deb68cb
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Chemical/Medications/BrutePatch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7976a98a25be4543ba45f1d5e26c072
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorHotDrinks.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9c224febb4233f4e912745553097652
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindow.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bb2ccbe283c7a7d459f283a7483e04b9
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/Vent/Vent.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bdeac5e9a27546348a584caa74f00ec7
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/MachineFrame.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be3fcf1a74268ad49bfedb1edd9f5318
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/JumpsuitBotany.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be5174cd6c3daf64a9739aff0f747a91
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/Scrubber/Scrubber.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf177f8bab26bc84b87fd9a971004418
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/FacewearGasMask.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c69ed93dc225ea049bbf1a02662c48c0
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCellAdmin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc1b7e8558e50594089a64af537ff781
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorYouTool.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc54bc74b2f4c2349b1f84b501b0a091
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanHead.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc71128d4bcc0c548ac11481000ac424
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/ElectricalWire.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d07b5fba3896ff448855d6e54356c365
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/LightSwitch.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d25b39d1e2379b64cba47629530ada78
+    m_Address: Assets/Content/WorldObjects/Structures/Doors/SecurityAirlock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d27600b4734eb3a4284be037a2f9d02b
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Medical/SleeperBed.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d32855055305ce5489c69379e2219a7d
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/PowerCellCharger.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d675e0c37e3147a4b8501314b5106f13
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Generic/Tanks/WaterTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d75ff9a3ac207a84487ec1ee73a676fc
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanLiver.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8b0c8d1ddcdeb24d9763054c103c9fe
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/IDCard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9aabfd5d726a7f499b8e360d919eba4
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Storage/Substances/Mug.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db15899bc1eb2794fb2b24129852a209
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/Headset.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dceb056e41b5c634f9933423de8e075c
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedLaughter.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd3ce5340ed4aba4babae7020f737084
+    m_Address: Assets/Content/WorldObjects/Furniture/Storage/Lockers/SecurityLocker.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ddaa28fac1956b2428aff1dac1d89707
+    m_Address: Assets/Content/WorldObjects/Items/Clothing/Backpack.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de67200a4c96d444f800399a033ddfef
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/PowerCells/PowerCell.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de6f06ad18d50134295959f438ba9c5d
+    m_Address: Assets/Content/WorldObjects/Structures/Pipes/Atmospherics/AtmosPipesL1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df4cf328d472de046bcbc073cbda2868
+    m_Address: Assets/Content/WorldObjects/Structures/Floors/Tiles/Reinforced/TileReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e02f11b9239b52748a5ed5afd1c5cbd3
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanEarLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2a06f02e6a7e0348bdc535344bfe1f3
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/GlassSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3fb39f0a84acf541b6ee828550a1708
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Generic/Tanks/PlasmaTank.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4281cb43d1443d4388737777fdd98d8
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanCannedAir.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e60ba1e09be8316448e419ecbdfb64a6
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanFootRight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9009aff81f29eb429148fd71961539f
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TableFrameSteel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9f99df80a74fd242aa46e53c7ec0376
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Tools/Medical/HealthScanner.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ebddb1721dcbe36499e4d093e5a7ff09
+    m_Address: Assets/Content/WorldObjects/Furniture/Generic/Surfaces/Tables/TablePoker.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ecaf79b0a74bdb443a350e88daa94a66
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanBodyParts/HumanLegLeft.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed77d98d3e75b7946b404face1fe8f82
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Parts/MachineParts/MatterBin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0eca2b8867709749bc10f61917c4bdf
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Engineering/SolarPanel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2493b5478dd8e946ba98861f533362e
+    m_Address: Assets/Content/WorldObjects/Structures/Walls/SteelWindowReinforced.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f490a74616c067c4f83995017e10b420
+    m_Address: Assets/Content/WorldObjects/Items/Consumable/Drinks/Soda/SodaCanBeepsSoda.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6528d8afa18fa14998a0158260ef26c
+    m_Address: Assets/Content/WorldObjects/Items/DoodadTestItem.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f88a398ad3d01454f955de9c337d9b99
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Materials/SteelReinforcedSheet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa1909e0d40b4cf408ff599df7a2043f
+    m_Address: Assets/Content/WorldObjects/Furniture/Storage/Lockers/Locker.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fccdc78a6cf916047ba52f2877f755e5
+    m_Address: Assets/Content/WorldObjects/Entities/Humanoids/Human/HumanOrgans/HumanHeart.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdaaabc96a55d824a86a3636906240c1
+    m_Address: Assets/Content/WorldObjects/Structures/WallMounts/Posters/Horizontal/PosterHorizontal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff95abc9c2b779340a1b50f1a128a934
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityIDCard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

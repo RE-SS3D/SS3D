@@ -13,34 +13,36 @@ MonoBehaviour:
   m_Name: Localization-String-Tables-Russian (Russia) (ru-RU)
   m_EditorClassIdentifier: 
   m_GroupName: Localization-String-Tables-Russian (Russia) (ru-RU)
-  m_Data:
-    m_SerializedData: []
   m_GUID: d3f700a215cac7a4fba69188b38918f6
   m_SerializeEntries:
-  - m_GUID: e733c6bc43b7db247916e07bfe6bf7df
-    m_Address: Tiles_ru-RU
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ru-RU
-    - Preload
   - m_GUID: 97b2446b18d76724281d1ed4e0504c82
     m_Address: Items_ru-RU
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ru-RU
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad49da73566313543890493baa8e0129
     m_Address: Misc_ru-RU
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ru-RU
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c57b9297280d10a4eaa62c4176f63075
     m_Address: UI_ru-RU
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ru-RU
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e733c6bc43b7db247916e07bfe6bf7df
+    m_Address: Tiles_ru-RU
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ru-RU
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
