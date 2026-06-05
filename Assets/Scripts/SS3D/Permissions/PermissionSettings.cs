@@ -12,9 +12,18 @@ namespace SS3D.Permissions
         [SerializeField]
         private bool _addServerOwnerPermissionToServerHost;
 
+        [SerializeField]
+        private bool _adminFunctionsForAll;
+
         /// <summary>
         /// We can define if the host will get the owner permission when he joins the game.
         /// </summary>
         public static bool AddServerOwnerPermissionToServerHost => GetOrFind<PermissionSettings>()._addServerOwnerPermissionToServerHost;
+
+        /// <summary>
+        /// If true, admin-only functions are available to all users.
+        /// Defaults to false, meaning only admins (host by default) can use admin functions.
+        /// </summary>
+        public static bool AdminFunctionsForAll => GetOrFind<PermissionSettings>()._adminFunctionsForAll;
     }
 }

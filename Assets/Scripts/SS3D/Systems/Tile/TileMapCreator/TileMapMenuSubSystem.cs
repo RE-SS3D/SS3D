@@ -4,6 +4,8 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data.Management;
+using SS3D.Logging;
+using SS3D.Permissions;
 using SS3D.Systems.Inputs;
 using TMPro;
 using UnityEngine;
@@ -128,6 +130,12 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         private void HandleToggleMenu(InputAction.CallbackContext context)
         {
+            if (!_enabled && !CanAccessTilemapEditor())
+            {
+                Log.Information(this, "Player lacks permission to access the tilemap editor", Logs.ServerOnly);
+                return;
+            }
+
             if (_enabled)
             {
                 _inputSystem.ToggleActionMap(_controls, false, new[] { _controls.ToggleMenu });
@@ -144,6 +152,28 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _currentTab = TileMapMenuTab.Build;
             ClearAllTab();
             _tileMapBuildTab.Display();
+        }
+
+        /// <summary>
+        /// Checks whether the local player is allowed to use the tilemap editor.
+        /// </summary>
+        private bool CanAccessTilemapEditor()
+        {
+            if (PermissionSettings.AdminFunctionsForAll)
+            {
+                return true;
+            }
+
+            string ckey = Core.Settings.LocalPlayer.Ckey;
+            if (string.IsNullOrEmpty(ckey))
+            {
+                return false;
+            }
+
+            PermissionSubSystem permissionSystem = SubSystems.Get<PermissionSubSystem>();
+            return permissionSystem != null
+                   && permissionSystem.HasLoadedPermissions
+                   && permissionSystem.IsAtLeast(ckey, ServerRoleTypes.Administrator);
         }
        
         /// <summary>
