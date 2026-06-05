@@ -359,8 +359,22 @@ namespace SS3D.Systems.Inventory.Containers
 		/// </summary>
 		/// <param name="item">The item to place</param>
 		/// <returns>If the item was added</returns>
+		[Server]
 		public bool AddItem(Item item)
 		{
+			if (item.IsStackable && TryStackWithExisting(item, out bool fullyConsumed))
+			{
+				if (fullyConsumed)
+				{
+					if (IsServer)
+					{
+						item.Delete();
+					}
+
+					return true;
+				}
+			}
+
 			// TODO: Use a more efficient algorithm
 			for (int y = 0; y < Size.y; y++)
 			{
@@ -375,6 +389,63 @@ namespace SS3D.Systems.Inventory.Containers
 			}
 			return false;
 		}
+
+        /// <summary>
+        /// Tries to merge the incoming stackable item with existing stacks of the same type.
+        /// When partially consumed, the incoming item's stack count is reduced for remaining placement.
+        /// </summary>
+        /// <param name="incomingItem">The stackable item to merge</param>
+        /// <param name="fullyConsumed">True if the incoming item was fully consumed by stacking</param>
+        /// <returns>True if any stacking occurred (partial or full)</returns>
+        private bool TryStackWithExisting(Item incomingItem, out bool fullyConsumed)
+        {
+            fullyConsumed = false;
+
+            Stackable incomingStackable = incomingItem.GetComponent<Stackable>();
+            if (incomingStackable == null)
+            {
+                return false;
+            }
+
+            int remaining = incomingStackable.AmountInStack;
+
+            foreach (StoredItem stored in _storedItems)
+            {
+                if (stored.Item == null || !stored.Item.IsStackable)
+                {
+                    continue;
+                }
+
+                Stackable existingStackable = stored.Item.GetComponent<Stackable>();
+                if (existingStackable == null || existingStackable.IsFull)
+                {
+                    continue;
+                }
+
+                if (!existingStackable.IsSameTypeAs(incomingStackable))
+                {
+                    continue;
+                }
+
+                remaining = existingStackable.AddToStack(remaining);
+                InvokeOnContentChanged(stored.Item, stored.Item, ContainerChangeType.Move);
+
+                if (remaining == 0)
+                {
+                    fullyConsumed = true;
+                    return true;
+                }
+            }
+
+            if (remaining < incomingStackable.AmountInStack)
+            {
+                incomingStackable.SetAmountInStack(remaining);
+                return true;
+            }
+
+            return false;
+        }
+
 
         /// <summary>
         /// transfer an item from this container to another container at a given position.

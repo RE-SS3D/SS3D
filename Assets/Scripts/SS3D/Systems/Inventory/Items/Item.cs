@@ -285,6 +285,11 @@ namespace SS3D.Systems.Inventory.Items
         }
 
         /// <summary>
+        /// Checks if the item has a Stackable component, allowing it to stack with other items of the same type
+        /// </summary>
+        public bool IsStackable => TryGetComponent(out Stackable _);
+
+        /// <summary>
         /// Checks if the item is currently stored in a container
         /// </summary>
         /// <returns></returns>

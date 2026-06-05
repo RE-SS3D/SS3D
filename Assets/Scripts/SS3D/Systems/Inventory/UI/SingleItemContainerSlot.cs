@@ -1,8 +1,9 @@
-﻿using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
@@ -19,6 +20,12 @@ namespace SS3D.Systems.Inventory.UI
         public ItemDisplay ItemDisplay;
 
         public ContainerType ContainerType;
+
+        /// <summary>
+        /// Optional reference to a stack count label. If null, one is created dynamically.
+        /// </summary>
+        [SerializeField]
+        private TMP_Text _stackCountLabel;
 
         /// <summary>
         /// The container displayed by this slot.
@@ -38,9 +45,19 @@ namespace SS3D.Systems.Inventory.UI
             {
                 UpdateContainer(Container);
             }
-            if(_container.Items.Count() > 0) 
+            if(_container.Items.Count() > 0)
             {
                 ItemDisplay.Item =  _container.Items.First();
+            }
+
+            if (_stackCountLabel == null && ItemDisplay != null)
+            {
+                _stackCountLabel = CreateStackCountLabel(ItemDisplay.transform);
+            }
+
+            if (_container.Items.Count() > 0)
+            {
+                UpdateStackCount(_container.Items.First());
             }
         }
 
@@ -82,7 +99,57 @@ namespace SS3D.Systems.Inventory.UI
             var item = _container.Items.FirstOrDefault();
 			ItemDisplay.Item = item;
 			ItemDisplay.MakeVisible(true);
+
+            UpdateStackCount(item);
 		}
+
+        /// <summary>
+        /// Show or hide the stack count label based on the current item.
+        /// Only displayed when the item has more than 1 in a stack.
+        /// </summary>
+        private void UpdateStackCount(Item item)
+        {
+            if (_stackCountLabel == null)
+            {
+                return;
+            }
+
+            if (item != null && item.IsStackable)
+            {
+                Stackable stackable = item.GetComponent<Stackable>();
+                if (stackable != null && stackable.AmountInStack > 1)
+                {
+                    _stackCountLabel.text = $"x{stackable.AmountInStack}";
+                    _stackCountLabel.gameObject.SetActive(true);
+                    return;
+                }
+            }
+
+            _stackCountLabel.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Creates a TextMeshPro label for displaying stack count, positioned at the bottom-right
+        /// corner of the item display. Used when no label is assigned in the prefab.
+        /// </summary>
+        private static TMP_Text CreateStackCountLabel(Transform parent)
+        {
+            GameObject labelObj = new("StackCountLabel", typeof(RectTransform));
+            labelObj.transform.SetParent(parent, false);
+            TMP_Text label = labelObj.AddComponent<TextMeshProUGUI>();
+            label.fontSize = 14;
+            label.alignment = TextAlignmentOptions.BottomRight;
+            label.color = Color.white;
+
+            RectTransform rectTransform = label.GetComponent<RectTransform>();
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.pivot = new Vector2(1f, 0f);
+
+            return label;
+        }
 
         /// <summary>
         /// UpdateContainer modify the container that this slot display, replacing the old one with newContainer.
@@ -105,10 +172,7 @@ namespace SS3D.Systems.Inventory.UI
 
         private void ContainerContentsChanged(AttachedContainer _, Item oldItem, Item newItem, ContainerChangeType type)
         {
-            if (type != ContainerChangeType.Move)
-            {
-                UpdateDisplay();
-            }
+            UpdateDisplay();
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -118,7 +182,7 @@ namespace SS3D.Systems.Inventory.UI
             if(ContainerType == ContainerType.Hand)
             {
                 Inventory.ActivateHand(_container);
-            }   
+            }
         }
 
         public GameObject GetCurrentGameObjectInSlot()

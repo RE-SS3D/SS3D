@@ -121,28 +121,98 @@ namespace SS3D.Systems.Inventory.Containers
 
         /// <summary>
         /// Place item on the floor, or on any other surface, place it out of its container.
+        /// If a stackable item of the same type exists at the drop location, the items merge.
         /// </summary>
         [Server]
         public void PlaceHeldItemOutOfHand(Vector3 position, Quaternion rotation)
         {
             if (IsEmpty())
                 return;
-            
+
             ItemInHand.GiveOwnership(null);
             Item item = ItemInHand;
             item.Container.RemoveItem(item);
             ItemUtility.Place(item, position, rotation);
 
-            // Register with TileMap for saving
-            TileMap tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
-            if (tileMap != null)
+            // Try to stack with nearby items of the same type — may despawn the dropped item
+            bool fullyConsumed = TryStackWithNearbyItem(item, position);
+
+            if (!fullyConsumed)
             {
-                ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset) as ItemObjectSo;
-                if (itemObjectSo != null)
+                // Register with TileMap for saving
+                TileMap tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
+                if (tileMap != null)
                 {
-                    tileMap.PlaceItemObject(position, rotation, itemObjectSo, item.gameObject);
+                    ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset) as ItemObjectSo;
+                    if (itemObjectSo != null)
+                    {
+                        tileMap.PlaceItemObject(position, rotation, itemObjectSo, item.gameObject);
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks if the dropped item can stack with any nearby in-world item of the same type.
+        /// If fully consumed by stacking, the dropped item's GameObject is despawned.
+        /// </summary>
+        /// <param name="item">The item that was just dropped</param>
+        /// <param name="position">The world position of the drop</param>
+        /// <returns>True if the dropped item was fully consumed and despawned; false otherwise</returns>
+        private bool TryStackWithNearbyItem(Item item, Vector3 position)
+        {
+            if (!item.IsStackable)
+            {
+                return false;
+            }
+
+            Stackable droppedStackable = item.GetComponent<Stackable>();
+            if (droppedStackable == null)
+            {
+                return false;
+            }
+
+            LayerMask itemsMask = LayerMask.GetMask("Items");
+            Collider[] hitColliders = Physics.OverlapSphere(position, 0.5f, itemsMask);
+
+            foreach (Collider hit in hitColliders)
+            {
+                Item nearbyItem = hit.GetComponent<Item>();
+                if (nearbyItem == null || nearbyItem == item || nearbyItem.IsInContainer())
+                {
+                    continue;
+                }
+
+                Stackable nearbyStackable = nearbyItem.GetComponent<Stackable>();
+                if (nearbyStackable == null || nearbyStackable.IsFull)
+                {
+                    continue;
+                }
+
+                if (!nearbyStackable.IsSameTypeAs(droppedStackable))
+                {
+                    continue;
+                }
+
+                int remaining = nearbyStackable.AddToStack(droppedStackable.AmountInStack);
+
+                if (remaining == 0)
+                {
+                    // Fully consumed — despawn the dropped item
+                    if (item.GameObject != null)
+                    {
+                        ServerManager.Despawn(item.GameObject);
+                    }
+
+                    return true;
+                }
+
+                // Partially consumed — update the dropped item's remaining stack amount
+                droppedStackable.SetAmountInStack(remaining);
+                return false;
+            }
+
+            return false;
         }
 
         /// <summary>

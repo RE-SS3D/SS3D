@@ -1,5 +1,6 @@
 ﻿using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inventory.Items;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -28,6 +29,7 @@ namespace SS3D.Systems.Examine
 
         /// <summary>
         /// Updates the hover text with the appropriate localized string.
+        /// Appends stack count for stackable items when more than one is present.
         /// </summary>
         /// <param name="examinable">The object that is being examined</param>
         private void UpdateHoverText(IExaminable examinable)
@@ -50,6 +52,12 @@ namespace SS3D.Systems.Examine
                         hoverTextToDisplay = _currentStringTable[data.NameKey]?.LocalizedValue;
                     }
                 }
+            }
+
+            // Append stack count for stackable items
+            if (examinable is Stackable stackable && stackable.AmountInStack > 1)
+            {
+                hoverTextToDisplay += $" x{stackable.AmountInStack}";
             }
 
             HoverName.text = hoverTextToDisplay;
