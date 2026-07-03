@@ -25,7 +25,7 @@ MonoBehaviour:
     probeSamplingDebugTexture: {fileID: 2800000, guid: 24ec0e140fb444a44ab96ee80844e18e, type: 3}
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
-  - {fileID: 7038310372446440354}
+  - {fileID: 1061322653275676946}
   m_RendererFeatureMap: 4c8e2b1f7a903d5e
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
@@ -55,7 +55,7 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
---- !u!114 &7038310372446440354
+--- !u!114 &1061322653275676946
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

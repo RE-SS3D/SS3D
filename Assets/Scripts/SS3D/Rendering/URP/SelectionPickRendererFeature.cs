@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RenderGraphModule.Util;
@@ -77,6 +77,10 @@ namespace SS3D.Rendering.URP
             readonly Material _overrideMaterial;
             readonly List<ShaderTagId> _shaderTags = new()
             {
+                new ShaderTagId("ForwardBase"),
+                new ShaderTagId("ForwardAdd"),
+                new ShaderTagId("Always"),
+                new ShaderTagId(string.Empty),
                 new ShaderTagId("UniversalForward"),
                 new ShaderTagId("UniversalForwardOnly"),
                 new ShaderTagId("SRPDefaultUnlit"),
@@ -124,16 +128,9 @@ namespace SS3D.Rendering.URP
                 UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
 
                 EnsureImportedTarget();
-                TextureHandle pickReadback = renderGraph.ImportTexture(_importedTarget);
-
-                RenderTextureDescriptor drawDesc = cameraData.cameraTargetDescriptor;
-                drawDesc.depthStencilFormat = GraphicsFormat.None;
-                drawDesc.graphicsFormat = GraphicsFormat.R8G8B8A8_UNorm;
-
-                bool needsResolve = drawDesc.msaaSamples > 1;
-                TextureHandle pickDrawTarget = needsResolve
-                    ? UniversalRenderer.CreateRenderGraphTexture(renderGraph, drawDesc, "_SS3DSelectionPickDraw", false)
-                    : pickReadback;
+                TextureHandle pickTarget = renderGraph.ImportTexture(_importedTarget);
+                bool useSceneDepth = cameraData.cameraTargetDescriptor.msaaSamples <= 1
+                    && resourceData.activeDepthTexture.IsValid();
 
                 RecordQueuePass(
                     renderGraph,
@@ -141,7 +138,8 @@ namespace SS3D.Rendering.URP
                     renderingData,
                     cameraData,
                     lightData,
-                    pickDrawTarget,
+                    pickTarget,
+                    useSceneDepth,
                     RenderQueueRange.opaque,
                     cameraData.defaultOpaqueSortFlags,
                     materialPassIndex: 0,
@@ -154,33 +152,13 @@ namespace SS3D.Rendering.URP
                     renderingData,
                     cameraData,
                     lightData,
-                    pickDrawTarget,
+                    pickTarget,
+                    useSceneDepth,
                     RenderQueueRange.transparent,
                     SortingCriteria.CommonTransparent,
                     materialPassIndex: 1,
                     clearTarget: false,
                     "SS3D Selection Pick Transparent");
-
-                if (needsResolve)
-                {
-                    RecordResolvePass(renderGraph, pickDrawTarget, pickReadback);
-                }
-            }
-
-            static void RecordResolvePass(RenderGraph renderGraph, TextureHandle source, TextureHandle destination)
-            {
-                if (renderGraph.CanAddCopyPass(source, destination))
-                {
-                    renderGraph.AddCopyPass(source, destination, passName: "SS3D Selection Pick Resolve");
-                    return;
-                }
-
-                RenderGraphUtils.BlitMaterialParameters blitParams = new(
-                    source,
-                    destination,
-                    Blitter.GetBlitMaterial(TextureDimension.Tex2D),
-                    0);
-                renderGraph.AddBlitPass(blitParams, passName: "SS3D Selection Pick Resolve");
             }
 
             void RecordQueuePass(
@@ -190,6 +168,7 @@ namespace SS3D.Rendering.URP
                 UniversalCameraData cameraData,
                 UniversalLightData lightData,
                 TextureHandle pickColor,
+                bool useSceneDepth,
                 RenderQueueRange queueRange,
                 SortingCriteria sortFlags,
                 int materialPassIndex,
@@ -206,11 +185,37 @@ namespace SS3D.Rendering.URP
                 drawingSettings.overrideMaterialPassIndex = materialPassIndex;
 
                 FilteringSettings filteringSettings = new FilteringSettings(queueRange, cameraData.camera.cullingMask);
-                var rendererListParams = new RendererListParams(
-                    renderingData.cullResults,
-                    drawingSettings,
-                    filteringSettings);
-                RendererListHandle rendererList = renderGraph.CreateRendererList(rendererListParams);
+
+                RendererListHandle rendererList;
+                if (useSceneDepth)
+                {
+                    var rendererListParams = new RendererListParams(
+                        renderingData.cullResults,
+                        drawingSettings,
+                        filteringSettings);
+                    rendererList = renderGraph.CreateRendererList(rendererListParams);
+                }
+                else
+                {
+                    var renderStateBlock = new RenderStateBlock(RenderStateMask.Depth);
+                    renderStateBlock.depthState = new DepthState(false, CompareFunction.Always);
+
+                    var tagValues = new NativeArray<ShaderTagId>(1, Allocator.Temp);
+                    var stateBlocks = new NativeArray<RenderStateBlock>(1, Allocator.Temp);
+                    tagValues[0] = ShaderTagId.none;
+                    stateBlocks[0] = renderStateBlock;
+
+                    var rendererListParams = new RendererListParams(
+                        renderingData.cullResults,
+                        drawingSettings,
+                        filteringSettings)
+                    {
+                        tagValues = tagValues,
+                        stateBlocks = stateBlocks,
+                        isPassTagName = false
+                    };
+                    rendererList = renderGraph.CreateRendererList(rendererListParams);
+                }
 
                 if (!rendererList.IsValid())
                 {
@@ -223,7 +228,7 @@ namespace SS3D.Rendering.URP
                 builder.UseRendererList(passData.RendererList);
                 builder.SetRenderAttachment(pickColor, 0, AccessFlags.Write);
 
-                if (resourceData.activeDepthTexture.IsValid())
+                if (useSceneDepth)
                 {
                     builder.SetRenderAttachmentDepth(resourceData.activeDepthTexture, AccessFlags.Read);
                 }
