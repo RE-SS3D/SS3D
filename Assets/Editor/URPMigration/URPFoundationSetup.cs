@@ -57,6 +57,8 @@ namespace SS3D.Editor.URPMigration
                 PlayerSettings.colorSpace = ColorSpace.Linear;
             }
 
+            SelectionPickRendererFeatureSetup.EnsureWired();
+
             AssetDatabase.SaveAssets();
             return true;
         }
