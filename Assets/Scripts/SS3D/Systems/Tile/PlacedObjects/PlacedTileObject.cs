@@ -1,5 +1,6 @@
 ﻿using FishNet;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Core;
 using SS3D.Data;
@@ -11,24 +12,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using math = SS3D.Utils.MathUtility;
 
 namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Component that is added to every tile object that is part of the tilemap. Tiles are more restrictive and need to have an origin, fixed grid position and direction to face.
     /// </summary>
-    public class PlacedTileObject: NetworkBehaviour, IWorldObjectAsset
+    public class PlacedTileObject: NetworkBehaviour, IWorldObjectAsset, ITileOccupant
     {
         /// <summary>
         /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. 
         /// Uses NetworkServer.Spawn() if a server is running.
         /// </summary>
-        /// <param name="worldPosition"></param>
-        /// <param name="dir"></param>
-        /// <param name="tileObjectSo"></param>
-        /// <returns></returns>
-        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
+        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo, int mapId = 0)
         {
             GameObject tileObjectPrefab = Assets.Get<GameObject>(tileObjectSo.PrefabAsset);
             GameObject placedGameObject = Instantiate(tileObjectPrefab);
@@ -37,14 +33,11 @@ namespace SS3D.Systems.Tile
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
             if (placedObject == null)
             {
-                // Ideally an editor script adds this instead of doing it at runtime
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
             }
 
-            placedObject.Setup(tileObjectSo, origin, worldPosition, dir);
+            placedObject.Setup(tileObjectSo, origin, worldPosition, dir, mapId);
 
-            // TODO : Spawning the placed game object does not spawn with it everything. In particular, the values
-            // such as tileobjectSO, origin or world position are not spawned. This might (or not) be an issue later on.
             if (InstanceFinder.ServerManager != null)
             {
                 if (placedObject.GetComponent<NetworkObject>() == null)
@@ -68,6 +61,31 @@ namespace SS3D.Systems.Tile
         private TileObjectSo _tileObjectSo;
         private Vector2Int _origin;
         private Direction _dir;
+        private int _mapId;
+
+        [SyncVar(OnChange = nameof(SyncAssetName))]
+        private string _syncAssetName = string.Empty;
+
+        [SyncVar(OnChange = nameof(SyncOriginX))]
+        private int _syncOriginX;
+
+        [SyncVar(OnChange = nameof(SyncOriginY))]
+        private int _syncOriginY;
+
+        [SyncVar(OnChange = nameof(SyncWorldOriginX))]
+        private int _syncWorldOriginX;
+
+        [SyncVar(OnChange = nameof(SyncWorldOriginY))]
+        private int _syncWorldOriginY;
+
+        [SyncVar(OnChange = nameof(SyncDirectionValue))]
+        private Direction _syncDirection;
+
+        [SyncVar(OnChange = nameof(SyncLayerValue))]
+        private TileLayer _syncLayer;
+
+        [SyncVar(OnChange = nameof(SyncMapIdValue))]
+        private int _syncMapId;
 
         private IAdjacencyConnector _connector;
         private Vector2Int _worldOrigin;
@@ -75,7 +93,6 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Returns a list of all grids positions that object occupies.
         /// </summary>
-        /// <returns></returns>
         public List<Vector2Int> GridOffsetList => _tileObjectSo.GetGridOffsetList(_dir);
 
         public Vector2Int Origin => _origin;
@@ -89,6 +106,8 @@ namespace SS3D.Systems.Tile
         public TileLayer Layer => _tileObjectSo.layer;
 
         public Direction Direction => _dir;
+
+        public int MapId => _mapId;
 
         public string NameString => _tileObjectSo.NameString;
 
@@ -110,18 +129,91 @@ namespace SS3D.Systems.Tile
         }
         public IAdjacencyConnector Connector => _connector;
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            ApplySyncedIdentity();
+        }
+
         /// <summary>
-        /// Set up a new PlacedTileObject.
+        /// Set up a new PlacedTileObject. SyncVars are published in <see cref="OnStartServer"/> after spawn.
         /// </summary>
-        /// <param name="tileObjectSo"></param>
-        /// <param name="dir"></param>
-        private void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Vector3 worldPosition, Direction dir)
+        private void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Vector3 worldPosition, Direction dir, int mapId)
         {
             _tileObjectSo = tileObjectSo;
             _origin = origin;
             _dir = dir;
+            _mapId = mapId;
             _connector = GetComponent<IAdjacencyConnector>();
             _worldOrigin = new Vector2Int((int)Math.Round(worldPosition.x), (int)Math.Round(worldPosition.z));
+            _asset = tileObjectSo.PrefabAsset;
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            PublishIdentityToNetwork();
+        }
+
+        private void PublishIdentityToNetwork()
+        {
+            if (_tileObjectSo == null)
+                return;
+
+            _syncAssetName = _tileObjectSo.NameString;
+            _syncOriginX = _origin.x;
+            _syncOriginY = _origin.y;
+            _syncWorldOriginX = _worldOrigin.x;
+            _syncWorldOriginY = _worldOrigin.y;
+            _syncDirection = _dir;
+            _syncLayer = _tileObjectSo.layer;
+            _syncMapId = _mapId;
+        }
+
+        private void SyncAssetName(string _, string __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void SyncOriginX(int _, int __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void SyncOriginY(int _, int __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void SyncWorldOriginX(int _, int __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void SyncWorldOriginY(int _, int __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void SyncDirectionValue(Direction _, Direction __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void SyncLayerValue(TileLayer _, TileLayer __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void SyncMapIdValue(int _, int __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+
+        private void ApplySyncedIdentityIfClient(bool asServer)
+        {
+            if (asServer)
+                return;
+
+            ApplySyncedIdentity();
+        }
+
+        private void ApplySyncedIdentity()
+        {
+            if (string.IsNullOrEmpty(_syncAssetName))
+                return;
+
+            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+            if (tileSystem == null)
+                return;
+
+            GenericObjectSo asset = tileSystem.GetAsset(_syncAssetName);
+            if (asset is not TileObjectSo tileObjectSo)
+                return;
+
+            _tileObjectSo = tileObjectSo;
+            _origin = new Vector2Int(_syncOriginX, _syncOriginY);
+            _worldOrigin = new Vector2Int(_syncWorldOriginX, _syncWorldOriginY);
+            _dir = _syncDirection;
+            _mapId = _syncMapId;
+            _asset = tileObjectSo.PrefabAsset;
+            _connector ??= GetComponent<IAdjacencyConnector>();
         }
 
         /// <summary>
@@ -158,6 +250,8 @@ namespace SS3D.Systems.Tile
         public void SetDirection(Direction dir)
         {
             _dir = dir;
+            if (IsServer)
+                _syncDirection = dir;
         }
 
         /// <summary>
@@ -166,12 +260,7 @@ namespace SS3D.Systems.Tile
         public bool IsInFront(PlacedTileObject other)
         {
             Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction);
-            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x + diff.x, TileConstants.ChunkSize),
-                math.mod(other.Origin.y + diff.y, TileConstants.ChunkSize));
-            if (Origin == OtherMoved)
-                return true;
-
-            return false;
+            return WorldOrigin == other.WorldOrigin + diff;
         }
 
         /// <summary>
@@ -180,12 +269,7 @@ namespace SS3D.Systems.Tile
         public bool IsBehind(PlacedTileObject other)
         {
             Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(other.Direction);
-            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x - diff.x, TileConstants.ChunkSize),
-                math.mod(other.Origin.y - diff.y, TileConstants.ChunkSize));
-            if (Origin == OtherMoved)
-                return true;
-
-            return false;
+            return WorldOrigin == other.WorldOrigin - diff;
         }
 
         /// <summary>
@@ -195,12 +279,7 @@ namespace SS3D.Systems.Tile
         {
             Direction dirOnRight = TileHelper.GetNextCardinalDir(other.Direction);
             Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnRight);
-            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x + diff.x, TileConstants.ChunkSize),
-                math.mod(other.Origin.y + diff.y, TileConstants.ChunkSize));
-            if (Origin == OtherMoved)
-                return true;
-
-            return false;
+            return WorldOrigin == other.WorldOrigin + diff;
         }
 
         /// <summary>
@@ -210,33 +289,17 @@ namespace SS3D.Systems.Tile
         {
             Direction dirOnLeft = TileHelper.GetNextCardinalDir(other.Direction);
             Vector2Int diff = TileHelper.CoordinateDifferenceInFrontFacingDirection(dirOnLeft);
-            Vector2Int OtherMoved = new Vector2Int(math.mod(other.Origin.x - diff.x, TileConstants.ChunkSize),
-                math.mod(other.Origin.y - diff.y, TileConstants.ChunkSize));
-            if (Origin == OtherMoved)
-                return true;
-
-            return false;
+            return WorldOrigin == other.WorldOrigin - diff;
         }
 
         /// <summary>
-        /// TODO don't use chunk if possible, or chunk coordinate as well.
         /// Is this at the direction of the other object ? (has to be adjacent).
         /// </summary>
         public bool AtDirectionOf(PlacedTileObject other, Direction dir)
         {
-            switch (dir)
-            {
-                case Direction.North:
-                    return math.mod(other.Origin.y - 1, TileConstants.ChunkSize) == Origin.y;
-                case Direction.South:
-                    return math.mod(other.Origin.y + 1, TileConstants.ChunkSize) == Origin.y;
-                case Direction.East:
-                    return math.mod(other.Origin.x - 1, TileConstants.ChunkSize) == Origin.x;
-                case Direction.West:
-                    return math.mod(other.Origin.x + 1, TileConstants.ChunkSize) == Origin.x;
-                default: return false;
-            }
-            
+            Tuple<int, int> vector = TileHelper.ToCardinalVector(dir);
+            Vector2Int expectedOrigin = other.WorldOrigin + new Vector2Int(vector.Item1, vector.Item2);
+            return WorldOrigin == expectedOrigin;
         }
 
         public bool HasNeighbourFrontBack(List<PlacedTileObject> neighbours,

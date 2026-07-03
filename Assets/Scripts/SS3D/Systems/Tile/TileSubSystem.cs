@@ -25,7 +25,9 @@ namespace SS3D.Systems.Tile
         public TileResourceLoader Loader { get; private set; }
  
         private TileMap _currentMap;
+        private TileQueryService _queryService;
         public TileMap CurrentMap => _currentMap;
+        public ITileQueryService QueryService => _queryService;
 
         public string SavePath => savePath;
 
@@ -77,6 +79,17 @@ namespace SS3D.Systems.Tile
 	        TileMap map = TileMap.Create(mapName);
 	        map.transform.SetParent(transform);
 	        _currentMap = map;
+	        _queryService = new TileQueryService(map);
+        }
+
+        public void RegisterTileMutationObserver(ITileMutationObserver observer)
+        {
+            _currentMap?.RegisterMutationObserver(observer);
+        }
+
+        public void UnregisterTileMutationObserver(ITileMutationObserver observer)
+        {
+            _currentMap?.UnregisterMutationObserver(observer);
         }
 
         [ServerOrClient]

@@ -22,18 +22,21 @@ namespace SS3D.Systems.Tile
     {
         private Dictionary<Vector2Int, TileChunk> _chunks;
         private List<PlacedItemObject> _items;
+        private readonly List<ITileMutationObserver> _mutationObservers = new();
         private string _mapName;
+
+        public int MapId { get; private set; }
 
         public int ChunkCount => _chunks.Count;
 
         public event EventHandler OnMapLoaded;
 
-        public static TileMap Create(string name)
+        public static TileMap Create(string name, int mapId = 0)
         {
             GameObject mapObject = new GameObject(name);
 
             TileMap map = mapObject.AddComponent<TileMap>();
-            map.Setup(name);
+            map.Setup(name, mapId);
 
             if (InstanceFinder.ServerManager != null && mapObject.GetComponent<NetworkObject>() != null)
             {
@@ -43,12 +46,24 @@ namespace SS3D.Systems.Tile
             return map;
         }
 
-        private void Setup(string mapName)
+        private void Setup(string mapName, int mapId)
         {
             _chunks = new Dictionary<Vector2Int, TileChunk>();
             _items = new List<PlacedItemObject>();
             name = mapName;
             _mapName = mapName;
+            MapId = mapId;
+        }
+
+        public void RegisterMutationObserver(ITileMutationObserver observer)
+        {
+            if (observer != null && !_mutationObservers.Contains(observer))
+                _mutationObservers.Add(observer);
+        }
+
+        public void UnregisterMutationObserver(ITileMutationObserver observer)
+        {
+            _mutationObservers.Remove(observer);
         }
 
         /// <summary>
@@ -92,6 +107,7 @@ namespace SS3D.Systems.Tile
                 Vector3 origin = new Vector3 { x = key.x * TileChunk.ChunkSize, z = key.y * TileChunk.ChunkSize };
                 chunk = CreateChunk(key, origin);
                 _chunks[key] = chunk;
+                NotifyChunkCreated(key, origin);
             }
 
             return chunk;
@@ -113,10 +129,46 @@ namespace SS3D.Systems.Tile
 
         public ITileLocation GetTileLocation(TileLayer layer, Vector3 worldPosition)
         {
-            TileChunk chunk = GetOrCreateChunk(worldPosition); // TODO: creates unnessary empty chunk when checking whether building can be done
+            return GetOrCreateTileLocation(layer, worldPosition);
+        }
+
+        public ITileLocation GetOrCreateTileLocation(TileLayer layer, Vector3 worldPosition)
+        {
+            TileChunk chunk = GetOrCreateChunk(worldPosition);
             return chunk.GetTileObject(layer, worldPosition);
         }
 
+        public bool TryGetTileLocation(TileLayer layer, Vector3 worldPosition, out ITileLocation location)
+        {
+            TileChunk chunk = GetChunk(worldPosition);
+            if (chunk == null)
+            {
+                location = CreateEmptyTileLocation(layer, worldPosition);
+                return false;
+            }
+
+            location = chunk.GetTileObject(layer, worldPosition);
+            return true;
+        }
+
+        public bool TryGetTileLocations(Vector3 worldPosition, out ITileLocation[] tileLocations)
+        {
+            tileLocations = new ITileLocation[TileHelper.GetTileLayers().Length];
+            TileChunk chunk = GetChunk(worldPosition);
+
+            if (chunk == null)
+            {
+                foreach (TileLayer layer in TileHelper.GetTileLayers())
+                    tileLocations[(int)layer] = CreateEmptyTileLocation(layer, worldPosition);
+
+                return false;
+            }
+
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+                tileLocations[(int)layer] = chunk.GetTileObject(layer, worldPosition);
+
+            return true;
+        }
 
         public ITileLocation[] GetTileLocations(Vector3 worldPosition)
         {
@@ -124,10 +176,27 @@ namespace SS3D.Systems.Tile
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                tileObjects[(int)layer] = GetTileLocation(layer, worldPosition);
+                tileObjects[(int)layer] = GetOrCreateTileLocation(layer, worldPosition);
             }
 
             return tileObjects;
+        }
+
+        private static ITileLocation CreateEmptyTileLocation(TileLayer layer, Vector3 worldPosition)
+        {
+            Vector2Int local = GetLocalTileCoordinates(worldPosition);
+            return TileHelper.CreateTileLocation(layer, local.x, local.y);
+        }
+
+        private static Vector2Int GetLocalTileCoordinates(Vector3 worldPosition)
+        {
+            int chunkX = (int)Math.Floor(worldPosition.x / TileChunk.ChunkSize);
+            int chunkY = (int)Math.Floor(worldPosition.z / TileChunk.ChunkSize);
+            Vector3 chunkOrigin = new Vector3(chunkX * TileChunk.ChunkSize, 0, chunkY * TileChunk.ChunkSize);
+
+            return new Vector2Int(
+                (int)Math.Round(worldPosition.x - chunkOrigin.x),
+                (int)Math.Round(worldPosition.z - chunkOrigin.z));
         }
 
         /// <summary>
@@ -147,7 +216,8 @@ namespace SS3D.Systems.Tile
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                ITileLocation neighbourLocation = GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
+                Vector3 neighbourPosition = worldPosition + new Vector3(vector.Item1, 0, vector.Item2);
+                TryGetTileLocation(layer, neighbourPosition, out ITileLocation neighbourLocation);
                 neighbourLocation.TryGetPlacedObject(out PlacedTileObject neighbourObject, TileHelper.GetOpposite(direction));
                 adjacentObjects[(int)direction] = neighbourObject;
             }
@@ -162,8 +232,9 @@ namespace SS3D.Systems.Tile
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction+= 2)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                adjacentObjects.AddRange(
-                    GetTileLocation(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetAllPlacedObject());
+                Vector3 neighbourPosition = worldPosition + new Vector3(vector.Item1, 0, vector.Item2);
+                TryGetTileLocation(layer, neighbourPosition, out ITileLocation neighbourLocation);
+                adjacentObjects.AddRange(neighbourLocation.GetAllPlacedObject());
             }
 
             return adjacentObjects;
@@ -180,17 +251,15 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
-            // Get the right chunk
-            TileChunk chunk = GetOrCreateChunk(placePosition);
             List<Vector2Int> gridPositionList = tileObjectSo.GetGridOffsetList(dir);
 
             bool canBuild = true;
             foreach (Vector2Int gridOffset in gridPositionList)
             {
-                // Verify if we are allowed to build for this grid position
                 Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
+                TryGetTileLocations(gridPosition, out ITileLocation[] tileLocations);
 
-                canBuild &= BuildChecker.CanBuild(GetTileLocations(gridPosition), tileObjectSo, dir, gridPosition,
+                canBuild &= BuildChecker.CanBuild(tileLocations, tileObjectSo, dir, gridPosition,
                     GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition), replaceExisting);
             }
             
@@ -207,7 +276,7 @@ namespace SS3D.Systems.Tile
             {
                 TileChunk chunk = GetOrCreateChunk(placePosition);
                 Vector2Int origin = chunk.GetXY(placePosition);
-                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo);
+                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo, MapId);
                 placedObject.transform.SetParent(chunk.transform);
 
                 foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
@@ -229,6 +298,7 @@ namespace SS3D.Systems.Tile
                 }
 
                 placedObjectGo = placedObject.gameObject;
+                NotifyTilePlaced(placedObject, placePosition);
             }
 
             return canBuild;
@@ -236,10 +306,9 @@ namespace SS3D.Systems.Tile
 
         public void ClearTileObject(Vector3 placePosition, TileLayer layer, Direction dir)
         {
-            ITileLocation[] tileLocations = GetTileLocations(placePosition);
+            TryGetTileLocations(placePosition, out ITileLocation[] tileLocations);
             ITileLocation tileLocation = tileLocations[(int)layer];
             tileLocation.TryGetPlacedObject(out var placed, dir);
-
 
             if (placed != null && placed.TryGetComponent(out IAdjacencyConnector connector))
             {
@@ -250,6 +319,9 @@ namespace SS3D.Systems.Tile
             {
                 tileLocation.TryClearPlacedObject(dir);
             }
+
+            if (placed != null)
+                NotifyTileCleared(placed, placePosition, layer);
 
             // Remove any invalid tile combinations
             List<ITileLocation> toClearLocations = BuildChecker.GetToBeClearedLocations(tileLocations);
@@ -471,6 +543,35 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Clear untracked items in the scene that are not in containers and don't have a PlacedItemObject component
         /// </summary>
+        private void NotifyChunkCreated(Vector2Int chunkKey, Vector3 origin)
+        {
+            TileChunkRef chunkRef = new TileChunkRef
+            {
+                MapId = MapId,
+                ChunkKey = chunkKey,
+                Origin = origin,
+            };
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnChunkCreated(chunkRef);
+        }
+
+        private void NotifyTilePlaced(PlacedTileObject placedObject, Vector3 worldPosition)
+        {
+            TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnTilePlaced(placedObject, coord);
+        }
+
+        private void NotifyTileCleared(PlacedTileObject placedObject, Vector3 worldPosition, TileLayer layer)
+        {
+            TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnTileCleared(placedObject, coord, layer);
+        }
+
         private void ClearUntrackedItems()
         {
             // Find all Item components in the scene
