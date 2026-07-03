@@ -10,18 +10,21 @@ namespace SS3D.Systems.Examine
     {
         [SerializeField] private TMP_Text HoverName;
         [SerializeField] private ExamineDetailedView DetailedViewPrefab;
+        [SerializeField] private ExamineImageDetailedView ImageDetailedViewPrefab;
         [SerializeField] private KeyCode DetailedExamineKey = KeyCode.LeftShift;
         [SerializeField] private Vector2 DetailedTextOffset = new Vector2(16f, -16f);
 
         private StringTable _currentStringTable;
         private IExaminable _currentExaminable;
         private bool _wasDetailedExamineHeld;
-        private ExamineDetailedView _detailedView;
+        private ExamineDetailedView _textDetailedView;
+        private ExamineImageDetailedView _imageDetailedView;
+        private RectTransform _activeDetailedPanel;
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            EnsureDetailedView();
+            EnsureDetailedViews();
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged += UpdateHoverText;
         }
 
@@ -40,7 +43,7 @@ namespace SS3D.Systems.Examine
                 _wasDetailedExamineHeld = isDetailedExamineHeld;
                 UpdateHoverText(_currentExaminable);
             }
-            else if (isDetailedExamineHeld && _detailedView != null && _detailedView.gameObject.activeSelf)
+            else if (isDetailedExamineHeld && _activeDetailedPanel != null)
             {
                 PositionDetailedPanel();
             }
@@ -62,62 +65,154 @@ namespace SS3D.Systems.Examine
                 return;
             }
 
-            if (_wasDetailedExamineHeld && TryGetDetailedTexts(examinable, out string name, out string description))
+            if (_wasDetailedExamineHeld)
             {
-                HoverName.text = string.Empty;
-                ShowDetailedView(name, description);
-                return;
+                ExamineData data = examinable.GetData();
+                if (data.Type == ExamineType.SIMPLE_IMAGE
+                    && TryGetImageDetailedContent(examinable, out Sprite image, out string caption, out Vector2 imageSize))
+                {
+                    HoverName.text = string.Empty;
+                    ShowImageDetailedView(image, caption, imageSize);
+                    return;
+                }
+
+                if (TryGetDetailedTexts(examinable, out string name, out string description))
+                {
+                    HoverName.text = string.Empty;
+                    ShowTextDetailedView(name, description);
+                    return;
+                }
             }
 
             SetDetailedViewVisible(false);
             HoverName.text = GetLocalizedName(examinable);
         }
 
-        private void EnsureDetailedView()
+        private void EnsureDetailedViews()
         {
-            if (_detailedView != null || DetailedViewPrefab == null || HoverName == null)
+            if (HoverName == null)
             {
                 return;
             }
 
-            _detailedView = Instantiate(DetailedViewPrefab, HoverName.rectTransform.parent);
-            _detailedView.name = "Examinable Detailed View";
-            _detailedView.transform.SetAsLastSibling();
-            _detailedView.SetVisible(false);
+            Transform parent = HoverName.rectTransform.parent;
+
+            if (_textDetailedView == null && DetailedViewPrefab != null)
+            {
+                _textDetailedView = Instantiate(DetailedViewPrefab, parent);
+                _textDetailedView.name = "Examinable Detailed View";
+                _textDetailedView.transform.SetAsLastSibling();
+                _textDetailedView.SetVisible(false);
+            }
+
+            if (_imageDetailedView == null && ImageDetailedViewPrefab != null)
+            {
+                _imageDetailedView = Instantiate(ImageDetailedViewPrefab, parent);
+                _imageDetailedView.name = "Examinable Image Detailed View";
+                _imageDetailedView.transform.SetAsLastSibling();
+                _imageDetailedView.SetVisible(false);
+            }
         }
 
-        private void ShowDetailedView(string name, string description)
+        private void ShowTextDetailedView(string name, string description)
         {
-            EnsureDetailedView();
-            if (_detailedView == null)
+            EnsureDetailedViews();
+            if (_textDetailedView == null)
             {
                 return;
             }
 
-            _detailedView.SetContent(name, description);
-            SetDetailedViewVisible(true);
+            SetDetailedViewVisible(false);
+            _textDetailedView.SetContent(name, description);
+            _textDetailedView.SetVisible(true);
+            _activeDetailedPanel = _textDetailedView.Panel;
+            PositionDetailedPanel();
+        }
+
+        private void ShowImageDetailedView(Sprite image, string caption, Vector2 imageSize)
+        {
+            EnsureDetailedViews();
+            if (_imageDetailedView == null)
+            {
+                return;
+            }
+
+            SetDetailedViewVisible(false);
+            _imageDetailedView.SetContent(image, caption, imageSize);
+            _imageDetailedView.SetVisible(true);
+            _activeDetailedPanel = _imageDetailedView.Panel;
             PositionDetailedPanel();
         }
 
         private void SetDetailedViewVisible(bool visible)
         {
-            if (_detailedView != null)
+            if (!visible)
             {
-                _detailedView.SetVisible(visible);
+                _activeDetailedPanel = null;
+            }
+
+            if (_textDetailedView != null)
+            {
+                _textDetailedView.SetVisible(false);
+            }
+
+            if (_imageDetailedView != null)
+            {
+                _imageDetailedView.SetVisible(false);
             }
         }
 
         private void PositionDetailedPanel()
         {
-            RectTransform panel = _detailedView.Panel;
+            if (_activeDetailedPanel == null)
+            {
+                return;
+            }
+
             Vector2 position = (Vector2)Input.mousePosition + DetailedTextOffset;
-            float width = panel.rect.width;
-            float height = panel.rect.height;
+            float width = _activeDetailedPanel.rect.width;
+            float height = _activeDetailedPanel.rect.height;
 
             position.x = Mathf.Clamp(position.x, 0f, Screen.width - width);
             position.y = Mathf.Clamp(position.y, height, Screen.height);
 
-            panel.position = position;
+            _activeDetailedPanel.position = position;
+        }
+
+        private bool TryGetImageDetailedContent(
+            IExaminable examinable,
+            out Sprite image,
+            out string caption,
+            out Vector2 imageSize)
+        {
+            image = null;
+            caption = string.Empty;
+            imageSize = Vector2.zero;
+
+            ExamineData data = examinable?.GetData();
+            if (data == null || data.Type != ExamineType.SIMPLE_IMAGE || examinable is not IImageExaminable imageExaminable)
+            {
+                return false;
+            }
+
+            image = imageExaminable.GetDetailedImage();
+            if (image == null)
+            {
+                return false;
+            }
+
+            imageSize = data.DetailedImageSize;
+
+            if (data.LocalizationTable != null)
+            {
+                _currentStringTable = data.LocalizationTable.GetTable();
+                if (_currentStringTable != null)
+                {
+                    caption = GetLocalizedValue(data.DescriptionKey);
+                }
+            }
+
+            return true;
         }
 
         private bool TryGetDetailedTexts(IExaminable examinable, out string name, out string description)
