@@ -19,3 +19,6 @@ MonoBehaviour:
   NameKey: Horizontal Poster
   DescriptionKey: A poster that is wider than tall.
   DetailedImageSize: {x: 320, y: 215}
+  DetailedImageRange:
+    Horizontal: 1.5
+    Vertical: 2

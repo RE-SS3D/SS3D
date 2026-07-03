@@ -1,5 +1,8 @@
-﻿using SS3D.Core;
+﻿using Coimbra.Services.Events;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Inventory.Containers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization.Tables;
@@ -16,10 +19,17 @@ namespace SS3D.Systems.Examine
 
         private StringTable _currentStringTable;
         private IExaminable _currentExaminable;
+        private GameObject _localPlayer;
         private bool _wasDetailedExamineHeld;
         private ExamineDetailedView _textDetailedView;
         private ExamineImageDetailedView _imageDetailedView;
         private RectTransform _activeDetailedPanel;
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            AddHandle(LocalPlayerObjectChanged.AddListener(HandleLocalPlayerObjectChanged));
+        }
 
         protected override void OnEnabled()
         {
@@ -35,6 +45,11 @@ namespace SS3D.Systems.Examine
             SetDetailedViewVisible(false);
         }
 
+        private void HandleLocalPlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
+        {
+            _localPlayer = e.PlayerHasObject ? e.PlayerObject : null;
+        }
+
         private void Update()
         {
             bool isDetailedExamineHeld = IsDetailedExamineHeld();
@@ -43,9 +58,14 @@ namespace SS3D.Systems.Examine
                 _wasDetailedExamineHeld = isDetailedExamineHeld;
                 UpdateHoverText(_currentExaminable);
             }
-            else if (isDetailedExamineHeld && _activeDetailedPanel != null)
+            else if (isDetailedExamineHeld)
             {
-                PositionDetailedPanel();
+                UpdateHoverText(_currentExaminable);
+
+                if (_activeDetailedPanel != null)
+                {
+                    PositionDetailedPanel();
+                }
             }
         }
 
@@ -69,6 +89,7 @@ namespace SS3D.Systems.Examine
             {
                 ExamineData data = examinable.GetData();
                 if (data.Type == ExamineType.SIMPLE_IMAGE
+                    && IsWithinDetailedImageRange(examinable, data)
                     && TryGetImageDetailedContent(examinable, out Sprite image, out string caption, out Vector2 imageSize))
                 {
                     HoverName.text = string.Empty;
@@ -212,6 +233,36 @@ namespace SS3D.Systems.Examine
                 }
             }
 
+            return true;
+        }
+
+        private bool IsWithinDetailedImageRange(IExaminable examinable, ExamineData data)
+        {
+            if (!TryGetPlayerExamineOrigin(out Vector3 origin))
+            {
+                return false;
+            }
+
+            return ExamineRangeUtility.IsWithinRange(examinable, origin, data.DetailedImageRange);
+        }
+
+        private bool TryGetPlayerExamineOrigin(out Vector3 origin)
+        {
+            origin = default;
+
+            if (_localPlayer == null)
+            {
+                return false;
+            }
+
+            Hands hands = _localPlayer.GetComponentInChildren<Hands>();
+            Hand hand = hands?.SelectedHand;
+            if (hand == null)
+            {
+                return false;
+            }
+
+            origin = hand.InteractionOrigin;
             return true;
         }
 

@@ -19,3 +19,6 @@ MonoBehaviour:
   NameKey: Vertical Poster
   DescriptionKey: A poster that is taller than wide.
   DetailedImageSize: {x: 215, y: 320}
+  DetailedImageRange:
+    Horizontal: 1.5
+    Vertical: 2
