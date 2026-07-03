@@ -63,18 +63,18 @@ namespace SS3D.Systems.Selection
             _inputSystem = SubSystems.Get<InputSubSystem>();
             _camera = GetComponent<Camera>();
             _playerCamera = transform.parent.GetComponent<Camera>();
-            _camera.SetReplacementShader(_shader, "");
+            SyncFromPlayerCamera();
 
-            GenerateRenderTexture();
+            EnsureRenderTextureSize();
             GenerateReadbackTexture();
-            
+
             _inputSystem.Inputs.Other.ToggleSelectionDebug.performed += ToggleDebugMode;
         }
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            
+
             _inputSystem = SubSystems.Get<InputSubSystem>();
 
             if (_inputSystem)
@@ -95,7 +95,10 @@ namespace SS3D.Systems.Selection
 
         protected override void OnDestroyed()
         {
-            _renderTexture.Release();
+            if (_renderTexture != null)
+            {
+                _renderTexture.Release();
+            }
         }
 
         private void GenerateReadbackTexture()
@@ -103,10 +106,22 @@ namespace SS3D.Systems.Selection
             _readbackTexture = new Texture2D(1, 1, _renderTexture.graphicsFormat, TextureCreationFlags.None);
         }
 
-        private void GenerateRenderTexture()
+        private void EnsureRenderTextureSize()
         {
-            if (_renderTexture != null) _renderTexture.Release();
-            _renderTexture = new RenderTexture(Screen.width, Screen.height, 0)
+            int width = Mathf.Max(1, _playerCamera != null ? _playerCamera.pixelWidth : Screen.width);
+            int height = Mathf.Max(1, _playerCamera != null ? _playerCamera.pixelHeight : Screen.height);
+
+            if (_renderTexture != null && _renderTexture.width == width && _renderTexture.height == height)
+            {
+                return;
+            }
+
+            if (_renderTexture != null)
+            {
+                _renderTexture.Release();
+            }
+
+            _renderTexture = new RenderTexture(width, height, 0)
             {
                 antiAliasing = 1,
                 filterMode = FilterMode.Point,
@@ -116,31 +131,69 @@ namespace SS3D.Systems.Selection
             _camera.targetTexture = _renderTexture;
         }
 
+        /// <summary>
+        /// Keep projection in sync with the player camera so pick pixels line up with what is on screen.
+        /// </summary>
+        private void SyncFromPlayerCamera()
+        {
+            if (_playerCamera == null)
+            {
+                return;
+            }
+
+            _camera.CopyFrom(_playerCamera);
+            _camera.targetTexture = _renderTexture;
+            _camera.clearFlags = CameraClearFlags.SolidColor;
+            _camera.backgroundColor = Color.black;
+            _camera.allowHDR = false;
+            _camera.allowMSAA = false;
+            _camera.SetReplacementShader(_shader, "");
+        }
+
         private void OnPreRender()
         {
-            if (_renderTexture.width != Screen.width || _renderTexture.height != Screen.height)
-            {
-                GenerateRenderTexture();
-            }
+            SyncFromPlayerCamera();
+            EnsureRenderTextureSize();
         }
 
         private void OnPostRender()
         {
-            Color32 col;
-            Vector3 pos = Input.mousePosition;
+            Color32 col = Color.black;
 
-            // If mouse position is out of bounds, default to black (i.e. no colour)
-            if (pos.x < 0 || pos.x >= Screen.width || pos.y < 0 || pos.y >= Screen.height)
+            if (_playerCamera != null
+                && _renderTexture != null
+                && _readbackTexture != null
+                && TryGetMousePixel(out int x, out int y))
             {
-                col = Color.black;
-            }
-            else
-            {
-                _readbackTexture.ReadPixels(new Rect(pos.x, Screen.height - pos.y - 1, 1, 1), 0, 0, false);
+                RenderTexture previous = RenderTexture.active;
+                RenderTexture.active = _renderTexture;
+                _readbackTexture.ReadPixels(new Rect(x, y, 1, 1), 0, 0, false);
+                _readbackTexture.Apply(false, false);
+                RenderTexture.active = previous;
                 col = _readbackTexture.GetPixel(0, 0);
             }
 
             _system.UpdateColourFromCamera(col);
+        }
+
+        private bool TryGetMousePixel(out int x, out int y)
+        {
+            x = 0;
+            y = 0;
+
+            Vector3 screenPosition = Mouse.current != null
+                ? (Vector3)Mouse.current.position.ReadValue()
+                : Input.mousePosition;
+
+            if (!_playerCamera.pixelRect.Contains(screenPosition))
+            {
+                return false;
+            }
+
+            Vector3 viewport = _playerCamera.ScreenToViewportPoint(screenPosition);
+            x = Mathf.Clamp(Mathf.FloorToInt(viewport.x * _renderTexture.width), 0, _renderTexture.width - 1);
+            y = Mathf.Clamp(Mathf.FloorToInt(viewport.y * _renderTexture.height), 0, _renderTexture.height - 1);
+            return true;
         }
 
         /// <summary>
