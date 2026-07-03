@@ -9,15 +9,19 @@ namespace SS3D.Systems.Examine
     public class ExamineUI : Actor
     {
         [SerializeField] private TMP_Text HoverName;
+        [SerializeField] private ExamineDetailedView DetailedViewPrefab;
         [SerializeField] private KeyCode DetailedExamineKey = KeyCode.LeftShift;
+        [SerializeField] private Vector2 DetailedTextOffset = new Vector2(16f, -16f);
 
         private StringTable _currentStringTable;
         private IExaminable _currentExaminable;
         private bool _wasDetailedExamineHeld;
+        private ExamineDetailedView _detailedView;
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
+            EnsureDetailedView();
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged += UpdateHoverText;
         }
 
@@ -25,6 +29,7 @@ namespace SS3D.Systems.Examine
         {
             base.OnDisabled();
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged -= UpdateHoverText;
+            SetDetailedViewVisible(false);
         }
 
         private void Update()
@@ -34,6 +39,10 @@ namespace SS3D.Systems.Examine
             {
                 _wasDetailedExamineHeld = isDetailedExamineHeld;
                 UpdateHoverText(_currentExaminable);
+            }
+            else if (isDetailedExamineHeld && _detailedView != null && _detailedView.gameObject.activeSelf)
+            {
+                PositionDetailedPanel();
             }
         }
 
@@ -45,10 +54,96 @@ namespace SS3D.Systems.Examine
         {
             _currentExaminable = examinable;
             _wasDetailedExamineHeld = IsDetailedExamineHeld();
-            HoverName.text = GetHoverText(examinable, _wasDetailedExamineHeld);
+
+            if (examinable?.GetData() == null)
+            {
+                HoverName.text = string.Empty;
+                SetDetailedViewVisible(false);
+                return;
+            }
+
+            if (_wasDetailedExamineHeld && TryGetDetailedTexts(examinable, out string name, out string description))
+            {
+                HoverName.text = string.Empty;
+                ShowDetailedView(name, description);
+                return;
+            }
+
+            SetDetailedViewVisible(false);
+            HoverName.text = GetLocalizedName(examinable);
         }
 
-        private string GetHoverText(IExaminable examinable, bool showDetailedText)
+        private void EnsureDetailedView()
+        {
+            if (_detailedView != null || DetailedViewPrefab == null || HoverName == null)
+            {
+                return;
+            }
+
+            _detailedView = Instantiate(DetailedViewPrefab, HoverName.rectTransform.parent);
+            _detailedView.name = "Examinable Detailed View";
+            _detailedView.transform.SetAsLastSibling();
+            _detailedView.SetVisible(false);
+        }
+
+        private void ShowDetailedView(string name, string description)
+        {
+            EnsureDetailedView();
+            if (_detailedView == null)
+            {
+                return;
+            }
+
+            _detailedView.SetContent(name, description);
+            SetDetailedViewVisible(true);
+            PositionDetailedPanel();
+        }
+
+        private void SetDetailedViewVisible(bool visible)
+        {
+            if (_detailedView != null)
+            {
+                _detailedView.SetVisible(visible);
+            }
+        }
+
+        private void PositionDetailedPanel()
+        {
+            RectTransform panel = _detailedView.Panel;
+            Vector2 position = (Vector2)Input.mousePosition + DetailedTextOffset;
+            float width = panel.rect.width;
+            float height = panel.rect.height;
+
+            position.x = Mathf.Clamp(position.x, 0f, Screen.width - width);
+            position.y = Mathf.Clamp(position.y, height, Screen.height);
+
+            panel.position = position;
+        }
+
+        private bool TryGetDetailedTexts(IExaminable examinable, out string name, out string description)
+        {
+            name = string.Empty;
+            description = string.Empty;
+
+            ExamineData data = examinable?.GetData();
+            if (data == null || data.LocalizationTable == null)
+            {
+                return false;
+            }
+
+            _currentStringTable = data.LocalizationTable.GetTable();
+            if (_currentStringTable == null)
+            {
+                return false;
+            }
+
+            name = GetLocalizedValue(data.NameKey);
+            description = GetLocalizedValue(data.DescriptionKey);
+
+            return !string.IsNullOrEmpty(description);
+        }
+
+        private string GetLocalizedName(IExaminable examinable)
         {
             ExamineData data = examinable?.GetData();
             if (data == null || data.LocalizationTable == null)
@@ -62,25 +157,7 @@ namespace SS3D.Systems.Examine
                 return string.Empty;
             }
 
-            string name = GetLocalizedValue(data.NameKey);
-
-            if (!showDetailedText)
-            {
-                return name;
-            }
-
-            string description = GetLocalizedValue(data.DescriptionKey);
-            if (string.IsNullOrEmpty(description))
-            {
-                return name;
-            }
-
-            if (string.IsNullOrEmpty(name))
-            {
-                return description;
-            }
-
-            return $"{name}\n{description}";
+            return GetLocalizedValue(data.NameKey);
         }
 
         private string GetLocalizedValue(string key)
