@@ -237,8 +237,8 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.scriptablebuildpipeline": {
-      "version": "4.9.4",
+    "com.unity.searcher": {
+      "version": "4.9.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
