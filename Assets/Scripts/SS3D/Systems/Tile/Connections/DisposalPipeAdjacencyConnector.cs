@@ -40,6 +40,11 @@ namespace SS3D.Systems.Tile.Connections
 
         public bool VerticalConnection => _verticalConnection;
 
+        /// <summary>
+        /// Horizontal facing used for vertical mesh rotation and in-front pipe links.
+        /// </summary>
+        public Direction FacingDirection => _direction;
+
         public int HorizontalConnectionCount => _adjacencyMap?.CardinalConnectionCount ?? 0;
 
         public IConnectionRule ConnectionRule => _connectionRule ??= new DisposalPipeConnectionRule(this);
@@ -72,17 +77,22 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
-            AdjacencyMap horizontalMap = BuildHorizontalMap(map, vertical: false);
+            AdjacencyMap preliminaryMap = BuildHorizontalMap(map, vertical: false, _placedObject.Direction);
             bool vertical = DisposalPipeConnectionRule.TryGetDisposalElementAbovePipe(map, _placedObject, out _)
-                && horizontalMap.CardinalConnectionCount < 2;
+                && preliminaryMap.CardinalConnectionCount < 2;
 
-            if (vertical)
-                horizontalMap = BuildHorizontalMap(map, vertical: true);
+            Direction facing = vertical
+                ? DisposalPipeConnectionRule.ResolveVerticalFacing(preliminaryMap, _placedObject.Direction)
+                : _placedObject.Direction;
+
+            AdjacencyMap horizontalMap = vertical
+                ? BuildHorizontalMap(map, vertical: true, facing)
+                : preliminaryMap;
 
             PublishAdjacency(
                 horizontalMap.SerializeToByte(),
                 vertical,
-                _placedObject.Direction);
+                facing);
         }
 
         public bool IsConnected(PlacedTileObject neighbourObject)
@@ -145,10 +155,11 @@ namespace SS3D.Systems.Tile.Connections
             return neighbours;
         }
 
-        private AdjacencyMap BuildHorizontalMap(TileMap map, bool vertical)
+        private AdjacencyMap BuildHorizontalMap(TileMap map, bool vertical, Direction facingDirection)
         {
             AdjacencyMap horizontalMap = new();
             PlacedTileObject[] neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
+            Direction selfFacing = vertical ? facingDirection : _placedObject.Direction;
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
@@ -157,12 +168,16 @@ namespace SS3D.Systems.Tile.Connections
                     && neighbour.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnector)
                     && neighbourConnector.VerticalConnection;
 
+                Direction neighbourFacing = DisposalPipeConnectionRule.ResolveNeighbourFacing(neighbour);
+
                 bool isConnected = DisposalPipeConnectionRule.Evaluate(
                     _placedObject,
                     neighbour,
                     vertical,
                     horizontalMap.CardinalConnectionCount,
-                    neighbourVertical);
+                    neighbourVertical,
+                    selfFacing,
+                    neighbourFacing);
 
                 horizontalMap.SetConnection(direction,
                     new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
@@ -206,8 +221,10 @@ namespace SS3D.Systems.Tile.Connections
             if (info.Item3 == AdjacencyShape.Vertical)
             {
                 transform.position = new Vector3(pos.x, -0.67f, pos.z);
+                // verticalMesh opens opposite its connection-facing direction (model south vs world north)
+                Direction meshRotation = TileHelper.GetOpposite(_direction);
                 _filter.transform.localRotation = Quaternion.Euler(
-                    eulerRotation.x, TileHelper.GetRotationAngle(_direction), eulerRotation.z);
+                    eulerRotation.x, TileHelper.GetRotationAngle(meshRotation), eulerRotation.z);
             }
             else
             {

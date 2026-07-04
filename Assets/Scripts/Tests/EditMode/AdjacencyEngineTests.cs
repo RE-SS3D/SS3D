@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using SS3D.Tests;
 using System.Collections.Generic;
 using System.Reflection;
@@ -102,7 +103,46 @@ namespace EditorTests
                 neighbour,
                 selfVertical: false,
                 selfCardinalConnectionCount: 0,
-                neighbourVertical: false);
+                neighbourVertical: false,
+                selfFacingDirection: Direction.North,
+                neighbourFacingDirection: Direction.North);
+
+            Assert.IsTrue(connected);
+        }
+
+        [Test]
+        public void DisposalPipeConnectionRule_ResolveVerticalFacing_UsesSingleCardinalConnection()
+        {
+            AdjacencyMap map = new();
+            map.SetConnection(Direction.East,
+                new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, true));
+
+            Assert.AreEqual(Direction.East,
+                DisposalPipeConnectionRule.ResolveVerticalFacing(map, Direction.North));
+        }
+
+        [Test]
+        public void DisposalPipeConnectionRule_VerticalPipeConnectsInFacingDirection()
+        {
+            TileMap tileMap = TileMap.Create("DisposalVerticalFacingTest");
+            instantiated.Add(tileMap.gameObject);
+
+            PlacedTileObject verticalPipe = CreatePlacedTileWithDisposalPipeConnectorAt(
+                new Vector2Int(5, 5), TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+            PlacedTileObject easternPipe = CreatePlacedTileWithDisposalPipeConnectorAt(
+                new Vector2Int(6, 5), TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+
+            RegisterOnMap(tileMap, verticalPipe, TileLayer.Disposal, new Vector3(5, 0, 5));
+            RegisterOnMap(tileMap, easternPipe, TileLayer.Disposal, new Vector3(6, 0, 5));
+
+            bool connected = DisposalPipeConnectionRule.Evaluate(
+                verticalPipe,
+                easternPipe,
+                selfVertical: true,
+                selfCardinalConnectionCount: 0,
+                neighbourVertical: false,
+                selfFacingDirection: Direction.East,
+                neighbourFacingDirection: Direction.North);
 
             Assert.IsTrue(connected);
         }
@@ -218,6 +258,17 @@ namespace EditorTests
         private PlacedTileObject CreatePlacedTileWithConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)
         {
             return CreatePlacedTile(genericType, specificType);
+        }
+
+        private PlacedTileObject CreatePlacedTileWithDisposalPipeConnectorAt(
+            Vector2Int worldOrigin,
+            TileObjectGenericType genericType,
+            TileObjectSpecificType specificType)
+        {
+            PlacedTileObject placed = CreatePlacedTileWithDisposalPipeConnector(genericType, specificType);
+            SetPrivateField(placed, "_worldOrigin", worldOrigin);
+            placed.transform.position = new Vector3(worldOrigin.x, 0, worldOrigin.y);
+            return placed;
         }
 
         private PlacedTileObject CreatePlacedTileWithDisposalPipeConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)
