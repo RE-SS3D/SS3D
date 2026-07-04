@@ -9,9 +9,11 @@ namespace SS3D.Systems.Networking
     public static class TileObserverConstants
     {
         /// <summary>
-        /// HashGrid accuracy in world units. Matches <see cref="TileConstants.ChunkSize"/>.
+        /// HashGrid accuracy in world units (Boot scene NetworkManager HashGrid).
+        /// Half-accuracy equals one <see cref="TileConstants.ChunkSize"/> chunk; FishNet's 3×3
+        /// neighbor window then covers roughly three chunks per axis (~48m) before pop-in.
         /// </summary>
-        public const ushort HashGridAccuracy = TileConstants.ChunkSize;
+        public const ushort HashGridAccuracy = (ushort)(TileConstants.ChunkSize * 2);
 
         /// <summary>
         /// Matches FishNet HashGrid cell math for XZ axes (see Boot scene NetworkManager).

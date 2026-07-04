@@ -1,15 +1,17 @@
 using NUnit.Framework;
 using SS3D.Systems.Networking;
 using SS3D.Systems.Tile;
+using UnityEngine;
 
 namespace EditorTests
 {
     public class TileObserverTests
     {
         [Test]
-        public void HashGridAccuracy_MatchesChunkSize()
+        public void HashGridHalfAccuracy_MatchesChunkSize()
         {
-            Assert.AreEqual(TileChunk.ChunkSize, TileObserverConstants.HashGridAccuracy);
+            int halfAccuracy = Mathf.CeilToInt(TileObserverConstants.HashGridAccuracy / 2f);
+            Assert.AreEqual(TileChunk.ChunkSize, halfAccuracy);
         }
     }
 }

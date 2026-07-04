@@ -398,7 +398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gridAxes: 2
-  _accuracy: 16
+  _accuracy: 32
 --- !u!1 &528567223
 GameObject:
   m_ObjectHideFlags: 0
