@@ -92,6 +92,22 @@ namespace EditorTests
         }
 
         [Test]
+        public void DisposalPipeConnectionRule_ConnectsMatchingDisposalPipes()
+        {
+            PlacedTileObject self = CreatePlacedTileWithDisposalPipeConnector(TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+            PlacedTileObject neighbour = CreatePlacedTileWithDisposalPipeConnector(TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+
+            bool connected = DisposalPipeConnectionRule.Evaluate(
+                self,
+                neighbour,
+                selfVertical: false,
+                selfCardinalConnectionCount: 0,
+                neighbourVertical: false);
+
+            Assert.IsTrue(connected);
+        }
+
+        [Test]
         public void PipeConnectionRule_ConnectsMatchingPipeTypes()
         {
             PlacedTileObject self = CreatePlacedTileWithPipeConnector(TileObjectGenericType.Pipe, TileObjectSpecificType.None);
@@ -202,6 +218,14 @@ namespace EditorTests
         private PlacedTileObject CreatePlacedTileWithConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)
         {
             return CreatePlacedTile(genericType, specificType);
+        }
+
+        private PlacedTileObject CreatePlacedTileWithDisposalPipeConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(genericType, specificType);
+            placed.gameObject.AddComponent<DisposalPipeAdjacencyConnector>();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            return placed;
         }
 
         private PlacedTileObject CreatePlacedTileWithPipeConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)

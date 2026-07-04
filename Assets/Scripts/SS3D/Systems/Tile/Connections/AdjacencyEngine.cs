@@ -60,6 +60,12 @@ namespace SS3D.Systems.Tile.Connections
             if (!tile.TryGetComponent(out IEngineDrivenAdjacency engineDriven))
                 return;
 
+            if (engineDriven is ICustomAdjacencyRecompute custom)
+            {
+                custom.RecomputeAdjacency(_map);
+                return;
+            }
+
             IConnectionRule rule = engineDriven.ConnectionRule;
             if (rule == null)
                 return;
