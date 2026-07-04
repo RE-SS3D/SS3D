@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -1956103261117562666}
   - component: {fileID: 8573479704529101673}
   - component: {fileID: 9103428603589987524}
+  - component: {fileID: -221895137340259304}
   m_Layer: 16
   m_Name: PosterVertical
   m_TagString: Untagged
@@ -173,6 +174,22 @@ MonoBehaviour:
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
+--- !u!114 &-221895137340259304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5927714388255546572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
 --- !u!1 &8415466882461271490
 GameObject:
   m_ObjectHideFlags: 0

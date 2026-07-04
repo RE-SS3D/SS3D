@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -4327415787478915747}
   - component: {fileID: 3176501786695625830}
   - component: {fileID: -8087668905176921522}
+  - component: {fileID: -3395956423447548270}
   m_Layer: 0
   m_Name: DisposalOutlet
   m_TagString: Untagged
@@ -204,6 +205,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 56d47dd0e5bd1da449ca79a55746d81b, type: 2}
+--- !u!114 &-3395956423447548270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
 --- !u!1 &4356345215162223831
 GameObject:
   m_ObjectHideFlags: 0

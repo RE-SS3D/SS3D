@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2363650261748645387}
   - component: {fileID: -3044062599094225265}
   - component: {fileID: 8276002785223364561}
+  - component: {fileID: -1732433879108660729}
   m_Layer: 0
   m_Name: TileBar
   m_TagString: Untagged
@@ -187,3 +188,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: d45d6304d59333149a65671f6299fa75, type: 2}
+--- !u!114 &-1732433879108660729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}

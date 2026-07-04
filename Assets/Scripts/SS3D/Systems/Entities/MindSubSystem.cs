@@ -107,6 +107,11 @@ namespace SS3D.Systems.Entities
 
             origin.SetMind(targetMind);
             target.SetMind(originMind);
+
+            if (origin.Owner != null)
+                origin.Owner.SetFirstObject(origin.NetworkObject);
+            if (target.Owner != null)
+                target.Owner.SetFirstObject(target.NetworkObject);
         }
     }
 }

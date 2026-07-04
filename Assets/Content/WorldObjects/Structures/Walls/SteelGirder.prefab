@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 5943896225279475942}
   - component: {fileID: 6249453572088940716}
   - component: {fileID: 1860443116909804100}
+  - component: {fileID: -2337296813948432858}
+  - component: {fileID: 2762988246928033648}
   m_Layer: 0
   m_Name: HighReinforcedWallSheets
   m_TagString: Untagged
@@ -125,6 +127,54 @@ MonoBehaviour:
     xQuad: {fileID: 0}
     viewObstacles: []
     opaque: 0
+--- !u!114 &-2337296813948432858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778875250064888452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &2762988246928033648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778875250064888452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FishNet.Runtime::FishNet.Object.NetworkObject
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 0
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 0
+  <IsNested>k__BackingField: 1
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours: []
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _defaultDespawnType: 0
 --- !u!1 &1826826728141998556
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,6 +441,7 @@ GameObject:
   - component: {fileID: 6528007219760414512}
   - component: {fileID: 6634051451888538392}
   - component: {fileID: 978290459806476930}
+  - component: {fileID: 780577917937939798}
   m_Layer: 0
   m_Name: SteelGirder
   m_TagString: Untagged
@@ -516,6 +567,14 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -2900075557854325373}
   _asset: {fileID: 11400000, guid: bbc616cb55d58144eb50ce126cfca103, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: 88eff1b17847b94469de924f4bb3e2cf, type: 2}
+  _syncAssetName: 
+  _syncOriginX: 0
+  _syncOriginY: 0
+  _syncWorldOriginX: 0
+  _syncWorldOriginY: 0
+  _syncDirection: 0
+  _syncLayer: 0
+  _syncMapId: 0
 --- !u!114 &6528007219760414512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,6 +634,22 @@ MonoBehaviour:
   - {fileID: 1778875250064888452}
   - {fileID: 8757138310547956779}
   - {fileID: 1826826728141998556}
+--- !u!114 &780577917937939798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FishNet.Runtime::FishNet.Observing.NetworkObserver
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
 --- !u!1 &3784341899280207488
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,6 +764,7 @@ MonoBehaviour:
     l: {fileID: 7170323549275931917, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     t: {fileID: -2594403483983642012, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     x: {fileID: 0}
+  _syncedEngineConnections: 0
 --- !u!1 &8309238590450996122
 GameObject:
   m_ObjectHideFlags: 0
