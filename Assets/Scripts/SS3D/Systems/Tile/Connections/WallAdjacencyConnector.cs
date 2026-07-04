@@ -1,12 +1,6 @@
-﻿using DG.Tweening;
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
+﻿using FishNet.Object.Synchronizing;
 using SS3D.Core;
-using SS3D.Logging;
-using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
@@ -16,95 +10,114 @@ namespace SS3D.Systems.Tile.Connections
     /// in particular with the way they connect with doors, hence why they need their own connector
     /// script.
     /// </summary>
-    public class WallAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
+    public class WallAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector, IEngineDrivenAdjacency
     {
-        /// <summary>
-        /// Script to help walls to choose their shape.
-        /// </summary>
         [SerializeField] private AdvancedConnector _advancedAdjacency;
+        private TileAdjacencyView _adjacencyView;
+
+        [SyncVar(OnChange = nameof(SyncEngineConnections))]
+        private byte _syncedEngineConnections;
+
+        private byte _pendingEngineConnections;
+        private bool _hasPendingEngineConnections;
 
         protected override IMeshAndDirectionResolver AdjacencyResolver => _advancedAdjacency;
 
-        /// <summary>
-        /// Check if this wall is conencted to the neighbour object when it's a door.
-        /// Walls only connect to doors when they are on left or on right of doors.
-        /// </summary>
-        private bool IsConnectedToDoor(PlacedTileObject neighbourObject)
+        public IConnectionRule ConnectionRule
         {
-            var doorConnector = neighbourObject.GetComponent<DoorAdjacencyConnector>();
-            var door = doorConnector.PlacedObject;
-            if (door != null)
+            get
             {
-                if (_placedObject.IsOnLeft(door) || _placedObject.IsOnRight(door))
-                {
-                    return true;
-                }
-                    
+                TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+                return new WallConnectionRule(map);
             }
-            return false;
         }
 
-        /// <summary>
-        /// Try to get a door on the left or on the right of this wall.
-        /// </summary>
-        private bool TryGetOnLeftOrRightDoor(out PlacedTileObject door)
+        public IMeshAndDirectionResolver MeshResolver => _advancedAdjacency;
+
+        private void Awake()
         {
-            var tileSystem = SubSystems.Get<TileSubSystem>();
-            var map = tileSystem.CurrentMap;
-            var neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
-
-            foreach( var neighbour in neighbours )
-            {
-                var doorConnector = neighbour?.GetComponent<DoorAdjacencyConnector>();
-                if (doorConnector == null) continue;
-
-                if (_placedObject.IsOnLeft(neighbour) || _placedObject.IsOnRight(neighbour))
-                {
-                    door = neighbour;
-                    return true;
-                }
-                    
-            }
-            door = null;
-            return false;
+            GetOrCreateAdjacencyView().Configure(_advancedAdjacency);
         }
 
-        /// <summary>
-        /// Walls connect to other walls, and to doors, when doors are placed on their left or on their
-        /// right.
-        /// </summary>
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            if (_hasPendingEngineConnections)
+                PublishEngineConnections(_pendingEngineConnections);
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            GetOrCreateAdjacencyView().Configure(_advancedAdjacency);
+        }
+
+        public void SetAdjacencyConnections(byte horizontalConnections)
+        {
+            _pendingEngineConnections = horizontalConnections;
+            _hasPendingEngineConnections = true;
+            GetOrCreateAdjacencyView().ApplyConnections(horizontalConnections);
+
+            if (NetworkObject != null && NetworkObject.IsSpawned)
+                PublishEngineConnections(horizontalConnections);
+        }
+
         public override bool IsConnected(PlacedTileObject neighbourObject)
         {
-            if(neighbourObject == null) return false;
+            return ConnectionRule.IsConnected(GetComponentInParent<PlacedTileObject>(), neighbourObject);
+        }
 
-            bool isConnected = (neighbourObject.HasAdjacencyConnector);
+        public override void UpdateAllConnections()
+        {
+            TileMap map = SubSystems.Get<TileSubSystem>().CurrentMap;
+            if (map == null)
+                return;
 
-            isConnected &= neighbourObject.GenericType == TileObjectGenericType.Wall ||
-                neighbourObject.GenericType == TileObjectGenericType.Door;
+            map.AdjacencyEngine.QueueCascadeFrom(PlacedObject);
+            map.AdjacencyEngine.ProcessQueue();
+        }
 
-            if (neighbourObject.GetComponent<DoorAdjacencyConnector>() != null)
-            {
-                isConnected &= IsConnectedToDoor(neighbourObject);
-            }
+        public override bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
+        {
+            TileMap map = SubSystems.Get<TileSubSystem>().CurrentMap;
+            if (map == null)
+                return false;
 
-            var tileSystem = SubSystems.Get<TileSubSystem>();
-            var map = tileSystem.CurrentMap;
+            map.AdjacencyEngine.QueueUpdate(PlacedObject);
 
-            // Needed for a weird edge case when you put walls all around a door. Will avoid connecting
-            // to a wall in front or behind the door, if this wall is itself connected to door.
-            // This is to avoid the wall considering there's 3 connections, because if it does, it takes
-            // a L2 shape which allow to see through the wall.
+            if (updateNeighbour && neighbourObject != null && neighbourObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
+                map.AdjacencyEngine.QueueUpdate(neighbourObject);
 
-            if(TryGetOnLeftOrRightDoor(out PlacedTileObject door) 
-                && neighbourObject.GetComponent<WallAdjacencyConnector>() != null)
-            {
-                if (neighbourObject.IsInFront(door) || neighbourObject.IsBehind(door))
-                {
-                    isConnected &= false;
-                }
-            }
+            map.AdjacencyEngine.ProcessQueue();
+            return true;
+        }
 
-            return isConnected;
+        protected override void UpdateMeshAndDirection()
+        {
+        }
+
+        private void PublishEngineConnections(byte connections)
+        {
+            _syncedEngineConnections = connections;
+            _hasPendingEngineConnections = false;
+        }
+
+        private void SyncEngineConnections(byte _, byte newValue, bool asServer)
+        {
+            if (!asServer)
+                GetOrCreateAdjacencyView().ApplyConnections(newValue);
+        }
+
+        private TileAdjacencyView GetOrCreateAdjacencyView()
+        {
+            if (_adjacencyView == null)
+                _adjacencyView = GetComponent<TileAdjacencyView>();
+
+            if (_adjacencyView == null)
+                _adjacencyView = gameObject.AddComponent<TileAdjacencyView>();
+
+            return _adjacencyView;
         }
     }
 }

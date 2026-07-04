@@ -10,6 +10,48 @@ namespace EditorTests
 {
     public class AdjacencyEngineTests : EditModeTest
     {
+        private static readonly DoorConnectionRule DoorRule = new();
+        [Test]
+        public void DoorConnectionRule_ConnectsAdjacentWall()
+        {
+            PlacedTileObject door = CreateDoorTile(new Vector2Int(5, 5), Direction.North);
+            PlacedTileObject wall = CreateWallTile(new Vector2Int(4, 5));
+
+            Assert.IsTrue(DoorRule.IsConnected(door, wall));
+        }
+
+        [Test]
+        public void WallConnectionRule_ConnectsDoorOnLeftOrRight()
+        {
+            TileMap map = TileMap.Create("WallDoorRuleTest");
+            instantiated.Add(map.gameObject);
+
+            PlacedTileObject door = CreateDoorTile(new Vector2Int(5, 5), Direction.North);
+            PlacedTileObject wall = CreateWallTile(new Vector2Int(4, 5));
+            RegisterOnMap(map, door, TileLayer.Turf, new Vector3(5, 0, 5));
+            RegisterOnMap(map, wall, TileLayer.Turf, new Vector3(4, 0, 5));
+
+            var rule = new WallConnectionRule(map);
+
+            Assert.IsTrue(rule.IsConnected(wall, door));
+        }
+
+        [Test]
+        public void WallConnectionRule_RejectsDoorInFront()
+        {
+            TileMap map = TileMap.Create("WallDoorFrontRuleTest");
+            instantiated.Add(map.gameObject);
+
+            PlacedTileObject door = CreateDoorTile(new Vector2Int(5, 5), Direction.North);
+            PlacedTileObject wall = CreateWallTile(new Vector2Int(5, 6));
+            RegisterOnMap(map, door, TileLayer.Turf, new Vector3(5, 0, 5));
+            RegisterOnMap(map, wall, TileLayer.Turf, new Vector3(5, 0, 6));
+
+            var rule = new WallConnectionRule(map);
+
+            Assert.IsFalse(rule.IsConnected(wall, door));
+        }
+
         [Test]
         public void MultiAdjacencyConnector_FansOutSetAdjacencyConnections()
         {
@@ -104,17 +146,44 @@ namespace EditorTests
             Assert.IsFalse(adjacencyMap.HasConnection(Direction.South));
         }
 
-        private PlacedTileObject CreatePlacedTile(TileObjectGenericType genericType, TileObjectSpecificType specificType)
+        private PlacedTileObject CreateWallTile(Vector2Int worldOrigin)
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.Wall, TileObjectSpecificType.Steel);
+            placed.gameObject.AddComponent<WallAdjacencyConnector>();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            SetPrivateField(placed, "_worldOrigin", worldOrigin);
+            SetPrivateField(placed, "_dir", Direction.North);
+            placed.transform.position = new Vector3(worldOrigin.x, 0, worldOrigin.y);
+            return placed;
+        }
+
+        private PlacedTileObject CreateDoorTile(Vector2Int worldOrigin, Direction direction)
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.Door, TileObjectSpecificType.Steel);
+            placed.gameObject.AddComponent<DoorAdjacencyConnector>();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            SetPrivateField(placed, "_worldOrigin", worldOrigin);
+            SetPrivateField(placed, "_dir", direction);
+            placed.transform.position = new Vector3(worldOrigin.x, 0, worldOrigin.y);
+            return placed;
+        }
+
+        private PlacedTileObject CreateBarePlacedTile(TileObjectGenericType genericType, TileObjectSpecificType specificType)
         {
             CreateGameObject(out GameObject go, out PlacedTileObject placed);
             TileObjectSo so = ScriptableObject.CreateInstance<TileObjectSo>();
             so.genericType = genericType;
             so.specificType = specificType;
             so.layer = TileLayer.Turf;
-
             SetPrivateField(placed, "_tileObjectSo", so);
-            go.AddComponent<SimpleAdjacencyConnector>();
-            SetPrivateField(placed, "_connector", go.GetComponent<IAdjacencyConnector>());
+            return placed;
+        }
+
+        private PlacedTileObject CreatePlacedTile(TileObjectGenericType genericType, TileObjectSpecificType specificType)
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(genericType, specificType);
+            placed.gameObject.AddComponent<SimpleAdjacencyConnector>();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
 
             return placed;
         }
