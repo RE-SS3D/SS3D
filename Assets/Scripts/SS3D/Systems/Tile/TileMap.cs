@@ -23,9 +23,12 @@ namespace SS3D.Systems.Tile
         private Dictionary<Vector2Int, TileChunk> _chunks;
         private List<PlacedItemObject> _items;
         private readonly List<ITileMutationObserver> _mutationObservers = new();
+        private AdjacencyEngine _adjacencyEngine;
         private string _mapName;
 
         public int MapId { get; private set; }
+
+        public AdjacencyEngine AdjacencyEngine => _adjacencyEngine;
 
         public int ChunkCount => _chunks.Count;
 
@@ -53,6 +56,7 @@ namespace SS3D.Systems.Tile
             name = mapName;
             _mapName = mapName;
             MapId = mapId;
+            _adjacencyEngine = new AdjacencyEngine(this);
         }
 
         public void RegisterMutationObserver(ITileMutationObserver observer)
@@ -293,8 +297,10 @@ namespace SS3D.Systems.Tile
                 }
 
                 // Handle Adjacency connectors, can skip it particulary when loading the map.
-                if (!skipAdjacency){
-                    placedObject.UpdateAdjacencies();
+                if (!skipAdjacency)
+                {
+                    UpdateAdjacenciesFor(placedObject);
+                    _adjacencyEngine.ProcessQueue();
                 }
 
                 placedObjectGo = placedObject.gameObject;
@@ -532,12 +538,19 @@ namespace SS3D.Systems.Tile
                 foreach(PlacedTileObject obj in chunk.GetAllTilePlacedObjects())
                 {
                     if (obj.HasAdjacencyConnector)
-                    {
-                        var pos = chunk.GetWorldPosition(obj.Origin.x, obj.Origin.y);
-                        obj.UpdateAdjacencies();
-                    }
+                        UpdateAdjacenciesFor(obj);
                 }
             }
+
+            _adjacencyEngine.ProcessQueue();
+        }
+
+        private void UpdateAdjacenciesFor(PlacedTileObject placedObject)
+        {
+            if (placedObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
+                _adjacencyEngine.QueueCascadeFrom(placedObject);
+            else
+                placedObject.UpdateAdjacencies();
         }
 
         /// <summary>
