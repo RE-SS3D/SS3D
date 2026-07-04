@@ -246,6 +246,9 @@ namespace SS3D.Systems.Tile
             _mapId = _syncMapId;
             _asset = tileObjectSo.PrefabAsset;
             _connector ??= GetComponent<IAdjacencyConnector>();
+
+            if (TryGetComponent(out DoorAdjacencyConnector doorConnector))
+                doorConnector.RefreshWallCapsFromSyncedAdjacencies();
         }
 
         /// <summary>
