@@ -32,7 +32,7 @@ namespace EditorTests
             loader.Catalog.Build(new[] { floorSo });
 
             CreateGameObject(out GameObject subsystemGo, out TileSubSystem tileSubSystem);
-            SetPrivateField(tileSubSystem, "Loader", loader);
+            typeof(TileSubSystem).GetProperty("Loader")!.SetValue(tileSubSystem, loader);
             SubSystems.Register(tileSubSystem);
 
             try
@@ -165,7 +165,9 @@ namespace EditorTests
 
         private static void SetPrivateField(object target, string fieldName, object value)
         {
-            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+            FieldInfo field = target.GetType().GetField(fieldName, flags);
+            Assert.IsNotNull(field, $"Field {fieldName} not found on {target.GetType().Name}");
             field.SetValue(target, value);
         }
     }
