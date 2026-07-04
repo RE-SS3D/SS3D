@@ -22,6 +22,7 @@
         _MinLight ("Min Light", Range(0,1)) = 0
         _MaxLight ("Max Light", Range(0,1)) = 1
         _Lumin ("Luminocity", Range(0,2)) = 0
+        [HDR] _EmissionColor ("Emission Color", COLOR) = (0,0,0,0)
 
         [Header(Shine)][Space(5)]
         [HDR] _ShnColor ("Color", COLOR) = (1,1,0,1)
@@ -57,6 +58,7 @@
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_instancing
 

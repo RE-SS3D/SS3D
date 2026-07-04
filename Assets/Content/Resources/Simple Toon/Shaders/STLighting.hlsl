@@ -91,6 +91,7 @@ float4 ST_EvaluateLighting(
     }
 #endif
 
+    result.rgb += _EmissionColor.rgb;
     result.a = alphaMultiplier;
     return result;
 }

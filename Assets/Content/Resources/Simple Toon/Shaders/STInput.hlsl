@@ -22,6 +22,7 @@ CBUFFER_START(UnityPerMaterial)
     float _MinLight;
     float _MaxLight;
     float _Lumin;
+    float4 _EmissionColor;
 
     float4 _ShnColor;
     float _ShnOverlap;

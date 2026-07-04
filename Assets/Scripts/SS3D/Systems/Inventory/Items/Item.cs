@@ -360,8 +360,7 @@ namespace SS3D.Systems.Inventory.Items
             Sprite icon;
             try
             {
-                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(previewObject,
-                    Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128);
+                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreview(previewObject, 128, 128);
                 icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), 
                     new Vector2(0.5f, 0.5f), 100);
                 icon.name = transform.name;
