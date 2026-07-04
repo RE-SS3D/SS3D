@@ -1,4 +1,5 @@
 ﻿using FishNet;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
@@ -153,6 +154,31 @@ namespace SS3D.Systems.Tile
         {
             base.OnStartServer();
             PublishIdentityToNetwork();
+            NetworkObject.OnObserversActive += HandleObserversActive;
+            RefreshHostVisibility();
+        }
+
+        public override void OnStopServer()
+        {
+            NetworkObject.OnObserversActive -= HandleObserversActive;
+            base.OnStopServer();
+        }
+
+        private void HandleObserversActive(NetworkObject _)
+        {
+            RefreshHostVisibility();
+        }
+
+        private void RefreshHostVisibility()
+        {
+            if (!IsClient)
+                return;
+
+            NetworkConnection localConnection = NetworkManager.ClientManager.Connection;
+            if (!localConnection.IsValid)
+                return;
+
+            NetworkObject.SetRenderersVisible(NetworkObject.Observers.Contains(localConnection), force: true);
         }
 
         private void PublishIdentityToNetwork()
