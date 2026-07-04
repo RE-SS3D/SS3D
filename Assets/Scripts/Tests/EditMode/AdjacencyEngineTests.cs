@@ -92,6 +92,17 @@ namespace EditorTests
         }
 
         [Test]
+        public void PipeConnectionRule_ConnectsMatchingPipeTypes()
+        {
+            PlacedTileObject self = CreatePlacedTileWithPipeConnector(TileObjectGenericType.Pipe, TileObjectSpecificType.None);
+            PlacedTileObject neighbour = CreatePlacedTileWithPipeConnector(TileObjectGenericType.Pipe, TileObjectSpecificType.None);
+
+            var rule = new PipeConnectionRule(TileObjectGenericType.Pipe, TileObjectSpecificType.None);
+
+            Assert.IsTrue(rule.IsConnected(self, neighbour));
+        }
+
+        [Test]
         public void SimpleConnectionRule_ConnectsMatchingTypes()
         {
             PlacedTileObject self = CreatePlacedTile(TileObjectGenericType.Table, TileObjectSpecificType.None);
@@ -191,6 +202,14 @@ namespace EditorTests
         private PlacedTileObject CreatePlacedTileWithConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)
         {
             return CreatePlacedTile(genericType, specificType);
+        }
+
+        private PlacedTileObject CreatePlacedTileWithPipeConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(genericType, specificType);
+            placed.gameObject.AddComponent<PipeAdjacencyConnector>();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            return placed;
         }
 
         private PlacedTileObject CreatePlacedTileAt(Vector2Int worldOrigin, TileObjectGenericType genericType, TileObjectSpecificType specificType)
