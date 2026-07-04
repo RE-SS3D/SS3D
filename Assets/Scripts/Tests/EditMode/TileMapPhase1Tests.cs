@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using SS3D.Core;
+using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Tile;
 using SS3D.Tests;
 using System.Reflection;
@@ -8,6 +10,48 @@ namespace EditorTests
 {
     public class TileMapPhase1Tests : EditModeTest
     {
+        [Test]
+        public void ApplySyncedIdentity_ResolvesTileFromCatalogAssetId()
+        {
+            TileObjectSo floorSo = CreateNamedTestSo("Phase1IdentityFloor", TileLayer.Turf);
+
+            TileAssetCatalog catalog = new();
+            catalog.Build(new[] { floorSo });
+            ushort assetId = catalog.TryGetAssetId(floorSo);
+
+            CreateGameObject(out GameObject go, out PlacedTileObject placed);
+            SetPrivateField(placed, "_syncAssetId", assetId);
+            SetPrivateField(placed, "_syncOriginX", 3);
+            SetPrivateField(placed, "_syncOriginY", 7);
+            SetPrivateField(placed, "_syncWorldOriginX", 3);
+            SetPrivateField(placed, "_syncWorldOriginY", 7);
+            SetPrivateField(placed, "_syncDirection", Direction.East);
+            SetPrivateField(placed, "_syncMapId", 2);
+
+            CreateGameObject(out GameObject loaderGo, out TileResourceLoader loader);
+            loader.Catalog.Build(new[] { floorSo });
+
+            CreateGameObject(out GameObject subsystemGo, out TileSubSystem tileSubSystem);
+            SetPrivateField(tileSubSystem, "Loader", loader);
+            SubSystems.Register(tileSubSystem);
+
+            try
+            {
+                MethodInfo applyIdentity = typeof(PlacedTileObject).GetMethod("ApplySyncedIdentity", BindingFlags.Instance | BindingFlags.NonPublic);
+                applyIdentity.Invoke(placed, null);
+
+                Assert.AreSame(floorSo, placed.tileObjectSO);
+                Assert.AreEqual(new Vector2Int(3, 7), placed.Origin);
+                Assert.AreEqual(new Vector2Int(3, 7), placed.WorldOrigin);
+                Assert.AreEqual(Direction.East, placed.Direction);
+                Assert.AreEqual(2, placed.MapId);
+            }
+            finally
+            {
+                SubSystems.Unregister(tileSubSystem);
+            }
+        }
+
         [Test]
         public void TryGetTileLocation_DoesNotCreateChunk()
         {
@@ -92,9 +136,15 @@ namespace EditorTests
             return map;
         }
 
-        private static TileObjectSo CreateTestSo(TileLayer layer)
+        private static TileObjectSo CreateTestSo(TileLayer layer) => CreateNamedTestSo("Phase1TestTile", layer);
+
+        private static TileObjectSo CreateNamedTestSo(string name, TileLayer layer)
         {
+            ObjectAssetReference prefabRef = ScriptableObject.CreateInstance<ObjectAssetReference>();
+            prefabRef.name = name;
+
             TileObjectSo testSo = ScriptableObject.CreateInstance<TileObjectSo>();
+            testSo.PrefabAsset = prefabRef;
             testSo.width = 1;
             testSo.height = 1;
             testSo.layer = layer;

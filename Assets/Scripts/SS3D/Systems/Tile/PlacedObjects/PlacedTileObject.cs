@@ -64,8 +64,8 @@ namespace SS3D.Systems.Tile
         private Direction _dir;
         private int _mapId;
 
-        [SyncVar(OnChange = nameof(SyncAssetName))]
-        private string _syncAssetName = string.Empty;
+        [SyncVar(OnChange = nameof(SyncAssetId))]
+        private ushort _syncAssetId = TileAssetCatalog.InvalidAssetId;
 
         [SyncVar(OnChange = nameof(SyncOriginX))]
         private int _syncOriginX;
@@ -186,7 +186,13 @@ namespace SS3D.Systems.Tile
             if (_tileObjectSo == null)
                 return;
 
-            _syncAssetName = _tileObjectSo.NameString;
+            ushort assetId = SubSystems.Get<TileSubSystem>()?.TryGetAssetId(_tileObjectSo) ?? TileAssetCatalog.InvalidAssetId;
+            if (assetId == TileAssetCatalog.InvalidAssetId)
+            {
+                Log.Warning(this, "Could not resolve compact asset id for {tileName}", Logs.Generic, _tileObjectSo.NameString);
+            }
+
+            _syncAssetId = assetId;
             _syncOriginX = _origin.x;
             _syncOriginY = _origin.y;
             _syncWorldOriginX = _worldOrigin.x;
@@ -196,7 +202,7 @@ namespace SS3D.Systems.Tile
             _syncMapId = _mapId;
         }
 
-        private void SyncAssetName(string _, string __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
+        private void SyncAssetId(ushort _, ushort __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
 
         private void SyncOriginX(int _, int __, bool asServer) => ApplySyncedIdentityIfClient(asServer);
 
@@ -222,14 +228,14 @@ namespace SS3D.Systems.Tile
 
         private void ApplySyncedIdentity()
         {
-            if (string.IsNullOrEmpty(_syncAssetName))
+            if (_syncAssetId == TileAssetCatalog.InvalidAssetId)
                 return;
 
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
             if (tileSystem == null)
                 return;
 
-            GenericObjectSo asset = tileSystem.GetAsset(_syncAssetName);
+            GenericObjectSo asset = tileSystem.GetAsset(_syncAssetId);
             if (asset is not TileObjectSo tileObjectSo)
                 return;
 

@@ -96,6 +96,12 @@ namespace SS3D.Systems.Tile
         public GenericObjectSo GetAsset(string assetName) => Loader.GetAsset(assetName);
 
         [ServerOrClient]
+        public GenericObjectSo GetAsset(ushort assetId) => Loader?.GetAsset(assetId);
+
+        [ServerOrClient]
+        public ushort TryGetAssetId(GenericObjectSo asset) => Loader?.Catalog.TryGetAssetId(asset) ?? TileAssetCatalog.InvalidAssetId;
+
+        [ServerOrClient]
         public GenericObjectSo GetAsset(ObjectAssetReference asset) => Loader.GetAsset(asset);
 
         [Server]
