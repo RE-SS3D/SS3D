@@ -1,5 +1,5 @@
-﻿using SS3D.Core.Behaviours;
-using System.Collections;
+﻿using SS3D.Core;
+using SS3D.Core.Behaviours;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,13 +11,31 @@ namespace SS3D.Systems.Tile.Connections
     /// Note that it means that those connectors won't behave completely independently.
     /// Should always be put on the "root" game object, at the same level as the placed tile object script.
     /// </summary>
-    public class MultiAdjacencyConnector : Actor, IAdjacencyConnector
+    public class MultiAdjacencyConnector : Actor, IAdjacencyConnector, IEngineDrivenAdjacency
     {
         /// <summary>
         /// Game objects that hold a IAdjacencyConnector component.
         /// </summary>
         [SerializeField]
         private List<GameObject> _connectors;
+
+        public IConnectionRule ConnectionRule
+        {
+            get
+            {
+                PlacedTileObject placed = GetComponent<PlacedTileObject>();
+                return new SimpleConnectionRule(placed.GenericType, placed.SpecificType);
+            }
+        }
+
+        public void SetAdjacencyConnections(byte horizontalConnections)
+        {
+            foreach (GameObject connectorObject in _connectors)
+            {
+                if (connectorObject != null && connectorObject.TryGetComponent(out IEngineDrivenAdjacency engineDriven))
+                    engineDriven.SetAdjacencyConnections(horizontalConnections);
+            }
+        }
 
         /// <summary>
         /// Return the neighbours of all connectors.
@@ -26,7 +44,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             List<PlacedTileObject> neighbours = new();
 
-            foreach (var connector in _connectors)
+            foreach (GameObject connector in _connectors)
             {
                 neighbours.AddRange(connector.GetComponent<IAdjacencyConnector>()?.GetNeighbours());
             }
@@ -38,17 +56,32 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         public bool IsConnected(PlacedTileObject neighbourObject)
         {
-            return _connectors.Any(x => (bool) x.GetComponent<IAdjacencyConnector>()?.IsConnected(neighbourObject));
+            return _connectors.Any(x => x.GetComponent<IAdjacencyConnector>()?.IsConnected(neighbourObject) == true);
         }
 
         public void UpdateAllConnections()
         {
-            _connectors.ForEach(x => x.GetComponent<IAdjacencyConnector>()?.UpdateAllConnections());
+            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            if (map == null)
+                return;
+
+            map.AdjacencyEngine.QueueCascadeFrom(GetComponent<PlacedTileObject>());
+            map.AdjacencyEngine.ProcessQueue();
         }
 
         public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
-            _connectors.ForEach(x => x.GetComponent<IAdjacencyConnector>()?.UpdateSingleConnection(dir, neighbourObject, updateNeighbour));
+            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            if (map == null)
+                return false;
+
+            PlacedTileObject placed = GetComponent<PlacedTileObject>();
+            map.AdjacencyEngine.QueueUpdate(placed);
+
+            if (updateNeighbour && neighbourObject != null && neighbourObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
+                map.AdjacencyEngine.QueueUpdate(neighbourObject);
+
+            map.AdjacencyEngine.ProcessQueue();
             return true;
         }
     }

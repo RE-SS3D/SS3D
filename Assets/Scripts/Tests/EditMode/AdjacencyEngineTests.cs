@@ -2,6 +2,7 @@ using NUnit.Framework;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Tests;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
@@ -9,6 +10,45 @@ namespace EditorTests
 {
     public class AdjacencyEngineTests : EditModeTest
     {
+        [Test]
+        public void MultiAdjacencyConnector_FansOutSetAdjacencyConnections()
+        {
+            CreateGameObject(out GameObject root, out PlacedTileObject placed);
+            MultiAdjacencyConnector multi = root.AddComponent<MultiAdjacencyConnector>();
+
+            TileObjectSo so = ScriptableObject.CreateInstance<TileObjectSo>();
+            so.genericType = TileObjectGenericType.Wall;
+            so.specificType = TileObjectSpecificType.Steel;
+            so.layer = TileLayer.Turf;
+            SetPrivateField(placed, "_tileObjectSo", so);
+
+            CreateGameObject(out GameObject childA, out AdvancedAdjacencyConnector connectorA);
+            CreateGameObject(out GameObject childB, out AdvancedAdjacencyConnector connectorB);
+            childA.transform.SetParent(root.transform);
+            childB.transform.SetParent(root.transform);
+
+            SetPrivateField(multi, "_connectors", new List<GameObject> { childA, childB });
+
+            multi.SetAdjacencyConnections(0b00001010);
+
+            FieldInfo pendingField = typeof(AdvancedAdjacencyConnector).GetField("_pendingEngineConnections",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.AreEqual(0b00001010, pendingField.GetValue(connectorA));
+            Assert.AreEqual(0b00001010, pendingField.GetValue(connectorB));
+        }
+
+        [Test]
+        public void AdvancedConnector_UsesTypeMatchingConnectionRule()
+        {
+            PlacedTileObject self = CreatePlacedTile(TileObjectGenericType.Wall, TileObjectSpecificType.None);
+            PlacedTileObject neighbour = CreatePlacedTileWithConnector(TileObjectGenericType.Wall, TileObjectSpecificType.None);
+
+            CreateGameObject(out GameObject connectorGo, out AdvancedAdjacencyConnector connector);
+            connectorGo.transform.SetParent(self.transform);
+
+            Assert.IsTrue(connector.ConnectionRule.IsConnected(self, neighbour));
+        }
+
         [Test]
         public void SimpleConnectionRule_ConnectsMatchingTypes()
         {
