@@ -33,11 +33,12 @@ namespace SS3D.Systems.Tile.Connections
 
             QueueUpdate(tile);
 
-            if (!tile.TryGetComponent(out IAdjacencyConnector connector))
-                return;
-
-            foreach (PlacedTileObject neighbour in connector.GetNeighbours())
-                QueueUpdate(neighbour);
+            PlacedTileObject[] neighbours = _map.GetNeighbourPlacedObjects(tile.Layer, tile.transform.position);
+            foreach (PlacedTileObject neighbour in neighbours)
+            {
+                if (neighbour != null && neighbour.TryGetComponent<IEngineDrivenAdjacency>(out _))
+                    QueueUpdate(neighbour);
+            }
         }
 
         public void ProcessQueue()
@@ -60,16 +61,11 @@ namespace SS3D.Systems.Tile.Connections
                 return;
 
             IConnectionRule rule = engineDriven.ConnectionRule;
-            TileAdjacencyView view = engineDriven.AdjacencyView;
-            IMeshAndDirectionResolver resolver = engineDriven.MeshResolver;
-
-            if (rule == null || view == null || resolver == null)
+            if (rule == null)
                 return;
 
-            view.Configure(resolver);
-
             AdjacencyMap adjacencyMap = ComputeAdjacencyMap(tile, rule, _map);
-            view.SetHorizontalConnections(adjacencyMap.SerializeToByte());
+            engineDriven.SetAdjacencyConnections(adjacencyMap.SerializeToByte());
         }
 
         public static AdjacencyMap ComputeAdjacencyMap(PlacedTileObject tile, IConnectionRule rule, TileMap map)

@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
 
@@ -14,6 +15,12 @@ namespace SS3D.Systems.Tile.Connections
         [SerializeField] private SimpleConnector simpleAdjacency;
         private TileAdjacencyView _adjacencyView;
 
+        [SyncVar(OnChange = nameof(SyncEngineConnections))]
+        private byte _syncedEngineConnections;
+
+        private byte _pendingEngineConnections;
+        private bool _hasPendingEngineConnections;
+
         protected override IMeshAndDirectionResolver AdjacencyResolver => simpleAdjacency;
 
         public IConnectionRule ConnectionRule
@@ -25,13 +32,35 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        public TileAdjacencyView AdjacencyView => GetOrCreateAdjacencyView();
-
         public IMeshAndDirectionResolver MeshResolver => simpleAdjacency;
 
         private void Awake()
         {
-            GetOrCreateAdjacencyView();
+            GetOrCreateAdjacencyView().Configure(simpleAdjacency);
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            if (_hasPendingEngineConnections)
+                PublishEngineConnections(_pendingEngineConnections);
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            GetOrCreateAdjacencyView().Configure(simpleAdjacency);
+        }
+
+        public void SetAdjacencyConnections(byte horizontalConnections)
+        {
+            _pendingEngineConnections = horizontalConnections;
+            _hasPendingEngineConnections = true;
+            GetOrCreateAdjacencyView().ApplyConnections(horizontalConnections);
+
+            if (NetworkObject != null && NetworkObject.IsSpawned)
+                PublishEngineConnections(horizontalConnections);
         }
 
         public override bool IsConnected(PlacedTileObject neighbourObject)
@@ -57,11 +86,30 @@ namespace SS3D.Systems.Tile.Connections
 
             map.AdjacencyEngine.QueueUpdate(PlacedObject);
 
-            if (updateNeighbour && neighbourObject != null)
+            if (updateNeighbour && neighbourObject != null && neighbourObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
                 map.AdjacencyEngine.QueueUpdate(neighbourObject);
 
             map.AdjacencyEngine.ProcessQueue();
             return true;
+        }
+
+        /// <summary>
+        /// Engine-driven connectors use <see cref="TileAdjacencyView"/> instead of the legacy SyncVar path.
+        /// </summary>
+        protected override void UpdateMeshAndDirection()
+        {
+        }
+
+        private void PublishEngineConnections(byte connections)
+        {
+            _syncedEngineConnections = connections;
+            _hasPendingEngineConnections = false;
+        }
+
+        private void SyncEngineConnections(byte _, byte newValue, bool asServer)
+        {
+            if (!asServer)
+                GetOrCreateAdjacencyView().ApplyConnections(newValue);
         }
 
         private TileAdjacencyView GetOrCreateAdjacencyView()

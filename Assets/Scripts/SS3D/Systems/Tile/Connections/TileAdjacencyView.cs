@@ -1,5 +1,3 @@
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
@@ -7,55 +5,20 @@ using UnityEngine;
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// Replicated adjacency visual state for a placed tile. Applies mesh/direction from a resolver.
+    /// Local mesh/direction application for engine-driven adjacency. Not networked — sync lives on the connector.
     /// </summary>
-    public class TileAdjacencyView : NetworkBehaviour
+    public class TileAdjacencyView : MonoBehaviour
     {
-        [SyncVar(OnChange = nameof(SyncHorizontalConnections))]
-        private byte _syncedHorizontalConnections;
-
         private AdjacencyMap _adjacencyMap;
         private IMeshAndDirectionResolver _resolver;
         private MeshFilter _filter;
-        private byte _pendingHorizontalConnections;
-        private bool _hasPendingConnections;
 
         public void Configure(IMeshAndDirectionResolver resolver)
         {
             _resolver = resolver;
         }
 
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-
-            if (_hasPendingConnections)
-                PublishConnections(_pendingHorizontalConnections);
-        }
-
-        public void SetHorizontalConnections(byte connections)
-        {
-            _pendingHorizontalConnections = connections;
-            _hasPendingConnections = true;
-            ApplyConnections(connections);
-
-            if (IsServer)
-                PublishConnections(connections);
-        }
-
-        private void PublishConnections(byte connections)
-        {
-            _syncedHorizontalConnections = connections;
-            _hasPendingConnections = false;
-        }
-
-        private void SyncHorizontalConnections(byte _, byte newValue, bool asServer)
-        {
-            if (!asServer)
-                ApplyConnections(newValue);
-        }
-
-        private void ApplyConnections(byte connections)
+        public void ApplyConnections(byte connections)
         {
             EnsureInitialized();
             _adjacencyMap.DeserializeFromByte(connections);
@@ -85,6 +48,9 @@ namespace SS3D.Systems.Tile.Connections
                 Log.Warning(this, "Missing mesh filter for adjacency view", Logs.Generic);
                 return;
             }
+
+            if (info.Mesh == null)
+                return;
 
             _filter.mesh = info.Mesh;
 
