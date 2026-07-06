@@ -230,10 +230,17 @@ namespace UDiscord
 
         void OnDisable()
         {
-            Log.Warning(nameof(DiscordManager), "Discord Shutdown after 10 seconds", Logs.External);
+            try
+            {
+                Log.Warning(nameof(DiscordManager), "Discord Shutdown after 10 seconds", Logs.External);
 
-            Shutdown();
-            discord?.Dispose();
+                Shutdown();
+                discord?.Dispose();
+            }
+            catch (DllNotFoundException)
+            {
+                // Native Discord SDK is not available on this platform/build.
+            }
         }
 
         #endregion

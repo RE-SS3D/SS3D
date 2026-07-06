@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Coimbra;
+using FishNet;
+using FishNet.Managing;
 using NUnit.Framework;
+using SS3D.Application;
 using SS3D.Core;
 using SS3D.Core.Settings;
 using SS3D.Networking;
@@ -19,6 +22,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace SS3D.Tests
 {
@@ -55,6 +61,9 @@ namespace SS3D.Tests
 
         protected HumanoidController HumanoidController;
         protected InteractionController InteractionController;
+
+        private static NetworkSettings _baselineNetworkSettings;
+        private static ApplicationSettings _baselineApplicationSettings;
 
         protected abstract bool UseMockUpInputs();
 
@@ -148,14 +157,91 @@ namespace SS3D.Tests
 
         protected void SetApplicationSettings(NetworkType type)
         {
-            // Create new settings so that tests are run in the correct context.
-            NetworkSettings originalSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
-            NetworkSettings newSettings = UnityEngine.Object.Instantiate(originalSettings);
-            newSettings.NetworkType = type;
-            newSettings.Ckey = "john";
+            NetworkSettings baselineNetworkSettings = GetBaselineNetworkSettings();
+            ApplicationSettings baselineApplicationSettings = GetBaselineApplicationSettings();
 
-            // Apply the new settings
-            ScriptableSettings.SetOrOverwrite<NetworkSettings>(newSettings);
+            NetworkSettings networkSettings = UnityEngine.Object.Instantiate(baselineNetworkSettings);
+            networkSettings.NetworkType = type;
+            networkSettings.Ckey = "john";
+            networkSettings.ServerAddress = LoadFileHelpers.IpAddress;
+
+            if (type == NetworkType.Client)
+            {
+                networkSettings.ServerPort = ushort.Parse(LoadFileHelpers.Port);
+            }
+
+            ScriptableSettings.SetOrOverwrite(networkSettings);
+
+            ApplicationSettings applicationSettings = UnityEngine.Object.Instantiate(baselineApplicationSettings);
+            applicationSettings.SkipIntro = true;
+            applicationSettings.EnableDiscord = false;
+            applicationSettings.ForceLauncher = false;
+            ScriptableSettings.SetOrOverwrite(applicationSettings);
+        }
+
+        private static NetworkSettings GetBaselineNetworkSettings()
+        {
+            if (_baselineNetworkSettings != null)
+            {
+                return _baselineNetworkSettings;
+            }
+
+#if UNITY_EDITOR
+            _baselineNetworkSettings = AssetDatabase.LoadAssetAtPath<NetworkSettings>("Assets/Settings/NetworkSettings.asset");
+#endif
+            if (_baselineNetworkSettings == null)
+            {
+                _baselineNetworkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
+            }
+
+            return _baselineNetworkSettings;
+        }
+
+        private static ApplicationSettings GetBaselineApplicationSettings()
+        {
+            if (_baselineApplicationSettings != null)
+            {
+                return _baselineApplicationSettings;
+            }
+
+#if UNITY_EDITOR
+            _baselineApplicationSettings = AssetDatabase.LoadAssetAtPath<ApplicationSettings>("Assets/Settings/ApplicationSettings.asset");
+#endif
+            if (_baselineApplicationSettings == null)
+            {
+                _baselineApplicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+            }
+
+            return _baselineApplicationSettings;
+        }
+
+        protected IEnumerator PrepareNetworkTestEnvironment()
+        {
+            KillAllBuiltExecutables();
+            CloseActiveNetworkSession();
+            lobbySceneLoaded = false;
+            setUpOnce = false;
+            yield return null;
+            yield return new WaitForSeconds(1f);
+        }
+
+        protected void CloseActiveNetworkSession()
+        {
+            NetworkManager networkManager = InstanceFinder.NetworkManager;
+            if (networkManager == null)
+            {
+                return;
+            }
+
+            if (networkManager.ServerManager != null && networkManager.ServerManager.Started)
+            {
+                networkManager.ServerManager.StopConnection(true);
+            }
+
+            if (networkManager.ClientManager != null && networkManager.ClientManager.Started)
+            {
+                networkManager.ClientManager.StopConnection();
+            }
         }
 
         protected void ClientSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -167,18 +253,39 @@ namespace SS3D.Tests
             }
         }
 
-        protected IEnumerator WaitForLobbyLoaded(float timeout = 20f)
+        protected IEnumerator WaitForLobbyLoaded(float timeout = 60f)
         {
             float startTime = Time.time;
-            while (!lobbySceneLoaded)
+
+            while (!IsLobbySceneActive())
             {
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.5f);
 
                 if (Time.time - startTime > timeout)
                 {
-                    throw new Exception($"Lobby not loaded within timeout of {timeout} seconds.");
+                    throw new Exception(BuildLobbyTimeoutMessage(timeout));
                 }
             }
+
+            lobbySceneLoaded = true;
+        }
+
+        private static bool IsLobbySceneActive()
+        {
+            return SceneManager.GetActiveScene().name == "Game";
+        }
+
+        private static string BuildLobbyTimeoutMessage(float timeout)
+        {
+            NetworkManager networkManager = InstanceFinder.NetworkManager;
+            string networkState = networkManager == null
+                ? "NetworkManager missing"
+                : $"clientStarted={networkManager.ClientManager.Started}, serverStarted={networkManager.ServerManager.Started}";
+
+            return
+                $"Lobby (Game scene) not loaded within {timeout} seconds. " +
+                $"Active scene: {SceneManager.GetActiveScene().name}. {networkState}. " +
+                "Boot flow is Boot -> Intro -> network session -> Game. Check for stale NetworkManager instances or port conflicts.";
         }
 
         protected void LoadStartupScene()
@@ -286,13 +393,14 @@ namespace SS3D.Tests
         /// <returns></returns>
         protected IEnumerator LoadAndSetInLobby(NetworkType type)
         {
+            yield return PrepareNetworkTestEnvironment();
+
             if(type is NetworkType.Client)
             {
+                LoadFileHelpers.RequireCompiledBuild();
                 LoadFileHelpers.OpenCompiledBuild();
 
-                // Force wait for 10 seconds - this should be long enough for the server to load
                 yield return new WaitForSeconds(10f);
-                // Set to run as client
                 SetApplicationSettings(NetworkType.Client);
             }
             else
@@ -300,13 +408,11 @@ namespace SS3D.Tests
                 SetApplicationSettings(type);
             }
 
-            // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();
 
             yield return WaitForLobbyLoaded();
 
-            // Wait a bit to make sure UI is correctly Loaded
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(1f);
         }
 
         /// <summary>

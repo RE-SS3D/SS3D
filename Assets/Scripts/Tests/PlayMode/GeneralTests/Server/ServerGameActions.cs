@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Core;
@@ -20,6 +21,7 @@ using System.Text;
 
 namespace SS3D.Tests
 {
+    [Category(TestCategories.RequiresCompiledBuild)]
     public class ServerGameActions : PlayModeTest
     {
 
@@ -87,11 +89,30 @@ namespace SS3D.Tests
 
         protected void KillClientProcesses()
         {
+            if (clientProcess == null)
+            {
+                return;
+            }
+
             foreach (Process process in clientProcess)
             {
-                process.CloseMainWindow();
-                process.Close();
+                if (process == null || process.HasExited)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    process.CloseMainWindow();
+                    process.Close();
+                }
+                catch (InvalidOperationException)
+                {
+                    // Process already exited.
+                }
             }
+
+            clientProcess = null;
         }
 
         protected override bool UseMockUpInputs()

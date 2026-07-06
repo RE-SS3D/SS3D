@@ -1,10 +1,12 @@
-﻿using SS3D.Core.Settings;
+﻿using NUnit.Framework;
+using SS3D.Core.Settings;
 using SS3D.Networking;
 using System.Collections;
 using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
+    [Category(TestCategories.RequiresCompiledBuild)]
     public class Issue0990_PropagatingPocketProblem_ClientPerspective : PlayModeTest
     {
 
@@ -19,7 +21,8 @@ namespace SS3D.Tests
         public IEnumerator UnityTearDown()
         {
             LogAssert.ignoreFailingMessages = true;
-            yield return TestHelpers.FinishAndExitRound();
+            yield return TestHelpers.TryFinishAndExitRound();
+            yield return PrepareNetworkTestEnvironment();
         }
 
         [UnityTest]
