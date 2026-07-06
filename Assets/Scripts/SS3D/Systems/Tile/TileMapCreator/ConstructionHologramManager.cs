@@ -377,7 +377,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             }
 
-            bool canBuild = tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            bool canBuild = tileSystem.Construction.TryPreviewTile(tileObjectSo, placePosition, dir, replaceExisting).CanBuild;
             RpcReceiveCanBuild(conn, placePosition, canBuild);
         }
 

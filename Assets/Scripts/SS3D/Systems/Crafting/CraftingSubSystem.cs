@@ -341,19 +341,26 @@ namespace SS3D.Systems.Crafting
         private List<IRecipeIngredient> GetCloseItemsFromTarget(InteractionEvent interactionEvent)
         {
             GameObject target = interactionEvent.Target.GetGameObject();
-            List<IRecipeIngredient> closeItemsFromTarget = new();
-            AddRecipeIngredientInHand(interactionEvent, closeItemsFromTarget);
+            List<IRecipeIngredient> handItems = new();
+            AddRecipeIngredientInHand(interactionEvent, handItems);
+
+            HashSet<GameObject> handObjects = new(handItems.Select(x => x.GameObject));
             Vector3 center = target.transform.position;
             float radius = 3f;
             Collider[] hitColliders = Physics.OverlapSphere(center, radius);
+            List<IRecipeIngredient> groundItems = new();
+
             foreach (Collider hitCollider in hitColliders)
             {
                 IRecipeIngredient item = hitCollider.GetComponentInParent<IRecipeIngredient>();
-                if (item == null) continue;
-                closeItemsFromTarget.Add(item);
+                if (item == null || handObjects.Contains(item.GameObject))
+                    continue;
+
+                groundItems.Add(item);
             }
 
-            return closeItemsFromTarget.OrderBy(x => Vector3.Distance(x.GameObject.transform.position, center)).ToList();
+            handItems.AddRange(groundItems.OrderBy(x => Vector3.Distance(x.GameObject.transform.position, center)));
+            return handItems;
         }
 
         /// <summary>
@@ -440,21 +447,21 @@ namespace SS3D.Systems.Crafting
             {
                 instance = DefaultCraftTileObject(interactionEvent, resultTileObject);
             }
-            else if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject _) && prefab.TryGetComponent(out Draggable _))
+            else if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTile)
+                && prefab.TryGetComponent(out Draggable _))
             {
-                instance = Instantiate(prefab);
-                instance.transform.position = interactionEvent.Target.GetGameObject().transform.position;
-                InstanceFinder.ServerManager.Spawn(instance);
-                instance.SetActive(true);
+                SpawnResult spawned = SubSystems.Get<TileSubSystem>().Construction.SpawnIngredient(
+                    prefab,
+                    targetTile.transform.position,
+                    targetTile.Direction);
+                instance = spawned.Instance;
             }
             else
             {
-                instance = Instantiate(prefab);
-                Vector3 characterGround = interaction.CharacterTransform.position;
-                characterGround.y = 0.1f;
-                instance.transform.position = characterGround + interaction.CharacterTransform.forward;
-                InstanceFinder.ServerManager.Spawn(instance);
-                instance.SetActive(true);
+                SpawnResult spawned = SubSystems.Get<TileSubSystem>().Construction.SpawnIngredient(
+                    prefab,
+                    interaction.CharacterTransform.position + interaction.CharacterTransform.forward);
+                instance = spawned.Instance;
             }
 
             return instance;
@@ -527,18 +534,22 @@ namespace SS3D.Systems.Crafting
         {
             bool replace = false;
             Direction direction = Direction.North;
+            Vector3 placePosition = interactionEvent.Target.GetGameObject().transform.position;
 
-            if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject)
-                && targetTileObject.Layer == resultTileObject.Layer)
+            if (interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject targetTileObject))
             {
-                replace = true;
+                direction = targetTileObject.Direction;
+                if (targetTileObject.Layer == resultTileObject.Layer)
+                    replace = true;
             }
 
-            SubSystems.Get<TileSubSystem>().CurrentMap.PlaceTileObject(resultTileObject.tileObjectSO,
-                TileHelper.GetClosestPosition(interactionEvent.Target.GetGameObject().transform.position),
-                direction, false, replace, false, out GameObject instance);
+            PlaceResult result = SubSystems.Get<TileSubSystem>().Construction.TryPlaceTile(
+                resultTileObject.tileObjectSO,
+                placePosition,
+                direction,
+                replace);
 
-            return instance;
+            return result.Instance;
         }
 
         /// <summary>
@@ -580,14 +591,21 @@ namespace SS3D.Systems.Crafting
         private bool ResultIsValidPlacedTileObject([NotNull] PlacedTileObject result, [NotNull] InteractionEvent interactionEvent)
         {
             bool replace = false;
+            Direction direction = Direction.North;
             bool targetIsPlacedTileObject = interactionEvent.Target.GetGameObject().TryGetComponent(out PlacedTileObject target);
 
-            if (targetIsPlacedTileObject && result.Layer == target.Layer)
+            if (targetIsPlacedTileObject)
             {
-                replace = true;
+                direction = target.Direction;
+                if (result.Layer == target.Layer)
+                    replace = true;
             }
 
-            return SubSystems.Get<TileSubSystem>().CanBuild(result.tileObjectSO, interactionEvent.Target.GetGameObject().transform.position, Direction.North, replace);
+            return SubSystems.Get<TileSubSystem>().Construction.TryPreviewTile(
+                result.tileObjectSO,
+                interactionEvent.Target.GetGameObject().transform.position,
+                direction,
+                replace).CanBuild;
         }
 
         /// <summary>
