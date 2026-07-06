@@ -10,6 +10,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
+using SS3D.Systems.Selection;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using System.Collections;
@@ -37,6 +38,7 @@ namespace SS3D.Systems.Interactions
 
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
+        private SelectionSubSystem _selectionSystem;
 
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
@@ -57,6 +59,7 @@ namespace SS3D.Systems.Interactions
             base.OnAwake();
 
             _radialView = SubSystems.Get<RadialInteractionSubSystem>();
+            _selectionSystem = SubSystems.Get<SelectionSubSystem>();
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
 
             _inputSystem = SubSystems.Get<InputSubSystem>();
@@ -111,8 +114,7 @@ namespace SS3D.Systems.Interactions
             {
                 return;
             }
-            Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            List<InteractionEntry> viableInteractions = GetViableInteractionsFromSelection(out InteractionEvent interactionEvent);
 
             if (viableInteractions.Count <= 0)
             {
@@ -124,7 +126,9 @@ namespace SS3D.Systems.Interactions
             interactionEvent.Target = interaction.Target;
 
             Log.Information(this, "Running interaction {interactionName} on target {target}", Logs.Generic, interactionName, interaction.Target);
-            CmdRunInteraction(ray, interactionName);
+            // Server validation still uses a ray until Phase 3 RPC redesign.
+            Ray serverRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            CmdRunInteraction(serverRay, interactionName);
         }
 
         [Client]
@@ -136,10 +140,9 @@ namespace SS3D.Systems.Interactions
             {
                 return;
             }
-            Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            List<InteractionEntry> viableInteractions = GetViableInteractionsFromSelection(out InteractionEvent interactionEvent);
 
-            ViewTargetInteractions(viableInteractions, interactionEvent, ray);
+            ViewTargetInteractions(viableInteractions, interactionEvent);
         }
 
         [Client]
@@ -164,9 +167,8 @@ namespace SS3D.Systems.Interactions
         /// </summary>
         /// <param name="viableInteractions"></param>
         /// <param name="interactionEvent"></param>
-        /// <param name="ray"></param>
         [Client]
-        private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
+        private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
 
@@ -177,7 +179,9 @@ namespace SS3D.Systems.Interactions
                 _radialView.OnInteractionSelected -= handleInteractionSelected;
                 string interactionName = interaction.GetName(interactionEvent);
 
-                CmdRunInteraction(ray, interactionName);
+                // Server validation still uses a ray until Phase 3 RPC redesign.
+                Ray serverRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+                CmdRunInteraction(serverRay, interactionName);
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
@@ -278,6 +282,35 @@ namespace SS3D.Systems.Interactions
         }
 
         /// <summary>
+        /// Gets all possible interactions from the shader selection pick on the client.
+        /// </summary>
+        [Client]
+        private List<InteractionEntry> GetViableInteractionsFromSelection(out InteractionEvent interactionEvent)
+        {
+            IInteractionSource source = GetActiveInteractionSource();
+
+            if (source == null)
+            {
+                interactionEvent = null;
+                return new List<InteractionEntry>();
+            }
+
+            Selectable current = _selectionSystem.GetCurrentSelectable();
+            if (current == null)
+            {
+                interactionEvent = null;
+                return new List<InteractionEntry>();
+            }
+
+            SelectionTargetUtility.TryResolveInteractionPoint(_camera, current, out Vector3 point, out Vector3 normal);
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, current.gameObject);
+
+            interactionEvent = new InteractionEvent(source, targets[0], point, normal);
+
+            return GetInteractionsFromTargets(source, targets, interactionEvent);
+        }
+
+        /// <summary>
         /// Gets all possible interactions, given a ray
         /// </summary>
         /// <param name="ray">The ray to use in ray casting</param>
@@ -307,6 +340,12 @@ namespace SS3D.Systems.Interactions
                 normal = hit.normal;
                 GameObject target = hit.transform.gameObject;
                 targets = GetTargetsFromGameObject(source, target);
+            }
+
+            if (targets.Count < 1)
+            {
+                interactionEvent = null;
+                return new List<InteractionEntry>();
             }
 
             interactionEvent = new InteractionEvent(source, targets[0], point, normal);
