@@ -26,12 +26,6 @@ namespace SS3D.Systems.Interactions
     /// </summary>
     public sealed class InteractionController : NetworkActor
     {
-        /// <summary>
-        /// Mask for physics to use when finding targets
-        /// </summary>
-        [Tooltip("Mask for physics to use when finding targets")]
-        [SerializeField] private LayerMask _selectionMask = 0;
-
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
         private InputSubSystem _inputSystem;
@@ -126,9 +120,12 @@ namespace SS3D.Systems.Interactions
             interactionEvent.Target = interaction.Target;
 
             Log.Information(this, "Running interaction {interactionName} on target {target}", Logs.Generic, interactionName, interaction.Target);
-            // Server validation still uses a ray until Phase 3 RPC redesign.
-            Ray serverRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            CmdRunInteraction(serverRay, interactionName);
+            if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
+            {
+                return;
+            }
+
+            CmdRunInteraction(networkTarget, interactionEvent.Point, interactionName);
         }
 
         [Client]
@@ -179,9 +176,12 @@ namespace SS3D.Systems.Interactions
                 _radialView.OnInteractionSelected -= handleInteractionSelected;
                 string interactionName = interaction.GetName(interactionEvent);
 
-                // Server validation still uses a ray until Phase 3 RPC redesign.
-                Ray serverRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-                CmdRunInteraction(serverRay, interactionName);
+                if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
+                {
+                    return;
+                }
+
+                CmdRunInteraction(networkTarget, interactionEvent.Point, interactionName);
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
@@ -243,20 +243,26 @@ namespace SS3D.Systems.Interactions
         /// <summary>
         /// Runs an interaction (chosen on the client) on the server. For reasons of serialization and security, some code is re-run.
         /// </summary>
-        /// <param name="ray">The ray the click came from. RaycastHit is not serializable and this ensures hat a user can't try to interact with something that should be invisible.</param>
-        /// <param name="index">The index into the prioritised interaction list this interaction is at</param>
-        /// <param name="name">To confirm the interaction is the correctly selected one.</param>
         [ServerRpc]
-        private void CmdRunInteraction(Ray ray, string interactionName)
+        private void CmdRunInteraction(NetworkObject target, Vector3 point, string interactionName)
         {
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
+            {
+                return;
+            }
 
+            List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
             InteractionEntry interaction = viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
+
+            if (interaction.Interaction == null)
+            {
+                return;
+            }
 
             interactionEvent.Target = interaction.Target;
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
-            RpcExecuteClientInteraction(ray, interactionName, reference.Id);
+            RpcExecuteClientInteraction(target, point, interactionName, reference.Id);
 
             // TODO: Keep track of interactions for cancellation
         }
@@ -265,15 +271,25 @@ namespace SS3D.Systems.Interactions
         /// Confirms an interaction issued by a client
         /// </summary>
         [ObserversRpc]
-        private void RpcExecuteClientInteraction(Ray ray, string interactionName, int referenceId)
+        private void RpcExecuteClientInteraction(NetworkObject target, Vector3 point, string interactionName, int referenceId)
         {
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
+            {
+                return;
+            }
+
+            List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
             InteractionEntry interaction =
                 viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
 
+            if (interaction.Interaction == null)
+            {
+                return;
+            }
+
             interactionEvent.Target = interaction.Target;
 
-            if (interaction.Interaction?.GetName(interactionEvent) != interactionName)
+            if (interaction.Interaction.GetName(interactionEvent) != interactionName)
             {
                 return;
             }
@@ -303,23 +319,15 @@ namespace SS3D.Systems.Interactions
             }
 
             SelectionTargetUtility.TryResolveInteractionPoint(_camera, current, out Vector3 point, out Vector3 normal);
-            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, current.gameObject);
-
-            interactionEvent = new InteractionEvent(source, targets[0], point, normal);
-
-            return GetInteractionsFromTargets(source, targets, interactionEvent);
+            return GetViableInteractionsFromTarget(current.gameObject, point, normal, out interactionEvent);
         }
 
         /// <summary>
-        /// Gets all possible interactions, given a ray
+        /// Gets all possible interactions for a resolved target object and interaction point.
         /// </summary>
-        /// <param name="ray">The ray to use in ray casting</param>
-        /// <param name="interactionEvent">The produced interaction event</param>
-        /// <returns>A list of possible interactions</returns>
         [ServerOrClient]
-        private List<InteractionEntry> GetViableInteractions(Ray ray, out InteractionEvent interactionEvent)
+        private List<InteractionEntry> GetViableInteractionsFromTarget(GameObject targetGameObject, Vector3 point, Vector3 normal, out InteractionEvent interactionEvent)
         {
-            // Get source that's currently interacting (eg. hand, tool)
             IInteractionSource source = GetActiveInteractionSource();
 
             if (source == null)
@@ -328,29 +336,70 @@ namespace SS3D.Systems.Interactions
                 return new List<InteractionEntry>();
             }
 
-            List<IInteractionTarget> targets = new();
-
-            // Raycast to find target game object
-            Vector3 point = Vector3.zero;
-            Vector3 normal = Vector3.zero;
-            bool raycast = Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, _selectionMask, QueryTriggerInteraction.Ignore);
-            if (raycast)
-            {
-                point = hit.point;
-                normal = hit.normal;
-                GameObject target = hit.transform.gameObject;
-                targets = GetTargetsFromGameObject(source, target);
-            }
-
-            if (targets.Count < 1)
-            {
-                interactionEvent = null;
-                return new List<InteractionEntry>();
-            }
-
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, targetGameObject);
             interactionEvent = new InteractionEvent(source, targets[0], point, normal);
 
             return GetInteractionsFromTargets(source, targets, interactionEvent);
+        }
+
+        [ServerOrClient]
+        private List<InteractionEntry> GetViableInteractionsFromTarget(GameObject targetGameObject, Vector3 point, out InteractionEvent interactionEvent)
+        {
+            return GetViableInteractionsFromTarget(targetGameObject, point, Vector3.zero, out interactionEvent);
+        }
+
+        [Client]
+        private static bool TryGetNetworkTarget(InteractionEvent interactionEvent, out NetworkObject networkObject)
+        {
+            networkObject = null;
+
+            if (interactionEvent?.Target == null)
+            {
+                return false;
+            }
+
+            GameObject targetGameObject = null;
+            if (interactionEvent.Target is IGameObjectProvider targetProvider)
+            {
+                targetGameObject = targetProvider.GameObject;
+            }
+            else if (interactionEvent.Target is Component targetComponent)
+            {
+                targetGameObject = targetComponent.gameObject;
+            }
+
+            if (targetGameObject == null)
+            {
+                return false;
+            }
+
+            networkObject = targetGameObject.GetComponent<NetworkObject>();
+            if (networkObject == null)
+            {
+                networkObject = targetGameObject.GetComponentInParent<NetworkObject>();
+            }
+
+            return networkObject != null;
+        }
+
+        [ServerOrClient]
+        private static bool TryValidateInteractionTarget(NetworkObject target, out GameObject targetGameObject)
+        {
+            targetGameObject = null;
+
+            if (target == null || !target.IsSpawned)
+            {
+                return false;
+            }
+
+            targetGameObject = target.gameObject;
+
+            if (targetGameObject.GetComponent<Selectable>() == null && targetGameObject.GetComponentInChildren<Selectable>() == null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
