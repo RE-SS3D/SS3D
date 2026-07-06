@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
@@ -122,29 +123,46 @@ namespace SS3D.Systems.Tile
 	        return false;
         }
 
-        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        /// <summary>
+        /// TileMap Creator place RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
+        /// </summary>
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
+        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting,
+            NetworkConnection conn = null)
         {
+            if (!TileMapEditorPermissions.TryAuthorize(conn))
+                return;
+
             GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
             PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
-        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        /// <summary>
+        /// TileMap Creator clear-tile RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
+        /// </summary>
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
+        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir,
+            NetworkConnection conn = null)
         {
+            if (!TileMapEditorPermissions.TryAuthorize(conn))
+                return;
+
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
             _constructionService.TryClearTile(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
         }
 
-        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        /// <summary>
+        /// TileMap Creator clear-item RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
+        /// </summary>
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition)
+        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition, NetworkConnection conn = null)
         {
+            if (!TileMapEditorPermissions.TryAuthorize(conn))
+                return;
+
             ItemObjectSo itemObjectSo = (ItemObjectSo)GetAsset(itemObjectSoName);
             _constructionService.TryClearItem(placePosition, itemObjectSo);
         }
