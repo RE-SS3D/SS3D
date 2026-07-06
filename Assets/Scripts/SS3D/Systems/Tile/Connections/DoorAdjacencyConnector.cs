@@ -1,7 +1,4 @@
 ﻿
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using SS3D.Core;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
 
@@ -11,7 +8,7 @@ namespace SS3D.Systems.Tile.Connections
     /// Connector for doors, handling adding wall caps, creating custom floor tile under the door.
     /// TODO : add the custom floor.
     /// </summary>
-    public class DoorAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector, IEngineDrivenAdjacency
+    public class DoorAdjacencyConnector : EngineDrivenHorizontalConnector
     {
         private enum DoorType
         {
@@ -25,6 +22,8 @@ namespace SS3D.Systems.Tile.Connections
 
         protected override IMeshAndDirectionResolver AdjacencyResolver => null;
 
+        protected override IMeshAndDirectionResolver EngineMeshResolver => null;
+
         private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0f;
 
         [SerializeField]
@@ -35,71 +34,7 @@ namespace SS3D.Systems.Tile.Connections
 
         private GameObject[] wallCaps = new GameObject[4];
 
-        [SyncVar(OnChange = nameof(SyncEngineConnections))]
-        private byte _syncedEngineConnections;
-
-        private byte _pendingEngineConnections;
-        private bool _hasPendingEngineConnections;
-
-        public IConnectionRule ConnectionRule => DoorRule;
-
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-
-            if (_hasPendingEngineConnections)
-                PublishEngineConnections(_pendingEngineConnections);
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            ApplyEngineSyncedAdjacencies();
-        }
-
-        public void SetAdjacencyConnections(byte horizontalConnections)
-        {
-            _pendingEngineConnections = horizontalConnections;
-            _hasPendingEngineConnections = true;
-            ApplyConnectionsToWallCaps(horizontalConnections);
-
-            if (NetworkObject != null && NetworkObject.IsSpawned)
-                PublishEngineConnections(horizontalConnections);
-        }
-
-        public override bool IsConnected(PlacedTileObject neighbourObject)
-        {
-            return ConnectionRule.IsConnected(GetComponentInParent<PlacedTileObject>(), neighbourObject);
-        }
-
-        public override void UpdateAllConnections()
-        {
-            TileMap map = SubSystems.Get<TileSubSystem>().CurrentMap;
-            if (map == null)
-                return;
-
-            map.AdjacencyEngine.QueueCascadeFrom(PlacedObject);
-            map.AdjacencyEngine.ProcessQueue();
-        }
-
-        public override bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
-        {
-            TileMap map = SubSystems.Get<TileSubSystem>().CurrentMap;
-            if (map == null)
-                return false;
-
-            map.AdjacencyEngine.QueueUpdate(PlacedObject);
-
-            if (updateNeighbour && neighbourObject != null && neighbourObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
-                map.AdjacencyEngine.QueueUpdate(neighbourObject);
-
-            map.AdjacencyEngine.ProcessQueue();
-            return true;
-        }
-
-        protected override void UpdateMeshAndDirection()
-        {
-        }
+        public override IConnectionRule ConnectionRule => DoorRule;
 
         /// <summary>
         /// Rebuilds wall caps after replicated tile identity is available on the client.
@@ -107,10 +42,10 @@ namespace SS3D.Systems.Tile.Connections
         public void RefreshWallCapsFromSyncedAdjacencies()
         {
             Setup();
-            ApplyConnectionsToWallCaps(_syncedEngineConnections);
+            ApplyEngineConnections(SyncedEngineConnections);
         }
 
-        private void ApplyConnectionsToWallCaps(byte horizontalConnections)
+        protected override void ApplyEngineConnections(byte horizontalConnections)
         {
             Setup();
             if (_adjacencyMap == null)
@@ -118,23 +53,6 @@ namespace SS3D.Systems.Tile.Connections
 
             _adjacencyMap.DeserializeFromByte(horizontalConnections);
             UpdateWallCaps();
-        }
-
-        private void ApplyEngineSyncedAdjacencies()
-        {
-            ApplyConnectionsToWallCaps(_syncedEngineConnections);
-        }
-
-        private void PublishEngineConnections(byte connections)
-        {
-            _syncedEngineConnections = connections;
-            _hasPendingEngineConnections = false;
-        }
-
-        private void SyncEngineConnections(byte _, byte newValue, bool asServer)
-        {
-            if (!asServer)
-                ApplyConnectionsToWallCaps(newValue);
         }
 
         private void CreateWallCaps(bool isPresent, Direction direction)
@@ -170,7 +88,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             GameObject wallCap = Instantiate(wallCapPrefab, transform);
 
-            if (wallCap.TryGetComponent(out NetworkObject networkObject))
+            if (wallCap.TryGetComponent(out FishNet.Object.NetworkObject networkObject))
                 Object.DestroyImmediate(networkObject);
 
             Direction cardinalDirectionInput = TileHelper.GetRelativeDirection(direction, DoorDirection);

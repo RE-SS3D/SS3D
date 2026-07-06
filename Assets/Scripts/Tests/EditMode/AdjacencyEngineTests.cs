@@ -74,7 +74,7 @@ namespace EditorTests
 
             multi.SetAdjacencyConnections(0b00001010);
 
-            FieldInfo pendingField = typeof(AdvancedAdjacencyConnector).GetField("_pendingEngineConnections",
+            FieldInfo pendingField = typeof(EngineDrivenHorizontalConnector).GetField("_pendingEngineConnections",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.AreEqual(0b00001010, pendingField.GetValue(connectorA));
             Assert.AreEqual(0b00001010, pendingField.GetValue(connectorB));
@@ -215,6 +215,40 @@ namespace EditorTests
         }
 
         [Test]
+        public void CableConnectionRule_ConnectsCablesOnly()
+        {
+            PlacedTileObject self = CreatePlacedTileWithCableConnector();
+            PlacedTileObject cableNeighbour = CreatePlacedTileWithCableConnector();
+            PlacedTileObject deviceNeighbour = CreatePlacedTileWithElectricDeviceConnector();
+
+            Assert.IsTrue(CableConnectionRule.Instance.IsConnected(self, cableNeighbour));
+            Assert.IsFalse(CableConnectionRule.Instance.IsConnected(self, deviceNeighbour));
+        }
+
+        [Test]
+        public void AdjacencyEngine_AdjacentCablesGetVisualConnection()
+        {
+            TileMap map = TileMap.Create("CableAdjacencyTest");
+            instantiated.Add(map.gameObject);
+
+            PlacedTileObject western = CreatePlacedTileWithCableConnectorAt(new Vector2Int(5, 5));
+            PlacedTileObject eastern = CreatePlacedTileWithCableConnectorAt(new Vector2Int(6, 5));
+
+            RegisterOnMap(map, western, TileLayer.Wire, new Vector3(5, 0, 5));
+            RegisterOnMap(map, eastern, TileLayer.Wire, new Vector3(6, 0, 5));
+
+            map.AdjacencyEngine.QueueCascadeFrom(eastern);
+            map.AdjacencyEngine.ProcessQueue();
+
+            CablesAdjacencyConnector easternConnector = eastern.GetComponent<CablesAdjacencyConnector>();
+            FieldInfo pendingField = typeof(EngineDrivenHorizontalConnector).GetField("_pendingEngineConnections",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            byte connections = (byte)pendingField.GetValue(easternConnector);
+
+            Assert.AreEqual(1 << (int)Direction.West, connections & (1 << (int)Direction.West));
+        }
+
+        [Test]
         public void SimpleConnectionRule_ConnectsMatchingTypes()
         {
             PlacedTileObject self = CreatePlacedTile(TileObjectGenericType.Table, TileObjectSpecificType.None);
@@ -342,6 +376,30 @@ namespace EditorTests
         {
             PlacedTileObject placed = CreateBarePlacedTile(genericType, specificType);
             placed.gameObject.AddComponent<PipeAdjacencyConnector>();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            return placed;
+        }
+
+        private PlacedTileObject CreatePlacedTileWithCableConnector()
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.None, TileObjectSpecificType.None, TileLayer.Wire);
+            placed.gameObject.AddComponent<CablesAdjacencyConnector>();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            return placed;
+        }
+
+        private PlacedTileObject CreatePlacedTileWithCableConnectorAt(Vector2Int worldOrigin)
+        {
+            PlacedTileObject placed = CreatePlacedTileWithCableConnector();
+            SetPrivateField(placed, "_worldOrigin", worldOrigin);
+            placed.transform.position = new Vector3(worldOrigin.x, 0, worldOrigin.y);
+            return placed;
+        }
+
+        private PlacedTileObject CreatePlacedTileWithElectricDeviceConnector()
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.None, TileObjectSpecificType.None, TileLayer.Wire);
+            placed.gameObject.AddComponent<ElectricDeviceAdjacencyConnector>();
             SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
             return placed;
         }

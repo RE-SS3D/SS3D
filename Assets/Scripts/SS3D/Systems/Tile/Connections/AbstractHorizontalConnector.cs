@@ -222,7 +222,7 @@ namespace SS3D.Systems.Tile.Connections
         /// Return only existing neighbours. Neighbours here are adjacent (cardinal and diagonal)
         /// tile objects on the same layer.
         /// </summary>
-        public List<PlacedTileObject> GetNeighbours()
+        public virtual List<PlacedTileObject> GetNeighbours()
         {
             Setup();
 
