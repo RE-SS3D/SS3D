@@ -158,6 +158,43 @@ namespace EditorTests
         }
 
         [Test]
+        public void AdjacencyEngine_TwoAdjacentDirectionals_Terminates()
+        {
+            TileMap map = TileMap.Create("DirectionalPairTest");
+            instantiated.Add(map.gameObject);
+
+            PlacedTileObject west = CreateDirectionalTileWithConnector(new Vector2Int(4, 5), Direction.North);
+            PlacedTileObject east = CreateDirectionalTileWithConnector(new Vector2Int(5, 5), Direction.North);
+            RegisterOnMap(map, west, TileLayer.FurnitureBase, new Vector3(4, 0, 5));
+            RegisterOnMap(map, east, TileLayer.FurnitureBase, new Vector3(5, 0, 5));
+
+            map.AdjacencyEngine.QueueCascadeFrom(east);
+            Assert.DoesNotThrow(() => map.AdjacencyEngine.ProcessQueue());
+
+            DirectionalAdjacencyConnector westConnector = west.GetComponent<DirectionalAdjacencyConnector>();
+            DirectionalAdjacencyConnector eastConnector = east.GetComponent<DirectionalAdjacencyConnector>();
+            Assert.AreEqual(AdjacencyShape.URight, GetCurrentShape(westConnector));
+            Assert.AreEqual(AdjacencyShape.ULeft, GetCurrentShape(eastConnector));
+        }
+
+        private static AdjacencyShape GetCurrentShape(DirectionalAdjacencyConnector connector)
+        {
+            FieldInfo field = typeof(DirectionalAdjacencyConnector).GetField("_currentShape",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            return (AdjacencyShape)field.GetValue(connector);
+        }
+
+        private PlacedTileObject CreateDirectionalTileWithConnector(Vector2Int worldOrigin, Direction direction)
+        {
+            PlacedTileObject placed = CreateDirectionalTile(worldOrigin, direction);
+            placed.gameObject.AddComponent<MeshFilter>();
+            DirectionalAdjacencyConnector connector = placed.gameObject.AddComponent<DirectionalAdjacencyConnector>();
+            connector.AdjacencyResolver = CreateResolver();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            return placed;
+        }
+
+        [Test]
         public void Connector_Recompute_UsesEvaluatorForOShape()
         {
             TileMap map = TileMap.Create("DirectionalEvaluatorConnectorTest");

@@ -61,7 +61,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public void RecomputeAdjacency(TileMap map)
         {
-            UpdateAllAndNeighbours(updateNeighbour: true, map);
+            UpdateAllAndNeighbours(map);
         }
 
         private void Setup()
@@ -129,7 +129,7 @@ namespace SS3D.Systems.Tile.Connections
             return true;
         }
 
-        private void UpdateAllAndNeighbours(bool updateNeighbour, TileMap map)
+        private void UpdateAllAndNeighbours(TileMap map)
         {
             Setup();
 
@@ -153,7 +153,9 @@ namespace SS3D.Systems.Tile.Connections
             if (updated)
                 PublishVisualState(result.Rotation, result.Shape);
 
-            if (updated || updateNeighbour)
+            // Only cascade when this tile's shape changed. Initial neighbour updates are handled
+            // by AdjacencyEngine.QueueCascadeFrom; unconditional re-queue causes infinite loops.
+            if (updated)
             {
                 foreach (PlacedTileObject adjacent in neighbours)
                     map.AdjacencyEngine.QueueUpdate(adjacent);
