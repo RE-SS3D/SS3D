@@ -19,7 +19,6 @@ namespace SS3D.Systems.Tile.Connections
 
         public bool IsConnected(PlacedTileObject self, PlacedTileObject neighbour)
         {
-            TryGetNeighbourVertical(neighbour, out bool neighbourVertical);
             Direction selfFacing = _connector.VerticalConnection
                 ? _connector.FacingDirection
                 : _connector.PlacedObject.Direction;
@@ -29,9 +28,7 @@ namespace SS3D.Systems.Tile.Connections
                 neighbour,
                 _connector.VerticalConnection,
                 _connector.HorizontalConnectionCount,
-                neighbourVertical,
-                selfFacing,
-                ResolveNeighbourFacing(neighbour));
+                selfFacing);
         }
 
         public static Direction ResolveVerticalFacing(AdjacencyMap preliminaryMap, Direction fallback)
@@ -46,9 +43,7 @@ namespace SS3D.Systems.Tile.Connections
             PlacedTileObject neighbour,
             bool selfVertical,
             int selfCardinalConnectionCount,
-            bool neighbourVertical,
-            Direction selfFacingDirection,
-            Direction neighbourFacingDirection)
+            Direction selfFacingDirection)
         {
             if (neighbour == null)
                 return false;
@@ -58,9 +53,6 @@ namespace SS3D.Systems.Tile.Connections
 
             if (neighbour.TryGetComponent<IDisposalElement>(out _))
                 return IsConnectedToDisposalFurniture(self, neighbour, selfCardinalConnectionCount);
-
-            if (neighbour.TryGetComponent(out DisposalPipeAdjacencyConnector _) && neighbourVertical)
-                return IsConnectedToVerticalPipe(self, neighbour, neighbourFacingDirection);
 
             return neighbour.HasAdjacencyConnector && neighbour.GenericType == TileObjectGenericType.Disposal;
         }
@@ -107,40 +99,12 @@ namespace SS3D.Systems.Tile.Connections
             return disposalFurniture == aboveDisposalFurniture && selfCardinalConnectionCount < 2;
         }
 
-        private static bool IsConnectedToVerticalPipe(
-            PlacedTileObject self,
-            PlacedTileObject neighbour,
-            Direction neighbourFacingDirection)
-        {
-            if (!neighbour.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnector))
-                return false;
-
-            if (!neighbourConnector.VerticalConnection)
-                return false;
-
-            bool isConnected = neighbourConnector.PlacedObject.NeighbourAtDirectionOf(self, out Direction direction);
-            isConnected &= neighbourFacingDirection == direction;
-            return isConnected;
-        }
-
         public static Direction ResolveNeighbourFacing(PlacedTileObject neighbour)
         {
             if (neighbour != null && neighbour.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnector))
                 return neighbourConnector.FacingDirection;
 
             return neighbour?.Direction ?? Direction.North;
-        }
-
-        private static bool TryGetNeighbourVertical(PlacedTileObject neighbour, out bool vertical)
-        {
-            if (neighbour != null && neighbour.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnector))
-            {
-                vertical = neighbourConnector.VerticalConnection;
-                return true;
-            }
-
-            vertical = false;
-            return false;
         }
     }
 }

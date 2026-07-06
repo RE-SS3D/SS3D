@@ -77,6 +77,8 @@ namespace SS3D.Systems.Tile.Connections
         {
             Setup();
 
+            Direction previousFacing = _direction;
+
             AdjacencyMap preliminaryMap = BuildHorizontalMap(map, vertical: false, _placedObject.Direction);
             bool vertical = DisposalPipeConnectionRule.TryGetDisposalElementAbovePipe(map, _placedObject, out _)
                 && preliminaryMap.CardinalConnectionCount < 2;
@@ -93,6 +95,9 @@ namespace SS3D.Systems.Tile.Connections
                 horizontalMap.SerializeToByte(),
                 vertical,
                 facing);
+
+            if (vertical && facing != previousFacing)
+                QueueCardinalDisposalNeighbours(map);
         }
 
         public bool IsConnected(PlacedTileObject neighbourObject)
@@ -164,26 +169,30 @@ namespace SS3D.Systems.Tile.Connections
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 PlacedTileObject neighbour = neighbours[(int)direction];
-                bool neighbourVertical = neighbour != null
-                    && neighbour.TryGetComponent(out DisposalPipeAdjacencyConnector neighbourConnector)
-                    && neighbourConnector.VerticalConnection;
-
-                Direction neighbourFacing = DisposalPipeConnectionRule.ResolveNeighbourFacing(neighbour);
 
                 bool isConnected = DisposalPipeConnectionRule.Evaluate(
                     _placedObject,
                     neighbour,
                     vertical,
                     horizontalMap.CardinalConnectionCount,
-                    neighbourVertical,
-                    selfFacing,
-                    neighbourFacing);
+                    selfFacing);
 
                 horizontalMap.SetConnection(direction,
                     new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
             }
 
             return horizontalMap;
+        }
+
+        private void QueueCardinalDisposalNeighbours(TileMap map)
+        {
+            PlacedTileObject[] neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
+            foreach (Direction direction in TileHelper.CardinalDirections())
+            {
+                PlacedTileObject neighbour = neighbours[(int)direction];
+                if (neighbour != null && neighbour.TryGetComponent<IEngineDrivenAdjacency>(out _))
+                    map.AdjacencyEngine.QueueUpdate(neighbour);
+            }
         }
 
         private void PublishAdjacency(byte connections, bool vertical, Direction direction)

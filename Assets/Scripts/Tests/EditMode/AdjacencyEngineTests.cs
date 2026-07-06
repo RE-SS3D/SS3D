@@ -103,9 +103,7 @@ namespace EditorTests
                 neighbour,
                 selfVertical: false,
                 selfCardinalConnectionCount: 0,
-                neighbourVertical: false,
-                selfFacingDirection: Direction.North,
-                neighbourFacingDirection: Direction.North);
+                selfFacingDirection: Direction.North);
 
             Assert.IsTrue(connected);
         }
@@ -119,6 +117,65 @@ namespace EditorTests
 
             Assert.AreEqual(Direction.East,
                 DisposalPipeConnectionRule.ResolveVerticalFacing(map, Direction.North));
+        }
+
+        [Test]
+        public void DisposalPipeConnectionRule_HorizontalConnectsToVerticalNeighbourRegardlessOfFacing()
+        {
+            TileMap tileMap = TileMap.Create("DisposalHorizontalToVerticalTest");
+            instantiated.Add(tileMap.gameObject);
+
+            PlacedTileObject verticalPipe = CreatePlacedTileWithDisposalPipeConnectorAt(
+                new Vector2Int(5, 5), TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+            PlacedTileObject easternPipe = CreatePlacedTileWithDisposalPipeConnectorAt(
+                new Vector2Int(6, 5), TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+
+            RegisterOnMap(tileMap, verticalPipe, TileLayer.Disposal, new Vector3(5, 0, 5));
+            RegisterOnMap(tileMap, easternPipe, TileLayer.Disposal, new Vector3(6, 0, 5));
+
+            DisposalPipeAdjacencyConnector verticalConnector = verticalPipe.GetComponent<DisposalPipeAdjacencyConnector>();
+            SetPrivateField(verticalConnector, "_verticalConnection", true);
+            SetPrivateField(verticalConnector, "_direction", Direction.North);
+            SetPrivateField(verticalConnector, "_adjacencyMap", new AdjacencyMap());
+
+            bool connected = DisposalPipeConnectionRule.Evaluate(
+                easternPipe,
+                verticalPipe,
+                selfVertical: false,
+                selfCardinalConnectionCount: 0,
+                selfFacingDirection: Direction.North);
+
+            Assert.IsTrue(connected);
+        }
+
+        [Test]
+        public void AdjacencyEngine_HorizontalPipeConnectsToVerticalPipeUnderBin()
+        {
+            TileMap map = TileMap.Create("DisposalEngineHorizontalVerticalTest");
+            instantiated.Add(map.gameObject);
+
+            PlacedTileObject verticalPipe = CreatePlacedTileWithDisposalPipeConnectorAt(
+                new Vector2Int(5, 5), TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+            PlacedTileObject easternPipe = CreatePlacedTileWithDisposalPipeConnectorAt(
+                new Vector2Int(6, 5), TileObjectGenericType.Disposal, TileObjectSpecificType.None);
+
+            RegisterOnMap(map, verticalPipe, TileLayer.Disposal, new Vector3(5, 0, 5));
+            RegisterOnMap(map, easternPipe, TileLayer.Disposal, new Vector3(6, 0, 5));
+
+            DisposalPipeAdjacencyConnector verticalConnector = verticalPipe.GetComponent<DisposalPipeAdjacencyConnector>();
+            SetPrivateField(verticalConnector, "_verticalConnection", true);
+            SetPrivateField(verticalConnector, "_direction", Direction.North);
+            SetPrivateField(verticalConnector, "_adjacencyMap", new AdjacencyMap());
+
+            map.AdjacencyEngine.QueueCascadeFrom(easternPipe);
+            map.AdjacencyEngine.ProcessQueue();
+
+            DisposalPipeAdjacencyConnector easternConnector = easternPipe.GetComponent<DisposalPipeAdjacencyConnector>();
+            FieldInfo mapField = typeof(DisposalPipeAdjacencyConnector).GetField("_adjacencyMap",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            AdjacencyMap easternMap = (AdjacencyMap)mapField.GetValue(easternConnector);
+
+            Assert.IsTrue(easternMap.HasConnection(Direction.West));
         }
 
         [Test]
@@ -140,9 +197,7 @@ namespace EditorTests
                 easternPipe,
                 selfVertical: true,
                 selfCardinalConnectionCount: 0,
-                neighbourVertical: false,
-                selfFacingDirection: Direction.East,
-                neighbourFacingDirection: Direction.North);
+                selfFacingDirection: Direction.East);
 
             Assert.IsTrue(connected);
         }
