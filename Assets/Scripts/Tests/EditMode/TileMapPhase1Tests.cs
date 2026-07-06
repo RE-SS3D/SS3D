@@ -15,25 +15,21 @@ namespace EditorTests
         {
             TileObjectSo floorSo = CreateNamedTestSo("Phase1IdentityFloor", TileLayer.Turf);
 
-            TileAssetCatalog catalog = new();
-            catalog.Build(new[] { floorSo });
-            ushort assetId = catalog.TryGetAssetId(floorSo);
+            CreateGameObject(out GameObject subsystemGo, out TileSubSystem tileSubSystem);
+            TileResourceLoader loader = subsystemGo.AddComponent<TileResourceLoader>();
+            loader.Catalog.Build(new[] { floorSo });
+            ushort assetId = loader.Catalog.TryGetAssetId(floorSo);
+            SetLoader(tileSubSystem, loader);
+            SubSystems.Register(tileSubSystem);
 
             CreateGameObject(out GameObject go, out PlacedTileObject placed);
-            SetPrivateField(placed, "_syncAssetId", assetId);
-            SetPrivateField(placed, "_syncOriginX", 3);
-            SetPrivateField(placed, "_syncOriginY", 7);
-            SetPrivateField(placed, "_syncWorldOriginX", 3);
-            SetPrivateField(placed, "_syncWorldOriginY", 7);
-            SetPrivateField(placed, "_syncDirection", Direction.East);
-            SetPrivateField(placed, "_syncMapId", 2);
-
-            CreateGameObject(out GameObject loaderGo, out TileResourceLoader loader);
-            loader.Catalog.Build(new[] { floorSo });
-
-            CreateGameObject(out GameObject subsystemGo, out TileSubSystem tileSubSystem);
-            typeof(TileSubSystem).GetProperty("Loader")!.SetValue(tileSubSystem, loader);
-            SubSystems.Register(tileSubSystem);
+            SetSyncField(placed, "_syncAssetId", assetId);
+            SetSyncField(placed, "_syncOriginX", 3);
+            SetSyncField(placed, "_syncOriginY", 7);
+            SetSyncField(placed, "_syncWorldOriginX", 3);
+            SetSyncField(placed, "_syncWorldOriginY", 7);
+            SetSyncField(placed, "_syncDirection", Direction.East);
+            SetSyncField(placed, "_syncMapId", 2);
 
             try
             {
@@ -161,6 +157,26 @@ namespace EditorTests
             SetPrivateField(placed, "_dir", direction);
 
             return placed;
+        }
+
+        private static void SetSyncField(PlacedTileObject placed, string fieldName, object value)
+        {
+            MethodInfo setter = typeof(PlacedTileObject).GetMethod($"sync___set_value_{fieldName}",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (setter != null)
+            {
+                setter.Invoke(placed, new[] { value, true });
+                return;
+            }
+
+            SetPrivateField(placed, fieldName, value);
+        }
+
+        private static void SetLoader(TileSubSystem subsystem, TileResourceLoader loader)
+        {
+            MethodInfo setter = typeof(TileSubSystem).GetProperty("Loader")!.GetSetMethod(true);
+            Assert.IsNotNull(setter, "TileSubSystem.Loader setter not found");
+            setter.Invoke(subsystem, new object[] { loader });
         }
 
         private static void SetPrivateField(object target, string fieldName, object value)
