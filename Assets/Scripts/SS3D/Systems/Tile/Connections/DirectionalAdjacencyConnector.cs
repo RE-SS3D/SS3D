@@ -24,7 +24,7 @@ namespace SS3D.Systems.Tile.Connections
     /// It should mostly work with models such as booth, bench, and other connectable seats.
     /// DO NOT MODIFY WITHOUT A LOT OF CARE. There's a lot of edge cases and it's easy to break it. You've been warned.
     /// </summary>
-    public class DirectionalAdjacencyConnector : NetworkActor, IAdjacencyConnector
+    public class DirectionalAdjacencyConnector : NetworkActor, IAdjacencyConnector, ICustomAdjacencyRecompute
     {
 
         /// <summary>
@@ -72,11 +72,42 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private PlacedTileObject _secondNeighbour;
 
+        [SyncVar(OnChange = nameof(SyncRotation))]
+        private float _syncedRotation;
+
+        [SyncVar(OnChange = nameof(SyncShape))]
+        private AdjacencyShape _syncedShape;
+
+        private float _pendingRotation;
+        private AdjacencyShape _pendingShape;
+        private bool _hasPendingVisual;
+
+        public IConnectionRule ConnectionRule => null;
+
+        public void SetAdjacencyConnections(byte horizontalConnections)
+        {
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            if (_hasPendingVisual)
+                PublishVisualState(_pendingRotation, _pendingShape);
+        }
 
         public override void OnStartClient()
         {
             base.OnStartClient();
             Setup();
+
+            if (!IsServer)
+                ApplyVisualState(_syncedRotation, _syncedShape);
+        }
+
+        public void RecomputeAdjacency(TileMap map)
+        {
+            UpdateAllAndNeighbours(updateNeighbour: true, map);
         }
 
         /// <summary>
@@ -101,12 +132,22 @@ namespace SS3D.Systems.Tile.Connections
         public List<PlacedTileObject> GetNeighbours()
         {
             Setup();
-            var tileSystem = SubSystems.Get<TileSubSystem>();
-            var map = tileSystem.CurrentMap;
+            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            return GetNeighbours(map);
+        }
 
-            var neighbours = map.GetCardinalNeighbourPlacedObjects(_placedObject.Layer, _placedObject.transform.position);
+        private List<PlacedTileObject> GetNeighbours(TileMap map)
+        {
+            Setup();
+
+            if (map == null || _placedObject == null)
+                return new List<PlacedTileObject>();
+
+            IEnumerable<PlacedTileObject> neighbours = map.GetCardinalNeighbourPlacedObjects(
+                _placedObject.Layer, _placedObject.transform.position);
+
             return neighbours.Where(x => x != null &&
-                x.TryGetComponent<DirectionalAdjacencyConnector>(out var component)).ToList();
+                x.TryGetComponent<DirectionalAdjacencyConnector>(out _)).ToList();
         }
 
         /// <summary>
@@ -117,13 +158,16 @@ namespace SS3D.Systems.Tile.Connections
             return neighbourObject == _firstNeighbour || neighbourObject == _secondNeighbour;
         }
 
-        // ignore param
         public void UpdateAllConnections()
         {
-            foreach(var neighbourObject in GetNeighbours())
-            {
-                UpdateAllAndNeighbours(true);
-            }
+            Setup();
+
+            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            if (map == null)
+                return;
+
+            map.AdjacencyEngine.QueueCascadeFrom(_placedObject);
+            map.AdjacencyEngine.ProcessQueue();
         }
 
         /// <summary>
@@ -132,14 +176,25 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         public bool UpdateSingleConnection(Direction dir, PlacedTileObject neighbourObject, bool updateNeighbour)
         {
-            UpdateAllAndNeighbours(true);
+            Setup();
+
+            TileMap map = SubSystems.Get<TileSubSystem>()?.CurrentMap;
+            if (map == null)
+                return false;
+
+            map.AdjacencyEngine.QueueUpdate(_placedObject);
+
+            if (updateNeighbour && neighbourObject != null && neighbourObject.TryGetComponent<IEngineDrivenAdjacency>(out _))
+                map.AdjacencyEngine.QueueUpdate(neighbourObject);
+
+            map.AdjacencyEngine.ProcessQueue();
             return true;
         }
 
-        private void UpdateAllAndNeighbours(bool updateNeighbour)
+        private void UpdateAllAndNeighbours(bool updateNeighbour, TileMap map)
         {
             Setup();
-            var neighbours = GetNeighbours();
+            var neighbours = GetNeighbours(map);
             // We don't want to update neighbours which are already fully connected, they should stay as they are.
             neighbours = neighbours.Where(x => !DirectionnalAlreadyHasTwoConnections(x, true)).ToList();
             int connections = 0;
@@ -174,19 +229,13 @@ namespace SS3D.Systems.Tile.Connections
             bool updated = UpdateMeshRotationDirection(results.Item1, results.Item2, results.Item3, results.Item4, connections);
 
             if (updated)
-            {
-                RpcUpdateOnClient(results.Item2, results.Item4);
-            }
+                PublishVisualState(results.Item2, results.Item4);
 
             if (updated || updateNeighbour)
             {
-                foreach(var adjacent in neighbours)
-                {
-                    adjacent.GetComponent<DirectionalAdjacencyConnector>().UpdateAllAndNeighbours(false);
-                }
+                foreach (PlacedTileObject adjacent in neighbours)
+                    map.AdjacencyEngine.QueueUpdate(adjacent);
             }
-
-
         }
 
         /// <summary>
@@ -219,16 +268,42 @@ namespace SS3D.Systems.Tile.Connections
             return updated;
         }
 
-        [ObserversRpc(ExcludeOwner = false, BufferLast = true)]
-        private void RpcUpdateOnClient(float rotation, AdjacencyShape shape)
+        private void PublishVisualState(float rotation, AdjacencyShape shape)
         {
+            _pendingRotation = rotation;
+            _pendingShape = shape;
+            _hasPendingVisual = true;
+
+            if (NetworkObject != null && NetworkObject.IsSpawned)
+            {
+                _syncedRotation = rotation;
+                _syncedShape = shape;
+                _hasPendingVisual = false;
+            }
+        }
+
+        private void SyncRotation(float _, float __, bool asServer)
+        {
+            if (!asServer)
+                ApplyVisualState(_syncedRotation, _syncedShape);
+        }
+
+        private void SyncShape(AdjacencyShape _, AdjacencyShape __, bool asServer)
+        {
+            if (!asServer)
+                ApplyVisualState(_syncedRotation, _syncedShape);
+        }
+
+        private void ApplyVisualState(float rotation, AdjacencyShape shape)
+        {
+            Setup();
+
             Quaternion localRotation = transform.localRotation;
             Vector3 eulerRotation = localRotation.eulerAngles;
             localRotation = Quaternion.Euler(eulerRotation.x, rotation, eulerRotation.z);
             transform.localRotation = localRotation;
             Mesh mesh = AdjacencyResolver.ShapeToMesh(shape);
             _filter.mesh = mesh;
-
         }
 
         /// <summary>

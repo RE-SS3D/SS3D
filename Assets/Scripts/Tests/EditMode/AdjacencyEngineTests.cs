@@ -249,6 +249,24 @@ namespace EditorTests
         }
 
         [Test]
+        public void AdjacencyEngine_QueuesDirectionalConnector()
+        {
+            TileMap map = TileMap.Create("DirectionalEngineTest");
+            instantiated.Add(map.gameObject);
+
+            PlacedTileObject placed = CreateDirectionalTileAt(new Vector2Int(5, 5));
+            RegisterOnMap(map, placed, TileLayer.FurnitureBase, new Vector3(5, 0, 5));
+
+            map.AdjacencyEngine.QueueCascadeFrom(placed);
+            map.AdjacencyEngine.ProcessQueue();
+
+            DirectionalAdjacencyConnector connector = placed.GetComponent<DirectionalAdjacencyConnector>();
+            FieldInfo shapeField = typeof(DirectionalAdjacencyConnector).GetField("_pendingShape",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.AreEqual(AdjacencyShape.O, shapeField.GetValue(connector));
+        }
+
+        [Test]
         public void SimpleConnectionRule_ConnectsMatchingTypes()
         {
             PlacedTileObject self = CreatePlacedTile(TileObjectGenericType.Table, TileObjectSpecificType.None);
@@ -401,6 +419,19 @@ namespace EditorTests
             PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.None, TileObjectSpecificType.None, TileLayer.Wire);
             placed.gameObject.AddComponent<ElectricDeviceAdjacencyConnector>();
             SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            return placed;
+        }
+
+        private PlacedTileObject CreateDirectionalTileAt(Vector2Int worldOrigin)
+        {
+            PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.Booth, TileObjectSpecificType.None, TileLayer.FurnitureBase);
+            placed.gameObject.AddComponent<MeshFilter>();
+            DirectionalAdjacencyConnector connector = placed.gameObject.AddComponent<DirectionalAdjacencyConnector>();
+            connector.AdjacencyResolver = new DirectionnalShapeResolver();
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            SetPrivateField(placed, "_worldOrigin", worldOrigin);
+            SetPrivateField(placed, "_dir", Direction.North);
+            placed.transform.position = new Vector3(worldOrigin.x, 0, worldOrigin.y);
             return placed;
         }
 

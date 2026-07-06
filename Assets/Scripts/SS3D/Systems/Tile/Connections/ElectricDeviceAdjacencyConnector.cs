@@ -1,7 +1,8 @@
 ﻿namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// Very simple class for electric devices that do not need their mesh to be updated when something connect to them;
+    /// Electric devices share the circuit via <see cref="ElectricNeighbourLookup"/> but have no visual adjacency mesh to sync.
+    /// Intentionally not engine-driven — cable neighbours trigger graph updates through <see cref="ElectricitySubSystem"/>.
     /// </summary>
     public class ElectricDeviceAdjacencyConnector : ElectricAdjacencyConnector
     {
