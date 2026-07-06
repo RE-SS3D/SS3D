@@ -1,4 +1,4 @@
-﻿using FishNet;
+using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -285,7 +285,8 @@ namespace SS3D.Systems.Tile
         public void SetDirection(Direction dir)
         {
             _dir = dir;
-            if (IsServer)
+
+            if (NetworkObject != null && NetworkObject.IsSpawned && IsServer)
                 _syncDirection = dir;
         }
 

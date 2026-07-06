@@ -72,13 +72,9 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     rotation = TileHelper.AngleBetween(Direction.North, direction);
                     break;
                 case AdjacencyShape.LIn:
-                    mesh = lIn;
-                    // TODO : neighbours can also be LIn or LOut so their directions can be diagonal as well.
-                    rotation = LOutLinRotation(adjacencyMap);
-                    direction = LInLOutDirection(neighbours[0].Direction, neighbours[1].Direction);
-                    break;
                 case AdjacencyShape.LOut:
-                    mesh = lOut;
+                    mesh = ShapeToMesh(shape);
+                    // TODO : neighbours can also be LIn or LOut so their directions can be diagonal as well.
                     rotation = LOutLinRotation(adjacencyMap);
                     direction = LInLOutDirection(neighbours[0].Direction, neighbours[1].Direction);
                     break;
@@ -182,8 +178,9 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case AdjacencyShape.O: return o;
                 case AdjacencyShape.ULeft: return uLeft;
                 case AdjacencyShape.URight: return uRight;
-                case AdjacencyShape.LIn: return lIn;
-                case AdjacencyShape.LOut: return lOut;
+                // Mesh asset names are inverted relative to the LIn/LOut configuration names.
+                case AdjacencyShape.LIn: return lOut;
+                case AdjacencyShape.LOut: return lIn;
                 case AdjacencyShape.I: return i;
                 default:
                     Debug.LogError("adjacency shape not found, returning mesh o");

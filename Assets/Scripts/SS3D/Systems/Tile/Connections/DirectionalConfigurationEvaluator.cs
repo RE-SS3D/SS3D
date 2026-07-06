@@ -211,39 +211,49 @@ namespace SS3D.Systems.Tile.Connections
             if (IsFirstLInConfiguration(neighbours,out first, out second))
             {
                 direction = DirectionInLConfiguration(first, second, true);
-                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetPreviousDir(direction));
-                return (_resolver.lIn, rotation, direction, AdjacencyShape.LIn);
+                rotation = LCornerRotation(AdjacencyShape.LIn, direction);
+                return (_resolver.ShapeToMesh(AdjacencyShape.LIn), rotation, direction, AdjacencyShape.LIn);
             }
 
             if (IsSecondLInConfiguration(neighbours, out first, out second))
             {
                 direction = DirectionInLConfiguration(first, second, true);
-                rotation = TileHelper.AngleBetween(Direction.North, TileHelper.GetPreviousDir(direction));
-                return (_resolver.lIn, rotation, direction, AdjacencyShape.LIn);
+                rotation = LCornerRotation(AdjacencyShape.LIn, direction);
+                return (_resolver.ShapeToMesh(AdjacencyShape.LIn), rotation, direction, AdjacencyShape.LIn);
             }
 
             if (IsFirstLOutConfiguration(neighbours, out first, out second))
             {
                 direction = DirectionInLConfiguration(first, second, false);
-                var toRotate = TileHelper.GetOpposite(direction);
-                toRotate = TileHelper.GetPreviousDir(toRotate);
-                rotation = TileHelper.AngleBetween(Direction.North, toRotate);
-
-                return (_resolver.lOut, rotation, direction, AdjacencyShape.LOut);
+                rotation = LCornerRotation(AdjacencyShape.LOut, direction);
+                return (_resolver.ShapeToMesh(AdjacencyShape.LOut), rotation, direction, AdjacencyShape.LOut);
             }
 
             if (IsSecondLOutConfiguration(neighbours, out first, out second))
             {
                 direction = DirectionInLConfiguration(first, second, false);
-                var toRotate = TileHelper.GetOpposite(direction);
-                toRotate = TileHelper.GetPreviousDir(toRotate);
-                rotation = TileHelper.AngleBetween(Direction.North, toRotate);
-                return (_resolver.lOut, rotation, direction, AdjacencyShape.LOut);
+                rotation = LCornerRotation(AdjacencyShape.LOut, direction);
+                return (_resolver.ShapeToMesh(AdjacencyShape.LOut), rotation, direction, AdjacencyShape.LOut);
             }
 
             Debug.LogError("should not reach this point");
 
             return (_resolver.o, 0f, Direction.North, AdjacencyShape.O);
+        }
+
+        /// <summary>
+        /// Mesh asset names are inverted relative to LIn/LOut configuration names, so each shape
+        /// uses the rotation formula that matches its displayed mesh.
+        /// </summary>
+        private static float LCornerRotation(AdjacencyShape shape, Direction direction)
+        {
+            if (shape == AdjacencyShape.LIn)
+            {
+                Direction toRotate = TileHelper.GetPreviousDir(TileHelper.GetOpposite(direction));
+                return TileHelper.AngleBetween(Direction.North, toRotate);
+            }
+
+            return TileHelper.AngleBetween(Direction.North, TileHelper.GetPreviousDir(direction));
         }
 
         /// <summary>

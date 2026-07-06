@@ -158,6 +158,48 @@ namespace EditorTests
         }
 
         [Test]
+        public void Evaluate_LInConfiguration_UsesOppositeCornerMesh()
+        {
+            // Concave corner: horizontal run west, leg continues north from corner.
+            PlacedTileObject corner = CreateDirectionalTile(new Vector2Int(5, 5), Direction.North);
+            PlacedTileObject west = CreateDirectionalTile(new Vector2Int(4, 5), Direction.North);
+            PlacedTileObject north = CreateDirectionalTile(new Vector2Int(5, 6), Direction.West);
+            DirectionnalShapeResolver resolver = CreateResolver();
+
+            DirectionalAdjacencyResult result = DirectionalConfigurationEvaluator.Evaluate(
+                corner,
+                new List<PlacedTileObject> { west, north },
+                DefaultNeighbourState,
+                resolver);
+
+            Assert.AreEqual(AdjacencyShape.LIn, result.Shape);
+            Assert.AreEqual("lOut", result.Mesh.name);
+            Assert.AreEqual(Direction.NorthWest, result.Facing);
+            Assert.AreEqual(180f, result.Rotation);
+        }
+
+        [Test]
+        public void Evaluate_LOutConfiguration_UsesOppositeCornerMesh()
+        {
+            // Convex corner: horizontal run west, leg continues south from corner.
+            PlacedTileObject corner = CreateDirectionalTile(new Vector2Int(5, 5), Direction.North);
+            PlacedTileObject west = CreateDirectionalTile(new Vector2Int(4, 5), Direction.North);
+            PlacedTileObject south = CreateDirectionalTile(new Vector2Int(5, 4), Direction.West);
+            DirectionnalShapeResolver resolver = CreateResolver();
+
+            DirectionalAdjacencyResult result = DirectionalConfigurationEvaluator.Evaluate(
+                corner,
+                new List<PlacedTileObject> { west, south },
+                DefaultNeighbourState,
+                resolver);
+
+            Assert.AreEqual(AdjacencyShape.LOut, result.Shape);
+            Assert.AreEqual("lIn", result.Mesh.name);
+            Assert.AreEqual(Direction.NorthWest, result.Facing);
+            Assert.AreEqual(315f, result.Rotation);
+        }
+
+        [Test]
         public void AdjacencyEngine_TwoAdjacentDirectionals_Terminates()
         {
             TileMap map = TileMap.Create("DirectionalPairTest");
