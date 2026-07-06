@@ -1,3 +1,4 @@
+﻿using Coimbra;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
@@ -257,7 +258,10 @@ namespace SS3D.Systems.Tile
         [Server]
         public void DestroySelf()
         {
-            InstanceFinder.ServerManager.Despawn(gameObject);
+            if (InstanceFinder.ServerManager != null)
+                InstanceFinder.ServerManager.Despawn(gameObject);
+            else
+                gameObject.Dispose(true);
         }
 
         public void UpdateAdjacencies()

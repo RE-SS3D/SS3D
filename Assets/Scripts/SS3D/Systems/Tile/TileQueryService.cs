@@ -87,6 +87,9 @@ namespace SS3D.Systems.Tile
                         Vector3 candidate = origin + new Vector3(dx, 0, dz);
                         TileCoord candidateCoord = WorldToTile(candidate, near.MapId);
 
+                        if (candidateCoord.MapId == near.MapId && candidateCoord.Grid == near.Grid)
+                            continue;
+
                         if (TryGetOccupant(candidateCoord, layer, Direction.North, out _))
                             continue;
 

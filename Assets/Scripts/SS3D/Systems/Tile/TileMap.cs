@@ -1,4 +1,4 @@
-﻿using FishNet;
+using FishNet;
 using FishNet.Object;
 using JetBrains.Annotations;
 using SS3D.Core;
@@ -314,20 +314,22 @@ namespace SS3D.Systems.Tile
         {
             TryGetTileLocations(placePosition, out ITileLocation[] tileLocations);
             ITileLocation tileLocation = tileLocations[(int)layer];
-            tileLocation.TryGetPlacedObject(out var placed, dir);
-
-            if (placed != null && placed.TryGetComponent(out IAdjacencyConnector connector))
-            {
-                List<PlacedTileObject> neighbours = connector.GetNeighbours();
-                ResetAdjacencies(placed, tileLocation, neighbours);
-            }
-            else
-            {
-                tileLocation.TryClearPlacedObject(dir);
-            }
+            tileLocation.TryGetPlacedObject(out PlacedTileObject placed, dir);
 
             if (placed != null)
+            {
                 NotifyTileCleared(placed, placePosition, layer);
+
+                if (placed.TryGetComponent(out IAdjacencyConnector connector))
+                {
+                    List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                    ResetAdjacencies(placed, tileLocation, neighbours);
+                }
+                else
+                {
+                    tileLocation.TryClearPlacedObject(dir);
+                }
+            }
 
             // Remove any invalid tile combinations
             List<ITileLocation> toClearLocations = BuildChecker.GetToBeClearedLocations(tileLocations);
@@ -338,9 +340,9 @@ namespace SS3D.Systems.Tile
 
                 foreach (PlacedTileObject placedToClear in allPlaced)
                 {
-                    if (placed != null && placedToClear.TryGetComponent(out connector))
+                    if (placed != null && placedToClear.TryGetComponent(out IAdjacencyConnector connectorToClear))
                     {
-                        List<PlacedTileObject> neighbours = connector.GetNeighbours();
+                        List<PlacedTileObject> neighbours = connectorToClear.GetNeighbours();
                         ResetAdjacencies(placed, clearLocation, neighbours);
                     }
                 }
