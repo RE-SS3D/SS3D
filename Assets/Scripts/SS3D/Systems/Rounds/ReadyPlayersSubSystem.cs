@@ -99,7 +99,17 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
+            RoundState roundState = SubSystems.Get<RoundSubSystem>().CurrentRoundState;
+            if (roundState is RoundState.Ongoing or RoundState.Ending)
+            {
+                return;
+            }
+
             Player player = SubSystems.Get<PlayerSubSystem>().GetPlayer(m.Ckey);
+            if (player == null)
+            {
+                return;
+            }
 
             SetPlayerReady(player, m.Ready);
         }

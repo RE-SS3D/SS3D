@@ -82,6 +82,11 @@ namespace SS3D.Systems.Rounds
         /// </summary>
         protected bool IsOngoing => RoundState == RoundState.Ongoing;
 
+        /// <summary>
+        /// Authoritative round state replicated to clients.
+        /// </summary>
+        public RoundState CurrentRoundState => _roundState;
+
         public override void OnStartServer()
         {
             base.OnStartServer();
