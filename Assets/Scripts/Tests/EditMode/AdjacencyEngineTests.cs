@@ -175,6 +175,7 @@ namespace EditorTests
                 BindingFlags.Instance | BindingFlags.NonPublic);
             AdjacencyMap easternMap = (AdjacencyMap)mapField.GetValue(easternConnector);
 
+            Assert.IsNotNull(easternMap);
             Assert.IsTrue(easternMap.HasConnection(Direction.West));
         }
 
@@ -290,13 +291,16 @@ namespace EditorTests
             return placed;
         }
 
-        private PlacedTileObject CreateBarePlacedTile(TileObjectGenericType genericType, TileObjectSpecificType specificType)
+        private PlacedTileObject CreateBarePlacedTile(
+            TileObjectGenericType genericType,
+            TileObjectSpecificType specificType,
+            TileLayer layer = TileLayer.Turf)
         {
             CreateGameObject(out GameObject go, out PlacedTileObject placed);
             TileObjectSo so = ScriptableObject.CreateInstance<TileObjectSo>();
             so.genericType = genericType;
             so.specificType = specificType;
-            so.layer = TileLayer.Turf;
+            so.layer = layer;
             SetPrivateField(placed, "_tileObjectSo", so);
             return placed;
         }
@@ -328,7 +332,7 @@ namespace EditorTests
 
         private PlacedTileObject CreatePlacedTileWithDisposalPipeConnector(TileObjectGenericType genericType, TileObjectSpecificType specificType)
         {
-            PlacedTileObject placed = CreateBarePlacedTile(genericType, specificType);
+            PlacedTileObject placed = CreateBarePlacedTile(genericType, specificType, TileLayer.Disposal);
             placed.gameObject.AddComponent<DisposalPipeAdjacencyConnector>();
             SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
             return placed;
