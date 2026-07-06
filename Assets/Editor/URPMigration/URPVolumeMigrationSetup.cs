@@ -306,6 +306,7 @@ namespace SS3D.Editor.URPMigration
             cameraData.renderPostProcessing = true;
             cameraData.antialiasing = AntialiasingMode.TemporalAntiAliasing;
             cameraData.antialiasingQuality = AntialiasingQuality.High;
+            EnsurePipelineMsaaDisabledForTaa();
             cameraData.volumeLayerMask = ~0;
 
             var cameraDataSettings = new SerializedObject(cameraData);
@@ -421,6 +422,18 @@ namespace SS3D.Editor.URPMigration
                     // Some BuildTargetGroup values are obsolete or unsupported.
                 }
             }
+        }
+
+        static void EnsurePipelineMsaaDisabledForTaa()
+        {
+            var pipeline = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+            if (pipeline == null || pipeline.msaaSampleCount == (int)MsaaQuality.Disabled)
+            {
+                return;
+            }
+
+            pipeline.msaaSampleCount = (int)MsaaQuality.Disabled;
+            EditorUtility.SetDirty(pipeline);
         }
     }
 }
