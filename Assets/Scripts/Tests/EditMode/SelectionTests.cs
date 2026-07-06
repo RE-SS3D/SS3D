@@ -213,6 +213,30 @@ namespace EditorTests
 
             Object.DestroyImmediate(target);
         }
+
+        /// <summary>
+        /// Interaction points should only use colliders owned by the picked selectable subtree.
+        /// </summary>
+        [Test]
+        public void TryResolveInteractionPointIgnoresNestedSelectableColliders()
+        {
+            GameObject parent = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            parent.transform.position = Vector3.zero;
+            Selectable parentSelectable = parent.AddComponent<Selectable>();
+
+            GameObject child = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            child.transform.SetParent(parent.transform);
+            child.transform.localPosition = new Vector3(2f, 0f, 0f);
+            Selectable childSelectable = child.AddComponent<Selectable>();
+
+            Ray ray = new Ray(new Vector3(0f, 0f, -5f), Vector3.forward);
+            bool resolved = SelectionTargetUtility.TryResolveInteractionPoint(ray, parentSelectable, out Vector3 point, out _);
+
+            Assert.IsTrue(resolved);
+            Assert.Less(Mathf.Abs(point.x), 0.6f);
+
+            Object.DestroyImmediate(parent);
+        }
         #endregion
 
         #region Helper functions

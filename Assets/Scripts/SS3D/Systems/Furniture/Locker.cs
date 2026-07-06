@@ -6,6 +6,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Interactions;
+using SS3D.Systems.Selection;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace SS3D.Systems.Furniture
     /// <summary>
     /// A temporary locker class for easily testing permission checking
     /// </summary>
+    [RequireComponent(typeof(Selectable))]
     public class Locker : NetworkActor, IInteractionTarget
     {
         private static readonly int ColorPropertyIndex = Shader.PropertyToID("_Color");
