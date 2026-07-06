@@ -93,6 +93,17 @@ namespace EditorTests
         }
 
         [Test]
+        public void AdjacencyPayload_DisposalPackUnpack_RoundTrips()
+        {
+            AdjacencyPayload payload = AdjacencyPayload.ForDisposal(0b10101010, true, Direction.SouthEast);
+            AdjacencyPayload roundTripped = AdjacencyPayload.UnpackDisposal(payload.PackDisposal());
+
+            Assert.AreEqual(payload.HorizontalConnections, roundTripped.HorizontalConnections);
+            Assert.AreEqual(payload.VerticalConnection, roundTripped.VerticalConnection);
+            Assert.AreEqual(payload.Facing, roundTripped.Facing);
+        }
+
+        [Test]
         public void DisposalPipeConnectionRule_ConnectsMatchingDisposalPipes()
         {
             PlacedTileObject self = CreatePlacedTileWithDisposalPipeConnector(TileObjectGenericType.Disposal, TileObjectSpecificType.None);

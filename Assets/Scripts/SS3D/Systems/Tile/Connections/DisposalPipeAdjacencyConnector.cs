@@ -21,19 +21,13 @@ namespace SS3D.Systems.Tile.Connections
         private PlacedTileObject _placedObject;
         private DisposalPipeConnectionRule _connectionRule;
         private bool _initialized;
-
-        [SyncVar(OnChange = nameof(SyncEngineConnections))]
-        private byte _syncedEngineConnections;
-
-        [SyncVar(OnChange = nameof(SyncVertical))]
         private bool _verticalConnection;
-
-        [SyncVar(OnChange = nameof(SyncDirection))]
         private Direction _direction;
 
-        private byte _pendingEngineConnections;
-        private bool _pendingVerticalConnection;
-        private Direction _pendingDirection;
+        [SyncVar(OnChange = nameof(SyncAdjacencyPayload))]
+        private uint _syncedAdjacencyPayload;
+
+        private uint _pendingAdjacencyPayload;
         private bool _hasPendingAdjacency;
 
         public PlacedTileObject PlacedObject => _placedObject;
@@ -65,12 +59,21 @@ namespace SS3D.Systems.Tile.Connections
             base.OnStartServer();
 
             if (_hasPendingAdjacency)
-                PublishAdjacency(_pendingEngineConnections, _pendingVerticalConnection, _pendingDirection);
+                PublishAdjacency(AdjacencyPayload.UnpackDisposal(_pendingAdjacencyPayload));
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            Setup();
+
+            if (!IsServer)
+                ApplyAdjacency(AdjacencyPayload.UnpackDisposal(_syncedAdjacencyPayload));
         }
 
         public void SetAdjacencyConnections(byte horizontalConnections)
         {
-            PublishAdjacency(horizontalConnections, _verticalConnection, _placedObject.Direction);
+            PublishAdjacency(AdjacencyPayload.ForDisposal(horizontalConnections, _verticalConnection, _direction));
         }
 
         public void RecomputeAdjacency(TileMap map)
@@ -92,9 +95,10 @@ namespace SS3D.Systems.Tile.Connections
                 : preliminaryMap;
 
             PublishAdjacency(
-                horizontalMap.SerializeToByte(),
-                vertical,
-                facing);
+                AdjacencyPayload.ForDisposal(
+                    horizontalMap.SerializeToByte(),
+                    vertical,
+                    facing));
 
             if (vertical && facing != previousFacing)
                 QueueCardinalDisposalNeighbours(map);
@@ -195,23 +199,26 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        private void PublishAdjacency(byte connections, bool vertical, Direction direction)
+        private void PublishAdjacency(AdjacencyPayload payload)
         {
-            _adjacencyMap.DeserializeFromByte(connections);
-            _verticalConnection = vertical;
-            _direction = direction;
-            UpdateMeshAndDirection();
+            ApplyAdjacency(payload);
 
-            _pendingEngineConnections = connections;
-            _pendingVerticalConnection = vertical;
-            _pendingDirection = direction;
+            _pendingAdjacencyPayload = payload.PackDisposal();
             _hasPendingAdjacency = true;
 
             if (NetworkObject != null && NetworkObject.IsSpawned)
             {
-                _syncedEngineConnections = connections;
+                _syncedAdjacencyPayload = _pendingAdjacencyPayload;
                 _hasPendingAdjacency = false;
             }
+        }
+
+        private void ApplyAdjacency(AdjacencyPayload payload)
+        {
+            _adjacencyMap.DeserializeFromByte(payload.HorizontalConnections);
+            _verticalConnection = payload.VerticalConnection;
+            _direction = payload.Facing;
+            UpdateMeshAndDirection();
         }
 
         private void UpdateMeshAndDirection()
@@ -242,31 +249,12 @@ namespace SS3D.Systems.Tile.Connections
             }
         }
 
-        private void SyncEngineConnections(byte _, byte newValue, bool asServer)
+        private void SyncAdjacencyPayload(uint _, uint newValue, bool asServer)
         {
             if (!asServer)
             {
                 Setup();
-                _adjacencyMap.DeserializeFromByte(newValue);
-                UpdateMeshAndDirection();
-            }
-        }
-
-        private void SyncVertical(bool _, bool newValue, bool asServer)
-        {
-            if (!asServer)
-            {
-                Setup();
-                UpdateMeshAndDirection();
-            }
-        }
-
-        private void SyncDirection(Direction _, Direction newValue, bool asServer)
-        {
-            if (!asServer)
-            {
-                Setup();
-                UpdateMeshAndDirection();
+                ApplyAdjacency(AdjacencyPayload.UnpackDisposal(newValue));
             }
         }
     }
