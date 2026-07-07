@@ -7,11 +7,13 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Interactions;
+using SS3D.Systems.Selection;
 using UnityEngine;
 
 /// <summary>
 /// Put this script on things that can be dragged by a player, such as unbolted furnitures.
 /// </summary>
+[RequireComponent(typeof(Selectable))]
 public class Draggable : NetworkActor, IInteractionTarget, IGameObjectProvider
 {
     [SerializeField]
