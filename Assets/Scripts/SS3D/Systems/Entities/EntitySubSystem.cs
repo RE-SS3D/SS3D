@@ -179,6 +179,11 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnLatePlayer(Player player)
         {
+            if (SubSystems.Get<RoundSubSystem>().CurrentRoundState != RoundState.Ongoing)
+            {
+                return;
+            }
+
             if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
                 SpawnPlayer(player);

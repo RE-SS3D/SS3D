@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Core.Settings;
@@ -16,6 +17,7 @@ using Tests.Play_Mode.Framework.Helpers;
 
 namespace SS3D.Tests
 {
+    [Category(TestCategories.RequiresCompiledBuild)]
     public class Issue1002_LateJoinFails_HostPerspective : PlayModeTest
     {
 
@@ -32,16 +34,27 @@ namespace SS3D.Tests
         public IEnumerator UnityTearDown()
         {
             LogAssert.ignoreFailingMessages = true;
-            // Wait for a bit, to get some temporal separation.
             yield return new WaitForSeconds(1f);
 
-            // Shut down the client
-            clientProcess.CloseMainWindow();
-            clientProcess.Close();
+            if (clientProcess != null)
+            {
+                try
+                {
+                    if (!clientProcess.HasExited)
+                    {
+                        clientProcess.CloseMainWindow();
+                        clientProcess.Close();
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    // Process already exited.
+                }
 
-            TestHelpers.FinishAndExitRound();
+                clientProcess = null;
+            }
 
-            // Wait for a bit more
+            yield return TestHelpers.TryFinishAndExitRound();
             yield return new WaitForSeconds(1f);
         }
 

@@ -22,6 +22,7 @@ using SS3D.Networking;
 
 namespace SS3D.Tests
 {
+    [Category(TestCategories.RequiresCompiledBuild)]
     public class ClientGameActions : PlayModeTest
     {
         [UnitySetUp]

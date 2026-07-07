@@ -18,10 +18,7 @@ using SS3D.Networking;
 
 namespace SS3D.Tests
 {
-
-    /// <summary>
-    /// All tests related to doing stuff in the lobby as a client.
-    /// </summary>
+    [Category(TestCategories.RequiresCompiledBuild)]
     public class ClientLobbyActions : PlayModeTest
     {
         [UnitySetUp]
