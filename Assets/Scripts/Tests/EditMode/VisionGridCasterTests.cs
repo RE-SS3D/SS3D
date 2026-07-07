@@ -107,6 +107,44 @@ namespace EditorTests
         }
 
         [Test]
+        public void OpenDoorTile_AllowsRayThrough()
+        {
+            MapContext context = CreateMapWithPlenum(new Vector3(5f, 0f, 5f), new Vector3(5f, 0f, 6f));
+            PlacedTileObject door = CreateDoorTile(new Vector2Int(5, 6), Direction.North);
+            StubDynamicTileOccupant opener = door.gameObject.AddComponent<StubDynamicTileOccupant>();
+            opener.IsOpen = true;
+            RegisterOnMap(context.Map, door, new Vector3(5f, 0f, 6f));
+            ProcessAdjacency(context.Map, door);
+
+            var occlusion = new VisionOcclusionProvider(context.Map, context.Query);
+            float depth = VisionGridCaster.CastRay(
+                occlusion,
+                context.Query,
+                new Vector3(5f, 0f, 5f),
+                angleRadians: 0f,
+                maxRange: 10f);
+
+            Assert.Greater(depth, 9.5f);
+        }
+
+        [Test]
+        public void TryGetOccupancy_OpenDoorDoesNotBlockVision()
+        {
+            MapContext context = CreateMapWithPlenum(new Vector3(5f, 0f, 5f), new Vector3(5f, 0f, 6f));
+            PlacedTileObject door = CreateDoorTile(new Vector2Int(5, 6), Direction.North);
+            StubDynamicTileOccupant opener = door.gameObject.AddComponent<StubDynamicTileOccupant>();
+            opener.IsOpen = true;
+            RegisterOnMap(context.Map, door, new Vector3(5f, 0f, 6f));
+
+            bool found = context.Query.TryGetOccupancy(new TileCoord(0, 5, 6), out TileOccupancy occupancy);
+
+            Assert.IsTrue(found);
+            Assert.IsTrue(occupancy.IsDoor);
+            Assert.IsFalse(occupancy.BlocksVision);
+            Assert.AreEqual(0, occupancy.BlockedEdges);
+        }
+
+        [Test]
         public void ChunkBoundaryRay_HitsWallAcrossChunkEdge()
         {
             MapContext context = CreateMapWithPlenum(new Vector3(15f, 0f, 5f), new Vector3(16f, 0f, 5f));
@@ -217,6 +255,11 @@ namespace EditorTests
 
             public TileMap Map { get; }
             public TileQueryService Query { get; }
+        }
+
+        private sealed class StubDynamicTileOccupant : MonoBehaviour, IDynamicTileOccupant
+        {
+            public bool IsOpen { get; set; }
         }
     }
 }

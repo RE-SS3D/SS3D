@@ -29,6 +29,7 @@ Shader "Vision/VisionMaskBlur"
             float _FovBlurQuality;
             float _FovBlurDirections;
             float2 _FovBlurSize;
+            float _VisionFogStrength;
 
             struct Varyings
             {
@@ -75,7 +76,7 @@ Shader "Vision/VisionMaskBlur"
                 half4 col = SAMPLE_TEXTURE2D_X(_MainTex, sampler_MainTex, input.texcoord);
 
                 if (!thisVisible)
-                    col = lerp(col, half4(0.0, 0.0, 0.0, 1.0), 0.2);
+                    col = lerp(col, half4(0.0, 0.0, 0.0, 1.0), _VisionFogStrength);
 
                 if (average > 0.0)
                     col = half4(0.0, 0.0, 0.0, 1.0) * average + col * (1.0 - average);

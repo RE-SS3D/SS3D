@@ -128,6 +128,14 @@ namespace SS3D.Systems.Tile
             _currentMap?.RemoveClientPlacedObject(placed);
         }
 
+        /// <summary>
+        /// Notifies the tilemap that a tile cell's runtime state changed (e.g. door open/close).
+        /// </summary>
+        public void NotifyTileStateChanged(Vector3 worldPosition)
+        {
+            _currentMap?.NotifyTileStateChanged(worldPosition);
+        }
+
         private void FlushPendingClientPlaced()
         {
             if (_currentMap == null || _pendingClientPlaced.Count == 0)

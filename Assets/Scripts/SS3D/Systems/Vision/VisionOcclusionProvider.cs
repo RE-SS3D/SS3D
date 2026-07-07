@@ -63,6 +63,11 @@ namespace SS3D.Systems.Vision
             _chunks.Remove(chunk.ChunkKey);
         }
 
+        public void OnTileStateChanged(TileCoord coord)
+        {
+            InvalidateCell(coord);
+        }
+
         private void InvalidateAround(TileCoord coord)
         {
             InvalidateCell(coord);

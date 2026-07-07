@@ -15,12 +15,14 @@ namespace SS3D.Rendering.URP
         static readonly int s_MainTexId = Shader.PropertyToID("_MainTex");
         static readonly int s_FovTexId = Shader.PropertyToID("_FovTex");
         static readonly int s_InvViewProjId = Shader.PropertyToID("_PlayerCameraInvViewProj");
+        static readonly int s_FogStrengthId = Shader.PropertyToID("_VisionFogStrength");
 
         readonly Material _blurMaterial;
         VisionRendererFeature _feature;
         float _blurQuality;
         float _blurDirections;
         Vector2 _blurSize;
+        float _fogStrength;
 
         public VisionBlurRenderPass(Material blurMaterial)
         {
@@ -30,12 +32,13 @@ namespace SS3D.Rendering.URP
             ConfigureInput(ScriptableRenderPassInput.Depth);
         }
 
-        public void Setup(VisionRendererFeature feature, float blurQuality, float blurDirections, Vector2 blurSize)
+        public void Setup(VisionRendererFeature feature, float blurQuality, float blurDirections, Vector2 blurSize, float fogStrength)
         {
             _feature = feature;
             _blurQuality = blurQuality;
             _blurDirections = blurDirections;
             _blurSize = blurSize;
+            _fogStrength = fogStrength;
         }
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -68,6 +71,7 @@ namespace SS3D.Rendering.URP
                 passData.BlurQuality = _blurQuality;
                 passData.BlurDirections = _blurDirections;
                 passData.BlurSize = _blurSize;
+                passData.FogStrength = _fogStrength;
                 passData.InverseViewProjection = inverseViewProjection;
 
                 builder.UseTexture(passData.Source, AccessFlags.Read);
@@ -81,6 +85,7 @@ namespace SS3D.Rendering.URP
                     data.Material.SetFloat("_FovBlurQuality", data.BlurQuality);
                     data.Material.SetFloat("_FovBlurDirections", data.BlurDirections);
                     data.Material.SetVector("_FovBlurSize", data.BlurSize);
+                    data.Material.SetFloat(s_FogStrengthId, data.FogStrength);
                     data.Material.SetMatrix(s_InvViewProjId, data.InverseViewProjection);
 
                     s_PropertyBlock.Clear();
@@ -114,6 +119,7 @@ namespace SS3D.Rendering.URP
             public float BlurQuality;
             public float BlurDirections;
             public Vector2 BlurSize;
+            public float FogStrength;
             public Matrix4x4 InverseViewProjection;
         }
     }

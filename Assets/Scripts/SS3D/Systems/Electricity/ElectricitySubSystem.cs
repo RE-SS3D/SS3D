@@ -145,6 +145,10 @@ namespace System.Electricity
         {
         }
 
+        public void OnTileStateChanged(TileCoord coord)
+        {
+        }
+
         [Server]
         private void RefreshNeighbouringElectricDevices(PlacedTileObject topologyTile)
         {

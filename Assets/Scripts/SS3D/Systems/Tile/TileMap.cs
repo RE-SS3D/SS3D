@@ -631,6 +631,17 @@ namespace SS3D.Systems.Tile
                 observer.OnTileCleared(placedObject, coord, layer);
         }
 
+        /// <summary>
+        /// Notifies observers that a tile cell's runtime state changed (e.g. door open/close).
+        /// </summary>
+        public void NotifyTileStateChanged(Vector3 worldPosition)
+        {
+            TileCoord coord = new TileCoord(MapId, Mathf.RoundToInt(worldPosition.x), Mathf.RoundToInt(worldPosition.z));
+
+            foreach (ITileMutationObserver observer in _mutationObservers)
+                observer.OnTileStateChanged(coord);
+        }
+
         private void ClearUntrackedItems()
         {
             // Find all Item components in the scene

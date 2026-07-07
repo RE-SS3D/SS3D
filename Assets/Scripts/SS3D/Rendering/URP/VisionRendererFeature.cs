@@ -15,6 +15,7 @@ namespace SS3D.Rendering.URP
         [SerializeField] private float _blurQuality = 5f;
         [SerializeField] private float _blurDirections = 25f;
         [SerializeField] private Vector2 _blurSize = new(5f, 5f);
+        [SerializeField] [Range(0f, 1f)] private float _fogStrength = 0.9f;
         [SerializeField] [Tooltip("Output the raw visibility mask to the screen and skip the blur composite (diagnostic).")] private bool _debugMask;
 
         VisionMaskRenderPass _maskPass;
@@ -57,7 +58,7 @@ namespace SS3D.Rendering.URP
             if (_debugMask)
                 return;
 
-            _blurPass.Setup(this, _blurQuality, _blurDirections, _blurSize);
+            _blurPass.Setup(this, _blurQuality, _blurDirections, _blurSize, _fogStrength);
             renderer.EnqueuePass(_blurPass);
         }
 

@@ -35,11 +35,12 @@ namespace SS3D.Systems.Tile
                     break;
 
                 case TileObjectGenericType.Door:
+                    bool open = placed.TryGetComponent(out IDynamicTileOccupant dynamic) && dynamic.IsOpen;
                     occupancy.IsDoor = true;
-                    occupancy.DoorBlocksVision = true;
-                    occupancy.BlocksVision = true;
-                    occupancy.BlockedEdges = AllCardinalEdges;
-                    occupancy.IsAirtight = true;
+                    occupancy.DoorBlocksVision = !open;
+                    occupancy.BlocksVision = !open;
+                    occupancy.BlockedEdges = open ? (byte)0 : AllCardinalEdges;
+                    occupancy.IsAirtight = !open;
                     break;
             }
         }
