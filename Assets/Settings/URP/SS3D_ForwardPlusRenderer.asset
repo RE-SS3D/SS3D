@@ -27,6 +27,7 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
   - {fileID: 1717928855446876704}
+  - {fileID: -8472639182736451891}
   m_RendererFeatureMap: 4c8e2b1f7a903d5e
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
@@ -96,3 +97,21 @@ MonoBehaviour:
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1
+--- !u!114 &-8472639182736451891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729836a4b4b4b16589994599bb480a8e, type: 3}
+  m_Name: VisionRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.VisionRendererFeature
+  m_Active: 1
+  _visionMaskShader: {fileID: 4800000, guid: 15369a85bf338fdb7af4340cb5d185ec, type: 3}
+  _visionBlurShader: {fileID: 4800000, guid: a2c58fdd58bc3e1a9a6970b779eebb57, type: 3}
+  _blurQuality: 5
+  _blurDirections: 25
+  _blurSize: {x: 5, y: 5}

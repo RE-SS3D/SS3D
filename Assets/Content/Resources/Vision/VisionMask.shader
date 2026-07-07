@@ -1,48 +1,47 @@
 Shader "Vision/VisionMask"
 {
-    //TODO Clean this up for multiplatform and add comments
     SubShader
     {
-        Cull Off ZWrite Off ZTest Always
-        Pass 
+        Tags
         {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+            "RenderPipeline" = "UniversalPipeline"
+        }
 
-            #include "UnityCG.cginc"
-            #include "VisionCG.cginc"
+        Pass
+        {
+            Name "VisionMask"
+            ZTest Always
+            ZWrite Off
+            Cull Off
 
-            struct appdata
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+            #include "Vision.hlsl"
+
+            struct Varyings
             {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
+                float4 positionCS : SV_POSITION;
+                float2 texcoord   : TEXCOORD0;
             };
 
-            struct v2f
+            Varyings Vert(uint vertexID : SV_VertexID)
             {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-            };
-
-            UNITY_DECLARE_TEX2D(_MainTex);
-            v2f vert(appdata v)
-            {
-                v2f o;
-                o.vertex = float4(v.vertex.xy, 0, 1);
-                o.uv = v.vertex.xy;
-
-                if (_ProjectionParams.x < 0) o.uv.y = (1 - o.uv.y) - 1;
-
-                return o;
-            }
-            float4 frag(v2f i) : SV_Target 
-            {
-                if(IsVisible(i.uv)) return float4(1,1,1,1);
-                else return float4(0,0,0,0);
+                Varyings output;
+                output.positionCS = GetFullScreenTriangleVertexPosition(vertexID);
+                output.texcoord = GetFullScreenTriangleTexCoord(vertexID);
+                return output;
             }
 
-            ENDCG
+            half4 Frag(Varyings input) : SV_Target
+            {
+                float2 clipCoords = input.texcoord * 2.0 - 1.0;
+                return VisionIsVisibleClip(clipCoords) ? half4(1.0, 1.0, 1.0, 1.0) : half4(0.0, 0.0, 0.0, 0.0);
+            }
+            ENDHLSL
         }
     }
 }
