@@ -126,7 +126,6 @@ namespace SS3D.Systems.Vision
             }
 
             chunk.Cells[local.x, local.y] = cell;
-            _chunks[chunkKey] = chunk;
             return true;
         }
 
@@ -170,14 +169,10 @@ namespace SS3D.Systems.Vision
             public byte BlockedEdges;
         }
 
-        private struct VisionChunkCache
+        private sealed class VisionChunkCache
         {
-            public VisionCellCache[,] Cells;
-
-            public VisionChunkCache()
-            {
-                Cells = new VisionCellCache[TileConstants.ChunkSize, TileConstants.ChunkSize];
-            }
+            public readonly VisionCellCache[,] Cells =
+                new VisionCellCache[TileConstants.ChunkSize, TileConstants.ChunkSize];
         }
     }
 }

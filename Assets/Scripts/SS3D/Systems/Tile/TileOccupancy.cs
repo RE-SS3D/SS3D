@@ -1,6 +1,4 @@
-using SS3D.Systems.Tile;
-
-namespace SS3D.Systems.Vision
+namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Read-only occupancy flags for a tile cell. Populated incrementally as consumers need them.
@@ -27,11 +25,19 @@ namespace SS3D.Systems.Vision
 
         public float GetDirectionalOpacity(Direction direction)
         {
-            int edgeIndex = VisionEdgeMask.EdgeIndexForDirection(direction);
+            int edgeIndex = direction switch
+            {
+                Direction.North => 0,
+                Direction.East => 1,
+                Direction.South => 2,
+                Direction.West => 3,
+                _ => -1
+            };
+
             if (edgeIndex < 0)
                 return 0f;
 
-            return (BlockedEdges & VisionEdgeMask.ForCardinal(edgeIndex)) != 0 ? 1f : 0f;
+            return (BlockedEdges & (1 << edgeIndex)) != 0 ? 1f : 0f;
         }
     }
 }

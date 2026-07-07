@@ -70,7 +70,7 @@ namespace SS3D.Systems.Vision
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
             {
-                Destroy(gameObject);
+                gameObject.Dispose(true);
                 return;
             }
 

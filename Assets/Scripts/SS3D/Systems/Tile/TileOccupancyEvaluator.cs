@@ -1,23 +1,18 @@
-using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
-using UnityEngine;
 
-namespace SS3D.Systems.Vision
+namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Derives vision-blocking occupancy from turf occupants and wall adjacency.
+    /// Derives occupancy flags (walls, doors, windows, per-edge blocking) from turf occupants and wall adjacency.
     /// </summary>
-    public static class VisionOccupancyEvaluator
+    public static class TileOccupancyEvaluator
     {
-        public static bool TryEvaluate(TileMap map, TileCoord coord, ITileLocation[] locations, out TileOccupancy occupancy)
+        private const byte AllCardinalEdges = 0b1111;
+
+        public static void Evaluate(TileMap map, ITileLocation[] locations, ref TileOccupancy occupancy)
         {
-            occupancy = default;
-
-            occupancy.HasPlenum = !locations[(int)TileLayer.Plenum].IsFullyEmpty();
-            occupancy.HasTurf = !locations[(int)TileLayer.Turf].IsFullyEmpty();
-
             if (locations[(int)TileLayer.Turf] is not SingleTileLocation turfLocation || turfLocation.IsEmpty())
-                return true;
+                return;
 
             PlacedTileObject placed = turfLocation.PlacedObject;
             switch (placed.GenericType)
@@ -43,12 +38,10 @@ namespace SS3D.Systems.Vision
                     occupancy.IsDoor = true;
                     occupancy.DoorBlocksVision = true;
                     occupancy.BlocksVision = true;
-                    occupancy.BlockedEdges = VisionEdgeMask.AllCardinals;
+                    occupancy.BlockedEdges = AllCardinalEdges;
                     occupancy.IsAirtight = true;
                     break;
             }
-
-            return true;
         }
 
         public static bool IsWindow(PlacedTileObject placed)
@@ -59,7 +52,7 @@ namespace SS3D.Systems.Vision
         public static byte ComputeWallBlockedEdges(PlacedTileObject wall, TileMap map)
         {
             if (map == null || wall.Layer != TileLayer.Turf || wall.GenericType != TileObjectGenericType.Wall)
-                return VisionEdgeMask.AllCardinals;
+                return AllCardinalEdges;
 
             AdjacencyMap adjacencyMap = ResolveAdjacencyMap(wall, map);
             byte blockedEdges = 0;
@@ -68,7 +61,7 @@ namespace SS3D.Systems.Vision
             foreach (Direction direction in TileHelper.CardinalDirections())
             {
                 if (!adjacencyMap.HasConnection(direction))
-                    blockedEdges |= VisionEdgeMask.ForCardinal(edgeIndex);
+                    blockedEdges |= (byte)(1 << edgeIndex);
 
                 edgeIndex++;
             }

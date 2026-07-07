@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SS3D.Systems.Vision;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -46,8 +45,7 @@ namespace SS3D.Systems.Tile
             occupancy.HasPlenum = !locations[(int)TileLayer.Plenum].IsFullyEmpty();
             occupancy.HasTurf = !locations[(int)TileLayer.Turf].IsFullyEmpty();
 
-            if (!VisionOccupancyEvaluator.TryEvaluate(_map, coord, locations, out occupancy))
-                return false;
+            TileOccupancyEvaluator.Evaluate(_map, locations, ref occupancy);
 
             return true;
         }

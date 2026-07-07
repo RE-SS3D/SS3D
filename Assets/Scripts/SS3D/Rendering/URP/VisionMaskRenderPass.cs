@@ -41,7 +41,7 @@ namespace SS3D.Rendering.URP
             TextureDesc maskDesc = resourceData.activeColorTexture.GetDescriptor(renderGraph);
             maskDesc.name = "VisionMask";
             maskDesc.depthBufferBits = 0;
-            maskDesc.msaaSamples = 1;
+            maskDesc.msaaSamples = MSAASamples.None;
             maskDesc.clearBuffer = true;
 
             TextureHandle maskTexture = renderGraph.CreateTexture(maskDesc);

@@ -55,7 +55,7 @@ namespace SS3D.Rendering.URP
             TextureDesc tempDesc = resourceData.activeColorTexture.GetDescriptor(renderGraph);
             tempDesc.name = "VisionBlurTemp";
             tempDesc.depthBufferBits = 0;
-            tempDesc.msaaSamples = 1;
+            tempDesc.msaaSamples = MSAASamples.None;
             TextureHandle tempColor = renderGraph.CreateTexture(tempDesc);
 
             using (var builder = renderGraph.AddRasterRenderPass<PassData>(passName, out PassData passData, profilingSampler))

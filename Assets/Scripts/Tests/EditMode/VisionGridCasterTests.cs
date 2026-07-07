@@ -156,7 +156,7 @@ namespace EditorTests
             map.AdjacencyEngine.ProcessQueue();
         }
 
-        private static PlacedTileObject CreateWallTile(Vector2Int worldOrigin)
+        private PlacedTileObject CreateWallTile(Vector2Int worldOrigin)
         {
             PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.Wall, TileObjectSpecificType.Steel);
             placed.gameObject.AddComponent<WallAdjacencyConnector>();
@@ -167,7 +167,7 @@ namespace EditorTests
             return placed;
         }
 
-        private static PlacedTileObject CreateDoorTile(Vector2Int worldOrigin, Direction direction)
+        private PlacedTileObject CreateDoorTile(Vector2Int worldOrigin, Direction direction)
         {
             PlacedTileObject placed = CreateBarePlacedTile(TileObjectGenericType.Door, TileObjectSpecificType.Steel);
             placed.gameObject.AddComponent<DoorAdjacencyConnector>();
@@ -178,7 +178,7 @@ namespace EditorTests
             return placed;
         }
 
-        private static PlacedTileObject CreateBarePlacedTile(
+        private PlacedTileObject CreateBarePlacedTile(
             TileObjectGenericType genericType,
             TileObjectSpecificType specificType,
             TileLayer layer = TileLayer.Turf)
