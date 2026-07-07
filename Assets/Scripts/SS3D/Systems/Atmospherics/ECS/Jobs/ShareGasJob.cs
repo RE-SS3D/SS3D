@@ -27,6 +27,7 @@ namespace SS3D.Systems.Atmospherics.ECS
         public int MaxGasTypes;
         public int GasTypeCount;
         public float DeltaTime;
+        public float SpaceTemperature;
 
         public void Execute()
         {
@@ -93,14 +94,24 @@ namespace SS3D.Systems.Atmospherics.ECS
 
                         // Venting into vacuum is unthrottled by the diffusion coefficient: there is
                         // no destination cell to overfill, so drain fast for a believable breach.
-                        float speed = neighbour.State == AtmosCellState.Vacuum
+                        bool ventingToVacuum = neighbour.State == AtmosCellState.Vacuum;
+                        float speed = ventingToVacuum
                             ? AtmosFluxConstants.VacuumVentSpeed
                             : AtmosFluxConstants.SimSpeed;
 
                         float molesToTransfer = partialDiff * 1000f * self.Volume /
                             (self.Temperature * AtmosFluxConstants.GasConstant);
                         molesToTransfer *= speed * DeltaTime;
-                        molesToTransfer = math.min(molesToTransfer, MolesWrite[selfMoleIndex]);
+
+                        // Never dump an entire cell through a single edge in one tick. A cell that
+                        // fully empties has ~zero heat capacity, so its temperature loses any stable
+                        // basis and thrashes between space temperature and whatever a neighbour
+                        // refills it with. Capping the fraction keeps a stable gas core so the
+                        // temperature decays smoothly (still fast: an exponential drain to vacuum).
+                        float maxTransfer = ventingToVacuum
+                            ? MolesWrite[selfMoleIndex] * AtmosFluxConstants.MaxVentFraction
+                            : MolesWrite[selfMoleIndex];
+                        molesToTransfer = math.min(molesToTransfer, maxTransfer);
                         if (molesToTransfer <= 0f)
                             continue;
 
@@ -170,17 +181,16 @@ namespace SS3D.Systems.Atmospherics.ECS
             // resolve back to the same value (energy = heatCapacity · T).
             for (int c = 0; c < CellMetaWrite.Length; c++)
             {
-                float heatCapacity = AtmosThermo.HeatCapacity(MolesWrite, SpecificHeat, c, MaxGasTypes, GasTypeCount);
-                if (heatCapacity <= HeatCapacityEpsilon)
+                AtmosCellMeta meta = CellMetaWrite[c];
+                if (meta.State == AtmosCellState.Blocked || meta.State == AtmosCellState.Vacuum)
                     continue;
 
-                AtmosCellMeta meta = CellMetaWrite[c];
-                meta.Temperature = EnergyScratch[c] / heatCapacity;
+                float heatCapacity = AtmosThermo.HeatCapacity(MolesWrite, SpecificHeat, c, MaxGasTypes, GasTypeCount);
+                float totalMoles = AtmosThermo.TotalMoles(MolesWrite, c, MaxGasTypes, GasTypeCount);
+                meta.Temperature = AtmosThermo.ResolveTemperature(EnergyScratch[c], heatCapacity, totalMoles, SpaceTemperature);
                 CellMetaWrite[c] = meta;
             }
         }
-
-        private const float HeatCapacityEpsilon = 1e-6f;
 
         private void WakeNeighbour(int neighbourIndex, AtmosCellMeta neighbour)
         {

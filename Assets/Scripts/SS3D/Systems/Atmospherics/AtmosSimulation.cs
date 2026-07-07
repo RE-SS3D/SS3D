@@ -413,6 +413,7 @@ namespace SS3D.Systems.Atmospherics
                 MaxGasTypes = AtmosConstants.MaxGasTypes,
                 GasTypeCount = _gasTypeCount,
                 DeltaTime = deltaTime,
+                SpaceTemperature = AtmosConstants.SpaceTemperature,
             };
 
             job.Schedule().Complete();
@@ -453,6 +454,7 @@ namespace SS3D.Systems.Atmospherics
                 MaxGasTypes = AtmosConstants.MaxGasTypes,
                 GasTypeCount = _gasTypeCount,
                 DeltaTime = deltaTime,
+                SpaceTemperature = AtmosConstants.SpaceTemperature,
             };
 
             job.Schedule().Complete();

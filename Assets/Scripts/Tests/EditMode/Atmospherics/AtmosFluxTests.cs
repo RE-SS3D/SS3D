@@ -110,6 +110,34 @@ namespace EditorTests.Atmospherics
         }
 
         [Test]
+        public void CellExposedToVacuum_RadiatesHeatTowardSpace()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            TileMapTestUtilities.PlacePlenum(context, new Vector3(0, 0, 0));
+
+            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
+            simulation.CreateChunk(new TileChunkRef
+            {
+                MapId = context.Map.MapId,
+                ChunkKey = Vector2Int.zero,
+                Origin = Vector3.zero,
+            });
+            simulation.UpdateCell(new TileCoord(context.Map.MapId, 0, 0));
+
+            var coord = new TileCoord(context.Map.MapId, 0, 0);
+            simulation.DebugSetTemperature(coord, 1000f);
+
+            simulation.Tick(AtmosConstants.TickInterval);
+
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info));
+
+            // Venting alone preserves temperature and the cell has no gas neighbours, so any drop
+            // is the new radiative heat sink to space. It must cool but never overshoot below space.
+            Assert.Less(info.Temperature, 1000f);
+            Assert.GreaterOrEqual(info.Temperature, AtmosConstants.SpaceTemperature);
+        }
+
+        [Test]
         public void SealedRoom_ConductionEqualizesTemperature()
         {
             const int size = 3;

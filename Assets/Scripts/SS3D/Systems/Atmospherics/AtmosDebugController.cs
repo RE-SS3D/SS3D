@@ -261,7 +261,7 @@ namespace SS3D.Systems.Atmospherics
         private static Color GetCellColor(AtmosCellDebugInfo info, float maxPressure, AtmosDebugViewMode viewMode)
         {
             if (viewMode == AtmosDebugViewMode.Temperature)
-                return Color.Lerp(new Color(0.2f, 0.4f, 1f), new Color(1f, 0.3f, 0.1f), Mathf.InverseLerp(173f, 1000f, info.Temperature));
+                return TemperatureColor(info.Temperature);
 
             if (viewMode == AtmosDebugViewMode.Active)
             {
@@ -291,6 +291,32 @@ namespace SS3D.Systems.Atmospherics
                 AtmosCellState.Blocked => new Color(0.15f, 0.15f, 0.15f, 0.8f),
                 _ => Color.Lerp(new Color(0.2f, 0.6f, 1f), new Color(1f, 0.2f, 0.2f), Mathf.Clamp01(info.Pressure / maxPressure)),
             };
+        }
+
+        // Multi-stop ramp so space-cold reads as a distinct near-black blue rather than looking
+        // like a merely cool (but breathable) room. Room temperature is a bright cyan, then it
+        // climbs orange -> red -> white-hot for fire.
+        private static Color TemperatureColor(float temperature)
+        {
+            Color space = new Color(0.02f, 0.02f, 0.10f); // <= 173 K, near-black blue (vacuum)
+            Color cold = new Color(0.10f, 0.35f, 0.85f);  // ~273 K, chilly blue
+            Color room = new Color(0.15f, 0.75f, 0.85f);  // ~293 K, bright cyan
+            Color warm = new Color(1f, 0.55f, 0.10f);     // ~600 K, orange
+            Color hot = new Color(1f, 0.15f, 0.05f);      // ~1000 K, red
+            Color blaze = new Color(1f, 1f, 0.90f);       // >= 2000 K, white-hot
+
+            if (temperature <= 173f)
+                return space;
+            if (temperature < 273f)
+                return Color.Lerp(space, cold, Mathf.InverseLerp(173f, 273f, temperature));
+            if (temperature < 293f)
+                return Color.Lerp(cold, room, Mathf.InverseLerp(273f, 293f, temperature));
+            if (temperature < 600f)
+                return Color.Lerp(room, warm, Mathf.InverseLerp(293f, 600f, temperature));
+            if (temperature < 1000f)
+                return Color.Lerp(warm, hot, Mathf.InverseLerp(600f, 1000f, temperature));
+
+            return Color.Lerp(hot, blaze, Mathf.InverseLerp(1000f, 2000f, temperature));
         }
 
         private float GetCellHeight(AtmosCellDebugInfo info, float maxPressure)

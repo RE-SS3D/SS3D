@@ -25,6 +25,7 @@ namespace SS3D.Systems.Atmospherics.ECS
         public int MaxGasTypes;
         public int GasTypeCount;
         public float DeltaTime;
+        public float SpaceTemperature;
 
         public void Execute()
         {
@@ -103,16 +104,53 @@ namespace SS3D.Systems.Atmospherics.ECS
                 }
             }
 
+            // Resolve conduction results back into temperatures. Near-empty cells blend toward
+            // space temperature instead of dividing energy by ~0, so a vented cell settles stably
+            // to space temperature rather than oscillating.
             for (int c = 0; c < CellMetaWrite.Length; c++)
             {
-                float heatCapacity = AtmosThermo.HeatCapacity(Moles, SpecificHeat, c, MaxGasTypes, GasTypeCount);
-                if (heatCapacity <= HeatCapacityEpsilon)
+                AtmosCellMeta meta = CellMetaWrite[c];
+                if (meta.State == AtmosCellState.Blocked || meta.State == AtmosCellState.Vacuum)
                     continue;
 
-                AtmosCellMeta meta = CellMetaWrite[c];
-                meta.Temperature = EnergyScratch[c] / heatCapacity;
+                float heatCapacity = AtmosThermo.HeatCapacity(Moles, SpecificHeat, c, MaxGasTypes, GasTypeCount);
+                float totalMoles = AtmosThermo.TotalMoles(Moles, c, MaxGasTypes, GasTypeCount);
+                meta.Temperature = AtmosThermo.ResolveTemperature(EnergyScratch[c], heatCapacity, totalMoles, SpaceTemperature);
                 CellMetaWrite[c] = meta;
             }
+
+            // Radiative loss to space across open vacuum edges, over the active list only (an
+            // exposed cell stays active until it reaches space temperature). Modeled as a direct
+            // temperature relaxation because energy leaving to space is not conserved — this keeps
+            // cooling a cell even after it has vented to near-vacuum, where an energy-based update
+            // would divide by ~0 and a breached hot tile would otherwise freeze at its fire heat.
+            for (int activeIndex = 0; activeIndex < ActiveCells.Length; activeIndex++)
+            {
+                int c = ActiveCells[activeIndex];
+                AtmosCellMeta meta = CellMetaWrite[c];
+                if (meta.State == AtmosCellState.Blocked || meta.State == AtmosCellState.Vacuum)
+                    continue;
+
+                if (meta.Temperature <= SpaceTemperature + AtmosFluxConstants.ThermalEpsilon || !IsExposedToVacuum(c))
+                    continue;
+
+                meta.Temperature += AtmosFluxConstants.SpaceConductionRate * DeltaTime *
+                    (SpaceTemperature - meta.Temperature);
+                meta.State = AtmosCellState.Active;
+                CellMetaWrite[c] = meta;
+            }
+        }
+
+        private bool IsExposedToVacuum(int cellIndex)
+        {
+            for (int direction = 0; direction < 4; direction++)
+            {
+                int neighbourIndex = Neighbours[cellIndex].Get(direction);
+                if (neighbourIndex >= 0 && CellMeta[neighbourIndex].State == AtmosCellState.Vacuum)
+                    return true;
+            }
+
+            return false;
         }
 
         private const float HeatCapacityEpsilon = 1e-6f;
