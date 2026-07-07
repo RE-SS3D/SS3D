@@ -98,6 +98,21 @@ namespace SS3D.Systems.Atmospherics.ECS
                     }
                 }
 
+                // If we moved gas this tick our pressure changed, so every dormant neighbour
+                // should re-check next tick. This lets the active front advance one tile per
+                // tick instead of waiting for the pressure gap to slowly build past epsilon.
+                if (transferred)
+                {
+                    for (int direction = 0; direction < 4; direction++)
+                    {
+                        int neighbourIndex = Neighbours[cellIndex].Get(direction);
+                        if (neighbourIndex < 0)
+                            continue;
+
+                        WakeNeighbour(neighbourIndex, CellMeta[neighbourIndex]);
+                    }
+                }
+
                 AtmosCellMeta selfWrite = CellMetaWrite[cellIndex];
 
                 // A neighbour that pushed gas into us this tick already flipped our write state to Active.

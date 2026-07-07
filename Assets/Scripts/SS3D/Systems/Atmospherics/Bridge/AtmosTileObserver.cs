@@ -26,8 +26,10 @@ namespace SS3D.Systems.Atmospherics
 
         public void OnTileCleared(ITileOccupant occupant, TileCoord coord, TileLayer layer)
         {
-            _simulation.UpdateCell(coord);
-            _simulation.ActivateRegion(coord, 2);
+            // The tilemap notifies before the occupant is actually removed, so re-reading
+            // occupancy now would still see the old tile. Defer to the next tick, by which
+            // point the clear has been applied.
+            _simulation.QueueCellRefresh(coord);
         }
 
         public void OnTileStateChanged(TileCoord coord)

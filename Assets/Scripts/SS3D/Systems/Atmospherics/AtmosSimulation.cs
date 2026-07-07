@@ -19,6 +19,7 @@ namespace SS3D.Systems.Atmospherics
         private readonly List<TileChunkRef> _chunks = new();
         private readonly Dictionary<TileCoord, int> _coordToIndex = new();
         private readonly Dictionary<Vector2Int, int> _chunkKeyToIndex = new();
+        private readonly HashSet<TileCoord> _pendingRefresh = new();
 
         private NativeArray<float> _molesRead;
         private NativeArray<float> _molesWrite;
@@ -100,8 +101,20 @@ namespace SS3D.Systems.Atmospherics
             }
         }
 
+        /// <summary>
+        /// Queues a cell to be re-evaluated at the start of the next tick. Used when a tile
+        /// mutation is observed before the tilemap has finished applying it (e.g. a clear notifies
+        /// before the occupant is removed), so re-reading occupancy immediately would be stale.
+        /// </summary>
+        public void QueueCellRefresh(TileCoord coord)
+        {
+            _pendingRefresh.Add(coord);
+        }
+
         public void Tick(float deltaTime)
         {
+            FlushPendingRefresh();
+
             if (_cellCount == 0)
                 return;
 
@@ -245,6 +258,20 @@ namespace SS3D.Systems.Atmospherics
                 return;
 
             AtmosNeighbourBuilder.RebuildNeighbours(cellIndex, coord, _coordToIndex, _query, _neighbours);
+        }
+
+        private void FlushPendingRefresh()
+        {
+            if (_pendingRefresh.Count == 0)
+                return;
+
+            foreach (TileCoord coord in _pendingRefresh)
+            {
+                UpdateCell(coord);
+                ActivateRegion(coord, 2);
+            }
+
+            _pendingRefresh.Clear();
         }
 
         private void RebuildActiveList()
