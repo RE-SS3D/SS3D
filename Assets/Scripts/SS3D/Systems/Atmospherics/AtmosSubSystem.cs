@@ -1,6 +1,9 @@
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Bridge;
+using SS3D.Systems.Tile;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics
@@ -13,18 +16,17 @@ namespace SS3D.Systems.Atmospherics
         [SerializeField] private GasRegistry _gasRegistry;
 
         private AtmosWorld _atmosWorld;
+        private AtmosSimulation _simulation;
+        private AtmosTileObserver _tileObserver;
         private float _tickTimer;
 
         public GasRegistry GasRegistry => _gasRegistry;
         public float TickInterval => AtmosConstants.TickInterval;
+        public AtmosSimulation Simulation => _simulation;
 
-        [ServerOrClient]
-        protected override void OnStart()
+        public override void OnStartServer()
         {
-            base.OnStart();
-
-            if (!IsServer)
-                return;
+            base.OnStartServer();
 
             if (_gasRegistry == null)
             {
@@ -34,12 +36,39 @@ namespace SS3D.Systems.Atmospherics
 
             _gasRegistry.Initialize();
             _atmosWorld = AtmosWorld.Create("AtmosSimulation");
-            Log.Information(this, $"Atmos ECS world created with {_gasRegistry.Count} gases.");
+
+            TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
+            if (tileSubSystem?.QueryService == null || tileSubSystem.CurrentMap == null)
+            {
+                Log.Error(this, "TileSubSystem map is not ready for atmospherics.");
+                return;
+            }
+
+            int gasTypeCount = Mathf.Max(_gasRegistry.Count, AtmosConstants.DefaultGasCount);
+            _simulation = new AtmosSimulation(tileSubSystem.QueryService, tileSubSystem.CurrentMap.MapId, gasTypeCount);
+            _tileObserver = new AtmosTileObserver(_simulation);
+            tileSubSystem.RegisterTileMutationObserver(_tileObserver);
+
+            Log.Information(this, $"Atmos simulation started with {gasTypeCount} gas slots.");
+        }
+
+        protected override void OnDestroyed()
+        {
+            TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
+            if (_tileObserver != null)
+                tileSubSystem?.UnregisterTileMutationObserver(_tileObserver);
+
+            _simulation?.Dispose();
+            _simulation = null;
+            _tileObserver = null;
+            _atmosWorld?.Dispose();
+            _atmosWorld = null;
+            base.OnDestroyed();
         }
 
         private void Update()
         {
-            if (!IsServer || _atmosWorld == null)
+            if (!IsServer || _simulation == null)
                 return;
 
             _tickTimer += Time.deltaTime;
@@ -52,13 +81,18 @@ namespace SS3D.Systems.Atmospherics
 
         private void SimTick()
         {
-            // Phase 1: observer flush, active list, ShareGasJob.
+            _simulation.Tick(AtmosConstants.TickInterval);
         }
 
-        private void OnDestroy()
+        public bool TryGetCellDebugInfo(TileCoord coord, out AtmosCellDebugInfo info)
         {
-            _atmosWorld?.Dispose();
-            _atmosWorld = null;
+            if (_simulation == null)
+            {
+                info = default;
+                return false;
+            }
+
+            return _simulation.TryGetCellDebugInfo(coord, out info);
         }
     }
 }

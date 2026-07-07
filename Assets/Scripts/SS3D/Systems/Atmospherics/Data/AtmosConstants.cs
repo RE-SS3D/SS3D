@@ -42,5 +42,12 @@ namespace SS3D.Systems.Atmospherics
         public static readonly GasId Antinoblium = new(19);
 
         public const int DefaultGasCount = 20;
+
+        public const int CellsPerChunk = 256;
+        public const int ChunkSize = 16;
+        public const float CellVolume = 2.5f;
+        public const float SpaceTemperature = 173f;
+        public const float StationOxygenMoles = 20.79f;
+        public const float StationNitrogenMoles = 83.17f;
     }
 }
