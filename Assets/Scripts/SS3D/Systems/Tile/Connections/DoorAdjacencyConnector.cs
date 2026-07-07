@@ -1,8 +1,6 @@
 ﻿
-using UnityEngine;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
-using Coimbra;
-using FishNet.Object;
+using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections
 {
@@ -10,7 +8,7 @@ namespace SS3D.Systems.Tile.Connections
     /// Connector for doors, handling adding wall caps, creating custom floor tile under the door.
     /// TODO : add the custom floor.
     /// </summary>
-    public class DoorAdjacencyConnector : AbstractHorizontalConnector, IAdjacencyConnector
+    public class DoorAdjacencyConnector : EngineDrivenHorizontalConnector
     {
         private enum DoorType
         {
@@ -18,59 +16,63 @@ namespace SS3D.Systems.Tile.Connections
             Double
         };
 
-        public Direction DoorDirection => _placedObject.Direction;
+        private static readonly DoorConnectionRule DoorRule = new();
+
+        public Direction DoorDirection => ResolveDoorDirection();
 
         protected override IMeshAndDirectionResolver AdjacencyResolver => null;
 
-        // Based on peculiarities of the model, the appropriate position of the wall cap
+        protected override IMeshAndDirectionResolver EngineMeshResolver => null;
+
         private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0f;
 
-        // As is the standard in the rest of the code, wallCap should face east.
         [SerializeField]
         private GameObject wallCapPrefab = null;
 
         [SerializeField]
         private DoorType doorType;
 
-        // WallCap gameobjects, North, East, South, West. Null if not present.
         private GameObject[] wallCaps = new GameObject[4];
 
-        public override bool UpdateSingleConnection(Direction dir, PlacedTileObject placedObject, bool updateNeighbours)
+        public override IConnectionRule ConnectionRule => DoorRule;
+
+        /// <summary>
+        /// Rebuilds wall caps after replicated tile identity is available on the client.
+        /// </summary>
+        public void RefreshWallCapsFromSyncedAdjacencies()
         {
-            bool update = base.UpdateSingleConnection(dir, placedObject, updateNeighbours);
-            if (update)
-                UpdateWallCaps();
-            return update;
+            Setup();
+            ApplyEngineConnections(SyncedEngineConnections);
         }
 
-        public override void UpdateAllConnections()
+        protected override void ApplyEngineConnections(byte horizontalConnections)
         {
-            base.UpdateAllConnections();
+            Setup();
+            if (_adjacencyMap == null)
+                return;
+
+            _adjacencyMap.DeserializeFromByte(horizontalConnections);
             UpdateWallCaps();
         }
 
-        /// <summary>
-        /// Destroy or add a wall cap.
-        /// </summary>
         private void CreateWallCaps(bool isPresent, Direction direction)
         {
             int capIndex = GetWallCapIndex(direction);
             if (isPresent && wallCaps[capIndex] == null)
             {
-
-                wallCaps[capIndex] = SpawnWallCap(direction);
+                wallCaps[capIndex] = CreateWallCap(direction);
                 wallCaps[capIndex].name = $"WallCap{capIndex}";
             }
             else if (!isPresent && wallCaps[capIndex] != null)
             {
-                wallCaps[capIndex].Dispose(true);
+                Object.DestroyImmediate(wallCaps[capIndex]);
                 wallCaps[capIndex] = null;
             }
         }
 
         private void UpdateWallCaps()
         {
-            if (wallCapPrefab == null)
+            if (wallCapPrefab == null || _adjacencyMap == null)
                 return;
 
             Direction outFacing = TileHelper.GetNextCardinalDir(DoorDirection);
@@ -82,37 +84,37 @@ namespace SS3D.Systems.Tile.Connections
             CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
         }
 
-        
-        /// <summary> Spawns a wall cap facing a direction, with appropriate position & settings </summary>
-        ///<param name="direction">Direction from the centre of the door</param>
-        private GameObject SpawnWallCap(Direction direction)
+        private GameObject CreateWallCap(Direction direction)
         {
-            var wallCap = Instantiate(wallCapPrefab, transform);
+            GameObject wallCap = Instantiate(wallCapPrefab, transform);
+
+            if (wallCap.TryGetComponent(out FishNet.Object.NetworkObject networkObject))
+                Object.DestroyImmediate(networkObject);
 
             Direction cardinalDirectionInput = TileHelper.GetRelativeDirection(direction, DoorDirection);
             var cardinal = TileHelper.ToCardinalVector(cardinalDirectionInput);
             float rotation = TileHelper.AngleBetween(direction, DoorDirection);
 
-
             wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
             wallCap.transform.localPosition = new Vector3(cardinal.Item1 * WALL_CAP_DISTANCE_FROM_CENTRE, 0, cardinal.Item2 * WALL_CAP_DISTANCE_FROM_CENTRE);
-            Spawn(wallCap);
             return wallCap;
         }
 
-        public override bool IsConnected(PlacedTileObject neighbourObject)
+        private Direction ResolveDoorDirection()
         {
-            return (neighbourObject && neighbourObject.HasAdjacencyConnector &&
-                neighbourObject.GenericType == TileObjectGenericType.Wall);
+            if (_placedObject != null)
+                return _placedObject.Direction;
+
+            int directionIndex = Mathf.RoundToInt(transform.eulerAngles.y / 45f) % 8;
+            if (directionIndex < 0)
+                directionIndex += 8;
+
+            return (Direction)directionIndex;
         }
 
-        /// <summary>
-        /// Get the index of a wallcap in the wallcap Array.
-        /// </summary>
         private int GetWallCapIndex(Direction dir)
         {
             return (int)dir / 2;
         }
     }
-
 }

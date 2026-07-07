@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 795498477345707595}
   - component: {fileID: 7108380166093802772}
   - component: {fileID: 8267695341769897230}
+  - component: {fileID: -8115744496724773774}
   m_Layer: 0
   m_Name: TileWood
   m_TagString: Untagged
@@ -187,3 +188,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: df60058861ab609488d81da89e7540b1, type: 2}
+--- !u!114 &-8115744496724773774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}

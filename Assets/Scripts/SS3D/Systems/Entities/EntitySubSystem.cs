@@ -206,6 +206,8 @@ namespace SS3D.Systems.Entities
             createdMind.SetPlayer(player);
             entity.SetMind(createdMind);
 
+            player.Owner.SetFirstObject(entity.NetworkObject);
+
             SubSystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
 
             _spawnedPlayers.Add(entity);

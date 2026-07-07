@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1323214974002075212}
   - component: {fileID: 3359982589328953207}
   - component: {fileID: 5321505427222609008}
+  - component: {fileID: -3984408023617221754}
   m_Layer: 0
   m_Name: TableGlass
   m_TagString: Untagged
@@ -223,3 +224,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: e2b446332f84cc34f8c2e805a8709b8b, type: 2}
+--- !u!114 &-3984408023617221754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}

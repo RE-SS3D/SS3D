@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8095612838085175437}
   - component: {fileID: -7163638817039245190}
   - component: {fileID: 6640300193741558374}
+  - component: {fileID: -4307371628711048749}
   m_Layer: 0
   m_Name: Blender
   m_TagString: Untagged
@@ -92,6 +93,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 351268bbcc4a9eb4ea6e9819fcf13b7f, type: 2}
+--- !u!114 &-4307371628711048749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918783493706165866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
 --- !u!1 &2266423437352020777
 GameObject:
   m_ObjectHideFlags: 0

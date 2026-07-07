@@ -1,5 +1,6 @@
 ﻿using System;
 using Coimbra;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
@@ -8,6 +9,7 @@ using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Health;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Networking;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -36,11 +38,39 @@ namespace SS3D.Systems.Entities
 
         public string Ckey => _mind.player.Ckey;
 
+        private const float ObserverGridCheckIntervalSeconds = 0.25f;
+
+        private Vector2Int? _lastObserverGridCell;
+        private float _nextObserverGridCheckTime;
+
         protected override void OnStart()
         {
             base.OnStart();
 
             OnSpawn();
+        }
+
+        private void Update()
+        {
+            if (!IsServer)
+                return;
+
+            NetworkConnection owner = Owner;
+            if (!owner.IsValid || owner.FirstObject != NetworkObject)
+                return;
+
+            float now = Time.unscaledTime;
+            if (now < _nextObserverGridCheckTime)
+                return;
+
+            _nextObserverGridCheckTime = now + ObserverGridCheckIntervalSeconds;
+
+            Vector2Int gridCell = TileObserverConstants.GetHashGridCell(transform.position);
+            if (_lastObserverGridCell == gridCell)
+                return;
+
+            _lastObserverGridCell = gridCell;
+            ServerManager.Objects.RebuildObservers(owner, timedOnly: false);
         }
 
         private void OnSpawn()
