@@ -135,6 +135,24 @@ namespace SS3D.Systems.Atmospherics.ECS
                     }
                 }
 
+                // Low-pressure settle: once a cell is nearly evacuated and still has somewhere to
+                // drain (vacuum, or a neighbour that is itself this empty), dump its last traces and
+                // sleep. Venting is proportional to the pressure gap, so without this a breached room
+                // never actually reaches zero — it creeps down an ever-slower exponential while the
+                // cells stay awake. The lost gas has effectively already vented to space.
+                if (selfPressure < AtmosFluxConstants.MinSimulationPressure && HasDrainSink(cellIndex))
+                {
+                    for (int gasId = 0; gasId < GasTypeCount; gasId++)
+                        MolesWrite[GetMoleIndex(cellIndex, gasId)] = 0f;
+
+                    EnergyScratch[cellIndex] = 0f;
+
+                    AtmosCellMeta settled = CellMetaWrite[cellIndex];
+                    settled.State = AtmosCellState.Inactive;
+                    CellMetaWrite[cellIndex] = settled;
+                    continue;
+                }
+
                 // If we moved gas this tick our pressure changed, so every dormant neighbour
                 // should re-check next tick. This lets the active front advance one tile per
                 // tick instead of waiting for the pressure gap to slowly build past epsilon.
@@ -190,6 +208,31 @@ namespace SS3D.Systems.Atmospherics.ECS
                 meta.Temperature = AtmosThermo.ResolveTemperature(EnergyScratch[c], heatCapacity, totalMoles, SpaceTemperature);
                 CellMetaWrite[c] = meta;
             }
+        }
+
+        // True if the cell borders somewhere its remaining gas can drain to: open space, or a
+        // plenum neighbour that is itself nearly evacuated (so the empty front propagates inward).
+        private bool HasDrainSink(int cellIndex)
+        {
+            for (int direction = 0; direction < 4; direction++)
+            {
+                int neighbourIndex = Neighbours[cellIndex].Get(direction);
+                if (neighbourIndex < 0)
+                    continue;
+
+                AtmosCellMeta neighbour = CellMeta[neighbourIndex];
+                if (neighbour.State == AtmosCellState.Blocked)
+                    continue;
+
+                if (neighbour.State == AtmosCellState.Vacuum)
+                    return true;
+
+                float neighbourPressure = GetPressure(neighbourIndex, neighbour.Temperature, neighbour.Volume);
+                if (neighbourPressure < AtmosFluxConstants.MinSimulationPressure)
+                    return true;
+            }
+
+            return false;
         }
 
         private void WakeNeighbour(int neighbourIndex, AtmosCellMeta neighbour)

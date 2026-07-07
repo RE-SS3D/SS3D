@@ -14,6 +14,13 @@ namespace SS3D.Systems.Atmospherics.ECS
         // capacity to ~0 and makes its temperature oscillate); the residual drains next tick.
         public const float MaxVentFraction = 0.5f;
         public const float PressureEpsilon = 1.0f;
+
+        // A nearly-evacuated cell that can still drain (touches vacuum, or a neighbour that is
+        // itself this empty) dumps its last traces and sleeps once it falls below this pressure.
+        // Venting is proportional to the pressure gap, so the approach to true vacuum is otherwise
+        // an ever-slowing exponential tail that keeps cells awake indefinitely; this lets a breached
+        // room actually settle to zero instead of creeping toward it forever.
+        public const float MinSimulationPressure = 5.0f;
         public const float FluxEpsilon = 0.05f;
         public const float ThermalBase = 0.024f;
         public const float ThermalEpsilon = 0.5f;
