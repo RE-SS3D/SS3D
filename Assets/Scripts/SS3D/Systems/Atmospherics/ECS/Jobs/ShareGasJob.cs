@@ -88,10 +88,28 @@ namespace SS3D.Systems.Atmospherics.ECS
                 }
 
                 AtmosCellMeta selfWrite = CellMetaWrite[cellIndex];
-                if (transferred)
+
+                // A neighbour that pushed gas into us this tick already flipped our write state to Active.
+                bool reactivatedByInflow = selfWrite.State == AtmosCellState.Active
+                    && self.State != AtmosCellState.Active;
+
+                if (transferred || reactivatedByInflow)
+                {
+                    // Gas moved in or out: keep the cell fully awake.
                     selfWrite.State = AtmosCellState.Active;
-                else if (selfWrite.State == AtmosCellState.Active)
+                }
+                else if (self.State == AtmosCellState.Active)
+                {
+                    // Was active but nothing moved: cool down to the grace state.
                     selfWrite.State = AtmosCellState.Semiactive;
+                }
+                else if (self.State == AtmosCellState.Semiactive)
+                {
+                    // Still nothing moved after the grace tick: settle and drop out of the sim.
+                    selfWrite.State = AtmosCellState.Inactive;
+                }
+
+                // Any other state (Inactive / Vacuum / Blocked) is left untouched.
                 CellMetaWrite[cellIndex] = selfWrite;
             }
         }

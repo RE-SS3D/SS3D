@@ -188,6 +188,14 @@ namespace SS3D.Systems.Atmospherics
                 State = AtmosCellState.Inactive,
             };
 
+            // Airtight walls block flow entirely, independent of whatever turf sits beneath them.
+            if (occupancy.HasWall && occupancy.IsAirtight)
+            {
+                meta.State = AtmosCellState.Blocked;
+                _cellMeta[cellIndex] = meta;
+                return;
+            }
+
             if (!occupancy.HasPlenum)
             {
                 meta.Temperature = AtmosConstants.SpaceTemperature;
@@ -199,9 +207,6 @@ namespace SS3D.Systems.Atmospherics
             SetMoles(cellIndex, AtmosConstants.Oxygen, AtmosConstants.StationOxygenMoles);
             SetMoles(cellIndex, AtmosConstants.Nitrogen, AtmosConstants.StationNitrogenMoles);
             meta.State = AtmosCellState.Active;
-
-            if (occupancy.HasWall && occupancy.IsAirtight)
-                meta.State = AtmosCellState.Blocked;
 
             _cellMeta[cellIndex] = meta;
         }
@@ -318,11 +323,25 @@ namespace SS3D.Systems.Atmospherics
 
         private static void ResizeNativeArray<T>(ref NativeArray<T> array, int length) where T : struct
         {
-            if (array.IsCreated)
-                array.Dispose();
+            if (length <= 0)
+            {
+                if (array.IsCreated)
+                    array.Dispose();
+                array = default;
+                return;
+            }
 
-            if (length > 0)
-                array = new NativeArray<T>(length, Allocator.Persistent);
+            var resized = new NativeArray<T>(length, Allocator.Persistent);
+
+            if (array.IsCreated)
+            {
+                // Preserve already-initialised cells; growing must not wipe existing chunks.
+                int copyLength = Mathf.Min(array.Length, length);
+                NativeArray<T>.Copy(array, resized, copyLength);
+                array.Dispose();
+            }
+
+            array = resized;
         }
 
         private void ClearMoles(int cellIndex)
