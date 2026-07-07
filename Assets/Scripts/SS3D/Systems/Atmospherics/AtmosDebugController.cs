@@ -150,6 +150,13 @@ namespace SS3D.Systems.Atmospherics
                 if (GUILayout.Button("+Plasma 5 mol"))
                     _atmos.DebugAddGas(spawnCoord, AtmosConstants.Plasma, 5f);
                 GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("+500 K"))
+                    _atmos.DebugAddHeat(spawnCoord, 500f);
+                if (GUILayout.Button("Ignite (1000 K)"))
+                    _atmos.DebugAddHeat(spawnCoord, 1000f);
+                GUILayout.EndHorizontal();
             }
 
             GUILayout.EndScrollView();
@@ -167,6 +174,17 @@ namespace SS3D.Systems.Atmospherics
             builder.AppendLine($"Plenum: {info.Occupancy.HasPlenum}  Airtight: {info.Occupancy.IsAirtight}");
             builder.AppendLine($"Blocked edges: {Convert.ToString(info.Occupancy.BlockedEdges, 2).PadLeft(4, '0')} (NESW)");
             builder.AppendLine($"Neighbours N/E/S/W: {info.Neighbours.North}/{info.Neighbours.East}/{info.Neighbours.South}/{info.Neighbours.West}");
+
+            AtmosSimulation sim = _atmos?.Simulation;
+            if (sim != null)
+            {
+                builder.AppendLine("Gas (mol):");
+                builder.AppendLine($"  O₂ {sim.DebugGetMoles(info.Coord, AtmosConstants.Oxygen):F2}" +
+                    $"  N₂ {sim.DebugGetMoles(info.Coord, AtmosConstants.Nitrogen):F2}");
+                builder.AppendLine($"  CO₂ {sim.DebugGetMoles(info.Coord, AtmosConstants.CarbonDioxide):F2}" +
+                    $"  Plasma {sim.DebugGetMoles(info.Coord, AtmosConstants.Plasma):F2}");
+            }
+
             GUILayout.TextArea(builder.ToString());
         }
 
@@ -243,7 +261,7 @@ namespace SS3D.Systems.Atmospherics
         private static Color GetCellColor(AtmosCellDebugInfo info, float maxPressure, AtmosDebugViewMode viewMode)
         {
             if (viewMode == AtmosDebugViewMode.Temperature)
-                return Color.Lerp(new Color(0.2f, 0.4f, 1f), new Color(1f, 0.3f, 0.1f), Mathf.InverseLerp(173f, 400f, info.Temperature));
+                return Color.Lerp(new Color(0.2f, 0.4f, 1f), new Color(1f, 0.3f, 0.1f), Mathf.InverseLerp(173f, 1000f, info.Temperature));
 
             if (viewMode == AtmosDebugViewMode.Active)
             {
@@ -279,7 +297,7 @@ namespace SS3D.Systems.Atmospherics
         {
             return _viewMode switch
             {
-                AtmosDebugViewMode.Temperature => Mathf.Lerp(0.2f, 2f, Mathf.InverseLerp(173f, 400f, info.Temperature)),
+                AtmosDebugViewMode.Temperature => Mathf.Lerp(0.2f, 2f, Mathf.InverseLerp(173f, 1000f, info.Temperature)),
                 AtmosDebugViewMode.Active => info.State is AtmosCellState.Active or AtmosCellState.Semiactive ? 1.2f : 0.2f,
                 AtmosDebugViewMode.State => 0.6f,
                 _ => Mathf.Lerp(0.2f, 2f, Mathf.Clamp01(info.Pressure / maxPressure)),

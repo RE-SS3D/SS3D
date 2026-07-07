@@ -19,6 +19,11 @@ namespace SS3D.Systems.Atmospherics.ECS
         public NativeArray<float> MolesWrite;
         public NativeArray<AtmosCellMeta> CellMetaWrite;
 
+        [ReadOnly] public NativeArray<float> SpecificHeat;
+
+        /// <summary>Per-cell thermal energy scratch (heatCapacity·T), seeded each run.</summary>
+        public NativeArray<float> EnergyScratch;
+
         public int MaxGasTypes;
         public int GasTypeCount;
         public float DeltaTime;
@@ -30,6 +35,14 @@ namespace SS3D.Systems.Atmospherics.ECS
 
             for (int i = 0; i < CellMeta.Length; i++)
                 CellMetaWrite[i] = CellMeta[i];
+
+            // Seed each cell's thermal energy from the read state so advected moles can carry
+            // their enthalpy; temperatures are recomputed from this conserved energy afterwards.
+            for (int c = 0; c < CellMeta.Length; c++)
+            {
+                float heatCapacity = AtmosThermo.HeatCapacity(MolesRead, SpecificHeat, c, MaxGasTypes, GasTypeCount);
+                EnergyScratch[c] = heatCapacity * CellMeta[c].Temperature;
+            }
 
             for (int activeIndex = 0; activeIndex < ActiveCells.Length; activeIndex++)
             {
@@ -91,9 +104,16 @@ namespace SS3D.Systems.Atmospherics.ECS
                         if (molesToTransfer <= 0f)
                             continue;
 
+                        // Moles leave the source carrying their enthalpy at the source temperature.
+                        float energyMoved = molesToTransfer * SpecificHeat[gasId] * self.Temperature;
+
                         MolesWrite[selfMoleIndex] -= molesToTransfer;
+                        EnergyScratch[cellIndex] -= energyMoved;
                         if (neighbour.State != AtmosCellState.Vacuum)
+                        {
                             MolesWrite[neighbourMoleIndex] += molesToTransfer;
+                            EnergyScratch[neighbourIndex] += energyMoved;
+                        }
 
                         transferred = true;
 
@@ -144,7 +164,23 @@ namespace SS3D.Systems.Atmospherics.ECS
                 // Any other state (Inactive / Vacuum / Blocked) is left untouched.
                 CellMetaWrite[cellIndex] = selfWrite;
             }
+
+            // Derive each cell's new temperature from its conserved energy and post-transfer
+            // heat capacity. Cells that gained or lost moles change temperature; unchanged cells
+            // resolve back to the same value (energy = heatCapacity · T).
+            for (int c = 0; c < CellMetaWrite.Length; c++)
+            {
+                float heatCapacity = AtmosThermo.HeatCapacity(MolesWrite, SpecificHeat, c, MaxGasTypes, GasTypeCount);
+                if (heatCapacity <= HeatCapacityEpsilon)
+                    continue;
+
+                AtmosCellMeta meta = CellMetaWrite[c];
+                meta.Temperature = EnergyScratch[c] / heatCapacity;
+                CellMetaWrite[c] = meta;
+            }
         }
+
+        private const float HeatCapacityEpsilon = 1e-6f;
 
         private void WakeNeighbour(int neighbourIndex, AtmosCellMeta neighbour)
         {

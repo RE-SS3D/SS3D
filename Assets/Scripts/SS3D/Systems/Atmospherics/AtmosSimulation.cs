@@ -26,6 +26,8 @@ namespace SS3D.Systems.Atmospherics
         private NativeArray<AtmosCellMeta> _cellMeta;
         private NativeArray<AtmosCellMeta> _cellMetaWrite;
         private NativeArray<AtmosNeighbours> _neighbours;
+        private NativeArray<float> _specificHeats;
+        private NativeArray<float> _energyScratch;
         private NativeList<int> _activeCells;
 
         private int _cellCount;
@@ -33,12 +35,37 @@ namespace SS3D.Systems.Atmospherics
         public int CellCount => _cellCount;
         public int ActiveCellCount => _activeCells.IsCreated ? _activeCells.Length : 0;
 
-        public AtmosSimulation(ITileQueryService query, int mapId, int gasTypeCount)
+        public AtmosSimulation(ITileQueryService query, int mapId, int gasTypeCount, float[] specificHeats = null)
         {
             _query = query;
             _mapId = mapId;
             _gasTypeCount = gasTypeCount;
             _activeCells = new NativeList<int>(Allocator.Persistent);
+            _specificHeats = BuildSpecificHeats(specificHeats);
+        }
+
+        private static NativeArray<float> BuildSpecificHeats(float[] overrides)
+        {
+            var heats = new NativeArray<float>(AtmosConstants.MaxGasTypes, Allocator.Persistent);
+
+            // Core gas defaults first, so an unassigned registry still has sane thermodynamics.
+            foreach (GasDefault gas in GasDefaults.Core)
+            {
+                if (gas.Id < AtmosConstants.MaxGasTypes)
+                    heats[gas.Id] = gas.SpecificHeat;
+            }
+
+            if (overrides != null)
+            {
+                int count = Mathf.Min(overrides.Length, AtmosConstants.MaxGasTypes);
+                for (int i = 0; i < count; i++)
+                {
+                    if (overrides[i] > 0f)
+                        heats[i] = overrides[i];
+                }
+            }
+
+            return heats;
         }
 
         public void CreateChunk(TileChunkRef chunkRef)
@@ -126,7 +153,11 @@ namespace SS3D.Systems.Atmospherics
             float subDelta = deltaTime / substeps;
 
             for (int step = 0; step < substeps; step++)
+            {
                 RunShareGasJob(subDelta);
+                RunReactJob(subDelta);
+                RunConductHeatJob(subDelta);
+            }
         }
 
         public bool TryGetCellDebugInfo(TileCoord coord, out AtmosCellDebugInfo info)
@@ -160,6 +191,26 @@ namespace SS3D.Systems.Atmospherics
             return total;
         }
 
+        /// <summary>
+        /// Total thermal energy across all cells (Σ heatCapacity·T). Conserved by advection and
+        /// conduction in a sealed room; used as a test invariant.
+        /// </summary>
+        public float GetTotalThermalEnergy()
+        {
+            float total = 0f;
+            for (int cellIndex = 0; cellIndex < _cellCount; cellIndex++)
+            {
+                float heatCapacity = 0f;
+                int baseIndex = cellIndex * AtmosConstants.MaxGasTypes;
+                for (int gasId = 0; gasId < _gasTypeCount; gasId++)
+                    heatCapacity += _molesRead[baseIndex + gasId] * _specificHeats[gasId];
+
+                total += heatCapacity * _cellMeta[cellIndex].Temperature;
+            }
+
+            return total;
+        }
+
         public void ForEachCoord(System.Action<TileCoord> visitor)
         {
             foreach (TileCoord coord in _coordToIndex.Keys)
@@ -177,6 +228,38 @@ namespace SS3D.Systems.Atmospherics
             ActivateRegion(coord, 0);
         }
 
+        public float DebugGetMoles(TileCoord coord, GasId gasId)
+        {
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return 0f;
+
+            return _molesRead[GasMixture.GetMoleIndex(cellIndex, gasId)];
+        }
+
+        public void DebugSetTemperature(TileCoord coord, float temperature)
+        {
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return;
+
+            AtmosCellMeta meta = _cellMeta[cellIndex];
+            meta.Temperature = temperature;
+            _cellMeta[cellIndex] = meta;
+            _cellMetaWrite[cellIndex] = meta;
+            ActivateRegion(coord, 0);
+        }
+
+        public void DebugAddHeat(TileCoord coord, float deltaKelvin)
+        {
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return;
+
+            AtmosCellMeta meta = _cellMeta[cellIndex];
+            meta.Temperature = Mathf.Max(0f, meta.Temperature + deltaKelvin);
+            _cellMeta[cellIndex] = meta;
+            _cellMetaWrite[cellIndex] = meta;
+            ActivateRegion(coord, 0);
+        }
+
         public void Dispose()
         {
             if (_molesRead.IsCreated) _molesRead.Dispose();
@@ -184,6 +267,8 @@ namespace SS3D.Systems.Atmospherics
             if (_cellMeta.IsCreated) _cellMeta.Dispose();
             if (_cellMetaWrite.IsCreated) _cellMetaWrite.Dispose();
             if (_neighbours.IsCreated) _neighbours.Dispose();
+            if (_energyScratch.IsCreated) _energyScratch.Dispose();
+            if (_specificHeats.IsCreated) _specificHeats.Dispose();
             if (_activeCells.IsCreated) _activeCells.Dispose();
         }
 
@@ -323,6 +408,8 @@ namespace SS3D.Systems.Atmospherics
                 CellMeta = _cellMeta,
                 CellMetaWrite = _cellMetaWrite,
                 Neighbours = _neighbours,
+                SpecificHeat = _specificHeats,
+                EnergyScratch = _energyScratch,
                 MaxGasTypes = AtmosConstants.MaxGasTypes,
                 GasTypeCount = _gasTypeCount,
                 DeltaTime = deltaTime,
@@ -332,9 +419,54 @@ namespace SS3D.Systems.Atmospherics
             SwapSimulationBuffers();
         }
 
+        private void RunReactJob(float deltaTime)
+        {
+            var job = new ReactAtmosJob
+            {
+                ActiveCells = _activeCells.AsArray(),
+                SpecificHeat = _specificHeats,
+                Moles = _molesRead,
+                CellMeta = _cellMeta,
+                MaxGasTypes = AtmosConstants.MaxGasTypes,
+                GasTypeCount = _gasTypeCount,
+                OxygenId = AtmosConstants.Oxygen.Value,
+                PlasmaId = AtmosConstants.Plasma.Value,
+                CarbonDioxideId = AtmosConstants.CarbonDioxide.Value,
+                DeltaTime = deltaTime,
+            };
+
+            // Reactions are local (single cell), so they run in place without buffer swaps.
+            job.Schedule().Complete();
+        }
+
+        private void RunConductHeatJob(float deltaTime)
+        {
+            var job = new ConductHeatJob
+            {
+                ActiveCells = _activeCells.AsArray(),
+                Moles = _molesRead,
+                CellMeta = _cellMeta,
+                Neighbours = _neighbours,
+                SpecificHeat = _specificHeats,
+                CellMetaWrite = _cellMetaWrite,
+                EnergyScratch = _energyScratch,
+                MaxGasTypes = AtmosConstants.MaxGasTypes,
+                GasTypeCount = _gasTypeCount,
+                DeltaTime = deltaTime,
+            };
+
+            job.Schedule().Complete();
+            SwapMetaBuffers();
+        }
+
         private void SwapSimulationBuffers()
         {
             (_molesRead, _molesWrite) = (_molesWrite, _molesRead);
+            (_cellMeta, _cellMetaWrite) = (_cellMetaWrite, _cellMeta);
+        }
+
+        private void SwapMetaBuffers()
+        {
             (_cellMeta, _cellMetaWrite) = (_cellMetaWrite, _cellMeta);
         }
 
@@ -346,6 +478,7 @@ namespace SS3D.Systems.Atmospherics
             ResizeNativeArray(ref _cellMeta, cellCount);
             ResizeNativeArray(ref _cellMetaWrite, cellCount);
             ResizeNativeArray(ref _neighbours, cellCount);
+            ResizeNativeArray(ref _energyScratch, cellCount);
         }
 
         private static void ResizeNativeArray<T>(ref NativeArray<T> array, int length) where T : struct

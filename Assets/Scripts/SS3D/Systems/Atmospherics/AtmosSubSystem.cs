@@ -53,10 +53,12 @@ namespace SS3D.Systems.Atmospherics
             _atmosWorld = AtmosWorld.Create("AtmosSimulation");
 
             int gasTypeCount;
+            float[] specificHeats = null;
             if (_gasRegistry != null)
             {
                 _gasRegistry.Initialize();
                 gasTypeCount = Mathf.Max(_gasRegistry.Count, GasDefaults.CoreGasCount);
+                specificHeats = BuildSpecificHeats(_gasRegistry);
             }
             else
             {
@@ -64,7 +66,7 @@ namespace SS3D.Systems.Atmospherics
                 gasTypeCount = GasDefaults.CoreGasCount;
             }
 
-            _simulation = new AtmosSimulation(tileSubSystem.QueryService, tileSubSystem.CurrentMap.MapId, gasTypeCount);
+            _simulation = new AtmosSimulation(tileSubSystem.QueryService, tileSubSystem.CurrentMap.MapId, gasTypeCount, specificHeats);
             _tileObserver = new AtmosTileObserver(_simulation);
             tileSubSystem.RegisterTileMutationObserver(_tileObserver);
 
@@ -73,6 +75,18 @@ namespace SS3D.Systems.Atmospherics
                 _simulation.CreateChunk(chunkRef);
 
             Log.Information(this, $"Atmos simulation started with {gasTypeCount} gas slots and {_simulation.CellCount} cells.");
+        }
+
+        private static float[] BuildSpecificHeats(GasRegistry registry)
+        {
+            var heats = new float[AtmosConstants.MaxGasTypes];
+            foreach (GasDefinition definition in registry.Definitions)
+            {
+                if (definition.Id < AtmosConstants.MaxGasTypes)
+                    heats[definition.Id] = definition.SpecificHeat;
+            }
+
+            return heats;
         }
 
         protected override void OnDestroyed()
@@ -124,6 +138,14 @@ namespace SS3D.Systems.Atmospherics
                 return;
 
             _simulation.DebugAddMoles(coord, gasId, moles);
+        }
+
+        public void DebugAddHeat(TileCoord coord, float deltaKelvin)
+        {
+            if (!IsServer || _simulation == null)
+                return;
+
+            _simulation.DebugAddHeat(coord, deltaKelvin);
         }
 
         private void SimTick()
