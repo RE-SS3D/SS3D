@@ -53,7 +53,18 @@ namespace SS3D.Systems.Atmospherics.ECS
                         continue;
 
                     float neighbourPressure = GetPressure(neighbourIndex, neighbour.Temperature, neighbour.Volume);
-                    if (selfPressure - neighbourPressure <= AtmosFluxConstants.PressureEpsilon)
+                    float pressureDiff = selfPressure - neighbourPressure;
+
+                    // Neighbour holds notably more pressure: it will drive flow toward us next
+                    // tick, so wake it if it has gone dormant (otherwise the wave can't spread
+                    // inward from a breach).
+                    if (pressureDiff < -AtmosFluxConstants.PressureEpsilon)
+                    {
+                        WakeNeighbour(neighbourIndex, neighbour);
+                        continue;
+                    }
+
+                    if (pressureDiff <= AtmosFluxConstants.PressureEpsilon)
                         continue;
 
                     for (int gasId = 0; gasId < GasTypeCount; gasId++)
@@ -111,6 +122,19 @@ namespace SS3D.Systems.Atmospherics.ECS
 
                 // Any other state (Inactive / Vacuum / Blocked) is left untouched.
                 CellMetaWrite[cellIndex] = selfWrite;
+            }
+        }
+
+        private void WakeNeighbour(int neighbourIndex, AtmosCellMeta neighbour)
+        {
+            if (neighbour.State == AtmosCellState.Vacuum || neighbour.State == AtmosCellState.Blocked)
+                return;
+
+            AtmosCellMeta write = CellMetaWrite[neighbourIndex];
+            if (write.State == AtmosCellState.Inactive || write.State == AtmosCellState.Semiactive)
+            {
+                write.State = AtmosCellState.Active;
+                CellMetaWrite[neighbourIndex] = write;
             }
         }
 
