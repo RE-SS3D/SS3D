@@ -43,86 +43,64 @@ namespace SS3D.Systems.Vision
             float dirX = Mathf.Sin(angleRadians);
             float dirZ = Mathf.Cos(angleRadians);
 
-            int startX = Mathf.RoundToInt(originWorld.x);
-            int startZ = Mathf.RoundToInt(originWorld.z);
-            int endX = startX + Mathf.RoundToInt(dirX * maxRange);
-            int endZ = startZ + Mathf.RoundToInt(dirZ * maxRange);
+            float originX = originWorld.x;
+            float originZ = originWorld.z;
 
-            TileCoord current = new TileCoord(mapId, startX, startZ);
-            float bestDistance = maxRange;
+            // Tiles are centred on integer coordinates, so a tile spans [c - 0.5, c + 0.5].
+            int cellX = Mathf.RoundToInt(originX);
+            int cellZ = Mathf.RoundToInt(originZ);
 
-            foreach (TileCoord stepped in GridLine(current, new TileCoord(mapId, endX, endZ)))
+            int stepX = dirX > 0f ? 1 : (dirX < 0f ? -1 : 0);
+            int stepZ = dirZ > 0f ? 1 : (dirZ < 0f ? -1 : 0);
+
+            // Ray parameter (world distance, since the direction is unit length) to the next cell
+            // boundary on each axis, and the increment needed to cross one full cell.
+            float tMaxX = stepX != 0 ? ((cellX + stepX * 0.5f) - originX) / dirX : float.PositiveInfinity;
+            float tMaxZ = stepZ != 0 ? ((cellZ + stepZ * 0.5f) - originZ) / dirZ : float.PositiveInfinity;
+            float tDeltaX = stepX != 0 ? 1f / Mathf.Abs(dirX) : float.PositiveInfinity;
+            float tDeltaZ = stepZ != 0 ? 1f / Mathf.Abs(dirZ) : float.PositiveInfinity;
+
+            TileCoord current = new TileCoord(mapId, cellX, cellZ);
+
+            // Each iteration crosses exactly one cardinal cell boundary; bound the walk so a
+            // degenerate ray can never loop forever.
+            int maxSteps = Mathf.CeilToInt(maxRange * 2f) + 2;
+            for (int i = 0; i < maxSteps; i++)
             {
-                if (stepped.Grid == current.Grid)
-                    continue;
+                float t;
+                TileCoord next;
 
-                if (!TryGetStepDirection(current, stepped, out Direction stepDirection))
-                    continue;
+                if (tMaxX <= tMaxZ)
+                {
+                    t = tMaxX;
+                    tMaxX += tDeltaX;
+                    next = new TileCoord(mapId, current.Grid.x + stepX, current.Grid.y);
+                }
+                else
+                {
+                    t = tMaxZ;
+                    tMaxZ += tDeltaZ;
+                    next = new TileCoord(mapId, current.Grid.x, current.Grid.y + stepZ);
+                }
 
+                if (t > maxRange)
+                    break;
+
+                if (!TryGetStepDirection(current, next, out Direction stepDirection))
+                    break;
+
+                // A wall on the shared edge stops the ray exactly at the boundary we just reached.
                 if (occlusion.BlocksEdge(current, stepDirection))
-                {
-                    bestDistance = Mathf.Min(bestDistance, DistanceToEdge(originWorld, current, stepDirection));
-                    break;
-                }
+                    return Mathf.Clamp(t, 0f, maxRange);
 
-                current = stepped;
+                current = next;
 
+                // An opaque tile is visible up to its near edge (the boundary at distance t).
                 if (occlusion.IsBlocked(current))
-                {
-                    bestDistance = Mathf.Min(bestDistance, DistanceToTileBoundary(originWorld, current, dirX, dirZ));
-                    break;
-                }
+                    return Mathf.Clamp(t, 0f, maxRange);
             }
 
-            return Mathf.Clamp(bestDistance, 0f, maxRange);
-        }
-
-        private static float DistanceToEdge(Vector3 origin, TileCoord from, Direction stepDirection)
-        {
-            Vector2Int delta = TileHelper.CoordinateDifferenceInFrontFacingDirection(stepDirection);
-            float edgeX = from.Grid.x + (delta.x > 0 ? 0.5f : delta.x < 0 ? -0.5f : 0f);
-            float edgeZ = from.Grid.y + (delta.y > 0 ? 0.5f : delta.y < 0 ? -0.5f : 0f);
-
-            if (delta.x != 0)
-                edgeX = from.Grid.x + delta.x * 0.5f;
-            if (delta.y != 0)
-                edgeZ = from.Grid.y + delta.y * 0.5f;
-
-            return HorizontalDistance(origin, new Vector3(edgeX, 0f, edgeZ));
-        }
-
-        private static float DistanceToTileBoundary(Vector3 origin, TileCoord tile, float dirX, float dirZ)
-        {
-            float centerX = tile.Grid.x;
-            float centerZ = tile.Grid.y;
-            float dx = centerX - origin.x;
-            float dz = centerZ - origin.z;
-            float centerDistance = Mathf.Sqrt(dx * dx + dz * dz);
-
-            float absDirX = Mathf.Abs(dirX);
-            float absDirZ = Mathf.Abs(dirZ);
-            float boundaryDistance = centerDistance;
-
-            if (absDirX > 0.0001f)
-            {
-                float toVerticalEdge = (Mathf.Sign(dirX) > 0f ? tile.Grid.x - 0.5f - origin.x : origin.x - (tile.Grid.x + 0.5f)) / absDirX;
-                boundaryDistance = Mathf.Min(boundaryDistance, toVerticalEdge);
-            }
-
-            if (absDirZ > 0.0001f)
-            {
-                float toHorizontalEdge = (Mathf.Sign(dirZ) > 0f ? tile.Grid.y - 0.5f - origin.z : origin.z - (tile.Grid.y + 0.5f)) / absDirZ;
-                boundaryDistance = Mathf.Min(boundaryDistance, toHorizontalEdge);
-            }
-
-            return Mathf.Max(0f, boundaryDistance);
-        }
-
-        private static float HorizontalDistance(Vector3 from, Vector3 to)
-        {
-            float dx = to.x - from.x;
-            float dz = to.z - from.z;
-            return Mathf.Sqrt(dx * dx + dz * dz);
+            return maxRange;
         }
 
         private static bool TryGetStepDirection(TileCoord from, TileCoord to, out Direction direction)
@@ -140,41 +118,6 @@ namespace SS3D.Systems.Vision
 
             direction = default;
             return false;
-        }
-
-        private static System.Collections.Generic.IEnumerable<TileCoord> GridLine(TileCoord from, TileCoord to)
-        {
-            int x0 = from.Grid.x;
-            int y0 = from.Grid.y;
-            int x1 = to.Grid.x;
-            int y1 = to.Grid.y;
-
-            int dx = Mathf.Abs(x1 - x0);
-            int dy = Mathf.Abs(y1 - y0);
-            int sx = x0 < x1 ? 1 : -1;
-            int sy = y0 < y1 ? 1 : -1;
-            int err = dx - dy;
-
-            while (true)
-            {
-                yield return new TileCoord(from.MapId, x0, y0);
-
-                if (x0 == x1 && y0 == y1)
-                    break;
-
-                int e2 = err * 2;
-                if (e2 > -dy)
-                {
-                    err -= dy;
-                    x0 += sx;
-                }
-
-                if (e2 < dx)
-                {
-                    err += dx;
-                    y0 += sy;
-                }
-            }
         }
     }
 }
