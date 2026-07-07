@@ -19,6 +19,7 @@ namespace SS3D.Systems.Atmospherics.ECS
 
         public NativeArray<float> Moles;
         public NativeArray<AtmosCellMeta> CellMeta;
+        public NativeArray<float> BurnIntensity;
 
         public int MaxGasTypes;
         public int GasTypeCount;
@@ -79,6 +80,12 @@ namespace SS3D.Systems.Atmospherics.ECS
 
                 meta.State = AtmosCellState.Active;
                 CellMeta[cell] = meta;
+
+                if (BurnIntensity.IsCreated && DeltaTime > 0f)
+                {
+                    float burnRate = plasmaBurn / DeltaTime;
+                    BurnIntensity[cell] = math.max(BurnIntensity[cell], burnRate);
+                }
             }
         }
 

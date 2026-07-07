@@ -27,21 +27,39 @@ namespace SS3D.Systems.Atmospherics
         private NativeArray<AtmosCellMeta> _cellMetaWrite;
         private NativeArray<AtmosNeighbours> _neighbours;
         private NativeArray<float> _specificHeats;
+        private NativeArray<float> _molarMasses;
         private NativeArray<float> _energyScratch;
+        private NativeArray<float> _burnIntensity;
         private NativeList<int> _activeCells;
 
         private int _cellCount;
 
         public int CellCount => _cellCount;
         public int ActiveCellCount => _activeCells.IsCreated ? _activeCells.Length : 0;
+        public int GasTypeCount => _gasTypeCount;
+        public int MapId => _mapId;
+        public IReadOnlyList<TileChunkRef> Chunks => _chunks;
 
-        public AtmosSimulation(ITileQueryService query, int mapId, int gasTypeCount, float[] specificHeats = null)
+        public NativeArray<float>.ReadOnly MolesRead =>
+            _molesRead.IsCreated ? _molesRead.AsReadOnly() : default;
+
+        public NativeArray<AtmosCellMeta>.ReadOnly CellMeta =>
+            _cellMeta.IsCreated ? _cellMeta.AsReadOnly() : default;
+
+        public NativeArray<AtmosNeighbours>.ReadOnly Neighbours =>
+            _neighbours.IsCreated ? _neighbours.AsReadOnly() : default;
+
+        public NativeArray<float>.ReadOnly BurnIntensity =>
+            _burnIntensity.IsCreated ? _burnIntensity.AsReadOnly() : default;
+
+        public AtmosSimulation(ITileQueryService query, int mapId, int gasTypeCount, float[] specificHeats = null, float[] molarMasses = null)
         {
             _query = query;
             _mapId = mapId;
             _gasTypeCount = gasTypeCount;
             _activeCells = new NativeList<int>(Allocator.Persistent);
             _specificHeats = BuildSpecificHeats(specificHeats);
+            _molarMasses = BuildMolarMasses(molarMasses);
         }
 
         private static NativeArray<float> BuildSpecificHeats(float[] overrides)
@@ -66,6 +84,61 @@ namespace SS3D.Systems.Atmospherics
             }
 
             return heats;
+        }
+
+        private static NativeArray<float> BuildMolarMasses(float[] overrides)
+        {
+            var masses = new NativeArray<float>(AtmosConstants.MaxGasTypes, Allocator.Persistent);
+
+            foreach (GasDefault gas in GasDefaults.Core)
+            {
+                if (gas.Id < AtmosConstants.MaxGasTypes)
+                    masses[gas.Id] = gas.MolarMass;
+            }
+
+            if (overrides != null)
+            {
+                int count = Mathf.Min(overrides.Length, AtmosConstants.MaxGasTypes);
+                for (int i = 0; i < count; i++)
+                {
+                    if (overrides[i] > 0f)
+                        masses[i] = overrides[i];
+                }
+            }
+
+            return masses;
+        }
+
+        public bool TryGetCellIndex(TileCoord coord, out int cellIndex)
+        {
+            return _coordToIndex.TryGetValue(coord, out cellIndex);
+        }
+
+        public bool TryGetGasMoles(TileCoord coord, GasId gasId, out float moles)
+        {
+            moles = 0f;
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return false;
+
+            moles = _molesRead[GasMixture.GetMoleIndex(cellIndex, gasId)];
+            return true;
+        }
+
+        public float GetMolarMass(GasId gasId)
+        {
+            if (!_molarMasses.IsCreated || gasId.Value >= _molarMasses.Length)
+                return 1f;
+
+            float mass = _molarMasses[gasId.Value];
+            return mass > 0f ? mass : 1f;
+        }
+
+        public float GetCellPressure(int cellIndex)
+        {
+            if (cellIndex < 0 || cellIndex >= _cellCount)
+                return 0f;
+
+            return GetPressure(cellIndex, _cellMeta[cellIndex]);
         }
 
         public void CreateChunk(TileChunkRef chunkRef)
@@ -149,6 +222,8 @@ namespace SS3D.Systems.Atmospherics
             if (_activeCells.Length == 0)
                 return;
 
+            ClearBurnIntensity();
+
             int substeps = GetBreachSubsteps();
             float subDelta = deltaTime / substeps;
 
@@ -177,6 +252,7 @@ namespace SS3D.Systems.Atmospherics
                 Temperature = meta.Temperature,
                 Volume = meta.Volume,
                 Pressure = GetPressure(cellIndex, meta),
+                BurnIntensity = _burnIntensity.IsCreated ? _burnIntensity[cellIndex] : 0f,
                 Neighbours = _neighbours[cellIndex],
                 Occupancy = occupancy,
             };
@@ -215,6 +291,12 @@ namespace SS3D.Systems.Atmospherics
         {
             foreach (TileCoord coord in _coordToIndex.Keys)
                 visitor(coord);
+        }
+
+        public void ForEachCell(System.Action<TileCoord, int> visitor)
+        {
+            foreach (KeyValuePair<TileCoord, int> pair in _coordToIndex)
+                visitor(pair.Key, pair.Value);
         }
 
         public void DebugAddMoles(TileCoord coord, GasId gasId, float moles)
@@ -268,7 +350,9 @@ namespace SS3D.Systems.Atmospherics
             if (_cellMetaWrite.IsCreated) _cellMetaWrite.Dispose();
             if (_neighbours.IsCreated) _neighbours.Dispose();
             if (_energyScratch.IsCreated) _energyScratch.Dispose();
+            if (_burnIntensity.IsCreated) _burnIntensity.Dispose();
             if (_specificHeats.IsCreated) _specificHeats.Dispose();
+            if (_molarMasses.IsCreated) _molarMasses.Dispose();
             if (_activeCells.IsCreated) _activeCells.Dispose();
         }
 
@@ -428,6 +512,7 @@ namespace SS3D.Systems.Atmospherics
                 SpecificHeat = _specificHeats,
                 Moles = _molesRead,
                 CellMeta = _cellMeta,
+                BurnIntensity = _burnIntensity,
                 MaxGasTypes = AtmosConstants.MaxGasTypes,
                 GasTypeCount = _gasTypeCount,
                 OxygenId = AtmosConstants.Oxygen.Value,
@@ -481,6 +566,16 @@ namespace SS3D.Systems.Atmospherics
             ResizeNativeArray(ref _cellMetaWrite, cellCount);
             ResizeNativeArray(ref _neighbours, cellCount);
             ResizeNativeArray(ref _energyScratch, cellCount);
+            ResizeNativeArray(ref _burnIntensity, cellCount);
+        }
+
+        private void ClearBurnIntensity()
+        {
+            if (!_burnIntensity.IsCreated)
+                return;
+
+            for (int i = 0; i < _burnIntensity.Length; i++)
+                _burnIntensity[i] = 0f;
         }
 
         private static void ResizeNativeArray<T>(ref NativeArray<T> array, int length) where T : struct

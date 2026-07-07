@@ -3,6 +3,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Tile;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace SS3D.Systems.Atmospherics
         private AtmosWorld _atmosWorld;
         private AtmosSimulation _simulation;
         private AtmosTileObserver _tileObserver;
+        private AtmosVisualizationBridge _visualizationBridge;
         private float _tickTimer;
 
         public GasRegistry GasRegistry => _gasRegistry;
@@ -32,6 +34,11 @@ namespace SS3D.Systems.Atmospherics
 
             if (!TryGetComponent<AtmosDebugController>(out _))
                 gameObject.AddComponent<AtmosDebugController>();
+
+            if (!TryGetComponent<AtmosVisualizationBridge>(out _))
+                _visualizationBridge = gameObject.AddComponent<AtmosVisualizationBridge>();
+            else
+                _visualizationBridge = GetComponent<AtmosVisualizationBridge>();
 
             InitializeWhenMapReady().Forget();
         }
@@ -54,11 +61,13 @@ namespace SS3D.Systems.Atmospherics
 
             int gasTypeCount;
             float[] specificHeats = null;
+            float[] molarMasses = null;
             if (_gasRegistry != null)
             {
                 _gasRegistry.Initialize();
                 gasTypeCount = Mathf.Max(_gasRegistry.Count, GasDefaults.CoreGasCount);
                 specificHeats = BuildSpecificHeats(_gasRegistry);
+                molarMasses = BuildMolarMasses(_gasRegistry);
             }
             else
             {
@@ -66,13 +75,20 @@ namespace SS3D.Systems.Atmospherics
                 gasTypeCount = GasDefaults.CoreGasCount;
             }
 
-            _simulation = new AtmosSimulation(tileSubSystem.QueryService, tileSubSystem.CurrentMap.MapId, gasTypeCount, specificHeats);
+            _simulation = new AtmosSimulation(
+                tileSubSystem.QueryService,
+                tileSubSystem.CurrentMap.MapId,
+                gasTypeCount,
+                specificHeats,
+                molarMasses);
             _tileObserver = new AtmosTileObserver(_simulation);
             tileSubSystem.RegisterTileMutationObserver(_tileObserver);
 
             // Seed any chunks that were created before the observer registered.
             foreach (TileChunkRef chunkRef in tileSubSystem.CurrentMap.GetChunkRefs())
                 _simulation.CreateChunk(chunkRef);
+
+            _visualizationBridge?.PublishSnapshot();
 
             Log.Information(this, $"Atmos simulation started with {gasTypeCount} gas slots and {_simulation.CellCount} cells.");
         }
@@ -89,6 +105,18 @@ namespace SS3D.Systems.Atmospherics
             return heats;
         }
 
+        private static float[] BuildMolarMasses(GasRegistry registry)
+        {
+            var masses = new float[AtmosConstants.MaxGasTypes];
+            foreach (GasDefinition definition in registry.Definitions)
+            {
+                if (definition.Id < AtmosConstants.MaxGasTypes)
+                    masses[definition.Id] = definition.MolarMass;
+            }
+
+            return masses;
+        }
+
         protected override void OnDestroyed()
         {
             TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
@@ -98,6 +126,7 @@ namespace SS3D.Systems.Atmospherics
             _simulation?.Dispose();
             _simulation = null;
             _tileObserver = null;
+            _visualizationBridge = null;
             _atmosWorld?.Dispose();
             _atmosWorld = null;
             base.OnDestroyed();
@@ -153,6 +182,7 @@ namespace SS3D.Systems.Atmospherics
             float started = Time.realtimeSinceStartup;
             _simulation.Tick(AtmosConstants.TickInterval);
             LastTickMilliseconds = (Time.realtimeSinceStartup - started) * 1000f;
+            _visualizationBridge?.PublishSnapshot();
         }
 
         public bool TryGetCellDebugInfo(TileCoord coord, out AtmosCellDebugInfo info)

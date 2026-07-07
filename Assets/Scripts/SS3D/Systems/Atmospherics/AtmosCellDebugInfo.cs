@@ -11,6 +11,7 @@ namespace SS3D.Systems.Atmospherics
         public float Temperature;
         public float Volume;
         public float Pressure;
+        public float BurnIntensity;
         public AtmosNeighbours Neighbours;
         public TileOccupancy Occupancy;
     }
