@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SS3D.Systems.Vision;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -44,10 +45,9 @@ namespace SS3D.Systems.Tile
 
             occupancy.HasPlenum = !locations[(int)TileLayer.Plenum].IsFullyEmpty();
             occupancy.HasTurf = !locations[(int)TileLayer.Turf].IsFullyEmpty();
-            occupancy.HasWall = !locations[(int)TileLayer.WallMountHigh].IsFullyEmpty()
-                || !locations[(int)TileLayer.WallMountLow].IsFullyEmpty();
-            occupancy.BlocksVision = occupancy.HasWall;
-            occupancy.IsAirtight = occupancy.HasWall;
+
+            if (!VisionOccupancyEvaluator.TryEvaluate(_map, coord, locations, out occupancy))
+                return false;
 
             return true;
         }
