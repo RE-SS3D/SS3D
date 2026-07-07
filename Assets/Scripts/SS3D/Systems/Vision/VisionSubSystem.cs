@@ -1,17 +1,22 @@
 using System;
 using FishNet;
-using Unity.Collections;
-using Unity.Jobs;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
+using SS3D.Core;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Tile;
 using SS3D.Rendering.URP;
 using Coimbra;
 using Coimbra.Services.Events;
 
 namespace SS3D.Systems.Vision
 {
+    /// <summary>
+    /// Client-side field-of-view producer. Casts polar rays across the tile grid (via
+    /// <see cref="VisionGridCaster"/> and <see cref="VisionOcclusionProvider"/>) to build the 1D
+    /// <c>_VisionMap</c> depth texture consumed by the URP vision render feature.
+    /// </summary>
     public class VisionSubSystem : Core.Behaviours.SubSystem
     {
         [SerializeField]
@@ -32,29 +37,25 @@ namespace SS3D.Systems.Vision
         private float viewConeWidth = 360;
 
         [SerializeField]
-        [Tooltip("Which layers this can't see through")]
-        private LayerMask obstacleMask = 0;
-
-        [SerializeField]
-        [Tooltip("Raycasts per degree")]
+        [Tooltip("Samples per degree of the view cone")]
         private float resolution = 1f;
 
         [SerializeField]
         [Tooltip("The center of the field of view's actual wall detection")]
         private Vector3 detectionOffset = Vector3.zero;
-        
-        [NonSerialized]
-        public NativeArray<Vector3> viewPoints;
+
         [NonSerialized]
         public int stepCount;
-        
-        // Buffer for view cast batching
-        private ViewCastInfo[] viewCastResults;
-        // Buffer for view cast angles
-        private float[] angleBuffer;
-        
-        static ProfilerMarker MapPerformanceMarker = new ProfilerMarker("Vision.VisionMap");
-        static ProfilerMarker PointsPerformanceMarker = new ProfilerMarker("Vision.ViewPoints");
+
+        private float[] _depthBuffer;
+        private Color[] _pixelBuffer;
+
+        private TileSubSystem _tileSubSystem;
+        private VisionOcclusionProvider _occlusion;
+        private ITileQueryService _query;
+
+        static ProfilerMarker GridCastMarker = new ProfilerMarker("Vision.GridCast");
+        static ProfilerMarker MapUploadMarker = new ProfilerMarker("Vision.CacheUpload");
 
         private bool _clientVisionInitialized;
 
@@ -82,28 +83,29 @@ namespace SS3D.Systems.Vision
 
             _clientVisionInitialized = true;
 
-            visionMap = new Texture2D(Mathf.RoundToInt(viewConeWidth * resolution), 1, TextureFormat.R16, false);
+            stepCount = Mathf.Max(1, Mathf.CeilToInt(viewConeWidth * resolution));
+            visionMap = new Texture2D(stepCount, 1, TextureFormat.R16, false);
             visionMap.wrapMode = TextureWrapMode.Repeat;
             visionMap.filterMode = FilterMode.Bilinear;
             Shader.SetGlobalTexture("_VisionMap", visionMap);
 
-            stepCount = Mathf.CeilToInt(viewConeWidth * resolution);
-            viewPoints = new NativeArray<Vector3>(stepCount + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            
-            viewCastResults = new ViewCastInfo[stepCount + 1];
-            angleBuffer = new float[viewCastResults.Length];
+            _depthBuffer = new float[stepCount];
+            _pixelBuffer = new Color[stepCount];
+
+            _tileSubSystem = SubSystems.Get<TileSubSystem>();
+            TryBindMap();
         }
 
         protected override void OnDisabled()
         {
             VisionRenderContext.Enabled = false;
 
-            if (!_clientVisionInitialized)
-            {
-                return;
-            }
+            if (_tileSubSystem != null && _occlusion != null)
+                _tileSubSystem.UnregisterTileMutationObserver(_occlusion);
 
-            viewPoints.Dispose();
+            _occlusion = null;
+            _query = null;
+
             _clientVisionInitialized = false;
         }
 
@@ -112,9 +114,31 @@ namespace SS3D.Systems.Vision
             target = e.PlayerObject.transform;
         }
 
+        /// <summary>
+        /// Binds to the tilemap once it becomes available (already present when hosting, created shortly
+        /// after connect on a remote client) and registers the occlusion cache as a mutation observer.
+        /// </summary>
+        private void TryBindMap()
+        {
+            if (_occlusion != null || _tileSubSystem == null)
+                return;
+
+            TileMap map = _tileSubSystem.CurrentMap;
+            ITileQueryService query = _tileSubSystem.QueryService;
+            if (map == null || query == null)
+                return;
+
+            _query = query;
+            _occlusion = new VisionOcclusionProvider(map, query);
+            _tileSubSystem.RegisterTileMutationObserver(_occlusion);
+        }
+
         private void LateUpdate()
         {
-            if (!_clientVisionInitialized || !target)
+            if (_occlusion == null)
+                TryBindMap();
+
+            if (!_clientVisionInitialized || !target || _occlusion == null || _query == null)
             {
                 VisionRenderContext.Enabled = false;
                 return;
@@ -127,147 +151,37 @@ namespace SS3D.Systems.Vision
             Shader.SetGlobalFloat("_PlayerAngle", angle);
             Shader.SetGlobalFloat("_ViewConeWidth", viewConeWidth * Mathf.Deg2Rad);
             Shader.SetGlobalFloat("_ViewRange", viewRange);
-            
-            DrawVisionMap();
+
+            DrawVisionMap(angle);
 
             VisionRenderContext.Enabled = true;
         }
 
-        public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal)
+        private void DrawVisionMap(float yawRadians)
         {
-            if (!angleIsGlobal)
-            {
-                angleInDegrees += target.transform.eulerAngles.y;
-            }
-            
-            Quaternion rotation = Quaternion.AngleAxis(angleInDegrees, Vector3.up);
-            return rotation * Vector3.forward;
-        }
+            GridCastMarker.Begin();
+            VisionGridCaster.Cast(
+                _occlusion,
+                _query,
+                DetectionCenter,
+                yawRadians,
+                viewRange,
+                viewConeWidth,
+                stepCount,
+                _depthBuffer);
+            GridCastMarker.End();
 
-        private void DrawVisionMap()
-        {
-            PointsPerformanceMarker.Begin();
-            CalculateViewPoints();
-            PointsPerformanceMarker.End();
-
-            MapPerformanceMarker.Begin();
-
-            if (visionMap.width != stepCount)
-            {
-                visionMap.Reinitialize(stepCount, 1);
-            }
- 
-            Color[] depths = new Color[stepCount + 1];
+            MapUploadMarker.Begin();
             for (int i = 0; i < stepCount; i++)
             {
-                Vector3 positionOS = viewPoints[i % stepCount] - DetectionCenter;
-                positionOS.y = 0;
-                depths[i] = new Color(positionOS.magnitude / viewRange, 0, 0);
+                _pixelBuffer[i] = new Color(_depthBuffer[i], 0f, 0f);
             }
 
 #pragma warning disable UNT0017 // SetPixels invocation is slow
-            visionMap.SetPixels(depths);
+            visionMap.SetPixels(_pixelBuffer);
 #pragma warning restore UNT0017 // SetPixels invocation is slow
-            visionMap.Apply();
-            
-            MapPerformanceMarker.End();
-        }
-
-        private void CalculateViewPoints()
-        {
-            stepCount = Mathf.CeilToInt(viewConeWidth * resolution);
-            float stepAngleSize = viewConeWidth / stepCount;
-            float halfCone = viewConeWidth / 2;
-
-            if (viewCastResults.Length < stepCount)
-            {
-                Array.Resize(ref viewCastResults, stepCount + 1);
-                Array.Resize(ref angleBuffer, stepCount + 1);
-                viewPoints.Dispose();
-                viewPoints = new NativeArray<Vector3>(stepCount + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            }
-
-            for (int i = 0; i < stepCount; i++)
-            {
-                angleBuffer[i] = (target.transform.rotation.eulerAngles.y - halfCone) + (stepAngleSize * i);
-            }
-
-            ViewCastBatch(angleBuffer, viewCastResults);
-            for (int i = 0; i < stepCount; i++)
-            {
-                ViewCastInfo newViewCast = viewCastResults[i];
-
-                viewPoints[i] = viewCastResults[i].Point;
-            }
-        }
-
-        private void ViewCastBatch(float[] angles, ViewCastInfo[] resultArray)
-        {
-            if (resultArray.Length < angles.Length)
-            {
-                throw new ArgumentException("Results can't be smaller than angles", nameof(resultArray));
-            }
-
-            // Allocate arrays for raycast data
-            NativeArray<RaycastHit> hits = new NativeArray<RaycastHit>(angles.Length, Allocator.TempJob);
-            NativeArray<RaycastCommand> commands = new NativeArray<RaycastCommand>(angles.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            
-            Vector3 origin = target.transform.position + detectionOffset;
-
-            // Create raycast commands
-            for (int i = 0; i < angles.Length; i++)
-            {
-                commands[i] = new RaycastCommand(origin, DirectionFromAngle(angles[i], true), viewRange, obstacleMask);
-            }
-
-            // Schedule raycasts
-            JobHandle handle = RaycastCommand.ScheduleBatch(commands, hits, 1);
-
-            // Wait for the raycasting to complete
-            handle.Complete();
-            
-            // Fill results array
-            for (int i = 0; i < hits.Length; i++)
-            {
-                RaycastHit hit = hits[i];
-
-                // Collider is only valid if hit (yes, this is in the docs)
-                if (hit.collider)
-                {
-                    resultArray[i] = new ViewCastInfo(true, hit.point, hit.distance, angles[i], hit.normal);
-                }
-                else
-                {
-                    resultArray[i] = new ViewCastInfo(
-                        false, 
-                        origin + (DirectionFromAngle(angles[i], true) * viewRange),
-                        viewRange,
-                        angles[i],
-                        hit.normal);
-                }
-            }
-            
-            // Dispose raycast data
-            hits.Dispose();
-            commands.Dispose();
-        }
-        
-        public struct ViewCastInfo
-        {
-            public bool Hit;
-            public Vector3 Point;
-            public float Distance;
-            public float Angle;
-            public Vector3 Normal;
-
-            public ViewCastInfo(bool hit, Vector3 point, float distance, float angle, Vector3 normal)
-            {
-                Hit = hit;
-                Point = point;
-                Distance = distance;
-                Angle = angle;
-                Normal = normal;
-            }
+            visionMap.Apply(false);
+            MapUploadMarker.End();
         }
     }
 }

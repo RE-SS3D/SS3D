@@ -23,47 +23,33 @@ namespace SS3D.Systems.Vision
 
         protected void OnSceneGUI()
         {
-            if (!_vision.showDebug)
+            if (!_vision.showDebug || _vision.target == null)
             {
                 return;
             }
 
             serializedObject.Update();
 
-            GUIStyle labelStyle = new GUIStyle
-            {
-                fontSize = 14,
-            };
-            Unity.Collections.NativeArray<Vector3> viewPoints = _vision.viewPoints;
-
-            Vector3 viewAngleA = _vision.DirectionFromAngle(-_viewConeWidthProp.floatValue / 2, false);
-            Vector3 viewAngleB = _vision.DirectionFromAngle(_viewConeWidthProp.floatValue / 2, false);
+            float range = _viewRangeProp.floatValue;
+            float halfCone = _viewConeWidthProp.floatValue / 2f;
+            float yaw = _vision.target.eulerAngles.y;
 
             Vector3 center = _vision.target.position + _detectionOffsetProp.vector3Value;
+            Vector3 edgeA = DirectionFromAngle(yaw - halfCone);
+            Vector3 edgeB = DirectionFromAngle(yaw + halfCone);
 
             Handles.color = Color.green;
             Handles.Label(center, "center");
+            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360, range);
 
-            labelStyle.normal.textColor = Color.green;
-            Handles.DrawWireArc(center, Vector3.up, Vector3.forward, 360, _viewRangeProp.floatValue);
-
-            Handles.DrawLine(center, center + (viewAngleA * _viewRangeProp.floatValue));
-            Handles.DrawLine(center, center + (viewAngleB * _viewRangeProp.floatValue));
-
-            // Draw Visual Vision outline;
             Handles.color = Color.yellow;
-            GUIStyle style = new GUIStyle();
-            style.normal.textColor = Color.red;
+            Handles.DrawLine(center, center + (edgeA * range));
+            Handles.DrawLine(center, center + (edgeB * range));
+        }
 
-            Handles.Label(viewPoints[0], "0", style);
-            for (int i = 1; i <= _vision.stepCount; i++)
-            {
-                Handles.Label(viewPoints[i % _vision.stepCount], i.ToString(), style);
-                Handles.color = Color.yellow;
-                Handles.DrawLine(viewPoints[i % _vision.stepCount], center);
-                Handles.color = Color.cyan;
-                Handles.DrawLine(viewPoints[i % _vision.stepCount], viewPoints[(i + 1) % _vision.stepCount]);
-            }
+        private static Vector3 DirectionFromAngle(float angleDegrees)
+        {
+            return Quaternion.AngleAxis(angleDegrees, Vector3.up) * Vector3.forward;
         }
     }
 }
