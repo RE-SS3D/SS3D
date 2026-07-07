@@ -7,6 +7,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Inventory.Items;
+using SS3D.Systems.Selection;
 using System;
 using System.Electricity;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace SS3D.Systems.Furniture
     ///
     /// TODO: Make proper UI for this.
     /// </summary>
+    [RequireComponent(typeof(Selectable))]
     public class VendingMachine : InteractionSource, IInteractionTarget
     {
         [SerializeField]

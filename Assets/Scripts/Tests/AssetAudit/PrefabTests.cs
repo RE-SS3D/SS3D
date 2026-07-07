@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using SS3D.Attributes;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Selection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -36,6 +38,17 @@ namespace AssetAudit
             StringBuilder sb = new();
             bool allScriptsExist = AssetAuditUtilities.CheckGameObjectForMissingScripts(prefab, ref sb);
             Assert.IsTrue(allScriptsExist, sb.ToString());
+        }
+
+        /// <summary>
+        /// Interaction targets must be shader-pickable via Selectable on the same object or a parent.
+        /// </summary>
+        [Test, TestCaseSource(nameof(AllPrefabs))]
+        public void InteractionTargetsHaveSelectableForShaderPicking(GameObject prefab)
+        {
+            StringBuilder sb = new();
+            bool allTargetsArePickable = AssetAuditUtilities.CheckInteractionTargetsHaveSelectable(prefab, ref sb);
+            Assert.IsTrue(allTargetsArePickable, sb.ToString());
         }
         #endregion
 

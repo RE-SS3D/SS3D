@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4137545864262984256}
   - component: {fileID: 4546650457145234162}
   - component: {fileID: 7802882637591850443}
+  - component: {fileID: -7041379797190674371}
   m_Layer: 0
   m_Name: SteelWindowReinforced
   m_TagString: Untagged
@@ -216,3 +217,27 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 0}
   _asset: {fileID: 11400000, guid: b841d8cacfb432a4789bbb387b08fe81, type: 2}
   _tileObjectSo: {fileID: 11400000, guid: f557176874ca0bf43a2b5b975cc94e3c, type: 2}
+  _syncAssetName: 
+  _syncOriginX: 0
+  _syncOriginY: 0
+  _syncWorldOriginX: 0
+  _syncWorldOriginY: 0
+  _syncDirection: 0
+  _syncLayer: 0
+  _syncMapId: 0
+--- !u!114 &-7041379797190674371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}

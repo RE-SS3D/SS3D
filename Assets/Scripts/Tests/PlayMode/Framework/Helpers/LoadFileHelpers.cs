@@ -1,5 +1,7 @@
-﻿using SS3D.CommandLine;
+﻿using NUnit.Framework;
+using SS3D.CommandLine;
 using SS3D.Networking;
+using SS3D.Tests;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -13,21 +15,38 @@ namespace Tests.Play_Mode.Framework.Helpers
     /// </summary>
     public static class LoadFileHelpers
     {
-        public const string ExecutableName = "SS3D.exe";
         public const string IpAddress = "127.0.0.1";
         public const string Port = "1151";
         public const int MaxExpectedServerLoadTimeMillis = 10000;
 
-        /// <summary>
-        /// Runs the compiled SS3D executable with the selected settings.
-        /// </summary>
-        /// <param name="networkType">Server (default), Host or Client.</param>
-        /// <param name="Ckey">Ckey. Applicable only for Client network type, but must not be empty if client</param>
-        /// <param name="windowStyle">Whether minimized (default), maximized, normal or hidden</param>
-        /// <returns>The process handle for the running SS3D build</returns>
+        public const string MissingBuildMessage = CompiledBuildPaths.MissingBuildMessage;
+
+        public static bool HasCompiledBuild => CompiledBuildPaths.HasCompiledBuild;
+
+        public static void RequireCompiledBuild()
+        {
+            if (!HasCompiledBuild)
+            {
+                Assert.Ignore(MissingBuildMessage);
+            }
+        }
+
+        public static string GetExecutableFileName() => CompiledBuildPaths.GetExecutableFileName();
+
+        public static string GetBuildDirectory() => CompiledBuildPaths.GetBuildDirectory();
+
+        public static bool TryResolveExecutablePath(out string executablePath) =>
+            CompiledBuildPaths.TryResolveExecutablePath(out executablePath);
+
         public static Process OpenCompiledBuild(NetworkType networkType = NetworkType.DedicatedServer, string Ckey = "client", ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
         {
-            // Confirm all arguments
+            RequireCompiledBuild();
+
+            if (!TryResolveExecutablePath(out string executablePath))
+            {
+                throw new FileNotFoundException(MissingBuildMessage);
+            }
+
             string arguments = $"{CommandLineArgs.Ip}{IpAddress} {CommandLineArgs.Port}{Port} {CommandLineArgs.SkipIntro} ";
             switch (networkType)
             {
@@ -36,30 +55,24 @@ namespace Tests.Play_Mode.Framework.Helpers
                 case NetworkType.Client: arguments += CommandLineArgs.Ckey + Ckey; break;
             }
 
-            // Create a process that will be able to launch the build.
             Process process = new Process();
             process.StartInfo.WindowStyle = windowStyle;
             process.StartInfo.Arguments = arguments;
-            process.StartInfo.FileName = ExecutableName;
-            process.StartInfo.WorkingDirectory = GetFilePath();
+            process.StartInfo.FileName = executablePath;
+            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(executablePath);
 
-            UnityEngine.Debug.Log($"Attempting to load {ExecutableName} {arguments}" );
+            UnityEngine.Debug.Log($"Attempting to load {executablePath} {arguments}");
 
-            // Execute the process
             process.Start();
 
-            // Enforce a delay if we are loading a server (either dedicated or host).
-            // This prevents us loading our client scene before server is ready to handle us.
-            if (networkType != NetworkType.Client) Sleep(MaxExpectedServerLoadTimeMillis);
+            if (networkType != NetworkType.Client)
+            {
+                Sleep(MaxExpectedServerLoadTimeMillis);
+            }
 
-            // Return the process handle so we can close it correctly later
             return process;
         }
 
-        /// <summary>
-        /// Pauses execution. For example, used so the server has time to load.
-        /// </summary>
-        /// <param name="durationInMilliseconds">How long to pause for (in milliseconds)</param>
         public static void Sleep(int durationInMilliseconds)
         {
             System.Threading.Thread.Sleep(durationInMilliseconds);
@@ -67,6 +80,11 @@ namespace Tests.Play_Mode.Framework.Helpers
 
         public static void PlaceQuadWindow(Process process, int windowNumber = 0)
         {
+            if (process == null || process.MainWindowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
             const int ScreenWidth = 2000;
             const int MaxWindowsPerRow = 4;
 
@@ -86,32 +104,6 @@ namespace Tests.Play_Mode.Framework.Helpers
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
 
 
-        #region Private helper methods
-        /// <summary>
-        /// This method gets the filepath of the Builds directory where the compiled build is saved.
-        /// </summary>
-        /// <returns>The filepath of the Builds folder.</returns>
-        private static string GetFilePath()
-        {
-            // Get relevant executable file path
-            string filePath = Application.dataPath;
-            filePath = filePath.Substring(0, filePath.Length - 6);     // Needed to remove the "Assets" folder.
-            filePath += "Builds";                                      // Needed to add the "Builds" folder.
-
-            const string expectedFolderNameForContinuousIntegrationTesting = "StandaloneLinux64";
-
-            if (Directory.Exists($"{filePath}/{expectedFolderNameForContinuousIntegrationTesting}"))
-            {
-                filePath += $"/{expectedFolderNameForContinuousIntegrationTesting}";
-            }
-            else
-            {
-                filePath += "/Game";
-            }
-            return filePath;
-        }
-        #endregion
-
         #region Random Enums for managing loaded application windows
         public enum SpecialWindowHandles : int
         {
@@ -125,33 +117,19 @@ namespace Tests.Play_Mode.Framework.Helpers
         public enum SetWindowPosFlags : uint
         {
             SWP_ASYNCWINDOWPOS = 0x4000,
-
             SWP_DEFERERASE = 0x2000,
-
             SWP_DRAWFRAME = 0x0020,
-
             SWP_FRAMECHANGED = 0x0020,
-
             SWP_HIDEWINDOW = 0x0080,
-
             SWP_NOACTIVATE = 0x0010,
-
             SWP_NOCOPYBITS = 0x0100,
-
             SWP_NOMOVE = 0x0002,
-
             SWP_NOOWNERZORDER = 0x0200,
-
             SWP_NOREDRAW = 0x0008,
-
             SWP_NOREPOSITION = 0x0200,
-
             SWP_NOSENDCHANGING = 0x0400,
-
             SWP_NOSIZE = 0x0001,
-
             SWP_NOZORDER = 0x0004,
-
             SWP_SHOWWINDOW = 0x0040,
         }
         #endregion

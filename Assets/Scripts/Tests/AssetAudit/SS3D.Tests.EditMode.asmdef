@@ -10,7 +10,8 @@
         "SS3D.Data",
         "Coimbra",
         "SS3D.Logging",
-        "Unity.Localization"
+        "Unity.Localization",
+        "SS3D.Interactions"
     ],
     "includePlatforms": [
         "Editor"

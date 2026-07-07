@@ -179,6 +179,11 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnLatePlayer(Player player)
         {
+            if (SubSystems.Get<RoundSubSystem>().CurrentRoundState != RoundState.Ongoing)
+            {
+                return;
+            }
+
             if (!IsPlayerSpawned(player) && _hasSpawnedInitialPlayers)
             {
                 SpawnPlayer(player);
@@ -205,6 +210,8 @@ namespace SS3D.Systems.Entities
 
             createdMind.SetPlayer(player);
             entity.SetMind(createdMind);
+
+            player.Owner.SetFirstObject(entity.NetworkObject);
 
             SubSystems.Get<RoleSubSystem>().GiveRoleLoadoutToPlayer(entity);
 

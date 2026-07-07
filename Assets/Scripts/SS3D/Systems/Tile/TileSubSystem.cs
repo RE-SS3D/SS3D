@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data.AssetDatabases;
@@ -25,7 +26,11 @@ namespace SS3D.Systems.Tile
         public TileResourceLoader Loader { get; private set; }
  
         private TileMap _currentMap;
+        private TileQueryService _queryService;
+        private ConstructionService _constructionService;
         public TileMap CurrentMap => _currentMap;
+        public ITileQueryService QueryService => _queryService;
+        public IConstructionService Construction => _constructionService;
 
         public string SavePath => savePath;
 
@@ -77,10 +82,28 @@ namespace SS3D.Systems.Tile
 	        TileMap map = TileMap.Create(mapName);
 	        map.transform.SetParent(transform);
 	        _currentMap = map;
+	        _queryService = new TileQueryService(map);
+	        _constructionService = new ConstructionService(map, _queryService);
+        }
+
+        public void RegisterTileMutationObserver(ITileMutationObserver observer)
+        {
+            _currentMap?.RegisterMutationObserver(observer);
+        }
+
+        public void UnregisterTileMutationObserver(ITileMutationObserver observer)
+        {
+            _currentMap?.UnregisterMutationObserver(observer);
         }
 
         [ServerOrClient]
         public GenericObjectSo GetAsset(string assetName) => Loader.GetAsset(assetName);
+
+        [ServerOrClient]
+        public GenericObjectSo GetAsset(ushort assetId) => Loader?.GetAsset(assetId);
+
+        [ServerOrClient]
+        public ushort TryGetAssetId(GenericObjectSo asset) => Loader?.Catalog.TryGetAssetId(asset) ?? TileAssetCatalog.InvalidAssetId;
 
         [ServerOrClient]
         public GenericObjectSo GetAsset(ObjectAssetReference asset) => Loader.GetAsset(asset);
@@ -91,46 +114,63 @@ namespace SS3D.Systems.Tile
 	        switch (genericObjectSo)
 	        {
 		        case TileObjectSo so:
-			        return _currentMap.PlaceTileObject(so, placePosition, dir, false, replaceExisting, false, out GameObject placedObject);
+			        return _constructionService.TryPlaceTile(so, placePosition, dir, replaceExisting).Success;
 		        case ItemObjectSo so:
-			        _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), so);
-			        break;
+			        return _constructionService.TryPlaceItem(so, placePosition,
+                        Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0)).Success;
 	        }
 
-	        return true;
+	        return false;
         }
 
-        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        /// <summary>
+        /// TileMap Creator place RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
+        /// </summary>
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
+        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting,
+            NetworkConnection conn = null)
         {
+            if (!TileMapEditorPermissions.TryAuthorize(conn))
+                return;
+
             GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
             PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
-        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        /// <summary>
+        /// TileMap Creator clear-tile RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
+        /// </summary>
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
+        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir,
+            NetworkConnection conn = null)
         {
+            if (!TileMapEditorPermissions.TryAuthorize(conn))
+                return;
+
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
-            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
+            _constructionService.TryClearTile(placePosition, ((TileObjectSo)tileObjectSo).layer, dir);
         }
 
-        // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
+        /// <summary>
+        /// TileMap Creator clear-item RPC. Requires <see cref="ServerRoleTypes.Administrator"/> on the server.
+        /// </summary>
         [Client]
         [ServerRpc(RequireOwnership = false)]
-        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition)
+        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition, NetworkConnection conn = null)
         {
+            if (!TileMapEditorPermissions.TryAuthorize(conn))
+                return;
+
             ItemObjectSo itemObjectSo = (ItemObjectSo)GetAsset(itemObjectSoName);
-            _currentMap.ClearItemObject(placePosition, itemObjectSo);
+            _constructionService.TryClearItem(placePosition, itemObjectSo);
         }
 
         [Server]
         public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
-            return _currentMap.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            return _constructionService.TryPreviewTile(tileObjectSo, placePosition, dir, replaceExisting).CanBuild;
         }
 
         [Server]

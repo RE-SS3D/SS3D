@@ -366,6 +366,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [ServerRpc(RequireOwnership = false)]
         private void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
+            if (!TileMapEditorPermissions.TryAuthorize(conn))
+            {
+                RpcReceiveCanBuild(conn, placePosition, false);
+                return;
+            }
 
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
 
@@ -377,7 +382,7 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 return;
             }
 
-            bool canBuild = tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            bool canBuild = tileSystem.Construction.TryPreviewTile(tileObjectSo, placePosition, dir, replaceExisting).CanBuild;
             RpcReceiveCanBuild(conn, placePosition, canBuild);
         }
 

@@ -117,28 +117,45 @@ namespace SS3D.Tests
 
         public static IEnumerator FinishAndExitRound()
         {
-            // Press and release the Escape key
-            //TODO: ScriptedInput input = UserInput.GetInputService() as ScriptedInput;
-            //input.HandleButton(CancelButton, true);
+            yield return TryFinishAndExitRound();
+        }
+
+        /// <summary>
+        /// Stops an active round when lobby UI is available. Safe to call from TearDown after a failed SetUp.
+        /// </summary>
+        public static IEnumerator TryFinishAndExitRound()
+        {
             yield return null;
 
-            //input.HandleButton(CancelButton, false);
+            if (GameObject.Find(ServerSettingsTabName) == null)
+            {
+                yield break;
+            }
 
-            // Change to the server settings tab, and cancel the round
             SetTabActive(ServerSettingsTabName);
 
             yield return new WaitForSeconds(1f);
+
+            if (GetButton(StartRoundButtonName) == null)
+            {
+                yield break;
+            }
+
             PressButton(StartRoundButtonName);
 
             yield return new WaitForSeconds(1f);
-
-            // Give a moment's pause before test formally concludes. (It takes a while for the round to reset).
             yield return new WaitForSeconds(4f);
         }
 
         public static void PressButton(string buttonName)
         {
-            GetButton(buttonName).Press();
+            LabelButton button = GetButton(buttonName);
+            if (button == null)
+            {
+                return;
+            }
+
+            button.Press();
         }
 
         public static IEnumerator PressButtonWhenAvailable(string buttonName, float timeout = 15f)

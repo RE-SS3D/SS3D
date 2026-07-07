@@ -20,6 +20,8 @@ namespace SS3D.Systems.Tile
 
         public List<GenericObjectSo> Assets { get; private set; }
 
+        public TileAssetCatalog Catalog { get; } = new();
+
         public void Awake()
         {
             LoadAssets();
@@ -32,6 +34,12 @@ namespace SS3D.Systems.Tile
 			Log.Information(this, "Loading tilemaps content");
 
             GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
+            foreach (GenericObjectSo asset in tempAssets)
+                Assets.Add(asset);
+
+            Catalog.Build(Assets);
+            IsInitialized = true;
+
             StartCoroutine(LoadAssetsWithIcon(tempAssets));
         }
 
@@ -53,22 +61,16 @@ namespace SS3D.Systems.Tile
 
 	        for (int i = 0; i < assets.Length; i++)
 	        {
-		        if (tempIcons[i] != null)
-		        {
-			        assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
-		        }
-		        else
-		        {
-			        assets[i].icon = _missingIcon;
-		        }
-
-		        Assets.Add(assets[i]);
+		        Assets[i].icon = tempIcons[i] != null
+			        ? Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f))
+			        : _missingIcon;
 	        }
-
-	        IsInitialized = true;
 
 	        yield return null;
         }
+
+        [CanBeNull]
+        public GenericObjectSo GetAsset(ushort assetId) => Catalog.GetAsset(assetId);
 
         [CanBeNull]
         public GenericObjectSo GetAsset(string assetName)

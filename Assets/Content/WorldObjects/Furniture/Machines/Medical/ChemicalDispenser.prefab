@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6421321388902000205}
   - component: {fileID: 1095773677197063761}
   - component: {fileID: 4986056284301255038}
+  - component: {fileID: -5555859180466062813}
   m_Layer: 0
   m_Name: ChemicalDispenser
   m_TagString: Untagged
@@ -93,6 +94,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: c5cbe3171c12dc244a7be5d019bf067c, type: 2}
+--- !u!114 &-5555859180466062813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2314780735993174911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions:
+  - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
 --- !u!1 &3518580019346823106
 GameObject:
   m_ObjectHideFlags: 0

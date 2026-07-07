@@ -22,6 +22,7 @@ namespace SS3D.Tests
     /// Set up client to late join the server, necessary as some functionnalities behave 
     /// differently when late joining.
     /// </summary>
+    [Category(TestCategories.RequiresCompiledBuild)]
     public class ClientLateJoinActions : PlayModeTest
     {
         [UnitySetUp]

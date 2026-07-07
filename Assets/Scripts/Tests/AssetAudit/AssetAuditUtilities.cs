@@ -1,4 +1,6 @@
 ﻿using SS3D.Attributes;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Selection;
 using SS3D.Systems.Tile;
 using System;
 using System.Collections;
@@ -107,6 +109,29 @@ namespace AssetAudit
                 }
             }
             return allScriptsExist;
+        }
+
+        public static bool CheckInteractionTargetsHaveSelectable(GameObject gameObject, ref StringBuilder sb)
+        {
+            bool allTargetsArePickable = true;
+
+            foreach (MonoBehaviour behaviour in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
+            {
+                if (behaviour is not IInteractionTarget)
+                {
+                    continue;
+                }
+
+                if (behaviour.GetComponent<Selectable>() != null || behaviour.GetComponentInParent<Selectable>() != null)
+                {
+                    continue;
+                }
+
+                allTargetsArePickable = false;
+                sb.Append($"-> {behaviour.GetType().Name} on '{behaviour.gameObject.name}' in '{gameObject.name}' is missing Selectable.\n");
+            }
+
+            return allTargetsArePickable;
         }
     }
 }

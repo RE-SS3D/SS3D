@@ -59,6 +59,11 @@ namespace SS3D.Networking
         {
             _quitButton.onClick.RemoveListener(UnityEngine.Application.Quit);
             _retryButton.onClick.RemoveListener(OnRetryButtonPressed);
+
+            if (InstanceFinder.ClientManager != null)
+            {
+                InstanceFinder.ClientManager.OnClientConnectionState -= HandleServerConnectionFailed;
+            }
         }
         
         private void UpdateMessageText(string message)
@@ -94,7 +99,12 @@ namespace SS3D.Networking
             {
                 return;
             }
-            
+
+            if (_buttons == null || _loadingIcon == null)
+            {
+                return;
+            }
+
             _connectionFailed = true;
             _buttons.SetActive(true);
             _loadingIcon.gameObject.SetActive(false);
