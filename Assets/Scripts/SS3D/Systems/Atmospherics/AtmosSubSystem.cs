@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
@@ -29,31 +30,49 @@ namespace SS3D.Systems.Atmospherics
         {
             base.OnStartServer();
 
-            if (_gasRegistry == null)
-            {
-                Log.Error(this, "GasRegistry is not assigned on AtmosSubSystem.");
-                return;
-            }
+            if (!TryGetComponent<AtmosDebugController>(out _))
+                gameObject.AddComponent<AtmosDebugController>();
 
-            _gasRegistry.Initialize();
+            InitializeWhenMapReady().Forget();
+        }
+
+        private async UniTaskVoid InitializeWhenMapReady()
+        {
+            TileSubSystem tileSubSystem = null;
+            await UniTask.WaitUntil(() =>
+            {
+                tileSubSystem = SubSystems.Get<TileSubSystem>();
+                return tileSubSystem != null
+                    && tileSubSystem.CurrentMap != null
+                    && tileSubSystem.QueryService != null;
+            });
+
+            if (!IsServer)
+                return;
+
             _atmosWorld = AtmosWorld.Create("AtmosSimulation");
 
-            TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
-            if (tileSubSystem?.QueryService == null || tileSubSystem.CurrentMap == null)
+            int gasTypeCount;
+            if (_gasRegistry != null)
             {
-                Log.Error(this, "TileSubSystem map is not ready for atmospherics.");
-                return;
+                _gasRegistry.Initialize();
+                gasTypeCount = Mathf.Max(_gasRegistry.Count, GasDefaults.CoreGasCount);
+            }
+            else
+            {
+                Log.Warning(this, "No GasRegistry assigned; using built-in core gas defaults.");
+                gasTypeCount = GasDefaults.CoreGasCount;
             }
 
-            int gasTypeCount = Mathf.Max(_gasRegistry.Count, AtmosConstants.DefaultGasCount);
             _simulation = new AtmosSimulation(tileSubSystem.QueryService, tileSubSystem.CurrentMap.MapId, gasTypeCount);
             _tileObserver = new AtmosTileObserver(_simulation);
             tileSubSystem.RegisterTileMutationObserver(_tileObserver);
 
-            if (!TryGetComponent<AtmosDebugController>(out _))
-                gameObject.AddComponent<AtmosDebugController>();
+            // Seed any chunks that were created before the observer registered.
+            foreach (TileChunkRef chunkRef in tileSubSystem.CurrentMap.GetChunkRefs())
+                _simulation.CreateChunk(chunkRef);
 
-            Log.Information(this, $"Atmos simulation started with {gasTypeCount} gas slots.");
+            Log.Information(this, $"Atmos simulation started with {gasTypeCount} gas slots and {_simulation.CellCount} cells.");
         }
 
         protected override void OnDestroyed()
