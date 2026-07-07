@@ -1,5 +1,4 @@
 using SS3D.Systems.Atmospherics.ECS;
-using SS3D.Systems.Atmospherics.ECS.Jobs;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -146,6 +145,23 @@ namespace SS3D.Systems.Atmospherics
             for (int i = 0; i < _molesRead.Length; i++)
                 total += _molesRead[i];
             return total;
+        }
+
+        public void ForEachCoord(System.Action<TileCoord> visitor)
+        {
+            foreach (TileCoord coord in _coordToIndex.Keys)
+                visitor(coord);
+        }
+
+        public void DebugAddMoles(TileCoord coord, GasId gasId, float moles)
+        {
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return;
+
+            int moleIndex = GasMixture.GetMoleIndex(cellIndex, gasId);
+            _molesRead[moleIndex] += moles;
+            _molesWrite[moleIndex] += moles;
+            ActivateRegion(coord, 0);
         }
 
         public void Dispose()

@@ -2,7 +2,6 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Atmospherics.ECS;
-using SS3D.Systems.Atmospherics.Bridge;
 using SS3D.Systems.Tile;
 using UnityEngine;
 
@@ -23,6 +22,8 @@ namespace SS3D.Systems.Atmospherics
         public GasRegistry GasRegistry => _gasRegistry;
         public float TickInterval => AtmosConstants.TickInterval;
         public AtmosSimulation Simulation => _simulation;
+        public bool SimulationPaused { get; set; }
+        public float LastTickMilliseconds { get; private set; }
 
         public override void OnStartServer()
         {
@@ -49,6 +50,9 @@ namespace SS3D.Systems.Atmospherics
             _tileObserver = new AtmosTileObserver(_simulation);
             tileSubSystem.RegisterTileMutationObserver(_tileObserver);
 
+            if (!TryGetComponent<AtmosDebugController>(out _))
+                gameObject.AddComponent<AtmosDebugController>();
+
             Log.Information(this, $"Atmos simulation started with {gasTypeCount} gas slots.");
         }
 
@@ -68,7 +72,7 @@ namespace SS3D.Systems.Atmospherics
 
         private void Update()
         {
-            if (!IsServer || _simulation == null)
+            if (!IsServer || _simulation == null || SimulationPaused)
                 return;
 
             _tickTimer += Time.deltaTime;
@@ -79,9 +83,35 @@ namespace SS3D.Systems.Atmospherics
             SimTick();
         }
 
+        public void StepOnce()
+        {
+            if (!IsServer || _simulation == null)
+                return;
+
+            SimTick();
+        }
+
+        public void DebugWakeRegion(TileCoord coord, int radius)
+        {
+            if (!IsServer || _simulation == null)
+                return;
+
+            _simulation.ActivateRegion(coord, radius);
+        }
+
+        public void DebugAddGas(TileCoord coord, GasId gasId, float moles)
+        {
+            if (!IsServer || _simulation == null)
+                return;
+
+            _simulation.DebugAddMoles(coord, gasId, moles);
+        }
+
         private void SimTick()
         {
+            float started = Time.realtimeSinceStartup;
             _simulation.Tick(AtmosConstants.TickInterval);
+            LastTickMilliseconds = (Time.realtimeSinceStartup - started) * 1000f;
         }
 
         public bool TryGetCellDebugInfo(TileCoord coord, out AtmosCellDebugInfo info)

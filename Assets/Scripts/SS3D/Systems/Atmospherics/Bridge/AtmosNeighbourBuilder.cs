@@ -29,8 +29,8 @@ namespace SS3D.Systems.Atmospherics
 
         public static TileCoord GetNeighbourCoord(TileCoord coord, Direction direction)
         {
-            (int dx, int dz) = TileHelper.ToCardinalVector(direction);
-            return new TileCoord(coord.MapId, coord.Grid.x + dx, coord.Grid.y + dz);
+            System.Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
+            return new TileCoord(coord.MapId, coord.Grid.x + vector.Item1, coord.Grid.y + vector.Item2);
         }
 
         public static int DirectionToEdgeIndex(Direction direction)
