@@ -15,7 +15,7 @@ namespace SS3D.Systems.Atmospherics
     public static class AtmosConstants
     {
         public const int MaxGasTypes = 64;
-        public const float TickInterval = 0.4f;
+        public const float TickInterval = 0.2f;
         public const float GasConstant = 8.314f;
         public const float StandardTemperature = 293.15f;
         public const float StandardPressure = 101.325f;

@@ -78,9 +78,15 @@ namespace SS3D.Systems.Atmospherics.ECS
                         if (partialDiff <= 0f)
                             continue;
 
+                        // Venting into vacuum is unthrottled by the diffusion coefficient: there is
+                        // no destination cell to overfill, so drain fast for a believable breach.
+                        float speed = neighbour.State == AtmosCellState.Vacuum
+                            ? AtmosFluxConstants.VacuumVentSpeed
+                            : AtmosFluxConstants.SimSpeed;
+
                         float molesToTransfer = partialDiff * 1000f * self.Volume /
                             (self.Temperature * AtmosFluxConstants.GasConstant);
-                        molesToTransfer *= AtmosFluxConstants.SimSpeed * DeltaTime;
+                        molesToTransfer *= speed * DeltaTime;
                         molesToTransfer = math.min(molesToTransfer, MolesWrite[selfMoleIndex]);
                         if (molesToTransfer <= 0f)
                             continue;
