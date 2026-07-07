@@ -5,6 +5,6 @@ namespace SS3D.Rendering.URP
     /// </summary>
     public static class VisionRenderContext
     {
-        public static bool Enabled { get; set; } = true;
+        public static bool Enabled { get; set; }
     }
 }

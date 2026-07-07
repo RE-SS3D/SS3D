@@ -11,8 +11,11 @@ namespace SS3D.Rendering.URP
     /// </summary>
     public sealed class VisionMaskRenderPass : ScriptableRenderPass
     {
+        static readonly int s_InvViewProjId = Shader.PropertyToID("_PlayerCameraInvViewProj");
+
         readonly Material _maskMaterial;
         VisionRendererFeature _feature;
+        bool _debugToScreen;
 
         public VisionMaskRenderPass(Material maskMaterial)
         {
@@ -22,9 +25,10 @@ namespace SS3D.Rendering.URP
             ConfigureInput(ScriptableRenderPassInput.Depth);
         }
 
-        public void Setup(VisionRendererFeature feature)
+        public void Setup(VisionRendererFeature feature, bool debugToScreen)
         {
             _feature = feature;
+            _debugToScreen = debugToScreen;
         }
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -38,6 +42,11 @@ namespace SS3D.Rendering.URP
             if (!resourceData.activeColorTexture.IsValid())
                 return;
 
+            Camera camera = cameraData.camera;
+            Matrix4x4 gpuProjection = GL.GetGPUProjectionMatrix(camera.projectionMatrix, false);
+            Matrix4x4 viewProjection = gpuProjection * camera.worldToCameraMatrix;
+            _maskMaterial.SetMatrix(s_InvViewProjId, viewProjection.inverse);
+
             TextureDesc maskDesc = resourceData.activeColorTexture.GetDescriptor(renderGraph);
             maskDesc.name = "VisionMask";
             maskDesc.depthBufferBits = 0;
@@ -46,11 +55,6 @@ namespace SS3D.Rendering.URP
 
             TextureHandle maskTexture = renderGraph.CreateTexture(maskDesc);
             _feature.MaskTexture = maskTexture;
-
-            Matrix4x4 view = cameraData.camera.worldToCameraMatrix;
-            Matrix4x4 projection = GL.GetGPUProjectionMatrix(cameraData.camera.projectionMatrix, false);
-            Matrix4x4 inverseViewProjection = (projection * view).inverse;
-            _maskMaterial.SetMatrix("_PlayerCameraInvViewProj", inverseViewProjection);
 
             RenderGraphUtils.BlitMaterialParameters blitParams = new(
                 resourceData.activeColorTexture,
@@ -61,6 +65,16 @@ namespace SS3D.Rendering.URP
             using (var builder = renderGraph.AddBlitPass(blitParams, passName: "Vision Mask", returnBuilder: true))
             {
                 builder.UseTexture(resourceData.cameraDepthTexture, AccessFlags.Read);
+            }
+
+            if (_debugToScreen)
+            {
+                RenderGraphUtils.BlitMaterialParameters debugParams = new(
+                    maskTexture,
+                    resourceData.activeColorTexture,
+                    Blitter.GetBlitMaterial(TextureDimension.Tex2D),
+                    0);
+                renderGraph.AddBlitPass(debugParams, passName: "Vision Mask Debug");
             }
         }
     }

@@ -45,11 +45,13 @@ float3 VisionClipToWorld(float2 posClip)
     rawDepth = lerp(UNITY_NEAR_CLIP_VALUE, 1.0, rawDepth);
 #endif
 
-    float4 worldSpace = mul(_PlayerCameraInvViewProj, float4(posClip, rawDepth, 1.0));
-
     if (VisionDepthIsSky(rawDepth))
         return _PlayerPos.xyz;
 
+    // In a fullscreen/blit pass the bound VP is the blit matrix, not the camera's,
+    // so reconstruct world position from a CPU-supplied camera inverse view-projection.
+    float4 adjClip = float4(posClip, rawDepth, 1.0);
+    float4 worldSpace = mul(_PlayerCameraInvViewProj, adjClip);
     return worldSpace.xyz / worldSpace.w;
 }
 

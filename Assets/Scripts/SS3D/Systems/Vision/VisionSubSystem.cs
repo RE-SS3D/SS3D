@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FishNet;
 using Unity.Collections;
 using Unity.Jobs;
@@ -6,6 +6,7 @@ using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 using SS3D.Systems.Entities.Events;
+using SS3D.Rendering.URP;
 using Coimbra;
 using Coimbra.Services.Events;
 
@@ -95,6 +96,8 @@ namespace SS3D.Systems.Vision
 
         protected override void OnDisabled()
         {
+            VisionRenderContext.Enabled = false;
+
             if (!_clientVisionInitialized)
             {
                 return;
@@ -113,6 +116,7 @@ namespace SS3D.Systems.Vision
         {
             if (!_clientVisionInitialized || !target)
             {
+                VisionRenderContext.Enabled = false;
                 return;
             }
 
@@ -125,6 +129,8 @@ namespace SS3D.Systems.Vision
             Shader.SetGlobalFloat("_ViewRange", viewRange);
             
             DrawVisionMap();
+
+            VisionRenderContext.Enabled = true;
         }
 
         public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal)

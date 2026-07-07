@@ -14,6 +14,7 @@ namespace SS3D.Rendering.URP
         static readonly MaterialPropertyBlock s_PropertyBlock = new();
         static readonly int s_MainTexId = Shader.PropertyToID("_MainTex");
         static readonly int s_FovTexId = Shader.PropertyToID("_FovTex");
+        static readonly int s_InvViewProjId = Shader.PropertyToID("_PlayerCameraInvViewProj");
 
         readonly Material _blurMaterial;
         VisionRendererFeature _feature;
@@ -48,9 +49,10 @@ namespace SS3D.Rendering.URP
             if (!resourceData.activeColorTexture.IsValid() || !_feature.MaskTexture.IsValid())
                 return;
 
-            Matrix4x4 view = cameraData.camera.worldToCameraMatrix;
-            Matrix4x4 projection = GL.GetGPUProjectionMatrix(cameraData.camera.projectionMatrix, false);
-            Matrix4x4 inverseViewProjection = (projection * view).inverse;
+            Camera camera = cameraData.camera;
+            Matrix4x4 gpuProjection = GL.GetGPUProjectionMatrix(camera.projectionMatrix, false);
+            Matrix4x4 viewProjection = gpuProjection * camera.worldToCameraMatrix;
+            Matrix4x4 inverseViewProjection = viewProjection.inverse;
 
             TextureDesc tempDesc = resourceData.activeColorTexture.GetDescriptor(renderGraph);
             tempDesc.name = "VisionBlurTemp";
@@ -63,10 +65,10 @@ namespace SS3D.Rendering.URP
                 passData.Material = _blurMaterial;
                 passData.Source = resourceData.activeColorTexture;
                 passData.Mask = _feature.MaskTexture;
-                passData.InverseViewProjection = inverseViewProjection;
                 passData.BlurQuality = _blurQuality;
                 passData.BlurDirections = _blurDirections;
                 passData.BlurSize = _blurSize;
+                passData.InverseViewProjection = inverseViewProjection;
 
                 builder.UseTexture(passData.Source, AccessFlags.Read);
                 builder.UseTexture(passData.Mask, AccessFlags.Read);
@@ -76,10 +78,10 @@ namespace SS3D.Rendering.URP
 
                 builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
                 {
-                    data.Material.SetMatrix("_PlayerCameraInvViewProj", data.InverseViewProjection);
                     data.Material.SetFloat("_FovBlurQuality", data.BlurQuality);
                     data.Material.SetFloat("_FovBlurDirections", data.BlurDirections);
                     data.Material.SetVector("_FovBlurSize", data.BlurSize);
+                    data.Material.SetMatrix(s_InvViewProjId, data.InverseViewProjection);
 
                     s_PropertyBlock.Clear();
                     s_PropertyBlock.SetTexture(s_MainTexId, data.Source);
@@ -109,10 +111,10 @@ namespace SS3D.Rendering.URP
             public Material Material;
             public TextureHandle Source;
             public TextureHandle Mask;
-            public Matrix4x4 InverseViewProjection;
             public float BlurQuality;
             public float BlurDirections;
             public Vector2 BlurSize;
+            public Matrix4x4 InverseViewProjection;
         }
     }
 }
