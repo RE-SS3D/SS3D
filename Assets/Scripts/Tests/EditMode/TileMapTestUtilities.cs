@@ -118,6 +118,8 @@ namespace EditorTests
             }
 
             public void OnChunkCreated(TileChunkRef chunk) { }
+
+            public void OnTileStateChanged(TileCoord coord) { }
         }
     }
 }

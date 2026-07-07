@@ -44,10 +44,8 @@ namespace SS3D.Systems.Tile
 
             occupancy.HasPlenum = !locations[(int)TileLayer.Plenum].IsFullyEmpty();
             occupancy.HasTurf = !locations[(int)TileLayer.Turf].IsFullyEmpty();
-            occupancy.HasWall = !locations[(int)TileLayer.WallMountHigh].IsFullyEmpty()
-                || !locations[(int)TileLayer.WallMountLow].IsFullyEmpty();
-            occupancy.BlocksVision = occupancy.HasWall;
-            occupancy.IsAirtight = occupancy.HasWall;
+
+            TileOccupancyEvaluator.Evaluate(_map, locations, ref occupancy);
 
             return true;
         }
