@@ -27,6 +27,9 @@ float4x4 _AtmosInvViewProj;
 float _AtmosGlowStrength;
 float4 _AtmosPlasmaEmissionColor;
 float _AtmosIgnitionTemperature;
+float _AtmosDistortionStrength;
+float _AtmosDistortionNoiseScale;
+float _AtmosDistortionNoiseSpeed;
 
 float2 AtmosWorldToAtlasUV(float2 worldXZ)
 {
@@ -379,7 +382,60 @@ float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
     return emission;
 }
 
-// Fullscreen triangle vertex shader shared by scatter and glow passes.
+float AtmosDistortionHash(float2 p)
+{
+    return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
+}
+
+float AtmosDistortionNoise(float2 p)
+{
+    float2 i = floor(p);
+    float2 f = frac(p);
+    float2 u = f * f * (3.0 - 2.0 * f);
+    float a = AtmosDistortionHash(i);
+    float b = AtmosDistortionHash(i + float2(1.0, 0.0));
+    float c = AtmosDistortionHash(i + float2(0.0, 1.0));
+    float d = AtmosDistortionHash(i + float2(1.0, 1.0));
+    return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
+}
+
+// Returns a screen-space UV offset driven by tile temperature gradients, gas density, and fire.
+float2 AtmosEvaluateDistortionOffset(float2 uvScreen)
+{
+    float2 worldXZ = AtmosComputeWorldXZOnPlane(uvScreen, 0.0);
+    if (AtmosSampleMask(worldXZ) != 1)
+        return 0.0;
+
+    float pressure = AtmosSamplePressure(worldXZ);
+    float density = saturate((max(0.0, pressure - _AtmosReferencePressure)) / max(_AtmosFogPressureScale, 1e-3));
+    if (density <= 0.001)
+        return 0.0;
+
+    float temperature = AtmosSampleTemperature(worldXZ);
+    float fire = AtmosSampleFire(worldXZ);
+    float tempFactor = saturate((temperature - 293.15) / max(_AtmosIgnitionTemperature - 293.15, 1.0));
+    if (tempFactor <= 0.001 && fire <= 0.001)
+        return 0.0;
+
+    float txp = AtmosSampleTemperature(worldXZ + float2(1.0, 0.0));
+    float txm = AtmosSampleTemperature(worldXZ - float2(1.0, 0.0));
+    float tzp = AtmosSampleTemperature(worldXZ + float2(0.0, 1.0));
+    float tzm = AtmosSampleTemperature(worldXZ - float2(0.0, 1.0));
+    float2 grad = float2(txp - txm, tzp - tzm) * 0.5;
+
+    float gradMag = length(grad);
+    float gradNorm = gradMag / max(_AtmosIgnitionTemperature, 1.0);
+    float noise = AtmosDistortionNoise(worldXZ * _AtmosDistortionNoiseScale + _Time.y * _AtmosDistortionNoiseSpeed);
+    float shimmer = (noise * 2.0 - 1.0) * gradNorm;
+
+    float weight = density * (tempFactor + fire) * (1.0 + fire * 2.0);
+    float2 direction = gradMag > 1e-4 ? grad / gradMag : float2(0.0, 0.0);
+    float2 offsetXZ = direction * gradNorm + float2(shimmer, -shimmer) * 0.35;
+
+    return offsetXZ * _AtmosDistortionStrength * weight;
+}
+
+// Fullscreen triangle vertex shader shared by scatter, glow, and distortion passes.
 struct AtmosAttributes
 {
     uint vertexID : SV_VertexID;

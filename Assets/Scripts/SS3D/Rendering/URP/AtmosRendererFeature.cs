@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// URP feature that composites turf gas scattering and emission over the camera color buffer.
+    /// URP feature that composites turf gas scattering, emission, and heat distortion over the camera color buffer.
     /// </summary>
     public sealed class AtmosRendererFeature : ScriptableRendererFeature
     {
@@ -39,15 +39,22 @@ namespace SS3D.Rendering.URP
         private static readonly int AtmosGlowStrengthId = Shader.PropertyToID("_AtmosGlowStrength");
         private static readonly int AtmosPlasmaEmissionColorId = Shader.PropertyToID("_AtmosPlasmaEmissionColor");
         private static readonly int AtmosIgnitionTemperatureId = Shader.PropertyToID("_AtmosIgnitionTemperature");
+        private static readonly int AtmosDistortionStrengthId = Shader.PropertyToID("_AtmosDistortionStrength");
+        private static readonly int AtmosDistortionNoiseScaleId = Shader.PropertyToID("_AtmosDistortionNoiseScale");
+        private static readonly int AtmosDistortionNoiseSpeedId = Shader.PropertyToID("_AtmosDistortionNoiseSpeed");
 
         [SerializeField] private Shader _scatterShader;
         [SerializeField] private Shader _glowShader;
+        [SerializeField] private Shader _distortionShader;
         [SerializeField] private bool _enabled = true;
         [SerializeField] private DebugView _debugView = DebugView.Off;
         [SerializeField] private float _scatterStrength = 1f;
         [SerializeField] private Color _scatterColor = new(0.65f, 0.7f, 0.75f, 1f);
         [SerializeField] private float _glowStrength = 1f;
         [SerializeField] private Color _plasmaEmissionColor = new(0.75f, 0.2f, 1f, 1f);
+        [SerializeField] private float _distortionStrength = 0.02f;
+        [SerializeField] private float _distortionNoiseScale = 0.35f;
+        [SerializeField] private float _distortionNoiseSpeed = 1.5f;
         [SerializeField] private float _volumeHeight = 2.5f;
         [SerializeField] private float _referencePressure = 101.325f;
         [SerializeField] private float _fogPressureScale = 80f;
@@ -55,8 +62,10 @@ namespace SS3D.Rendering.URP
 
         AtmosFullscreenPass _scatterPass;
         AtmosFullscreenPass _glowPass;
+        AtmosFullscreenPass _distortionPass;
         Material _scatterMaterial;
         Material _glowMaterial;
+        Material _distortionMaterial;
 
         public override void Create()
         {
@@ -64,11 +73,15 @@ namespace SS3D.Rendering.URP
                 _scatterShader = Shader.Find("Custom/AtmosScatter");
             if (_glowShader == null)
                 _glowShader = Shader.Find("Custom/AtmosGlow");
+            if (_distortionShader == null)
+                _distortionShader = Shader.Find("Custom/AtmosDistortion");
 
             if (_scatterShader != null && _scatterMaterial == null)
                 _scatterMaterial = CoreUtils.CreateEngineMaterial(_scatterShader);
             if (_glowShader != null && _glowMaterial == null)
                 _glowMaterial = CoreUtils.CreateEngineMaterial(_glowShader);
+            if (_distortionShader != null && _distortionMaterial == null)
+                _distortionMaterial = CoreUtils.CreateEngineMaterial(_distortionShader);
 
             _scatterPass = new AtmosFullscreenPass(_scatterMaterial, "SS3D Atmos Scatter", "SS3D Atmos Copy Scene")
             {
@@ -80,9 +93,18 @@ namespace SS3D.Rendering.URP
                 renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing,
                 requiresIntermediateTexture = true,
             };
+            _distortionPass = new AtmosFullscreenPass(
+                _distortionMaterial,
+                "SS3D Atmos Distortion",
+                "SS3D Atmos Copy Scene Distortion")
+            {
+                renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing,
+                requiresIntermediateTexture = true,
+            };
 
             _scatterPass.ConfigureInput(ScriptableRenderPassInput.Color | ScriptableRenderPassInput.Depth);
             _glowPass.ConfigureInput(ScriptableRenderPassInput.Color | ScriptableRenderPassInput.Depth);
+            _distortionPass.ConfigureInput(ScriptableRenderPassInput.Color | ScriptableRenderPassInput.Depth);
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -108,8 +130,11 @@ namespace SS3D.Rendering.URP
                 && snapshot.Temperature != null
                 && snapshot.Composition != null
                 && snapshot.FireIntensity != null;
+            bool distortionActive = !debugActive && _distortionStrength > 0f
+                && snapshot.Temperature != null
+                && snapshot.FireIntensity != null;
 
-            if (!scatterActive && !glowActive)
+            if (!scatterActive && !glowActive && !distortionActive)
                 return;
 
             ApplySharedMaterialSettings(snapshot, renderingData.cameraData.camera);
@@ -127,19 +152,28 @@ namespace SS3D.Rendering.URP
                 _glowPass.Setup(snapshot);
                 renderer.EnqueuePass(_glowPass);
             }
+
+            if (distortionActive && _distortionMaterial != null)
+            {
+                ApplyDistortionMaterialSettings(snapshot);
+                _distortionPass.Setup(snapshot);
+                renderer.EnqueuePass(_distortionPass);
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
             _scatterPass?.DisposePass();
             _glowPass?.DisposePass();
+            _distortionPass?.DisposePass();
             CoreUtils.Destroy(_scatterMaterial);
             CoreUtils.Destroy(_glowMaterial);
+            CoreUtils.Destroy(_distortionMaterial);
         }
 
         void ApplySharedMaterialSettings(AtmosRenderContext.Snapshot snapshot, Camera camera)
         {
-            Material[] materials = { _scatterMaterial, _glowMaterial };
+            Material[] materials = { _scatterMaterial, _glowMaterial, _distortionMaterial };
             foreach (Material material in materials)
             {
                 if (material == null)
@@ -183,6 +217,15 @@ namespace SS3D.Rendering.URP
             _glowMaterial.SetColor(AtmosPlasmaEmissionColorId, _plasmaEmissionColor);
             _glowMaterial.SetFloat(AtmosIgnitionTemperatureId, snapshot.IgnitionTemperature);
             _glowMaterial.SetInt(AtmosDebugViewId, 0);
+        }
+
+        void ApplyDistortionMaterialSettings(AtmosRenderContext.Snapshot snapshot)
+        {
+            _distortionMaterial.SetFloat(AtmosDistortionStrengthId, _distortionStrength);
+            _distortionMaterial.SetFloat(AtmosDistortionNoiseScaleId, _distortionNoiseScale);
+            _distortionMaterial.SetFloat(AtmosDistortionNoiseSpeedId, _distortionNoiseSpeed);
+            _distortionMaterial.SetFloat(AtmosIgnitionTemperatureId, snapshot.IgnitionTemperature);
+            _distortionMaterial.SetInt(AtmosDebugViewId, 0);
         }
 
         sealed class AtmosFullscreenPass : ScriptableRenderPass
