@@ -1,5 +1,19 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8093506482987201068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
+  m_Name: SelectionPickRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
+  m_Active: 1
+  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
 --- !u!114 &-3601183876851600227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14,10 +28,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.AtmosRendererFeature
   m_Active: 1
   _scatterShader: {fileID: 4800000, guid: 7f2a9b8c1d3e4f5061728394a5b6c7d8, type: 3}
+  _glowShader: {fileID: 4800000, guid: a3c7e1f92b4d5a60817293b4c5d6e7f8, type: 3}
   _enabled: 1
   _debugView: 0
   _scatterStrength: 1
-  _scatterColor: {r: 0.656928, g: 0.7490196, b: 0.6509804, a: 1}
+  _scatterColor: {r: 0.60260093, g: 0.36712354, b: 0.6226415, a: 1}
+  _glowStrength: 4
+  _plasmaEmissionColor: {r: 0.75, g: 0.2, b: 1, a: 1}
   _volumeHeight: 2.5
   _referencePressure: 101.325
   _fogPressureScale: 80
@@ -49,7 +66,7 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
   - {fileID: -3601183876851600227}
-  - {fileID: 224747764540820986}
+  - {fileID: -8093506482987201068}
   m_RendererFeatureMap: 6dc57abbd793e549006e7d341c02045600000000000000009d746509580606ce
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
@@ -79,20 +96,6 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
---- !u!114 &224747764540820986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
-  m_Name: SelectionPickRendererFeature
-  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
-  m_Active: 1
-  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
 --- !u!114 &5324824689208116589
 MonoBehaviour:
   m_ObjectHideFlags: 0

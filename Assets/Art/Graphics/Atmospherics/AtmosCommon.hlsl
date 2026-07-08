@@ -24,6 +24,9 @@ float4 _AtmosScatterColor;
 int _AtmosSlabSteps;
 int _AtmosDebugView;
 float4x4 _AtmosInvViewProj;
+float _AtmosGlowStrength;
+float4 _AtmosPlasmaEmissionColor;
+float _AtmosIgnitionTemperature;
 
 float2 AtmosWorldToAtlasUV(float2 worldXZ)
 {
@@ -238,21 +241,34 @@ float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
     return tileDensity * heightFalloff * edgeFade;
 }
 
-float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
+// Shared view-ray march bounds through the atmosphere slab, clipped to scene depth.
+bool AtmosComputeSlabMarch(
+    float2 uvScreen,
+    float deviceDepth,
+    bool isSky,
+    out float3 rayOrigin,
+    out float3 rayDir,
+    out float tEnter,
+    out float tExit,
+    out float segmentLength,
+    out int steps)
 {
-    float3 rayOrigin = 0.0;
-    float3 rayDir = float3(0.0, 1.0, 0.0);
+    rayOrigin = 0.0;
+    rayDir = float3(0.0, 1.0, 0.0);
+    tEnter = 0.0;
+    tExit = 0.0;
+    segmentLength = 0.0;
+    steps = 0;
+
     float tScene = 0.0;
     AtmosComputeScatterRay(uvScreen, deviceDepth, isSky, rayOrigin, rayDir, tScene);
 
     float volumeHeight = max(_AtmosVolumeHeight, 1e-3);
-    float tEnter = 0.0;
-    float tExit = 0.0;
 
     if (abs(rayDir.y) < 1e-5)
     {
         if (rayOrigin.y < 0.0 || rayOrigin.y > volumeHeight)
-            return 0.0;
+            return false;
 
         tEnter = 0.0;
         tExit = 1e6;
@@ -268,17 +284,54 @@ float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
     tEnter = max(tEnter, 0.0);
     tExit = min(tExit, tScene);
     if (tExit <= tEnter)
-        return 0.0;
+        return false;
 
-    float segmentLength = tExit - tEnter;
-    // Increase steps with ray length to reduce visible layered bands.
-    int steps = max(_AtmosSlabSteps, 1);
+    segmentLength = tExit - tEnter;
+    steps = max(_AtmosSlabSteps, 1);
     int dynamicSteps = (int)ceil(segmentLength * 3.0);
     steps = clamp(max(steps, dynamicSteps), 1, 32);
+    return true;
+}
+
+float3 AtmosSamplePointEmission(float2 worldXZ, float sampleY)
+{
+    int mask = AtmosSampleMask(worldXZ);
+    if (mask != 1)
+        return 0.0;
+
+    float4 composition = AtmosSampleComposition(worldXZ);
+    float plasmaFrac = composition.a;
+    if (plasmaFrac <= 0.001)
+        return 0.0;
+
+    float temperature = AtmosSampleTemperature(worldXZ);
+    float fire = AtmosSampleFire(worldXZ);
+    float heightFalloff = saturate(1.0 - sampleY / max(_AtmosVolumeHeight, 1e-3));
+
+    // O2, N2, CO2 are non-emissive in v1; plasma glows when hot or actively burning.
+    float tempFactor = saturate((temperature - _AtmosIgnitionTemperature) /
+        max(_AtmosIgnitionTemperature * 0.5, 1.0));
+    float burnBoost = 1.0 + fire * 2.0;
+    float intensity = plasmaFrac * (tempFactor + fire) * heightFalloff * burnBoost;
+
+    return _AtmosPlasmaEmissionColor.rgb * intensity * _AtmosGlowStrength;
+}
+
+float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
+{
+    float3 rayOrigin;
+    float3 rayDir;
+    float tEnter;
+    float tExit;
+    float segmentLength;
+    int steps;
+    if (!AtmosComputeSlabMarch(uvScreen, deviceDepth, isSky, rayOrigin, rayDir, tEnter, tExit, segmentLength, steps))
+        return 0.0;
+
     float stepLength = segmentLength / steps;
     float opticalDepth = 0.0;
     float jitter = frac(sin(dot(uvScreen, float2(12.9898, 78.233))) * 43758.5453);
-    float jitterPos = jitter - 0.5; // [-0.5, 0.5]
+    float jitterPos = jitter - 0.5;
 
     UNITY_LOOP
     for (int i = 0; i < steps; i++)
@@ -292,8 +345,59 @@ float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
         opticalDepth += AtmosSampleGasDensity(samplePos.xz, samplePos.y) * stepLength;
     }
 
-    // Integrate along the view ray through the atmosphere slab (Beer-Lambert).
     return saturate((1.0 - exp(-opticalDepth)) * _AtmosScatterStrength * _AtmosScatterColor.a);
+}
+
+float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
+{
+    float3 rayOrigin;
+    float3 rayDir;
+    float tEnter;
+    float tExit;
+    float segmentLength;
+    int steps;
+    if (!AtmosComputeSlabMarch(uvScreen, deviceDepth, isSky, rayOrigin, rayDir, tEnter, tExit, segmentLength, steps))
+        return 0.0;
+
+    float stepLength = segmentLength / steps;
+    float3 emission = 0.0;
+    float jitter = frac(sin(dot(uvScreen, float2(4.898, 7.23))) * 43758.5453);
+    float jitterPos = jitter - 0.5;
+
+    UNITY_LOOP
+    for (int i = 0; i < steps; i++)
+    {
+        float t = tEnter + stepLength * (i + 0.5 + jitterPos);
+        float3 samplePos = rayOrigin + rayDir * t;
+        float2 atlasUV = AtmosWorldToAtlasUV(samplePos.xz);
+        if (!AtmosIsAtlasUVValid(atlasUV))
+            continue;
+
+        emission += AtmosSamplePointEmission(samplePos.xz, samplePos.y) * stepLength;
+    }
+
+    return emission;
+}
+
+// Fullscreen triangle vertex shader shared by scatter and glow passes.
+struct AtmosAttributes
+{
+    uint vertexID : SV_VertexID;
+};
+
+struct AtmosVaryings
+{
+    float4 positionCS : SV_POSITION;
+    float2 uv : TEXCOORD0;
+};
+
+AtmosVaryings AtmosVert(AtmosAttributes input)
+{
+    AtmosVaryings output;
+    float2 uv = float2((input.vertexID << 1) & 2, input.vertexID & 2);
+    output.uv = uv;
+    output.positionCS = float4(uv * 2.0 - 1.0, 0.0, 1.0);
+    return output;
 }
 
 #endif

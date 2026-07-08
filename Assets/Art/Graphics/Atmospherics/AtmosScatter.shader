@@ -34,29 +34,6 @@ Shader "Custom/AtmosScatter"
             // Scene color copied into this texture by the render feature before the scatter draw.
             TEXTURE2D_X(_BlitTexture);
 
-            struct AtmosAttributes
-            {
-                uint vertexID : SV_VertexID;
-            };
-
-            struct AtmosVaryings
-            {
-                float4 positionCS : SV_POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            // Self-contained fullscreen triangle. We intentionally do not use core Blit.hlsl's Vert:
-            // its z = UNITY_NEAR_CLIP_VALUE gets clipped in this render-graph raster setup on
-            // reversed-Z, producing zero fragments. z = 0 (far plane on reversed-Z) is safe here.
-            AtmosVaryings AtmosVert(AtmosAttributes input)
-            {
-                AtmosVaryings output;
-                float2 uv = float2((input.vertexID << 1) & 2, input.vertexID & 2);
-                output.uv = uv;
-                output.positionCS = float4(uv * 2.0 - 1.0, 0.0, 1.0);
-                return output;
-            }
-
             half4 AtmosFrag(AtmosVaryings input) : SV_Target
             {
                 // uvScreen: NDC-aligned (bottom-left origin), used for world-space reconstruction.
