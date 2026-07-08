@@ -62,6 +62,29 @@ namespace System.Electricity
         }
 
         [Server]
+        public bool TryGetCircuitStats(IElectricDevice device, IPowerStorage apcCell, out CircuitStats stats)
+        {
+            stats = default;
+            if (_circuits == null)
+            {
+                return false;
+            }
+
+            foreach (Circuit circuit in _circuits)
+            {
+                if (!circuit.ContainsDevice(device))
+                {
+                    continue;
+                }
+
+                stats = circuit.GetStats(apcCell);
+                return true;
+            }
+
+            return false;
+        }
+
+        [Server]
         private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
         {
             _timeElapsed += Time.deltaTime;
@@ -89,6 +112,11 @@ namespace System.Electricity
         [Server]
         public void AddElectricalElement(IElectricDevice device)
         {
+            if (_electricityGraph == null)
+            {
+                return;
+            }
+
             PlacedTileObject tileObject = device.TileObject;
             VerticeCoordinates deviceCoordinates = ToCoordinates(tileObject);
 
@@ -114,8 +142,10 @@ namespace System.Electricity
         [Server]
         public void RemoveElectricalElement(IElectricDevice device)
         {
-            if (device?.TileObject == null)
+            if (_electricityGraph == null || device?.TileObject == null)
+            {
                 return;
+            }
 
             _electricityGraph.RemoveVertex(ToCoordinates(device.TileObject));
             _graphIsDirty = true;

@@ -14,9 +14,13 @@ namespace System.Electricity
         [SerializeField]
         private float _powerConsumption = 1f;
 
+        [SerializeField]
+        private PowerChannel _channel = PowerChannel.Equipment;
+
         [SyncVar(OnChange = nameof(SyncPowerStatus))]
         private PowerStatus _powerStatus;
         public float PowerNeeded => _powerConsumption;
+        public PowerChannel Channel => _channel;
         public event EventHandler<PowerStatus> OnPowerStatusUpdated;
         public PowerStatus PowerStatus { get => _powerStatus; set => _powerStatus = value; }
 

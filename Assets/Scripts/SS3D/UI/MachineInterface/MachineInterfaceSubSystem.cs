@@ -1,13 +1,13 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using System;
 using System.Collections.Generic;
 
 namespace SS3D.UI.MachineInterface
 {
     /// <summary>
-    /// Client-side coordinator for machine interface panels. Phase 1 is local-only;
-    /// Phase 2 will extend this to NetworkSubSystem with TargetRpc snapshot sync.
+    /// Client-side coordinator for machine interface panels.
     /// </summary>
     public class MachineInterfaceSubSystem : SubSystem
     {
@@ -17,19 +17,23 @@ namespace SS3D.UI.MachineInterface
 
         private ApcInterfaceViewModel _currentModel;
         private string _openInterfaceId;
+        private IMachineInterfaceClientBridge _clientBridge;
+        private InputSubSystem _inputSystem;
+        private bool _inputBlocked;
 
         public bool IsOpen => !string.IsNullOrEmpty(_openInterfaceId);
 
         public void Open(string interfaceId, ApcInterfaceViewModel viewModel)
         {
+            MachineInterfaceHost host = GetHost();
+            if (host == null || !host.Open(interfaceId, viewModel))
+            {
+                return;
+            }
+
             _openInterfaceId = interfaceId;
             _currentModel = viewModel;
-
-            MachineInterfaceHost host = GetHost();
-            if (host != null)
-            {
-                host.Open(interfaceId, viewModel);
-            }
+            SetGameplayInputBlocked(true);
         }
 
         public void Refresh(ApcInterfaceViewModel viewModel)
@@ -47,6 +51,7 @@ namespace SS3D.UI.MachineInterface
         {
             _openInterfaceId = null;
             _currentModel = null;
+            _clientBridge = null;
 
             MachineInterfaceHost host = GetHost();
             if (host != null)
@@ -54,17 +59,72 @@ namespace SS3D.UI.MachineInterface
                 host.Close();
             }
 
+            SetGameplayInputBlocked(false);
             InterfaceClosed?.Invoke();
+        }
+
+        public void OpenFromNetwork(ApcInterfaceSnapshot snapshot, IMachineInterfaceClientBridge bridge)
+        {
+            _clientBridge = bridge;
+            Open(snapshot.InterfaceId, ApcInterfaceSnapshotMapper.ToViewModel(snapshot));
+
+            if (!IsOpen)
+            {
+                _clientBridge = null;
+            }
+        }
+
+        public void RefreshFromNetwork(ApcInterfaceSnapshot snapshot)
+        {
+            if (!IsOpen)
+            {
+                return;
+            }
+
+            Refresh(ApcInterfaceSnapshotMapper.ToViewModel(snapshot));
+        }
+
+        public void CloseFromNetwork(IMachineInterfaceClientBridge bridge)
+        {
+            if (_clientBridge != bridge)
+            {
+                return;
+            }
+
+            Close();
+        }
+
+        public void RequestCloseFromUi(string interfaceId)
+        {
+            if (_openInterfaceId != interfaceId)
+            {
+                return;
+            }
+
+            _clientBridge?.RequestClose();
+            Close();
         }
 
         public void NotifyClosed(string interfaceId)
         {
-            if (_openInterfaceId == interfaceId)
+            if (_openInterfaceId != interfaceId)
             {
-                _openInterfaceId = null;
-                _currentModel = null;
-                InterfaceClosed?.Invoke();
+                return;
             }
+
+            _clientBridge?.RequestClose();
+            _openInterfaceId = null;
+            _currentModel = null;
+            _clientBridge = null;
+
+            MachineInterfaceHost host = GetHost();
+            if (host != null)
+            {
+                host.Close();
+            }
+
+            SetGameplayInputBlocked(false);
+            InterfaceClosed?.Invoke();
         }
 
         public void NotifyChannelToggled(string channelId, bool isOn)
@@ -79,18 +139,21 @@ namespace SS3D.UI.MachineInterface
                 case "lighting":
                 {
                     _currentModel.LightingOn = isOn;
+                    _clientBridge?.SetControl(0, isOn);
                     break;
                 }
 
                 case "equipment":
                 {
                     _currentModel.EquipmentOn = isOn;
+                    _clientBridge?.SetControl(1, isOn);
                     break;
                 }
 
                 case "environment":
                 {
                     _currentModel.EnvironmentOn = isOn;
+                    _clientBridge?.SetControl(2, isOn);
                     break;
                 }
             }
@@ -117,10 +180,43 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
+        protected override void OnDestroyed()
+        {
+            SetGameplayInputBlocked(false);
+            base.OnDestroyed();
+        }
+
+        protected override void OnDisabled()
+        {
+            SetGameplayInputBlocked(false);
+            base.OnDisabled();
+        }
+
         private static MachineInterfaceHost GetHost()
         {
             List<MachineInterfaceHost> hosts = ViewLocator.Get<MachineInterfaceHost>();
             return hosts is { Count: > 0 } ? hosts[0] : null;
+        }
+
+        private void SetGameplayInputBlocked(bool blocked)
+        {
+            if (!SubSystems.TryGet(out _inputSystem))
+            {
+                return;
+            }
+
+            if (blocked && !_inputBlocked)
+            {
+                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, false);
+                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Camera, false);
+                _inputBlocked = true;
+            }
+            else if (!blocked && _inputBlocked)
+            {
+                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, true);
+                _inputSystem.ToggleActionMap(_inputSystem.Inputs.Camera, true);
+                _inputBlocked = false;
+            }
         }
     }
 }

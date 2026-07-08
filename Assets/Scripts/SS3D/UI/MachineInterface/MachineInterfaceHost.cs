@@ -7,6 +7,12 @@ using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface
 {
+    /// <summary>
+    /// Renders machine interface panels via UI Toolkit.
+    /// UIDocument stays disabled while closed so the panel does not clear camera depth
+    /// used by the selection pick pass.
+    /// </summary>
+    [RequireComponent(typeof(UIDocument))]
     public class MachineInterfaceHost : View
     {
         public const string ApcInterfaceId = "power.apc";
@@ -27,18 +33,30 @@ namespace SS3D.UI.MachineInterface
         private MachineWindow _window;
         private ApcPowerControllerBinder _binder;
         private string _openInterfaceId;
+        private bool _overlayReady;
 
         public bool IsOpen => _window != null && _window.style.display != DisplayStyle.None;
 
-        public void Open(string interfaceId, ApcInterfaceViewModel viewModel)
+        public bool Open(string interfaceId, ApcInterfaceViewModel viewModel)
         {
+            if (!EnsureDocumentActive())
+            {
+                return false;
+            }
+
             if (interfaceId != ApcInterfaceId)
             {
                 Debug.LogWarning($"Unknown machine interface id: {interfaceId}");
-                return;
+                return false;
             }
 
-            Close();
+            if (_apcTemplate == null)
+            {
+                Debug.LogError("MachineInterfaceHost is missing the APC template.", this);
+                return false;
+            }
+
+            ClosePanelOnly();
 
             _openInterfaceId = interfaceId;
             _window = new MachineWindow { Title = viewModel.Title };
@@ -60,7 +78,7 @@ namespace SS3D.UI.MachineInterface
 
             _window.Content.Add(template);
             _overlayRoot.Add(_window);
-            _overlayRoot.pickingMode = PickingMode.Position;
+            SetOverlayInteractive(true);
 
             _binder = new ApcPowerControllerBinder(_window);
             _binder.CloseRequested += HandleCloseRequested;
@@ -68,6 +86,7 @@ namespace SS3D.UI.MachineInterface
             _binder.Bind(viewModel);
 
             _window.CloseClicked += HandleCloseRequested;
+            return true;
         }
 
         public void Refresh(ApcInterfaceViewModel viewModel)
@@ -82,22 +101,8 @@ namespace SS3D.UI.MachineInterface
 
         public void Close()
         {
-            if (_binder != null)
-            {
-                _binder.CloseRequested -= HandleCloseRequested;
-                _binder.ChannelToggled -= HandleChannelToggled;
-                _binder = null;
-            }
-
-            if (_window != null)
-            {
-                _window.CloseClicked -= HandleCloseRequested;
-                _window.RemoveFromHierarchy();
-                _window = null;
-            }
-
-            _openInterfaceId = null;
-            _overlayRoot.pickingMode = PickingMode.Ignore;
+            ClosePanelOnly();
+            ShutdownDocument();
         }
 
         protected override void OnAwake()
@@ -112,8 +117,13 @@ namespace SS3D.UI.MachineInterface
 #if UNITY_EDITOR
             EnsureEditorAssets();
 #endif
-            BuildOverlay();
-            Hide();
+            ShutdownDocument();
+        }
+
+        protected override void OnDestroyed()
+        {
+            Close();
+            base.OnDestroyed();
         }
 
 #if UNITY_EDITOR
@@ -136,29 +146,119 @@ namespace SS3D.UI.MachineInterface
                 _apcTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
                     "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss");
             }
+
+            if (_document != null && _document.panelSettings == null)
+            {
+                _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
+                    "Assets/Content/Systems/UI/MachineInterface/MachineInterfacePanelSettings.asset");
+            }
         }
 #endif
 
-        private void BuildOverlay()
+        private void ClosePanelOnly()
         {
-            _overlayRoot = _document.rootVisualElement;
-            _overlayRoot.style.flexGrow = 1;
-            _overlayRoot.pickingMode = PickingMode.Ignore;
+            if (_binder != null)
+            {
+                _binder.CloseRequested -= HandleCloseRequested;
+                _binder.ChannelToggled -= HandleChannelToggled;
+                _binder = null;
+            }
+
+            if (_window != null)
+            {
+                _window.CloseClicked -= HandleCloseRequested;
+                _window.RemoveFromHierarchy();
+                _window = null;
+            }
+
+            _openInterfaceId = null;
+            SetOverlayInteractive(false);
         }
 
-        private void Hide()
+        private void ShutdownDocument()
         {
-            Close();
+            _overlayReady = false;
+            _overlayRoot = null;
+
+            if (_document != null)
+            {
+                _document.enabled = false;
+            }
+        }
+
+        private bool EnsureDocumentActive()
+        {
+            if (_document == null)
+            {
+                _document = GetComponent<UIDocument>();
+            }
+
+            if (_document == null)
+            {
+                Debug.LogError("MachineInterfaceHost requires a UIDocument on the same GameObject.", this);
+                return false;
+            }
+
+            if (!_document.enabled)
+            {
+                _document.enabled = true;
+                _overlayReady = false;
+                _overlayRoot = null;
+            }
+
+            return EnsureOverlay();
+        }
+
+        private bool EnsureOverlay()
+        {
+            if (_overlayReady)
+            {
+                return true;
+            }
+
+            VisualElement root = _document.rootVisualElement;
+            if (root == null)
+            {
+                Debug.LogError(
+                    "MachineInterfaceHost could not access UIDocument.rootVisualElement. Assign Panel Settings on the UIDocument.",
+                    this);
+                return false;
+            }
+
+            _overlayRoot = root;
+            _overlayRoot.style.flexGrow = 0;
+            _overlayReady = true;
+            SetOverlayInteractive(false);
+            return true;
+        }
+
+        private void SetOverlayInteractive(bool interactive)
+        {
+            if (_overlayRoot == null)
+            {
+                return;
+            }
+
+            if (interactive)
+            {
+                _overlayRoot.style.display = DisplayStyle.Flex;
+                _overlayRoot.style.flexGrow = 1;
+                _overlayRoot.pickingMode = PickingMode.Position;
+            }
+            else
+            {
+                _overlayRoot.style.display = DisplayStyle.None;
+                _overlayRoot.style.flexGrow = 0;
+                _overlayRoot.pickingMode = PickingMode.Ignore;
+            }
         }
 
         private void HandleCloseRequested()
         {
             if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
             {
-                subsystem.NotifyClosed(_openInterfaceId);
+                subsystem.RequestCloseFromUi(_openInterfaceId);
             }
-
-            Close();
         }
 
         private void HandleChannelToggled(string channelId, bool isOn)
