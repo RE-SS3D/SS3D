@@ -11,7 +11,6 @@ namespace EditorTests.Atmospherics
     public class AtmosCombustionTests
     {
         private const int RoomSize = 3;
-        private const int Interior = 1;
 
         private List<GameObject> _instantiated;
 
@@ -32,7 +31,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, RoomSize, out int mapId);
 
-            TileCoord center = InteriorCoord(mapId);
+            TileCoord center = AtmosTestFixtures.InteriorCoord(mapId, RoomSize);
             AtmosTestFixtures.IgnitePlasmaFire(simulation, center, plasmaMoles: 10f, oxygenMoles: 40f);
 
             simulation.Tick(AtmosConstants.TickInterval);
@@ -48,20 +47,21 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, RoomSize, out int mapId);
 
-            TileCoord center = InteriorCoord(mapId);
+            TileCoord center = AtmosTestFixtures.InteriorCoord(mapId, RoomSize);
             simulation.DebugAddMoles(center, AtmosConstants.Plasma, 10f);
             simulation.DebugAddMoles(center, AtmosConstants.Oxygen, 40f);
             simulation.DebugSetTemperature(center, 350f);
 
-            float initialPlasma = AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.Plasma);
+            float carbonDioxideBefore = simulation.DebugGetMoles(center, AtmosConstants.CarbonDioxide);
             simulation.Tick(AtmosConstants.TickInterval);
 
             Assert.IsTrue(simulation.TryGetCellDebugInfo(center, out AtmosCellDebugInfo info));
             Assert.AreEqual(0f, info.BurnIntensity);
+            // Diffusion redistributes plasma quickly; CO₂ is the combustion fingerprint.
             Assert.AreEqual(
-                initialPlasma,
-                AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.Plasma),
-                0.05f);
+                carbonDioxideBefore,
+                simulation.DebugGetMoles(center, AtmosConstants.CarbonDioxide),
+                0.01f);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, RoomSize, out int mapId);
 
-            TileCoord center = InteriorCoord(mapId);
+            TileCoord center = AtmosTestFixtures.InteriorCoord(mapId, RoomSize);
             simulation.DebugAddMoles(center, AtmosConstants.Plasma, 200f);
             simulation.DebugSetTemperature(center, 1000f);
 
@@ -94,29 +94,19 @@ namespace EditorTests.Atmospherics
         }
 
         [Test]
-        public void PlasmaFire_Stoichiometry_ConsumesTwoOxygenPerPlasma()
+        public void ReactAtmosJob_Stoichiometry_ConsumesTwoOxygenPerPlasma()
         {
-            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
-            using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, RoomSize, out int mapId);
+            ReactAtmosJobResult result = AtmosTestFixtures.RunReactAtmosJobOnCell(
+                plasmaMoles: 8f,
+                oxygenMoles: 40f,
+                carbonDioxideMoles: 0f,
+                nitrogenMoles: 83f,
+                temperature: 1000f,
+                deltaTime: AtmosConstants.TickInterval);
 
-            TileCoord center = InteriorCoord(mapId);
-            AtmosTestFixtures.IgnitePlasmaFire(simulation, center, plasmaMoles: 8f, oxygenMoles: 40f);
-
-            float initialPlasma = AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.Plasma);
-            float initialOxygen = AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.Oxygen);
-            float initialCarbonDioxide = AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.CarbonDioxide);
-
-            for (int tick = 0; tick < 15; tick++)
-                simulation.Tick(AtmosConstants.TickInterval);
-
-            float plasmaBurned = initialPlasma - AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.Plasma);
-            float oxygenConsumed = initialOxygen - AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.Oxygen);
-            float carbonDioxideProduced = AtmosTestFixtures.SumGas(simulation, mapId, RoomSize, AtmosConstants.CarbonDioxide)
-                - initialCarbonDioxide;
-
-            Assert.Greater(plasmaBurned, 0.5f);
-            Assert.That(oxygenConsumed, Is.EqualTo(plasmaBurned * AtmosFluxConstants.OxygenPerPlasma).Within(0.5f));
-            Assert.That(carbonDioxideProduced, Is.EqualTo(plasmaBurned).Within(0.5f));
+            Assert.Greater(result.PlasmaBurned, 0.5f);
+            Assert.That(result.OxygenConsumed, Is.EqualTo(result.PlasmaBurned * AtmosFluxConstants.OxygenPerPlasma).Within(0.01f));
+            Assert.That(result.CarbonDioxideProduced, Is.EqualTo(result.PlasmaBurned).Within(0.01f));
         }
 
         [Test]
@@ -125,8 +115,8 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, RoomSize, out int mapId);
 
-            TileCoord center = InteriorCoord(mapId);
-            TileCoord west = new TileCoord(mapId, Interior - 1, Interior);
+            TileCoord center = AtmosTestFixtures.InteriorCoord(mapId, RoomSize);
+            TileCoord west = new TileCoord(mapId, center.Grid.x - 1, center.Grid.y);
             AtmosTestFixtures.IgnitePlasmaFire(simulation, center, plasmaMoles: 10f, oxygenMoles: 40f);
 
             Assert.IsTrue(simulation.TryGetCellDebugInfo(west, out AtmosCellDebugInfo initialWest));
@@ -140,24 +130,36 @@ namespace EditorTests.Atmospherics
         }
 
         [Test]
-        public void PlasmaFire_ConservesMolesInSealedRoom()
+        public void ReactAtmosJob_CombustionNetMoleLoss()
         {
-            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
-            using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, RoomSize, out int mapId);
+            ReactAtmosJobResult result = AtmosTestFixtures.RunReactAtmosJobOnCell(
+                plasmaMoles: 10f,
+                oxygenMoles: 40f,
+                carbonDioxideMoles: 0f,
+                nitrogenMoles: 83f,
+                temperature: 1000f,
+                deltaTime: AtmosConstants.TickInterval);
 
-            TileCoord center = InteriorCoord(mapId);
-            AtmosTestFixtures.IgnitePlasmaFire(simulation, center, plasmaMoles: 10f, oxygenMoles: 40f);
-
-            float initialMoles = simulation.GetTotalMoles();
-
-            // Edge cells in plenum-only maps leak to vacuum over long runs; keep this short so
-            // combustion stoichiometry is what we are measuring, not breach venting.
-            for (int tick = 0; tick < 5; tick++)
-                simulation.Tick(AtmosConstants.TickInterval);
-
-            Assert.AreEqual(initialMoles, simulation.GetTotalMoles(), initialMoles * 0.01f);
+            Assert.Greater(result.PlasmaBurned, 0.5f);
+            // 1 plasma + 2 O2 -> 1 CO2 removes two net moles per plasma burned.
+            Assert.AreEqual(result.TotalMolesBefore - result.PlasmaBurned * 2f, result.TotalMolesAfter, 0.01f);
         }
 
-        static TileCoord InteriorCoord(int mapId) => new TileCoord(mapId, Interior, Interior);
+        [Test]
+        public void ReactAtmosJob_BelowIgnition_DoesNotBurn()
+        {
+            ReactAtmosJobResult result = AtmosTestFixtures.RunReactAtmosJobOnCell(
+                plasmaMoles: 10f,
+                oxygenMoles: 40f,
+                carbonDioxideMoles: 0f,
+                nitrogenMoles: 83f,
+                temperature: 350f,
+                deltaTime: AtmosConstants.TickInterval);
+
+            Assert.AreEqual(0f, result.PlasmaBurned, 0.001f);
+            Assert.AreEqual(0f, result.BurnIntensity, 0.001f);
+            Assert.AreEqual(0f, result.CarbonDioxideProduced, 0.001f);
+        }
+
     }
 }

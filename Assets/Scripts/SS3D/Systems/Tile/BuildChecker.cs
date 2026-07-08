@@ -127,6 +127,9 @@ namespace SS3D.Systems.Tile
         private static bool NoNeighbouringWallMount(Vector3 GridPosition)
         {
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+            if (tileSystem?.CurrentMap == null)
+                return true;
+
             var map = tileSystem.CurrentMap;
             var neighboursHigh = map.GetNeighbourPlacedObjects(TileLayer.WallMountHigh, GridPosition);
             var neighboursLow= map.GetNeighbourPlacedObjects(TileLayer.WallMountLow, GridPosition);

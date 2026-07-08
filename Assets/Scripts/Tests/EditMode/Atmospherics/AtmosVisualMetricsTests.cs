@@ -30,7 +30,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
 
-            var coord = new TileCoord(mapId, 0, 0);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 1);
             simulation.DebugSetTemperature(coord, 2200f);
 
             Assert.IsTrue(simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info));
@@ -45,7 +45,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
 
-            var coord = new TileCoord(mapId, 0, 0);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 1);
             simulation.DebugAddMoles(coord, AtmosConstants.Nitrogen, 80f);
 
             Assert.IsTrue(simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info));
@@ -60,7 +60,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
 
-            var coord = new TileCoord(mapId, 0, 0);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 1);
             simulation.DebugAddMoles(coord, AtmosConstants.CarbonDioxide, 12f);
             simulation.DebugSetTemperature(coord, 1500f);
 
@@ -81,7 +81,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
 
-            var coord = new TileCoord(mapId, 0, 0);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 1);
             simulation.DebugAddMoles(coord, AtmosConstants.Plasma, 0.01f);
             simulation.DebugSetTemperature(coord, 2000f);
 
@@ -98,7 +98,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
 
-            var coord = new TileCoord(mapId, 0, 0);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 1);
             simulation.DebugSetTemperature(coord, 1500f);
 
             Assert.IsTrue(simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info));

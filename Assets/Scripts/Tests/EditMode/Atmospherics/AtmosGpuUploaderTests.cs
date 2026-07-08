@@ -29,7 +29,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 2, out int mapId);
 
-            var coord = new TileCoord(mapId, 1, 1);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 2);
             using var uploader = new AtmosGpuUploader();
             uploader.Refresh(simulation);
 
@@ -42,7 +42,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 2, out int mapId);
 
-            var coord = new TileCoord(mapId, 1, 1);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 2);
             simulation.DebugSetTemperature(coord, 850f);
 
             using var uploader = new AtmosGpuUploader();
@@ -57,7 +57,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
 
-            var coord = new TileCoord(mapId, 0, 0);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 1);
             AtmosTestFixtures.IgnitePlasmaFire(simulation, coord, plasmaMoles: 10f, oxygenMoles: 40f);
             simulation.Tick(AtmosConstants.TickInterval);
 
@@ -73,7 +73,7 @@ namespace EditorTests.Atmospherics
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
             using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
 
-            var coord = new TileCoord(mapId, 0, 0);
+            var coord = AtmosTestFixtures.InteriorCoord(mapId, 1);
             AtmosTestFixtures.IgnitePlasmaFire(simulation, coord, plasmaMoles: 10f, oxygenMoles: 40f);
             simulation.Tick(AtmosConstants.TickInterval);
 

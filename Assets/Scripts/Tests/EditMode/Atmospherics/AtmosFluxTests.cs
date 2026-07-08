@@ -25,30 +25,19 @@ namespace EditorTests.Atmospherics
         [Test]
         public void SealedRoom_ConservesMolesOverTicks()
         {
+            const int size = 2;
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
-            BuildSealedRoom(context, 2);
-
-            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
-            simulation.CreateChunk(new TileChunkRef
+            InitializeSealedRoomSimulation(context, size, out AtmosSimulation simulation);
+            using (simulation)
             {
-                MapId = context.Map.MapId,
-                ChunkKey = Vector2Int.zero,
-                Origin = Vector3.zero,
-            });
+                float initialMoles = simulation.GetTotalMoles();
+                Assert.Greater(initialMoles, 0f);
 
-            for (int x = 0; x < 2; x++)
-            {
-                for (int z = 0; z < 2; z++)
-                    simulation.UpdateCell(new TileCoord(context.Map.MapId, x, z));
+                for (int tick = 0; tick < 10; tick++)
+                    simulation.Tick(AtmosConstants.TickInterval);
+
+                Assert.AreEqual(initialMoles, simulation.GetTotalMoles(), 0.01f);
             }
-
-            float initialMoles = simulation.GetTotalMoles();
-            Assert.Greater(initialMoles, 0f);
-
-            for (int tick = 0; tick < 10; tick++)
-                simulation.Tick(AtmosConstants.TickInterval);
-
-            Assert.AreEqual(initialMoles, simulation.GetTotalMoles(), 0.01f);
         }
 
         [Test]
@@ -78,35 +67,23 @@ namespace EditorTests.Atmospherics
         {
             const int size = 3;
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
-            BuildSealedRoom(context, size);
-
-            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
-            simulation.CreateChunk(new TileChunkRef
+            InitializeSealedRoomSimulation(context, size, out AtmosSimulation simulation);
+            using (simulation)
             {
-                MapId = context.Map.MapId,
-                ChunkKey = Vector2Int.zero,
-                Origin = Vector3.zero,
-            });
+                // Heat one corner so a pressure gradient forms and advected moles carry enthalpy.
+                simulation.DebugSetTemperature(new TileCoord(context.Map.MapId, AtmosTestFixtures.InteriorOrigin, AtmosTestFixtures.InteriorOrigin), 1000f);
 
-            for (int x = 0; x < size; x++)
-            {
-                for (int z = 0; z < size; z++)
-                    simulation.UpdateCell(new TileCoord(context.Map.MapId, x, z));
+                float initialEnergy = simulation.GetTotalThermalEnergy();
+                float initialMoles = simulation.GetTotalMoles();
+                Assert.Greater(initialEnergy, 0f);
+
+                for (int tick = 0; tick < 30; tick++)
+                    simulation.Tick(AtmosConstants.TickInterval);
+
+                // Advection must conserve both moles and total thermal energy in a sealed room.
+                Assert.AreEqual(initialMoles, simulation.GetTotalMoles(), initialMoles * 0.005f);
+                Assert.AreEqual(initialEnergy, simulation.GetTotalThermalEnergy(), initialEnergy * 0.005f);
             }
-
-            // Heat one corner so a pressure gradient forms and advected moles carry enthalpy.
-            simulation.DebugSetTemperature(new TileCoord(context.Map.MapId, 0, 0), 1000f);
-
-            float initialEnergy = simulation.GetTotalThermalEnergy();
-            float initialMoles = simulation.GetTotalMoles();
-            Assert.Greater(initialEnergy, 0f);
-
-            for (int tick = 0; tick < 30; tick++)
-                simulation.Tick(AtmosConstants.TickInterval);
-
-            // Advection must conserve both moles and total thermal energy in a sealed room.
-            Assert.AreEqual(initialMoles, simulation.GetTotalMoles(), initialMoles * 0.005f);
-            Assert.AreEqual(initialEnergy, simulation.GetTotalThermalEnergy(), initialEnergy * 0.005f);
         }
 
         [Test]
@@ -142,37 +119,25 @@ namespace EditorTests.Atmospherics
         {
             const int size = 3;
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
-            BuildSealedRoom(context, size);
-
-            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
-            simulation.CreateChunk(new TileChunkRef
+            InitializeSealedRoomSimulation(context, size, out AtmosSimulation simulation);
+            using (simulation)
             {
-                MapId = context.Map.MapId,
-                ChunkKey = Vector2Int.zero,
-                Origin = Vector3.zero,
-            });
+                simulation.DebugSetTemperature(new TileCoord(context.Map.MapId, AtmosTestFixtures.InteriorOrigin, AtmosTestFixtures.InteriorOrigin), 1000f);
 
-            for (int x = 0; x < size; x++)
-            {
-                for (int z = 0; z < size; z++)
-                    simulation.UpdateCell(new TileCoord(context.Map.MapId, x, z));
+                float initialEnergy = simulation.GetTotalThermalEnergy();
+                GetTemperatureSpread(simulation, context.Map.MapId, size, out float initialMin, out float initialMax);
+                float initialSpread = initialMax - initialMin;
+
+                for (int tick = 0; tick < 120; tick++)
+                    simulation.Tick(AtmosConstants.TickInterval);
+
+                GetTemperatureSpread(simulation, context.Map.MapId, size, out float finalMin, out float finalMax);
+                float finalSpread = finalMax - finalMin;
+
+                // Conduction should pull temperatures together while energy stays conserved.
+                Assert.Less(finalSpread, initialSpread * 0.25f);
+                Assert.AreEqual(initialEnergy, simulation.GetTotalThermalEnergy(), initialEnergy * 0.005f);
             }
-
-            simulation.DebugSetTemperature(new TileCoord(context.Map.MapId, 0, 0), 1000f);
-
-            float initialEnergy = simulation.GetTotalThermalEnergy();
-            GetTemperatureSpread(simulation, context.Map.MapId, size, out float initialMin, out float initialMax);
-            float initialSpread = initialMax - initialMin;
-
-            for (int tick = 0; tick < 120; tick++)
-                simulation.Tick(AtmosConstants.TickInterval);
-
-            GetTemperatureSpread(simulation, context.Map.MapId, size, out float finalMin, out float finalMax);
-            float finalSpread = finalMax - finalMin;
-
-            // Conduction should pull temperatures together while energy stays conserved.
-            Assert.Less(finalSpread, initialSpread * 0.25f);
-            Assert.AreEqual(initialEnergy, simulation.GetTotalThermalEnergy(), initialEnergy * 0.005f);
         }
 
         [Test]
@@ -180,39 +145,27 @@ namespace EditorTests.Atmospherics
         {
             const int size = 3;
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
-            BuildSealedRoom(context, size);
-
-            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
-            simulation.CreateChunk(new TileChunkRef
+            InitializeSealedRoomSimulation(context, size, out AtmosSimulation simulation);
+            using (simulation)
             {
-                MapId = context.Map.MapId,
-                ChunkKey = Vector2Int.zero,
-                Origin = Vector3.zero,
-            });
+                var center = AtmosTestFixtures.InteriorCoord(context.Map.MapId, size);
+                simulation.DebugAddMoles(center, AtmosConstants.Plasma, 10f);
+                simulation.DebugAddMoles(center, AtmosConstants.Oxygen, 40f);
+                simulation.DebugSetTemperature(center, 1000f);
 
-            for (int x = 0; x < size; x++)
-            {
-                for (int z = 0; z < size; z++)
-                    simulation.UpdateCell(new TileCoord(context.Map.MapId, x, z));
+                float initialPlasma = SumGas(simulation, context.Map.MapId, size, AtmosConstants.Plasma);
+                Assert.Greater(initialPlasma, 0f);
+
+                for (int tick = 0; tick < 60; tick++)
+                    simulation.Tick(AtmosConstants.TickInterval);
+
+                float finalPlasma = SumGas(simulation, context.Map.MapId, size, AtmosConstants.Plasma);
+                float finalCarbonDioxide = SumGas(simulation, context.Map.MapId, size, AtmosConstants.CarbonDioxide);
+
+                // Combustion should consume plasma and produce carbon dioxide.
+                Assert.Less(finalPlasma, initialPlasma * 0.8f);
+                Assert.Greater(finalCarbonDioxide, 0f);
             }
-
-            var center = new TileCoord(context.Map.MapId, 1, 1);
-            simulation.DebugAddMoles(center, AtmosConstants.Plasma, 10f);
-            simulation.DebugAddMoles(center, AtmosConstants.Oxygen, 40f);
-            simulation.DebugSetTemperature(center, 1000f);
-
-            float initialPlasma = SumGas(simulation, context.Map.MapId, size, AtmosConstants.Plasma);
-            Assert.Greater(initialPlasma, 0f);
-
-            for (int tick = 0; tick < 60; tick++)
-                simulation.Tick(AtmosConstants.TickInterval);
-
-            float finalPlasma = SumGas(simulation, context.Map.MapId, size, AtmosConstants.Plasma);
-            float finalCarbonDioxide = SumGas(simulation, context.Map.MapId, size, AtmosConstants.CarbonDioxide);
-
-            // Combustion should consume plasma and produce carbon dioxide.
-            Assert.Less(finalPlasma, initialPlasma * 0.8f);
-            Assert.Greater(finalCarbonDioxide, 0f);
         }
 
         [Test]
@@ -230,13 +183,15 @@ namespace EditorTests.Atmospherics
                 Origin = Vector3.zero,
             });
 
-            for (int x = 0; x < size; x++)
+            const int origin = 0;
+            int outerSize = size + 2;
+            for (int x = 0; x < outerSize; x++)
             {
-                for (int z = 0; z < size; z++)
-                    simulation.UpdateCell(new TileCoord(context.Map.MapId, x, z));
+                for (int z = 0; z < outerSize; z++)
+                    simulation.UpdateCell(new TileCoord(context.Map.MapId, origin + x, origin + z));
             }
 
-            var center = new TileCoord(context.Map.MapId, 1, 1);
+            var center = AtmosTestFixtures.InteriorCoord(context.Map.MapId, size);
             simulation.DebugAddMoles(center, AtmosConstants.Plasma, 5f);
             simulation.DebugAddMoles(center, AtmosConstants.Oxygen, 10f);
             simulation.DebugAddHeat(center, 1000f);
@@ -244,40 +199,65 @@ namespace EditorTests.Atmospherics
             Assert.DoesNotThrow(() => simulation.Tick(AtmosConstants.TickInterval));
         }
 
-        private static float SumGas(AtmosSimulation simulation, int mapId, int size, GasId gasId)
+        private static float SumGas(AtmosSimulation simulation, int mapId, int interiorSize, GasId gasId)
         {
             float total = 0f;
-            for (int x = 0; x < size; x++)
+            for (int x = 0; x < interiorSize; x++)
             {
-                for (int z = 0; z < size; z++)
-                    total += simulation.DebugGetMoles(new TileCoord(mapId, x, z), gasId);
+                for (int z = 0; z < interiorSize; z++)
+                {
+                    total += simulation.DebugGetMoles(
+                        new TileCoord(mapId, AtmosTestFixtures.InteriorOrigin + x, AtmosTestFixtures.InteriorOrigin + z),
+                        gasId);
+                }
             }
 
             return total;
         }
 
         private static void GetTemperatureSpread(
-            AtmosSimulation simulation, int mapId, int size, out float min, out float max)
+            AtmosSimulation simulation, int mapId, int interiorSize, out float min, out float max)
         {
             min = float.MaxValue;
             max = float.MinValue;
-            for (int x = 0; x < size; x++)
+            for (int x = 0; x < interiorSize; x++)
             {
-                for (int z = 0; z < size; z++)
+                for (int z = 0; z < interiorSize; z++)
                 {
-                    Assert.IsTrue(simulation.TryGetCellDebugInfo(new TileCoord(mapId, x, z), out AtmosCellDebugInfo info));
+                    Assert.IsTrue(simulation.TryGetCellDebugInfo(
+                        new TileCoord(mapId, AtmosTestFixtures.InteriorOrigin + x, AtmosTestFixtures.InteriorOrigin + z),
+                        out AtmosCellDebugInfo info));
                     min = Mathf.Min(min, info.Temperature);
                     max = Mathf.Max(max, info.Temperature);
                 }
             }
         }
 
-        private static void BuildSealedRoom(TileMapTestUtilities.MapContext context, int size)
+        private static void BuildSealedRoom(TileMapTestUtilities.MapContext context, int interiorSize)
         {
-            for (int x = 0; x < size; x++)
+            TileMapTestUtilities.BuildWalledRoom(context, 0, 0, interiorSize);
+        }
+
+        private static void InitializeSealedRoomSimulation(
+            TileMapTestUtilities.MapContext context,
+            int interiorSize,
+            out AtmosSimulation simulation)
+        {
+            BuildSealedRoom(context, interiorSize);
+
+            simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
+            simulation.CreateChunk(new TileChunkRef
             {
-                for (int z = 0; z < size; z++)
-                    TileMapTestUtilities.PlacePlenum(context, new Vector3(x, 0, z));
+                MapId = context.Map.MapId,
+                ChunkKey = Vector2Int.zero,
+                Origin = Vector3.zero,
+            });
+
+            int outerSize = interiorSize + 2;
+            for (int x = 0; x < outerSize; x++)
+            {
+                for (int z = 0; z < outerSize; z++)
+                    simulation.UpdateCell(new TileCoord(context.Map.MapId, x, z));
             }
         }
     }

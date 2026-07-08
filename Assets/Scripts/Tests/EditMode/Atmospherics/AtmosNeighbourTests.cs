@@ -53,7 +53,9 @@ namespace EditorTests.Atmospherics
             simulation.UpdateCell(new TileCoord(context.Map.MapId, 0, 0));
 
             Assert.IsTrue(simulation.TryGetCellDebugInfo(new TileCoord(context.Map.MapId, 0, 0), out AtmosCellDebugInfo center));
-            Assert.AreEqual(-1, center.Neighbours.East);
+            Assert.Greater(center.Neighbours.East, -1);
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(new TileCoord(context.Map.MapId, 1, 0), out AtmosCellDebugInfo east));
+            Assert.AreEqual(AtmosCellState.Vacuum, east.State);
             Assert.AreEqual(AtmosCellState.Active, center.State);
         }
 

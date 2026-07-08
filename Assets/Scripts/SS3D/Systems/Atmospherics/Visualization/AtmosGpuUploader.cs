@@ -266,7 +266,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
             }
 
             if (texture != null)
-                UnityEngine.Object.Destroy(texture);
+                DestroyObject(texture);
 
             texture = new Texture2D(width, height, format, mipChain: false, linear: true)
             {
@@ -334,8 +334,16 @@ namespace SS3D.Systems.Atmospherics.Visualization
             if (texture == null)
                 return;
 
-            UnityEngine.Object.Destroy(texture);
+            DestroyObject(texture);
             texture = null;
+        }
+
+        private static void DestroyObject(UnityEngine.Object obj)
+        {
+            if (obj == null)
+                return;
+
+            UnityEngine.Object.DestroyImmediate(obj);
         }
     }
 }
