@@ -72,6 +72,7 @@ namespace SS3D.UI.MachineInterface.Components
                 return;
             }
 
+            ConvertToPixelPosition();
             _isDragging = true;
             _dragStartPointer = evt.position;
             _dragStartPosition = new Vector2(resolvedStyle.left, resolvedStyle.top);
@@ -111,6 +112,22 @@ namespace SS3D.UI.MachineInterface.Components
             _isDragging = false;
             _header.RemoveFromClassList("machine-window__header--dragging");
             _header.ReleasePointer(PointerId.mousePointerId);
+        }
+
+        private void ConvertToPixelPosition()
+        {
+            VisualElement parentElement = parent;
+            if (parentElement == null)
+            {
+                return;
+            }
+
+            Rect parentBounds = parentElement.worldBound;
+            Rect selfBounds = worldBound;
+
+            style.translate = new Translate(0, 0);
+            style.left = selfBounds.x - parentBounds.x;
+            style.top = selfBounds.y - parentBounds.y;
         }
 
         private void ClampToParent(ref Vector2 position)
