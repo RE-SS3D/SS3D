@@ -15,71 +15,6 @@ namespace SS3D.UI.MachineInterface
 {
     public abstract class MachineInterfaceBehaviour : InteractionTargetNetworkBehaviour, IMachineInterfaceProvider, IMachineInterfaceClientBridge
     {
-        public abstract class Snapshot<TSnapshot> : MachineInterfaceBehaviour
-        {
-            protected abstract TSnapshot BuildSnapshot();
-
-            protected override void SendOpenToViewer(NetworkConnection conn)
-            {
-                TargetOpenInterface(conn, BuildSnapshot());
-            }
-
-            protected override void SendRefreshToViewer(NetworkConnection conn)
-            {
-                TargetRefreshInterface(conn, BuildSnapshot());
-            }
-
-            [TargetRpc(RunLocally = true)]
-            private void TargetOpenInterface(NetworkConnection conn, TSnapshot snapshot)
-            {
-                if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-                {
-                    return;
-                }
-
-                DispatchOpen(subsystem, snapshot);
-            }
-
-            [TargetRpc(RunLocally = true)]
-            private void TargetRefreshInterface(NetworkConnection conn, TSnapshot snapshot)
-            {
-                if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-                {
-                    return;
-                }
-
-                DispatchRefresh(subsystem, snapshot);
-            }
-
-            private void DispatchOpen(MachineInterfaceSubSystem subsystem, TSnapshot snapshot)
-            {
-                if (snapshot is ApcInterfaceSnapshot apcSnapshot)
-                {
-                    subsystem.OpenFromNetwork(apcSnapshot, this);
-                    return;
-                }
-
-                if (snapshot is SmesInterfaceSnapshot smesSnapshot)
-                {
-                    subsystem.OpenFromNetwork(smesSnapshot, this);
-                }
-            }
-
-            private void DispatchRefresh(MachineInterfaceSubSystem subsystem, TSnapshot snapshot)
-            {
-                if (snapshot is ApcInterfaceSnapshot apcSnapshot)
-                {
-                    subsystem.RefreshFromNetwork(apcSnapshot);
-                    return;
-                }
-
-                if (snapshot is SmesInterfaceSnapshot smesSnapshot)
-                {
-                    subsystem.RefreshFromNetwork(smesSnapshot);
-                }
-            }
-        }
-
         private readonly HashSet<NetworkConnection> _viewers = new();
 
         public abstract string InterfaceId { get; }
@@ -253,6 +188,46 @@ namespace SS3D.UI.MachineInterface
         protected abstract void SendOpenToViewer(NetworkConnection conn);
 
         protected abstract void SendRefreshToViewer(NetworkConnection conn);
+
+        protected void DispatchClientOpen(ApcInterfaceSnapshot snapshot)
+        {
+            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                return;
+            }
+
+            subsystem.OpenFromNetwork(snapshot, this);
+        }
+
+        protected void DispatchClientOpen(SmesInterfaceSnapshot snapshot)
+        {
+            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                return;
+            }
+
+            subsystem.OpenFromNetwork(snapshot, this);
+        }
+
+        protected void DispatchClientRefresh(ApcInterfaceSnapshot snapshot)
+        {
+            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                return;
+            }
+
+            subsystem.RefreshFromNetwork(snapshot);
+        }
+
+        protected void DispatchClientRefresh(SmesInterfaceSnapshot snapshot)
+        {
+            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                return;
+            }
+
+            subsystem.RefreshFromNetwork(snapshot);
+        }
 
         private static bool TryResolveViewerConnection(IInteractionSource source, out NetworkConnection conn)
         {

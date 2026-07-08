@@ -1,3 +1,5 @@
+using FishNet.Connection;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ namespace SS3D.UI.MachineInterface
     /// Networked SMES machine interface controller. Reads battery/circuit state and exposes input/output controls.
     /// </summary>
     [RequireComponent(typeof(SmesBattery))]
-    public sealed class SmesController : MachineInterfaceBehaviour.Snapshot<SmesInterfaceSnapshot>
+    public sealed class SmesController : MachineInterfaceBehaviour
     {
         private const float CriticalChargeThreshold = 0.05f;
         private const float LowChargeThreshold = 0.15f;
@@ -55,56 +57,14 @@ namespace SS3D.UI.MachineInterface
             ApplyOutputEnabled(_outputEnabled);
         }
 
-        protected override SmesInterfaceSnapshot BuildSnapshot()
+        protected override void SendOpenToViewer(NetworkConnection conn)
         {
-            if (_battery == null)
-            {
-                _battery = GetComponent<SmesBattery>();
-            }
+            TargetOpenInterface(conn, BuildSnapshot());
+        }
 
-            CircuitStats stats = default;
-            if (SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem) && _battery != null)
-            {
-                electricitySubSystem.TryGetCircuitStats(_battery, _battery, out stats);
-            }
-
-            float chargePct = _battery != null && _battery.MaxCapacity > 0f
-                ? _battery.StoredPower / _battery.MaxCapacity
-                : 0f;
-
-            float inputKw = Mathf.Min(stats.TotalSupplyKw, _inputMaxKw);
-            float outputKw = Mathf.Min(stats.TotalDemandKw, _outputMaxKw);
-            bool inputActive = _inputEnabled && stats.TotalSupplyKw > 0f;
-            bool outputActive = _outputEnabled && _battery is { IsOn: true } && outputKw > 0f;
-
-            SmesPowerState powerState = DerivePowerState(chargePct, stats, inputActive, outputActive);
-            SmesChargeTrend chargeTrend = DeriveChargeTrend(powerState, stats);
-
-            SmesInterfaceSnapshot snapshot = new()
-            {
-                MachineObjectId = NetworkObject.ObjectId,
-                InterfaceId = InterfaceId,
-                Title = _title,
-                PowerState = (byte)powerState,
-                ChargePct = chargePct,
-                ChargeTrend = (byte)chargeTrend,
-                InputCurrentKw = inputActive ? inputKw : 0f,
-                OutputCurrentKw = outputActive ? outputKw : 0f,
-                InputMaxKw = _inputMaxKw,
-                OutputMaxKw = _outputMaxKw,
-                InputEnabled = _inputEnabled,
-                OutputEnabled = _outputEnabled,
-                InputActive = inputActive,
-                OutputActive = outputActive,
-                ConnectionStateText = BuildConnectionStateText(powerState, inputActive, outputActive),
-                DiagnosisHint = string.Empty,
-                MaintenanceText = "No maintenance due.",
-                MaintenanceTone = (byte)StatusTone.Info,
-            };
-
-            ApplyWarnings(ref snapshot, powerState, stats, chargePct, inputActive);
-            ApplyAdvancedMetrics(ref snapshot, stats, chargePct, inputKw, outputKw, powerState);
-            return snapshot;
+        protected override void SendRefreshToViewer(NetworkConnection conn)
+        {
+            TargetRefreshInterface(conn, BuildSnapshot());
         }
 
         protected override bool ApplyControl(byte controlId, bool value)
@@ -429,6 +389,70 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
             }
+        }
+
+        [TargetRpc(RunLocally = true)]
+        private void TargetOpenInterface(NetworkConnection conn, SmesInterfaceSnapshot snapshot)
+        {
+            DispatchClientOpen(snapshot);
+        }
+
+        [TargetRpc(RunLocally = true)]
+        private void TargetRefreshInterface(NetworkConnection conn, SmesInterfaceSnapshot snapshot)
+        {
+            DispatchClientRefresh(snapshot);
+        }
+
+        private SmesInterfaceSnapshot BuildSnapshot()
+        {
+            if (_battery == null)
+            {
+                _battery = GetComponent<SmesBattery>();
+            }
+
+            CircuitStats stats = default;
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem) && _battery != null)
+            {
+                electricitySubSystem.TryGetCircuitStats(_battery, _battery, out stats);
+            }
+
+            float chargePct = _battery != null && _battery.MaxCapacity > 0f
+                ? _battery.StoredPower / _battery.MaxCapacity
+                : 0f;
+
+            float inputKw = Mathf.Min(stats.TotalSupplyKw, _inputMaxKw);
+            float outputKw = Mathf.Min(stats.TotalDemandKw, _outputMaxKw);
+            bool inputActive = _inputEnabled && stats.TotalSupplyKw > 0f;
+            bool outputActive = _outputEnabled && _battery is { IsOn: true } && outputKw > 0f;
+
+            SmesPowerState powerState = DerivePowerState(chargePct, stats, inputActive, outputActive);
+            SmesChargeTrend chargeTrend = DeriveChargeTrend(powerState, stats);
+
+            SmesInterfaceSnapshot snapshot = new()
+            {
+                MachineObjectId = NetworkObject.ObjectId,
+                InterfaceId = InterfaceId,
+                Title = _title,
+                PowerState = (byte)powerState,
+                ChargePct = chargePct,
+                ChargeTrend = (byte)chargeTrend,
+                InputCurrentKw = inputActive ? inputKw : 0f,
+                OutputCurrentKw = outputActive ? outputKw : 0f,
+                InputMaxKw = _inputMaxKw,
+                OutputMaxKw = _outputMaxKw,
+                InputEnabled = _inputEnabled,
+                OutputEnabled = _outputEnabled,
+                InputActive = inputActive,
+                OutputActive = outputActive,
+                ConnectionStateText = BuildConnectionStateText(powerState, inputActive, outputActive),
+                DiagnosisHint = string.Empty,
+                MaintenanceText = "No maintenance due.",
+                MaintenanceTone = (byte)StatusTone.Info,
+            };
+
+            ApplyWarnings(ref snapshot, powerState, stats, chargePct, inputActive);
+            ApplyAdvancedMetrics(ref snapshot, stats, chargePct, inputKw, outputKw, powerState);
+            return snapshot;
         }
 
         private void OnElectricitySystemSetup()

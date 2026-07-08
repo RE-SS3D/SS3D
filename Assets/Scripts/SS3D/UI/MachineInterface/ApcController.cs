@@ -1,3 +1,5 @@
+using FishNet.Connection;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Systems.Tile;
@@ -12,7 +14,7 @@ namespace SS3D.UI.MachineInterface
     /// Area Power Controller with machine interface, local cell storage, and circuit channel gating.
     /// </summary>
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class ApcController : MachineInterfaceBehaviour.Snapshot<ApcInterfaceSnapshot>, IApcChannelSource, IPowerStorage
+    public sealed class ApcController : MachineInterfaceBehaviour, IApcChannelSource, IPowerStorage
     {
         private const float CriticalBatteryThreshold = 0.15f;
 
@@ -92,35 +94,14 @@ namespace SS3D.UI.MachineInterface
             return removedAmount;
         }
 
-        protected override ApcInterfaceSnapshot BuildSnapshot()
+        protected override void SendOpenToViewer(NetworkConnection conn)
         {
-            CircuitStats stats = default;
-            if (SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
-            {
-                electricitySubSystem.TryGetCircuitStats(this, this, out stats);
-            }
+            TargetOpenInterface(conn, BuildSnapshot());
+        }
 
-            ApcPowerState powerState = DerivePowerState(stats);
-            ApcBatteryState batteryState = DeriveBatteryState(stats);
-
-            ApcInterfaceSnapshot snapshot = new()
-            {
-                MachineObjectId = NetworkObject.ObjectId,
-                InterfaceId = InterfaceId,
-                Title = _title,
-                Channels = _channels,
-                PowerState = (byte)powerState,
-                GridInputKw = stats.TotalSupplyKw,
-                LoadOutputKw = stats.TotalDemandKw,
-                BatteryCharge = stats.ApcBatteryCharge,
-                BatteryState = (byte)batteryState,
-                LightingLoadKw = stats.LightingLoadKw,
-                EquipmentLoadKw = stats.EquipmentLoadKw,
-                EnvironmentLoadKw = stats.EnvironmentLoadKw,
-            };
-
-            ApplyDiagnostics(ref snapshot, stats, powerState, batteryState);
-            return snapshot;
+        protected override void SendRefreshToViewer(NetworkConnection conn)
+        {
+            TargetRefreshInterface(conn, BuildSnapshot());
         }
 
         protected override bool ApplyControl(byte controlId, bool value)
@@ -293,6 +274,49 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
             }
+        }
+
+        [TargetRpc(RunLocally = true)]
+        private void TargetOpenInterface(NetworkConnection conn, ApcInterfaceSnapshot snapshot)
+        {
+            DispatchClientOpen(snapshot);
+        }
+
+        [TargetRpc(RunLocally = true)]
+        private void TargetRefreshInterface(NetworkConnection conn, ApcInterfaceSnapshot snapshot)
+        {
+            DispatchClientRefresh(snapshot);
+        }
+
+        private ApcInterfaceSnapshot BuildSnapshot()
+        {
+            CircuitStats stats = default;
+            if (SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                electricitySubSystem.TryGetCircuitStats(this, this, out stats);
+            }
+
+            ApcPowerState powerState = DerivePowerState(stats);
+            ApcBatteryState batteryState = DeriveBatteryState(stats);
+
+            ApcInterfaceSnapshot snapshot = new()
+            {
+                MachineObjectId = NetworkObject.ObjectId,
+                InterfaceId = InterfaceId,
+                Title = _title,
+                Channels = _channels,
+                PowerState = (byte)powerState,
+                GridInputKw = stats.TotalSupplyKw,
+                LoadOutputKw = stats.TotalDemandKw,
+                BatteryCharge = stats.ApcBatteryCharge,
+                BatteryState = (byte)batteryState,
+                LightingLoadKw = stats.LightingLoadKw,
+                EquipmentLoadKw = stats.EquipmentLoadKw,
+                EnvironmentLoadKw = stats.EnvironmentLoadKw,
+            };
+
+            ApplyDiagnostics(ref snapshot, stats, powerState, batteryState);
+            return snapshot;
         }
 
         private void OnElectricitySystemSetup()
