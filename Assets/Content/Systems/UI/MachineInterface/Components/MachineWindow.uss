@@ -1,0 +1,58 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+
+.machine-window {
+    position: absolute;
+    width: 380px;
+    background-color: var(--ss3d-surface-panel);
+    border-radius: var(--ss3d-radius-md);
+    border-width: 1px;
+    border-color: var(--ss3d-border-accent);
+    padding: 0;
+}
+
+.machine-window__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--ss3d-surface-elevated);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--ss3d-border-subtle);
+    padding: var(--ss3d-space-2) var(--ss3d-space-3);
+    border-top-left-radius: var(--ss3d-radius-md);
+    border-top-right-radius: var(--ss3d-radius-md);
+}
+
+.machine-window__header--dragging {
+    cursor: move;
+}
+
+.machine-window__title {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-primary);
+    flex-grow: 1;
+}
+
+.machine-window__close {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 0;
+    margin: 0;
+    border-width: 0;
+    background-color: transparent;
+    color: var(--ss3d-text-tertiary);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.machine-window__close:hover {
+    color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger-bg);
+}
+
+.machine-window__content {
+    padding: var(--ss3d-space-4);
+    flex-grow: 1;
+}

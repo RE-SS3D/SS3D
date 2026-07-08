@@ -1,0 +1,51 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+
+.status-badge {
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    padding: 2px var(--ss3d-space-2);
+    align-self: flex-start;
+}
+
+.status-badge__label {
+    font-size: 10px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.status-badge.tone-info {
+    border-color: var(--ss3d-feedback-info-border);
+    background-color: var(--ss3d-feedback-info-bg);
+}
+
+.status-badge.tone-info .status-badge__label {
+    color: var(--ss3d-feedback-info);
+}
+
+.status-badge.tone-success {
+    border-color: var(--ss3d-feedback-success-border);
+    background-color: var(--ss3d-feedback-success-bg);
+}
+
+.status-badge.tone-success .status-badge__label {
+    color: var(--ss3d-feedback-success);
+}
+
+.status-badge.tone-warning {
+    border-color: var(--ss3d-feedback-warning-border);
+    background-color: var(--ss3d-feedback-warning-bg);
+}
+
+.status-badge.tone-warning .status-badge__label {
+    color: var(--ss3d-feedback-warning);
+}
+
+.status-badge.tone-danger {
+    border-color: var(--ss3d-feedback-danger-border);
+    background-color: var(--ss3d-feedback-danger-bg);
+}
+
+.status-badge.tone-danger .status-badge__label {
+    color: var(--ss3d-feedback-danger);
+}

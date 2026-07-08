@@ -1,0 +1,65 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+
+.channel-row {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--ss3d-space-2) var(--ss3d-space-3);
+    margin-bottom: var(--ss3d-space-1);
+    background-color: var(--ss3d-surface-elevated);
+    border-radius: var(--ss3d-radius-sm);
+    border-left-width: 3px;
+    border-left-color: var(--ss3d-accent-rust);
+}
+
+.channel-row--off {
+    border-left-color: var(--ss3d-border-subtle);
+    opacity: 0.7;
+}
+
+.channel-row__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: var(--ss3d-feedback-success);
+    margin-right: var(--ss3d-space-2);
+}
+
+.channel-row__dot--off {
+    background-color: var(--ss3d-text-tertiary);
+}
+
+.channel-row__name {
+    flex-grow: 1;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--ss3d-text-primary);
+}
+
+.channel-row__load {
+    font-size: 10px;
+    color: var(--ss3d-text-secondary);
+    margin-right: var(--ss3d-space-3);
+    min-width: 48px;
+    -unity-text-align: middle-right;
+}
+
+.channel-row__toggle {
+    min-width: 44px;
+    height: 22px;
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-accent);
+    background-color: var(--ss3d-surface-inset);
+    color: var(--ss3d-text-tertiary);
+    font-size: 9px;
+    -unity-font-style: bold;
+    padding: 0;
+    margin: 0;
+}
+
+.channel-row__toggle--on {
+    background-color: var(--ss3d-accent-rust-dim);
+    border-color: var(--ss3d-accent-rust);
+    color: var(--ss3d-text-primary);
+}
