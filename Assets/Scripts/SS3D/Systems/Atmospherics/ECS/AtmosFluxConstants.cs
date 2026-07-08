@@ -54,7 +54,7 @@ namespace SS3D.Systems.Atmospherics.ECS
         public const float PlasmaIgnitionTemperature = 373.15f;
 
         // Base fraction of available plasma consumed per second, scaled up with temperature.
-        public const float PlasmaBurnRate = 1.0f;
+        public const float PlasmaBurnRate = 0.5f;
 
         // Moles of oxygen consumed per mole of plasma burned.
         public const float OxygenPerPlasma = 2.0f;

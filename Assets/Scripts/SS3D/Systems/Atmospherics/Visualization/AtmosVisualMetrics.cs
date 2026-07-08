@@ -34,10 +34,10 @@ namespace SS3D.Systems.Atmospherics.Visualization
         public const float ReferenceTemperatureK = 293.15f;
         public const float FogPressureScale = 80f;
         public const float StrongFireIntensity = 1f;
-        public const float StrongFireBurnRateMolPerSec = 6f;
+        public const float StrongFireBurnRateMolPerSec = 4f;
         public const float FireDistortionBoost = 3f;
         public const float HeatDistortionBlend = 0.35f;
-        public const float VisualFireDecayPerTick = 0.93f;
+        public const float VisualFireDecayPerTick = 0.96f;
         public const float GasFogSaturationPressureKpa = ReferencePressureKpa + FogPressureScale;
 
         public static AtmosCellVisualMetrics Compute(
@@ -169,7 +169,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 $"  avg pressure {pressureSum / count:F1} kPa  avg temp {tempSum / count:F0} K\n" +
                 $"  max fire {fireMax:F2}  max gas fog {gasFogMax:F2}  max CO₂ mid-smoke {co2MidMax:F2}\n" +
                 $"  max distortion weight {distortionWeightMax:F2}  max plasma glow {plasmaGlowMax:F3}\n" +
-                $"  refs: fire 1.0 @ ~6 mol/s | gas fog full ≥ {GasFogSaturationPressureKpa:F0} kPa");
+                $"  refs: fire {StrongFireIntensity:F1} @ ~{StrongFireBurnRateMolPerSec:F0} mol/s | gas fog full ≥ {GasFogSaturationPressureKpa:F0} kPa");
         }
 
         static float NumberDensityRatio(float pressureKpa, float temperatureK)

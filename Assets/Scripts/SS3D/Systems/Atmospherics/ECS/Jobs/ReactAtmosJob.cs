@@ -97,7 +97,7 @@ namespace SS3D.Systems.Atmospherics.ECS
                 {
                     // Normalize burn rate into a stable 0–1 \"fire intensity\" range so the
                     // visualization can treat 1 as a strong plasma fire. With the current
-                    // tuning a hot plasma tile burns on the order of 6 mol/s, so we scale
+                    // tuning a hot plasma tile burns on the order of 4–5 mol/s, so we scale
                     // by ~0.16 and clamp.
                     float burnRate = plasmaBurn / DeltaTime;
                     float fireIntensity = math.saturate(burnRate * 0.16f);

@@ -18,7 +18,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
         private const byte MaskBlocked = 3;
         // Sim burn intensity is cleared every tick; decay the uploaded fire texture slower so
         // flames read longer than a single 0.2s plasma reaction step.
-        private const float VisualFireDecayPerTick = 0.93f;
+        private const float VisualFireDecayPerTick = 0.96f;
 
         private Texture2D _pressure;
         private Texture2D _temperature;
