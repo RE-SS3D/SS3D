@@ -215,6 +215,35 @@ namespace EditorTests.Atmospherics
             Assert.Greater(finalCarbonDioxide, 0f);
         }
 
+        [Test]
+        public void PlasmaFire_WithExcessGasTypeCount_DoesNotThrow()
+        {
+            const int size = 3;
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            BuildSealedRoom(context, size);
+
+            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, 65);
+            simulation.CreateChunk(new TileChunkRef
+            {
+                MapId = context.Map.MapId,
+                ChunkKey = Vector2Int.zero,
+                Origin = Vector3.zero,
+            });
+
+            for (int x = 0; x < size; x++)
+            {
+                for (int z = 0; z < size; z++)
+                    simulation.UpdateCell(new TileCoord(context.Map.MapId, x, z));
+            }
+
+            var center = new TileCoord(context.Map.MapId, 1, 1);
+            simulation.DebugAddMoles(center, AtmosConstants.Plasma, 5f);
+            simulation.DebugAddMoles(center, AtmosConstants.Oxygen, 10f);
+            simulation.DebugAddHeat(center, 1000f);
+
+            Assert.DoesNotThrow(() => simulation.Tick(AtmosConstants.TickInterval));
+        }
+
         private static float SumGas(AtmosSimulation simulation, int mapId, int size, GasId gasId)
         {
             float total = 0f;

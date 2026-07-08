@@ -56,7 +56,7 @@ namespace SS3D.Systems.Atmospherics
         {
             _query = query;
             _mapId = mapId;
-            _gasTypeCount = gasTypeCount;
+            _gasTypeCount = Mathf.Clamp(gasTypeCount, 1, AtmosConstants.MaxGasTypes);
             _activeCells = new NativeList<int>(Allocator.Persistent);
             _specificHeats = BuildSpecificHeats(specificHeats);
             _molarMasses = BuildMolarMasses(molarMasses);

@@ -14,13 +14,7 @@ namespace SS3D.Systems.Atmospherics.ECS
     [BurstCompile]
     public struct ReactAtmosJob : IJob
     {
-        [ReadOnly] public NativeArray<int> ActiveCells;
-        [ReadOnly] public NativeArray<float> SpecificHeat;
-
-        public NativeArray<float> Moles;
-        public NativeArray<AtmosCellMeta> CellMeta;
-        public NativeArray<float> BurnIntensity;
-
+        // Scalar fields first — keeps Burst job struct layout stable when native buffers are added.
         public int MaxGasTypes;
         public int GasTypeCount;
         public int OxygenId;
@@ -28,11 +22,29 @@ namespace SS3D.Systems.Atmospherics.ECS
         public int CarbonDioxideId;
         public float DeltaTime;
 
+        [ReadOnly] public NativeArray<int> ActiveCells;
+        [ReadOnly] public NativeArray<float> SpecificHeat;
+        public NativeArray<float> Moles;
+        public NativeArray<AtmosCellMeta> CellMeta;
+        public NativeArray<float> BurnIntensity;
+
         public void Execute()
         {
+            int cellCount = MaxGasTypes > 0 ? Moles.Length / MaxGasTypes : 0;
+            int safeGasTypeCount = math.min(GasTypeCount, MaxGasTypes);
+
+            if (cellCount <= 0 ||
+                !IsGasIdValid(OxygenId) ||
+                !IsGasIdValid(PlasmaId) ||
+                !IsGasIdValid(CarbonDioxideId))
+                return;
+
             for (int activeIndex = 0; activeIndex < ActiveCells.Length; activeIndex++)
             {
                 int cell = ActiveCells[activeIndex];
+                if (cell < 0 || cell >= cellCount)
+                    continue;
+
                 AtmosCellMeta meta = CellMeta[cell];
                 if (!meta.IsSimulated)
                     continue;
@@ -66,7 +78,7 @@ namespace SS3D.Systems.Atmospherics.ECS
                 if (plasmaBurn < AtmosFluxConstants.MinimumBurnMoles)
                     continue;
 
-                float energyBefore = AtmosThermo.HeatCapacity(Moles, SpecificHeat, cell, MaxGasTypes, GasTypeCount)
+                float energyBefore = AtmosThermo.HeatCapacity(Moles, SpecificHeat, cell, MaxGasTypes, safeGasTypeCount)
                     * meta.Temperature;
 
                 Moles[baseIndex + PlasmaId] = plasma - plasmaBurn;
@@ -74,7 +86,7 @@ namespace SS3D.Systems.Atmospherics.ECS
                 Moles[baseIndex + CarbonDioxideId] += plasmaBurn;
 
                 float energyAfter = energyBefore + plasmaBurn * AtmosFluxConstants.FireEnergyPerMole;
-                float heatCapacityAfter = AtmosThermo.HeatCapacity(Moles, SpecificHeat, cell, MaxGasTypes, GasTypeCount);
+                float heatCapacityAfter = AtmosThermo.HeatCapacity(Moles, SpecificHeat, cell, MaxGasTypes, safeGasTypeCount);
                 if (heatCapacityAfter > HeatCapacityEpsilon)
                     meta.Temperature = energyAfter / heatCapacityAfter;
 
@@ -83,11 +95,18 @@ namespace SS3D.Systems.Atmospherics.ECS
 
                 if (BurnIntensity.IsCreated && DeltaTime > 0f)
                 {
+                    // Normalize burn rate into a stable 0–1 \"fire intensity\" range so the
+                    // visualization can treat 1 as a strong plasma fire. With the current
+                    // tuning a hot plasma tile burns on the order of 6 mol/s, so we scale
+                    // by ~0.16 and clamp.
                     float burnRate = plasmaBurn / DeltaTime;
-                    BurnIntensity[cell] = math.max(BurnIntensity[cell], burnRate);
+                    float fireIntensity = math.saturate(burnRate * 0.16f);
+                    BurnIntensity[cell] = math.max(BurnIntensity[cell], fireIntensity);
                 }
             }
         }
+
+        private bool IsGasIdValid(int gasId) => gasId >= 0 && gasId < MaxGasTypes;
 
         private const float HeatCapacityEpsilon = 1e-6f;
     }

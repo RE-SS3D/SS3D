@@ -59,7 +59,7 @@ namespace SS3D.Systems.Atmospherics.ECS
                 for (int direction = 0; direction < 4; direction++)
                 {
                     int neighbourIndex = Neighbours[cellIndex].Get(direction);
-                    if (neighbourIndex < 0)
+                    if (neighbourIndex < 0 || neighbourIndex >= CellMeta.Length)
                         continue;
 
                     AtmosCellMeta neighbour = CellMeta[neighbourIndex];
@@ -161,7 +161,7 @@ namespace SS3D.Systems.Atmospherics.ECS
                     for (int direction = 0; direction < 4; direction++)
                     {
                         int neighbourIndex = Neighbours[cellIndex].Get(direction);
-                        if (neighbourIndex < 0)
+                        if (neighbourIndex < 0 || neighbourIndex >= CellMeta.Length)
                             continue;
 
                         WakeNeighbour(neighbourIndex, CellMeta[neighbourIndex]);
@@ -217,7 +217,7 @@ namespace SS3D.Systems.Atmospherics.ECS
             for (int direction = 0; direction < 4; direction++)
             {
                 int neighbourIndex = Neighbours[cellIndex].Get(direction);
-                if (neighbourIndex < 0)
+                if (neighbourIndex < 0 || neighbourIndex >= CellMeta.Length)
                     continue;
 
                 AtmosCellMeta neighbour = CellMeta[neighbourIndex];

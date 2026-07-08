@@ -1921,7 +1921,7 @@ MonoBehaviour:
   _componentIndexCache: 8
   _addedNetworkObject: {fileID: 1506918116}
   _networkObjectCache: {fileID: 1506918116}
-  _gasRegistry: {fileID: 0}
+  _gasRegistry: {fileID: 11400000, guid: 0aee396c6f7001293acdb041245c13ef, type: 2}
 --- !u!1 &1121348072
 GameObject:
   m_ObjectHideFlags: 0
@@ -2123,7 +2123,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168891139}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3d4e5f6a7b8091a2b3c4d5e6f7a8091, type: 3}
   m_Name: 
@@ -2139,6 +2139,7 @@ MonoBehaviour:
   _hotSpotRadius: 0.35
   _fireIntensity: 1
   _plasmaFraction: 0.6
+  _co2Fraction: 0.45
 --- !u!4 &1168891141
 Transform:
   m_ObjectHideFlags: 0

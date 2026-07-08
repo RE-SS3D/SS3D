@@ -17,9 +17,20 @@ namespace SS3D.Systems.Atmospherics.ECS
             int maxGasTypes,
             int gasTypeCount)
         {
+            if (maxGasTypes <= 0 || moles.Length == 0)
+                return 0f;
+
+            int cellCount = moles.Length / maxGasTypes;
+            if (cellIndex < 0 || cellIndex >= cellCount)
+                return 0f;
+
+            int safeGasTypeCount = gasTypeCount < maxGasTypes ? gasTypeCount : maxGasTypes;
+            if (safeGasTypeCount <= 0)
+                return 0f;
+
             float capacity = 0f;
             int baseIndex = cellIndex * maxGasTypes;
-            for (int gasId = 0; gasId < gasTypeCount; gasId++)
+            for (int gasId = 0; gasId < safeGasTypeCount; gasId++)
                 capacity += moles[baseIndex + gasId] * specificHeat[gasId];
 
             return capacity;
@@ -32,9 +43,20 @@ namespace SS3D.Systems.Atmospherics.ECS
             int maxGasTypes,
             int gasTypeCount)
         {
+            if (maxGasTypes <= 0 || moles.Length == 0)
+                return 0f;
+
+            int cellCount = moles.Length / maxGasTypes;
+            if (cellIndex < 0 || cellIndex >= cellCount)
+                return 0f;
+
+            int safeGasTypeCount = gasTypeCount < maxGasTypes ? gasTypeCount : maxGasTypes;
+            if (safeGasTypeCount <= 0)
+                return 0f;
+
             float total = 0f;
             int baseIndex = cellIndex * maxGasTypes;
-            for (int gasId = 0; gasId < gasTypeCount; gasId++)
+            for (int gasId = 0; gasId < safeGasTypeCount; gasId++)
                 total += moles[baseIndex + gasId];
 
             return total;

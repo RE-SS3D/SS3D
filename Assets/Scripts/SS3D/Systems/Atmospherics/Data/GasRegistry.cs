@@ -14,6 +14,21 @@ namespace SS3D.Systems.Atmospherics
 
         public int Count => _sortedDefinitions?.Length ?? 0;
 
+        /// <summary>
+        /// Number of SoA gas slots the simulation must iterate (highest id + 1), capped at
+        /// <see cref="AtmosConstants.MaxGasTypes"/>.
+        /// </summary>
+        public int GetSlotCount()
+        {
+            Initialize();
+
+            int slots = GasDefaults.CoreGasCount;
+            foreach (GasDefinition definition in _sortedDefinitions)
+                slots = Mathf.Max(slots, definition.Id + 1);
+
+            return Mathf.Clamp(slots, 1, AtmosConstants.MaxGasTypes);
+        }
+
         public void Initialize()
         {
             if (_sortedDefinitions != null)

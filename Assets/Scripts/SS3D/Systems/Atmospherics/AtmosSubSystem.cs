@@ -65,7 +65,7 @@ namespace SS3D.Systems.Atmospherics
             if (_gasRegistry != null)
             {
                 _gasRegistry.Initialize();
-                gasTypeCount = Mathf.Max(_gasRegistry.Count, GasDefaults.CoreGasCount);
+                gasTypeCount = _gasRegistry.GetSlotCount();
                 specificHeats = BuildSpecificHeats(_gasRegistry);
                 molarMasses = BuildMolarMasses(_gasRegistry);
             }
