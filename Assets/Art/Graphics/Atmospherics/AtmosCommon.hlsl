@@ -27,7 +27,6 @@ int _AtmosSlabSteps;
 int _AtmosDebugView;
 float4x4 _AtmosInvViewProj;
 float _AtmosGlowStrength;
-float4 _AtmosPlasmaEmissionColor;
 float _AtmosIgnitionTemperature;
 float _AtmosDistortionStrength;
 float _AtmosDistortionNoiseScale;
@@ -35,6 +34,15 @@ float _AtmosDistortionNoiseSpeed;
 float _AtmosTurbulenceStrength;
 float _AtmosFlowNoiseScale;
 float _AtmosFlowSpeed;
+float4 _AtmosFireCoreColor;
+float4 _AtmosPlasmaHaloColor;
+float4 _AtmosSmokeColor;
+float _AtmosSmokeStrength;
+float _AtmosFlickerAmount;
+float _AtmosFlickerSpeed;
+float _AtmosFireHeightBoost;
+float _AtmosFireRiseStrength;
+float _AtmosFireDistortionBoost;
 
 float2 AtmosWorldToAtlasUV(float2 worldXZ)
 {
@@ -129,19 +137,36 @@ float2 AtmosSampleFlow(float2 worldXZ)
 }
 
 // Scroll procedural noise by the flow field so fog and plasma appear to move with gas.
-float AtmosFlowModulation(float2 worldXZ)
+float AtmosFlowModulation(float2 worldXZ, float fire)
 {
     if (_AtmosTurbulenceStrength <= 0.0)
         return 1.0;
 
     float2 flow = AtmosSampleFlow(worldXZ);
     float flowMag = length(flow);
-    if (flowMag <= 0.001)
+    if (flowMag <= 0.001 && fire <= 0.001)
         return 1.0;
 
-    float2 noiseCoord = worldXZ * _AtmosFlowNoiseScale + flow * _Time.y * _AtmosFlowSpeed;
+    float2 rise = float2(flow.x, abs(flow.y) + fire * _AtmosFireRiseStrength);
+    float2 noiseCoord = worldXZ * _AtmosFlowNoiseScale + rise * _Time.y * _AtmosFlowSpeed;
     float noise = AtmosDistortionNoise(noiseCoord) * 2.0 - 1.0;
-    return 1.0 + noise * _AtmosTurbulenceStrength * flowMag;
+    float drive = max(flowMag, fire * 0.5);
+    return 1.0 + noise * _AtmosTurbulenceStrength * drive;
+}
+
+float AtmosGetLocalVolumeHeight(float2 worldXZ)
+{
+    float fire = AtmosSampleFire(worldXZ);
+    return _AtmosVolumeHeight * (1.0 + fire * _AtmosFireHeightBoost);
+}
+
+float AtmosFireFlicker(float2 worldXZ)
+{
+    if (_AtmosFlickerAmount <= 0.0)
+        return 1.0;
+
+    float phase = AtmosDistortionHash(worldXZ) * 6.2831853;
+    return 1.0 + _AtmosFlickerAmount * sin(_Time.y * _AtmosFlickerSpeed + phase);
 }
 
 // Renders raw atlas channels for debugging. Returns -1 in alpha when the debug
@@ -278,19 +303,38 @@ float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
     if (mask == 0 || mask == 2 || mask == 3)
         return 0.0;
 
-    // Fade near atlas borders to avoid a hard rectangular fog "wall".
     float2 local = worldXZ - _AtmosAtlasBounds.xy;
     float2 size = max(_AtmosAtlasBounds.zw, float2(1.0, 1.0));
     float2 distToSides = min(local + 0.5, (size - 0.5) - local);
-    // Smooth lateral fade so the fog doesn't end as a hard rectangular boundary.
     float edgeMin = min(distToSides.x, distToSides.y);
-    float edgeFade = smoothstep(0.0, 1.25, edgeMin); // fade over ~1 tile
+    float edgeFade = smoothstep(0.0, 1.25, edgeMin);
+
+    float fire = AtmosSampleFire(worldXZ);
+    float localHeight = AtmosGetLocalVolumeHeight(worldXZ);
+    float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
 
     float pressure = AtmosSamplePressure(worldXZ);
     float excess = max(0.0, pressure - _AtmosReferencePressure);
     float tileDensity = saturate(excess / max(_AtmosFogPressureScale, 1e-3));
-    float heightFalloff = saturate(1.0 - sampleY / max(_AtmosVolumeHeight, 1e-3));
-    return tileDensity * heightFalloff * edgeFade * AtmosFlowModulation(worldXZ);
+    return tileDensity * heightFalloff * edgeFade * AtmosFlowModulation(worldXZ, fire);
+}
+
+float AtmosSampleSmokeDensity(float2 worldXZ, float sampleY)
+{
+    int mask = AtmosSampleMask(worldXZ);
+    if (mask != 1)
+        return 0.0;
+
+    float fire = AtmosSampleFire(worldXZ);
+    float4 composition = AtmosSampleComposition(worldXZ);
+    float co2Frac = composition.b;
+    if (co2Frac <= 0.001)
+        return 0.0;
+
+    float localHeight = AtmosGetLocalVolumeHeight(worldXZ);
+    float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
+    float riseBias = 1.0 + fire * 0.75;
+    return co2Frac * _AtmosSmokeStrength * heightFalloff * riseBias * AtmosFlowModulation(worldXZ, fire);
 }
 
 // Shared view-ray march bounds through the atmosphere slab, clipped to scene depth.
@@ -315,7 +359,9 @@ bool AtmosComputeSlabMarch(
     float tScene = 0.0;
     AtmosComputeScatterRay(uvScreen, deviceDepth, isSky, rayOrigin, rayDir, tScene);
 
-    float volumeHeight = max(_AtmosVolumeHeight, 1e-3);
+    float2 planeXZ = AtmosComputeWorldXZOnPlane(uvScreen, 0.0);
+    float planeFire = AtmosSampleFire(planeXZ);
+    float volumeHeight = max(_AtmosVolumeHeight, 1e-3) * (1.0 + planeFire * _AtmosFireHeightBoost);
 
     if (abs(rayDir.y) < 1e-5)
     {
@@ -353,22 +399,26 @@ float3 AtmosSamplePointEmission(float2 worldXZ, float sampleY)
 
     float4 composition = AtmosSampleComposition(worldXZ);
     float plasmaFrac = composition.a;
-    if (plasmaFrac <= 0.001)
-        return 0.0;
-
     float temperature = AtmosSampleTemperature(worldXZ);
     float fire = AtmosSampleFire(worldXZ);
-    float heightFalloff = saturate(1.0 - sampleY / max(_AtmosVolumeHeight, 1e-3));
-
-    // O2, N2, CO2 are non-emissive in v1; plasma glows when hot or actively burning.
     float tempFactor = saturate((temperature - _AtmosIgnitionTemperature) /
-        max(_AtmosIgnitionTemperature * 0.5, 1.0));
-    float burnBoost = 1.0 + fire * 2.0;
-    float intensity = plasmaFrac * (tempFactor + fire) * heightFalloff * burnBoost;
-    return _AtmosPlasmaEmissionColor.rgb * intensity * _AtmosGlowStrength * AtmosFlowModulation(worldXZ);
+        max(_AtmosIgnitionTemperature, 1e-3));
+
+    if (tempFactor <= 0.001 && fire <= 0.001)
+        return 0.0;
+
+    float localHeight = AtmosGetLocalVolumeHeight(worldXZ);
+    float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
+    float flicker = AtmosFireFlicker(worldXZ);
+
+    float3 fireCore = fire * tempFactor * _AtmosFireCoreColor.rgb;
+    float3 plasmaHalo = plasmaFrac * tempFactor * _AtmosPlasmaHaloColor.rgb;
+    float3 emission = (fireCore + plasmaHalo) * flicker * heightFalloff;
+
+    return emission * _AtmosGlowStrength * AtmosFlowModulation(worldXZ, fire);
 }
 
-float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
+float2 AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
 {
     float3 rayOrigin;
     float3 rayDir;
@@ -380,7 +430,8 @@ float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
         return 0.0;
 
     float stepLength = segmentLength / steps;
-    float opticalDepth = 0.0;
+    float gasOpticalDepth = 0.0;
+    float smokeOpticalDepth = 0.0;
     float jitter = frac(sin(dot(uvScreen, float2(12.9898, 78.233))) * 43758.5453);
     float jitterPos = jitter - 0.5;
 
@@ -393,10 +444,13 @@ float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
         if (!AtmosIsAtlasUVValid(atlasUV))
             continue;
 
-        opticalDepth += AtmosSampleGasDensity(samplePos.xz, samplePos.y) * stepLength;
+        gasOpticalDepth += AtmosSampleGasDensity(samplePos.xz, samplePos.y) * stepLength;
+        smokeOpticalDepth += AtmosSampleSmokeDensity(samplePos.xz, samplePos.y) * stepLength;
     }
 
-    return saturate((1.0 - exp(-opticalDepth)) * _AtmosScatterStrength * _AtmosScatterColor.a);
+    return float2(
+        saturate((1.0 - exp(-gasOpticalDepth)) * _AtmosScatterStrength * _AtmosScatterColor.a),
+        saturate(1.0 - exp(-smokeOpticalDepth)));
 }
 
 float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
@@ -459,7 +513,7 @@ float2 AtmosEvaluateDistortionOffset(float2 uvScreen)
     float noise = AtmosDistortionNoise(worldXZ * _AtmosDistortionNoiseScale + _Time.y * _AtmosDistortionNoiseSpeed);
     float shimmer = (noise * 2.0 - 1.0) * gradNorm;
 
-    float weight = density * (tempFactor + fire) * (1.0 + fire * 2.0);
+    float weight = density * (tempFactor + fire) * (1.0 + fire * _AtmosFireDistortionBoost);
     float2 direction = gradMag > 1e-4 ? grad / gradMag : float2(0.0, 0.0);
     float2 offsetXZ = direction * gradNorm + float2(shimmer, -shimmer) * 0.35;
 

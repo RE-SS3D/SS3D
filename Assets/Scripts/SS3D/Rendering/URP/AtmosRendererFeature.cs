@@ -38,7 +38,6 @@ namespace SS3D.Rendering.URP
         private static readonly int AtmosDebugViewId = Shader.PropertyToID("_AtmosDebugView");
         private static readonly int AtmosInvViewProjId = Shader.PropertyToID("_AtmosInvViewProj");
         private static readonly int AtmosGlowStrengthId = Shader.PropertyToID("_AtmosGlowStrength");
-        private static readonly int AtmosPlasmaEmissionColorId = Shader.PropertyToID("_AtmosPlasmaEmissionColor");
         private static readonly int AtmosIgnitionTemperatureId = Shader.PropertyToID("_AtmosIgnitionTemperature");
         private static readonly int AtmosDistortionStrengthId = Shader.PropertyToID("_AtmosDistortionStrength");
         private static readonly int AtmosDistortionNoiseScaleId = Shader.PropertyToID("_AtmosDistortionNoiseScale");
@@ -46,6 +45,15 @@ namespace SS3D.Rendering.URP
         private static readonly int AtmosTurbulenceStrengthId = Shader.PropertyToID("_AtmosTurbulenceStrength");
         private static readonly int AtmosFlowNoiseScaleId = Shader.PropertyToID("_AtmosFlowNoiseScale");
         private static readonly int AtmosFlowSpeedId = Shader.PropertyToID("_AtmosFlowSpeed");
+        private static readonly int AtmosFireCoreColorId = Shader.PropertyToID("_AtmosFireCoreColor");
+        private static readonly int AtmosPlasmaHaloColorId = Shader.PropertyToID("_AtmosPlasmaHaloColor");
+        private static readonly int AtmosSmokeColorId = Shader.PropertyToID("_AtmosSmokeColor");
+        private static readonly int AtmosSmokeStrengthId = Shader.PropertyToID("_AtmosSmokeStrength");
+        private static readonly int AtmosFlickerAmountId = Shader.PropertyToID("_AtmosFlickerAmount");
+        private static readonly int AtmosFlickerSpeedId = Shader.PropertyToID("_AtmosFlickerSpeed");
+        private static readonly int AtmosFireHeightBoostId = Shader.PropertyToID("_AtmosFireHeightBoost");
+        private static readonly int AtmosFireRiseStrengthId = Shader.PropertyToID("_AtmosFireRiseStrength");
+        private static readonly int AtmosFireDistortionBoostId = Shader.PropertyToID("_AtmosFireDistortionBoost");
 
         [SerializeField] private Shader _scatterShader;
         [SerializeField] private Shader _glowShader;
@@ -55,13 +63,23 @@ namespace SS3D.Rendering.URP
         [SerializeField] private float _scatterStrength = 1f;
         [SerializeField] private Color _scatterColor = new(0.65f, 0.7f, 0.75f, 1f);
         [SerializeField] private float _glowStrength = 1f;
-        [SerializeField] private Color _plasmaEmissionColor = new(0.75f, 0.2f, 1f, 1f);
         [SerializeField] private float _distortionStrength = 0.02f;
         [SerializeField] private float _distortionNoiseScale = 0.35f;
         [SerializeField] private float _distortionNoiseSpeed = 1.5f;
         [SerializeField] private float _turbulenceStrength = 0.25f;
         [SerializeField] private float _flowNoiseScale = 0.5f;
         [SerializeField] private float _flowSpeed = 1f;
+        [Header("Fire visuals")]
+        [SerializeField] private Color _fireCoreColor = new(1f, 0.55f, 0.15f, 1f);
+        [SerializeField] private Color _plasmaHaloColor = new(0.75f, 0.2f, 1f, 1f);
+        [SerializeField] private Color _smokeColor = new(0.12f, 0.12f, 0.12f, 1f);
+        [SerializeField] private float _smokeStrength = 1.5f;
+        [SerializeField] [Range(0f, 0.5f)] private float _flickerAmount = 0.15f;
+        [SerializeField] private float _flickerSpeed = 8f;
+        [SerializeField] private float _fireHeightBoost = 0.75f;
+        [SerializeField] private float _fireRiseStrength = 0.5f;
+        [SerializeField] private float _fireDistortionBoost = 3f;
+        [Header("Volume")]
         [SerializeField] private float _volumeHeight = 2.5f;
         [SerializeField] private float _referencePressure = 101.325f;
         [SerializeField] private float _fogPressureScale = 80f;
@@ -132,7 +150,7 @@ namespace SS3D.Rendering.URP
                 return;
 
             bool debugActive = _debugView != DebugView.Off;
-            bool scatterActive = debugActive || _scatterStrength > 0f;
+            bool scatterActive = debugActive || _scatterStrength > 0f || _smokeStrength > 0f;
             bool glowActive = !debugActive && _glowStrength > 0f
                 && snapshot.Temperature != null
                 && snapshot.Composition != null
@@ -206,6 +224,15 @@ namespace SS3D.Rendering.URP
                 material.SetFloat(AtmosTurbulenceStrengthId, _turbulenceStrength);
                 material.SetFloat(AtmosFlowNoiseScaleId, _flowNoiseScale);
                 material.SetFloat(AtmosFlowSpeedId, _flowSpeed);
+                material.SetColor(AtmosFireCoreColorId, _fireCoreColor);
+                material.SetColor(AtmosPlasmaHaloColorId, _plasmaHaloColor);
+                material.SetColor(AtmosSmokeColorId, _smokeColor);
+                material.SetFloat(AtmosSmokeStrengthId, _smokeStrength);
+                material.SetFloat(AtmosFlickerAmountId, _flickerAmount);
+                material.SetFloat(AtmosFlickerSpeedId, _flickerSpeed);
+                material.SetFloat(AtmosFireHeightBoostId, _fireHeightBoost);
+                material.SetFloat(AtmosFireRiseStrengthId, _fireRiseStrength);
+                material.SetFloat(AtmosFireDistortionBoostId, _fireDistortionBoost);
 
                 if (camera != null)
                 {
@@ -226,7 +253,6 @@ namespace SS3D.Rendering.URP
         void ApplyGlowMaterialSettings(AtmosRenderContext.Snapshot snapshot)
         {
             _glowMaterial.SetFloat(AtmosGlowStrengthId, _glowStrength);
-            _glowMaterial.SetColor(AtmosPlasmaEmissionColorId, _plasmaEmissionColor);
             _glowMaterial.SetFloat(AtmosIgnitionTemperatureId, snapshot.IgnitionTemperature);
             _glowMaterial.SetInt(AtmosDebugViewId, 0);
         }

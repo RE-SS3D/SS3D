@@ -2,7 +2,6 @@ Shader "Custom/AtmosGlow"
 {
     Properties
     {
-        _AtmosPlasmaEmissionColor ("Plasma Emission Color", Color) = (0.75, 0.2, 1.0, 1)
     }
 
     SubShader

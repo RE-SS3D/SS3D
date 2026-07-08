@@ -32,6 +32,8 @@ namespace SS3D.Systems.Atmospherics.Visualization
         [Tooltip("Fire intensity at the hot spot centre.")]
         [SerializeField] private float _fireIntensity = 1f;
         [SerializeField] [Range(0f, 1f)] private float _plasmaFraction = 0.6f;
+        [Tooltip("Peak CO₂ mole fraction at the hot spot centre (combustion smoke).")]
+        [SerializeField] [Range(0f, 1f)] private float _co2Fraction = 0.45f;
 
         private Texture2D _pressure;
         private Texture2D _temperature;
@@ -124,11 +126,12 @@ namespace SS3D.Systems.Atmospherics.Visualization
                     _fireData[i] = _fireIntensity * hot;
 
                     float plasma = _plasmaFraction * hot;
-                    float remaining = 1f - plasma;
+                    float co2 = _co2Fraction * hot;
+                    float remaining = Mathf.Max(0f, 1f - plasma - co2);
                     _compositionData[i] = new Color32(
                         ToByte(remaining * 0.5f),
                         ToByte(remaining * 0.5f),
-                        0,
+                        ToByte(co2),
                         ToByte(plasma));
                 }
             }

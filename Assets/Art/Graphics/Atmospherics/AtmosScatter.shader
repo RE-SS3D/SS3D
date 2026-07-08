@@ -63,9 +63,14 @@ Shader "Custom/AtmosScatter"
                 if (debugColor.a >= 0.0)
                     return half4(lerp(sceneColor, debugColor.rgb, debugColor.a), 1.0);
 
-                float fog = AtmosEvaluateScatter(uvScreen, depth, isSky);
-                float transmittance = 1.0 - fog;
-                float3 result = sceneColor * transmittance + _AtmosScatterColor.rgb * fog;
+                float2 scatter = AtmosEvaluateScatter(uvScreen, depth, isSky);
+                float gasFog = scatter.x;
+                float smokeFog = scatter.y;
+                float totalFog = saturate(gasFog + smokeFog);
+                float smokeMix = smokeFog / max(gasFog + smokeFog, 1e-4);
+                float3 fogColor = lerp(_AtmosScatterColor.rgb, _AtmosSmokeColor.rgb, smokeMix);
+                float transmittance = 1.0 - totalFog;
+                float3 result = sceneColor * transmittance + fogColor * totalFog;
 
                 return half4(result, 1.0);
             }
