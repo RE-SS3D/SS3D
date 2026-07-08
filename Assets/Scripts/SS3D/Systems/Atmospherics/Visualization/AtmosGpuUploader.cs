@@ -16,6 +16,9 @@ namespace SS3D.Systems.Atmospherics.Visualization
         private const byte MaskSimulated = 1;
         private const byte MaskVacuum = 2;
         private const byte MaskBlocked = 3;
+        // Sim burn intensity is cleared every tick; decay the uploaded fire texture slower so
+        // flames read longer than a single 0.2s plasma reaction step.
+        private const float VisualFireDecayPerTick = 0.93f;
 
         private Texture2D _pressure;
         private Texture2D _temperature;
@@ -29,6 +32,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
         private Color32[] _compositionScratch;
         private float[] _flowScratch;
         private float[] _fireScratch;
+        private float[] _visualFireScratch;
         private byte[] _maskScratch;
 
         private int _atlasWidth;
@@ -72,9 +76,13 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 AtmosCellMeta meta = simulation.CellMeta[cellIndex];
                 _pressureScratch[texel] = simulation.GetCellPressure(cellIndex);
                 _temperatureScratch[texel] = meta.Temperature;
-                _fireScratch[texel] = simulation.BurnIntensity.IsCreated
+                float simFire = simulation.BurnIntensity.IsCreated
                     ? simulation.BurnIntensity[cellIndex]
                     : 0f;
+                float decayedFire = _visualFireScratch[texel] * VisualFireDecayPerTick;
+                float visualFire = Mathf.Max(simFire, decayedFire);
+                _visualFireScratch[texel] = visualFire;
+                _fireScratch[texel] = visualFire;
                 _maskScratch[texel] = EncodeMask(meta.State);
                 _compositionScratch[texel] = EncodeComposition(simulation, cellIndex);
             });
@@ -239,6 +247,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
             EnsureScratch(ref _compositionScratch, pixelCount);
             EnsureScratch(ref _flowScratch, pixelCount * 2);
             EnsureScratch(ref _fireScratch, pixelCount);
+            EnsureScratch(ref _visualFireScratch, pixelCount);
             EnsureScratch(ref _maskScratch, pixelCount);
         }
 
@@ -278,6 +287,8 @@ namespace SS3D.Systems.Atmospherics.Visualization
             Array.Clear(_pressureScratch, 0, pixelCount);
             Array.Clear(_temperatureScratch, 0, pixelCount);
             Array.Clear(_fireScratch, 0, pixelCount);
+            if (_visualFireScratch != null)
+                Array.Clear(_visualFireScratch, 0, pixelCount);
             Array.Clear(_maskScratch, 0, pixelCount);
 
             var clearComposition = new Color32(0, 0, 0, 0);

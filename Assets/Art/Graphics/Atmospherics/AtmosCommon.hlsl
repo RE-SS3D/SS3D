@@ -299,6 +299,26 @@ float2 AtmosComputeWorldXZOnPlane(float2 uv, float planeY)
     return (rayOrigin + rayDir * t).xz;
 }
 
+// Number density is proportional to P/T. Hot over-pressurized cells can have P >> P_ref
+// while n is still near ambient — raw pressure alone makes fog/distortion saturate incorrectly.
+float AtmosReferenceNumberDensity()
+{
+    return _AtmosReferencePressure / 293.15;
+}
+
+float AtmosNumberDensityRatio(float pressure, float temperature)
+{
+    float t = max(temperature, 293.15);
+    return (pressure / t) / max(AtmosReferenceNumberDensity(), 1e-3);
+}
+
+float AtmosPressureFogDensity(float pressure, float temperature)
+{
+    float excess = max(0.0, AtmosNumberDensityRatio(pressure, temperature) - 1.0);
+    float scale = _AtmosFogPressureScale / max(_AtmosReferencePressure, 1e-3);
+    return saturate(excess / max(scale, 1e-3));
+}
+
 float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
 {
     int mask = AtmosSampleMask(worldXZ);
@@ -316,8 +336,8 @@ float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
     float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
 
     float pressure = AtmosSamplePressure(worldXZ);
-    float excess = max(0.0, pressure - _AtmosReferencePressure);
-    float tileDensity = saturate(excess / max(_AtmosFogPressureScale, 1e-3));
+    float temperature = AtmosSampleTemperature(worldXZ);
+    float tileDensity = AtmosPressureFogDensity(pressure, temperature);
     return tileDensity * heightFalloff * edgeFade * AtmosFlowModulation(worldXZ, fire);
 }
 
@@ -438,6 +458,10 @@ float3 AtmosSamplePointEmission(float2 worldXZ, float sampleY)
     if (tempFactor <= 0.001 && fire <= 0.001)
         return 0.0;
 
+    float plasmaFrac = composition[3];
+    if (fire <= 0.001 && plasmaFrac <= 0.002)
+        return 0.0;
+
     float localHeight = AtmosGetLocalVolumeHeight(worldXZ);
     float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
     float flicker = AtmosFireFlicker(worldXZ);
@@ -553,11 +577,11 @@ float2 AtmosEvaluateDistortionOffset(float2 uvScreen)
         return 0.0;
 
     float pressure = AtmosSamplePressure(worldXZ);
-    float density = saturate((max(0.0, pressure - _AtmosReferencePressure)) / max(_AtmosFogPressureScale, 1e-3));
-    if (density <= 0.001)
+    float temperature = AtmosSampleTemperature(worldXZ);
+    float density = AtmosPressureFogDensity(pressure, temperature);
+    if (density <= 0.001 && temperature < 293.15 + 1.0)
         return 0.0;
 
-    float temperature = AtmosSampleTemperature(worldXZ);
     float fire = AtmosSampleFire(worldXZ);
     float tempFactor = saturate((temperature - 293.15) / max(_AtmosIgnitionTemperature - 293.15, 1.0));
     if (tempFactor <= 0.001 && fire <= 0.001)
@@ -574,7 +598,7 @@ float2 AtmosEvaluateDistortionOffset(float2 uvScreen)
     float noise = AtmosDistortionNoise(worldXZ * _AtmosDistortionNoiseScale + _Time.y * _AtmosDistortionNoiseSpeed);
     float shimmer = (noise * 2.0 - 1.0) * gradNorm;
 
-    float weight = density * (tempFactor + fire) * (1.0 + fire * _AtmosFireDistortionBoost);
+    float weight = (density + tempFactor * 0.35) * (tempFactor + fire) * (1.0 + fire * _AtmosFireDistortionBoost);
     float2 direction = gradMag > 1e-4 ? grad / gradMag : float2(0.0, 0.0);
     float2 offsetXZ = direction * gradNorm + float2(shimmer, -shimmer) * 0.35;
 
