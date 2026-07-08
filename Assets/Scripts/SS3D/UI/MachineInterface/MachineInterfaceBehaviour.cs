@@ -15,6 +15,71 @@ namespace SS3D.UI.MachineInterface
 {
     public abstract class MachineInterfaceBehaviour : InteractionTargetNetworkBehaviour, IMachineInterfaceProvider, IMachineInterfaceClientBridge
     {
+        public abstract class Snapshot<TSnapshot> : MachineInterfaceBehaviour
+        {
+            protected abstract TSnapshot BuildSnapshot();
+
+            protected override void SendOpenToViewer(NetworkConnection conn)
+            {
+                TargetOpenInterface(conn, BuildSnapshot());
+            }
+
+            protected override void SendRefreshToViewer(NetworkConnection conn)
+            {
+                TargetRefreshInterface(conn, BuildSnapshot());
+            }
+
+            [TargetRpc(RunLocally = true)]
+            private void TargetOpenInterface(NetworkConnection conn, TSnapshot snapshot)
+            {
+                if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+                {
+                    return;
+                }
+
+                DispatchOpen(subsystem, snapshot);
+            }
+
+            [TargetRpc(RunLocally = true)]
+            private void TargetRefreshInterface(NetworkConnection conn, TSnapshot snapshot)
+            {
+                if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+                {
+                    return;
+                }
+
+                DispatchRefresh(subsystem, snapshot);
+            }
+
+            private void DispatchOpen(MachineInterfaceSubSystem subsystem, TSnapshot snapshot)
+            {
+                if (snapshot is ApcInterfaceSnapshot apcSnapshot)
+                {
+                    subsystem.OpenFromNetwork(apcSnapshot, this);
+                    return;
+                }
+
+                if (snapshot is SmesInterfaceSnapshot smesSnapshot)
+                {
+                    subsystem.OpenFromNetwork(smesSnapshot, this);
+                }
+            }
+
+            private void DispatchRefresh(MachineInterfaceSubSystem subsystem, TSnapshot snapshot)
+            {
+                if (snapshot is ApcInterfaceSnapshot apcSnapshot)
+                {
+                    subsystem.RefreshFromNetwork(apcSnapshot);
+                    return;
+                }
+
+                if (snapshot is SmesInterfaceSnapshot smesSnapshot)
+                {
+                    subsystem.RefreshFromNetwork(smesSnapshot);
+                }
+            }
+        }
+
         private readonly HashSet<NetworkConnection> _viewers = new();
 
         public abstract string InterfaceId { get; }
@@ -29,6 +94,11 @@ namespace SS3D.UI.MachineInterface
         public void SetControl(byte controlId, bool value)
         {
             CmdSetControl(controlId, value);
+        }
+
+        public void SetNumericControl(byte controlId, float delta)
+        {
+            CmdSetNumericControl(controlId, delta);
         }
 
         public void RequestClose()
@@ -99,6 +169,17 @@ namespace SS3D.UI.MachineInterface
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void CmdSetNumericControl(byte controlId, float delta, NetworkConnection conn = null)
+        {
+            if (conn == null || !conn.IsValid || !_viewers.Contains(conn))
+            {
+                return;
+            }
+
+            ApplyNumericControl(controlId, delta);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         public void CmdCloseInterface(NetworkConnection conn = null)
         {
             if (conn == null || !conn.IsValid)
@@ -115,9 +196,12 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        protected abstract ApcInterfaceSnapshot BuildSnapshot();
-
         protected abstract bool ApplyControl(byte controlId, bool value);
+
+        protected virtual bool ApplyNumericControl(byte controlId, float delta)
+        {
+            return false;
+        }
 
         [Server]
         protected void RefreshAllViewers()
@@ -127,12 +211,11 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            ApcInterfaceSnapshot snapshot = BuildSnapshot();
             foreach (NetworkConnection viewer in _viewers)
             {
                 if (viewer.IsValid)
                 {
-                    TargetRefreshInterface(viewer, snapshot);
+                    SendRefreshToViewer(viewer);
                 }
             }
         }
@@ -158,6 +241,18 @@ namespace SS3D.UI.MachineInterface
             ReleaseTickSubscription();
             base.OnDestroyed();
         }
+
+        [Server]
+        protected void OpenInterfaceForViewer(NetworkConnection conn)
+        {
+            _viewers.Add(conn);
+            EnsureTickSubscription();
+            SendOpenToViewer(conn);
+        }
+
+        protected abstract void SendOpenToViewer(NetworkConnection conn);
+
+        protected abstract void SendRefreshToViewer(NetworkConnection conn);
 
         private static bool TryResolveViewerConnection(IInteractionSource source, out NetworkConnection conn)
         {
@@ -217,28 +312,6 @@ namespace SS3D.UI.MachineInterface
         }
 
         [TargetRpc(RunLocally = true)]
-        private void TargetOpenInterface(NetworkConnection conn, ApcInterfaceSnapshot snapshot)
-        {
-            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-            {
-                return;
-            }
-
-            subsystem.OpenFromNetwork(snapshot, this);
-        }
-
-        [TargetRpc(RunLocally = true)]
-        private void TargetRefreshInterface(NetworkConnection conn, ApcInterfaceSnapshot snapshot)
-        {
-            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-            {
-                return;
-            }
-
-            subsystem.RefreshFromNetwork(snapshot);
-        }
-
-        [TargetRpc(RunLocally = true)]
         private void TargetCloseInterface(NetworkConnection conn)
         {
             if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
@@ -247,14 +320,6 @@ namespace SS3D.UI.MachineInterface
             }
 
             subsystem.CloseFromNetwork(this);
-        }
-
-        [Server]
-        private void OpenInterfaceForViewer(NetworkConnection conn)
-        {
-            _viewers.Add(conn);
-            EnsureTickSubscription();
-            TargetOpenInterface(conn, BuildSnapshot());
         }
 
         private bool ValidateViewer(NetworkConnection conn, InteractionEvent interactionEvent)

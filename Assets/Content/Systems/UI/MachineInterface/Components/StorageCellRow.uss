@@ -1,0 +1,27 @@
+@import url("../Tokens/ss3d-tokens.uss");
+
+.storage-cell-row {
+    flex-direction: row;
+    gap: 3px;
+}
+
+.storage-cell-row__cell {
+    flex-grow: 1;
+    height: 28px;
+    background-color: var(--ss3d-surface-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+}
+
+.storage-cell-row__cell--filled.tone-success {
+    background-color: var(--ss3d-feedback-success);
+}
+
+.storage-cell-row__cell--filled.tone-warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.storage-cell-row__cell--filled.tone-danger {
+    background-color: var(--ss3d-feedback-danger);
+}

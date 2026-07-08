@@ -12,7 +12,7 @@ namespace SS3D.UI.MachineInterface
     /// Area Power Controller with machine interface, local cell storage, and circuit channel gating.
     /// </summary>
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class ApcController : MachineInterfaceBehaviour, IApcChannelSource, IPowerStorage
+    public sealed class ApcController : MachineInterfaceBehaviour.Snapshot<ApcInterfaceSnapshot>, IApcChannelSource, IPowerStorage
     {
         private const float CriticalBatteryThreshold = 0.15f;
 

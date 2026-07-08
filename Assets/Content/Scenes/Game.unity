@@ -424,8 +424,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: SS3D.UI.MachineInterface::SS3D.UI.MachineInterface.MachineInterfaceHost
   _document: {fileID: 467607470}
   _apcTemplate: {fileID: 9197481963319205126, guid: 1ff2d6fd1c7097ec4bf8147ac8056658, type: 3}
+  _smesTemplate: {fileID: 9197481963319205126, guid: c3d9f5a72b8e4f6581c2d3e4f5a6b7c8, type: 3}
   _machineWindowStyle: {fileID: 7433441132597879392, guid: 2433e3839429109c4a24395da97d3bae, type: 3}
   _apcTemplateStyle: {fileID: 7433441132597879392, guid: df40fcc0bee62728ab016d9de9e31fba, type: 3}
+  _smesTemplateStyle: {fileID: 7433441132597879392, guid: d4e0a6b83c9f506792d3e4f5a6b7c8d9, type: 3}
 --- !u!114 &467607470
 MonoBehaviour:
   m_ObjectHideFlags: 0

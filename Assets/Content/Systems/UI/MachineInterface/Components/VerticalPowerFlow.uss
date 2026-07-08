@@ -1,0 +1,49 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+
+.vertical-power-flow {
+    flex-direction: column;
+    align-items: center;
+}
+
+.vertical-power-flow__node {
+    width: 100%;
+    -unity-text-align: middle-center;
+    padding: var(--ss3d-space-2);
+    background-color: var(--ss3d-surface-inset);
+    border-radius: var(--ss3d-radius-sm);
+    font-size: 12px;
+    color: var(--ss3d-text-secondary);
+}
+
+.vertical-power-flow__node--core {
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-accent);
+    color: var(--ss3d-text-primary);
+    font-size: 13px;
+    padding: var(--ss3d-space-3);
+}
+
+.vertical-power-flow__glyph {
+    font-size: 20px;
+    padding-top: var(--ss3d-space-1);
+    padding-bottom: var(--ss3d-space-1);
+    -unity-text-align: middle-center;
+}
+
+.vertical-power-flow__glyph.tone-success {
+    color: var(--ss3d-feedback-success);
+}
+
+.vertical-power-flow__glyph.tone-warning {
+    color: var(--ss3d-feedback-warning);
+}
+
+.vertical-power-flow__glyph.tone-danger {
+    color: var(--ss3d-feedback-danger);
+}
+
+.vertical-power-flow__glyph.tone-info {
+    color: var(--ss3d-text-tertiary);
+}

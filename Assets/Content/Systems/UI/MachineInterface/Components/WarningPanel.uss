@@ -1,0 +1,43 @@
+@import url("../Tokens/ss3d-tokens.uss");
+
+.warning-panel {
+    flex-direction: column;
+    gap: var(--ss3d-space-2);
+    padding: var(--ss3d-space-3);
+    border-width: 1px;
+    border-color: var(--ss3d-feedback-danger);
+    border-radius: var(--ss3d-radius-md);
+}
+
+.warning-panel__title {
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.warning-panel__lines {
+    flex-direction: column;
+    gap: 6px;
+}
+
+.warning-panel__line {
+    flex-direction: row;
+    gap: var(--ss3d-space-2);
+}
+
+.warning-panel__glyph {
+    min-width: 12px;
+    font-size: 13px;
+}
+
+.warning-panel__text {
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    white-space: normal;
+}
+
+.warning-panel__hint {
+    font-size: 12px;
+    color: var(--ss3d-text-secondary);
+    white-space: normal;
+    padding-top: 2px;
+}

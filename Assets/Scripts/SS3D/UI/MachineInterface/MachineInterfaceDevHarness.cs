@@ -14,7 +14,13 @@ namespace SS3D.UI.MachineInterface
         private bool _openOnStart = true;
 
         [SerializeField]
-        private ApcPowerState _initialState = ApcPowerState.Nominal;
+        private string _interfaceId = MachineInterfaceHost.ApcInterfaceId;
+
+        [SerializeField]
+        private ApcPowerState _initialApcState = ApcPowerState.Nominal;
+
+        [SerializeField]
+        private SmesPowerState _initialSmesState = SmesPowerState.Nominal;
 
         private MachineInterfaceSubSystem _subsystem;
 
@@ -29,7 +35,7 @@ namespace SS3D.UI.MachineInterface
 
             if (_openOnStart && _subsystem != null)
             {
-                _subsystem.SimulateState(_initialState);
+                SimulateCurrentInterface(_initialApcState, _initialSmesState);
             }
         }
 
@@ -42,19 +48,35 @@ namespace SS3D.UI.MachineInterface
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                _subsystem.SimulateState(ApcPowerState.Nominal);
+                SimulateCurrentInterface(ApcPowerState.Nominal, SmesPowerState.Nominal);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                _subsystem.SimulateState(ApcPowerState.Overload);
+                SimulateCurrentInterface(ApcPowerState.Overload, SmesPowerState.Degraded);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                _subsystem.SimulateState(ApcPowerState.Critical);
+                SimulateCurrentInterface(ApcPowerState.Critical, SmesPowerState.Overload);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                SimulateCurrentInterface(ApcPowerState.Critical, SmesPowerState.Fault);
             }
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
                 _subsystem.Close();
+            }
+        }
+
+        private void SimulateCurrentInterface(ApcPowerState apcState, SmesPowerState smesState)
+        {
+            if (_interfaceId == MachineInterfaceHost.SmesInterfaceId)
+            {
+                _subsystem.SimulateSmesState(smesState);
+            }
+            else
+            {
+                _subsystem.SimulateApcState(apcState);
             }
         }
     }

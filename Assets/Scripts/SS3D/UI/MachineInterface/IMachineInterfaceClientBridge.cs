@@ -4,6 +4,8 @@ namespace SS3D.UI.MachineInterface
     {
         void SetControl(byte controlId, bool value);
 
+        void SetNumericControl(byte controlId, float delta);
+
         void RequestClose();
     }
 }

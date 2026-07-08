@@ -15,7 +15,8 @@ namespace SS3D.UI.MachineInterface
 
         public event Action InterfaceClosed;
 
-        private ApcInterfaceViewModel _currentModel;
+        private ApcInterfaceViewModel _apcModel;
+        private SmesInterfaceViewModel _smesModel;
         private string _openInterfaceId;
         private IMachineInterfaceClientBridge _clientBridge;
         private InputSubSystem _inputSystem;
@@ -32,13 +33,39 @@ namespace SS3D.UI.MachineInterface
             }
 
             _openInterfaceId = interfaceId;
-            _currentModel = viewModel;
+            _apcModel = viewModel;
+            _smesModel = null;
+            SetGameplayInputBlocked(true);
+        }
+
+        public void Open(string interfaceId, SmesInterfaceViewModel viewModel)
+        {
+            MachineInterfaceHost host = GetHost();
+            if (host == null || !host.Open(interfaceId, viewModel))
+            {
+                return;
+            }
+
+            _openInterfaceId = interfaceId;
+            _smesModel = viewModel;
+            _apcModel = null;
             SetGameplayInputBlocked(true);
         }
 
         public void Refresh(ApcInterfaceViewModel viewModel)
         {
-            _currentModel = viewModel;
+            _apcModel = viewModel;
+
+            MachineInterfaceHost host = GetHost();
+            if (host != null)
+            {
+                host.Refresh(viewModel);
+            }
+        }
+
+        public void Refresh(SmesInterfaceViewModel viewModel)
+        {
+            _smesModel = viewModel;
 
             MachineInterfaceHost host = GetHost();
             if (host != null)
@@ -50,7 +77,8 @@ namespace SS3D.UI.MachineInterface
         public void Close()
         {
             _openInterfaceId = null;
-            _currentModel = null;
+            _apcModel = null;
+            _smesModel = null;
             _clientBridge = null;
 
             MachineInterfaceHost host = GetHost();
@@ -74,14 +102,35 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
+        public void OpenFromNetwork(SmesInterfaceSnapshot snapshot, IMachineInterfaceClientBridge bridge)
+        {
+            _clientBridge = bridge;
+            Open(snapshot.InterfaceId, SmesInterfaceSnapshotMapper.ToViewModel(snapshot));
+
+            if (!IsOpen)
+            {
+                _clientBridge = null;
+            }
+        }
+
         public void RefreshFromNetwork(ApcInterfaceSnapshot snapshot)
         {
-            if (!IsOpen)
+            if (!IsOpen || _openInterfaceId != snapshot.InterfaceId)
             {
                 return;
             }
 
             Refresh(ApcInterfaceSnapshotMapper.ToViewModel(snapshot));
+        }
+
+        public void RefreshFromNetwork(SmesInterfaceSnapshot snapshot)
+        {
+            if (!IsOpen || _openInterfaceId != snapshot.InterfaceId)
+            {
+                return;
+            }
+
+            Refresh(SmesInterfaceSnapshotMapper.ToViewModel(snapshot));
         }
 
         public void CloseFromNetwork(IMachineInterfaceClientBridge bridge)
@@ -114,7 +163,8 @@ namespace SS3D.UI.MachineInterface
 
             _clientBridge?.RequestClose();
             _openInterfaceId = null;
-            _currentModel = null;
+            _apcModel = null;
+            _smesModel = null;
             _clientBridge = null;
 
             MachineInterfaceHost host = GetHost();
@@ -129,7 +179,7 @@ namespace SS3D.UI.MachineInterface
 
         public void NotifyChannelToggled(string channelId, bool isOn)
         {
-            if (_currentModel == null)
+            if (_apcModel == null)
             {
                 return;
             }
@@ -138,21 +188,21 @@ namespace SS3D.UI.MachineInterface
             {
                 case "lighting":
                 {
-                    _currentModel.LightingOn = isOn;
+                    _apcModel.LightingOn = isOn;
                     _clientBridge?.SetControl(0, isOn);
                     break;
                 }
 
                 case "equipment":
                 {
-                    _currentModel.EquipmentOn = isOn;
+                    _apcModel.EquipmentOn = isOn;
                     _clientBridge?.SetControl(1, isOn);
                     break;
                 }
 
                 case "environment":
                 {
-                    _currentModel.EnvironmentOn = isOn;
+                    _apcModel.EnvironmentOn = isOn;
                     _clientBridge?.SetControl(2, isOn);
                     break;
                 }
@@ -161,7 +211,57 @@ namespace SS3D.UI.MachineInterface
             ChannelToggled?.Invoke(channelId, isOn);
         }
 
-        public void SimulateState(ApcPowerState state)
+        public void NotifySmesControlToggled(byte controlId, bool isOn)
+        {
+            if (_smesModel == null)
+            {
+                return;
+            }
+
+            switch (controlId)
+            {
+                case 0:
+                {
+                    _smesModel.InputEnabled = isOn;
+                    break;
+                }
+
+                case 1:
+                {
+                    _smesModel.OutputEnabled = isOn;
+                    break;
+                }
+            }
+
+            _clientBridge?.SetControl(controlId, isOn);
+        }
+
+        public void NotifySmesRateDelta(byte controlId, float delta)
+        {
+            if (_smesModel == null)
+            {
+                return;
+            }
+
+            switch (controlId)
+            {
+                case 0:
+                {
+                    _smesModel.InputMaxKw = Math.Max(1f, _smesModel.InputMaxKw + delta);
+                    break;
+                }
+
+                case 1:
+                {
+                    _smesModel.OutputMaxKw = Math.Max(1f, _smesModel.OutputMaxKw + delta);
+                    break;
+                }
+            }
+
+            _clientBridge?.SetNumericControl(controlId, delta);
+        }
+
+        public void SimulateApcState(ApcPowerState state)
         {
             ApcInterfaceViewModel model = state switch
             {
@@ -170,13 +270,33 @@ namespace SS3D.UI.MachineInterface
                 _ => ApcInterfaceViewModel.CreateNominal(),
             };
 
-            if (IsOpen)
+            if (IsOpen && _openInterfaceId == MachineInterfaceHost.ApcInterfaceId)
             {
                 Refresh(model);
             }
             else
             {
                 Open(MachineInterfaceHost.ApcInterfaceId, model);
+            }
+        }
+
+        public void SimulateSmesState(SmesPowerState state)
+        {
+            SmesInterfaceViewModel model = state switch
+            {
+                SmesPowerState.Degraded => SmesInterfaceViewModel.CreateDegraded(),
+                SmesPowerState.Overload => SmesInterfaceViewModel.CreateOverload(),
+                SmesPowerState.Fault => SmesInterfaceViewModel.CreateFault(),
+                _ => SmesInterfaceViewModel.CreateNominal(),
+            };
+
+            if (IsOpen && _openInterfaceId == MachineInterfaceHost.SmesInterfaceId)
+            {
+                Refresh(model);
+            }
+            else
+            {
+                Open(MachineInterfaceHost.SmesInterfaceId, model);
             }
         }
 

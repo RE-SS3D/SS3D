@@ -17,6 +17,8 @@ namespace SS3D.UI.MachineInterface
     {
         public const string ApcInterfaceId = "power.apc";
 
+        public const string SmesInterfaceId = "power.smes";
+
         [SerializeField]
         private UIDocument _document;
 
@@ -24,14 +26,21 @@ namespace SS3D.UI.MachineInterface
         private VisualTreeAsset _apcTemplate;
 
         [SerializeField]
+        private VisualTreeAsset _smesTemplate;
+
+        [SerializeField]
         private StyleSheet _machineWindowStyle;
 
         [SerializeField]
         private StyleSheet _apcTemplateStyle;
 
+        [SerializeField]
+        private StyleSheet _smesTemplateStyle;
+
         private VisualElement _overlayRoot;
         private MachineWindow _window;
-        private ApcPowerControllerBinder _binder;
+        private ApcPowerControllerBinder _apcBinder;
+        private SmesUnitBinder _smesBinder;
         private string _openInterfaceId;
         private bool _overlayReady;
 
@@ -46,7 +55,7 @@ namespace SS3D.UI.MachineInterface
 
             if (interfaceId != ApcInterfaceId)
             {
-                Debug.LogWarning($"Unknown machine interface id: {interfaceId}");
+                Debug.LogWarning($"MachineInterfaceHost expected APC interface id but received: {interfaceId}");
                 return false;
             }
 
@@ -57,46 +66,77 @@ namespace SS3D.UI.MachineInterface
             }
 
             ClosePanelOnly();
+            if (!CreateWindow(viewModel.Title))
+            {
+                return false;
+            }
 
             _openInterfaceId = interfaceId;
-            _window = new MachineWindow { Title = viewModel.Title };
-            _window.style.left = Length.Percent(50);
-            _window.style.top = Length.Percent(50);
-            _window.style.translate = new Translate(Length.Percent(-50), Length.Percent(-50));
-            _window.pickingMode = PickingMode.Position;
-
-            if (_machineWindowStyle != null)
-            {
-                _window.styleSheets.Add(_machineWindowStyle);
-            }
-
             TemplateContainer template = _apcTemplate.CloneTree();
-            if (_apcTemplateStyle != null)
-            {
-                template.styleSheets.Add(_apcTemplateStyle);
-            }
-
+            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _apcTemplateStyle);
             _window.Content.Add(template);
             _overlayRoot.Add(_window);
             SetOverlayInteractive(true);
 
-            _binder = new ApcPowerControllerBinder(_window);
-            _binder.CloseRequested += HandleCloseRequested;
-            _binder.ChannelToggled += HandleChannelToggled;
-            _binder.Bind(viewModel);
+            _apcBinder = new ApcPowerControllerBinder(_window);
+            _apcBinder.CloseRequested += HandleCloseRequested;
+            _apcBinder.ChannelToggled += HandleChannelToggled;
+            _apcBinder.Bind(viewModel);
+            _window.CloseClicked += HandleCloseRequested;
+            return true;
+        }
 
+        public bool Open(string interfaceId, SmesInterfaceViewModel viewModel)
+        {
+            if (!EnsureDocumentActive())
+            {
+                return false;
+            }
+
+            if (interfaceId != SmesInterfaceId)
+            {
+                Debug.LogWarning($"MachineInterfaceHost expected SMES interface id but received: {interfaceId}");
+                return false;
+            }
+
+            if (_smesTemplate == null)
+            {
+                Debug.LogError("MachineInterfaceHost is missing the SMES template.", this);
+                return false;
+            }
+
+            ClosePanelOnly();
+            if (!CreateWindow(viewModel.Title))
+            {
+                return false;
+            }
+
+            _openInterfaceId = interfaceId;
+            TemplateContainer template = _smesTemplate.CloneTree();
+            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _smesTemplateStyle);
+            _window.Content.Add(template);
+            _overlayRoot.Add(_window);
+            SetOverlayInteractive(true);
+
+            _smesBinder = new SmesUnitBinder(_window);
+            _smesBinder.CloseRequested += HandleCloseRequested;
+            _smesBinder.InputToggled += HandleSmesInputToggled;
+            _smesBinder.OutputToggled += HandleSmesOutputToggled;
+            _smesBinder.InputRateDeltaRequested += HandleSmesInputRateDelta;
+            _smesBinder.OutputRateDeltaRequested += HandleSmesOutputRateDelta;
+            _smesBinder.Bind(viewModel);
             _window.CloseClicked += HandleCloseRequested;
             return true;
         }
 
         public void Refresh(ApcInterfaceViewModel viewModel)
         {
-            if (_binder == null)
-            {
-                return;
-            }
+            _apcBinder?.Bind(viewModel);
+        }
 
-            _binder.Bind(viewModel);
+        public void Refresh(SmesInterfaceViewModel viewModel)
+        {
+            _smesBinder?.Bind(viewModel);
         }
 
         public void Close()
@@ -135,6 +175,12 @@ namespace SS3D.UI.MachineInterface
                     "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uxml");
             }
 
+            if (_smesTemplate == null)
+            {
+                _smesTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uxml");
+            }
+
             if (_machineWindowStyle == null)
             {
                 _machineWindowStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
@@ -147,6 +193,12 @@ namespace SS3D.UI.MachineInterface
                     "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss");
             }
 
+            if (_smesTemplateStyle == null)
+            {
+                _smesTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss");
+            }
+
             if (_document != null && _document.panelSettings == null)
             {
                 _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
@@ -155,13 +207,39 @@ namespace SS3D.UI.MachineInterface
         }
 #endif
 
+        private bool CreateWindow(string title)
+        {
+            _window = new MachineWindow { Title = title };
+            _window.style.left = Length.Percent(50);
+            _window.style.top = Length.Percent(50);
+            _window.style.translate = new Translate(Length.Percent(-50), Length.Percent(-50));
+            _window.pickingMode = PickingMode.Position;
+
+            if (_machineWindowStyle != null)
+            {
+                _window.styleSheets.Add(_machineWindowStyle);
+            }
+
+            return true;
+        }
+
         private void ClosePanelOnly()
         {
-            if (_binder != null)
+            if (_apcBinder != null)
             {
-                _binder.CloseRequested -= HandleCloseRequested;
-                _binder.ChannelToggled -= HandleChannelToggled;
-                _binder = null;
+                _apcBinder.CloseRequested -= HandleCloseRequested;
+                _apcBinder.ChannelToggled -= HandleChannelToggled;
+                _apcBinder = null;
+            }
+
+            if (_smesBinder != null)
+            {
+                _smesBinder.CloseRequested -= HandleCloseRequested;
+                _smesBinder.InputToggled -= HandleSmesInputToggled;
+                _smesBinder.OutputToggled -= HandleSmesOutputToggled;
+                _smesBinder.InputRateDeltaRequested -= HandleSmesInputRateDelta;
+                _smesBinder.OutputRateDeltaRequested -= HandleSmesOutputRateDelta;
+                _smesBinder = null;
             }
 
             if (_window != null)
@@ -266,6 +344,40 @@ namespace SS3D.UI.MachineInterface
             if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
             {
                 subsystem.NotifyChannelToggled(channelId, isOn);
+            }
+        }
+
+        private void HandleSmesInputToggled(bool isOn)
+        {
+            if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                subsystem.NotifySmesControlToggled(0, isOn);
+            }
+        }
+
+        private void HandleSmesOutputToggled(bool isOn)
+        {
+            if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                subsystem.NotifySmesControlToggled(1, isOn);
+            }
+        }
+
+        private void HandleSmesInputRateDelta(float delta)
+        {
+            HandleSmesRateDelta(0, delta);
+        }
+
+        private void HandleSmesOutputRateDelta(float delta)
+        {
+            HandleSmesRateDelta(1, delta);
+        }
+
+        private void HandleSmesRateDelta(byte controlId, float delta)
+        {
+            if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                subsystem.NotifySmesRateDelta(controlId, delta);
             }
         }
     }

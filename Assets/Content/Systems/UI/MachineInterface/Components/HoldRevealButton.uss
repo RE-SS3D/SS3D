@@ -1,0 +1,29 @@
+@import url("../Tokens/ss3d-tokens.uss");
+
+.hold-reveal-button {
+    position: relative;
+    overflow: hidden;
+    padding: 10px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+    background-color: var(--ss3d-surface-inset);
+    align-items: center;
+    justify-content: center;
+}
+
+.hold-reveal-button__progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--ss3d-accent-rust);
+    opacity: 0.35;
+}
+
+.hold-reveal-button__label {
+    position: relative;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--ss3d-text-tertiary);
+}

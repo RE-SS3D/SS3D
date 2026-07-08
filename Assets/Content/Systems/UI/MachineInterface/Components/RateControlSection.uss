@@ -1,0 +1,96 @@
+@import url("../Tokens/ss3d-tokens.uss");
+
+.rate-control {
+    flex-direction: column;
+    gap: var(--ss3d-space-2);
+    padding-top: var(--ss3d-space-2);
+    border-top-width: 1px;
+    border-top-color: var(--ss3d-border-subtle);
+}
+
+.rate-control__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rate-control__title {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+}
+
+.rate-control__bar-row {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ss3d-space-3);
+}
+
+.rate-control__track {
+    flex-grow: 1;
+    height: 10px;
+    background-color: var(--ss3d-surface-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+    overflow: hidden;
+}
+
+.rate-control__fill {
+    height: 100%;
+}
+
+.rate-control__fill.tone-success {
+    background-color: var(--ss3d-feedback-success);
+}
+
+.rate-control__fill.tone-warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.rate-control__fill.tone-danger {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.rate-control__current {
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+    min-width: 64px;
+}
+
+.rate-control__stepper-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rate-control__stepper-hint {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+}
+
+.rate-control__stepper {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.rate-control__stepper-button {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    padding: 0;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+    background-color: var(--ss3d-surface-inset);
+    color: var(--ss3d-text-secondary);
+    font-size: 12px;
+}
+
+.rate-control__max {
+    width: 52px;
+    -unity-text-align: middle-center;
+    font-size: 12px;
+    color: var(--ss3d-text-primary);
+}
