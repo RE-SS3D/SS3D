@@ -12,6 +12,8 @@ TEXTURE2D(_AtmosComposition);
 SAMPLER(sampler_AtmosComposition);
 TEXTURE2D(_AtmosFire);
 SAMPLER(sampler_AtmosFire);
+TEXTURE2D(_AtmosFlow);
+SAMPLER(sampler_AtmosFlow);
 TEXTURE2D(_AtmosMask);
 SAMPLER(sampler_AtmosMask);
 
@@ -30,6 +32,9 @@ float _AtmosIgnitionTemperature;
 float _AtmosDistortionStrength;
 float _AtmosDistortionNoiseScale;
 float _AtmosDistortionNoiseSpeed;
+float _AtmosTurbulenceStrength;
+float _AtmosFlowNoiseScale;
+float _AtmosFlowSpeed;
 
 float2 AtmosWorldToAtlasUV(float2 worldXZ)
 {
@@ -93,6 +98,50 @@ float4 AtmosSampleComposition(float2 worldXZ)
         return 0.0;
 
     return SAMPLE_TEXTURE2D_LOD(_AtmosComposition, sampler_AtmosComposition, atlasUV, 0);
+}
+
+float AtmosDistortionHash(float2 p)
+{
+    return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
+}
+
+float AtmosDistortionNoise(float2 p)
+{
+    float2 i = floor(p);
+    float2 f = frac(p);
+    float2 u = f * f * (3.0 - 2.0 * f);
+    float a = AtmosDistortionHash(i);
+    float b = AtmosDistortionHash(i + float2(1.0, 0.0));
+    float c = AtmosDistortionHash(i + float2(0.0, 1.0));
+    float d = AtmosDistortionHash(i + float2(1.0, 1.0));
+    return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
+}
+
+float2 AtmosSampleFlow(float2 worldXZ)
+{
+    float2 atlasUV = AtmosWorldToAtlasUV(worldXZ);
+    if (!AtmosIsAtlasUVValid(atlasUV))
+        return 0.0;
+
+    // Flow atlas stores direction in 0..1; unpack to -1..1.
+    float2 packed = SAMPLE_TEXTURE2D_LOD(_AtmosFlow, sampler_AtmosFlow, atlasUV, 0).rg;
+    return packed * 2.0 - 1.0;
+}
+
+// Scroll procedural noise by the flow field so fog and plasma appear to move with gas.
+float AtmosFlowModulation(float2 worldXZ)
+{
+    if (_AtmosTurbulenceStrength <= 0.0)
+        return 1.0;
+
+    float2 flow = AtmosSampleFlow(worldXZ);
+    float flowMag = length(flow);
+    if (flowMag <= 0.001)
+        return 1.0;
+
+    float2 noiseCoord = worldXZ * _AtmosFlowNoiseScale + flow * _Time.y * _AtmosFlowSpeed;
+    float noise = AtmosDistortionNoise(noiseCoord) * 2.0 - 1.0;
+    return 1.0 + noise * _AtmosTurbulenceStrength * flowMag;
 }
 
 // Renders raw atlas channels for debugging. Returns -1 in alpha when the debug
@@ -241,7 +290,7 @@ float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
     float excess = max(0.0, pressure - _AtmosReferencePressure);
     float tileDensity = saturate(excess / max(_AtmosFogPressureScale, 1e-3));
     float heightFalloff = saturate(1.0 - sampleY / max(_AtmosVolumeHeight, 1e-3));
-    return tileDensity * heightFalloff * edgeFade;
+    return tileDensity * heightFalloff * edgeFade * AtmosFlowModulation(worldXZ);
 }
 
 // Shared view-ray march bounds through the atmosphere slab, clipped to scene depth.
@@ -316,8 +365,7 @@ float3 AtmosSamplePointEmission(float2 worldXZ, float sampleY)
         max(_AtmosIgnitionTemperature * 0.5, 1.0));
     float burnBoost = 1.0 + fire * 2.0;
     float intensity = plasmaFrac * (tempFactor + fire) * heightFalloff * burnBoost;
-
-    return _AtmosPlasmaEmissionColor.rgb * intensity * _AtmosGlowStrength;
+    return _AtmosPlasmaEmissionColor.rgb * intensity * _AtmosGlowStrength * AtmosFlowModulation(worldXZ);
 }
 
 float AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
@@ -380,23 +428,6 @@ float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
     }
 
     return emission;
-}
-
-float AtmosDistortionHash(float2 p)
-{
-    return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
-}
-
-float AtmosDistortionNoise(float2 p)
-{
-    float2 i = floor(p);
-    float2 f = frac(p);
-    float2 u = f * f * (3.0 - 2.0 * f);
-    float a = AtmosDistortionHash(i);
-    float b = AtmosDistortionHash(i + float2(1.0, 0.0));
-    float c = AtmosDistortionHash(i + float2(0.0, 1.0));
-    float d = AtmosDistortionHash(i + float2(1.0, 1.0));
-    return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
 }
 
 // Returns a screen-space UV offset driven by tile temperature gradients, gas density, and fire.

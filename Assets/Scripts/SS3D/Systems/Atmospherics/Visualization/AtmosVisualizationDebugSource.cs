@@ -38,12 +38,14 @@ namespace SS3D.Systems.Atmospherics.Visualization
         private Texture2D _composition;
         private Texture2D _fire;
         private Texture2D _mask;
+        private Texture2D _flow;
 
         private float[] _pressureData;
         private float[] _temperatureData;
         private float[] _fireData;
         private Color32[] _compositionData;
         private byte[] _maskData;
+        private float[] _flowData;
         private bool _built;
 
         private void OnEnable()
@@ -67,6 +69,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
             DestroyTexture(ref _composition);
             DestroyTexture(ref _fire);
             DestroyTexture(ref _mask);
+            DestroyTexture(ref _flow);
         }
 
         private void Update()
@@ -130,6 +133,8 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 }
             }
 
+            WriteSyntheticFlow();
+
             _pressure.SetPixelData(_pressureData, 0);
             _pressure.Apply(false, false);
             _temperature.SetPixelData(_temperatureData, 0);
@@ -140,8 +145,39 @@ namespace SS3D.Systems.Atmospherics.Visualization
             _composition.Apply(false, false);
             _mask.SetPixelData(_maskData, 0);
             _mask.Apply(false, false);
+            _flow.SetPixelData(_flowData, 0);
+            _flow.Apply(false, false);
 
             _built = true;
+        }
+
+        private void WriteSyntheticFlow()
+        {
+            float half = _size * 0.5f;
+
+            for (int z = 0; z < _size; z++)
+            {
+                for (int x = 0; x < _size; x++)
+                {
+                    int texel = z * _size + x;
+                    int flowIndex = texel * 2;
+
+                    float dx = x - half;
+                    float dz = z - half;
+                    float distance = Mathf.Sqrt(dx * dx + dz * dz);
+                    if (distance <= 0.01f)
+                    {
+                        _flowData[flowIndex] = 0.5f;
+                        _flowData[flowIndex + 1] = 0.5f;
+                        continue;
+                    }
+
+                    // Radial outward flow from the hot-spot centre without altering pressure.
+                    var gradient = new Vector2(dx / distance, dz / distance);
+                    _flowData[flowIndex] = gradient.x * 0.5f + 0.5f;
+                    _flowData[flowIndex + 1] = gradient.y * 0.5f + 0.5f;
+                }
+            }
         }
 
         private AtmosRenderContext.Snapshot BuildSnapshot()
@@ -152,6 +188,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 Temperature = _temperature,
                 Composition = _composition,
                 FireIntensity = _fire,
+                Flow = _flow,
                 Mask = _mask,
                 AtlasBounds = new Vector4(_originX, _originZ, _size, _size),
                 MapId = 0,
@@ -168,12 +205,14 @@ namespace SS3D.Systems.Atmospherics.Visualization
             EnsureTexture(ref _composition, TextureFormat.RGBA32, FilterMode.Bilinear);
             EnsureTexture(ref _fire, TextureFormat.RFloat, FilterMode.Bilinear);
             EnsureTexture(ref _mask, TextureFormat.R8, FilterMode.Point);
+            EnsureTexture(ref _flow, TextureFormat.RGFloat, FilterMode.Bilinear);
 
             EnsureArray(ref _pressureData, pixelCount);
             EnsureArray(ref _temperatureData, pixelCount);
             EnsureArray(ref _fireData, pixelCount);
             EnsureArray(ref _compositionData, pixelCount);
             EnsureArray(ref _maskData, pixelCount);
+            EnsureArray(ref _flowData, pixelCount * 2);
         }
 
         private void EnsureTexture(ref Texture2D texture, TextureFormat format, FilterMode filterMode)

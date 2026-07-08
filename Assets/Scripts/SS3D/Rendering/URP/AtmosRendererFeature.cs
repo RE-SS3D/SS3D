@@ -26,6 +26,7 @@ namespace SS3D.Rendering.URP
         private static readonly int AtmosTemperatureId = Shader.PropertyToID("_AtmosTemperature");
         private static readonly int AtmosCompositionId = Shader.PropertyToID("_AtmosComposition");
         private static readonly int AtmosFireId = Shader.PropertyToID("_AtmosFire");
+        private static readonly int AtmosFlowId = Shader.PropertyToID("_AtmosFlow");
         private static readonly int AtmosMaskId = Shader.PropertyToID("_AtmosMask");
         private static readonly int AtmosAtlasBoundsId = Shader.PropertyToID("_AtmosAtlasBounds");
         private static readonly int AtmosVolumeHeightId = Shader.PropertyToID("_AtmosVolumeHeight");
@@ -42,6 +43,9 @@ namespace SS3D.Rendering.URP
         private static readonly int AtmosDistortionStrengthId = Shader.PropertyToID("_AtmosDistortionStrength");
         private static readonly int AtmosDistortionNoiseScaleId = Shader.PropertyToID("_AtmosDistortionNoiseScale");
         private static readonly int AtmosDistortionNoiseSpeedId = Shader.PropertyToID("_AtmosDistortionNoiseSpeed");
+        private static readonly int AtmosTurbulenceStrengthId = Shader.PropertyToID("_AtmosTurbulenceStrength");
+        private static readonly int AtmosFlowNoiseScaleId = Shader.PropertyToID("_AtmosFlowNoiseScale");
+        private static readonly int AtmosFlowSpeedId = Shader.PropertyToID("_AtmosFlowSpeed");
 
         [SerializeField] private Shader _scatterShader;
         [SerializeField] private Shader _glowShader;
@@ -55,6 +59,9 @@ namespace SS3D.Rendering.URP
         [SerializeField] private float _distortionStrength = 0.02f;
         [SerializeField] private float _distortionNoiseScale = 0.35f;
         [SerializeField] private float _distortionNoiseSpeed = 1.5f;
+        [SerializeField] private float _turbulenceStrength = 0.25f;
+        [SerializeField] private float _flowNoiseScale = 0.5f;
+        [SerializeField] private float _flowSpeed = 1f;
         [SerializeField] private float _volumeHeight = 2.5f;
         [SerializeField] private float _referencePressure = 101.325f;
         [SerializeField] private float _fogPressureScale = 80f;
@@ -188,12 +195,17 @@ namespace SS3D.Rendering.URP
                     material.SetTexture(AtmosCompositionId, snapshot.Composition);
                 if (snapshot.FireIntensity != null)
                     material.SetTexture(AtmosFireId, snapshot.FireIntensity);
+                if (snapshot.Flow != null)
+                    material.SetTexture(AtmosFlowId, snapshot.Flow);
 
                 material.SetVector(AtmosAtlasBoundsId, snapshot.AtlasBounds);
                 material.SetFloat(AtmosVolumeHeightId, _volumeHeight);
                 material.SetFloat(AtmosReferencePressureId, _referencePressure);
                 material.SetFloat(AtmosFogPressureScaleId, _fogPressureScale);
                 material.SetInt(AtmosSlabStepsId, _slabSteps);
+                material.SetFloat(AtmosTurbulenceStrengthId, _turbulenceStrength);
+                material.SetFloat(AtmosFlowNoiseScaleId, _flowNoiseScale);
+                material.SetFloat(AtmosFlowSpeedId, _flowSpeed);
 
                 if (camera != null)
                 {

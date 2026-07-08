@@ -24,7 +24,10 @@ MonoBehaviour:
   _plasmaEmissionColor: {r: 0.75, g: 0.2, b: 1, a: 1}
   _distortionStrength: 0.02
   _distortionNoiseScale: 0.35
-  _distortionNoiseSpeed: 1.5
+  _distortionNoiseSpeed: 3
+  _turbulenceStrength: 0.52
+  _flowNoiseScale: 0.5
+  _flowSpeed: 1
   _volumeHeight: 2.5
   _referencePressure: 101.325
   _fogPressureScale: 80
@@ -56,7 +59,7 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
   - {fileID: -3601183876851600227}
-  - {fileID: 6862977095932934460}
+  - {fileID: 2343490401261148184}
   m_RendererFeatureMap: 6dc57abbd793e549006e7d341c02045600000000000000009d746509580606ce
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
@@ -86,6 +89,20 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &2343490401261148184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
+  m_Name: SelectionPickRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
+  m_Active: 1
+  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
 --- !u!114 &5324824689208116589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,20 +129,6 @@ MonoBehaviour:
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1
---- !u!114 &6862977095932934460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
-  m_Name: SelectionPickRendererFeature
-  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
-  m_Active: 1
-  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
 --- !u!114 &8234567890123456789
 MonoBehaviour:
   m_ObjectHideFlags: 0
