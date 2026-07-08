@@ -27,6 +27,9 @@ namespace SS3D.Rendering.URP
             public int MapId;
             public bool Valid;
             public float IgnitionTemperature;
+            public Vector4[] GasScatter;
+            public Vector4[] GasEmission;
+            public Vector4[] GasMisc;
         }
 
         static Request? s_Request;

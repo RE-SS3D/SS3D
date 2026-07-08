@@ -188,6 +188,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
 
         private AtmosRenderContext.Snapshot BuildSnapshot()
         {
+            GasVisualProfileBuilder.GpuSet gasProfiles = GasVisualProfileBuilder.CoreDefaults;
             return new AtmosRenderContext.Snapshot
             {
                 Pressure = _pressure,
@@ -200,6 +201,9 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 MapId = 0,
                 Valid = true,
                 IgnitionTemperature = 373.15f,
+                GasScatter = gasProfiles.Scatter,
+                GasEmission = gasProfiles.Emission,
+                GasMisc = gasProfiles.Misc,
             };
         }
 

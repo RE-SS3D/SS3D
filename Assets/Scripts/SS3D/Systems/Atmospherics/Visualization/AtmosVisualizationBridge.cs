@@ -45,7 +45,9 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 return;
             }
 
-            AtmosRenderContext.SetSnapshot(_uploader.BuildSnapshot());
+            GasVisualProfileBuilder.GpuSet gasProfiles =
+                GasVisualProfileBuilder.Build(_atmos.GasRegistry);
+            AtmosRenderContext.SetSnapshot(_uploader.BuildSnapshot(gasProfiles));
         }
     }
 }

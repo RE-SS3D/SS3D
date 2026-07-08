@@ -35,14 +35,16 @@ float _AtmosTurbulenceStrength;
 float _AtmosFlowNoiseScale;
 float _AtmosFlowSpeed;
 float4 _AtmosFireCoreColor;
-float4 _AtmosPlasmaHaloColor;
-float4 _AtmosSmokeColor;
-float _AtmosSmokeStrength;
 float _AtmosFlickerAmount;
 float _AtmosFlickerSpeed;
 float _AtmosFireHeightBoost;
 float _AtmosFireRiseStrength;
 float _AtmosFireDistortionBoost;
+
+#define ATMOS_COMPOSITION_GAS_CHANNELS 4
+float4 _AtmosGasScatter[ATMOS_COMPOSITION_GAS_CHANNELS];
+float4 _AtmosGasEmission[ATMOS_COMPOSITION_GAS_CHANNELS];
+float4 _AtmosGasMisc[ATMOS_COMPOSITION_GAS_CHANNELS];
 
 float2 AtmosWorldToAtlasUV(float2 worldXZ)
 {
@@ -319,30 +321,52 @@ float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
     return tileDensity * heightFalloff * edgeFade * AtmosFlowModulation(worldXZ, fire);
 }
 
-float AtmosSampleSmokeDensity(float2 worldXZ, float sampleY)
+void AtmosSampleCompositionScatter(
+    float2 worldXZ,
+    float sampleY,
+    out float density,
+    out float3 tint)
 {
+    density = 0.0;
+    tint = 0.0;
+
     int mask = AtmosSampleMask(worldXZ);
     if (mask != 1)
-        return 0.0;
+        return;
 
-    float fire = AtmosSampleFire(worldXZ);
     float4 composition = AtmosSampleComposition(worldXZ);
-    float co2Frac = composition.b;
-    if (co2Frac <= 0.001)
-        return 0.0;
-
+    float fire = AtmosSampleFire(worldXZ);
     float localHeight = AtmosGetLocalVolumeHeight(worldXZ);
     float heightNorm = sampleY / max(localHeight, 1e-3);
-
-    // Rising plume: weak near the floor, strongest in the upper half of the column.
     float plumeMask = smoothstep(0.12, 0.38, heightNorm) * (1.0 - smoothstep(0.82, 1.0, heightNorm));
-
-    // Push smoke out of the burn core so it does not compete with glow.
     float coreMask = 1.0 - saturate(fire * 2.5);
+    float flowMod = AtmosFlowModulation(worldXZ, fire);
 
-    // Mole fraction is a much weaker visual driver than pressure-based gas fog.
-    float density = co2Frac * 4.0;
-    return density * _AtmosSmokeStrength * plumeMask * coreMask * AtmosFlowModulation(worldXZ, fire);
+    float weightedDensity = 0.0;
+    float3 weightedColor = 0.0;
+
+    [unroll]
+    for (int i = 0; i < ATMOS_COMPOSITION_GAS_CHANNELS; i++)
+    {
+        float frac = composition[i];
+        float scatterStrength = _AtmosGasScatter[i].a;
+        if (frac <= 0.001 || scatterStrength <= 0.001)
+            continue;
+
+        float channelWeight = frac * scatterStrength;
+        // CO₂ (channel 2) uses rising plume shaping away from the burn core.
+        if (i == 2)
+            channelWeight *= plumeMask * coreMask;
+
+        weightedDensity += channelWeight;
+        weightedColor += _AtmosGasScatter[i].rgb * channelWeight;
+    }
+
+    if (weightedDensity <= 0.001)
+        return;
+
+    tint = weightedColor / weightedDensity;
+    density = weightedDensity * flowMod;
 }
 
 // Shared view-ray march bounds through the atmosphere slab, clipped to scene depth.
@@ -406,7 +430,6 @@ float3 AtmosSamplePointEmission(float2 worldXZ, float sampleY)
         return 0.0;
 
     float4 composition = AtmosSampleComposition(worldXZ);
-    float plasmaFrac = composition.a;
     float temperature = AtmosSampleTemperature(worldXZ);
     float fire = AtmosSampleFire(worldXZ);
     float tempFactor = saturate((temperature - _AtmosIgnitionTemperature) /
@@ -419,15 +442,36 @@ float3 AtmosSamplePointEmission(float2 worldXZ, float sampleY)
     float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
     float flicker = AtmosFireFlicker(worldXZ);
 
+    float3 gasEmission = 0.0;
+    [unroll]
+    for (int i = 0; i < ATMOS_COMPOSITION_GAS_CHANNELS; i++)
+    {
+        float frac = composition[i];
+        float emissionIntensity = _AtmosGasEmission[i].a;
+        if (frac <= 0.001 || emissionIntensity <= 0.001)
+            continue;
+
+        gasEmission += frac * _AtmosGasEmission[i].rgb * emissionIntensity * tempFactor;
+    }
+
     float3 fireCore = fire * tempFactor * _AtmosFireCoreColor.rgb;
-    float3 plasmaHalo = plasmaFrac * tempFactor * _AtmosPlasmaHaloColor.rgb;
-    float3 emission = (fireCore + plasmaHalo) * flicker * heightFalloff;
+    float3 emission = (fireCore + gasEmission) * flicker * heightFalloff;
 
     return emission * _AtmosGlowStrength * AtmosFlowModulation(worldXZ, fire);
 }
 
-float2 AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
+void AtmosEvaluateScatter(
+    float2 uvScreen,
+    float deviceDepth,
+    bool isSky,
+    out float gasFog,
+    out float compFog,
+    out float3 compTint)
 {
+    gasFog = 0.0;
+    compFog = 0.0;
+    compTint = 0.0;
+
     float3 rayOrigin;
     float3 rayDir;
     float tEnter;
@@ -435,11 +479,13 @@ float2 AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
     float segmentLength;
     int steps;
     if (!AtmosComputeSlabMarch(uvScreen, deviceDepth, isSky, rayOrigin, rayDir, tEnter, tExit, segmentLength, steps))
-        return 0.0;
+        return;
 
     float stepLength = segmentLength / steps;
     float gasOpticalDepth = 0.0;
-    float smokeOpticalDepth = 0.0;
+    float compOpticalDepth = 0.0;
+    float3 compTintAccum = 0.0;
+    float compWeightAccum = 0.0;
     float jitter = frac(sin(dot(uvScreen, float2(12.9898, 78.233))) * 43758.5453);
     float jitterPos = jitter - 0.5;
 
@@ -453,12 +499,19 @@ float2 AtmosEvaluateScatter(float2 uvScreen, float deviceDepth, bool isSky)
             continue;
 
         gasOpticalDepth += AtmosSampleGasDensity(samplePos.xz, samplePos.y) * stepLength;
-        smokeOpticalDepth += AtmosSampleSmokeDensity(samplePos.xz, samplePos.y) * stepLength;
+
+        float sampleDensity;
+        float3 sampleTint;
+        AtmosSampleCompositionScatter(samplePos.xz, samplePos.y, sampleDensity, sampleTint);
+        float sampleContribution = sampleDensity * stepLength;
+        compOpticalDepth += sampleContribution;
+        compTintAccum += sampleTint * sampleContribution;
+        compWeightAccum += sampleContribution;
     }
 
-    return float2(
-        saturate((1.0 - exp(-gasOpticalDepth)) * _AtmosScatterStrength * _AtmosScatterColor.a),
-        saturate(1.0 - exp(-smokeOpticalDepth)));
+    gasFog = saturate((1.0 - exp(-gasOpticalDepth)) * _AtmosScatterStrength * _AtmosScatterColor.a);
+    compFog = saturate(1.0 - exp(-compOpticalDepth));
+    compTint = compTintAccum / max(compWeightAccum, 1e-4);
 }
 
 float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)

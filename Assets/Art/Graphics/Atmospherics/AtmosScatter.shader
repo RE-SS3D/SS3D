@@ -63,14 +63,13 @@ Shader "Custom/AtmosScatter"
                 if (debugColor.a >= 0.0)
                     return half4(lerp(sceneColor, debugColor.rgb, debugColor.a), 1.0);
 
-                float2 scatter = AtmosEvaluateScatter(uvScreen, depth, isSky);
-                float gasFog = scatter.x;
-                float smokeFog = scatter.y;
+                float gasFog;
+                float compFog;
+                float3 compTint;
+                AtmosEvaluateScatter(uvScreen, depth, isSky, gasFog, compFog, compTint);
 
-                // Layer gas fog and smoke separately so smoke stays visible without
-                // fighting gas tint or needing extreme strength values.
                 float3 afterGas = sceneColor * (1.0 - gasFog) + _AtmosScatterColor.rgb * gasFog;
-                float3 result = afterGas * (1.0 - smokeFog) + _AtmosSmokeColor.rgb * smokeFog;
+                float3 result = afterGas * (1.0 - compFog) + compTint * compFog;
 
                 return half4(result, 1.0);
             }

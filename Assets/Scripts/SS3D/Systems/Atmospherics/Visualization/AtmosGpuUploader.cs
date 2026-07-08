@@ -84,7 +84,7 @@ namespace SS3D.Systems.Atmospherics.Visualization
             _valid = true;
         }
 
-        public AtmosRenderContext.Snapshot BuildSnapshot()
+        public AtmosRenderContext.Snapshot BuildSnapshot(GasVisualProfileBuilder.GpuSet gasProfiles)
         {
             return new AtmosRenderContext.Snapshot
             {
@@ -98,6 +98,9 @@ namespace SS3D.Systems.Atmospherics.Visualization
                 MapId = _mapId,
                 Valid = _valid,
                 IgnitionTemperature = AtmosFluxConstants.PlasmaIgnitionTemperature,
+                GasScatter = gasProfiles.Scatter,
+                GasEmission = gasProfiles.Emission,
+                GasMisc = gasProfiles.Misc,
             };
         }
 

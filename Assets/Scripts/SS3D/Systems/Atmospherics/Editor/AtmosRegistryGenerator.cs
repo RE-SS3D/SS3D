@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using SS3D.Systems.Atmospherics.Visualization;
 using UnityEditor;
 using UnityEngine;
 
@@ -37,6 +38,15 @@ namespace SS3D.Systems.Atmospherics.Editor
                 serialized.FindProperty("_displayName").stringValue = gas.DisplayName;
                 serialized.FindProperty("_molarMass").floatValue = gas.MolarMass;
                 serialized.FindProperty("_specificHeat").floatValue = gas.SpecificHeat;
+
+                GasVisualProfile visualProfile = GasVisualProfileBuilder.CoreDefaultProfile(gas.Id);
+                SerializedProperty visual = serialized.FindProperty("_visualProfile");
+                visual.FindPropertyRelative("ScatterColor").colorValue = visualProfile.ScatterColor;
+                visual.FindPropertyRelative("ScatterStrength").floatValue = visualProfile.ScatterStrength;
+                visual.FindPropertyRelative("EmissionColor").colorValue = visualProfile.EmissionColor;
+                visual.FindPropertyRelative("EmissionIntensity").floatValue = visualProfile.EmissionIntensity;
+                visual.FindPropertyRelative("DistortionScale").floatValue = visualProfile.DistortionScale;
+                visual.FindPropertyRelative("TurbulenceScale").floatValue = visualProfile.TurbulenceScale;
                 serialized.ApplyModifiedPropertiesWithoutUndo();
 
                 definitions.Add(definition);

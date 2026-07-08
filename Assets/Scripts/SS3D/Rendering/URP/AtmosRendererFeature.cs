@@ -46,9 +46,9 @@ namespace SS3D.Rendering.URP
         private static readonly int AtmosFlowNoiseScaleId = Shader.PropertyToID("_AtmosFlowNoiseScale");
         private static readonly int AtmosFlowSpeedId = Shader.PropertyToID("_AtmosFlowSpeed");
         private static readonly int AtmosFireCoreColorId = Shader.PropertyToID("_AtmosFireCoreColor");
-        private static readonly int AtmosPlasmaHaloColorId = Shader.PropertyToID("_AtmosPlasmaHaloColor");
-        private static readonly int AtmosSmokeColorId = Shader.PropertyToID("_AtmosSmokeColor");
-        private static readonly int AtmosSmokeStrengthId = Shader.PropertyToID("_AtmosSmokeStrength");
+        private static readonly int AtmosGasScatterId = Shader.PropertyToID("_AtmosGasScatter");
+        private static readonly int AtmosGasEmissionId = Shader.PropertyToID("_AtmosGasEmission");
+        private static readonly int AtmosGasMiscId = Shader.PropertyToID("_AtmosGasMisc");
         private static readonly int AtmosFlickerAmountId = Shader.PropertyToID("_AtmosFlickerAmount");
         private static readonly int AtmosFlickerSpeedId = Shader.PropertyToID("_AtmosFlickerSpeed");
         private static readonly int AtmosFireHeightBoostId = Shader.PropertyToID("_AtmosFireHeightBoost");
@@ -71,9 +71,6 @@ namespace SS3D.Rendering.URP
         [SerializeField] private float _flowSpeed = 1f;
         [Header("Fire visuals")]
         [SerializeField] private Color _fireCoreColor = new(1f, 0.55f, 0.15f, 1f);
-        [SerializeField] private Color _plasmaHaloColor = new(0.75f, 0.2f, 1f, 1f);
-        [SerializeField] private Color _smokeColor = new(0.18f, 0.16f, 0.14f, 1f);
-        [SerializeField] private float _smokeStrength = 4f;
         [SerializeField] [Range(0f, 0.5f)] private float _flickerAmount = 0.15f;
         [SerializeField] private float _flickerSpeed = 8f;
         [SerializeField] private float _fireHeightBoost = 0.75f;
@@ -150,7 +147,7 @@ namespace SS3D.Rendering.URP
                 return;
 
             bool debugActive = _debugView != DebugView.Off;
-            bool scatterActive = debugActive || _scatterStrength > 0f || _smokeStrength > 0f;
+            bool scatterActive = debugActive || _scatterStrength > 0f || HasCompositionScatter(snapshot);
             bool glowActive = !debugActive && _glowStrength > 0f
                 && snapshot.Temperature != null
                 && snapshot.Composition != null
@@ -225,9 +222,12 @@ namespace SS3D.Rendering.URP
                 material.SetFloat(AtmosFlowNoiseScaleId, _flowNoiseScale);
                 material.SetFloat(AtmosFlowSpeedId, _flowSpeed);
                 material.SetColor(AtmosFireCoreColorId, _fireCoreColor);
-                material.SetColor(AtmosPlasmaHaloColorId, _plasmaHaloColor);
-                material.SetColor(AtmosSmokeColorId, _smokeColor);
-                material.SetFloat(AtmosSmokeStrengthId, _smokeStrength);
+                if (snapshot.GasScatter != null)
+                    material.SetVectorArray(AtmosGasScatterId, snapshot.GasScatter);
+                if (snapshot.GasEmission != null)
+                    material.SetVectorArray(AtmosGasEmissionId, snapshot.GasEmission);
+                if (snapshot.GasMisc != null)
+                    material.SetVectorArray(AtmosGasMiscId, snapshot.GasMisc);
                 material.SetFloat(AtmosFlickerAmountId, _flickerAmount);
                 material.SetFloat(AtmosFlickerSpeedId, _flickerSpeed);
                 material.SetFloat(AtmosFireHeightBoostId, _fireHeightBoost);
@@ -241,6 +241,20 @@ namespace SS3D.Rendering.URP
                     material.SetMatrix(AtmosInvViewProjId, inverseViewProjection);
                 }
             }
+        }
+
+        static bool HasCompositionScatter(AtmosRenderContext.Snapshot snapshot)
+        {
+            if (snapshot.GasScatter == null)
+                return false;
+
+            foreach (Vector4 channel in snapshot.GasScatter)
+            {
+                if (channel.w > 0f)
+                    return true;
+            }
+
+            return false;
         }
 
         void ApplyScatterMaterialSettings()

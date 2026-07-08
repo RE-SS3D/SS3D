@@ -42,7 +42,7 @@ namespace EditorTests.Atmospherics
             uploader.Refresh(simulation);
 
             Assert.IsTrue(uploader.IsValid);
-            var snapshot = uploader.BuildSnapshot();
+            var snapshot = uploader.BuildSnapshot(GasVisualProfileBuilder.CoreDefaults);
             Assert.IsTrue(snapshot.Valid);
 
             var coord = new TileCoord(context.Map.MapId, 1, 1);
