@@ -72,8 +72,8 @@ namespace SS3D.Rendering.URP
         [Header("Fire visuals")]
         [SerializeField] private Color _fireCoreColor = new(1f, 0.55f, 0.15f, 1f);
         [SerializeField] private Color _plasmaHaloColor = new(0.75f, 0.2f, 1f, 1f);
-        [SerializeField] private Color _smokeColor = new(0.12f, 0.12f, 0.12f, 1f);
-        [SerializeField] private float _smokeStrength = 1.5f;
+        [SerializeField] private Color _smokeColor = new(0.18f, 0.16f, 0.14f, 1f);
+        [SerializeField] private float _smokeStrength = 4f;
         [SerializeField] [Range(0f, 0.5f)] private float _flickerAmount = 0.15f;
         [SerializeField] private float _flickerSpeed = 8f;
         [SerializeField] private float _fireHeightBoost = 0.75f;

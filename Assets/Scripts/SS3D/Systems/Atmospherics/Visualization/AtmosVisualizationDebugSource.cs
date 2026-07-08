@@ -126,7 +126,10 @@ namespace SS3D.Systems.Atmospherics.Visualization
                     _fireData[i] = _fireIntensity * hot;
 
                     float plasma = _plasmaFraction * hot;
-                    float co2 = _co2Fraction * hot;
+                    // CO₂ peaks around the burn, not in the brightest core, and spreads wider.
+                    float co2Spread = Mathf.Clamp01(1f - distance / (maxRadius * 1.4f));
+                    float co2Core = Mathf.Clamp01(1f - distance / (maxRadius * 0.4f));
+                    float co2 = _co2Fraction * co2Spread * (1f - co2Core * 0.9f);
                     float remaining = Mathf.Max(0f, 1f - plasma - co2);
                     _compositionData[i] = new Color32(
                         ToByte(remaining * 0.5f),

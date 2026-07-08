@@ -332,9 +332,17 @@ float AtmosSampleSmokeDensity(float2 worldXZ, float sampleY)
         return 0.0;
 
     float localHeight = AtmosGetLocalVolumeHeight(worldXZ);
-    float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
-    float riseBias = 1.0 + fire * 0.75;
-    return co2Frac * _AtmosSmokeStrength * heightFalloff * riseBias * AtmosFlowModulation(worldXZ, fire);
+    float heightNorm = sampleY / max(localHeight, 1e-3);
+
+    // Rising plume: weak near the floor, strongest in the upper half of the column.
+    float plumeMask = smoothstep(0.12, 0.38, heightNorm) * (1.0 - smoothstep(0.82, 1.0, heightNorm));
+
+    // Push smoke out of the burn core so it does not compete with glow.
+    float coreMask = 1.0 - saturate(fire * 2.5);
+
+    // Mole fraction is a much weaker visual driver than pressure-based gas fog.
+    float density = co2Frac * 4.0;
+    return density * _AtmosSmokeStrength * plumeMask * coreMask * AtmosFlowModulation(worldXZ, fire);
 }
 
 // Shared view-ray march bounds through the atmosphere slab, clipped to scene depth.
