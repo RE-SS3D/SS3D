@@ -1,6 +1,7 @@
 @import url("../Tokens/ss3d-tokens.uss");
 
 .hold-reveal-button {
+    width: 100%;
     position: relative;
     overflow: hidden;
     padding: 10px;

@@ -2,12 +2,25 @@
 
 .smes-unit-interface {
     flex-direction: column;
-    width: 396px;
+    width: 100%;
 }
 
 .smes-view {
     flex-direction: column;
-    gap: var(--ss3d-space-4);
+    width: 100%;
+}
+
+.smes-view .smes-exterior-charge,
+.smes-view .smes-exterior-io-grid,
+.smes-view .smes-connection,
+.smes-view .smes-open-engineer-btn,
+.smes-view .warning-panel,
+.smes-view .smes-energy-storage,
+.smes-view .smes-power-flow-section,
+.smes-view .rate-control,
+.smes-view .hold-reveal-button,
+.smes-view .advanced-diagnostics {
+    margin-top: var(--ss3d-space-4);
 }
 
 .smes-view--hidden {
@@ -22,6 +35,7 @@
 }
 
 .smes-exterior-status {
+    width: 100%;
     padding: 14px;
     border-width: 1px;
     border-radius: var(--ss3d-radius-md);
@@ -73,13 +87,13 @@
 }
 
 .smes-exterior-status__word {
+    flex-shrink: 1;
     font-size: 13px;
     letter-spacing: 2px;
 }
 
 .smes-exterior-charge {
     flex-direction: column;
-    gap: 6px;
 }
 
 .smes-exterior-charge__header {
@@ -93,6 +107,7 @@
 }
 
 .smes-exterior-charge__track {
+    margin-top: 6px;
     height: 16px;
     background-color: var(--ss3d-surface-inset);
     border-width: 1px;
@@ -119,13 +134,18 @@
 
 .smes-exterior-io-grid {
     flex-direction: row;
-    gap: var(--ss3d-space-2);
+    width: 100%;
+}
+
+#exterior-input-card {
+    margin-right: var(--ss3d-space-2);
 }
 
 .smes-io-card {
     flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
     flex-direction: column;
-    gap: 2px;
     padding: 10px 12px;
     background-color: var(--ss3d-surface-inset);
     border-radius: var(--ss3d-radius-sm);
@@ -155,6 +175,7 @@
 }
 
 .smes-io-card__value {
+    margin-top: 2px;
     font-size: 14px;
     color: var(--ss3d-text-primary);
 }
@@ -173,11 +194,21 @@
 
 .smes-connection {
     flex-direction: row;
-    align-items: center;
-    gap: var(--ss3d-space-2);
+    align-items: flex-start;
+    width: 100%;
+}
+
+.smes-connection__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-left: var(--ss3d-space-2);
+    font-size: 12px;
+    color: var(--ss3d-text-tertiary);
+    white-space: normal;
 }
 
 .smes-connection__dot {
+    flex-shrink: 0;
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -195,13 +226,8 @@
     background-color: var(--ss3d-feedback-danger);
 }
 
-.smes-connection__text {
-    font-size: 12px;
-    color: var(--ss3d-text-tertiary);
-    white-space: normal;
-}
-
 .smes-open-engineer-btn {
+    width: 100%;
     height: 42px;
     border-width: 0;
     border-radius: var(--ss3d-radius-sm);
@@ -226,7 +252,11 @@
 
 .smes-energy-storage {
     flex-direction: column;
-    gap: var(--ss3d-space-2);
+}
+
+.smes-energy-storage .storage-cell-row,
+.smes-energy-storage__footer {
+    margin-top: var(--ss3d-space-2);
 }
 
 .smes-energy-storage__footer {
@@ -241,7 +271,10 @@
 
 .smes-power-flow-section {
     flex-direction: column;
-    gap: 4px;
+}
+
+.smes-power-flow-section .vertical-power-flow {
+    margin-top: 4px;
 }
 
 .tone-success {

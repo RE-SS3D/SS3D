@@ -18,6 +18,11 @@ namespace SS3D.UI.MachineInterface.Components
             {
                 VisualElement cell = new();
                 cell.AddToClassList("storage-cell-row__cell");
+                if (i == CellCount - 1)
+                {
+                    cell.AddToClassList("storage-cell-row__cell--last");
+                }
+
                 _cells[i] = cell;
                 Add(cell);
             }

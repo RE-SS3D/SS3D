@@ -2,7 +2,7 @@
 
 .warning-panel {
     flex-direction: column;
-    gap: var(--ss3d-space-2);
+    width: 100%;
     padding: var(--ss3d-space-3);
     border-width: 1px;
     border-color: var(--ss3d-feedback-danger);
@@ -16,12 +16,12 @@
 
 .warning-panel__lines {
     flex-direction: column;
-    gap: 6px;
+    margin-top: var(--ss3d-space-2);
 }
 
 .warning-panel__line {
     flex-direction: row;
-    gap: var(--ss3d-space-2);
+    margin-bottom: 6px;
 }
 
 .warning-panel__glyph {
@@ -30,6 +30,7 @@
 }
 
 .warning-panel__text {
+    margin-left: var(--ss3d-space-2);
     font-size: 13px;
     color: var(--ss3d-text-primary);
     white-space: normal;
@@ -39,5 +40,6 @@
     font-size: 12px;
     color: var(--ss3d-text-secondary);
     white-space: normal;
+    margin-top: var(--ss3d-space-2);
     padding-top: 2px;
 }

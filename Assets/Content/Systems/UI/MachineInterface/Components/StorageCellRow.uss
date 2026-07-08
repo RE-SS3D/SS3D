@@ -2,16 +2,23 @@
 
 .storage-cell-row {
     flex-direction: row;
-    gap: 3px;
+    width: 100%;
 }
 
 .storage-cell-row__cell {
     flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 3px;
     height: 28px;
     background-color: var(--ss3d-surface-inset);
     border-width: 1px;
     border-color: var(--ss3d-border-subtle);
     border-radius: var(--ss3d-radius-sm);
+}
+
+.storage-cell-row__cell--last {
+    margin-right: 0;
 }
 
 .storage-cell-row__cell--filled.tone-success {
