@@ -1,5 +1,27 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3601183876851600227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e54601e917853c2c93138c2b6e2515b, type: 3}
+  m_Name: AtmosRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.AtmosRendererFeature
+  m_Active: 1
+  _scatterShader: {fileID: 4800000, guid: 7f2a9b8c1d3e4f5061728394a5b6c7d8, type: 3}
+  _enabled: 1
+  _debugView: 0
+  _scatterStrength: 1
+  _scatterColor: {r: 0.656928, g: 0.7490196, b: 0.6509804, a: 1}
+  _volumeHeight: 2.5
+  _referencePressure: 101.325
+  _fogPressureScale: 80
+  _slabSteps: 6
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26,8 +48,9 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
-  - {fileID: 1717928855446876704}
-  m_RendererFeatureMap: 4c8e2b1f7a903d5e
+  - {fileID: -3601183876851600227}
+  - {fileID: 224747764540820986}
+  m_RendererFeatureMap: 6dc57abbd793e549006e7d341c02045600000000000000009d746509580606ce
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -56,7 +79,7 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
---- !u!114 &1717928855446876704
+--- !u!114 &224747764540820986
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,3 +119,24 @@ MonoBehaviour:
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1
+--- !u!114 &8234567890123456789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: AtmosRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.AtmosRendererFeature
+  m_Active: 1
+  _scatterShader: {fileID: 4800000, guid: 7f2a9b8c1d3e4f5061728394a5b6c7d8, type: 3}
+  _enabled: 1
+  _scatterStrength: 1
+  _scatterColor: {r: 0.65, g: 0.7, b: 0.75, a: 1}
+  _volumeHeight: 2.5
+  _referencePressure: 101.325
+  _fogPressureScale: 80
+  _slabSteps: 6

@@ -3,10 +3,16 @@ using UnityEngine;
 namespace SS3D.Rendering.URP
 {
     /// <summary>
-    /// Per-tick atmospherics GPU snapshot consumed by <see cref="AtmosRendererFeature"/> (Phase 2+).
+    /// Per-tick atmospherics GPU snapshot and per-camera render requests consumed by
+    /// <see cref="AtmosRendererFeature"/>.
     /// </summary>
     public static class AtmosRenderContext
     {
+        public struct Request
+        {
+            public Camera SourceCamera;
+        }
+
         public struct Snapshot
         {
             public Texture2D Pressure;
@@ -23,7 +29,31 @@ namespace SS3D.Rendering.URP
             public float IgnitionTemperature;
         }
 
+        static Request? s_Request;
         static Snapshot? s_Snapshot;
+        static bool s_DebugSnapshotOverride;
+
+        public static void SetRequest(Request request)
+        {
+            s_Request = request.SourceCamera != null ? request : null;
+        }
+
+        public static void ClearRequest()
+        {
+            s_Request = null;
+        }
+
+        public static bool TryGetRequest(out Request request)
+        {
+            if (s_Request.HasValue && s_Request.Value.SourceCamera != null)
+            {
+                request = s_Request.Value;
+                return true;
+            }
+
+            request = default;
+            return false;
+        }
 
         public static void SetSnapshot(Snapshot snapshot)
         {
@@ -45,6 +75,16 @@ namespace SS3D.Rendering.URP
 
             snapshot = default;
             return false;
+        }
+
+        public static void SetDebugSnapshotOverride(bool enabled)
+        {
+            s_DebugSnapshotOverride = enabled;
+        }
+
+        public static bool IsDebugSnapshotOverrideEnabled()
+        {
+            return s_DebugSnapshotOverride;
         }
     }
 }

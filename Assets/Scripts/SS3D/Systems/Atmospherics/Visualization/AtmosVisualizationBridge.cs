@@ -28,6 +28,10 @@ namespace SS3D.Systems.Atmospherics.Visualization
         /// <summary>Called by <see cref="AtmosSubSystem"/> after each simulation tick.</summary>
         public void PublishSnapshot()
         {
+            // When synthetic debug source is active, keep its snapshot authoritative.
+            if (AtmosRenderContext.IsDebugSnapshotOverrideEnabled())
+                return;
+
             if (_uploader == null || _atmos?.Simulation == null)
             {
                 AtmosRenderContext.ClearSnapshot();
