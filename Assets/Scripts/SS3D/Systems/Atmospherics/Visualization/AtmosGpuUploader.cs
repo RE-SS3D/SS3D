@@ -287,8 +287,6 @@ namespace SS3D.Systems.Atmospherics.Visualization
             Array.Clear(_pressureScratch, 0, pixelCount);
             Array.Clear(_temperatureScratch, 0, pixelCount);
             Array.Clear(_fireScratch, 0, pixelCount);
-            if (_visualFireScratch != null)
-                Array.Clear(_visualFireScratch, 0, pixelCount);
             Array.Clear(_maskScratch, 0, pixelCount);
 
             var clearComposition = new Color32(0, 0, 0, 0);

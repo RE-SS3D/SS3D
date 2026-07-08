@@ -27,39 +27,88 @@ namespace EditorTests.Atmospherics
         public void GpuUploader_PressureAtlasMatchesSimulation()
         {
             TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
-            BuildPlenumTile(context, 1, 1);
+            using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 2, out int mapId);
 
-            using var simulation = new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);
-            simulation.CreateChunk(new TileChunkRef
-            {
-                MapId = context.Map.MapId,
-                ChunkKey = Vector2Int.zero,
-                Origin = Vector3.zero,
-            });
-            simulation.UpdateCell(new TileCoord(context.Map.MapId, 1, 1));
+            var coord = new TileCoord(mapId, 1, 1);
+            using var uploader = new AtmosGpuUploader();
+            uploader.Refresh(simulation);
+
+            AssertAtlasScalarMatches(simulation, uploader, coord, snapshot => snapshot.Pressure, info => info.Pressure);
+        }
+
+        [Test]
+        public void GpuUploader_TemperatureAtlasMatchesSimulation()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 2, out int mapId);
+
+            var coord = new TileCoord(mapId, 1, 1);
+            simulation.DebugSetTemperature(coord, 850f);
 
             using var uploader = new AtmosGpuUploader();
             uploader.Refresh(simulation);
 
+            AssertAtlasScalarMatches(simulation, uploader, coord, snapshot => snapshot.Temperature, info => info.Temperature);
+        }
+
+        [Test]
+        public void GpuUploader_FireAtlasMatchesSimulationBurnIntensity()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
+
+            var coord = new TileCoord(mapId, 0, 0);
+            AtmosTestFixtures.IgnitePlasmaFire(simulation, coord, plasmaMoles: 10f, oxygenMoles: 40f);
+            simulation.Tick(AtmosConstants.TickInterval);
+
+            using var uploader = new AtmosGpuUploader();
+            uploader.Refresh(simulation);
+
+            AssertAtlasScalarMatches(simulation, uploader, coord, snapshot => snapshot.FireIntensity, info => info.BurnIntensity);
+        }
+
+        [Test]
+        public void GpuUploader_VisualFireDecaysBetweenUploadsWhenSimBurnStops()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            using var simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 1, out int mapId);
+
+            var coord = new TileCoord(mapId, 0, 0);
+            AtmosTestFixtures.IgnitePlasmaFire(simulation, coord, plasmaMoles: 10f, oxygenMoles: 40f);
+            simulation.Tick(AtmosConstants.TickInterval);
+
+            using var uploader = new AtmosGpuUploader();
+            uploader.Refresh(simulation);
+            var snapshot = uploader.BuildSnapshot(GasVisualProfileBuilder.CoreDefaults);
+            float firstFire = AtmosTestFixtures.SampleSnapshotScalar(snapshot, coord, snapshot.FireIntensity);
+            Assert.Greater(firstFire, 0.01f);
+
+            simulation.DebugSetTemperature(coord, 300f);
+            simulation.Tick(AtmosConstants.TickInterval);
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info));
+            Assert.AreEqual(0f, info.BurnIntensity, 0.001f);
+
+            uploader.Refresh(simulation);
+            snapshot = uploader.BuildSnapshot(GasVisualProfileBuilder.CoreDefaults);
+            float decayedFire = AtmosTestFixtures.SampleSnapshotScalar(snapshot, coord, snapshot.FireIntensity);
+
+            Assert.That(decayedFire, Is.EqualTo(firstFire * AtmosVisualMetrics.VisualFireDecayPerTick).Within(0.01f));
+        }
+
+        private static void AssertAtlasScalarMatches(
+            AtmosSimulation simulation,
+            AtmosGpuUploader uploader,
+            TileCoord coord,
+            System.Func<SS3D.Rendering.URP.AtmosRenderContext.Snapshot, Texture2D> textureSelector,
+            System.Func<AtmosCellDebugInfo, float> expectedValue)
+        {
             Assert.IsTrue(uploader.IsValid);
             var snapshot = uploader.BuildSnapshot(GasVisualProfileBuilder.CoreDefaults);
             Assert.IsTrue(snapshot.Valid);
-
-            var coord = new TileCoord(context.Map.MapId, 1, 1);
             Assert.IsTrue(simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info));
 
-            int localX = coord.Grid.x - (int)snapshot.AtlasBounds.x;
-            int localZ = coord.Grid.y - (int)snapshot.AtlasBounds.y;
-            int atlasWidth = (int)snapshot.AtlasBounds.z;
-            int index = localZ * atlasWidth + localX;
-
-            var pressureData = snapshot.Pressure.GetPixelData<float>(0);
-            Assert.That(pressureData[index], Is.EqualTo(info.Pressure).Within(0.01f));
-        }
-
-        private static void BuildPlenumTile(TileMapTestUtilities.MapContext context, int x, int z)
-        {
-            TileMapTestUtilities.PlacePlenum(context, new Vector3(x, 0, z));
+            float atlasValue = AtmosTestFixtures.SampleSnapshotScalar(snapshot, coord, textureSelector(snapshot));
+            Assert.That(atlasValue, Is.EqualTo(expectedValue(info)).Within(0.01f));
         }
     }
 }

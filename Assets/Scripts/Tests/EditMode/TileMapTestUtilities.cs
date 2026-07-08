@@ -44,8 +44,11 @@ namespace EditorTests
 
         internal static void EnsureTestAssetsRegistered()
         {
-            if (_assetsRegistered)
+            if (_assetsRegistered && _tilePrefab != null)
                 return;
+
+            if (_tilePrefab != null)
+                Object.DestroyImmediate(_tilePrefab);
 
             _tilePrefab = new GameObject("EditModeTilePrefab");
             _tilePrefab.AddComponent<PlacedTileObject>();
