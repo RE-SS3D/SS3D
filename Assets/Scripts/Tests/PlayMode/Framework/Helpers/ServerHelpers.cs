@@ -6,6 +6,7 @@ using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using System.Collections;
 using System.Diagnostics;
+using System.IO;
 using UnityEngine;
 using System.Linq;
 using Tests.Play_Mode.Framework.Helpers;
@@ -20,29 +21,25 @@ namespace SS3D.Tests
     {
         public static Process[] CreateClients(int amount, ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
         {
-            string filePath;
-            Process[] result;
+            LoadFileHelpers.RequireCompiledBuild();
 
-            // Initialize the process return array
-            result = new Process[amount];
+            if (!LoadFileHelpers.TryResolveExecutablePath(out string executablePath))
+            {
+                throw new FileNotFoundException(LoadFileHelpers.MissingBuildMessage);
+            }
 
-            // Get relevant executable file path
-            filePath = Application.dataPath;
-            filePath = filePath.Substring(0, filePath.Length - 6);     // Needed to remove the "Assets" folder.
-            filePath += "Builds/Game";                                    // Needed to add the "Builds" folder.
+            Process[] result = new Process[amount];
+            string workingDirectory = Path.GetDirectoryName(executablePath);
 
             for (int i = 0; i < amount; i++)
             {
-                // Fire up the client.
                 result[i] = new Process();
                 result[i].StartInfo.WindowStyle = windowStyle;
                 result[i].StartInfo.Arguments = $"-ip=localhost -ckey=player_{i} -port=1151 -skipintro";
-                result[i].StartInfo.FileName = "SS3D.exe";
-                result[i].StartInfo.WorkingDirectory = filePath;
+                result[i].StartInfo.FileName = executablePath;
+                result[i].StartInfo.WorkingDirectory = workingDirectory;
                 result[i].Start();
             }
-
-            
 
             return result;
         }

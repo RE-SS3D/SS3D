@@ -133,15 +133,14 @@ namespace SS3D.Systems.Inventory.Containers
             item.Container.RemoveItem(item);
             ItemUtility.Place(item, position, rotation);
 
-            // Register with TileMap for saving
-            TileMap tileMap = SubSystems.Get<TileSubSystem>().CurrentMap;
-            if (tileMap != null)
+            ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset) as ItemObjectSo;
+            if (itemObjectSo != null)
             {
-                ItemObjectSo itemObjectSo = SubSystems.Get<TileSubSystem>().GetAsset(item.Asset) as ItemObjectSo;
-                if (itemObjectSo != null)
-                {
-                    tileMap.PlaceItemObject(position, rotation, itemObjectSo, item.gameObject);
-                }
+                SubSystems.Get<TileSubSystem>().Construction.TryPlaceItem(
+                    itemObjectSo,
+                    position,
+                    rotation,
+                    item.gameObject);
             }
         }
 

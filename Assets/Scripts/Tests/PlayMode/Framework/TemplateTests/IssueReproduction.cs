@@ -27,24 +27,36 @@ namespace SS3D.Tests
         /// after the round restarts. Aims to validate Issue #990: Propagating Pocket Problem.
         /// </summary>
         /// <returns>IEnumerator for use as a UnityTest.</returns>
-        public static IEnumerator Issue0990_PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne()
+        public static IEnumerator Issue0990_PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne(bool useProgrammaticRoundControl = false)
         {
-            // Make sure the player has actually embarked
             yield return new WaitForSeconds(5f);
 
-            // Count the number of container slots -> this will include pockets.
             int initialNumberOfContainerSlots = Object.FindObjectsOfType(typeof(SingleItemContainerSlot)).Length;
 
-            // Exit the round, then restart shortly after.
-            yield return TestHelpers.FinishAndExitRound();
-            yield return new WaitForSeconds(5f);
-            yield return TestHelpers.StartAndEnterRound();
+            if (useProgrammaticRoundControl)
+            {
+                ServerHelpers.ChangeRoundState(false);
+                yield return new WaitForSeconds(8f);
+
+                ServerHelpers.SetPlayerReadiness("john", true);
+                ServerHelpers.ChangeRoundState(true);
+                yield return new WaitForSeconds(8f);
+                yield return TestHelpers.Embark();
+            }
+            else
+            {
+                yield return TestHelpers.FinishAndExitRound();
+                yield return new WaitForSeconds(5f);
+                yield return TestHelpers.StartAndEnterRound();
+            }
+
             yield return new WaitForSeconds(5f);
 
-            // Count the number of slots again -> it should be the same as the first time
             int subsequentNumberOfContainerSlots = Object.FindObjectsOfType(typeof(SingleItemContainerSlot)).Length;
 
-            Assert.IsTrue(initialNumberOfContainerSlots == subsequentNumberOfContainerSlots,
+            Assert.AreEqual(
+                initialNumberOfContainerSlots,
+                subsequentNumberOfContainerSlots,
                 $"Initially there were {initialNumberOfContainerSlots} slots, but now there are {subsequentNumberOfContainerSlots} slots");
         }
     }

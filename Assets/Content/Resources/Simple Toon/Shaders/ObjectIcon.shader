@@ -1,79 +1,97 @@
-Shader "Unlit/ObjectIcon" 
+Shader "Unlit/ObjectIcon"
 {
     Properties
     {
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _EmissionMap ("Emission Map", 2D) = "black" {}
         [HDR]_EmissionColor ("Emission Color", Color) = (0,0,0,0)
-
     }
 
     SubShader
     {
+        Tags
+        {
+            "RenderType" = "Opaque"
+            "RenderPipeline" = "UniversalPipeline"
+            "Queue" = "Geometry"
+        }
+
         Pass
         {
-            Tags{ "RenderType" = "Opaque" "Queue" = "Opaque" }
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+            Name "ForwardUnlit"
+            Tags { "LightMode" = "UniversalForward" }
+
+            Cull Back
+            ZWrite On
+            ZTest LEqual
+
+            HLSLPROGRAM
             #pragma target 2.0
-            #pragma multi_compile_fog
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma multi_compile_instancing
 
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            struct appdata_t {
-                float4 vertex : POSITION;
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+            TEXTURE2D(_EmissionMap);
+            SAMPLER(sampler_EmissionMap);
+
+            CBUFFER_START(UnityPerMaterial)
+                float4 _MainTex_ST;
+                float4 _EmissionColor;
+            CBUFFER_END
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
                 float2 texcoord : TEXCOORD0;
-                float3 normal : NORMAL;
+                float3 normalOS : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
-            struct v2f {
-                float4 vertex : SV_POSITION;
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
                 float2 texcoord : TEXCOORD0;
-                half3 worldNormal : TEXCOORD1;
-                float4 worldPos : TEXCOORD2;
-                float3 viewDir : TEXCOORD3;
+                float3 normalWS : TEXCOORD1;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-            sampler2D _EmissionMap;
-            float4 _EmissionColor;
-
-            v2f vert (appdata_t v)
+            Varyings Vert(Attributes input)
             {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-                o.worldNormal = UnityObjectToWorldNormal(v.normal);
-                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
-                o.viewDir = WorldSpaceViewDir(v.vertex);
-                return o;
+                Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_TRANSFER_INSTANCE_ID(input, output);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+                VertexNormalInputs normalInputs = GetVertexNormalInputs(input.normalOS);
+                output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+                output.texcoord = TRANSFORM_TEX(input.texcoord, _MainTex);
+                output.normalWS = normalInputs.normalWS;
+                return output;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            half4 Frag(Varyings input) : SV_Target
             {
-                float3 viewDir = normalize(i.viewDir);
-                fixed4 texColor = tex2D(_MainTex, i.texcoord);
-                fixed4 emission = tex2D(_EmissionMap, i.texcoord) * _EmissionColor;
+                UNITY_SETUP_INSTANCE_ID(input);
 
-                float3 lightVector = (float3(-0.258, 0.22, 0.966));
+                float3 lightVector = float3(-0.258, 0.22, 0.966);
+                float ndotl = dot(normalize(input.normalWS), lightVector);
+                float light = smoothstep(0.0, 0.75, ndotl) * 0.525 + 0.475;
+                float4 shadow = float4(0.0, 0.0, 0.04, 0.0) * (1.0 - light);
 
-                float NdotL = dot(i.worldNormal, lightVector);
-                float light = (smoothstep(0, 0.75, NdotL) * 0.525 + 0.475);
-                float4 shadow = float4(0,0,0.04f,0) * (1 - light);
+                half4 texColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.texcoord);
+                half4 emission = SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, input.texcoord) * _EmissionColor;
 
-
-//                float4 rimDot = (1 - dot(viewDir, i.worldNormal));
-//                rimDot = (rimDot * rimDot * rimDot) * 0.15;
-
-                fixed3 color = texColor.rgb * light + shadow + emission;
-                fixed4 outcolor;
-                outcolor.rgb = color.rgb;
-                outcolor.a = texColor.a;
-                return outcolor;
+                half3 color = texColor.rgb * light + shadow.rgb + emission.rgb;
+                return half4(color, texColor.a);
             }
-        ENDCG
+            ENDHLSL
         }
     }
+
+    Fallback Off
 }

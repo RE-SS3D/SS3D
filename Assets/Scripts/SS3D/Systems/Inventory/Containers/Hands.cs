@@ -34,6 +34,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 
         private Controls.HotkeysActions _controls;
+        private bool _controlsInitialized;
 
         /// <summary>
         /// Reference to the inventory linked to Hands.
@@ -113,6 +114,7 @@ namespace SS3D.Systems.Inventory.Containers
             _controls = SubSystems.Get<InputSubSystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
+            _controlsInitialized = true;
 
             Inventory.OnInventorySetUp -= OnInventorySetUp;
         }
@@ -121,10 +123,11 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnDestroyed();
 
-            if (IsOwner)
+            if (IsOwner && _controlsInitialized)
             {
                 _controls.SwapHands.performed -= HandleSwapHands;
                 _controls.Drop.performed -= HandleDropHeldItem;
+                _controlsInitialized = false;
             }
         }
 

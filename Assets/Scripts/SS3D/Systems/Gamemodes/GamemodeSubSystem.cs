@@ -11,7 +11,6 @@ using SS3D.Systems.GameModes.Modes;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
-using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
 using SS3D.Systems.PlayerControl;
 
@@ -131,8 +130,7 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         public void EndRound()
         {
-            ChangeRoundStateMessage message = new(false);
-            ClientManager.Broadcast(message);
+            SubSystems.Get<RoundSubSystem>().RequestRoundEnd();
         }
 
         /// <summary>

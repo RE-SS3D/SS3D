@@ -13,34 +13,38 @@ MonoBehaviour:
   m_Name: InteractionIcons
   m_EditorClassIdentifier: 
   m_GroupName: InteractionIcons
-  m_Data:
-    m_SerializedData: []
   m_GUID: 1126fc962db90eb4599465450b6b7b5c
   m_SerializeEntries:
-  - m_GUID: b22067d36fa963b4bbaf8d6085b0ebc9
-    m_Address: Assets/Content/UI/Interactions/Power.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2db953f2ae8f41d4e9842d9144a9e396
-    m_Address: Assets/Content/UI/Interactions/Take.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 1f97d7fac1be1b448824c85e156d9746
     m_Address: Assets/Content/UI/Interactions/Open.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: e4d142ab75244e24c89d0c2aec36dbed
-    m_Address: Assets/Content/UI/Interactions/Discard.asset
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2db953f2ae8f41d4e9842d9144a9e396
+    m_Address: Assets/Content/UI/Interactions/Take.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 88c0c549992b597489791caf4a12f18c
-    m_Address: Assets/Content/UI/Interactions/Honk.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3030468639c4d15459be5f65d30a42df
     m_Address: Assets/Content/UI/Interactions/Nuke.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88c0c549992b597489791caf4a12f18c
+    m_Address: Assets/Content/UI/Interactions/Honk.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b22067d36fa963b4bbaf8d6085b0ebc9
+    m_Address: Assets/Content/UI/Interactions/Power.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4d142ab75244e24c89d0c2aec36dbed
+    m_Address: Assets/Content/UI/Interactions/Discard.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

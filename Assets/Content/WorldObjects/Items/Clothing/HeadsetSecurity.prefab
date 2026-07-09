@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -662551539427050504, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
@@ -24,11 +25,11 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 867287249480193492, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
-      propertyPath: _startingTraits.Array.data[2]
+      propertyPath: '_startingTraits.Array.data[2]'
       value: 
       objectReference: {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
     - target: {fileID: 867287249480193492, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
-      propertyPath: _startingTraits.Array.data[3]
+      propertyPath: '_startingTraits.Array.data[3]'
       value: 
       objectReference: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
     - target: {fileID: 3346295071430447723, guid: db15899bc1eb2794fb2b24129852a209, type: 3}
@@ -96,4 +97,7 @@ PrefabInstance:
       value: HeadsetSecurity
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db15899bc1eb2794fb2b24129852a209, type: 3}

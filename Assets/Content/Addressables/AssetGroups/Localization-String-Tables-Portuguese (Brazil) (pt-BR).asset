@@ -13,34 +13,36 @@ MonoBehaviour:
   m_Name: Localization-String-Tables-Portuguese (Brazil) (pt-BR)
   m_EditorClassIdentifier: 
   m_GroupName: Localization-String-Tables-Portuguese (Brazil) (pt-BR)
-  m_Data:
-    m_SerializedData: []
   m_GUID: 574ca4a3fe84aff4ca268ab007cab6a0
   m_SerializeEntries:
-  - m_GUID: fd5df8e66ef5d164f82bc433fd92e531
-    m_Address: Tiles_pt-BR
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-pt-BR
-    - Preload
   - m_GUID: 3b9e40bf56dc3a349bd0048ba90a1ffc
     m_Address: Items_pt-BR
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-pt-BR
     - Preload
-  - m_GUID: d2ba8918226d6a549aaddbe313f03435
-    m_Address: Misc_pt-BR
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-pt-BR
-    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c6b4394e0eac718429a2d9e404355d1c
     m_Address: UI_pt-BR
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-pt-BR
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2ba8918226d6a549aaddbe313f03435
+    m_Address: Misc_pt-BR
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pt-BR
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fd5df8e66ef5d164f82bc433fd92e531
+    m_Address: Tiles_pt-BR
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pt-BR
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

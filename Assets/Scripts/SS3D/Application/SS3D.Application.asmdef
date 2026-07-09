@@ -8,7 +8,6 @@
         "SS3D.Core",
         "SS3D.Logging",
         "UltimateDiscordSDK",
-        "ToolbarExtender.Editor",
         "DOTween.Modules"
     ],
     "includePlatforms": [],

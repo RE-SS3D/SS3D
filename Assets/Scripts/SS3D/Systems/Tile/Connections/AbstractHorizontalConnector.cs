@@ -82,20 +82,23 @@ namespace SS3D.Systems.Tile.Connections
         {
             base.OnStartClient();
             Setup();
+            ApplyClientSyncedAdjacencies();
         }
 
         /// <summary>
         /// Simply set things up, including creating new references, and fetching generic and specific type
         /// from the associated scriptable object.
         /// </summary>
-        private void Setup()
+        protected void Setup()
         {
             if (!_initialized)
             {
                 _adjacencyMap = new AdjacencyMap();
                 _filter = GetComponent<MeshFilter>();
 
-                _placedObject = GetComponentInParent<PlacedTileObject>();
+                _placedObject = GetComponent<PlacedTileObject>();
+                if (_placedObject == null)
+                    _placedObject = GetComponentInParent<PlacedTileObject>();
                 if (_placedObject == null)
                 {
                     _genericType = TileObjectGenericType.None;
@@ -161,10 +164,20 @@ namespace SS3D.Systems.Tile.Connections
             if (!asServer)
             {
                 Setup();
-
-                _adjacencyMap.DeserializeFromByte(newValue);
-                UpdateMeshAndDirection();
+                ApplyClientSyncedAdjacencies();
             }
+        }
+
+        /// <summary>
+        /// Applies the current replicated connection byte on clients (initial spawn and late join).
+        /// </summary>
+        protected void ApplyClientSyncedAdjacencies()
+        {
+            if (_adjacencyMap == null)
+                return;
+
+            _adjacencyMap.DeserializeFromByte(_syncedConnections);
+            UpdateMeshAndDirection();
         }
 
         /// <summary>
@@ -209,11 +222,20 @@ namespace SS3D.Systems.Tile.Connections
         /// Return only existing neighbours. Neighbours here are adjacent (cardinal and diagonal)
         /// tile objects on the same layer.
         /// </summary>
-        public List<PlacedTileObject> GetNeighbours()
+        public virtual List<PlacedTileObject> GetNeighbours()
         {
+            Setup();
+
+            if (_placedObject == null)
+                return new List<PlacedTileObject>();
+
             TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
-            var map = tileSystem.CurrentMap;
-            var neighbours = map.GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position).ToList();
+            if (tileSystem?.CurrentMap == null)
+                return new List<PlacedTileObject>();
+
+            var neighbours = tileSystem.CurrentMap
+                .GetNeighbourPlacedObjects(_placedObject.Layer, _placedObject.gameObject.transform.position)
+                .ToList();
             neighbours.RemoveAll(x => x == null);
             return neighbours;
         }

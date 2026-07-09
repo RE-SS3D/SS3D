@@ -6,6 +6,9 @@ using UnityEngine;
 #if UNITY_2018_2_OR_NEWER
 using UnityEngine.Rendering;
 #endif
+#if UNITY_RENDER_PIPELINE_UNIVERSAL
+using UnityEngine.Rendering.Universal;
+#endif
 using Object = UnityEngine.Object;
 
 public static class RuntimePreviewGenerator
@@ -100,6 +103,7 @@ public static class RuntimePreviewGenerator
 				m_internalCamera.nearClipPlane = 0.01f;
 				m_internalCamera.cullingMask = 1 << PREVIEW_LAYER;
 				m_internalCamera.gameObject.hideFlags = HideFlags.HideAndDontSave;
+				ConfigurePreviewCameraForActivePipeline( m_internalCamera );
 			}
 
 			return m_internalCamera;
@@ -730,10 +734,31 @@ public static class RuntimePreviewGenerator
 		else
 			renderCamera = InternalCamera;
 
+		ConfigurePreviewCameraForActivePipeline( renderCamera );
+
 		renderCamera.backgroundColor = m_backgroundColor;
 		renderCamera.orthographic = m_orthographicMode;
 		renderCamera.clearFlags = m_backgroundColor.a < 1f ? CameraClearFlags.Depth : CameraClearFlags.Color;
 	}
+
+#if UNITY_RENDER_PIPELINE_UNIVERSAL
+	private static void ConfigurePreviewCameraForActivePipeline( Camera camera )
+	{
+		if( camera == null || GraphicsSettings.currentRenderPipeline == null )
+			return;
+
+		var cameraData = camera.GetUniversalAdditionalCameraData();
+		cameraData.renderType = CameraRenderType.Base;
+		cameraData.requiresColorOption = CameraOverrideOption.Off;
+		cameraData.requiresDepthOption = CameraOverrideOption.Off;
+		cameraData.renderShadows = false;
+		cameraData.dithering = false;
+	}
+#else
+	private static void ConfigurePreviewCameraForActivePipeline( Camera camera )
+	{
+	}
+#endif
 
 	private static bool IsStatic( Transform obj )
 	{

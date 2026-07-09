@@ -32,14 +32,6 @@ namespace SS3D.Systems.PlayerControl
 
             UserAuthorizationMessage userAuthorizationMessage = new(ckey);
             ClientManager.Broadcast(userAuthorizationMessage);
-
-            CmdDestroyObjectAfterLogin();
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        private void CmdDestroyObjectAfterLogin()
-        {
-            ServerManager.Despawn(gameObject);
         }
     }
 }

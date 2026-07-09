@@ -57,6 +57,18 @@ GitHub hosts this fork's [issues](https://github.com/henkhooft/SS3D/issues) and 
 
 <br>
 
+<h1 align="center">EDITOR TOOLS</h1>
+
+SS3D adds a few custom tools to Unity's main toolbar to speed up day-to-day development:
+
+- **Scene Switcher** *(left side)* — quickly load any scene listed in the `Scene` class.
+- **Launcher** *(right side)* — toggle the launcher on or off, mirroring the Force Launcher option in the Application Settings.
+- **Network Settings** *(right side)* — view and change the network type and server port, mirroring the Network Settings.
+
+These are built on Unity's native main toolbar API. If you don't see them after opening the project, **right-click the main toolbar and enable them under _Tools_** — Unity hides custom toolbar elements until each user enables them the first time.
+
+<br>
+
 <h1 align="center">LICENSING</h1>
 
 All **CODE** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.

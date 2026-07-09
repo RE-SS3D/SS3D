@@ -13,6 +13,7 @@ namespace SS3D.Systems.Selection {
         /// The color that this Selectable will be rendered by the Selection Camera
         /// </summary>
         Color32 _selectionColor;
+        static readonly int SelectionColorId = Shader.PropertyToID("_SelectionColor");
 
         /// <summary>
         /// The color that this Selectable will be rendered by the Selection Camera
@@ -43,7 +44,7 @@ namespace SS3D.Systems.Selection {
             {
                 MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
                 renderer.GetPropertyBlock(propertyBlock);
-                propertyBlock.SetColor("_SelectionColor", color);
+                propertyBlock.SetColor(SelectionColorId, color);
                 renderer.SetPropertyBlock(propertyBlock);
             }
 

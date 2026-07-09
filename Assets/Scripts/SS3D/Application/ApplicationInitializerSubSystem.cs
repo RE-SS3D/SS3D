@@ -45,14 +45,12 @@ namespace SS3D.Application
         {
             ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
 
-            if (applicationSettings.EnableDiscord)
+            if (!applicationSettings.EnableDiscord)
             {
-                DiscordManager.Initialize();
+                return;
             }
-            else
-            {
-                Destroy(FindObjectOfType<DiscordManager>());
-            }
+
+            DiscordManager.Initialize();
         }
     }
 }

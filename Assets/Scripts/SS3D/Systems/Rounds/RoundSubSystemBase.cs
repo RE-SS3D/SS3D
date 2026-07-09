@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -11,7 +12,6 @@ using SS3D.Permissions;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
-using UnityEngine;
 using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 using RoundTickUpdated = SS3D.Systems.Rounds.Events.RoundTickUpdated;
 
@@ -48,6 +48,13 @@ namespace SS3D.Systems.Rounds
         protected CancellationTokenSource TickCancellationToken;
 
         /// <summary>
+        /// Cancels the in-flight round operation when a newer start/stop request arrives.
+        /// </summary>
+        private CancellationTokenSource _roundOperationCts;
+
+        private int _roundOperationGeneration;
+
+        /// <summary>
         /// The current round state.
         /// </summary>
         protected RoundState RoundState
@@ -74,6 +81,11 @@ namespace SS3D.Systems.Rounds
         /// Shortcut to see if the round is ongoing.
         /// </summary>
         protected bool IsOngoing => RoundState == RoundState.Ongoing;
+
+        /// <summary>
+        /// Authoritative round state replicated to clients.
+        /// </summary>
+        public RoundState CurrentRoundState => _roundState;
 
         public override void OnStartServer()
         {
@@ -121,39 +133,82 @@ namespace SS3D.Systems.Rounds
             else
             {
                 Log.Information(this, "User {ckey} has started the round", Logs.ServerOnly, userCkey);
+                RequestRoundStateChange(m);
+            }
+        }
 
-                #pragma warning disable CS4014
-                ProcessChangeRoundState(m);
-                #pragma warning restore CS4014
+        /// <summary>
+        /// Single-flight entry point for round transitions. Supersedes any in-flight operation.
+        /// </summary>
+        [Server]
+        protected void RequestRoundStateChange(ChangeRoundStateMessage m)
+        {
+            RunRoundStateChangeAsync(m).Forget();
+        }
+
+        /// <summary>
+        /// Server-side round stop (gamemode triggers, dedicated server). Does not rely on client broadcast.
+        /// </summary>
+        [Server]
+        public void RequestRoundEnd()
+        {
+            RequestRoundStateChange(new ChangeRoundStateMessage(false));
+        }
+
+        [Server]
+        private async UniTaskVoid RunRoundStateChangeAsync(ChangeRoundStateMessage m)
+        {
+            int generation = Interlocked.Increment(ref _roundOperationGeneration);
+            CancelTick();
+            _roundOperationCts?.Cancel();
+            _roundOperationCts?.Dispose();
+            _roundOperationCts = new CancellationTokenSource();
+            CancellationToken cancellationToken = _roundOperationCts.Token;
+
+            try
+            {
+                await ProcessChangeRoundState(m, cancellationToken);
+            }
+            catch (OperationCanceledException) when (generation != Volatile.Read(ref _roundOperationGeneration))
+            {
+                // Superseded by a newer round operation.
             }
         }
 
         [Server]
-        protected virtual async UniTask ProcessChangeRoundState(ChangeRoundStateMessage changeRoundStateMessage)
+        protected void CancelTick()
+        {
+            TickCancellationToken?.Cancel();
+            TickCancellationToken?.Dispose();
+            TickCancellationToken = null;
+        }
+
+        [Server]
+        protected virtual async UniTask ProcessChangeRoundState(ChangeRoundStateMessage changeRoundStateMessage, CancellationToken cancellationToken)
         {
             throw new NotImplementedException("Method is not implemented, please do, you moron 😘");
         }
 
         [Server]
-        protected virtual async UniTask ProcessEndRound()
+        protected virtual async UniTask ProcessEndRound(CancellationToken cancellationToken)
         {
             throw new NotImplementedException("Method is not implemented, please do, you moron 😘");
         }
 
         [Server]
-        protected virtual async UniTask ProcessRoundTick()
+        protected virtual async UniTask ProcessRoundTick(CancellationToken cancellationToken)
         {
             throw new NotImplementedException("Method is not implemented, please do, you moron 😘");
         }
 
         [Server]
-        protected virtual async UniTask PrepareRound()
+        protected virtual async UniTask PrepareRound(CancellationToken cancellationToken)
         {
             throw new NotImplementedException("Method is not implemented, please do, you moron 😘");
         }
 
         [Server]
-        protected virtual async UniTask StopRound()
+        protected virtual async UniTask StopRound(CancellationToken cancellationToken)
         {
             throw new NotImplementedException("Method is not implemented, please do, you moron 😘");
         }

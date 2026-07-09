@@ -133,7 +133,7 @@ namespace SS3D.Systems.PlayerControl
         {
             foreach (Player player in _serverPlayers.Values)
             {
-                HandleSyncOnlinePlayers(SyncDictionaryOperation.Add, player.Ckey, player, false);
+                HandleSyncServerPlayersChanged(SyncDictionaryOperation.Add, player.Ckey, player, false);
             }
         }
 
@@ -192,6 +192,23 @@ namespace SS3D.Systems.PlayerControl
             if (!hasOnlinePlayer)
             {
                 _onlinePlayers.Add(ckey, player);
+            }
+
+            DespawnUnauthorizedPlayer(conn);
+        }
+
+        [Server]
+        private void DespawnUnauthorizedPlayer(NetworkConnection conn)
+        {
+            foreach (NetworkObject networkObject in conn.Objects)
+            {
+                if (networkObject.GetComponent<UnauthorizedPlayer>() == null)
+                {
+                    continue;
+                }
+
+                ServerManager.Despawn(networkObject);
+                return;
             }
         }
 
