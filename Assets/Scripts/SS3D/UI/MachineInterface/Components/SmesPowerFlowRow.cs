@@ -3,20 +3,20 @@ using UnityEngine.UIElements;
 namespace SS3D.UI.MachineInterface.Components
 {
     [UxmlElement]
-    public partial class VerticalPowerFlow : VisualElement
+    public partial class SmesPowerFlowRow : VisualElement
     {
         private readonly Label _inputGlyph;
         private readonly Label _outputGlyph;
 
-        public VerticalPowerFlow()
+        public SmesPowerFlowRow()
         {
-            AddToClassList("vertical-power-flow");
+            AddToClassList("smes-power-flow-row");
 
-            Label stationGrid = CreateNode("STATION GRID", "vertical-power-flow__node");
+            Label stationGrid = CreateNode("STATION GRID", "smes-power-flow-row__node");
             _inputGlyph = CreateGlyph();
-            Label smesNode = CreateNode("SMES", "vertical-power-flow__node vertical-power-flow__node--core");
+            Label smesNode = CreateNode("SMES", "smes-power-flow-row__node smes-power-flow-row__node--core");
             _outputGlyph = CreateGlyph();
-            Label distributionGrid = CreateNode("DISTRIBUTION GRID", "vertical-power-flow__node");
+            Label distributionGrid = CreateNode("DISTRIBUTION", "smes-power-flow-row__node");
 
             Add(stationGrid);
             Add(_inputGlyph);
@@ -27,8 +27,8 @@ namespace SS3D.UI.MachineInterface.Components
 
         public void SetFlow(bool inputActive, bool outputActive, StatusTone inputTone, StatusTone outputTone)
         {
-            SetGlyph(_inputGlyph, inputActive, inputTone, inactiveGlyph: "·", brokenGlyph: "✕");
-            SetGlyph(_outputGlyph, outputActive, outputTone, inactiveGlyph: "·", brokenGlyph: "✕");
+            SetGlyph(_inputGlyph, inputActive, inputTone);
+            SetGlyph(_outputGlyph, outputActive, outputTone);
         }
 
         private static Label CreateNode(string text, string className)
@@ -41,24 +41,24 @@ namespace SS3D.UI.MachineInterface.Components
 
         private static Label CreateGlyph()
         {
-            Label glyph = new("↓");
-            glyph.AddToClassList("vertical-power-flow__glyph");
+            Label glyph = new("→");
+            glyph.AddToClassList("smes-power-flow-row__glyph");
             return glyph;
         }
 
-        private static void SetGlyph(Label glyph, bool active, StatusTone tone, string inactiveGlyph, string brokenGlyph)
+        private static void SetGlyph(Label glyph, bool active, StatusTone tone)
         {
             if (active)
             {
-                glyph.text = "↓";
+                glyph.text = "→";
             }
             else if (tone == StatusTone.Danger)
             {
-                glyph.text = brokenGlyph;
+                glyph.text = "✕";
             }
             else
             {
-                glyph.text = inactiveGlyph;
+                glyph.text = "·";
             }
 
             glyph.RemoveFromClassList("tone-success");

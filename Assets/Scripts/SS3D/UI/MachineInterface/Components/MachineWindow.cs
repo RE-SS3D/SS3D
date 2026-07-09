@@ -9,6 +9,9 @@ namespace SS3D.UI.MachineInterface.Components
     {
         public event Action CloseClicked;
 
+        public const float DefaultWidth = 380f;
+        public const float WideWidth = 780f;
+
         private readonly VisualElement _header;
         private readonly Label _titleLabel;
         private readonly VisualElement _content;
@@ -145,7 +148,7 @@ namespace SS3D.UI.MachineInterface.Components
 
             if (float.IsNaN(panelWidth) || panelWidth <= 0f)
             {
-                panelWidth = 380f;
+                panelWidth = ClassListContains("machine-window--wide") ? WideWidth : DefaultWidth;
             }
 
             if (float.IsNaN(panelHeight) || panelHeight <= 0f)

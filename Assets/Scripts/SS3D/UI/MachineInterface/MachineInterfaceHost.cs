@@ -106,7 +106,7 @@ namespace SS3D.UI.MachineInterface
             }
 
             ClosePanelOnly();
-            if (!CreateWindow(viewModel.Title))
+            if (!CreateWindow(viewModel.Title, wide: true))
             {
                 return false;
             }
@@ -207,9 +207,14 @@ namespace SS3D.UI.MachineInterface
         }
 #endif
 
-        private bool CreateWindow(string title)
+        private bool CreateWindow(string title, bool wide = false)
         {
             _window = new MachineWindow { Title = title };
+            if (wide)
+            {
+                _window.AddToClassList("machine-window--wide");
+            }
+
             _window.style.left = Length.Percent(50);
             _window.style.top = Length.Percent(50);
             _window.style.translate = new Translate(Length.Percent(-50), Length.Percent(-50));

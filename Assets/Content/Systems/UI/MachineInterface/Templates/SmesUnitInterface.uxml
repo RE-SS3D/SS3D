@@ -1,80 +1,37 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/TogglePill.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/VerticalPowerFlow.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesStatusBanner.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/WarningPanel.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/HoldRevealButton.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AdvancedDiagnosticsPanel.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesPowerFlowRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/TogglePill.uss" />
 
     <ui:VisualElement name="smes-root" class="smes-unit-interface">
-        <ui:VisualElement name="exterior-view" class="smes-view">
-            <ui:VisualElement name="exterior-status" class="smes-exterior-status">
-                <ui:VisualElement class="smes-exterior-status__header">
-                    <ui:Label name="exterior-status-word" text="SMES ONLINE" class="smes-exterior-status__word font-titling" />
-                    <ss3d:StatusBadge name="exterior-badge" text="ONLINE" tone="Success" />
-                </ui:VisualElement>
-            </ui:VisualElement>
+        <ss3d:SmesStatusBanner name="status-banner" />
 
-            <ui:VisualElement class="smes-exterior-charge">
-                <ui:VisualElement class="smes-exterior-charge__header">
-                    <ui:Label text="STORED ENERGY" class="smes-section-title font-titling" />
-                    <ui:Label name="exterior-charge-pct" text="72%" class="smes-exterior-charge__pct font-terminal" />
-                </ui:VisualElement>
-                <ui:VisualElement class="smes-exterior-charge__track">
-                    <ui:VisualElement name="exterior-charge-fill" class="smes-exterior-charge__fill" />
-                </ui:VisualElement>
-            </ui:VisualElement>
+        <ss3d:WarningPanel name="warning-panel" />
 
-            <ui:VisualElement class="smes-exterior-io-grid">
-                <ui:VisualElement name="exterior-input-card" class="smes-io-card">
-                    <ui:Label text="INPUT" class="smes-io-card__label font-arcade" />
-                    <ui:Label name="exterior-input-word" text="AVAILABLE" class="smes-io-card__value font-terminal" />
-                </ui:VisualElement>
-                <ui:VisualElement name="exterior-output-card" class="smes-io-card">
-                    <ui:Label text="OUTPUT" class="smes-io-card__label font-arcade" />
-                    <ui:Label name="exterior-output-word" text="ACTIVE" class="smes-io-card__value font-terminal" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement class="smes-connection">
-                <ui:VisualElement name="connection-dot" class="smes-connection__dot" />
-                <ui:Label name="connection-text" text="Grid link nominal — both connections healthy." class="smes-connection__text font-terminal" />
-            </ui:VisualElement>
-
-            <ui:Button name="open-engineer-btn" text="Open control interface" class="smes-open-engineer-btn font-terminal" />
-        </ui:VisualElement>
-
-        <ui:VisualElement name="engineer-view" class="smes-view smes-view--hidden">
-            <ui:VisualElement class="smes-engineer-header">
-                <ui:Button name="close-engineer-btn" text="‹ close panel" class="smes-close-engineer-btn font-terminal" />
-                <ss3d:StatusBadge name="engineer-badge" text="ONLINE" tone="Success" />
-            </ui:VisualElement>
-
-            <ss3d:WarningPanel name="warning-panel" />
-
-            <ui:VisualElement class="smes-energy-storage">
+        <ui:VisualElement class="smes-metrics-row">
+            <ui:VisualElement class="smes-storage-column">
                 <ui:Label text="ENERGY STORAGE" class="smes-section-title font-titling" />
                 <ss3d:StorageCellRow name="storage-cells" charge-pct="0.72" />
-                <ui:VisualElement class="smes-energy-storage__footer">
-                    <ui:Label name="engineer-charge-pct" text="72%" class="font-terminal" />
+                <ui:VisualElement class="smes-storage-footer">
+                    <ui:Label name="charge-pct" text="72%" class="font-terminal" />
                     <ui:Label name="charge-trend-text" text="steady" class="font-terminal smes-charge-trend" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement class="smes-power-flow-section">
+            <ui:VisualElement class="smes-power-flow-column">
                 <ui:Label text="POWER FLOW" class="smes-section-title font-titling" />
-                <ss3d:VerticalPowerFlow name="power-flow" />
+                <ss3d:SmesPowerFlowRow name="power-flow" />
             </ui:VisualElement>
+        </ui:VisualElement>
 
+        <ui:VisualElement class="smes-controls-row">
             <ss3d:RateControlSection name="input-control" />
             <ss3d:RateControlSection name="output-control" />
-
-            <ss3d:HoldRevealButton name="hold-reveal" />
-            <ss3d:AdvancedDiagnosticsPanel name="advanced-panel" class="smes-view--hidden" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

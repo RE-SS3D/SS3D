@@ -1,49 +1,52 @@
 @import url("../Tokens/ss3d-tokens.uss");
 @import url("../Tokens/ss3d-typography.uss");
 
-.vertical-power-flow {
-    flex-direction: column;
+.smes-power-flow-row {
+    flex-direction: row;
     align-items: center;
+    flex-grow: 1;
 }
 
-.vertical-power-flow__node {
-    width: 100%;
+.smes-power-flow-row__node {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
     -unity-text-align: middle-center;
-    padding: var(--ss3d-space-2);
+    padding: 12px 8px;
     background-color: var(--ss3d-surface-inset);
     border-radius: var(--ss3d-radius-sm);
     font-size: 12px;
     color: var(--ss3d-text-secondary);
 }
 
-.vertical-power-flow__node--core {
+.smes-power-flow-row__node--core {
     background-color: var(--ss3d-surface-panel);
     border-width: 1px;
     border-color: var(--ss3d-border-accent);
     color: var(--ss3d-text-primary);
     font-size: 13px;
-    padding: var(--ss3d-space-3);
+    padding: 12px 8px;
 }
 
-.vertical-power-flow__glyph {
-    font-size: 20px;
-    padding-top: var(--ss3d-space-1);
-    padding-bottom: var(--ss3d-space-1);
+.smes-power-flow-row__glyph {
+    width: 34px;
+    flex-shrink: 0;
+    font-size: 18px;
     -unity-text-align: middle-center;
 }
 
-.vertical-power-flow__glyph.tone-success {
+.smes-power-flow-row__glyph.tone-success {
     color: var(--ss3d-feedback-success);
 }
 
-.vertical-power-flow__glyph.tone-warning {
+.smes-power-flow-row__glyph.tone-warning {
     color: var(--ss3d-feedback-warning);
 }
 
-.vertical-power-flow__glyph.tone-danger {
+.smes-power-flow-row__glyph.tone-danger {
     color: var(--ss3d-feedback-danger);
 }
 
-.vertical-power-flow__glyph.tone-info {
+.smes-power-flow-row__glyph.tone-info {
     color: var(--ss3d-text-tertiary);
 }

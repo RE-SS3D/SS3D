@@ -88,10 +88,6 @@
     align-items: center;
 }
 
-.rate-control .toggle-pill__button {
-    min-width: 72px;
-}
-
 .rate-control__stepper-button {
     width: 22px;
     height: 22px;

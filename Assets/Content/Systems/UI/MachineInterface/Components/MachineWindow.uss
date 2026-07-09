@@ -11,6 +11,10 @@
     padding: 0;
 }
 
+.machine-window--wide {
+    width: 780px;
+}
+
 .machine-window__header {
     flex-direction: row;
     align-items: center;
