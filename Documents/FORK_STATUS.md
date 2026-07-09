@@ -174,7 +174,7 @@ Production multiplayer hardening of the source/target interaction model:
 
 EditMode **`InteractionPipelineTests`**; PlayMode pickup regression via **`InteractionPlayModeTests`**.
 
-Merged from `feature/interaction-system-hardening` (includes `feature/radial-menu-redesign`).
+Merged from `archive/feature-interaction-system-hardening` (includes `archive/feature-radial-menu-redesign`).
 Architecture: [2026-07_interaction-system-hardening.md](architecture/2026-07_interaction-system-hardening.md).
 Plans: [interaction_system_improvements_9e14ae22.plan.md](plans/interaction_system_improvements_9e14ae22.plan.md),
 [radial_menu_implementation_5a83bdf9.plan.md](plans/radial_menu_implementation_5a83bdf9.plan.md).
@@ -292,8 +292,8 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/fix-selection-camera-picking` | (via develop-unity6) | Cursor picking alignment |
 | `archive/machine-ui` | 2026-07 | Machine interface UI (APC/SMES) |
 | `archive/feature-examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
-| `feature/interaction-system-hardening` | 2026-07-09 | Interaction RPC hardening, pipeline, outlines, radial menu |
-| `feature/radial-menu-redesign` | (via interaction-system-hardening) | UI Toolkit three-tier radial menu + armed overlay |
+| `archive/feature-interaction-system-hardening` | 2026-07-09 | Interaction RPC hardening, pipeline, outlines, radial menu |
+| `archive/feature-radial-menu-redesign` | (via interaction-system-hardening) | UI Toolkit three-tier radial menu + armed overlay |
 
 ---
 
