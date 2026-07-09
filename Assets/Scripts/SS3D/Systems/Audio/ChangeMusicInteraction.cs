@@ -18,7 +18,7 @@ namespace SS3D.Systems.Audio
             return "Change Music";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "ChangeMusic";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

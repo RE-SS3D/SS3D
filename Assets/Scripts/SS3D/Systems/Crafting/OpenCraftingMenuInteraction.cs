@@ -21,7 +21,7 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
         _craftingInteractionType = craftingInteraction;
     }
 
-    public string GetGenericName() => "Open crafting menu";
+    public string GetGenericName() => "OpenCraftingMenu";
 
     /// <summary>
     /// Get the name of the interaction

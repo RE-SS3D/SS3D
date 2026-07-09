@@ -20,7 +20,7 @@ namespace SS3D.Substances
             return "Transfer";
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "TransferSubstance";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

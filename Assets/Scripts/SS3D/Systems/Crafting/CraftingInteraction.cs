@@ -106,7 +106,7 @@ namespace SS3D.Systems.Crafting
             return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
         }
 
-        public override string GetGenericName() => throw new System.NotImplementedException();
+        public override string GetGenericName() => $"Craft:{_chosenLink.Tag.From}-{_chosenLink.Tag.To}";
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {

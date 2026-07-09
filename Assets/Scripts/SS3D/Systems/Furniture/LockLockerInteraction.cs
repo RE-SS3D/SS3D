@@ -29,7 +29,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return "Lock Locker";
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "LockLocker";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

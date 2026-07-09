@@ -27,7 +27,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return "Take in " + _attachedContainer.ContainerName;
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "TakeFirst:" + _attachedContainer.ContainerName;
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

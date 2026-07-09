@@ -24,7 +24,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return "Pick up";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Pickup";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

@@ -41,7 +41,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return animator.GetBool(OpenId) ? "Close " + name : "Open " + name;
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "Open";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

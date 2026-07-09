@@ -116,16 +116,15 @@ namespace SS3D.Systems.Interactions
             }
 
             InteractionEntry interaction = viableInteractions[0];
-            string interactionName = interaction.Interaction.GetName(interactionEvent);
             interactionEvent.Target = interaction.Target;
 
-            Log.Information(this, "Running interaction {interactionName} on target {target}", Logs.Generic, interactionName, interaction.Target);
+            Log.Information(this, "Running interaction {interactionId} on target {target}", Logs.Generic, interaction.Id.GenericName, interaction.Target);
             if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
             {
                 return;
             }
 
-            CmdRunInteraction(networkTarget, interactionEvent.Point, interactionName);
+            CmdRunInteraction(networkTarget, interactionEvent.Point, interaction.Id.GenericName, interaction.Id.TargetComponentIndex);
         }
 
         [Client]
@@ -174,14 +173,21 @@ namespace SS3D.Systems.Interactions
             void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
             {
                 _radialView.OnInteractionSelected -= handleInteractionSelected;
-                string interactionName = interaction.GetName(interactionEvent);
+
+                InteractionEntry entry = viableInteractions.Find(e => e.Interaction == interaction);
+                if (entry.Interaction == null)
+                {
+                    return;
+                }
+
+                interactionEvent.Target = entry.Target;
 
                 if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
                 {
                     return;
                 }
 
-                CmdRunInteraction(networkTarget, interactionEvent.Point, interactionName);
+                CmdRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Mouse.current.position.ReadValue());
@@ -225,18 +231,21 @@ namespace SS3D.Systems.Interactions
 
                 void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
                 {
-                    int index = entries.FindIndex(x => x.Interaction == interaction);
-                    string interactionName = interaction.GetName(interactionEvent);
+                    InteractionEntry entry = entries.Find(x => x.Interaction == interaction);
+                    if (entry.Interaction == null)
+                    {
+                        return;
+                    }
 
-                    CmdRunInventoryInteraction(target, sourceObject, index, interactionName);
+                    CmdRunInventoryInteraction(target, sourceObject, entry.Id.GenericName, entry.Id.TargetComponentIndex);
                 }
 
                 _radialView.OnInteractionSelected += handleInteractionSelected;
             }
             else
             {
-                IInteraction firstInteraction = entries.First().Interaction;
-                CmdRunInventoryInteraction(target, sourceObject, 0, firstInteraction.GetName(interactionEvent));
+                InteractionEntry firstEntry = entries.First();
+                CmdRunInventoryInteraction(target, sourceObject, firstEntry.Id.GenericName, firstEntry.Id.TargetComponentIndex);
             }
         }
 
@@ -244,7 +253,7 @@ namespace SS3D.Systems.Interactions
         /// Runs an interaction (chosen on the client) on the server. For reasons of serialization and security, some code is re-run.
         /// </summary>
         [ServerRpc]
-        private void CmdRunInteraction(NetworkObject target, Vector3 point, string interactionName)
+        private void CmdRunInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex)
         {
             if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
             {
@@ -252,17 +261,20 @@ namespace SS3D.Systems.Interactions
             }
 
             List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
-            InteractionEntry interaction = viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
+            InteractionIdentifier id = new(genericName, targetComponentIndex);
 
-            if (interaction.Interaction == null)
+            if (!InteractionEntry.TryResolve(viableInteractions, id, out InteractionEntry interaction))
             {
+                Log.Error(this, "Failed to resolve interaction {genericName} at target index {targetIndex} on {target}",
+                    Logs.Generic, genericName, targetComponentIndex, targetGameObject);
+
                 return;
             }
 
             interactionEvent.Target = interaction.Target;
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
-            RpcExecuteClientInteraction(target, point, interactionName, reference.Id);
+            RpcExecuteClientInteraction(target, point, genericName, targetComponentIndex, reference.Id);
 
             // TODO: Keep track of interactions for cancellation
         }
@@ -271,29 +283,30 @@ namespace SS3D.Systems.Interactions
         /// Confirms an interaction issued by a client
         /// </summary>
         [ObserversRpc]
-        private void RpcExecuteClientInteraction(NetworkObject target, Vector3 point, string interactionName, int referenceId)
+        private void RpcExecuteClientInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, int referenceId)
         {
+            if (IsServer)
+            {
+                return;
+            }
+
             if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
             {
                 return;
             }
 
             List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
-            InteractionEntry interaction =
-                viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
+            InteractionIdentifier id = new(genericName, targetComponentIndex);
 
-            if (interaction.Interaction == null)
+            if (!InteractionEntry.TryResolve(viableInteractions, id, out InteractionEntry interaction))
             {
+                Log.Warning(this, "Observer failed to resolve interaction {genericName} at target index {targetIndex}",
+                    Logs.Generic, genericName, targetComponentIndex);
+
                 return;
             }
 
             interactionEvent.Target = interaction.Target;
-
-            if (interaction.Interaction.GetName(interactionEvent) != interactionName)
-            {
-                return;
-            }
-
             interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
         }
 
@@ -435,6 +448,7 @@ namespace SS3D.Systems.Interactions
         {
             List<InteractionEntry> interactions = new();
             Vector3 point = interactionEvent.Point;
+            GameObject targetGameObject = ResolveTargetGameObject(targets);
 
             // Generate interactions on targets
             foreach (IInteractionTarget target in targets)
@@ -444,13 +458,13 @@ namespace SS3D.Systems.Interactions
 
                 foreach (IInteraction interaction in targetInteractions)
                 {
-                    InteractionEntry entry = new(target, interaction);
-                    interactions.Add(entry);
+                    interactions.Add(InteractionEntry.Create(target, interaction, targetGameObject));
                 }
             }
 
             // Allow the source to add its own interactions
             source.CreateSourceInteractions(targets.ToArray(), interactions);
+            RebuildEntryIndices(interactions, targetGameObject);
 
             // Filter interactions to possible ones
             List<InteractionEntry> interactionsFromTargets = new();
@@ -467,6 +481,33 @@ namespace SS3D.Systems.Interactions
             return interactionsFromTargets;
         }
 
+        private static GameObject ResolveTargetGameObject(List<IInteractionTarget> targets)
+        {
+            foreach (IInteractionTarget target in targets)
+            {
+                if (target is IGameObjectProvider provider)
+                {
+                    return provider.GameObject;
+                }
+
+                if (target is Component component)
+                {
+                    return component.gameObject;
+                }
+            }
+
+            return null;
+        }
+
+        private static void RebuildEntryIndices(List<InteractionEntry> interactions, GameObject targetGameObject)
+        {
+            for (int i = 0; i < interactions.Count; i++)
+            {
+                InteractionEntry entry = interactions[i];
+                interactions[i] = InteractionEntry.Create(entry.Target, entry.Interaction, targetGameObject);
+            }
+        }
+
         [ServerOrClient]
         private IInteractionSource GetActiveInteractionSource()
         {
@@ -477,7 +518,7 @@ namespace SS3D.Systems.Interactions
         }
 
         [ServerRpc]
-        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string interactionName)
+        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex)
         {
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
@@ -487,29 +528,22 @@ namespace SS3D.Systems.Interactions
 
             // TODO: Validate access to inventory
 
-            // Check for valid interaction index
-            if (index < 0 || entries.Count <= index)
+            InteractionIdentifier id = new(genericName, targetComponentIndex);
+
+            if (!InteractionEntry.TryResolve(entries, id, out InteractionEntry chosenEntry))
             {
-                Log.Error(target, "Inventory interaction with invalid index {index}", Logs.Generic, index);
+                Log.Error(target, "Failed to resolve inventory interaction {genericName} at target index {targetIndex}",
+                    Logs.Generic, genericName, targetComponentIndex);
 
                 return;
             }
 
-            InteractionEntry chosenEntry = entries[index];
             interactionEvent.Target = chosenEntry.Target;
-
-            if (chosenEntry.Interaction.GetName(interactionEvent) != interactionName)
-            {
-                Log.Error(target, "Interaction at index {index} did not have the expected name of {interactionName}",
-                    Logs.Generic, index, interactionName);
-
-                return;
-            }
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
             if (chosenEntry.Interaction is IClientInteractionSource)
             {
-                RpcExecuteClientInventoryInteraction(target, sourceObject, interactionName, reference.Id);
+                RpcExecuteClientInventoryInteraction(target, sourceObject, genericName, targetComponentIndex, reference.Id);
             }
         }
 
@@ -521,7 +555,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="interactionName"></param>
         /// <param name="referenceId"></param>
         [ObserversRpc]
-        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, string interactionName, int referenceId)
+        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex, int referenceId)
         {
             if (IsServer)
             {
@@ -532,10 +566,17 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            InteractionIdentifier id = new(genericName, targetComponentIndex);
 
-            InteractionEntry chosenInteraction = entries.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
+            if (!InteractionEntry.TryResolve(entries, id, out InteractionEntry chosenInteraction))
+            {
+                Log.Warning(this, "Observer failed to resolve inventory interaction {genericName} at target index {targetIndex}",
+                    Logs.Generic, genericName, targetComponentIndex);
+
+                return;
+            }
+
             interactionEvent.Target = chosenInteraction.Target;
-
             interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
         }
     }

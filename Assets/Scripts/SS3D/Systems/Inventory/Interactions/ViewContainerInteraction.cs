@@ -28,7 +28,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return "View " + AttachedContainer.ContainerName;
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "View:" + AttachedContainer.ContainerName;
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

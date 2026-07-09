@@ -50,7 +50,7 @@ namespace SS3D.Interactions
             return null;
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "Toggle";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

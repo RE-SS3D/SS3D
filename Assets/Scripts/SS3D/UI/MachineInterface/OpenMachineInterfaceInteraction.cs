@@ -7,7 +7,7 @@ namespace SS3D.UI.MachineInterface
 {
     public sealed class OpenMachineInterfaceInteraction : IInteraction, IClientInteractionSource
     {
-        public string GetGenericName() => "Open interface";
+        public string GetGenericName() => "OpenMachineInterface";
 
         public string GetName(InteractionEvent interactionEvent) => "Open interface";
 

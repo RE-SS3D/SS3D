@@ -31,7 +31,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return "Drop";
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "Drop";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

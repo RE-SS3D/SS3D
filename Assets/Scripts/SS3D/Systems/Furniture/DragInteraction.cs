@@ -32,7 +32,7 @@ namespace SS3D.Systems.Furniture
             return null;
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Drag";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

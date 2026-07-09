@@ -24,7 +24,7 @@ namespace SS3D.Systems.Furniture
             return $"Dispense {ProductName} (x{ProductStock})";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Dispense:" + ProductIndex;
 
         /// <inheritdoc />
         public bool CanInteract(InteractionEvent interactionEvent)

@@ -15,10 +15,9 @@ namespace SS3D.Interactions.Interfaces
         string GetName(InteractionEvent interactionEvent);
 
         /// <summary>
-        /// Get the generic name of interaction. Pickup interaction should return "Pickup".
-        /// GetName should return "Pickup item" with item the name of the item to pickup.
+        /// Get the stable wire identifier for this interaction. Must not depend on runtime toggle or animation state.
+        /// Display text belongs in <see cref="GetName"/>.
         /// </summary>
-        /// <returns></returns>
         string GetGenericName();
 
         /// <summary>

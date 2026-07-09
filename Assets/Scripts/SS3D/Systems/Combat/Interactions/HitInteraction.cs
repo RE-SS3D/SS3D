@@ -23,7 +23,7 @@ namespace SS3D.Systems.Combat.Interactions
             return "Hit";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Hit";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

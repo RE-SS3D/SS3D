@@ -27,7 +27,7 @@ namespace SS3D.Interactions
 
         public string GetName(InteractionEvent interactionEvent) => Interaction.GetName(interactionEvent);
 
-        public abstract string GetGenericName();
+        public virtual string GetGenericName() => Interaction.GetGenericName();
 
         public Sprite GetIcon(InteractionEvent interactionEvent) => Interaction.GetIcon(interactionEvent);
 
