@@ -163,7 +163,6 @@ namespace SS3D.Systems.Audio
         /// </summary>
         private void PlayAmbience()
         {
-            Debug.Log("Playing ambience.");
             if (_air == 0f)
             {
                 _nowPlaying = PickSound(_spaceNoises);

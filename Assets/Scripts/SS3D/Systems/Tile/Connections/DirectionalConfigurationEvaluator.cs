@@ -1,3 +1,4 @@
+using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using System;
 using System.Collections.Generic;
@@ -147,7 +148,7 @@ namespace SS3D.Systems.Tile.Connections
             }
             else
             {
-                Debug.LogError("should not reach this point");
+                Log.Error(typeof(DirectionalConfigurationEvaluator), "should not reach this point");
                 return (_resolver.o, 0, Direction.North, AdjacencyShape.O);
             }
 
@@ -236,7 +237,7 @@ namespace SS3D.Systems.Tile.Connections
                 return (_resolver.ShapeToMesh(AdjacencyShape.LOut), rotation, direction, AdjacencyShape.LOut);
             }
 
-            Debug.LogError("should not reach this point");
+            Log.Error(typeof(DirectionalConfigurationEvaluator), "should not reach this point");
 
             return (_resolver.o, 0f, Direction.North, AdjacencyShape.O);
         }

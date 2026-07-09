@@ -4,6 +4,7 @@ using SS3D.Substances;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using SS3D.Core;
+using SS3D.Logging;
 using SS3D.Systems.Screens;
 using static UnityEngine.GraphicsBuffer;
 
@@ -38,7 +39,7 @@ namespace SS3D.Content.Furniture.Generic
             registry = SubSystems.Get<SubstancesSubSystem>();
             if (registry == null)
             {
-                Debug.LogError("SubstanceRegistry not found. Substances will be disabled.");
+                Log.Error(this, "SubstanceRegistry not found. Substances will be disabled.");
             }
         }
 
@@ -58,7 +59,7 @@ namespace SS3D.Content.Furniture.Generic
                 if (substance == null)
                 {
                     // If it isn't, let them know what it is!
-                    Debug.LogWarning("No substance in Registry for " + substances[i] + ". Add it.");
+                    Log.Warning(this, "No substance in Registry for {substanceType}. Add it.", Logs.Generic, substances[i]);
                     return null;
                 }
 

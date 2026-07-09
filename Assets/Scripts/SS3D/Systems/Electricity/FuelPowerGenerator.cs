@@ -4,6 +4,7 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Generated;
 using SS3D.Interactions;
+using SS3D.Logging;
 using SS3D.Systems.Audio;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;
@@ -77,7 +78,7 @@ namespace System.Electricity
             }
             else
             {
-                Debug.LogError("Blend shape " + OnBlendShapeName + " not found.");
+                Log.Error(typeof(FuelPowerGenerator), "Blend shape {blendShapeName} not found.", Logs.Generic, OnBlendShapeName);
             }
 
             if (outputBlendShapeIndex != -1)
@@ -86,7 +87,7 @@ namespace System.Electricity
             }
             else
             {
-                Debug.LogError("Blend shape " + OnBlendShapeName + " not found.");
+                Log.Error(typeof(FuelPowerGenerator), "Blend shape {blendShapeName} not found.", Logs.Generic, OutputBlendShapeName);
             }
         }
 

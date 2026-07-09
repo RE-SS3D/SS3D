@@ -171,7 +171,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
             else
             {
-                Debug.LogError("selectedContainer is not in HandContainers.");
+                Log.Error(this, "selectedContainer is not in HandContainers.");
             }
         }
 

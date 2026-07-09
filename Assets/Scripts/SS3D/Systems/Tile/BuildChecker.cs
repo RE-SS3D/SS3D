@@ -1,4 +1,5 @@
-﻿using SS3D.Core;
+﻿using SS3D.Logging;
+using SS3D.Core;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace SS3D.Systems.Tile
             {
                 if (!(tileLocations[(int)TileLayer.Plenum] is SingleTileLocation))
                 {
-                    Debug.LogError("Location on Plenum should be a Single object location");
+                    Log.Error(typeof(BuildChecker), "Location on Plenum should be a Single object location");
                     return false;
                 }
 

@@ -114,7 +114,7 @@ namespace SS3D.Systems.Inventory.Items
             {
                 if (UnityEngine.Application.isPlaying)
                 {
-                    Serilog.Log.Warning($"Field {nameof(Asset)} is being modified in runtime. This should not happen in normal conditions.");
+                    Log.Warning(this, "Field {fieldName} is being modified in runtime. This should not happen in normal conditions.", Logs.Generic, nameof(Asset));
                 }
                 _asset = value;
             }

@@ -604,7 +604,8 @@ namespace SS3D.Systems.Tile
                 // Destroy items that are in the world but not tracked by TileMap
                 if (item.gameObject != null)
                 {
-                    Debug.LogWarning($"Destroying untracked item: {item.gameObject.name} at position {item.gameObject.transform.position}");
+                    Log.Warning(this, "Destroying untracked item: {itemName} at position {position}",
+                        Logs.Generic, item.gameObject.name, item.gameObject.transform.position);
                     DestroyImmediate(item.gameObject);
                 }
             }

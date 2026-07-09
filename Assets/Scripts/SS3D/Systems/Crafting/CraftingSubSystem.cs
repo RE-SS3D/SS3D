@@ -650,7 +650,7 @@ namespace SS3D.Systems.Crafting
             }
             else
             {
-                Debug.LogWarning("The object to hide does not have a Renderer component.");
+                Log.Warning(this, "The object to hide does not have a Renderer component.");
             }
 
             _craftingSmokes.Add(new(referenceId), particles);
