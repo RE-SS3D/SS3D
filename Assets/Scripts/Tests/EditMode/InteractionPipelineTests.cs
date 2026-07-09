@@ -120,7 +120,7 @@ namespace EditorTests
             return new InteractionEntry(target, interaction, InteractionIdentifier.SyntheticTargetIndex);
         }
 
-        private sealed class NamedInteraction : IInteraction
+        private class NamedInteraction : IInteraction
         {
             public NamedInteraction(string genericName, int priority)
             {
