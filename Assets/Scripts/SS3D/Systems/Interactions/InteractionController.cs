@@ -149,8 +149,6 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            // leftButton is enabled in RadialInteractionView HandleDisappear
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 return;
@@ -188,6 +186,8 @@ namespace SS3D.Systems.Interactions
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
 
             if (interactions.Count <= 0) { return; }
+
+            _radialView.SuppressLeftButtonForMenu();
 
             void handleInteractionSelected(IInteraction interaction)
             {

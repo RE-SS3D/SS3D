@@ -1,15 +1,17 @@
 @import url("../../Tokens/ss3d-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
 
 .radial-interaction-petal {
     position: absolute;
-    width: 48px;
-    height: 48px;
-    border-radius: 24px;
+    width: 52px;
+    height: 52px;
+    border-radius: 26px;
     background-color: var(--ss3d-surface-panel-raised);
     border-width: 1px;
     border-color: var(--ss3d-border-default);
     align-items: center;
     justify-content: center;
+    overflow: visible;
     transition-duration: var(--ss3d-duration-fast);
     transition-property: background-color, border-color, scale;
 }
@@ -23,6 +25,27 @@
     width: 25px;
     height: 25px;
     -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ss3d-text-primary);
+}
+
+.radial-interaction-petal__label {
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background-color: rgba(22, 22, 22, 0.85);
+    color: var(--ss3d-text-primary);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.radial-interaction-petal__label--above {
+    top: -20px;
+}
+
+.radial-interaction-petal__label--below {
+    top: 60px;
 }
 
 .radial-interaction-petal__reticle-badge {
@@ -57,8 +80,8 @@
 
 .radial-interaction-menu {
     position: absolute;
-    width: 176px;
-    height: 176px;
+    width: 240px;
+    height: 240px;
 }
 
 .radial-interaction-menu__background {
@@ -67,7 +90,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    border-radius: 88px;
+    border-radius: 120px;
     background-color: var(--ss3d-surface-panel-raised);
     border-width: 2px;
     border-color: var(--ss3d-border-default);

@@ -14,8 +14,9 @@ namespace SS3D.Systems.Interactions.UI
     /// </summary>
     public sealed class RadialInteractionMenuView
     {
-        public const float MenuDiameter = 176f;
-        private const float PetalSize = 48f;
+        public const float MenuDiameter = 240f;
+        private const float PetalSize = 52f;
+        private const float PetalOrbitFactor = 0.56f;
         private const float ShowDuration = 0.2f;
 
         private readonly StyleSheet _menuStyleSheet;
@@ -164,7 +165,7 @@ namespace SS3D.Systems.Interactions.UI
 
             int count = Mathf.Min(interactions.Count, _maxPetals);
             float radius = MenuDiameter * 0.5f;
-            float petalOrbit = radius * 0.66f;
+            float petalOrbit = radius * PetalOrbitFactor;
 
             for (int i = 0; i < count; i++)
             {
@@ -177,9 +178,12 @@ namespace SS3D.Systems.Interactions.UI
 
                 RadialInteractionPetal petal = GetOrCreatePetal(i);
                 InteractionTier tier = interaction.GetInteractionTier(interactionEvent);
-                petal.SetInteraction(interaction, icon, tier);
+                string label = interaction.GetName(interactionEvent);
 
                 float angle = (i / (float)count) * Mathf.PI * 2f - Mathf.PI / 2f;
+                bool labelAbove = Mathf.Sin(angle) <= -0.4f;
+                petal.SetInteraction(interaction, icon, tier, label, labelAbove);
+
                 float x = Mathf.Cos(angle) * petalOrbit;
                 float y = Mathf.Sin(angle) * petalOrbit;
 

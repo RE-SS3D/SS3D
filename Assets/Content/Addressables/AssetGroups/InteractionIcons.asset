@@ -46,7 +46,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 875cad4822d740c2a65e2c94bceba78b
-    m_Address: Assets/Art/Graphics/UI/Interactions/InteractionIcons/Examine.png
+    m_Address: Assets/Content/Systems/UI/Systems/Interactions/InteractionIcons/Examine.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

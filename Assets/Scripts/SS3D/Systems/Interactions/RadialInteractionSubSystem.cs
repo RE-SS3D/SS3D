@@ -34,8 +34,23 @@ namespace SS3D.Systems.Interactions
         private Controls.InteractionsActions _controls;
         private InputSubSystem _inputSystem;
         private bool _overlayReady;
+        private bool _leftButtonSuppressed;
 
         public float MenuHeight => RadialInteractionMenuView.MenuDiameter;
+
+        /// <summary>
+        /// Suppresses LMB actions while the radial menu is held open.
+        /// </summary>
+        public void SuppressLeftButtonForMenu()
+        {
+            if (_leftButtonSuppressed)
+            {
+                return;
+            }
+
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
+            _leftButtonSuppressed = true;
+        }
 
         protected override void OnAwake()
         {
@@ -70,6 +85,7 @@ namespace SS3D.Systems.Interactions
 
         protected override void OnDestroyed()
         {
+            ReleaseLeftButtonSuppression();
             _menuView?.Detach();
             ShutdownDocument();
             base.OnDestroyed();
@@ -96,21 +112,32 @@ namespace SS3D.Systems.Interactions
         private void HandleInteractionSelected(IInteraction interaction)
         {
             _menuView.InteractionSelected -= HandleInteractionSelected;
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            ReleaseLeftButtonSuppression();
             Disappear();
             OnInteractionSelected?.Invoke(interaction);
         }
 
         private void HandleCloseRequested()
         {
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            ReleaseLeftButtonSuppression();
             Disappear();
         }
 
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
         {
-            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            ReleaseLeftButtonSuppression();
             Disappear();
+        }
+
+        private void ReleaseLeftButtonSuppression()
+        {
+            if (!_leftButtonSuppressed)
+            {
+                return;
+            }
+
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
+            _leftButtonSuppressed = false;
         }
 
         private void Disappear()

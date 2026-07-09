@@ -10,6 +10,7 @@ namespace SS3D.Systems.Interactions.UI
     public partial class RadialInteractionPetal : VisualElement
     {
         private readonly VisualElement _icon;
+        private readonly Label _label;
         private readonly VisualElement _reticleBadge;
         private readonly VisualElement _reticleDot;
 
@@ -22,6 +23,10 @@ namespace SS3D.Systems.Interactions.UI
             _icon.AddToClassList("radial-interaction-petal__icon");
             _icon.pickingMode = PickingMode.Ignore;
 
+            _label = new Label();
+            _label.AddToClassList("radial-interaction-petal__label");
+            _label.pickingMode = PickingMode.Ignore;
+
             _reticleBadge = new VisualElement();
             _reticleBadge.AddToClassList("radial-interaction-petal__reticle-badge");
             _reticleBadge.pickingMode = PickingMode.Ignore;
@@ -31,6 +36,7 @@ namespace SS3D.Systems.Interactions.UI
             _reticleBadge.Add(_reticleDot);
 
             Add(_icon);
+            Add(_label);
             Add(_reticleBadge);
 
             RegisterCallback<ClickEvent>(HandleClick);
@@ -40,9 +46,13 @@ namespace SS3D.Systems.Interactions.UI
 
         public event Action<IInteraction> Clicked;
 
-        public void Bind(Sprite icon, InteractionTier tier)
+        public void Bind(Sprite icon, InteractionTier tier, string label, bool labelAbove)
         {
             _icon.style.backgroundImage = icon != null ? new StyleBackground(icon) : StyleKeyword.None;
+            _label.text = label ?? string.Empty;
+            _label.EnableInClassList("radial-interaction-petal__label--above", labelAbove);
+            _label.EnableInClassList("radial-interaction-petal__label--below", !labelAbove);
+
             bool showBadge = tier is InteractionTier.Targeted or InteractionTier.Combine;
             _reticleBadge.style.display = showBadge ? DisplayStyle.Flex : DisplayStyle.None;
 
@@ -54,10 +64,10 @@ namespace SS3D.Systems.Interactions.UI
             }
         }
 
-        public void SetInteraction(IInteraction interaction, Sprite icon, InteractionTier tier)
+        public void SetInteraction(IInteraction interaction, Sprite icon, InteractionTier tier, string label, bool labelAbove)
         {
             Interaction = interaction;
-            Bind(icon, tier);
+            Bind(icon, tier, label, labelAbove);
             style.display = DisplayStyle.Flex;
         }
 
@@ -65,6 +75,7 @@ namespace SS3D.Systems.Interactions.UI
         {
             Interaction = null;
             _icon.style.backgroundImage = StyleKeyword.None;
+            _label.text = string.Empty;
             _reticleBadge.style.display = DisplayStyle.None;
             style.display = DisplayStyle.None;
         }
