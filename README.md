@@ -2,73 +2,58 @@
 
 <br>
 
+<h1 align="center">THIS FORK</h1>
+
+This repository is **[henkhooft/SS3D](https://github.com/henkhooft/SS3D)** — a development fork of the official
+[RE-SS3D/SS3D](https://github.com/RE-SS3D/SS3D) project. It is an active experiment in redesigning core gameplay
+systems and development foundations at a faster pace than upstream's current review capacity supports.
+
+**Read [Documents/FORK_STATUS.md](Documents/FORK_STATUS.md)** for what has diverged and what may be proposed back
+upstream. Design specs live in [Documents/design/](Documents/design/); implementation plans go in
+[Documents/architecture/](Documents/architecture/). See [Documents/SKILL.md](Documents/SKILL.md) before editing
+either.
+
+This is not the official RE:SS3D release channel. For the upstream project, community, and official builds, see
+[RE-SS3D/SS3D](https://github.com/RE-SS3D/SS3D).
+
+<br>
+
 <h1 align="center">INFO</h1>
 
-**[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
-[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)
-[<img src="https://img.shields.io/github/milestones/open/RE-SS3D/SS3D?color=blueviolet&label=Milestones&logo=github&style=plastic" alt="GitHub Milestones" align="right">](https://github.com/RE-SS3D/SS3D/milestones)
+**[Fork status](Documents/FORK_STATUS.md) · [Design docs](Documents/design/) · [Doc conventions](Documents/SKILL.md)**
+[<img src="https://img.shields.io/github/discussions/henkhooft/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/henkhooft/SS3D/discussions)
 
 <br>
 
-<h1 align="center">DOWNLOADS</h1>
+<h1 align="center">BUILD</h1>
 
-[<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
+[<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/henkhooft/SS3D/archive/develop.zip)
 
-[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic&color=9cf" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of SS3D (tested on Windows but not other OSs).[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic&color=blue" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
+This fork does not publish releases. Clone or download the **`develop`** branch and build in Unity yourself.
+[<img src="https://img.shields.io/github/repo-size/henkhooft/SS3D?color=gold&label=Repository%20Size&style=plastic" alt="Repo Size" align="right">](https://github.com/henkhooft/SS3D)
 
-[<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
+```bash
+git clone https://github.com/henkhooft/SS3D.git
+cd SS3D
+git checkout develop
+```
 
-[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic&color=blue" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The entire SS3D project in a .zip folder (must be built in Unity yourself).[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
+Open the project in Unity (see [Documents/CONTRIBUTING.md](Documents/CONTRIBUTING.md) for setup notes).
 
-***Note:*** *SS3D is still in a 'pre-alpha' phase while we concentrate on core mechanics. So, there isn't much content, systems, or even interactions currently. What you see now is just the beginning to something much, much greater.*
-
-<br>
-
-<h1 align="center">DONATE</h1>
-
-[<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
-
-PayPal is where our donations go before distribution to development costs. Use link or send to our [email](mailto:ress3d.project@gmail.com).
-
-[<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
-
-Patreon is our subscription-based donation platform (currently no unique benefits for different tiers).
-
-<br>
-
-<h1 align="center">COMMUNITY</h1>
-
-[<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
-
-[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Primary communication (devs & community). Includes helpful people, polls, & more.
-
-[<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
-
-[<img src="https://img.shields.io/reddit/subreddit-subscribers/ress3d?label=Followers&style=social" alt="Reddit Followers" align="right">](https://www.reddit.com/r/RESS3D/)Secondary community, with smililar content to our Discord but not nearly as active.
-
-[<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/@spacestation3d)
-
-[<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/@spacestation3d)Where we upload many videos including animations, trailers, and gameplay tests.
-
-[<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
-
-[<img src="https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FSpaceStation3D" alt="Twitter Followers" align="right">](https://twitter.com/SpaceStation3D)Used for announcements & memes but we will start using it more for other posts eventually.
+***Note:*** *This fork is in active development. Systems, interactions, and design docs are evolving — what you
+build today may not match upstream RE:SS3D.*
 
 <br>
 
 <h1 align="center">CONTRIBUTING</h1>
 
-[<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)Our [Dev Guide](https://ss3d.gitbook.io/dev-guide/) outlines setting up the project and contributing to it with various tips and guidelines.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
+[<img src="https://img.shields.io/github/issues-raw/henkhooft/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/henkhooft/SS3D/issues)Read [Documents/SKILL.md](Documents/SKILL.md) before writing design or architecture docs. Gameplay specs belong in [Documents/design/](Documents/design/).[<img src="https://img.shields.io/github/issues-closed-raw/henkhooft/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/henkhooft/SS3D/issues?q=is%3Aissue+is%3Aclosed)
 
-[<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)Our [Art Guide](https://ss3d.gitbook.io/art-guide/) outlines asset contributions like models, textures, animations, audio, etc.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
+[<img src="https://img.shields.io/github/issues-pr-raw/henkhooft/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/henkhooft/SS3D/pulls)Code changes should align with the relevant design doc where one exists, or note the deviation in the PR.[<img src="https://img.shields.io/github/issues-pr-closed-raw/henkhooft/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/henkhooft/SS3D/pulls?q=is%3Apr+is%3Aclosed)
 
-[<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/issues)
+[<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/henkhooft/SS3D/issues)
 
-GitHub hosts our [issues board](https://github.com/RE-SS3D/SS3D/issues) and [milestones board](https://github.com/RE-SS3D/SS3D/milestones), both of which help manage technical tasks.
-
-[<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
-
-Trello hosts our task boards for asset types (3D, 2D, audio, etc.) and our management board.
+GitHub hosts this fork's [issues](https://github.com/henkhooft/SS3D/issues) and [discussions](https://github.com/henkhooft/SS3D/discussions).
 
 <br>
 

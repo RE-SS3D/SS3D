@@ -1,31 +1,45 @@
-# How To Contribute To SS3D
+# How To Contribute To This Fork
 
-***All of our documents have moved to [our GitBook](https://ss3d.gitbook.io/) so go there for more detailed guides and documents!***
+This document covers contributing to **[henkhooft/SS3D](https://github.com/henkhooft/SS3D)**. For upstream RE:SS3D
+community and official releases, see [RE-SS3D/SS3D](https://github.com/RE-SS3D/SS3D).
 
-This document outlines the guidelines for contributing to the SS3D project. If you have any questions, feel free to ask on our [discussions page](https://github.com/RE-SS3D/SS3D/discussions) or [discord server](https://discord.gg/Z3sPhyS).
+Read [FORK_STATUS.md](FORK_STATUS.md) first if you are new here — it explains how this repo diverges from upstream.
+
+## Documentation
+
+This fork maintains its own docs in `Documents/`, independent of upstream's GitBook.
+
+- [SKILL.md](SKILL.md) — conventions for design and architecture docs (read before writing either)
+- [design/](design/) — gameplay design specs (what and why)
+- [architecture/](architecture/) — implementation plans (how and in what order)
+
+If a design doc exists for the system you are changing, align with it or state the deviation in your PR.
 
 ## Setup
 
-First, start by running through the [intro page of our dev guide](https://ss3d.gitbook.io/dev-guide/) and the intro's sub-pages.
+Clone the repo and check out **`develop`**:
 
-This will lay out everything you need to know about the basics of GitHub, Unity, and our project logistics.
+```bash
+git clone https://github.com/henkhooft/SS3D.git
+cd SS3D
+git checkout develop
+```
 
-### Developer Guide
+Open the project in Unity Hub. The game is written in C# and uses [FishNet](https://fish-networking.com/) for
+networking.
 
-Right [here](https://ss3d.gitbook.io/dev-guide/) young programmer!
+Upstream's [dev guide](https://ss3d.gitbook.io/dev-guide/) may still help with generic Unity and FishNet concepts,
+but project direction, milestones, and gameplay specs for this fork live in `Documents/` — not GitBook.
 
-The game itself is made in [Unity](https://ss3d.gitbook.io/dev-guide/introduction/using-unity), written in [C#](https://ss3d.gitbook.io/dev-guide/guidelines/the-c-style-guide), and uses [FishNet](https://ss3d.gitbook.io/dev-guide/networking/fishnet-networking) for networking.
+## Running The Game
 
-### Artist Guide
+This fork does not publish releases. Build from source in Unity.
 
-Right [here](https://ss3d.gitbook.io/art-guide/) blossoming artist!
+Running the game is still more involved than it should be. Until fork-specific run instructions land here, upstream's
+[running the project](https://ss3d.gitbook.io/dev-guide/guides/running-the-project) guide covers the basic host/join
+flow — steps may drift as this fork changes.
 
-Since were an open-source project, most of us use open-source software for creating assets. For beginners or those who want do not want to pay for software, we recommend [Blender](https://www.blender.org/) for 3D assets and [Gimp](https://www.gimp.org/) for 2D assets.
+## Questions
 
-## Running The Game:
-
-First you will need to either build the project using Unity or download one of our offical builds from our [GitHub Releases page](https://github.com/RE-SS3D/SS3D/releases), alternatively you can visit https://ss3d.space/download/ which will automatically download our latest release from GitHub.
-
-Running the game itself is a little bit more complicated than it needs to be at this time but will be simplified as our development progresses. The details of running the game have been moved [here](https://ss3d.gitbook.io/dev-guide/guides/running-the-project). If you are only interested in play testing the game by yourself, just follow the 'Joining a Server' page.
-
-***All of our documents have moved to [our GitBook](https://ss3d.gitbook.io/) so go there for more detailed guides and documents!***
+Open a [discussion](https://github.com/henkhooft/SS3D/discussions) or [issue](https://github.com/henkhooft/SS3D/issues)
+on this repository.
