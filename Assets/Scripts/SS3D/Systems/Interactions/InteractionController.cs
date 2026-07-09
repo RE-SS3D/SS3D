@@ -171,7 +171,7 @@ namespace SS3D.Systems.Interactions
 
             if (interactions.Count <= 0) { return; }
 
-            void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
+            void handleInteractionSelected(IInteraction interaction)
             {
                 _radialView.OnInteractionSelected -= handleInteractionSelected;
                 string interactionName = interaction.GetName(interactionEvent);
@@ -219,11 +219,11 @@ namespace SS3D.Systems.Interactions
             if (showMenu && interactions.Count > 0)
             {
                 Vector3 mousePosition = Mouse.current.position.ReadValue();
-                mousePosition.y = Mathf.Max(_radialView.RectTransform.rect.height, mousePosition.y);
+                mousePosition.y = Mathf.Max(_radialView.MenuHeight, mousePosition.y);
 
                 _radialView.SetInteractions(interactions, interactionEvent, mousePosition);
 
-                void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
+                void handleInteractionSelected(IInteraction interaction)
                 {
                     int index = entries.FindIndex(x => x.Interaction == interaction);
                     string interactionName = interaction.GetName(interactionEvent);

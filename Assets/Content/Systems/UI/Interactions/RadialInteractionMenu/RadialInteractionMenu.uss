@@ -1,0 +1,109 @@
+@import url("../../Tokens/ss3d-tokens.uss");
+
+.radial-interaction-petal {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background-color: var(--ss3d-surface-panel-raised);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    align-items: center;
+    justify-content: center;
+    transition-duration: var(--ss3d-duration-fast);
+    transition-property: background-color, border-color, scale;
+}
+
+.radial-interaction-petal:hover {
+    background-color: var(--ss3d-surface-elevated);
+    border-color: var(--ss3d-border-strong);
+}
+
+.radial-interaction-petal__icon {
+    width: 25px;
+    height: 25px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.radial-interaction-petal__reticle-badge {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background-color: var(--ss3d-surface-void);
+    border-width: 1.5px;
+    border-color: var(--ss3d-accent-rust);
+    align-items: center;
+    justify-content: center;
+}
+
+.radial-interaction-petal__reticle-badge--combine {
+    border-color: var(--ss3d-ramp-green-300);
+}
+
+.radial-interaction-petal__reticle-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    border-width: 1.5px;
+    border-color: var(--ss3d-accent-rust);
+}
+
+.radial-interaction-petal__reticle-dot--combine {
+    border-color: var(--ss3d-ramp-green-300);
+}
+
+.radial-interaction-menu {
+    position: absolute;
+    width: 176px;
+    height: 176px;
+}
+
+.radial-interaction-menu__background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 88px;
+    background-color: var(--ss3d-surface-panel-raised);
+    border-width: 2px;
+    border-color: var(--ss3d-border-default);
+}
+
+.radial-interaction-menu__petal-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.radial-interaction-menu__close {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 36px;
+    height: 36px;
+    margin-left: -18px;
+    margin-top: -18px;
+    border-radius: 18px;
+    background-color: var(--ss3d-surface-void);
+    border-width: 1px;
+    border-color: var(--ss3d-border-strong);
+    align-items: center;
+    justify-content: center;
+}
+
+.radial-interaction-menu__close:hover {
+    border-color: var(--ss3d-accent-rust);
+}
+
+.radial-interaction-menu__close-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+    -unity-background-scale-mode: scale-to-fit;
+}
