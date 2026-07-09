@@ -3,7 +3,7 @@ Shader "Custom/InteractionOutline"
     Properties
     {
         _OutlineColor ("Outline Color", Color) = (0, 1, 0, 1)
-        _OutlineWidth ("Outline Width", Range(0, 0.1)) = 0.04
+        _OutlineWidth ("Outline Width", Range(0, 0.1)) = 0.03
     }
 
     SubShader
@@ -12,7 +12,7 @@ Shader "Custom/InteractionOutline"
         {
             "RenderType" = "Opaque"
             "RenderPipeline" = "UniversalPipeline"
-            "Queue" = "Geometry+1"
+            "Queue" = "Geometry-1"
         }
 
         Pass
@@ -21,8 +21,9 @@ Shader "Custom/InteractionOutline"
             Tags { "LightMode" = "SRPDefaultUnlit" }
 
             Cull Front
-            ZWrite Off
+            ZWrite On
             ZTest LEqual
+            Offset 1, 1
             Blend Off
 
             HLSLPROGRAM

@@ -23,7 +23,7 @@ namespace SS3D.Systems.Interactions
 
         private static readonly int OutlineColorId = Shader.PropertyToID("_OutlineColor");
         private static readonly int OutlineWidthId = Shader.PropertyToID("_OutlineWidth");
-        private const float OutlineWidth = 0.04f;
+        private const float OutlineWidth = 0.03f;
         private static readonly Color AvailableColor = new(0.15f, 0.95f, 0.35f, 1f);
         private static readonly Color UnavailableColor = new(0.98f, 0.88f, 0.15f, 1f);
 

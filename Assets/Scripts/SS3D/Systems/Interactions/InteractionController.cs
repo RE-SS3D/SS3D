@@ -10,6 +10,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Inputs;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Screens;
 using SS3D.Systems.Selection;
 using SS3D.Systems.Inventory.Containers;
@@ -518,15 +519,15 @@ namespace SS3D.Systems.Interactions
         {
             Selectable current = _selectionSystem.GetCurrentSelectable();
 
+            if (current == null || IsEntityOutlineExcluded(current))
+            {
+                ClearInteractionOutline();
+                return;
+            }
+
             if (current != _activeOutlineSelectable)
             {
                 ClearInteractionOutline();
-
-                if (current == null)
-                {
-                    return;
-                }
-
                 _activeOutlineSelectable = current;
                 _activeOutlineView = GetOrCreateOutlineView(current);
             }
@@ -547,6 +548,14 @@ namespace SS3D.Systems.Interactions
                 : InteractionOutlineView.OutlineState.Unavailable;
 
             _activeOutlineView.SetState(state);
+        }
+
+        /// <summary>
+        /// Player-controlled entities use dedicated UIs (e.g. medical) instead of world interaction outlines.
+        /// </summary>
+        private static bool IsEntityOutlineExcluded(Selectable selectable)
+        {
+            return selectable.GetComponentInParent<Entity>() != null;
         }
 
         [Client]
