@@ -91,7 +91,7 @@ public class PredictedBullet : NetworkBehaviour
     public void SetVelocity(Vector3 value)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
-        rb.velocity = value;
+        rb.linearVelocity = value;
     }
 
     /// <summary>
