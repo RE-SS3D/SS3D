@@ -85,6 +85,7 @@ namespace SS3D.Systems.Crafting
         [Server]
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
+            CaptureStartPosition(interactionEvent);
             StartCounter();
             _startPosition = _characterTransform.position;
             SubSystems.TryGet(out CraftingSubSystem craftingSystem);

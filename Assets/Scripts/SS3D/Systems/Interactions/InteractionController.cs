@@ -29,6 +29,7 @@ namespace SS3D.Systems.Interactions
     {
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
+        private InputAction _cancelInteractionAction;
         private InputSubSystem _inputSystem;
 
         private Camera _camera;
@@ -38,6 +39,11 @@ namespace SS3D.Systems.Interactions
         [SyncVar(OnChange = nameof(SyncIntent))] private IntentType _currentIntent = IntentType.Help;
 
         private IntentType _ownerIntent = IntentType.Help;
+
+        private int _clientActiveReferenceId = -1;
+        private IInteractionSource _clientActiveSource;
+        private InteractionReference _serverActiveReference;
+        private IInteractionSource _serverActiveSource;
 
         public IntentType CurrentIntent => IsOwner ? _ownerIntent : _currentIntent;
 
@@ -67,6 +73,17 @@ namespace SS3D.Systems.Interactions
             Controls controls = _inputSystem.Inputs;
             _controls = controls.Interactions;
             _hotkeysControls = controls.Hotkeys;
+            _cancelInteractionAction = controls.Interactions.Get().FindAction("Cancel Interaction", throwIfNotFound: true);
+        }
+
+        private void Update()
+        {
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            RefreshActiveInteractionTracking();
         }
 
         protected override void OnEnabled()
@@ -93,6 +110,7 @@ namespace SS3D.Systems.Interactions
         {
             _controls.RunPrimary.performed += HandleRunPrimary;
             _controls.ViewInteractions.performed += HandleView;
+            _cancelInteractionAction.performed += HandleCancelInteraction;
             _hotkeysControls.Use.performed += HandleUse;
             _inputSystem.ToggleActionMap(_controls, true);
         }
@@ -101,8 +119,23 @@ namespace SS3D.Systems.Interactions
         {
             _controls.RunPrimary.performed -= HandleRunPrimary;
             _controls.ViewInteractions.performed -= HandleView;
+            _cancelInteractionAction.performed -= HandleCancelInteraction;
             _hotkeysControls.Use.performed -= HandleUse;
             _inputSystem.ToggleActionMap(_controls, false);
+        }
+
+        [Client]
+        private void HandleCancelInteraction(InputAction.CallbackContext callbackContext)
+        {
+            if (_clientActiveReferenceId < 0)
+            {
+                return;
+            }
+
+            int referenceId = _clientActiveReferenceId;
+            ClearClientActiveInteractionTracking();
+            InteractionOptimisticFeedback.Clear(transform);
+            CmdCancelInteraction(referenceId);
         }
 
         /// <summary>
@@ -324,9 +357,8 @@ namespace SS3D.Systems.Interactions
             interactionEvent.Target = interaction.Target;
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
+            TrackActiveInteraction(interactionEvent.Source, reference, interaction.Interaction);
             RpcExecuteClientInteraction(target, point, genericName, targetComponentIndex, reference.Id);
-
-            // TODO: Keep track of interactions for cancellation
         }
 
         /// <summary>
@@ -358,6 +390,8 @@ namespace SS3D.Systems.Interactions
 
             interactionEvent.Target = interaction.Target;
             interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
+            _clientActiveSource = interactionEvent.Source;
+            _clientActiveReferenceId = referenceId;
         }
 
         /// <summary>
@@ -532,6 +566,7 @@ namespace SS3D.Systems.Interactions
             interactionEvent.Target = chosenEntry.Target;
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
+            TrackActiveInteraction(source, reference, chosenEntry.Interaction);
             if (chosenEntry.Interaction is IClientInteractionSource)
             {
                 RpcExecuteClientInventoryInteraction(target, sourceObject, genericName, targetComponentIndex, reference.Id);
@@ -569,11 +604,76 @@ namespace SS3D.Systems.Interactions
 
             interactionEvent.Target = chosenInteraction.Target;
             interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
+            _clientActiveSource = source;
+            _clientActiveReferenceId = referenceId;
+        }
+
+        [ServerRpc]
+        private void CmdCancelInteraction(int referenceId)
+        {
+            if (_serverActiveReference == null || _serverActiveReference.Id != referenceId || _serverActiveSource == null)
+            {
+                return;
+            }
+
+            if (!_serverActiveSource.HasInteraction(_serverActiveReference))
+            {
+                ClearActiveInteractionTracking();
+                return;
+            }
+
+            _serverActiveSource.CancelInteraction(_serverActiveReference);
+            ClearActiveInteractionTracking();
+        }
+
+        [Server]
+        private void TrackActiveInteraction(IInteractionSource source, InteractionReference reference, IInteraction interaction)
+        {
+            if (interaction is not IDelayedInteraction)
+            {
+                return;
+            }
+
+            _serverActiveReference = reference;
+            _serverActiveSource = source;
+        }
+
+        [Server]
+        private void ClearActiveInteractionTracking()
+        {
+            _serverActiveReference = null;
+            _serverActiveSource = null;
+        }
+
+        private void ClearClientActiveInteractionTracking()
+        {
+            _clientActiveReferenceId = -1;
+            _clientActiveSource = null;
+        }
+
+        private void RefreshActiveInteractionTracking()
+        {
+            if (IsServer && _serverActiveReference != null && _serverActiveSource != null
+                && !_serverActiveSource.HasInteraction(_serverActiveReference))
+            {
+                ClearActiveInteractionTracking();
+            }
+
+            if (IsClient && _clientActiveReferenceId >= 0 && _clientActiveSource != null)
+            {
+                var reference = new InteractionReference(_clientActiveReferenceId);
+
+                if (!_clientActiveSource.HasInteraction(reference))
+                {
+                    ClearClientActiveInteractionTracking();
+                }
+            }
         }
 
         [TargetRpc]
         private void TargetRejectInteraction(NetworkConnection connection)
         {
+            ClearClientActiveInteractionTracking();
             InteractionOptimisticFeedback.Clear(transform);
         }
 

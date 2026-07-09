@@ -56,5 +56,10 @@ namespace SS3D.Interactions.Interfaces
         void CancelInteraction(InteractionReference reference);
 
         InteractionInstance GetInstanceFromReference(InteractionReference reference);
+
+        /// <summary>
+        /// Returns whether an interaction with the given reference is still active on this source.
+        /// </summary>
+        bool HasInteraction(InteractionReference reference);
     }
 }

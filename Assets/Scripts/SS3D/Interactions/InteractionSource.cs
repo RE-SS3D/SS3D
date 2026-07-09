@@ -159,6 +159,24 @@ namespace SS3D.Interactions
             return _interactions.FirstOrDefault(x => x.Reference.Equals(reference));
         }
 
+        public bool HasInteraction(InteractionReference reference)
+        {
+            if (IsServer)
+            {
+                return GetInstanceFromReference(reference) != null;
+            }
+
+            for (int i = 0; i < _clientInteractions.Count; i++)
+            {
+                if (_clientInteractions[i].Reference.Id == reference.Id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction, InteractionReference reference)
         {
             if (interaction is not IClientInteractionSource clientInteractionSource)
