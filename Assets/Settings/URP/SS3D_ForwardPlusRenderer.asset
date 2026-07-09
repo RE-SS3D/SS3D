@@ -1,19 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7298896358476930769
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
-  m_Name: SelectionPickRendererFeature
-  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
-  m_Active: 1
-  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40,7 +26,7 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
   - {fileID: 5324824689208116589}
-  - {fileID: -7298896358476930769}
+  - {fileID: 6780653091773748592}
   m_RendererFeatureMap: 4c8e2b1f7a903d5e
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
@@ -96,3 +82,17 @@ MonoBehaviour:
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1
+--- !u!114 &6780653091773748592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f817be434d471c9377a7c61382a2cd, type: 3}
+  m_Name: SelectionPickRendererFeature
+  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.SelectionPickRendererFeature
+  m_Active: 1
+  _selectionShader: {fileID: 4800000, guid: bcd9cf75c1aa43247b53d2014cfde501, type: 3}
