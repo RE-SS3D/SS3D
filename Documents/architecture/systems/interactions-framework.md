@@ -19,6 +19,9 @@ RPCs identify interactions with `InteractionIdentifier` (`genericName` + `target
 - `Assets/Scripts/SS3D/Interactions/InteractionIdentifier.cs` — stable RPC wire ID
 - `Assets/Scripts/SS3D/Interactions/InteractionPipeline.cs` — shared discover → filter → sort
 - `Assets/Scripts/SS3D/Interactions/InteractionTier.cs` — instant / targeted / folder tiers for radial menu
+- `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionTierProvider.cs` — per-interaction tier override
+- `Assets/Scripts/SS3D/Interactions/Extensions/InteractionExtensions.cs` — `GetInteractionTier()` helper
+- `Assets/Scripts/SS3D/Interactions/InteractionOptimisticFeedback.cs` — delayed loading bars during server confirm
 - `Assets/Scripts/SS3D/Interactions/Interfaces/IIntentRestrictedInteraction.cs` — Help/Harm gate
 - `Assets/Scripts/SS3D/Interactions/Interfaces/ITargetedInteraction.cs` — armed-mode second-click targeting
 - `Assets/Scripts/SS3D/Interactions/DelayedInteraction.cs` — timed interaction base class

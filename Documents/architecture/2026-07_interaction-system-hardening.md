@@ -42,6 +42,7 @@ Harden SS3D's interaction system for production multiplayer without rewriting th
 
 ### Follow-up (branch extras)
 - Hover availability outlines (green/yellow), entity exclusion, silhouette shader
+- Merged `feature/radial-menu-redesign`: UI Toolkit radial menu, armed overlay, `InteractionTier` / `ExamineInteraction`
 
 ## Deferred / out of scope
 

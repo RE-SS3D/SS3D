@@ -15,7 +15,7 @@ Hover tooltips and shift-hold detailed examine panels, range-gated off the [sele
 - `Assets/Scripts/SS3D/Systems/Examine/ExamineContentResolver.cs` — static table + dynamic section resolution
 - `Assets/Scripts/SS3D/Systems/Examine/IExaminable.cs` — interface for examinable objects
 - `Assets/Scripts/SS3D/Systems/Examine/ExamineData.cs` — ScriptableObject examine content asset
-- `Assets/Scripts/SS3D/Systems/Examine/ExamineInteraction.cs` — shift-hold detailed examine interaction
+- `Assets/Scripts/SS3D/Systems/Examine/ExamineInteraction.cs` — Tier 1 radial petal; shift-hold detailed examine
 - `Assets/Scripts/SS3D/Localization/LocalizedTextService.cs` — shared localization accessor with caching
 
 ## Extension points
@@ -32,3 +32,4 @@ Hover tooltips and shift-hold detailed examine panels, range-gated off the [sele
 ## Related docs
 
 - Plan: [examine_localization_design_5ca361a6.plan.md](../../plans/examine_localization_design_5ca361a6.plan.md)
+- Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md) § Examine tier

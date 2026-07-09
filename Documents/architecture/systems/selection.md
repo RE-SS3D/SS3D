@@ -6,7 +6,7 @@
 
 ## Overview
 
-Shader-ID mesh picking replaces screen raycasts for interaction targeting. Each `Selectable` gets a unique render color; a URP offscreen pick pass plus `SelectionCamera` readback identifies the hover target. `InteractionController` routes client interaction targeting through this system; the server validates using `NetworkObject` and interaction point.
+Shader-ID mesh picking replaces screen raycasts for interaction targeting. Each `Selectable` gets a unique render color; a URP offscreen pick pass plus `SelectionCamera` readback identifies the hover target. `InteractionController` routes client interaction targeting through this system and drives `InteractionOutlineView` from the current hover; the server validates using `NetworkObject` and interaction point.
 
 ## Start here
 

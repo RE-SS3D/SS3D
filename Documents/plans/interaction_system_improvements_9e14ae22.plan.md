@@ -376,3 +376,14 @@ Each PR independently mergeable; PRs 1–4 can ship before gameplay gates.
 - Client gets immediate feedback on interaction attempt; rolls back on rejection
 - PlayMode tests cover pickup, priority, RPC rejection, and feedback rollback
 
+---
+
+## Implementation notes
+
+**Shipped (Jul 2026, branch `feature/interaction-system-hardening`):**
+
+- All phases 1–5 complete per todos above.
+- Merged `feature/radial-menu-redesign` after hardening: radial tier routing and armed overlay integrated with `InteractionIdentifier` RPCs and `InteractionPipeline`.
+- Branch extras beyond original plan: hover availability outlines (green/yellow/blue pending), entity outline exclusion, `InteractionOutlineView` + `InteractionOutline.shader`.
+- PlayMode: `InteractionPlayModeTests` wraps existing pickup regression; priority, intent, and identifier resolution covered in EditMode `InteractionPipelineTests`.
+- Deferred items unchanged (inventory prediction, RPC rate limiting, medical entity outlines, etc.).

@@ -349,3 +349,16 @@ Used by both armed-click (Phase 3) and drag-drop (Phase 4) so both routes produc
 - Intent modifier chords (Ctrl disarm, Alt grab)
 - Gamepad radial navigation
 
+---
+
+## Implementation notes
+
+**Shipped (Jul 2026, branch `feature/radial-menu-redesign`, merged into `feature/interaction-system-hardening`):**
+
+- Phases 1b–3 complete: UI Toolkit radial view (`RadialInteractionMenuView`, `RadialInteractionPetal`), shared tokens at `Assets/Content/Systems/UI/Tokens/`, `InteractionTier` + `IInteractionTierProvider`, `ArmedInteractionSubSystem` + overlay, `ExamineInteraction`, `TransferSubstanceInteraction` as Tier 2 proof-of-concept.
+- Deprecated UGUI `RadialInteractionButton` and legacy `InteractionMenuView` removed; radial lives on scene `Game.unity` HUD overlay, not `PlayerCanvas`.
+- Post-merge with interaction hardening: radial and armed dispatch use `InteractionIdentifier` (`genericName` + `targetComponentIndex`), not display `GetName()`. Armed second-click resolves entries by `GetGenericName()` on the new target.
+
+**Still pending:** Phase 4 drag-combine (`WorldCombineDropTarget`), Phase 5 tier audit and polish.
+
+**Regression note:** Server RPC validation matches `InteractionIdentifier`, not display names (supersedes plan checklist item "re-validates interaction name on RPC").

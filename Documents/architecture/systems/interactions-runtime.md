@@ -13,16 +13,19 @@ Client-side interaction routing: discovers available interactions from the curre
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — primary click, radial dispatch, intent sync, armed resolution, outline feedback
 - `Assets/Scripts/SS3D/Systems/Interactions/RadialInteractionSubSystem.cs` — three-tier radial menu subsystem
 - `Assets/Scripts/SS3D/Systems/Interactions/UI/RadialInteractionMenuView.cs` — radial menu UI (UI Toolkit)
+- `Assets/Scripts/SS3D/Systems/Interactions/UI/RadialInteractionPetal.cs` — dynamic petal elements
+- `Assets/Scripts/SS3D/Systems/Interactions/UI/ArmedInteractionOverlayView.cs` — reticle, chip, and target highlight overlay
 - `Assets/Scripts/SS3D/Systems/Interactions/ArmedInteractionSubSystem.cs` — armed-mode interaction overlay
 - `Assets/Scripts/SS3D/Systems/Interactions/InteractionOutlineView.cs` — hover and pending interaction outlines
 - `Assets/Scripts/SS3D/Systems/Interactions/ArmedTargetEvaluation.cs` — armed target filtering
+- `Assets/Art/Graphics/InteractionOutline.shader` — inverted-hull outline material for availability feedback
 
 ## Player flow
 
 1. `SelectionSubSystem` resolves hovered `Selectable`.
 2. `InteractionController` builds viable list via `InteractionPipeline` + active hand/tool source.
 3. Primary click or instant radial choice sends `CmdRunInteraction` with `InteractionIdentifier`.
-4. Targeted radial choices arm the cursor; second click resolves entry on new target and dispatches RPC.
+4. Targeted radial choices arm the cursor via `TryRouteRadialInteraction`; second click resolves the matching `InteractionEntry` by `GetGenericName()` and dispatches RPC.
 5. Server re-validates gates (intent, stamina, ownership, permissions) then `InteractionSource.Interact`.
 6. Observers run client FX; rejections use `TargetRejectInteraction` to roll back optimistic UI.
 

@@ -28,7 +28,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
 | Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction |
 | Electricity | [electricity](systems/electricity.md) | partial | Power circuits, APC, SMES, generators |
-| Substances | [substances](systems/substances.md) | stub | Chemical substances and containers |
+| Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | stub | Items, containers, ID cards |
 | Entities | [entities](systems/entities.md) | stub | Humanoids, minds, entity spawning |
 | Health | [health](systems/health.md) | partial | Body parts, oxygen consumer (design spec not fully implemented) |
