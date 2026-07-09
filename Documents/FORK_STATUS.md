@@ -138,7 +138,7 @@ menus under `SS3D/Localization/Examine/` export/import JSON for translation work
 Non-English locales (`fr`, `pt-BR`, `ru-RU`) have empty Examine tables for now — they fall back to
 English until a translation import lands.
 
-Merged from `feature/examine-localization`. Design plan:
+Merged from `archive/feature-examine-localization`. Design plan:
 [examine_localization_design_5ca361a6.plan.md](plans/examine_localization_design_5ca361a6.plan.md).
 
 ### Tilemap and adjacency engine
@@ -251,7 +251,7 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/feature-game-lifecycle-hardening` | (via develop-unity6) | Round state machine |
 | `archive/fix-selection-camera-picking` | (via develop-unity6) | Cursor picking alignment |
 | `archive/machine-ui` | 2026-07 | Machine interface UI (APC/SMES) |
-| `feature/examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
+| `archive/feature-examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
 
 ---
 
