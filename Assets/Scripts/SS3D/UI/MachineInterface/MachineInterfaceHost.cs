@@ -11,6 +11,18 @@ namespace SS3D.UI.MachineInterface
     /// Renders machine interface panels via UI Toolkit.
     /// UIDocument stays disabled while closed so the panel does not clear camera depth
     /// used by the selection pick pass.
+    /// <para>
+    /// Adding a new machine interface:
+    /// </para>
+    /// <list type="number">
+    /// <item><description>Add a constant to <see cref="MachineInterfaceIds"/>.</description></item>
+    /// <item><description>Define snapshot, FishNet serializer, view model, and mapper types.</description></item>
+    /// <item><description>Create UXML/USS under Content/Systems/UI/MachineInterface and a binder implementing <see cref="IMachineInterfaceBinder"/>.</description></item>
+    /// <item><description>Add a networked controller on the machine prefab (inherit <see cref="MachineInterfaceBehaviour"/>; use concrete TargetRpc snapshot types—FishNet does not support generic RPC parameters).</description></item>
+    /// <item><description>Assign serialized templates on this host and register a <see cref="MachineInterfaceUiRegistration"/> in <see cref="RegisterUiEntries"/> (set <c>Wide</c> for layouts wider than the default window).</description></item>
+    /// <item><description>Register the snapshot type in <see cref="MachineInterfaceNetworkRegistry"/>.</description></item>
+    /// <item><description>Optional: add control IDs to <see cref="MachineInterfaceControlIds"/> and a dev scenario in <see cref="MachineInterfaceDevHarness"/>.</description></item>
+    /// </list>
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class MachineInterfaceHost : View
