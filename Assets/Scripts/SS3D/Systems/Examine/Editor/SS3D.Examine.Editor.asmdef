@@ -1,0 +1,21 @@
+{
+    "name": "SS3D.Examine.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
+        "GUID:c8f4e2a1b3d54e6f9a0b1c2d3e4f5a60",
+        "GUID:2e77701fe0ceda44fb763f03ee704c37",
+        "Unity.Localization"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

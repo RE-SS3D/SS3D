@@ -1,0 +1,1028 @@
+{
+    "Version": 1,
+    "ExportedAt": "2026-07-09T13:05:28.3556090Z",
+    "Entries": [
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Entities/Humanoids/Human.asset",
+            "NameKey": "entities.humanoids.human.name",
+            "DescriptionKey": "entities.humanoids.human.desc",
+            "EnName": "Some guy",
+            "EnDescription": "Yup. Thats some guy."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Entities/Silicon/EngineeringBorg.asset",
+            "NameKey": "entities.silicon.engineering_borg.name",
+            "DescriptionKey": "entities.silicon.engineering_borg.desc",
+            "EnName": "Engineering Cyborg",
+            "EnDescription": "It's not moving... it must be out of power."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Flora/PottedPlants/Plant0.asset",
+            "NameKey": "furniture.flora.potted_plants.plant_0.name",
+            "DescriptionKey": "furniture.flora.potted_plants.plant_0.desc",
+            "EnName": "Potted Plant",
+            "EnDescription": "An Earth species planted in a pot."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Flora/PottedPlants/Plant7.asset",
+            "NameKey": "furniture.flora.potted_plants.plant_7.name",
+            "DescriptionKey": "furniture.flora.potted_plants.plant_7.desc",
+            "EnName": "Potted Plant",
+            "EnDescription": "Some exotic species planted in a pot."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/NuclearDevice.asset",
+            "NameKey": "furniture.nuclear_device.name",
+            "DescriptionKey": "furniture.nuclear_device.desc",
+            "EnName": "Nuclear Device",
+            "EnDescription": "Whatever you do, don't activate this using the authentication disk the captain has!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/NukeCart.asset",
+            "NameKey": "furniture.nuke_cart.name",
+            "DescriptionKey": "furniture.nuke_cart.desc",
+            "EnName": "Nuke Cart",
+            "EnDescription": "Just a simple cart for a precious nuclear device."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Seats/Chairs/OfficeChair.asset",
+            "NameKey": "furniture.seats.chairs.office_chair.name",
+            "DescriptionKey": "furniture.seats.chairs.office_chair.desc",
+            "EnName": "Office Chair",
+            "EnDescription": "Classic office chair you can slide around in."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Seats/Chairs/PlasticChair.asset",
+            "NameKey": "furniture.seats.chairs.plastic_chair.name",
+            "DescriptionKey": "furniture.seats.chairs.plastic_chair.desc",
+            "EnName": "Plastic Chair",
+            "EnDescription": "A modern chair made of plastic. It looks more comfortable than it is."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Seats/DinerBooth.asset",
+            "NameKey": "furniture.seats.diner_booth.name",
+            "DescriptionKey": "furniture.seats.diner_booth.desc",
+            "EnName": "DinerBooth",
+            "EnDescription": "A typical squarish booth you see at small diners."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Sink.asset",
+            "NameKey": "furniture.sink.name",
+            "DescriptionKey": "furniture.sink.desc",
+            "EnName": "Sink",
+            "EnDescription": "Dispenses tap water."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Surfaces/Tables/TableFrameSteel.asset",
+            "NameKey": "furniture.surfaces.tables.table_frame_steel.name",
+            "DescriptionKey": "furniture.surfaces.tables.table_frame_steel.desc",
+            "EnName": "Steel Table Frame",
+            "EnDescription": "A frame for a table made of steel."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Surfaces/Tables/TableFrameWood.asset",
+            "NameKey": "furniture.surfaces.tables.table_frame_wood.name",
+            "DescriptionKey": "furniture.surfaces.tables.table_frame_wood.desc",
+            "EnName": "Wood Table Frame",
+            "EnDescription": "A frame for a table made of wood."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Surfaces/Tables/TableGlass.asset",
+            "NameKey": "furniture.surfaces.tables.table_glass.name",
+            "DescriptionKey": "furniture.surfaces.tables.table_glass.desc",
+            "EnName": "Glass Table",
+            "EnDescription": "A table with a glass surface and steel frame."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Surfaces/Tables/TablePoker.asset",
+            "NameKey": "furniture.surfaces.tables.table_poker.name",
+            "DescriptionKey": "furniture.surfaces.tables.table_poker.desc",
+            "EnName": "Poker Table",
+            "EnDescription": "A table with a felt surface and wood frame."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Surfaces/Tables/TableSteel.asset",
+            "NameKey": "furniture.surfaces.tables.table_steel.name",
+            "DescriptionKey": "furniture.surfaces.tables.table_steel.desc",
+            "EnName": "Steel Table",
+            "EnDescription": "A steel table."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/Surfaces/Tables/TableWood.asset",
+            "NameKey": "furniture.surfaces.tables.table_wood.name",
+            "DescriptionKey": "furniture.surfaces.tables.table_wood.desc",
+            "EnName": "Wood table.",
+            "EnDescription": "A wood table."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Generic/WaterCooler.asset",
+            "NameKey": "furniture.water_cooler.name",
+            "DescriptionKey": "furniture.water_cooler.desc",
+            "EnName": "Water Cooler",
+            "EnDescription": "Dispenses cold water."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/Scrubber.asset",
+            "NameKey": "furniture.machines.atmospherics.scrubber.name",
+            "DescriptionKey": "furniture.machines.atmospherics.scrubber.desc",
+            "EnName": "Scrubber",
+            "EnDescription": "An air scrubber. Sucks out any harmful gases in the atmosphere."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Atmospherics/Vent.asset",
+            "NameKey": "furniture.machines.atmospherics.vent.name",
+            "DescriptionKey": "furniture.machines.atmospherics.vent.desc",
+            "EnName": "Vent",
+            "EnDescription": "An air vent. Provides rooms with an air supply."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Engineering/PacManGenerator.asset",
+            "NameKey": "furniture.machines.engineering.pac_man_generator.name",
+            "DescriptionKey": "furniture.machines.engineering.pac_man_generator.desc",
+            "EnName": "PacMan Generator",
+            "EnDescription": "Generates electricity from specific fuels."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Engineering/PowerCellCharger.asset",
+            "NameKey": "furniture.machines.engineering.power_cell_charger.name",
+            "DescriptionKey": "furniture.machines.engineering.power_cell_charger.desc",
+            "EnName": "Power Cell Charger",
+            "EnDescription": "Charges power cells."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Engineering/SMES.asset",
+            "NameKey": "furniture.machines.engineering.smes.name",
+            "DescriptionKey": "furniture.machines.engineering.smes.desc",
+            "EnName": "SMES",
+            "EnDescription": "A large power storage unit."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Engineering/SolarPanel.asset",
+            "NameKey": "furniture.machines.engineering.solar_panel.name",
+            "DescriptionKey": "furniture.machines.engineering.solar_panel.desc",
+            "EnName": "Solar Panel",
+            "EnDescription": "Converts photons into electricity."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Engineering/SolarTrackingBeacon.asset",
+            "NameKey": "furniture.machines.engineering.solar_tracking_beacon.name",
+            "DescriptionKey": "furniture.machines.engineering.solar_tracking_beacon.desc",
+            "EnName": "Solar Tracking Beacon",
+            "EnDescription": "Senses the direction of the nearest star so nearby solar panels can align themselves to it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Generic/SlotMachine.asset",
+            "NameKey": "furniture.machines.slot_machine.name",
+            "DescriptionKey": "furniture.machines.slot_machine.desc",
+            "EnName": "Slot Machine",
+            "EnDescription": "Try your luck!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Generic/Tanks/FuelTank.asset",
+            "NameKey": "furniture.machines.tanks.fuel_tank.name",
+            "DescriptionKey": "furniture.machines.tanks.fuel_tank.desc",
+            "EnName": "Fuel Tank",
+            "EnDescription": "A tank of fuel."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Generic/Tanks/WaterTank.asset",
+            "NameKey": "furniture.machines.tanks.water_tank.name",
+            "DescriptionKey": "furniture.machines.tanks.water_tank.desc",
+            "EnName": "Water Tank",
+            "EnDescription": "A tank of water."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Kitchen/Blender.asset",
+            "NameKey": "furniture.machines.kitchen.blender.name",
+            "DescriptionKey": "furniture.machines.kitchen.blender.desc",
+            "EnName": "Blender",
+            "EnDescription": "Will it blend?"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Kitchen/Gibber.asset",
+            "NameKey": "furniture.machines.kitchen.gibber.name",
+            "DescriptionKey": "furniture.machines.kitchen.gibber.desc",
+            "EnName": "Gibber",
+            "EnDescription": "Grinds big things into little things."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Kitchen/Microwave.asset",
+            "NameKey": "furniture.machines.kitchen.microwave.name",
+            "DescriptionKey": "furniture.machines.kitchen.microwave.desc",
+            "EnName": "Microwave",
+            "EnDescription": "Cooks food using low frequency radiation."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Kitchen/TableBoozeDispenser.asset",
+            "NameKey": "furniture.machines.kitchen.table_booze_dispenser.name",
+            "DescriptionKey": "furniture.machines.kitchen.table_booze_dispenser.desc",
+            "EnName": "Table Booze Dispenser",
+            "EnDescription": "Dispenses booze!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/MachineFrame.asset",
+            "NameKey": "furniture.machines.machine_frame.name",
+            "DescriptionKey": "furniture.machines.machine_frame.desc",
+            "EnName": "Machine Frame",
+            "EnDescription": "A metal frame to construct a machine from."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Medical/ChemicalDispenser.asset",
+            "NameKey": "furniture.machines.medical.chemical_dispenser.name",
+            "DescriptionKey": "furniture.machines.medical.chemical_dispenser.desc",
+            "EnName": "Chemical Dispenser",
+            "EnDescription": "Dispenses chemicals."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Medical/Cryotube.asset",
+            "NameKey": "furniture.machines.medical.cryotube.name",
+            "DescriptionKey": "furniture.machines.medical.cryotube.desc",
+            "EnName": "Cryotube",
+            "EnDescription": "Slowly heals wounds using a comination of temperature and substances."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Medical/SleeperBed.asset",
+            "NameKey": "furniture.machines.medical.sleeper_bed.name",
+            "DescriptionKey": "furniture.machines.medical.sleeper_bed.desc",
+            "EnName": "Sleeper Bed",
+            "EnDescription": "Slowly heals wounds using state of the art electricity."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Supply/DisposalBin.asset",
+            "NameKey": "furniture.machines.supply.disposal_bin.name",
+            "DescriptionKey": "furniture.machines.supply.disposal_bin.desc",
+            "EnName": "Disposal Bin",
+            "EnDescription": "Basically an automated trash can."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Supply/DisposalOutlet.asset",
+            "NameKey": "furniture.machines.supply.disposal_outlet.name",
+            "DescriptionKey": "furniture.machines.supply.disposal_outlet.desc",
+            "EnName": "Disposal Outlet",
+            "EnDescription": "Ejects the contents of connected disposal pipes."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Vendors/VendorHotDrinks.asset",
+            "NameKey": "furniture.machines.vendors.vendor_hot_drinks.name",
+            "DescriptionKey": "furniture.machines.vendors.vendor_hot_drinks.desc",
+            "EnName": "Hot Drinks Vendor",
+            "EnDescription": "Vends hot beverages."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Vendors/VendorRobustSoftDrinks.asset",
+            "NameKey": "furniture.machines.vendors.vendor_robust_soft_drinks.name",
+            "DescriptionKey": "furniture.machines.vendors.vendor_robust_soft_drinks.desc",
+            "EnName": "Robust Soft Drinks Vendor",
+            "EnDescription": "Vends carbonated beverages."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Vendors/VendorSecTech.asset",
+            "NameKey": "furniture.machines.vendors.vendor_sec_tech.name",
+            "DescriptionKey": "furniture.machines.vendors.vendor_sec_tech.desc",
+            "EnName": "Security Tech Vendor",
+            "EnDescription": "Vends security gadgets."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Machines/Vendors/VendorYouTool.asset",
+            "NameKey": "furniture.machines.vendors.vendor_you_tool.name",
+            "DescriptionKey": "furniture.machines.vendors.vendor_you_tool.desc",
+            "EnName": "YouTool Vendor",
+            "EnDescription": "Vends construction tools."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Storage/Lockers/Locker.asset",
+            "NameKey": "furniture.storage.lockers.locker.name",
+            "DescriptionKey": "furniture.storage.lockers.locker.desc",
+            "EnName": "Locker",
+            "EnDescription": "A plain unsecure locker."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Storage/Lockers/LockerSecure.asset",
+            "NameKey": "furniture.storage.lockers.locker_secure.name",
+            "DescriptionKey": "furniture.storage.lockers.locker_secure.desc",
+            "EnName": "Secure Locker",
+            "EnDescription": "A plain secure locker."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Furniture/Storage/Lockers/SecurityLocker.asset",
+            "NameKey": "furniture.storage.lockers.security_locker.name",
+            "DescriptionKey": "furniture.storage.lockers.security_locker.desc",
+            "EnName": "Security Locker",
+            "EnDescription": "A locker for security officers."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Backpack.asset",
+            "NameKey": "items.clothing.backpack.name",
+            "DescriptionKey": "items.clothing.backpack.desc",
+            "EnName": "Backpack",
+            "EnDescription": "Worn on the back and stores stuff."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/FacewearGasMask.asset",
+            "NameKey": "items.clothing.facewear_gas_mask.name",
+            "DescriptionKey": "items.clothing.facewear_gas_mask.desc",
+            "EnName": "Gas Mask",
+            "EnDescription": "Protect's the wearer's airways and can supply fresh air to them from a tank."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/GloveInsulated.asset",
+            "NameKey": "items.clothing.glove_insulated.name",
+            "DescriptionKey": "items.clothing.glove_insulated.desc",
+            "EnName": "Insulated Glove",
+            "EnDescription": "A single insulated glove, looks to be for the hands."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Headset.asset",
+            "NameKey": "items.clothing.headset.name",
+            "DescriptionKey": "items.clothing.headset.desc",
+            "EnName": "Headset",
+            "EnDescription": "A headset for listenting to the station's comms."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/HeadsetSecurity.asset",
+            "NameKey": "items.clothing.headset_security.name",
+            "DescriptionKey": "items.clothing.headset_security.desc",
+            "EnName": "Security Headset",
+            "EnDescription": "A headset for listenting to the security's comms."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitBotany.asset",
+            "NameKey": "items.clothing.jumpsuit_botany.name",
+            "DescriptionKey": "items.clothing.jumpsuit_botany.desc",
+            "EnName": "Botany Jumpsuit",
+            "EnDescription": "A botany issue jumpsuit from Nanotrasen."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitEngineer.asset",
+            "NameKey": "items.clothing.jumpsuit_engineer.name",
+            "DescriptionKey": "items.clothing.jumpsuit_engineer.desc",
+            "EnName": "Engineer Jumpsuit",
+            "EnDescription": "A engineer issue jumpsuit from Nanotrasen."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitGrey.asset",
+            "NameKey": "items.clothing.jumpsuit_grey.name",
+            "DescriptionKey": "items.clothing.jumpsuit_grey.desc",
+            "EnName": "Grey Jumpsuit",
+            "EnDescription": "A regular issue jumpsuit from Nanotrasen, this one is grey."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/JumpsuitSecurity.asset",
+            "NameKey": "items.clothing.jumpsuit_security.name",
+            "DescriptionKey": "items.clothing.jumpsuit_security.desc",
+            "EnName": "Security Jumpsuit",
+            "EnDescription": "A security issue jumpsuit from Nanotrasen."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ShoeHiTops.asset",
+            "NameKey": "items.clothing.shoe_hi_tops.name",
+            "DescriptionKey": "items.clothing.shoe_hi_tops.desc",
+            "EnName": "High Top Sneaker",
+            "EnDescription": "Stylin' foot swag."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/ShoeJackboots.asset",
+            "NameKey": "items.clothing.shoe_jackboots.name",
+            "DescriptionKey": "items.clothing.shoe_jackboots.desc",
+            "EnName": "Jackboot",
+            "EnDescription": "Jackboot for a foot."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Sunglasses.asset",
+            "NameKey": "items.clothing.sunglasses.name",
+            "DescriptionKey": "items.clothing.sunglasses.desc",
+            "EnName": "Sunglasses",
+            "EnDescription": "It's bright in space, protect your eyes with these Nanotrasen brand sunglasses!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/Toolbelt.asset",
+            "NameKey": "items.clothing.toolbelt.name",
+            "DescriptionKey": "items.clothing.toolbelt.desc",
+            "EnName": "Toolbelt",
+            "EnDescription": "It's a belt, it stores tools."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Clothing/TruckerCap.asset",
+            "NameKey": "items.clothing.trucker_cap.name",
+            "DescriptionKey": "items.clothing.trucker_cap.desc",
+            "EnName": "Trucker Cap",
+            "EnDescription": "A billed hated often worn by truckers to keep their mullets out of their face."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Chemical/Medications/BrutePatch.asset",
+            "NameKey": "items.consumable.chemical.medications.brute_patch.name",
+            "DescriptionKey": "items.consumable.chemical.medications.brute_patch.desc",
+            "EnName": "Brute Patch",
+            "EnDescription": "Heals brute damage.<br>Not implemented."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Chemical/Medications/BurnPatch.asset",
+            "NameKey": "items.consumable.chemical.medications.burn_patch.name",
+            "DescriptionKey": "items.consumable.chemical.medications.burn_patch.desc",
+            "EnName": "Burn Patch",
+            "EnDescription": "Heals burn damage.<br>Not implemented."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Chemical/Medications/MedicalPatch.asset",
+            "NameKey": "items.consumable.chemical.medications.medical_patch.name",
+            "DescriptionKey": "items.consumable.chemical.medications.medical_patch.desc",
+            "EnName": "Medical Patch",
+            "EnDescription": "Slightly heals all damage.<br>Not implemented."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanBeepsSoda.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_beeps_soda.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_beeps_soda.desc",
+            "EnName": "Beep's Soda",
+            "EnDescription": "Tastes like a *beep!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanBeepyLime.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_beepy_lime.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_beepy_lime.desc",
+            "EnName": "Beepy Lime",
+            "EnDescription": "Still *beep-y but now with lime!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanCannedAir.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_canned_air.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_canned_air.desc",
+            "EnName": "Canned Air",
+            "EnDescription": "Hey, theres nothing in this! Oh wait, *technically^ there is air in it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanCannedLaughter.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_canned_laughter.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_canned_laughter.desc",
+            "EnName": "Canned Laughter",
+            "EnDescription": "Laughter in.. a can?"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanCola.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_cola.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_cola.desc",
+            "EnName": "Beep's Cola.",
+            "EnDescription": "This this the best *beep cola I ever had!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanDukePurpleTea.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_duke_purple_tea.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_duke_purple_tea.desc",
+            "EnName": "Duke Purple Tea",
+            "EnDescription": "It's that stuff, that purp."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanGeneric.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_generic.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_generic.desc",
+            "EnName": "Generic Pop",
+            "EnDescription": "Not sure what kind of pop but it's generic alright."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/Drinks/Soda/SodaCanTonic.asset",
+            "NameKey": "items.consumable.food.drinks.soda.soda_can_tonic.name",
+            "DescriptionKey": "items.consumable.food.drinks.soda.soda_can_tonic.desc",
+            "EnName": "Tonic",
+            "EnDescription": "Tonic water."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Consumable/Food/General/Snacks/DonkPocket.asset",
+            "NameKey": "items.consumable.food.general.snacks.donk_pocket.name",
+            "DescriptionKey": "items.consumable.food.general.snacks.donk_pocket.desc",
+            "EnName": "Donk Pocket",
+            "EnDescription": "A pocket of donk. Recommend to warm it before consuming."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Cosmetic/BikeHorn.asset",
+            "NameKey": "items.cosmetic.bike_horn.name",
+            "DescriptionKey": "items.cosmetic.bike_horn.desc",
+            "EnName": "Bike Horn",
+            "EnDescription": "*honk*"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Doodad.asset",
+            "NameKey": "items.doodad.name",
+            "DescriptionKey": "items.doodad.desc",
+            "EnName": "Doodad",
+            "EnDescription": "Test item. Used to test object orientation. Import, export, hold positions, etc."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Boombox.asset",
+            "NameKey": "items.boombox.name",
+            "DescriptionKey": "items.boombox.desc",
+            "EnName": "Boombox",
+            "EnDescription": "Bumps sick beats."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Floortile.asset",
+            "NameKey": "items.floor_tile_grey.name",
+            "DescriptionKey": "items.floortile.desc",
+            "EnName": "Grey Floortile",
+            "EnDescription": "A generic grey floortile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/GreyFloorTile.asset",
+            "NameKey": "items.grey_floor_tile.name",
+            "DescriptionKey": "items.grey_floor_tile.desc",
+            "EnName": "Grey Floor Tile",
+            "EnDescription": "A common grey floor tile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Identification/IDCard.asset",
+            "NameKey": "items.identification.id_card.name",
+            "DescriptionKey": "items.identification.id_card.desc",
+            "EnName": "ID Card",
+            "EnDescription": "A standard issue ID card."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Identification/PDA.asset",
+            "NameKey": "items.identification.pda.name",
+            "DescriptionKey": "items.identification.pda.desc",
+            "EnName": "PDA",
+            "EnDescription": "A standard issue PDA."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Identification/SecurityIDCard.asset",
+            "NameKey": "items.identification.security_id_card.name",
+            "DescriptionKey": "items.identification.security_id_card.desc",
+            "EnName": "Security ID Card",
+            "EnDescription": "A security issue ID card."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Identification/SecurityPDA.asset",
+            "NameKey": "items.identification.security_pda.name",
+            "DescriptionKey": "items.identification.security_pda.desc",
+            "EnName": "Security PDA",
+            "EnDescription": "A security issue PDA."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Poster.asset",
+            "NameKey": "items.poster.name",
+            "DescriptionKey": "items.poster.desc",
+            "EnName": "Poster",
+            "EnDescription": "Placed on walls, usually."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Tanks/OxygenTank.asset",
+            "NameKey": "items.tanks.oxygen_tank.name",
+            "DescriptionKey": "items.tanks.oxygen_tank.desc",
+            "EnName": "Oxygen Tank",
+            "EnDescription": "A tank of oxygen."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Generic/Tanks/PlasmaTank.asset",
+            "NameKey": "items.tanks.plasma_tank.name",
+            "DescriptionKey": "items.tanks.plasma_tank.desc",
+            "EnName": "Plasma Tank",
+            "EnDescription": "A tank of plasma."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/ElectricalCable.asset",
+            "NameKey": "items.materials.electrical_cable.name",
+            "DescriptionKey": "items.materials.electrical_cable.desc",
+            "EnName": "Electrical Cable",
+            "EnDescription": "Cable used for high-voltage electrical purposes."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/ElectricalWire.asset",
+            "NameKey": "items.materials.electrical_wire.name",
+            "DescriptionKey": "items.materials.electrical_wire.desc",
+            "EnName": "Electrical Wire",
+            "EnDescription": "Wire used for general electrical purposes."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/GlassReinforcedSheet.asset",
+            "NameKey": "items.materials.glass_reinforced_sheet.name",
+            "DescriptionKey": "items.materials.glass_reinforced_sheet.desc",
+            "EnName": "Reinforced Glass Sheet",
+            "EnDescription": "A sheet of reinforced glass."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/GlassShard.asset",
+            "NameKey": "items.materials.glass_shard.name",
+            "DescriptionKey": "items.materials.glass_shard.desc",
+            "EnName": "Glass Shard",
+            "EnDescription": "A shard of glass."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/GlassSheet.asset",
+            "NameKey": "items.materials.glass_sheet.name",
+            "DescriptionKey": "items.materials.glass_sheet.desc",
+            "EnName": "Glass Sheet",
+            "EnDescription": "A sheet of glass."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/SteelReinforcedSheet.asset",
+            "NameKey": "items.materials.steel_reinforced_sheet.name",
+            "DescriptionKey": "items.materials.steel_reinforced_sheet.desc",
+            "EnName": "Reinforced Steel Sheet",
+            "EnDescription": "A sheet of reinforced steel."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/SteelRod.asset",
+            "NameKey": "items.materials.steel_rod.name",
+            "DescriptionKey": "items.materials.steel_rod.desc",
+            "EnName": "Steel Rod",
+            "EnDescription": "A rod made of steel."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/SteelSheet.asset",
+            "NameKey": "items.materials.steel_sheet.name",
+            "DescriptionKey": "items.materials.steel_sheet.desc",
+            "EnName": "Steel Sheet",
+            "EnDescription": "A sheet of steel."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/WoodLog.asset",
+            "NameKey": "items.materials.wood_log.name",
+            "DescriptionKey": "items.materials.wood_log.desc",
+            "EnName": "Wood Log",
+            "EnDescription": "A log of wood."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Materials/WoodPlank.asset",
+            "NameKey": "items.materials.wood_plank.name",
+            "DescriptionKey": "items.materials.wood_plank.desc",
+            "EnName": "Wood Plank",
+            "EnDescription": "A plank of wood."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/MachineParts/MatterBin.asset",
+            "NameKey": "items.parts.machine_parts.matter_bin.name",
+            "DescriptionKey": "items.parts.machine_parts.matter_bin.desc",
+            "EnName": "Matter Bin",
+            "EnDescription": "A simple bin for containing matter."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/MachineParts/MicroLaser.asset",
+            "NameKey": "items.parts.machine_parts.micro_laser.name",
+            "DescriptionKey": "items.parts.machine_parts.micro_laser.desc",
+            "EnName": "Micro Laser",
+            "EnDescription": "Applies a concentrated photon stream in various advanced technologies."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/PowerCells/PowerCell.asset",
+            "NameKey": "items.parts.power_cells.power_cell.name",
+            "DescriptionKey": "items.parts.power_cells.power_cell.desc",
+            "EnName": "Power Cell",
+            "EnDescription": "Stores power."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Parts/PowerCells/PowerCellAdmin.asset",
+            "NameKey": "items.parts.power_cells.power_cell_admin.name",
+            "DescriptionKey": "items.parts.power_cells.power_cell_admin.desc",
+            "EnName": "Admin Power Cell",
+            "EnDescription": "Has infinite electricity. ADMIN ONLY!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Storage/Objects/Medkit.asset",
+            "NameKey": "items.storage.objects.medkit.name",
+            "DescriptionKey": "items.storage.objects.medkit.desc",
+            "EnName": "Medkit",
+            "EnDescription": "A box for carrying medical items."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Storage/Objects/Toolboxblue.asset",
+            "NameKey": "items.storage.objects.toolboxblue.name",
+            "DescriptionKey": "items.storage.objects.toolboxblue.desc",
+            "EnName": "Toolbox",
+            "EnDescription": "A box for carrying your tools."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Storage/Substances/Mug.asset",
+            "NameKey": "items.storage.substances.mug.name",
+            "DescriptionKey": "items.storage.substances.mug.desc",
+            "EnName": "Mug",
+            "EnDescription": "A simple beverage container."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Botany/Hatchet.asset",
+            "NameKey": "items.tools.botany.hatchet.name",
+            "DescriptionKey": "items.tools.botany.hatchet.desc",
+            "EnName": "Hatchet",
+            "EnDescription": "A tool for chopping wood."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Command/NuclearAuthenticationDisc.asset",
+            "NameKey": "items.tools.command.nuclear_authentication_disc.name",
+            "DescriptionKey": "items.tools.command.nuclear_authentication_disc.desc",
+            "EnName": "Nuclear Authentication Disc",
+            "EnDescription": "Whatever you do, don't put this in the nuclear device found in the vault!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Engineering/Crowbar.asset",
+            "NameKey": "items.tools.engineering.crowbar.name",
+            "DescriptionKey": "items.tools.engineering.crowbar.desc",
+            "EnName": "Crowbar",
+            "EnDescription": "Prys stuff open."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Engineering/Multitool.asset",
+            "NameKey": "items.tools.engineering.multitool.name",
+            "DescriptionKey": "items.tools.engineering.multitool.desc",
+            "EnName": "Multitool",
+            "EnDescription": "An electrical tool with various functions."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Engineering/Screwdriver.asset",
+            "NameKey": "items.tools.engineering.screwdriver.name",
+            "DescriptionKey": "items.tools.engineering.screwdriver.desc",
+            "EnName": "Screwdriver.",
+            "EnDescription": "Drives those screws."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Engineering/Welder.asset",
+            "NameKey": "items.tools.engineering.welder.name",
+            "DescriptionKey": "items.tools.engineering.welder.desc",
+            "EnName": "Welder",
+            "EnDescription": "Used to weld pieces of metal together."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Engineering/Wirecutters.asset",
+            "NameKey": "items.tools.engineering.wirecutters.name",
+            "DescriptionKey": "items.tools.engineering.wirecutters.desc",
+            "EnName": "Wirecutters.",
+            "EnDescription": "Cuts.... wires."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Engineering/Wrench.asset",
+            "NameKey": "items.tools.engineering.wrench.name",
+            "DescriptionKey": "items.tools.engineering.wrench.desc",
+            "EnName": "Wrench",
+            "EnDescription": "Used to get leverage when torquing nuts."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Generic/Flashlight.asset",
+            "NameKey": "items.tools.flashlight.name",
+            "DescriptionKey": "items.tools.flashlight.desc",
+            "EnName": "Flashlight",
+            "EnDescription": "Points a light."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Kitchen/KitchenKnife.asset",
+            "NameKey": "items.tools.kitchen.kitchen_knife.name",
+            "DescriptionKey": "items.tools.kitchen.kitchen_knife.desc",
+            "EnName": "Kitchen Knife",
+            "EnDescription": "This knife is a kitchen knife. Do NOT use it for non-kitchen stuff!"
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Items/Functional/Tools/Medical/HealthScanner.asset",
+            "NameKey": "items.tools.medical.health_scanner.name",
+            "DescriptionKey": "items.tools.medical.health_scanner.desc",
+            "EnName": "Health Scanner",
+            "EnDescription": "Scans the health of the target."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/CivilianAirlock.asset",
+            "NameKey": "structures.doors.civilian_airlock.name",
+            "DescriptionKey": "structures.doors.civilian_airlock.desc",
+            "EnName": "Civilian Airlock",
+            "EnDescription": "A common airlock for all."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Doors/SecurityAirlock.asset",
+            "NameKey": "structures.doors.security_airlock.name",
+            "DescriptionKey": "structures.doors.security_airlock.desc",
+            "EnName": "Security Airlock",
+            "EnDescription": "A security access airlock."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Catwalk.asset",
+            "NameKey": "structures.floors.catwalk.name",
+            "DescriptionKey": "structures.floors.catwalk.desc",
+            "EnName": "Lattice",
+            "EnDescription": "A small structural piece with supports."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Lattice.asset",
+            "NameKey": "structures.floors.lattice.name",
+            "DescriptionKey": "structures.floors.lattice.desc",
+            "EnName": "Lattice",
+            "EnDescription": "A small structural piece with no support."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Plenum.asset",
+            "NameKey": "structures.floors.plenum.name",
+            "DescriptionKey": "structures.floors.plenum.desc",
+            "EnName": "Plenum",
+            "EnDescription": "The structural base of the floor which also houses pipes and wires."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/AirlockFloorTile.asset",
+            "NameKey": "structures.floors.tiles.airlock_floor_tile.name",
+            "DescriptionKey": "structures.floors.tiles.airlock_floor_tile.desc",
+            "EnName": "Floor Tile",
+            "EnDescription": "A split floor tile to accomodate doors."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/FancyCarpetRed.asset",
+            "NameKey": "structures.floors.tiles.fancy_carpet_red.name",
+            "DescriptionKey": "structures.floors.tiles.fancy_carpet_red.desc",
+            "EnName": "Fancy Carpet",
+            "EnDescription": "Really fancy carpet in a beautiful red."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileBar.asset",
+            "NameKey": "structures.floors.tiles.tile_bar.name",
+            "DescriptionKey": "structures.floors.tiles.tile_bar.desc",
+            "EnName": "Bar Floor Tile",
+            "EnDescription": "Red and grey checkered floor tile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileGrey.asset",
+            "NameKey": "structures.floors.tiles.tile_grey.name",
+            "DescriptionKey": "structures.floors.tiles.tile_grey.desc",
+            "EnName": "Floor Tile",
+            "EnDescription": "Common grey floor tile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileGreyDark.asset",
+            "NameKey": "structures.floors.tiles.tile_grey_dark.name",
+            "DescriptionKey": "structures.floors.tiles.tile_grey_dark.desc",
+            "EnName": "Dark Grey Floor Tile",
+            "EnDescription": "Dark grey floor tile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileKitchen.asset",
+            "NameKey": "structures.floors.tiles.tile_kitchen.name",
+            "DescriptionKey": "structures.floors.tiles.tile_kitchen.desc",
+            "EnName": "Kitchen Floor Tile",
+            "EnDescription": "White and grey checkered floor tile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TilePlating.asset",
+            "NameKey": "structures.floors.tiles.tile_plating.name",
+            "DescriptionKey": "structures.floors.tiles.tile_plating.desc",
+            "EnName": "Plating",
+            "EnDescription": "Floor plating."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileWhite.asset",
+            "NameKey": "structures.floors.tiles.tile_white.name",
+            "DescriptionKey": "structures.floors.tiles.tile_white.desc",
+            "EnName": "White Floor Tile",
+            "EnDescription": "White floor tile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Floors/Tiles/TileWood.asset",
+            "NameKey": "structures.floors.tiles.tile_wood.name",
+            "DescriptionKey": "structures.floors.tiles.tile_wood.desc",
+            "EnName": "Wood Floor Tile",
+            "EnDescription": "Planks of wood combined into a floor tile."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL1.asset",
+            "NameKey": "structures.pipes.atmos_pipe.name",
+            "DescriptionKey": "structures.pipes.atmos_pipes_l1.desc",
+            "EnName": "Atmospheric Pipe",
+            "EnDescription": "An atmospheric pipe positioned on the 1st layer."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL2.asset",
+            "NameKey": "structures.pipes.atmos_pipe.name",
+            "DescriptionKey": "structures.pipes.atmos_pipes_l2.desc",
+            "EnName": "Atmospheric Pipe",
+            "EnDescription": "An atmospheric pipe positioned on the 2nd layer."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL3.asset",
+            "NameKey": "structures.pipes.atmos_pipe.name",
+            "DescriptionKey": "structures.pipes.atmos_pipes_l3.desc",
+            "EnName": "Atmospheric Pipe",
+            "EnDescription": "An atmospheric pipe positioned on the 3rd layer."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/AtmosPipesL4.asset",
+            "NameKey": "structures.pipes.atmos_pipe.name",
+            "DescriptionKey": "structures.pipes.atmos_pipes_l4.desc",
+            "EnName": "Atmospheric Pipe",
+            "EnDescription": "An atmospheric pipe positioned on the 4th layer."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Pipes/DisposalPipes.asset",
+            "NameKey": "structures.pipes.disposal_pipe.name",
+            "DescriptionKey": "structures.pipes.disposal_pipes.desc",
+            "EnName": "Disposal Pipe",
+            "EnDescription": "A disposal pipe."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/APC.asset",
+            "NameKey": "structures.wall_mounts.apc.name",
+            "DescriptionKey": "structures.wall_mounts.apc.desc",
+            "EnName": "APC",
+            "EnDescription": "Distributes power to different components in the area."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/AirAlarm.asset",
+            "NameKey": "structures.wall_mounts.air_alarm.name",
+            "DescriptionKey": "structures.wall_mounts.air_alarm.desc",
+            "EnName": "Air Alarm",
+            "EnDescription": "Ensures a safe atmosphere in the area."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/FireAlarm.asset",
+            "NameKey": "structures.wall_mounts.fire_alarm.name",
+            "DescriptionKey": "structures.wall_mounts.fire_alarm.desc",
+            "EnName": "Fire Alarm",
+            "EnDescription": "Warns of and helps prevent the spread of fires."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/LightSwitch.asset",
+            "NameKey": "structures.wall_mounts.light_switch.name",
+            "DescriptionKey": "structures.wall_mounts.light_switch.desc",
+            "EnName": "Light Switch",
+            "EnDescription": "A switch for turning nearby lights on and off."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/Lights/LightBulbFixture.asset",
+            "NameKey": "structures.wall_mounts.lights.light_bulb_fixture.name",
+            "DescriptionKey": "structures.wall_mounts.lights.light_bulb_fixture.desc",
+            "EnName": "Light Bulb Fixture",
+            "EnDescription": "A fixture with a light bulb."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/Lights/LightTubeFixture.asset",
+            "NameKey": "structures.wall_mounts.lights.light_tube_fixture.name",
+            "DescriptionKey": "structures.wall_mounts.lights.light_tube_fixture.desc",
+            "EnName": "Light Tube Fixture",
+            "EnDescription": "A fixture with a light tube in it."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/Mirror.asset",
+            "NameKey": "structures.wall_mounts.mirror.name",
+            "DescriptionKey": "structures.wall_mounts.mirror.desc",
+            "EnName": "Mirror",
+            "EnDescription": "Reflects light."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/MirrorBroken.asset",
+            "NameKey": "structures.wall_mounts.mirror_broken.name",
+            "DescriptionKey": "structures.wall_mounts.mirror_broken.desc",
+            "EnName": "Mirror",
+            "EnDescription": "It's broken, that can't be good luck.."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/Posters/PosterHorizontal.asset",
+            "NameKey": "structures.wall_mounts.posters.poster_horizontal.name",
+            "DescriptionKey": "structures.wall_mounts.posters.poster_horizontal.desc",
+            "EnName": "Horizontal Poster",
+            "EnDescription": "A poster that is wider than tall."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/WallMounts/Posters/PosterVertical.asset",
+            "NameKey": "structures.wall_mounts.posters.poster_vertical.name",
+            "DescriptionKey": "structures.wall_mounts.posters.poster_vertical.desc",
+            "EnName": "Vertical Poster",
+            "EnDescription": "A poster that is taller than wide."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Walls/SteelGirder.asset",
+            "NameKey": "structures.walls.steel_girder.name",
+            "DescriptionKey": "structures.walls.steel_girder.desc",
+            "EnName": "Steel Girder",
+            "EnDescription": "A steel girder. The structural base for steel walls and windows."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Walls/SteelWall.asset",
+            "NameKey": "structures.walls.steel_wall.name",
+            "DescriptionKey": "structures.walls.steel_wall.desc",
+            "EnName": "Steel Wall",
+            "EnDescription": "A solid steel wall."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Walls/SteelWallReinforced.asset",
+            "NameKey": "structures.walls.steel_wall_reinforced.name",
+            "DescriptionKey": "structures.walls.steel_wall_reinforced.desc",
+            "EnName": "Reinforced Steel Wall",
+            "EnDescription": "A solid reinforced steel wall."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Walls/SteelWindow.asset",
+            "NameKey": "structures.walls.steel_window.name",
+            "DescriptionKey": "structures.walls.steel_window.desc",
+            "EnName": "Steel Window",
+            "EnDescription": "A steel framed window."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Walls/SteelWindowReinforced.asset",
+            "NameKey": "structures.walls.steel_window_reinforced.name",
+            "DescriptionKey": "structures.walls.steel_window_reinforced.desc",
+            "EnName": "Reinforced Steel Window",
+            "EnDescription": "A reinforced steel framed window."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Wires/Cables.asset",
+            "NameKey": "structures.wires.cables.name",
+            "DescriptionKey": "structures.wires.cables.desc",
+            "EnName": "Cables",
+            "EnDescription": "High powered electrical cables."
+        },
+        {
+            "AssetPath": "Assets/Content/Data/Examine/String/Structures/Wires/Wires.asset",
+            "NameKey": "structures.wires.wires.name",
+            "DescriptionKey": "structures.wires.wires.desc",
+            "EnName": "Wires",
+            "EnDescription": "Electrical wires."
+        }
+    ]
+}

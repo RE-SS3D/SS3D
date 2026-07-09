@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: editor-export-import
     content: "Build editor tooling: key generation from asset paths, English extraction from legacy assets, JSON export/import"
-    status: pending
+    status: completed
   - id: migrate-english
     content: "Phase 1: populate Examine_en for all 146 assets and rewrite ExamineData references"
     status: pending
