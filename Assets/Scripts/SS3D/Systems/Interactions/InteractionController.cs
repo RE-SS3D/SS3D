@@ -45,6 +45,9 @@ namespace SS3D.Systems.Interactions
         private InteractionReference _serverActiveReference;
         private IInteractionSource _serverActiveSource;
 
+        private Selectable _activeOutlineSelectable;
+        private InteractionOutlineView _activeOutlineView;
+
         public IntentType CurrentIntent => IsOwner ? _ownerIntent : _currentIntent;
 
         public override void OnOwnershipClient(NetworkConnection prevOwner)
@@ -86,6 +89,16 @@ namespace SS3D.Systems.Interactions
             RefreshActiveInteractionTracking();
         }
 
+        private void LateUpdate()
+        {
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            RefreshInteractionOutline();
+        }
+
         protected override void OnEnabled()
         {
             base.OnEnabled();
@@ -103,6 +116,7 @@ namespace SS3D.Systems.Interactions
             if (IsOwner)
             {
                 UnsubscribeFromInput();
+                ClearInteractionOutline();
             }
         }
 
@@ -497,6 +511,84 @@ namespace SS3D.Systems.Interactions
             }
 
             return true;
+        }
+
+        [Client]
+        private void RefreshInteractionOutline()
+        {
+            Selectable current = _selectionSystem.GetCurrentSelectable();
+
+            if (current != _activeOutlineSelectable)
+            {
+                ClearInteractionOutline();
+
+                if (current == null)
+                {
+                    return;
+                }
+
+                _activeOutlineSelectable = current;
+                _activeOutlineView = GetOrCreateOutlineView(current);
+            }
+
+            if (_activeOutlineView == null)
+            {
+                return;
+            }
+
+            if (!TryEvaluateInteractability(current, out bool hasViableInteractions))
+            {
+                _activeOutlineView.SetState(InteractionOutlineView.OutlineState.Hidden);
+                return;
+            }
+
+            InteractionOutlineView.OutlineState state = hasViableInteractions
+                ? InteractionOutlineView.OutlineState.Available
+                : InteractionOutlineView.OutlineState.Unavailable;
+
+            _activeOutlineView.SetState(state);
+        }
+
+        [Client]
+        private bool TryEvaluateInteractability(Selectable selectable, out bool hasViableInteractions)
+        {
+            hasViableInteractions = false;
+
+            if (GetActiveInteractionSource() == null)
+            {
+                return false;
+            }
+
+            SelectionTargetUtility.TryResolveInteractionPoint(_camera, selectable, out Vector3 point, out Vector3 normal);
+            List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(
+                selectable.gameObject,
+                point,
+                normal,
+                out _);
+
+            hasViableInteractions = viableInteractions.Count > 0;
+            return true;
+        }
+
+        private static InteractionOutlineView GetOrCreateOutlineView(Selectable selectable)
+        {
+            if (!selectable.TryGetComponent(out InteractionOutlineView outlineView))
+            {
+                outlineView = selectable.gameObject.AddComponent<InteractionOutlineView>();
+            }
+
+            return outlineView;
+        }
+
+        private void ClearInteractionOutline()
+        {
+            if (_activeOutlineView != null)
+            {
+                _activeOutlineView.SetState(InteractionOutlineView.OutlineState.Hidden);
+            }
+
+            _activeOutlineView = null;
+            _activeOutlineSelectable = null;
         }
 
         /// <summary>
