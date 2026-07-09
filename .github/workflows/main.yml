@@ -1,9 +1,9 @@
+# Disabled on this fork: no release channel here (see README.md).
+# Manual dispatch only if a tagged build is needed.
 #https://game.ci/docs/github/builder
 name: Automated Build
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch: {}
 jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}

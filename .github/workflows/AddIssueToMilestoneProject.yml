@@ -1,7 +1,8 @@
+# Disabled on this fork: syncs with RE-SS3D organization Projects (see Documents/FORK_STATUS.md).
+# Manual dispatch only until fork project automation is configured.
 name: Add Issues and Pull Requests To Milestone Project
 on:
-  issues:
-    types: [milestoned]
+  workflow_dispatch: {}
 jobs:
   AddIssueToProject:
     runs-on: ubuntu-latest

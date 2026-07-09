@@ -1,7 +1,7 @@
 name: 'Check milestone exists'
 inputs:
   JSON_LIST_OF_PROJECTS:
-    description: 'Results of a GraphQL query returning all ProjectV2 owned by RE-SS3D.'
+    description: 'Results of a GraphQL query returning organization ProjectV2 nodes.'
     required: true
   PROJECT_NAME:
     description: 'The name of the project to search for.'

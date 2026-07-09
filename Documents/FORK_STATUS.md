@@ -7,8 +7,12 @@ faster pace than upstream's current review capacity supports.
 **What's diverged:**
 - Documentation: new design/architecture doc structure in `Documents/design/` and
   `Documents/architecture/`, independent of the upstream GitBook.
-- Gameplay design: [health/combat/stamina/armor/comms/HUD/area/hacking — list as
-  landed].
+- Repo presentation: `README.md` and `Documents/CONTRIBUTING.md` describe this fork,
+  not upstream; GitHub issue templates and PR checklist point at `Documents/`.
+- GitHub automation: upstream milestone/roadmap/release workflows disabled
+  (`workflow_dispatch` only); Discord webhook notifications removed from CI.
+- Gameplay design: health, combat, stamina, armor, comms, main HUD, area, hacking
+  interface — specs in `Documents/design/`.
 - [Update as branches merge: URP migration, milestone redesign, etc.]
 
 **Standing offer:** anything here can be proposed upstream on request — open an

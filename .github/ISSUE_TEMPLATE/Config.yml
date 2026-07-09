@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Discussions
-    url: https://github.com/RE-SS3D/SS3D/discussions/categories/general
-    about: Join or add a GitHub discussion on topics like game-design, announcements, ideas/inspiration, Q&A, etc.
-  - name: Discord
-    url: https://discord.gg/3ny9tdH
-    about: Chat directly with the developers/community, partake in polls, & see updates on our Discord server!
+    url: https://github.com/henkhooft/SS3D/discussions
+    about: Ask questions, propose ideas, or discuss design for this fork.
+  - name: Fork status
+    url: https://github.com/henkhooft/SS3D/blob/develop/Documents/FORK_STATUS.md
+    about: How this repo diverges from upstream RE-SS3D/SS3D.

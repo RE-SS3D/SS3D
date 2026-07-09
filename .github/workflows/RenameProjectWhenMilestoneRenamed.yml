@@ -1,7 +1,8 @@
+# Disabled on this fork: syncs with RE-SS3D organization Projects (see Documents/FORK_STATUS.md).
+# Manual dispatch only until fork project automation is configured.
 name: Rename Project When Milestone Renamed
 on:
-  milestone:
-    types: [edited]
+  workflow_dispatch: {}
 jobs:
   RenameProject:
     runs-on: ubuntu-latest
