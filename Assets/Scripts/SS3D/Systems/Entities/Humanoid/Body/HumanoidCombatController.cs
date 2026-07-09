@@ -17,8 +17,15 @@ namespace SS3D.Systems.Entities.Humanoid
         protected override void OnAwake()
         {
             base.OnAwake();
-            _bodyStateMachine ??= GetComponent<HumanoidBodyStateMachine>();
-            _orchestrator ??= GetComponent<AnimationOrchestrator>();
+            if (_bodyStateMachine == null)
+            {
+                _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+            }
+
+            if (_orchestrator == null)
+            {
+                _orchestrator = GetComponent<AnimationOrchestrator>();
+            }
         }
 
         protected override void OnEnabled()

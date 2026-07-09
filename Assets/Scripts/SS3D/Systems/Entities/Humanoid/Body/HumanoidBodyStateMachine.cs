@@ -1,6 +1,7 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Humanoid;
 using System;
 using UnityEngine;
 

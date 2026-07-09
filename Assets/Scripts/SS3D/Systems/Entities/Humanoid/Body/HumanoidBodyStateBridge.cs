@@ -22,10 +22,25 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Awake()
         {
-            _bodyStateMachine ??= GetComponent<HumanoidBodyStateMachine>();
-            _livingController ??= GetComponent<HumanoidLivingController>();
-            _feetController ??= GetComponent<FeetController>();
-            _hands ??= GetComponent<Hands>();
+            if (_bodyStateMachine == null)
+            {
+                _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+            }
+
+            if (_livingController == null)
+            {
+                _livingController = GetComponent<HumanoidLivingController>();
+            }
+
+            if (_feetController == null)
+            {
+                _feetController = GetComponent<FeetController>();
+            }
+
+            if (_hands == null)
+            {
+                _hands = GetComponent<Hands>();
+            }
         }
 
         private void Start()

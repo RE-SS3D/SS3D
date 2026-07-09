@@ -2,6 +2,7 @@ using FishNet;
 using FishNet.Object;
 using FishNet.Object.Prediction;
 using FishNet.Transporting;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Inputs;
@@ -68,9 +69,20 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             base.OnAwake();
             _characterController = GetComponent<CharacterController>();
-            _bodyStateMachine ??= GetComponent<HumanoidBodyStateMachine>();
-            _livingController ??= GetComponent<HumanoidLivingController>();
-            _feetController ??= GetComponent<FeetController>();
+            if (_bodyStateMachine == null)
+            {
+                _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
+            }
+
+            if (_livingController == null)
+            {
+                _livingController = GetComponent<HumanoidLivingController>();
+            }
+
+            if (_feetController == null)
+            {
+                _feetController = GetComponent<FeetController>();
+            }
         }
 
         public override void OnStartNetwork()
@@ -161,7 +173,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            bool isRunning = caps.CanRun && Keyboard.current != null && Keyboard.current.leftShift.isPressed;
+            bool isRunning = caps.CanRun && _livingController != null && _livingController.IsRunning;
             float aimYaw = 0f;
             if (_bodyStateMachine.CombatMode == HumanoidCombatMode.Combat && _camera != null)
             {
@@ -193,7 +205,8 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            _characterController.Move(Physics.gravity * (float)InstanceFinder.TimeManager.TickDelta);
+            float tickDelta = (float)InstanceFinder.TimeManager.TickDelta;
+            _characterController.Move(tickDelta * Physics.gravity);
 
             if (md.Horizontal == 0f && md.Vertical == 0f)
             {
@@ -206,7 +219,7 @@ namespace SS3D.Systems.Entities.Humanoid
             float speedFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
             float speed = _movementSpeed * speedFactor * (md.IsRunning ? _runMultiplier : 1f);
 
-            _characterController.Move(moveDirection * speed * (float)InstanceFinder.TimeManager.TickDelta);
+            _characterController.Move(moveDirection * (tickDelta * speed));
 
             if (caps.CanRotate)
             {

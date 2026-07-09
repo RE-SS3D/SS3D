@@ -59,16 +59,55 @@ namespace SS3D.Systems.Entities.Humanoid.Body
                 _armatureRoot = found;
             }
 
-            _hips ??= FindBone("hips");
-            _spine ??= FindBone("spine");
-            _chest ??= FindBone("chest");
-            _head ??= FindBone("head");
-            _handLeft ??= FindBone("hand_l");
-            _handRight ??= FindBone("hand_r");
-            _upperArmLeft ??= FindBone("upper_arm_l");
-            _upperArmRight ??= FindBone("upper_arm_r");
-            _footLeft ??= FindBone("foot_l");
-            _footRight ??= FindBone("foot_r");
+            if (_hips == null)
+            {
+                _hips = FindBone("hips");
+            }
+
+            if (_spine == null)
+            {
+                _spine = FindBone("spine");
+            }
+
+            if (_chest == null)
+            {
+                _chest = FindBone("chest");
+            }
+
+            if (_head == null)
+            {
+                _head = FindBone("head");
+            }
+
+            if (_handLeft == null)
+            {
+                _handLeft = FindBone("hand_l");
+            }
+
+            if (_handRight == null)
+            {
+                _handRight = FindBone("hand_r");
+            }
+
+            if (_upperArmLeft == null)
+            {
+                _upperArmLeft = FindBone("upper_arm_l");
+            }
+
+            if (_upperArmRight == null)
+            {
+                _upperArmRight = FindBone("upper_arm_r");
+            }
+
+            if (_footLeft == null)
+            {
+                _footLeft = FindBone("foot_l");
+            }
+
+            if (_footRight == null)
+            {
+                _footRight = FindBone("foot_r");
+            }
         }
 
         private Transform FindBone(string boneName)

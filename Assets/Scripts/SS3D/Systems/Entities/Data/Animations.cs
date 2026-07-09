@@ -1,3 +1,4 @@
+using SS3D.Systems.Entities.Humanoid.Body;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Data
@@ -23,15 +24,15 @@ namespace SS3D.Systems.Entities.Data
             public static readonly int Emote = Animator.StringToHash("Emote");
             public static readonly int Flinch = Animator.StringToHash("Flinch");
 
-            public static int GetTriggerHash(Humanoid.Body.AnimationTriggerId trigger)
+            public static int GetTriggerHash(AnimationTriggerId trigger)
             {
                 return trigger switch
                 {
-                    Humanoid.Body.AnimationTriggerId.AttackSwing => AttackSwing,
-                    Humanoid.Body.AnimationTriggerId.AttackStab => AttackStab,
-                    Humanoid.Body.AnimationTriggerId.Throw => Throw,
-                    Humanoid.Body.AnimationTriggerId.Emote => Emote,
-                    Humanoid.Body.AnimationTriggerId.Flinch => Flinch,
+                    AnimationTriggerId.AttackSwing => AttackSwing,
+                    AnimationTriggerId.AttackStab => AttackStab,
+                    AnimationTriggerId.Throw => Throw,
+                    AnimationTriggerId.Emote => Emote,
+                    AnimationTriggerId.Flinch => Flinch,
                     _ => 0,
                 };
             }

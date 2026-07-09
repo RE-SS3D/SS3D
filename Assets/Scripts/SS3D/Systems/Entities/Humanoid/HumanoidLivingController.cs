@@ -34,7 +34,10 @@ namespace SS3D.Systems.Entities.Humanoid
 		public override void OnStartClient()
         {
             base.OnStartClient();
-            _predictedMovement ??= GetComponent<HumanoidPredictedMovement>();
+            if (_predictedMovement == null)
+            {
+                _predictedMovement = GetComponent<HumanoidPredictedMovement>();
+            }
             if (!IsOwner)
             {
                 return;

@@ -1,8 +1,8 @@
-using SS3D.Systems.Entities.Silicon;
+using SS3D.Systems.Entities.Humanoid.Body;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Systems.Entities.Humanoid.Body.Editor
+namespace SS3D.Editor
 {
     /// <summary>
     /// Editor utility to auto-bind humanoid rig bone references on prefabs.
