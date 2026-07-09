@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBanner.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PowerFlowRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/BatteryBar.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss" />
+
+    <ui:VisualElement name="apc-root" class="apc-power-controller">
+        <ss3d:StatusBanner name="status-banner"
+            headline="POWER NOMINAL"
+            badge-text="NOMINAL"
+            explanation="Grid supply meets connected load."
+            tone="Success" />
+
+        <ss3d:PowerFlowRow name="power-flow" grid-input-kw="0" load-output-kw="0" />
+
+        <ss3d:BatteryBar name="battery-bar" value="1" state-text="CHARGED" eta-text="—" />
+
+        <ui:Label name="channels-title" text="CHANNELS" class="font-arcade apc-channels-title" />
+
+        <ss3d:ChannelRow name="channel-lighting" channel-name="LIGHTING" load-kw="0" is-on="true" />
+        <ss3d:ChannelRow name="channel-equipment" channel-name="EQUIPMENT" load-kw="0" is-on="true" />
+        <ss3d:ChannelRow name="channel-environment" channel-name="ENVIRONMENT" load-kw="0" is-on="true" />
+
+        <ui:Label name="shed-hint"
+            text="Non-critical channels may be shed automatically when cell charge is low."
+            class="font-body apc-shed-hint" />
+
+        <ss3d:DiagnosticsList name="diagnostics-list" />
+    </ui:VisualElement>
+</ui:UXML>

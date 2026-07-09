@@ -10,7 +10,8 @@
         "SS3D.Data",
         "SS3D.Logging",
         "SS3D.Interactions",
-        "SS3D.Tests.Common"
+        "SS3D.Tests.Common",
+        "SS3D.UI.MachineInterface"
     ],
     "includePlatforms": [
         "Editor"

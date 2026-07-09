@@ -1,0 +1,79 @@
+@import url("../Tokens/ss3d-tokens.uss");
+@import url("../Tokens/ss3d-typography.uss");
+
+.battery-bar {
+    flex-direction: column;
+    margin-bottom: var(--ss3d-space-3);
+}
+
+.battery-bar__header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ss3d-space-2);
+}
+
+.battery-bar__title {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+    letter-spacing: 2px;
+}
+
+.battery-bar__state {
+    font-size: 10px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.battery-bar__track {
+    height: 8px;
+    background-color: var(--ss3d-surface-inset);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    overflow: hidden;
+}
+
+.battery-bar__fill {
+    height: 100%;
+    width: 100%;
+    background-color: var(--ss3d-feedback-success);
+    transition-property: width, background-color;
+    transition-duration: var(--ss3d-duration-slow);
+}
+
+.battery-bar__footer {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: var(--ss3d-space-1);
+}
+
+.battery-bar__percent {
+    font-size: 11px;
+    color: var(--ss3d-text-secondary);
+}
+
+.battery-bar__eta {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+}
+
+.battery-bar__fill--warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.battery-bar__fill--danger {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.battery-bar__state--warning {
+    color: var(--ss3d-feedback-warning);
+}
+
+.battery-bar__state--danger {
+    color: var(--ss3d-feedback-danger);
+}
+
+.battery-bar__state--success {
+    color: var(--ss3d-feedback-success);
+}
