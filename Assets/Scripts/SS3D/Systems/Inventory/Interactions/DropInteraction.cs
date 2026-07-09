@@ -26,6 +26,8 @@ namespace SS3D.Systems.Inventory.Interactions
         /// </summary>
         private LayerMask _defaultMask = LayerMask.GetMask("Default");
 
+        public int Priority => 5;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Drop";

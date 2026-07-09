@@ -212,7 +212,7 @@ namespace SS3D.Systems.Interactions
             InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
 
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent);
 
             if (entries.Count < 1)
             {
@@ -352,7 +352,7 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, targetGameObject);
             interactionEvent = new InteractionEvent(source, targets[0], point, normal);
 
-            return GetInteractionsFromTargets(source, targets, interactionEvent);
+            return InteractionPipeline.GetViableInteractions(source, targets, interactionEvent);
         }
 
         [ServerOrClient]
@@ -436,78 +436,6 @@ namespace SS3D.Systems.Interactions
             return targets;
         }
 
-        /// <summary>
-        /// Generates all possible interactions, given both a source and targets
-        /// </summary>
-        /// <param name="source">The interaction source</param>
-        /// <param name="targets">The interaction targets</param>
-        /// <param name="interactionEvent">The interaction event data</param>
-        /// <returns>A list of all possible interaction entries</returns>
-        [ServerOrClient]
-        private List<InteractionEntry> GetInteractionsFromTargets(IInteractionSource source, List<IInteractionTarget> targets, InteractionEvent interactionEvent)
-        {
-            List<InteractionEntry> interactions = new();
-            Vector3 point = interactionEvent.Point;
-            GameObject targetGameObject = ResolveTargetGameObject(targets);
-
-            // Generate interactions on targets
-            foreach (IInteractionTarget target in targets)
-            {
-                InteractionEvent e = new(source, target, point);
-                IInteraction[] targetInteractions = target.CreateTargetInteractions(e);
-
-                foreach (IInteraction interaction in targetInteractions)
-                {
-                    interactions.Add(InteractionEntry.Create(target, interaction, targetGameObject));
-                }
-            }
-
-            // Allow the source to add its own interactions
-            source.CreateSourceInteractions(targets.ToArray(), interactions);
-            RebuildEntryIndices(interactions, targetGameObject);
-
-            // Filter interactions to possible ones
-            List<InteractionEntry> interactionsFromTargets = new();
-            foreach (InteractionEntry entry in interactions)
-            {
-                InteractionEvent e = new(source, entry.Target, point);
-
-                if (entry.Interaction.CanInteract(e))
-                {
-                    interactionsFromTargets.Add(entry);
-                }
-            }
-
-            return interactionsFromTargets;
-        }
-
-        private static GameObject ResolveTargetGameObject(List<IInteractionTarget> targets)
-        {
-            foreach (IInteractionTarget target in targets)
-            {
-                if (target is IGameObjectProvider provider)
-                {
-                    return provider.GameObject;
-                }
-
-                if (target is Component component)
-                {
-                    return component.gameObject;
-                }
-            }
-
-            return null;
-        }
-
-        private static void RebuildEntryIndices(List<InteractionEntry> interactions, GameObject targetGameObject)
-        {
-            for (int i = 0; i < interactions.Count; i++)
-            {
-                InteractionEntry entry = interactions[i];
-                interactions[i] = InteractionEntry.Create(entry.Target, entry.Interaction, targetGameObject);
-            }
-        }
-
         [ServerOrClient]
         private IInteractionSource GetActiveInteractionSource()
         {
@@ -524,7 +452,7 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             InteractionEvent interactionEvent = new(source, null, source.GameObject.transform.position);
 
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent);
 
             // TODO: Validate access to inventory
 
@@ -565,7 +493,7 @@ namespace SS3D.Systems.Interactions
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent);
             InteractionIdentifier id = new(genericName, targetComponentIndex);
 
             if (!InteractionEntry.TryResolve(entries, id, out InteractionEntry chosenInteraction))

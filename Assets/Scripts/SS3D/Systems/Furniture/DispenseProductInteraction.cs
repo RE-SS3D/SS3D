@@ -18,6 +18,8 @@ namespace SS3D.Systems.Furniture
         public int ProductStock;
         public int ProductIndex;
 
+        public int Priority => 50;
+
         /// <inheritdoc />
         public string GetName(InteractionEvent interactionEvent)
         {

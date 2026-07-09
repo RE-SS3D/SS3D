@@ -15,6 +15,8 @@ namespace SS3D.Interactions
 
         protected IInteraction Interaction { get; }
 
+        public int Priority => Interaction.Priority;
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             if (Interaction is IClientInteractionSource clientInteractionSource)

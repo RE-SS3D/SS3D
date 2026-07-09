@@ -21,6 +21,8 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
         _craftingInteractionType = craftingInteraction;
     }
 
+    public int Priority => 60;
+
     public string GetGenericName() => "OpenCraftingMenu";
 
     /// <summary>

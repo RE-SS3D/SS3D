@@ -20,6 +20,8 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
+        public int Priority => 25;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Store in " + _attachedContainer.ContainerName;

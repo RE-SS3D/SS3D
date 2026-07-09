@@ -18,6 +18,8 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public readonly AttachedContainer AttachedContainer;
 
+        public int Priority => 25;
+
         public ViewContainerInteraction(AttachedContainer attachedContainer)
         {
             AttachedContainer = attachedContainer;

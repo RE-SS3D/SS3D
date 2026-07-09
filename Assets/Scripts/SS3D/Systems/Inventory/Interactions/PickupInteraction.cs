@@ -19,6 +19,8 @@ namespace SS3D.Systems.Inventory.Interactions
         public string Name;
         public Sprite Icon;
 
+        public int Priority => 30;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Pick up";

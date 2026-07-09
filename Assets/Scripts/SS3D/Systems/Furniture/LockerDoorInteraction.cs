@@ -18,6 +18,8 @@ namespace SS3D.Systems.Furniture
             _locker = locker;
         }
 
+        public int Priority => 25;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return !string.IsNullOrEmpty(Name) ? Name : "Open or Close Locker";

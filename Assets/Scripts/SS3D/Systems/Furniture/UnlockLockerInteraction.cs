@@ -26,6 +26,8 @@ namespace SS3D.Systems.Inventory.Interactions
             _permissionToUnlock = permission;
         }
 
+        public int Priority => 25;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Unlock Locker";

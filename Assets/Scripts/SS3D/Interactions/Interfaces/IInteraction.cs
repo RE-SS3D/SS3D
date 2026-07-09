@@ -26,6 +26,11 @@ namespace SS3D.Interactions.Interfaces
         Sprite GetIcon(InteractionEvent interactionEvent);
 
         /// <summary>
+        /// Relative ordering for primary-click selection and radial menus. Higher runs first.
+        /// </summary>
+        int Priority => 0;
+
+        /// <summary>
         /// Checks if this interaction can be executed
         /// </summary>
         /// <param name="interactionEvent">The interaction source</param>

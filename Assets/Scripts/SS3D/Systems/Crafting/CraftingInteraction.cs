@@ -57,6 +57,8 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public TaggedEdge<RecipeStep, RecipeStepLink> ChosenLink => _chosenLink;
 
+        public int Priority => 55;
+
         public CraftingInteraction(float delay, Transform characterTransform, CraftingInteractionType type, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
             _characterTransform = characterTransform;

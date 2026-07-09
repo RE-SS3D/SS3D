@@ -18,6 +18,8 @@ namespace SS3D.Systems.Combat.Interactions
         public string Name;
         public Sprite Icon;
 
+        public int Priority => 100;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Hit";
