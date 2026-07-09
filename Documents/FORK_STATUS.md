@@ -21,7 +21,7 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps |
-| Commits ahead of upstream | — | **~98** (0 behind as of last fetch) |
+| Commits ahead of upstream | — | **~119** (0 behind as of last fetch) |
 | Files changed vs upstream | — | ~2,672 files, +164k / −44k lines |
 
 ---
@@ -145,6 +145,40 @@ English until a translation import lands.
 Merged from `archive/feature-examine-localization`. Design plan:
 [examine_localization_design_5ca361a6.plan.md](plans/examine_localization_design_5ca361a6.plan.md).
 
+**Examine interaction (radial Tier 1):** `ExamineInteraction` added as a shift-hold detailed examine
+action reachable from the radial menu (merged with interaction work below).
+
+### Interactions — hardening and radial menu
+
+**Paths:** `SS3D.Interactions`, `SS3D.Systems.Interactions`
+
+Production multiplayer hardening of the source/target interaction model:
+
+- **`InteractionIdentifier`** wire protocol (`genericName` + `targetComponentIndex`) — RPCs no longer
+  match display names
+- **`InteractionPipeline`** — shared discover → filter → sort on client and server; **`Priority`**
+  for deterministic primary-click order
+- Gameplay gates: intent sync, stamina, inventory ownership, locker **`InteractionPermission`**
+- Cancellation (**C** key + movement auto-cancel on delayed interactions)
+- Optimistic client feedback (loading bars + pending hover outlines); **`TargetRejectInteraction`**
+  rollback on server reject
+- Hover availability outlines (green/yellow/blue) via **`InteractionOutlineView`** + URP outline shader
+
+**Three-tier radial menu** (UI Toolkit, shared tokens at `Assets/Content/Systems/UI/Tokens/`):
+
+- Dynamic petals with labels; instant (Tier 1), armed targeted (Tier 2), combine (Tier 3 — drag route
+  still pending)
+- **`ArmedInteractionSubSystem`** + overlay for second-click targeting (`TransferSubstanceInteraction`
+  proof-of-concept)
+- Radial HUD lives on scene overlay (`Game.unity`), not `PlayerCanvas`
+
+EditMode **`InteractionPipelineTests`**; PlayMode pickup regression via **`InteractionPlayModeTests`**.
+
+Merged from `feature/interaction-system-hardening` (includes `feature/radial-menu-redesign`).
+Architecture: [2026-07_interaction-system-hardening.md](architecture/2026-07_interaction-system-hardening.md).
+Plans: [interaction_system_improvements_9e14ae22.plan.md](plans/interaction_system_improvements_9e14ae22.plan.md),
+[radial_menu_implementation_5a83bdf9.plan.md](plans/radial_menu_implementation_5a83bdf9.plan.md).
+
 ### Tilemap and adjacency engine
 
 **Paths:** `SS3D.Systems.Tile`, `SS3D.Systems.Tile.Connections`
@@ -221,8 +255,10 @@ Implementation should follow the specs or document explicit deviations.
 | [main-hud.md](design/main-hud.md) | Minimal chrome HUD — 3D body vitals, cut targeting doll, intent chording |
 | [hacking-interface.md](design/hacking-interface.md) | Field diagnostic unit (FDU) — diegetic 7-panel tool; discovery by physical access |
 
-Machine interfaces partially implement [main-hud.md](design/main-hud.md) and
-[area.md](design/area.md) power assumptions; the rest of these specs remain design-only.
+Machine interfaces and the radial interaction menu partially implement
+[main-hud.md](design/main-hud.md) (tiered interactions, intent chording — drag-combine Tier 3 still
+pending). Machine interfaces also touch [area.md](design/area.md) power assumptions; the rest of
+these specs remain design-only.
 
 ---
 
@@ -256,6 +292,8 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/fix-selection-camera-picking` | (via develop-unity6) | Cursor picking alignment |
 | `archive/machine-ui` | 2026-07 | Machine interface UI (APC/SMES) |
 | `archive/feature-examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
+| `feature/interaction-system-hardening` | 2026-07-09 | Interaction RPC hardening, pipeline, outlines, radial menu |
+| `feature/radial-menu-redesign` | (via interaction-system-hardening) | UI Toolkit three-tier radial menu + armed overlay |
 
 ---
 
