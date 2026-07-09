@@ -1171,6 +1171,14 @@ MonoBehaviour:
     m_Key: structures.wires.wires.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 252937831022456832
+    m_Key: examine.identification.owner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831043428352
+    m_Key: examine.identification.role
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

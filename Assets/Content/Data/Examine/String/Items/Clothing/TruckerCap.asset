@@ -31,11 +31,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  LocalizationTable:
-    m_TableReference:
-      m_TableCollectionName: GUID:679d905fa8ed8324e9b852762c337b0d
-  NameKey: Trucker Cap
-  DescriptionKey: A billed hated often worn by truckers to keep their mullets out
     of their face.
   DetailedImageSize: {x: 260, y: 175}
   DetailedImageRange:

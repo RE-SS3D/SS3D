@@ -1183,6 +1183,14 @@ MonoBehaviour:
     m_Localized: Electrical wires.
     m_Metadata:
       m_Items: []
+  - m_Id: 252937831022456832
+    m_Localized: 'Registered to: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 252937831043428352
+    m_Localized: 'Assignment: {0}'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

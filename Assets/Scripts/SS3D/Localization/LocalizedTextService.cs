@@ -95,6 +95,36 @@ namespace SS3D.Localization
             return GetFromTable(table, key, englishFallback ?? key);
         }
 
+        public static string GetFormattedString(string tableCollectionName, string key, object[] arguments, string englishFallback = null)
+        {
+            EnsureInitialized();
+
+            if (string.IsNullOrEmpty(key))
+            {
+                return string.Empty;
+            }
+
+            TableReference tableReference = tableCollectionName;
+            StringTable table = GetOrLoadCurrentLocaleTable(tableReference);
+            if (table == null)
+            {
+                return FormatMissing(key, englishFallback ?? key);
+            }
+
+            StringTableEntry entry = table.GetEntry(key);
+            if (entry == null || string.IsNullOrEmpty(entry.Value))
+            {
+                return FormatMissing(key, englishFallback ?? key);
+            }
+
+            if (arguments == null || arguments.Length == 0)
+            {
+                return entry.GetLocalizedString();
+            }
+
+            return entry.GetLocalizedString(arguments);
+        }
+
         private static string GetFromTable(StringTable table, string key, string englishFallback)
         {
             string localized = TryGetEntryValue(table, key);

@@ -31,11 +31,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  LocalizationTable:
-    m_TableReference:
-      m_TableCollectionName: GUID:679d905fa8ed8324e9b852762c337b0d
-  NameKey: Sunglasses
-  DescriptionKey: It's bright in space, protect your eyes with these Nanotrasen brand
     sunglasses!
   DetailedImageSize: {x: 260, y: 175}
   DetailedImageRange:

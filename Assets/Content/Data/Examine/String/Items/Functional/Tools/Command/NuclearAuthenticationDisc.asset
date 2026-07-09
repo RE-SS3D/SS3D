@@ -31,11 +31,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  LocalizationTable:
-    m_TableReference:
-      m_TableCollectionName: GUID:679d905fa8ed8324e9b852762c337b0d
-  NameKey: Nuclear Authentication Disc
-  DescriptionKey: Whatever you do, don't put this in the nuclear device found in
     the vault!
   DetailedImageSize: {x: 260, y: 175}
   DetailedImageRange:

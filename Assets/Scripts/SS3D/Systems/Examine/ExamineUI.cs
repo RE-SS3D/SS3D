@@ -1,4 +1,5 @@
-﻿using Coimbra.Services.Events;
+﻿using System.Text;
+using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Localization;
@@ -113,10 +114,10 @@ namespace SS3D.Systems.Examine
                     return;
                 }
 
-                if (content.HasDescription)
+                if (content.HasDescription || content.Sections.Count > 0)
                 {
                     HoverName.text = string.Empty;
-                    ShowTextDetailedView(content.Name, content.Description);
+                    ShowTextDetailedView(content.Name, BuildDetailedText(content));
                     return;
                 }
             }
@@ -234,6 +235,32 @@ namespace SS3D.Systems.Examine
             position.y = Mathf.Clamp(position.y, height, Screen.height);
 
             _activeDetailedPanel.position = position;
+        }
+
+        private static string BuildDetailedText(ExamineContent content)
+        {
+            if (content.Sections == null || content.Sections.Count == 0)
+            {
+                return content.Description;
+            }
+
+            StringBuilder builder = new(content.Description);
+            foreach (ExamineSection section in content.Sections)
+            {
+                if (string.IsNullOrWhiteSpace(section.Text))
+                {
+                    continue;
+                }
+
+                if (builder.Length > 0)
+                {
+                    builder.Append("\n\n");
+                }
+
+                builder.Append(section.Text);
+            }
+
+            return builder.ToString();
         }
 
         private bool TryGetImageDetailedContent(

@@ -31,11 +31,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  LocalizationTable:
-    m_TableReference:
-      m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: Solar Tracking Beacon
-  DescriptionKey: Senses the direction of the nearest star so nearby solar panels
     can align themselves to it.
   DetailedImageSize: {x: 260, y: 175}
   DetailedImageRange:

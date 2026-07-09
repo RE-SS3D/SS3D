@@ -31,11 +31,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  LocalizationTable:
-    m_TableReference:
-      m_TableCollectionName: GUID:5efc696289c14204ea5472b3e853eea2
-  NameKey: human
-  DescriptionKey: human_desc
   DetailedImageSize: {x: 260, y: 175}
   DetailedImageRange:
     Horizontal: 1.5

@@ -19,16 +19,16 @@ todos:
     status: completed
   - id: migrate-english
     content: "Phase 1: populate Examine_en for all 146 assets and rewrite ExamineData references"
-    status: pending
+    status: completed
   - id: ai-translate
     content: "Phase 2: AI-translate Examine strings to fr/pt-BR/ru-RU with glossary; import and validate"
-    status: pending
+    status: cancelled
   - id: audit-tests
     content: Extend ExamineDataTests for key existence and locale completeness; add resolver/service unit tests
     status: completed
   - id: cleanup-dynamic
     content: "Phase 3: remove legacy fields, deprecate old tables, add IExamineContentProvider for dynamic examine types"
-    status: pending
+    status: completed
 isProject: false
 ---
 

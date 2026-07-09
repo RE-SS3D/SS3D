@@ -2,6 +2,7 @@ using NUnit.Framework;
 using SS3D.Localization;
 using SS3D.Systems.Examine;
 using SS3D.Tests;
+using UnityEngine.Localization;
 
 namespace EditorTests
 {
@@ -39,22 +40,22 @@ namespace EditorTests
         }
 
         [Test]
-        public void ResolveUsesLegacyKeysWithoutDevLocalizationMarker()
+        public void ResolveUsesLocalizedStringReferences()
         {
             ExamineContentResolver resolver = new();
             ExamineData data = UnityEngine.ScriptableObject.CreateInstance<ExamineData>();
-            data.NameKey = "Wrench";
-            data.DescriptionKey = "Used to get leverage when torquing nuts.";
+            data.Name.SetReference(ExamineCanonicalKeyGenerator.ExamineTableName, "items.tools.engineering.wrench.name");
+            data.Description.SetReference(ExamineCanonicalKeyGenerator.ExamineTableName, "items.tools.engineering.wrench.desc");
 
             StubExaminable examinable = new(data);
             ExamineContent content = resolver.Resolve(examinable);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Assert.AreEqual("[MISSING: Wrench]", content.Name);
-            Assert.AreEqual("[MISSING: Used to get leverage when torquing nuts.]", content.Description);
+            Assert.AreEqual("[MISSING: items.tools.engineering.wrench.name]", content.Name);
+            Assert.AreEqual("[MISSING: items.tools.engineering.wrench.desc]", content.Description);
 #else
-            Assert.AreEqual("Wrench", content.Name);
-            Assert.AreEqual("Used to get leverage when torquing nuts.", content.Description);
+            Assert.AreEqual("items.tools.engineering.wrench.name", content.Name);
+            Assert.AreEqual("items.tools.engineering.wrench.desc", content.Description);
 #endif
             Assert.IsFalse(content.Name.Contains("*[to be localized]*"));
             Assert.IsFalse(content.Description.Contains("*[to be localized]*"));

@@ -1,7 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEditor.Localization;
+using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Tables;
 
 namespace SS3D.Systems.Examine.Editor
 {
@@ -10,7 +12,7 @@ namespace SS3D.Systems.Examine.Editor
         public static ExamineLocalizationExportFile ExportAll()
         {
             string[] guids = AssetDatabase.FindAssets("t:ExamineData", new string[] { ExamineCanonicalKeyGenerator.ExamineDataRoot });
-            List<ExamineLocalizationExportEntry> entries = new(guids.Length);
+            System.Collections.Generic.List<ExamineLocalizationExportEntry> entries = new(guids.Length);
 
             foreach (string guid in guids)
             {
@@ -29,7 +31,7 @@ namespace SS3D.Systems.Examine.Editor
             return new ExamineLocalizationExportFile
             {
                 Version = 1,
-                ExportedAt = DateTime.UtcNow.ToString("o"),
+                ExportedAt = System.DateTime.UtcNow.ToString("o"),
                 Entries = entries.ToArray(),
             };
         }
@@ -57,11 +59,33 @@ namespace SS3D.Systems.Examine.Editor
             return new ExamineLocalizationExportEntry
             {
                 AssetPath = assetPath,
-                NameKey = ExamineCanonicalKeyGenerator.GetNameKey(assetPath, data.NameKey),
-                DescriptionKey = ExamineCanonicalKeyGenerator.GetDescriptionKey(assetPath),
-                EnName = ExamineLegacyEnglishResolver.ResolveEnglishName(data),
-                EnDescription = ExamineLegacyEnglishResolver.ResolveEnglishDescription(data),
+                NameKey = data.Name.TableEntryReference.Key,
+                DescriptionKey = data.Description.TableEntryReference.Key,
+                EnName = GetEnglishValue(data.Name),
+                EnDescription = GetEnglishValue(data.Description),
             };
+        }
+
+        private static string GetEnglishValue(LocalizedString localizedString)
+        {
+            if (localizedString.IsEmpty)
+            {
+                return string.Empty;
+            }
+
+            StringTableCollection collection = LocalizationEditorSettings.GetStringTableCollection(localizedString.TableReference);
+            if (collection == null)
+            {
+                return string.Empty;
+            }
+
+            if (collection.GetTable(new LocaleIdentifier("en")) is not StringTable englishTable)
+            {
+                return string.Empty;
+            }
+
+            StringTableEntry entry = englishTable.GetEntry(localizedString.TableEntryReference.Key);
+            return entry?.Value ?? string.Empty;
         }
     }
 }

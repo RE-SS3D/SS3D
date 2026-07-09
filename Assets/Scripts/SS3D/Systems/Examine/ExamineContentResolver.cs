@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SS3D.Localization;
-using UnityEngine.Localization;
 
 namespace SS3D.Systems.Examine
 {
@@ -17,8 +16,8 @@ namespace SS3D.Systems.Examine
                 return ExamineContent.Empty;
             }
 
-            string name = ResolveName(data);
-            string description = ResolveDescription(data);
+            string name = LocalizedTextService.GetString(data.Name);
+            string description = LocalizedTextService.GetString(data.Description);
 
             List<ExamineSection> sections = new();
             if (examinable is IExamineContentProvider provider)
@@ -27,29 +26,6 @@ namespace SS3D.Systems.Examine
             }
 
             return new ExamineContent(name, description, sections);
-        }
-
-        private static string ResolveName(ExamineData data)
-        {
-            if (!data.Name.IsEmpty)
-            {
-                return LocalizedTextService.GetString(data.Name, data.NameKey);
-            }
-
-            return LocalizedTextService.GetString(data.LocalizationTable, data.NameKey, data.NameKey);
-        }
-
-        private static string ResolveDescription(ExamineData data)
-        {
-            if (!data.Description.IsEmpty)
-            {
-                return LocalizedTextService.GetString(data.Description, data.DescriptionKey);
-            }
-
-            return LocalizedTextService.GetString(
-                data.LocalizationTable,
-                data.DescriptionKey,
-                data.DescriptionKey);
         }
     }
 }

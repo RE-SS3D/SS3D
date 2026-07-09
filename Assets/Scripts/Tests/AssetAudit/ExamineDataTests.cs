@@ -16,15 +16,6 @@ namespace AssetAudit
 
         #region Tests
 
-        /// <summary>
-        /// Ensure all Examine Data have a reference to their localization table.
-        /// </summary>
-        [Test, TestCaseSource(nameof(AllExamineData))]
-        public void EveryExamineDataHasALocalizationTable(ExamineData examineData)
-        {
-            Assert.IsTrue(examineData?.LocalizationTable.ToString() is not null, $"ExamineData '{examineData.name}' does not have a localization table set.\n");
-        }
-
         [Test, TestCaseSource(nameof(AllExamineData))]
         public void EveryExamineDataHasValidLocalizedStrings(ExamineData examineData)
         {

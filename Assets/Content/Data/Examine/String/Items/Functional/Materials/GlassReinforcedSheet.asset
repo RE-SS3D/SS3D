@@ -31,11 +31,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  LocalizationTable:
-    m_TableReference:
-      m_TableCollectionName: GUID:679d905fa8ed8324e9b852762c337b0d
-  NameKey: Reinforced Glass Sheet
-  DescriptionKey: A sheet of reinforced glass.
   DetailedImageSize: {x: 260, y: 175}
   DetailedImageRange:
     Horizontal: 1.5
