@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Coimbra;
 using SS3D.Core.Behaviours;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Selection;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,13 +19,17 @@ namespace SS3D.Systems.Interactions
         public enum OutlineState
         {
             Hidden,
+            Pending,
             Available,
             Unavailable,
         }
 
+        private static readonly HashSet<int> PendingSelectableIds = new();
+
         private static readonly int OutlineColorId = Shader.PropertyToID("_OutlineColor");
         private static readonly int OutlineWidthId = Shader.PropertyToID("_OutlineWidth");
         private const float OutlineWidth = 0.03f;
+        private static readonly Color PendingColor = new(0.55f, 0.85f, 1f, 1f);
         private static readonly Color AvailableColor = new(0.15f, 0.95f, 0.35f, 1f);
         private static readonly Color UnavailableColor = new(0.98f, 0.88f, 0.15f, 1f);
 
@@ -64,7 +70,13 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            Color color = state == OutlineState.Available ? AvailableColor : UnavailableColor;
+            Color color = state switch
+            {
+                OutlineState.Pending => PendingColor,
+                OutlineState.Available => AvailableColor,
+                OutlineState.Unavailable => UnavailableColor,
+                _ => AvailableColor,
+            };
 
             foreach (OutlineEntry entry in _entries)
             {
@@ -87,6 +99,80 @@ namespace SS3D.Systems.Interactions
             }
 
             _entries.Clear();
+        }
+
+        public static bool IsPending(Selectable selectable)
+        {
+            return selectable != null && PendingSelectableIds.Contains(selectable.GetInstanceID());
+        }
+
+        public static void TryBeginPending(IInteraction interaction, InteractionEvent interactionEvent)
+        {
+            if (interaction is IDelayedInteraction)
+            {
+                return;
+            }
+
+            if (!TryGetSelectable(interactionEvent, out Selectable selectable))
+            {
+                return;
+            }
+
+            InteractionOutlineView view = GetOrCreate(selectable);
+            PendingSelectableIds.Add(selectable.GetInstanceID());
+            view.SetState(OutlineState.Pending);
+        }
+
+        public static void ClearPending()
+        {
+            foreach (int selectableId in PendingSelectableIds)
+            {
+                Selectable selectable = FindSelectableById(selectableId);
+                if (selectable != null && selectable.TryGetComponent(out InteractionOutlineView view))
+                {
+                    view.SetState(OutlineState.Hidden);
+                }
+            }
+
+            PendingSelectableIds.Clear();
+        }
+
+        public static InteractionOutlineView GetOrCreate(Selectable selectable)
+        {
+            if (!selectable.TryGetComponent(out InteractionOutlineView outlineView))
+            {
+                outlineView = selectable.gameObject.AddComponent<InteractionOutlineView>();
+            }
+
+            return outlineView;
+        }
+
+        private static bool TryGetSelectable(InteractionEvent interactionEvent, out Selectable selectable)
+        {
+            selectable = null;
+
+            if (interactionEvent?.Target is not IGameObjectProvider provider)
+            {
+                return false;
+            }
+
+            selectable = provider.GameObject.GetComponentInParent<Selectable>();
+            return selectable != null;
+        }
+
+        private static Selectable FindSelectableById(int instanceId)
+        {
+            Selectable[] selectables = Object.FindObjectsByType<Selectable>(FindObjectsSortMode.None);
+
+            for (int i = 0; i < selectables.Length; i++)
+            {
+                if (selectables[i].GetInstanceID() == instanceId)
+                {
+                    return selectables[i];
+                }
+            }
+
+            return null;
         }
 
         private void Build()

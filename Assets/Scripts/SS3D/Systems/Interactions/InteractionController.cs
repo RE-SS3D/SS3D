@@ -150,6 +150,7 @@ namespace SS3D.Systems.Interactions
             int referenceId = _clientActiveReferenceId;
             ClearClientActiveInteractionTracking();
             InteractionOptimisticFeedback.Clear(transform);
+            InteractionOutlineView.ClearPending();
             CmdCancelInteraction(referenceId);
         }
 
@@ -180,6 +181,7 @@ namespace SS3D.Systems.Interactions
             }
 
             InteractionOptimisticFeedback.TryBeginDelayed(interaction.Interaction, interactionEvent);
+            InteractionOutlineView.TryBeginPending(interaction.Interaction, interactionEvent);
             CmdRunInteraction(networkTarget, interactionEvent.Point, interaction.Id.GenericName, interaction.Id.TargetComponentIndex);
         }
 
@@ -269,6 +271,7 @@ namespace SS3D.Systems.Interactions
                 }
 
                 InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
+                InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
                 CmdRunInteraction(networkTarget, interactionEvent.Point, entry.Id.GenericName, entry.Id.TargetComponentIndex);
             }
 
@@ -320,6 +323,7 @@ namespace SS3D.Systems.Interactions
                     }
 
                     InteractionOptimisticFeedback.TryBeginDelayed(entry.Interaction, interactionEvent);
+                    InteractionOutlineView.TryBeginPending(entry.Interaction, interactionEvent);
                     CmdRunInventoryInteraction(target, sourceObject, entry.Id.GenericName, entry.Id.TargetComponentIndex);
                 }
 
@@ -329,6 +333,7 @@ namespace SS3D.Systems.Interactions
             {
                 InteractionEntry firstEntry = entries.First();
                 InteractionOptimisticFeedback.TryBeginDelayed(firstEntry.Interaction, interactionEvent);
+                InteractionOutlineView.TryBeginPending(firstEntry.Interaction, interactionEvent);
                 CmdRunInventoryInteraction(target, sourceObject, firstEntry.Id.GenericName, firstEntry.Id.TargetComponentIndex);
             }
         }
@@ -407,6 +412,7 @@ namespace SS3D.Systems.Interactions
             interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
             _clientActiveSource = interactionEvent.Source;
             _clientActiveReferenceId = referenceId;
+            InteractionOutlineView.ClearPending();
         }
 
         /// <summary>
@@ -525,11 +531,16 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
+            if (InteractionOutlineView.IsPending(current))
+            {
+                return;
+            }
+
             if (current != _activeOutlineSelectable)
             {
                 ClearInteractionOutline();
                 _activeOutlineSelectable = current;
-                _activeOutlineView = GetOrCreateOutlineView(current);
+                _activeOutlineView = InteractionOutlineView.GetOrCreate(current);
             }
 
             if (_activeOutlineView == null)
@@ -577,16 +588,6 @@ namespace SS3D.Systems.Interactions
 
             hasViableInteractions = viableInteractions.Count > 0;
             return true;
-        }
-
-        private static InteractionOutlineView GetOrCreateOutlineView(Selectable selectable)
-        {
-            if (!selectable.TryGetComponent(out InteractionOutlineView outlineView))
-            {
-                outlineView = selectable.gameObject.AddComponent<InteractionOutlineView>();
-            }
-
-            return outlineView;
         }
 
         private void ClearInteractionOutline()
@@ -707,6 +708,7 @@ namespace SS3D.Systems.Interactions
             interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
             _clientActiveSource = source;
             _clientActiveReferenceId = referenceId;
+            InteractionOutlineView.ClearPending();
         }
 
         [ServerRpc]
@@ -776,6 +778,7 @@ namespace SS3D.Systems.Interactions
         {
             ClearClientActiveInteractionTracking();
             InteractionOptimisticFeedback.Clear(transform);
+            InteractionOutlineView.ClearPending();
         }
 
         private bool TryValidateGameplayGates(IInteraction interaction, InteractionEvent interactionEvent)

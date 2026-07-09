@@ -111,9 +111,7 @@ namespace SS3D.Systems.Inventory.Interactions
 
             if (networkedOpenable != null)
             {
-                bool newState = !networkedOpenable.IsOpen();
-                OnOpenStateChange(newState);
-
+                networkedOpenable.SetOpenState(!networkedOpenable.IsOpen());
                 return false;
             }
 
