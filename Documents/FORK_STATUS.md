@@ -21,7 +21,7 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` |
-| Commits ahead of upstream | — | **~93** (0 behind as of last fetch) |
+| Commits ahead of upstream | — | **~98** (0 behind as of last fetch) |
 | Files changed vs upstream | — | ~2,672 files, +164k / −44k lines |
 
 ---
@@ -121,6 +121,25 @@ range-gated, driven off the selection system's current `IExaminable`. Posters an
 wired as `ImageExaminable`.
 
 Merged from `archive/feature-1394-detailed-examine`.
+
+### Examine localization
+
+**Paths:** `SS3D.Localization`, `SS3D.Systems.Examine`
+
+Unified **Examine** string table for all 146 `ExamineData` assets, replacing sparse per-category
+tables (Items, Tiles, Misc). Shared **`LocalizedTextService`** (caching, locale-change invalidation,
+dev/release fallback) drives code-driven lookups; **`ExamineContentResolver`** separates static
+table text from dynamic sections via **`IExamineContentProvider`**.
+
+English strings migrated and wired through `LocalizedString` fields on every examine asset. Editor
+menus under `SS3D/Localization/Examine/` export/import JSON for translation workflows.
+**Identification cards** use dynamic owner/role lines (`IdentificationCardExaminable`).
+
+Non-English locales (`fr`, `pt-BR`, `ru-RU`) have empty Examine tables for now — they fall back to
+English until a translation import lands.
+
+Merged from `feature/examine-localization`. Design plan:
+[examine_localization_design_5ca361a6.plan.md](plans/examine_localization_design_5ca361a6.plan.md).
 
 ### Tilemap and adjacency engine
 
@@ -232,6 +251,7 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/feature-game-lifecycle-hardening` | (via develop-unity6) | Round state machine |
 | `archive/fix-selection-camera-picking` | (via develop-unity6) | Cursor picking alignment |
 | `archive/machine-ui` | 2026-07 | Machine interface UI (APC/SMES) |
+| `feature/examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
 
 ---
 
