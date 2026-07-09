@@ -10,6 +10,16 @@ namespace SS3D.Systems.Examine
         public ExamineType Type = ExamineType.SIMPLE_TEXT;
 
         /// <summary>
+        /// Localized name for this object. Preferred over legacy <see cref="LocalizationTable"/> and <see cref="NameKey"/>.
+        /// </summary>
+        public LocalizedString Name;
+
+        /// <summary>
+        /// Localized description for this object. Preferred over legacy <see cref="LocalizationTable"/> and <see cref="DescriptionKey"/>.
+        /// </summary>
+        public LocalizedString Description;
+
+        /// <summary>
         /// The table holding the localization strings for this object.
         /// </summary>
         public LocalizedStringTable LocalizationTable;

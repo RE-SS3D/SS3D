@@ -4,16 +4,16 @@ overview: Redesign Examine localization around a single unified string table, a 
 todos:
   - id: foundation-service
     content: Add LocalizedTextService with caching, async resolution, locale-change invalidation, and dev/release fallback policy
-    status: pending
+    status: completed
   - id: examine-resolver
     content: Add ExamineContentResolver + ExamineContent struct; refactor ExamineUI to use it with cached resolution
-    status: pending
+    status: completed
   - id: examine-table
     content: Create unified Examine string table collection and Addressables group entry
-    status: pending
+    status: completed
   - id: examine-data-refactor
     content: Refactor ExamineData to LocalizedString fields with Phase 0 compatibility shim for legacy triple
-    status: pending
+    status: completed
   - id: editor-export-import
     content: "Build editor tooling: key generation from asset paths, English extraction from legacy assets, JSON export/import"
     status: pending
@@ -25,7 +25,7 @@ todos:
     status: pending
   - id: audit-tests
     content: Extend ExamineDataTests for key existence and locale completeness; add resolver/service unit tests
-    status: pending
+    status: completed
   - id: cleanup-dynamic
     content: "Phase 3: remove legacy fields, deprecate old tables, add IExamineContentProvider for dynamic examine types"
     status: pending

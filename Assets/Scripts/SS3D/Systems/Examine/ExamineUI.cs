@@ -1,11 +1,11 @@
 ﻿using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Localization;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Inventory.Containers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Localization.Tables;
 
 namespace SS3D.Systems.Examine
 {
@@ -17,8 +17,11 @@ namespace SS3D.Systems.Examine
         [SerializeField] private KeyCode DetailedExamineKey = KeyCode.LeftShift;
         [SerializeField] private Vector2 DetailedTextOffset = new Vector2(16f, -16f);
 
-        private StringTable _currentStringTable;
+        private readonly ExamineContentResolver _contentResolver = new();
         private IExaminable _currentExaminable;
+        private IExaminable _cachedExaminable;
+        private ExamineContent _cachedContent;
+        private bool _hasCachedContent;
         private GameObject _localPlayer;
         private bool _wasDetailedExamineHeld;
         private ExamineDetailedView _textDetailedView;
@@ -34,6 +37,8 @@ namespace SS3D.Systems.Examine
         protected override void OnEnabled()
         {
             base.OnEnabled();
+            LocalizedTextService.EnsureInitialized();
+            LocalizedTextService.LocaleChanged += HandleLocaleChanged;
             EnsureDetailedViews();
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged += UpdateHoverText;
         }
@@ -41,13 +46,21 @@ namespace SS3D.Systems.Examine
         protected override void OnDisabled()
         {
             base.OnDisabled();
+            LocalizedTextService.LocaleChanged -= HandleLocaleChanged;
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged -= UpdateHoverText;
             SetDetailedViewVisible(false);
+            InvalidateContentCache();
         }
 
         private void HandleLocalPlayerObjectChanged(ref EventContext context, in LocalPlayerObjectChanged e)
         {
             _localPlayer = e.PlayerHasObject ? e.PlayerObject : null;
+        }
+
+        private void HandleLocaleChanged()
+        {
+            InvalidateContentCache();
+            UpdateHoverText(_currentExaminable);
         }
 
         private void Update()
@@ -82,31 +95,54 @@ namespace SS3D.Systems.Examine
             {
                 HoverName.text = string.Empty;
                 SetDetailedViewVisible(false);
+                InvalidateContentCache();
                 return;
             }
+
+            ExamineContent content = GetCachedContent(examinable);
 
             if (_wasDetailedExamineHeld)
             {
                 ExamineData data = examinable.GetData();
                 if (data.Type == ExamineType.SIMPLE_IMAGE
                     && IsWithinDetailedImageRange(examinable, data)
-                    && TryGetImageDetailedContent(examinable, out Sprite image, out string caption, out Vector2 imageSize))
+                    && TryGetImageDetailedContent(examinable, content, out Sprite image, out string caption, out Vector2 imageSize))
                 {
                     HoverName.text = string.Empty;
                     ShowImageDetailedView(image, caption, imageSize);
                     return;
                 }
 
-                if (TryGetDetailedTexts(examinable, out string name, out string description))
+                if (content.HasDescription)
                 {
                     HoverName.text = string.Empty;
-                    ShowTextDetailedView(name, description);
+                    ShowTextDetailedView(content.Name, content.Description);
                     return;
                 }
             }
 
             SetDetailedViewVisible(false);
-            HoverName.text = GetLocalizedName(examinable);
+            HoverName.text = content.Name;
+        }
+
+        private ExamineContent GetCachedContent(IExaminable examinable)
+        {
+            if (_hasCachedContent && _cachedExaminable == examinable)
+            {
+                return _cachedContent;
+            }
+
+            _cachedContent = _contentResolver.Resolve(examinable);
+            _cachedExaminable = examinable;
+            _hasCachedContent = true;
+            return _cachedContent;
+        }
+
+        private void InvalidateContentCache()
+        {
+            _hasCachedContent = false;
+            _cachedExaminable = null;
+            _cachedContent = ExamineContent.Empty;
         }
 
         private void EnsureDetailedViews()
@@ -202,6 +238,7 @@ namespace SS3D.Systems.Examine
 
         private bool TryGetImageDetailedContent(
             IExaminable examinable,
+            ExamineContent content,
             out Sprite image,
             out string caption,
             out Vector2 imageSize)
@@ -223,16 +260,7 @@ namespace SS3D.Systems.Examine
             }
 
             imageSize = data.DetailedImageSize;
-
-            if (data.LocalizationTable != null)
-            {
-                _currentStringTable = data.LocalizationTable.GetTable();
-                if (_currentStringTable != null)
-                {
-                    caption = GetLocalizedValue(data.DescriptionKey);
-                }
-            }
-
+            caption = content.Description;
             return true;
         }
 
@@ -264,61 +292,6 @@ namespace SS3D.Systems.Examine
 
             origin = hand.InteractionOrigin;
             return true;
-        }
-
-        private bool TryGetDetailedTexts(IExaminable examinable, out string name, out string description)
-        {
-            name = string.Empty;
-            description = string.Empty;
-
-            ExamineData data = examinable?.GetData();
-            if (data == null || data.LocalizationTable == null)
-            {
-                return false;
-            }
-
-            _currentStringTable = data.LocalizationTable.GetTable();
-            if (_currentStringTable == null)
-            {
-                return false;
-            }
-
-            name = GetLocalizedValue(data.NameKey);
-            description = GetLocalizedValue(data.DescriptionKey);
-
-            return !string.IsNullOrEmpty(description);
-        }
-
-        private string GetLocalizedName(IExaminable examinable)
-        {
-            ExamineData data = examinable?.GetData();
-            if (data == null || data.LocalizationTable == null)
-            {
-                return string.Empty;
-            }
-
-            _currentStringTable = data.LocalizationTable.GetTable();
-            if (_currentStringTable == null)
-            {
-                return string.Empty;
-            }
-
-            return GetLocalizedValue(data.NameKey);
-        }
-
-        private string GetLocalizedValue(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                return string.Empty;
-            }
-
-            if (_currentStringTable[key]?.LocalizedValue is null)
-            {
-                return key + " *[to be localized]*";
-            }
-
-            return _currentStringTable[key].LocalizedValue;
         }
 
         private bool IsDetailedExamineHeld()
