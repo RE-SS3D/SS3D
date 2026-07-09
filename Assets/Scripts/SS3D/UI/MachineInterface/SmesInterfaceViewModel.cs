@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SS3D.UI.MachineInterface
 {
-    public class SmesInterfaceViewModel
+    public class SmesInterfaceViewModel : IMachineInterfaceViewModel
     {
         public string Title { get; set; } = "SMES · ENERGY STORAGE";
 
@@ -40,13 +40,7 @@ namespace SS3D.UI.MachineInterface
 
         public string DiagnosisHint { get; set; } = string.Empty;
 
-        public string MaintenanceText { get; set; } = "No maintenance due.";
-
-        public StatusTone MaintenanceTone { get; set; } = StatusTone.Info;
-
         public List<DiagnosticLine> Warnings { get; set; } = new();
-
-        public List<SmesMetricLine> AdvancedMetrics { get; set; } = new();
 
         public static SmesInterfaceViewModel CreateNominal()
         {
@@ -68,15 +62,6 @@ namespace SS3D.UI.MachineInterface
                 ExteriorInputWord = "AVAILABLE",
                 ExteriorOutputWord = "ACTIVE",
                 ConnectionStateText = "Grid link nominal — both connections healthy.",
-                AdvancedMetrics = new List<SmesMetricLine>
-                {
-                    new("Voltage", "750 V"),
-                    new("Current", "4.3 kA"),
-                    new("Input efficiency", "97%"),
-                    new("Output efficiency", "95%"),
-                    new("Internal temp", "34°C"),
-                    new("Component health", "Cells 1–4 nominal", StatusTone.Success),
-                },
             };
         }
 
@@ -104,16 +89,6 @@ namespace SS3D.UI.MachineInterface
                     new("!", "No grid connection detected.", StatusTone.Danger),
                     new("!", "Battery discharge increasing.", StatusTone.Warning),
                 },
-                AdvancedMetrics = new List<SmesMetricLine>
-                {
-                    new("Voltage", "742 V"),
-                    new("Current", "3.1 kA"),
-                    new("Input efficiency", "—", StatusTone.Info),
-                    new("Output efficiency", "94%"),
-                    new("Internal temp", "36°C"),
-                    new("Component health", "Cells 1–4 nominal", StatusTone.Success),
-                },
-                MaintenanceText = "No maintenance due — fault is upstream.",
             };
         }
 
@@ -141,16 +116,6 @@ namespace SS3D.UI.MachineInterface
                     new("!", "Output exceeds sustainable generation.", StatusTone.Warning),
                     new("!", "Battery discharge increasing.", StatusTone.Warning),
                 },
-                AdvancedMetrics = new List<SmesMetricLine>
-                {
-                    new("Voltage", "718 V", StatusTone.Warning),
-                    new("Current", "6.0 kA", StatusTone.Warning),
-                    new("Input efficiency", "96%"),
-                    new("Output efficiency", "91%"),
-                    new("Internal temp", "48°C", StatusTone.Warning),
-                    new("Component health", "Cells 1–4 nominal", StatusTone.Success),
-                },
-                MaintenanceText = "No maintenance due — this is a demand issue.",
             };
         }
 
@@ -177,17 +142,6 @@ namespace SS3D.UI.MachineInterface
                 {
                     new("X", "Cell bank overheating — output disabled.", StatusTone.Danger),
                     new("X", "Charge critical — connect input immediately.", StatusTone.Danger),
-                },
-                MaintenanceText = "Cell bank 3 — inspection required.",
-                MaintenanceTone = StatusTone.Danger,
-                AdvancedMetrics = new List<SmesMetricLine>
-                {
-                    new("Voltage", "412 V", StatusTone.Danger),
-                    new("Current", "0.2 kA", StatusTone.Danger),
-                    new("Input efficiency", "—", StatusTone.Info),
-                    new("Output efficiency", "—", StatusTone.Info),
-                    new("Internal temp", "89°C", StatusTone.Danger),
-                    new("Component health", "Cell bank 3 — fault", StatusTone.Danger),
                 },
             };
         }

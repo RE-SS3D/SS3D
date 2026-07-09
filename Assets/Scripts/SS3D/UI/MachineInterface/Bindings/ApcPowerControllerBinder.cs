@@ -4,11 +4,13 @@ using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Bindings
 {
-    public class ApcPowerControllerBinder
+    public class ApcPowerControllerBinder : IMachineInterfaceBinder
     {
-        public event Action<string, bool> ChannelToggled;
-
         public event Action CloseRequested;
+
+        public event Action<byte, bool> BoolControlChanged;
+
+        public event Action<byte, float> NumericControlChanged;
 
         private readonly MachineWindow _window;
         private readonly StatusBanner _statusBanner;
@@ -34,16 +36,24 @@ namespace SS3D.UI.MachineInterface.Bindings
 
             if (_window != null)
             {
-                _window.CloseClicked += () => CloseRequested?.Invoke();
+                _window.CloseClicked += HandleWindowCloseClicked;
             }
 
-            _lightingChannel.ValueChanged += value => ChannelToggled?.Invoke("lighting", value);
-            _equipmentChannel.ValueChanged += value => ChannelToggled?.Invoke("equipment", value);
-            _environmentChannel.ValueChanged += value => ChannelToggled?.Invoke("environment", value);
+            _lightingChannel.ValueChanged += value =>
+                BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Lighting, value);
+            _equipmentChannel.ValueChanged += value =>
+                BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Equipment, value);
+            _environmentChannel.ValueChanged += value =>
+                BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Environment, value);
         }
 
-        public void Bind(ApcInterfaceViewModel model)
+        public void Bind(IMachineInterfaceViewModel viewModel)
         {
+            if (viewModel is not ApcInterfaceViewModel model)
+            {
+                return;
+            }
+
             if (_window != null)
             {
                 _window.Title = model.Title;
@@ -78,6 +88,19 @@ namespace SS3D.UI.MachineInterface.Bindings
             _environmentChannel.IsOn = model.EnvironmentOn;
 
             _diagnosticsList.SetLines(model.Diagnostics);
+        }
+
+        public void Disconnect()
+        {
+            if (_window != null)
+            {
+                _window.CloseClicked -= HandleWindowCloseClicked;
+            }
+        }
+
+        private void HandleWindowCloseClicked()
+        {
+            CloseRequested?.Invoke();
         }
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SS3D.UI.MachineInterface
 {
-    public class ApcInterfaceViewModel
+    public class ApcInterfaceViewModel : IMachineInterfaceViewModel
     {
         public string Title { get; set; } = "APC · ENGINEERING BAY";
 

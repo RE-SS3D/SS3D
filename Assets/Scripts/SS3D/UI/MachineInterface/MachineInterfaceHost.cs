@@ -15,10 +15,6 @@ namespace SS3D.UI.MachineInterface
     [RequireComponent(typeof(UIDocument))]
     public class MachineInterfaceHost : View
     {
-        public const string ApcInterfaceId = "power.apc";
-
-        public const string SmesInterfaceId = "power.smes";
-
         [SerializeField]
         private UIDocument _document;
 
@@ -39,104 +35,54 @@ namespace SS3D.UI.MachineInterface
 
         private VisualElement _overlayRoot;
         private MachineWindow _window;
-        private ApcPowerControllerBinder _apcBinder;
-        private SmesUnitBinder _smesBinder;
+        private IMachineInterfaceBinder _binder;
         private string _openInterfaceId;
         private bool _overlayReady;
 
         public bool IsOpen => _window != null && _window.style.display != DisplayStyle.None;
 
-        public bool Open(string interfaceId, ApcInterfaceViewModel viewModel)
+        public bool Open(string interfaceId, IMachineInterfaceViewModel viewModel)
         {
             if (!EnsureDocumentActive())
             {
                 return false;
             }
 
-            if (interfaceId != ApcInterfaceId)
+            if (!MachineInterfaceRegistry.TryGetUi(interfaceId, out MachineInterfaceUiRegistration registration))
             {
-                Debug.LogWarning($"MachineInterfaceHost expected APC interface id but received: {interfaceId}");
+                Debug.LogWarning($"MachineInterfaceHost has no UI registration for: {interfaceId}", this);
                 return false;
             }
 
-            if (_apcTemplate == null)
+            if (registration.Template == null)
             {
-                Debug.LogError("MachineInterfaceHost is missing the APC template.", this);
+                Debug.LogError($"MachineInterfaceHost is missing the template for {interfaceId}.", this);
                 return false;
             }
 
             ClosePanelOnly();
-            if (!CreateWindow(viewModel.Title))
+            if (!CreateWindow(viewModel.Title, registration.Wide))
             {
                 return false;
             }
 
             _openInterfaceId = interfaceId;
-            TemplateContainer template = _apcTemplate.CloneTree();
-            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _apcTemplateStyle);
+            TemplateContainer template = registration.Template.CloneTree();
+            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, registration.TemplateStyle);
             _window.Content.Add(template);
             _overlayRoot.Add(_window);
             SetOverlayInteractive(true);
 
-            _apcBinder = new ApcPowerControllerBinder(_window);
-            _apcBinder.CloseRequested += HandleCloseRequested;
-            _apcBinder.ChannelToggled += HandleChannelToggled;
-            _apcBinder.Bind(viewModel);
+            _binder = registration.CreateBinder(_window);
+            WireBinder(_binder);
+            _binder.Bind(viewModel);
             _window.CloseClicked += HandleCloseRequested;
             return true;
         }
 
-        public bool Open(string interfaceId, SmesInterfaceViewModel viewModel)
+        public void Refresh(IMachineInterfaceViewModel viewModel)
         {
-            if (!EnsureDocumentActive())
-            {
-                return false;
-            }
-
-            if (interfaceId != SmesInterfaceId)
-            {
-                Debug.LogWarning($"MachineInterfaceHost expected SMES interface id but received: {interfaceId}");
-                return false;
-            }
-
-            if (_smesTemplate == null)
-            {
-                Debug.LogError("MachineInterfaceHost is missing the SMES template.", this);
-                return false;
-            }
-
-            ClosePanelOnly();
-            if (!CreateWindow(viewModel.Title, wide: true))
-            {
-                return false;
-            }
-
-            _openInterfaceId = interfaceId;
-            TemplateContainer template = _smesTemplate.CloneTree();
-            MachineInterfaceHostHelpers.ApplyTemplateStyle(template, _smesTemplateStyle);
-            _window.Content.Add(template);
-            _overlayRoot.Add(_window);
-            SetOverlayInteractive(true);
-
-            _smesBinder = new SmesUnitBinder(_window);
-            _smesBinder.CloseRequested += HandleCloseRequested;
-            _smesBinder.InputToggled += HandleSmesInputToggled;
-            _smesBinder.OutputToggled += HandleSmesOutputToggled;
-            _smesBinder.InputRateDeltaRequested += HandleSmesInputRateDelta;
-            _smesBinder.OutputRateDeltaRequested += HandleSmesOutputRateDelta;
-            _smesBinder.Bind(viewModel);
-            _window.CloseClicked += HandleCloseRequested;
-            return true;
-        }
-
-        public void Refresh(ApcInterfaceViewModel viewModel)
-        {
-            _apcBinder?.Bind(viewModel);
-        }
-
-        public void Refresh(SmesInterfaceViewModel viewModel)
-        {
-            _smesBinder?.Bind(viewModel);
+            _binder?.Bind(viewModel);
         }
 
         public void Close()
@@ -157,6 +103,7 @@ namespace SS3D.UI.MachineInterface
 #if UNITY_EDITOR
             EnsureEditorAssets();
 #endif
+            RegisterUiEntries();
             ShutdownDocument();
         }
 
@@ -207,6 +154,27 @@ namespace SS3D.UI.MachineInterface
         }
 #endif
 
+        private void RegisterUiEntries()
+        {
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Apc,
+                Template = _apcTemplate,
+                TemplateStyle = _apcTemplateStyle,
+                Wide = false,
+                CreateBinder = window => new ApcPowerControllerBinder(window),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Smes,
+                Template = _smesTemplate,
+                TemplateStyle = _smesTemplateStyle,
+                Wide = true,
+                CreateBinder = window => new SmesUnitBinder(window),
+            });
+        }
+
         private bool CreateWindow(string title, bool wide = false)
         {
             _window = new MachineWindow { Title = title };
@@ -230,21 +198,13 @@ namespace SS3D.UI.MachineInterface
 
         private void ClosePanelOnly()
         {
-            if (_apcBinder != null)
+            if (_binder != null)
             {
-                _apcBinder.CloseRequested -= HandleCloseRequested;
-                _apcBinder.ChannelToggled -= HandleChannelToggled;
-                _apcBinder = null;
-            }
-
-            if (_smesBinder != null)
-            {
-                _smesBinder.CloseRequested -= HandleCloseRequested;
-                _smesBinder.InputToggled -= HandleSmesInputToggled;
-                _smesBinder.OutputToggled -= HandleSmesOutputToggled;
-                _smesBinder.InputRateDeltaRequested -= HandleSmesInputRateDelta;
-                _smesBinder.OutputRateDeltaRequested -= HandleSmesOutputRateDelta;
-                _smesBinder = null;
+                _binder.CloseRequested -= HandleCloseRequested;
+                _binder.BoolControlChanged -= HandleBoolControlChanged;
+                _binder.NumericControlChanged -= HandleNumericControlChanged;
+                _binder.Disconnect();
+                _binder = null;
             }
 
             if (_window != null)
@@ -336,6 +296,13 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
+        private void WireBinder(IMachineInterfaceBinder binder)
+        {
+            binder.CloseRequested += HandleCloseRequested;
+            binder.BoolControlChanged += HandleBoolControlChanged;
+            binder.NumericControlChanged += HandleNumericControlChanged;
+        }
+
         private void HandleCloseRequested()
         {
             if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
@@ -344,45 +311,19 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        private void HandleChannelToggled(string channelId, bool isOn)
+        private void HandleBoolControlChanged(byte controlId, bool isOn)
         {
             if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
             {
-                subsystem.NotifyChannelToggled(channelId, isOn);
+                subsystem.NotifyBoolControl(controlId, isOn);
             }
         }
 
-        private void HandleSmesInputToggled(bool isOn)
+        private void HandleNumericControlChanged(byte controlId, float delta)
         {
             if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
             {
-                subsystem.NotifySmesControlToggled(0, isOn);
-            }
-        }
-
-        private void HandleSmesOutputToggled(bool isOn)
-        {
-            if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-            {
-                subsystem.NotifySmesControlToggled(1, isOn);
-            }
-        }
-
-        private void HandleSmesInputRateDelta(float delta)
-        {
-            HandleSmesRateDelta(0, delta);
-        }
-
-        private void HandleSmesOutputRateDelta(float delta)
-        {
-            HandleSmesRateDelta(1, delta);
-        }
-
-        private void HandleSmesRateDelta(byte controlId, float delta)
-        {
-            if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-            {
-                subsystem.NotifySmesRateDelta(controlId, delta);
+                subsystem.NotifyNumericControl(controlId, delta);
             }
         }
     }

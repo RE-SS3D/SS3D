@@ -189,44 +189,26 @@ namespace SS3D.UI.MachineInterface
 
         protected abstract void SendRefreshToViewer(NetworkConnection conn);
 
-        protected void DispatchClientOpen(ApcInterfaceSnapshot snapshot)
+        protected void DispatchClientOpen<TSnapshot>(TSnapshot snapshot)
+            where TSnapshot : struct
         {
             if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
             {
                 return;
             }
 
-            subsystem.OpenFromNetwork(snapshot, this);
+            MachineInterfaceNetworkRegistry.DispatchOpen(subsystem, snapshot, this);
         }
 
-        protected void DispatchClientOpen(SmesInterfaceSnapshot snapshot)
+        protected void DispatchClientRefresh<TSnapshot>(TSnapshot snapshot)
+            where TSnapshot : struct
         {
             if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
             {
                 return;
             }
 
-            subsystem.OpenFromNetwork(snapshot, this);
-        }
-
-        protected void DispatchClientRefresh(ApcInterfaceSnapshot snapshot)
-        {
-            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-            {
-                return;
-            }
-
-            subsystem.RefreshFromNetwork(snapshot);
-        }
-
-        protected void DispatchClientRefresh(SmesInterfaceSnapshot snapshot)
-        {
-            if (!SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
-            {
-                return;
-            }
-
-            subsystem.RefreshFromNetwork(snapshot);
+            MachineInterfaceNetworkRegistry.DispatchRefresh(subsystem, snapshot);
         }
 
         private static bool TryResolveViewerConnection(IInteractionSource source, out NetworkConnection conn)

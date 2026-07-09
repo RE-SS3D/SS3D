@@ -37,7 +37,7 @@ namespace SS3D.UI.MachineInterface
 
         private SmesBattery _battery;
 
-        public override string InterfaceId => MachineInterfaceHost.SmesInterfaceId;
+        public override string InterfaceId => MachineInterfaceIds.Smes;
 
         public override void OnStartServer()
         {
@@ -235,8 +235,6 @@ namespace SS3D.UI.MachineInterface
                     Tone = (byte)StatusTone.Danger,
                 });
                 snapshot.DiagnosisHint = "The SMES itself has faulted — restore input power, then let it cool before re-enabling output.";
-                snapshot.MaintenanceText = "Cell bank 3 — inspection required.";
-                snapshot.MaintenanceTone = (byte)StatusTone.Danger;
             }
 
             snapshot.WarningCount = Mathf.Min(warnings.Count, SmesInterfaceSnapshot.MaxWarnings);
@@ -244,79 +242,6 @@ namespace SS3D.UI.MachineInterface
             {
                 SetWarning(ref snapshot, i, warnings[i]);
             }
-        }
-
-        private static void ApplyAdvancedMetrics(
-            ref SmesInterfaceSnapshot snapshot,
-            CircuitStats stats,
-            float chargePct,
-            float inputKw,
-            float outputKw,
-            SmesPowerState powerState)
-        {
-            StatusTone healthTone = powerState == SmesPowerState.Fault ? StatusTone.Danger : StatusTone.Success;
-            string healthValue = powerState == SmesPowerState.Fault ? "Cell bank 3 — fault" : "Cells 1–4 nominal";
-
-            List<SmesMetricSnapshot> metrics = new()
-            {
-                new()
-                {
-                    Label = "Stored charge",
-                    Value = $"{Mathf.RoundToInt(chargePct * 100f)}%",
-                    Tone = (byte)GetChargeTone(chargePct),
-                },
-                new()
-                {
-                    Label = "Input draw",
-                    Value = $"{inputKw:0.0} kW",
-                    Tone = (byte)StatusTone.Info,
-                },
-                new()
-                {
-                    Label = "Output draw",
-                    Value = $"{outputKw:0.0} kW",
-                    Tone = (byte)StatusTone.Info,
-                },
-                new()
-                {
-                    Label = "Grid supply",
-                    Value = $"{stats.TotalSupplyKw:0.0} kW",
-                    Tone = (byte)StatusTone.Info,
-                },
-                new()
-                {
-                    Label = "Grid demand",
-                    Value = $"{stats.TotalDemandKw:0.0} kW",
-                    Tone = (byte)StatusTone.Info,
-                },
-                new()
-                {
-                    Label = "Component health",
-                    Value = healthValue,
-                    Tone = (byte)healthTone,
-                },
-            };
-
-            snapshot.AdvancedMetricCount = Mathf.Min(metrics.Count, SmesInterfaceSnapshot.MaxAdvancedMetrics);
-            for (int i = 0; i < snapshot.AdvancedMetricCount; i++)
-            {
-                SetMetric(ref snapshot, i, metrics[i]);
-            }
-        }
-
-        private static StatusTone GetChargeTone(float chargePct)
-        {
-            if (chargePct <= LowChargeThreshold)
-            {
-                return StatusTone.Danger;
-            }
-
-            if (chargePct <= 0.4f)
-            {
-                return StatusTone.Warning;
-            }
-
-            return StatusTone.Success;
         }
 
         private static void SetWarning(ref SmesInterfaceSnapshot snapshot, int index, ApcDiagnosticSnapshot warning)
@@ -344,48 +269,6 @@ namespace SS3D.UI.MachineInterface
                 case 3:
                 {
                     snapshot.Warning3 = warning;
-                    break;
-                }
-            }
-        }
-
-        private static void SetMetric(ref SmesInterfaceSnapshot snapshot, int index, SmesMetricSnapshot metric)
-        {
-            switch (index)
-            {
-                case 0:
-                {
-                    snapshot.AdvancedMetric0 = metric;
-                    break;
-                }
-
-                case 1:
-                {
-                    snapshot.AdvancedMetric1 = metric;
-                    break;
-                }
-
-                case 2:
-                {
-                    snapshot.AdvancedMetric2 = metric;
-                    break;
-                }
-
-                case 3:
-                {
-                    snapshot.AdvancedMetric3 = metric;
-                    break;
-                }
-
-                case 4:
-                {
-                    snapshot.AdvancedMetric4 = metric;
-                    break;
-                }
-
-                case 5:
-                {
-                    snapshot.AdvancedMetric5 = metric;
                     break;
                 }
             }
@@ -446,12 +329,9 @@ namespace SS3D.UI.MachineInterface
                 OutputActive = outputActive,
                 ConnectionStateText = BuildConnectionStateText(powerState, inputActive, outputActive),
                 DiagnosisHint = string.Empty,
-                MaintenanceText = "No maintenance due.",
-                MaintenanceTone = (byte)StatusTone.Info,
             };
 
             ApplyWarnings(ref snapshot, powerState, stats, chargePct, inputActive);
-            ApplyAdvancedMetrics(ref snapshot, stats, chargePct, inputKw, outputKw, powerState);
             return snapshot;
         }
 

@@ -15,8 +15,7 @@ namespace SS3D.UI.MachineInterface
 
         public event Action InterfaceClosed;
 
-        private ApcInterfaceViewModel _apcModel;
-        private SmesInterfaceViewModel _smesModel;
+        private IMachineInterfaceViewModel _openModel;
         private string _openInterfaceId;
         private IMachineInterfaceClientBridge _clientBridge;
         private InputSubSystem _inputSystem;
@@ -24,7 +23,7 @@ namespace SS3D.UI.MachineInterface
 
         public bool IsOpen => !string.IsNullOrEmpty(_openInterfaceId);
 
-        public void Open(string interfaceId, ApcInterfaceViewModel viewModel)
+        public void Open(string interfaceId, IMachineInterfaceViewModel viewModel)
         {
             MachineInterfaceHost host = GetHost();
             if (host == null || !host.Open(interfaceId, viewModel))
@@ -33,39 +32,13 @@ namespace SS3D.UI.MachineInterface
             }
 
             _openInterfaceId = interfaceId;
-            _apcModel = viewModel;
-            _smesModel = null;
+            _openModel = viewModel;
             SetGameplayInputBlocked(true);
         }
 
-        public void Open(string interfaceId, SmesInterfaceViewModel viewModel)
+        public void Refresh(IMachineInterfaceViewModel viewModel)
         {
-            MachineInterfaceHost host = GetHost();
-            if (host == null || !host.Open(interfaceId, viewModel))
-            {
-                return;
-            }
-
-            _openInterfaceId = interfaceId;
-            _smesModel = viewModel;
-            _apcModel = null;
-            SetGameplayInputBlocked(true);
-        }
-
-        public void Refresh(ApcInterfaceViewModel viewModel)
-        {
-            _apcModel = viewModel;
-
-            MachineInterfaceHost host = GetHost();
-            if (host != null)
-            {
-                host.Refresh(viewModel);
-            }
-        }
-
-        public void Refresh(SmesInterfaceViewModel viewModel)
-        {
-            _smesModel = viewModel;
+            _openModel = viewModel;
 
             MachineInterfaceHost host = GetHost();
             if (host != null)
@@ -77,8 +50,7 @@ namespace SS3D.UI.MachineInterface
         public void Close()
         {
             _openInterfaceId = null;
-            _apcModel = null;
-            _smesModel = null;
+            _openModel = null;
             _clientBridge = null;
 
             MachineInterfaceHost host = GetHost();
@@ -91,10 +63,13 @@ namespace SS3D.UI.MachineInterface
             InterfaceClosed?.Invoke();
         }
 
-        public void OpenFromNetwork(ApcInterfaceSnapshot snapshot, IMachineInterfaceClientBridge bridge)
+        public void OpenFromNetwork(
+            string interfaceId,
+            IMachineInterfaceViewModel viewModel,
+            IMachineInterfaceClientBridge bridge)
         {
             _clientBridge = bridge;
-            Open(snapshot.InterfaceId, ApcInterfaceSnapshotMapper.ToViewModel(snapshot));
+            Open(interfaceId, viewModel);
 
             if (!IsOpen)
             {
@@ -102,35 +77,14 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        public void OpenFromNetwork(SmesInterfaceSnapshot snapshot, IMachineInterfaceClientBridge bridge)
+        public void RefreshFromNetwork(string interfaceId, IMachineInterfaceViewModel viewModel)
         {
-            _clientBridge = bridge;
-            Open(snapshot.InterfaceId, SmesInterfaceSnapshotMapper.ToViewModel(snapshot));
-
-            if (!IsOpen)
-            {
-                _clientBridge = null;
-            }
-        }
-
-        public void RefreshFromNetwork(ApcInterfaceSnapshot snapshot)
-        {
-            if (!IsOpen || _openInterfaceId != snapshot.InterfaceId)
+            if (!IsOpen || _openInterfaceId != interfaceId)
             {
                 return;
             }
 
-            Refresh(ApcInterfaceSnapshotMapper.ToViewModel(snapshot));
-        }
-
-        public void RefreshFromNetwork(SmesInterfaceSnapshot snapshot)
-        {
-            if (!IsOpen || _openInterfaceId != snapshot.InterfaceId)
-            {
-                return;
-            }
-
-            Refresh(SmesInterfaceSnapshotMapper.ToViewModel(snapshot));
+            Refresh(viewModel);
         }
 
         public void CloseFromNetwork(IMachineInterfaceClientBridge bridge)
@@ -163,8 +117,7 @@ namespace SS3D.UI.MachineInterface
 
             _clientBridge?.RequestClose();
             _openInterfaceId = null;
-            _apcModel = null;
-            _smesModel = null;
+            _openModel = null;
             _clientBridge = null;
 
             MachineInterfaceHost host = GetHost();
@@ -177,58 +130,24 @@ namespace SS3D.UI.MachineInterface
             InterfaceClosed?.Invoke();
         }
 
-        public void NotifyChannelToggled(string channelId, bool isOn)
+        public void NotifyBoolControl(byte controlId, bool isOn)
         {
-            if (_apcModel == null)
+            if (_openModel == null)
             {
                 return;
             }
 
-            switch (channelId)
+            switch (_openModel)
             {
-                case "lighting":
+                case ApcInterfaceViewModel apcModel:
                 {
-                    _apcModel.LightingOn = isOn;
-                    _clientBridge?.SetControl(0, isOn);
+                    ApplyApcControl(apcModel, controlId, isOn);
                     break;
                 }
 
-                case "equipment":
+                case SmesInterfaceViewModel smesModel:
                 {
-                    _apcModel.EquipmentOn = isOn;
-                    _clientBridge?.SetControl(1, isOn);
-                    break;
-                }
-
-                case "environment":
-                {
-                    _apcModel.EnvironmentOn = isOn;
-                    _clientBridge?.SetControl(2, isOn);
-                    break;
-                }
-            }
-
-            ChannelToggled?.Invoke(channelId, isOn);
-        }
-
-        public void NotifySmesControlToggled(byte controlId, bool isOn)
-        {
-            if (_smesModel == null)
-            {
-                return;
-            }
-
-            switch (controlId)
-            {
-                case 0:
-                {
-                    _smesModel.InputEnabled = isOn;
-                    break;
-                }
-
-                case 1:
-                {
-                    _smesModel.OutputEnabled = isOn;
+                    ApplySmesBoolControl(smesModel, controlId, isOn);
                     break;
                 }
             }
@@ -236,24 +155,24 @@ namespace SS3D.UI.MachineInterface
             _clientBridge?.SetControl(controlId, isOn);
         }
 
-        public void NotifySmesRateDelta(byte controlId, float delta)
+        public void NotifyNumericControl(byte controlId, float delta)
         {
-            if (_smesModel == null)
+            if (_openModel is not SmesInterfaceViewModel smesModel)
             {
                 return;
             }
 
             switch (controlId)
             {
-                case 0:
+                case MachineInterfaceControlIds.Smes.Input:
                 {
-                    _smesModel.InputMaxKw = Math.Max(1f, _smesModel.InputMaxKw + delta);
+                    smesModel.InputMaxKw = Math.Max(1f, smesModel.InputMaxKw + delta);
                     break;
                 }
 
-                case 1:
+                case MachineInterfaceControlIds.Smes.Output:
                 {
-                    _smesModel.OutputMaxKw = Math.Max(1f, _smesModel.OutputMaxKw + delta);
+                    smesModel.OutputMaxKw = Math.Max(1f, smesModel.OutputMaxKw + delta);
                     break;
                 }
             }
@@ -270,13 +189,13 @@ namespace SS3D.UI.MachineInterface
                 _ => ApcInterfaceViewModel.CreateNominal(),
             };
 
-            if (IsOpen && _openInterfaceId == MachineInterfaceHost.ApcInterfaceId)
+            if (IsOpen && _openInterfaceId == MachineInterfaceIds.Apc)
             {
                 Refresh(model);
             }
             else
             {
-                Open(MachineInterfaceHost.ApcInterfaceId, model);
+                Open(MachineInterfaceIds.Apc, model);
             }
         }
 
@@ -290,13 +209,13 @@ namespace SS3D.UI.MachineInterface
                 _ => SmesInterfaceViewModel.CreateNominal(),
             };
 
-            if (IsOpen && _openInterfaceId == MachineInterfaceHost.SmesInterfaceId)
+            if (IsOpen && _openInterfaceId == MachineInterfaceIds.Smes)
             {
                 Refresh(model);
             }
             else
             {
-                Open(MachineInterfaceHost.SmesInterfaceId, model);
+                Open(MachineInterfaceIds.Smes, model);
             }
         }
 
@@ -316,6 +235,63 @@ namespace SS3D.UI.MachineInterface
         {
             List<MachineInterfaceHost> hosts = ViewLocator.Get<MachineInterfaceHost>();
             return hosts is { Count: > 0 } ? hosts[0] : null;
+        }
+
+        private static void ApplySmesBoolControl(SmesInterfaceViewModel model, byte controlId, bool isOn)
+        {
+            switch (controlId)
+            {
+                case MachineInterfaceControlIds.Smes.Input:
+                {
+                    model.InputEnabled = isOn;
+                    break;
+                }
+
+                case MachineInterfaceControlIds.Smes.Output:
+                {
+                    model.OutputEnabled = isOn;
+                    break;
+                }
+            }
+        }
+
+        private void ApplyApcControl(ApcInterfaceViewModel model, byte controlId, bool isOn)
+        {
+            string channelId = controlId switch
+            {
+                MachineInterfaceControlIds.Apc.Lighting => "lighting",
+                MachineInterfaceControlIds.Apc.Equipment => "equipment",
+                MachineInterfaceControlIds.Apc.Environment => "environment",
+                _ => null,
+            };
+
+            if (channelId == null)
+            {
+                return;
+            }
+
+            switch (controlId)
+            {
+                case MachineInterfaceControlIds.Apc.Lighting:
+                {
+                    model.LightingOn = isOn;
+                    break;
+                }
+
+                case MachineInterfaceControlIds.Apc.Equipment:
+                {
+                    model.EquipmentOn = isOn;
+                    break;
+                }
+
+                case MachineInterfaceControlIds.Apc.Environment:
+                {
+                    model.EnvironmentOn = isOn;
+                    break;
+                }
+            }
+
+            ChannelToggled?.Invoke(channelId, isOn);
         }
 
         private void SetGameplayInputBlocked(bool blocked)

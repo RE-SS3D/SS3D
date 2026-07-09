@@ -22,8 +22,6 @@ namespace SS3D.UI.MachineInterface
             writer.WriteBoolean(snapshot.OutputActive);
             writer.WriteString(snapshot.ConnectionStateText);
             writer.WriteString(snapshot.DiagnosisHint);
-            writer.WriteString(snapshot.MaintenanceText);
-            writer.WriteByte(snapshot.MaintenanceTone);
 
             int warningCount = snapshot.WarningCount;
             if (warningCount > SmesInterfaceSnapshot.MaxWarnings)
@@ -35,18 +33,6 @@ namespace SS3D.UI.MachineInterface
             for (int i = 0; i < warningCount; i++)
             {
                 WriteWarning(writer, snapshot, i);
-            }
-
-            int metricCount = snapshot.AdvancedMetricCount;
-            if (metricCount > SmesInterfaceSnapshot.MaxAdvancedMetrics)
-            {
-                metricCount = SmesInterfaceSnapshot.MaxAdvancedMetrics;
-            }
-
-            writer.WriteInt32(metricCount);
-            for (int i = 0; i < metricCount; i++)
-            {
-                WriteMetric(writer, snapshot, i);
             }
         }
 
@@ -70,8 +56,6 @@ namespace SS3D.UI.MachineInterface
                 OutputActive = reader.ReadBoolean(),
                 ConnectionStateText = reader.ReadString(),
                 DiagnosisHint = reader.ReadString(),
-                MaintenanceText = reader.ReadString(),
-                MaintenanceTone = reader.ReadByte(),
                 WarningCount = reader.ReadInt32(),
             };
 
@@ -84,18 +68,6 @@ namespace SS3D.UI.MachineInterface
             {
                 ApcDiagnosticSnapshot warning = ReadWarning(reader);
                 SetWarning(ref snapshot, i, warning);
-            }
-
-            snapshot.AdvancedMetricCount = reader.ReadInt32();
-            if (snapshot.AdvancedMetricCount > SmesInterfaceSnapshot.MaxAdvancedMetrics)
-            {
-                snapshot.AdvancedMetricCount = SmesInterfaceSnapshot.MaxAdvancedMetrics;
-            }
-
-            for (int i = 0; i < snapshot.AdvancedMetricCount; i++)
-            {
-                SmesMetricSnapshot metric = ReadMetric(reader);
-                SetMetric(ref snapshot, i, metric);
             }
 
             return snapshot;
@@ -115,24 +87,6 @@ namespace SS3D.UI.MachineInterface
             {
                 Glyph = reader.ReadString(),
                 Text = reader.ReadString(),
-                Tone = reader.ReadByte(),
-            };
-        }
-
-        private static void WriteMetric(Writer writer, SmesInterfaceSnapshot snapshot, int index)
-        {
-            SmesMetricSnapshot metric = GetMetric(snapshot, index);
-            writer.WriteString(metric.Label);
-            writer.WriteString(metric.Value);
-            writer.WriteByte(metric.Tone);
-        }
-
-        private static SmesMetricSnapshot ReadMetric(Reader reader)
-        {
-            return new SmesMetricSnapshot
-            {
-                Label = reader.ReadString(),
-                Value = reader.ReadString(),
                 Tone = reader.ReadByte(),
             };
         }
@@ -174,62 +128,6 @@ namespace SS3D.UI.MachineInterface
                 case 3:
                 {
                     snapshot.Warning3 = warning;
-                    break;
-                }
-            }
-        }
-
-        private static SmesMetricSnapshot GetMetric(SmesInterfaceSnapshot snapshot, int index)
-        {
-            return index switch
-            {
-                0 => snapshot.AdvancedMetric0,
-                1 => snapshot.AdvancedMetric1,
-                2 => snapshot.AdvancedMetric2,
-                3 => snapshot.AdvancedMetric3,
-                4 => snapshot.AdvancedMetric4,
-                5 => snapshot.AdvancedMetric5,
-                _ => default,
-            };
-        }
-
-        private static void SetMetric(ref SmesInterfaceSnapshot snapshot, int index, SmesMetricSnapshot metric)
-        {
-            switch (index)
-            {
-                case 0:
-                {
-                    snapshot.AdvancedMetric0 = metric;
-                    break;
-                }
-
-                case 1:
-                {
-                    snapshot.AdvancedMetric1 = metric;
-                    break;
-                }
-
-                case 2:
-                {
-                    snapshot.AdvancedMetric2 = metric;
-                    break;
-                }
-
-                case 3:
-                {
-                    snapshot.AdvancedMetric3 = metric;
-                    break;
-                }
-
-                case 4:
-                {
-                    snapshot.AdvancedMetric4 = metric;
-                    break;
-                }
-
-                case 5:
-                {
-                    snapshot.AdvancedMetric5 = metric;
                     break;
                 }
             }

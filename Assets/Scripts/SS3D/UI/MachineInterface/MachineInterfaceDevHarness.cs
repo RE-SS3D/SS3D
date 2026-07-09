@@ -14,7 +14,7 @@ namespace SS3D.UI.MachineInterface
         private bool _openOnStart = true;
 
         [SerializeField]
-        private string _interfaceId = MachineInterfaceHost.ApcInterfaceId;
+        private string _interfaceId = MachineInterfaceIds.Apc;
 
         [SerializeField]
         private ApcPowerState _initialApcState = ApcPowerState.Nominal;
@@ -70,7 +70,7 @@ namespace SS3D.UI.MachineInterface
 
         private void SimulateCurrentInterface(ApcPowerState apcState, SmesPowerState smesState)
         {
-            if (_interfaceId == MachineInterfaceHost.SmesInterfaceId)
+            if (_interfaceId == MachineInterfaceIds.Smes)
             {
                 _subsystem.SimulateSmesState(smesState);
             }

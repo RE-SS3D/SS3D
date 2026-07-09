@@ -4,8 +4,6 @@ namespace SS3D.UI.MachineInterface
     {
         public const int MaxWarnings = 4;
 
-        public const int MaxAdvancedMetrics = 6;
-
         public int MachineObjectId;
 
         public string InterfaceId;
@@ -38,10 +36,6 @@ namespace SS3D.UI.MachineInterface
 
         public string DiagnosisHint;
 
-        public string MaintenanceText;
-
-        public byte MaintenanceTone;
-
         public int WarningCount;
 
         public ApcDiagnosticSnapshot Warning0;
@@ -51,19 +45,5 @@ namespace SS3D.UI.MachineInterface
         public ApcDiagnosticSnapshot Warning2;
 
         public ApcDiagnosticSnapshot Warning3;
-
-        public int AdvancedMetricCount;
-
-        public SmesMetricSnapshot AdvancedMetric0;
-
-        public SmesMetricSnapshot AdvancedMetric1;
-
-        public SmesMetricSnapshot AdvancedMetric2;
-
-        public SmesMetricSnapshot AdvancedMetric3;
-
-        public SmesMetricSnapshot AdvancedMetric4;
-
-        public SmesMetricSnapshot AdvancedMetric5;
     }
 }

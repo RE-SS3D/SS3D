@@ -22,10 +22,7 @@ namespace SS3D.UI.MachineInterface
                 OutputActive = snapshot.OutputActive,
                 ConnectionStateText = snapshot.ConnectionStateText,
                 DiagnosisHint = snapshot.DiagnosisHint,
-                MaintenanceText = snapshot.MaintenanceText,
-                MaintenanceTone = (StatusTone)snapshot.MaintenanceTone,
                 Warnings = BuildWarnings(snapshot),
-                AdvancedMetrics = BuildAdvancedMetrics(snapshot),
             };
 
             ApplyStatusCopy(model);
@@ -44,18 +41,6 @@ namespace SS3D.UI.MachineInterface
             return lines;
         }
 
-        private static List<SmesMetricLine> BuildAdvancedMetrics(SmesInterfaceSnapshot snapshot)
-        {
-            List<SmesMetricLine> lines = new(snapshot.AdvancedMetricCount);
-            for (int i = 0; i < snapshot.AdvancedMetricCount; i++)
-            {
-                SmesMetricSnapshot metric = GetMetric(snapshot, i);
-                lines.Add(new SmesMetricLine(metric.Label, metric.Value, (StatusTone)metric.Tone));
-            }
-
-            return lines;
-        }
-
         private static ApcDiagnosticSnapshot GetWarning(SmesInterfaceSnapshot snapshot, int index)
         {
             return index switch
@@ -64,20 +49,6 @@ namespace SS3D.UI.MachineInterface
                 1 => snapshot.Warning1,
                 2 => snapshot.Warning2,
                 3 => snapshot.Warning3,
-                _ => default,
-            };
-        }
-
-        private static SmesMetricSnapshot GetMetric(SmesInterfaceSnapshot snapshot, int index)
-        {
-            return index switch
-            {
-                0 => snapshot.AdvancedMetric0,
-                1 => snapshot.AdvancedMetric1,
-                2 => snapshot.AdvancedMetric2,
-                3 => snapshot.AdvancedMetric3,
-                4 => snapshot.AdvancedMetric4,
-                5 => snapshot.AdvancedMetric5,
                 _ => default,
             };
         }

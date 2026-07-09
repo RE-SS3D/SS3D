@@ -33,7 +33,7 @@ namespace SS3D.UI.MachineInterface
         [SyncVar]
         private float _storedPower;
 
-        public override string InterfaceId => MachineInterfaceHost.ApcInterfaceId;
+        public override string InterfaceId => MachineInterfaceIds.Apc;
 
         public ApcControlFlags Channels => _channels;
 

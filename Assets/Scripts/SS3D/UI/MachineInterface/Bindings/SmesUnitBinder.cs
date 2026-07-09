@@ -5,17 +5,13 @@ using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Bindings
 {
-    public class SmesUnitBinder
+    public class SmesUnitBinder : IMachineInterfaceBinder
     {
         public event Action CloseRequested;
 
-        public event Action<bool> InputToggled;
+        public event Action<byte, bool> BoolControlChanged;
 
-        public event Action<bool> OutputToggled;
-
-        public event Action<float> InputRateDeltaRequested;
-
-        public event Action<float> OutputRateDeltaRequested;
+        public event Action<byte, float> NumericControlChanged;
 
         private readonly MachineWindow _window;
         private readonly SmesStatusBanner _statusBanner;
@@ -43,26 +39,35 @@ namespace SS3D.UI.MachineInterface.Bindings
 
             if (_window != null)
             {
-                _window.CloseClicked += () => CloseRequested?.Invoke();
+                _window.CloseClicked += HandleWindowCloseClicked;
             }
 
             if (_inputControl != null)
             {
                 _inputControl.SectionTitle = "INPUT";
-                _inputControl.ToggleChanged += value => InputToggled?.Invoke(value);
-                _inputControl.RateDeltaRequested += delta => InputRateDeltaRequested?.Invoke(delta);
+                _inputControl.ToggleChanged += value =>
+                    BoolControlChanged?.Invoke(MachineInterfaceControlIds.Smes.Input, value);
+                _inputControl.RateDeltaRequested += delta =>
+                    NumericControlChanged?.Invoke(MachineInterfaceControlIds.Smes.Input, delta);
             }
 
             if (_outputControl != null)
             {
                 _outputControl.SectionTitle = "OUTPUT";
-                _outputControl.ToggleChanged += value => OutputToggled?.Invoke(value);
-                _outputControl.RateDeltaRequested += delta => OutputRateDeltaRequested?.Invoke(delta);
+                _outputControl.ToggleChanged += value =>
+                    BoolControlChanged?.Invoke(MachineInterfaceControlIds.Smes.Output, value);
+                _outputControl.RateDeltaRequested += delta =>
+                    NumericControlChanged?.Invoke(MachineInterfaceControlIds.Smes.Output, delta);
             }
         }
 
-        public void Bind(SmesInterfaceViewModel model)
+        public void Bind(IMachineInterfaceViewModel viewModel)
         {
+            if (viewModel is not SmesInterfaceViewModel model)
+            {
+                return;
+            }
+
             if (_window != null)
             {
                 _window.Title = model.Title;
@@ -110,6 +115,19 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _outputControl.MaxKw = model.OutputMaxKw;
                 _outputControl.SetAccentTone(outputTone);
             }
+        }
+
+        public void Disconnect()
+        {
+            if (_window != null)
+            {
+                _window.CloseClicked -= HandleWindowCloseClicked;
+            }
+        }
+
+        private void HandleWindowCloseClicked()
+        {
+            CloseRequested?.Invoke();
         }
     }
 }
