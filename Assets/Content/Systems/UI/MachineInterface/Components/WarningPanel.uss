@@ -1,4 +1,4 @@
-@import url("../Tokens/ss3d-tokens.uss");
+@import url("../../Tokens/ss3d-tokens.uss");
 
 .warning-panel {
     flex-direction: column;
