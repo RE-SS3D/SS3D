@@ -40,7 +40,7 @@ namespace SS3D.CommandLine
         /// </summary>
         private void ProcessCommandLineArgs()
         {
-            Log.Information(this, "Getting command line args", Logs.Important);
+            Log.Debug(this, "Getting command line args", Logs.Important);
 
             LoadCommandLineArgs();
 
@@ -128,7 +128,7 @@ namespace SS3D.CommandLine
             }
             catch (Exception e)
             {
-                Log.Information(this,e,$"Failed to load command line arguments");
+                Log.Error(this, e, "Failed to load command line arguments");
                 throw;
             }
         }

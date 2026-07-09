@@ -44,7 +44,7 @@ namespace SS3D.SceneManagement
 
             string sceneToLoad = isUsingCommandLineArgs ? Scenes.Intro : Scenes.Launcher;
 
-            Log.Information(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
+            Log.Debug(this, $"Loading main scene as {sceneToLoad}", Logs.Important);
 
             if (applicationSettings.ForceLauncher)
             {

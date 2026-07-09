@@ -68,7 +68,7 @@ namespace SS3D.Core
 
             if (!RegisteredSubsystems.TryGetValue(type, out ISubSystem _))
             {
-                Serilog.Log.Information($"{nameof(SubSystems)} - Registering {subSystem.GetType().Name}");
+                Log.Debug(typeof(SubSystems), "Registering subsystem {subSystemType}", Logs.Generic, subSystem.GetType().Name);
                 RegisteredSubsystems.Add(type, subSystem);
             }
         }
@@ -79,7 +79,7 @@ namespace SS3D.Core
         /// <param name="subSystem">The subsystem to unregister.</param>
         public static void Unregister([NotNull] ISubSystem subSystem)
         {
-            Serilog.Log.Information($"{nameof(SubSystems)} - Unregistering {subSystem.GetType().Name}");
+            Log.Debug(typeof(SubSystems), "Unregistering subsystem {subSystemType}", Logs.Generic, subSystem.GetType().Name);
             RegisteredSubsystems.Remove(subSystem.GetType());
         }
     }

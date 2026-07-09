@@ -163,7 +163,6 @@ namespace SS3D.Systems.Inventory.Items
             }
 
             _nativeColliders ??= GetNativeColliders();
-            Debug.Log("Start " + name);
         }
 
         /// <summary>

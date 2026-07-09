@@ -65,7 +65,7 @@ namespace SS3D.Systems.Tile
 
 	        await WaitForResourcesLoad();
 
-            Log.Information(this, "All tiles loaded successfully");
+            Log.Debug(this, "All tiles loaded successfully");
         }
 
         [ServerOrClient]
@@ -77,7 +77,7 @@ namespace SS3D.Systems.Tile
 		        return;
 	        }
 
-			Log.Information(this, $"Creating new tilemap {mapName}");
+			Log.Debug(this, $"Creating new tilemap {mapName}");
 
 	        TileMap map = TileMap.Create(mapName);
 	        map.transform.SetParent(transform);
@@ -176,7 +176,7 @@ namespace SS3D.Systems.Tile
         [Server]
         public void Save(string mapName, bool overwrite)
         {
-			Log.Information(this, $"Saving tilemap {mapName}");
+			Log.Debug(this, $"Saving tilemap {mapName}");
 
             SavedTileMap mapSave = _currentMap.Save();
 												    
@@ -186,7 +186,7 @@ namespace SS3D.Systems.Tile
         [Server]
         public void Load()
         {
-            Log.Information(this, "Loading most recent tilemap");
+            Log.Debug(this, "Loading most recent tilemap");
             
 	        SavedTileMap mapSave = LocalStorage.LoadMostRecentObject<SavedTileMap>(SavePath);
 
@@ -196,7 +196,7 @@ namespace SS3D.Systems.Tile
         [Server]
         public void Load(string mapName)
         {
-            Log.Information(this, "Loading most recent tilemap");
+            Log.Debug(this, "Loading most recent tilemap");
 
             SavedTileMap mapSave = LocalStorage.LoadObject<SavedTileMap>(mapName);
 

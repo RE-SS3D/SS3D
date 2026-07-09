@@ -58,7 +58,7 @@ namespace SS3D.Networking
         /// </summary>
         public void  StartNetworkSession()
         {
-            Log.Information(this, "Initializing network session", Logs.Important);
+            Log.Debug(this, "Initializing network session", Logs.Important);
 
             NetworkManager networkManager = InstanceFinder.NetworkManager;
             NetworkSettings networkSettings = ScriptableSettings.GetOrFind<NetworkSettings>();
@@ -112,7 +112,7 @@ namespace SS3D.Networking
                 return;
             }
 
-            Log.Information(this, "Closing network session", Logs.Important);
+            Log.Debug(this, "Closing network session", Logs.Important);
             networkManager.TransportManager.Transport.Shutdown();
         }
     }
