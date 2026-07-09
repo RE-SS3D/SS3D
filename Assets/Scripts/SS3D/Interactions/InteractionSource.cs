@@ -116,6 +116,21 @@ namespace SS3D.Interactions
 
         public virtual bool CanExecuteInteraction(IInteraction interaction)
         {
+            if (Source != null && !ReferenceEquals(Source, this))
+            {
+                return Source.CanExecuteInteraction(interaction);
+            }
+
+            return true;
+        }
+
+        public virtual bool CanContinueInteraction()
+        {
+            if (Source != null && !ReferenceEquals(Source, this))
+            {
+                return Source.CanContinueInteraction();
+            }
+
             return true;
         }
 

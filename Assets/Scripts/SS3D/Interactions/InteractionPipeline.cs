@@ -12,11 +12,12 @@ namespace SS3D.Interactions
         public static List<InteractionEntry> GetViableInteractions(
             IInteractionSource source,
             List<IInteractionTarget> targets,
-            InteractionEvent interactionEvent)
+            InteractionEvent interactionEvent,
+            IntentType intent = IntentType.Help)
         {
             List<InteractionEntry> discovered = Discover(source, targets, interactionEvent);
 
-            return FilterAndSort(source, discovered, interactionEvent.Point);
+            return FilterAndSort(source, discovered, interactionEvent.Point, intent);
         }
 
         public static List<InteractionEntry> Discover(
@@ -48,7 +49,8 @@ namespace SS3D.Interactions
         public static List<InteractionEntry> FilterAndSort(
             IInteractionSource source,
             List<InteractionEntry> entries,
-            Vector3 point)
+            Vector3 point,
+            IntentType intent = IntentType.Help)
         {
             List<InteractionEntry> viable = new();
 
@@ -57,6 +59,11 @@ namespace SS3D.Interactions
                 InteractionEvent e = new(source, entry.Target, point);
 
                 if (!entry.Interaction.CanInteract(e))
+                {
+                    continue;
+                }
+
+                if (!MatchesIntent(entry.Interaction, intent))
                 {
                     continue;
                 }
@@ -72,6 +79,16 @@ namespace SS3D.Interactions
             viable.Sort((a, b) => b.Interaction.Priority.CompareTo(a.Interaction.Priority));
 
             return viable;
+        }
+
+        public static bool MatchesIntent(IInteraction interaction, IntentType intent)
+        {
+            if (interaction is IIntentRestrictedInteraction restricted)
+            {
+                return restricted.AllowedIntent == intent;
+            }
+
+            return true;
         }
 
         private static GameObject ResolveTargetGameObject(List<IInteractionTarget> targets)

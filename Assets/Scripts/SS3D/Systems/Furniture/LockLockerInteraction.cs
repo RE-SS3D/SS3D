@@ -5,6 +5,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Furniture;
+using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using System;
 using UnityEngine;
@@ -50,6 +51,11 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            if (!InteractionPermission.HasPermission(interactionEvent, _permissionToUnlock))
+            {
+                return false;
+            }
+
             return !_locker.IsLocked && !_locker.IsOpen;
         }
 
@@ -69,17 +75,15 @@ namespace SS3D.Systems.Inventory.Interactions
                 return true;
             }
 
-            if (hands.Inventory.HasPermission(_permissionToUnlock))
-            {
-                Log.Information(this, "Locker has been locked!");
-                _locker.IsLocked = true;
-            }
-            else
+            if (!InteractionPermission.HasPermission(interactionEvent, _permissionToUnlock))
             {
                 Log.Information(this, "No permission to lock Locker!");
 
                 return false;
             }
+
+            Log.Information(this, "Locker has been locked!");
+            _locker.IsLocked = true;
 
             return true;
         }

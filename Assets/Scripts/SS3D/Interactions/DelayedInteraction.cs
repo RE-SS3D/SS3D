@@ -20,6 +20,8 @@ namespace SS3D.Interactions
         /// </summary>
         protected float Delay { get; init; }
 
+        public float ClientDelay => Delay;
+
         protected bool HasStarted { get; private set; }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace SS3D.Interactions
         {
             if (_lastCheck + CheckInterval < Time.time && HasStarted)
             {
-                if (!CanInteract(interactionEvent))
+                if (!CanInteract(interactionEvent) || !interactionEvent.Source.CanContinueInteraction())
                 {
                     // Cancel the interaction
                     interactionEvent.Source.CancelInteraction(reference);

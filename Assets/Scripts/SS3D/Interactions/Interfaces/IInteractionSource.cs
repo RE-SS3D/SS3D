@@ -30,6 +30,11 @@ namespace SS3D.Interactions.Interfaces
         bool CanExecuteInteraction(IInteraction interaction);
 
         /// <summary>
+        /// Checks if this source can continue an in-progress interaction.
+        /// </summary>
+        bool CanContinueInteraction();
+
+        /// <summary>
         /// Executes the interaction (server-side)
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>

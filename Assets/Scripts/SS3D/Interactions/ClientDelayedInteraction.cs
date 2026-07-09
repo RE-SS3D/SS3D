@@ -38,6 +38,12 @@ namespace SS3D.Interactions
                 return true;
             }
 
+            if (InteractionOptimisticFeedback.TryAdoptExisting(source.GameObject.transform, out LoadingBar existingBar))
+            {
+                _loadingBarInstance = existingBar;
+                return true;
+            }
+
             LoadingBar loadingBarPrefab = Assets.Get<LoadingBar>(AssetDatabases.WorldSpaceUI, WorldSpaceUI.LoadingBar);
             _loadingBarInstance = Object.Instantiate(loadingBarPrefab, source.GameObject.transform);
             
@@ -59,6 +65,11 @@ namespace SS3D.Interactions
             if (_loadingBarInstance != null)
             {
                 _loadingBarInstance.GameObject.Dispose(true);
+            }
+
+            if (interactionEvent.Source.GetRootSource() is IGameObjectProvider source)
+            {
+                InteractionOptimisticFeedback.Clear(source.GameObject.transform);
             }
         }
     }
