@@ -10,10 +10,10 @@ todos:
     status: completed
   - id: phase2-tiers
     content: "Phase 2: Add InteractionTier enum + IInteractionTierProvider; classify Tier 1 interactions; add ExamineInteraction; route Tier 1 in InteractionController"
-    status: pending
+    status: completed
   - id: phase3-armed
     content: "Phase 3: Build ArmedInteractionSubSystem + overlay UI (reticle, chip, target highlights); wire Tier 2/3 petal selection; proof-of-concept with TransferSubstanceInteraction"
-    status: pending
+    status: completed
   - id: phase4-drag
     content: "Phase 4: Extend ItemDisplay world drag-drop; add WorldCombineDropTarget; shared ResolveCombineInteraction path for Tier 3"
     status: pending
@@ -125,6 +125,20 @@ flowchart TD
 ### Cleanup
 
 - Delete or mark deprecated `[InteractionMenuView.cs](Assets/Scripts/SS3D/Interactions/UI/InteractionMenuView.cs)` (unused vertical list menu)
+
+---
+
+## Phase 3 — Armed Cursor State (completed)
+
+**Goal:** Implement the reticle + chip + target validation loop from the mockup.
+
+### Done
+
+- `ITargetedInteraction` interface for follow-up target validation
+- `ArmedInteractionSubSystem` + `ArmedInteractionOverlayView` (UI Toolkit, shared tokens)
+- `ArmedInteractionOverlay.prefab` under `Game.unity` Systems hierarchy
+- `InteractionController` routes Tier 2/3 radial selections to armed state; LMB resolves, RMB/Esc cancels
+- `TransferSubstanceInteraction` classified as Tier 2 proof-of-concept
 
 ---
 

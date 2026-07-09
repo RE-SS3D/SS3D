@@ -96,6 +96,7 @@ namespace SS3D.Systems.Interactions
         private void HandleInteractionSelected(IInteraction interaction)
         {
             _menuView.InteractionSelected -= HandleInteractionSelected;
+            _inputSystem.ToggleBinding("<Mouse>/leftButton", true);
             Disappear();
             OnInteractionSelected?.Invoke(interaction);
         }

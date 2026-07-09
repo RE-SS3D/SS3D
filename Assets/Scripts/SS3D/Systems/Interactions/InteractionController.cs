@@ -32,6 +32,7 @@ namespace SS3D.Systems.Interactions
 
         private Camera _camera;
         private RadialInteractionSubSystem _radialView;
+        private ArmedInteractionSubSystem _armedSystem;
         private SelectionSubSystem _selectionSystem;
 
         public override void OnOwnershipClient(NetworkConnection prevOwner)
@@ -41,10 +42,12 @@ namespace SS3D.Systems.Interactions
             if (IsOwner)
             {
                 SubscribeToInput();
+                _armedSystem.EvaluateTarget += EvaluateArmedTarget;
             }
             else if (prevOwner.Equals(LocalConnection))
             {
                 UnsubscribeFromInput();
+                _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
             }
         }
 
@@ -53,6 +56,7 @@ namespace SS3D.Systems.Interactions
             base.OnAwake();
 
             _radialView = SubSystems.Get<RadialInteractionSubSystem>();
+            _armedSystem = SubSystems.Get<ArmedInteractionSubSystem>();
             _selectionSystem = SubSystems.Get<SelectionSubSystem>();
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera.GetComponent<Camera>();
 
@@ -79,6 +83,7 @@ namespace SS3D.Systems.Interactions
             if (IsOwner)
             {
                 UnsubscribeFromInput();
+                _armedSystem.EvaluateTarget -= EvaluateArmedTarget;
             }
         }
 
@@ -108,6 +113,13 @@ namespace SS3D.Systems.Interactions
             {
                 return;
             }
+
+            if (_armedSystem.IsArmed)
+            {
+                TryResolveArmedInteraction();
+                return;
+            }
+
             List<InteractionEntry> viableInteractions = GetViableInteractionsFromSelection(out InteractionEvent interactionEvent);
 
             if (viableInteractions.Count <= 0)
@@ -131,6 +143,12 @@ namespace SS3D.Systems.Interactions
         [Client]
         private void HandleView(InputAction.CallbackContext callbackContext)
         {
+            if (_armedSystem.IsArmed)
+            {
+                _armedSystem.Cancel();
+                return;
+            }
+
             // leftButton is enabled in RadialInteractionView HandleDisappear
             _inputSystem.ToggleBinding("<Mouse>/leftButton", false);
             if (EventSystem.current.IsPointerOverGameObject())
@@ -174,7 +192,11 @@ namespace SS3D.Systems.Interactions
             void handleInteractionSelected(IInteraction interaction)
             {
                 _radialView.OnInteractionSelected -= handleInteractionSelected;
-                string interactionName = interaction.GetName(interactionEvent);
+
+                if (!TryRouteRadialInteraction(interaction, interactionEvent, out string interactionName))
+                {
+                    return;
+                }
 
                 if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
                 {
@@ -225,9 +247,14 @@ namespace SS3D.Systems.Interactions
 
                 void handleInteractionSelected(IInteraction interaction)
                 {
-                    int index = entries.FindIndex(x => x.Interaction == interaction);
-                    string interactionName = interaction.GetName(interactionEvent);
+                    _radialView.OnInteractionSelected -= handleInteractionSelected;
 
+                    if (!TryRouteRadialInteraction(interaction, interactionEvent, out string interactionName))
+                    {
+                        return;
+                    }
+
+                    int index = entries.FindIndex(x => x.Interaction == interaction);
                     CmdRunInventoryInteraction(target, sourceObject, index, interactionName);
                 }
 
@@ -238,6 +265,112 @@ namespace SS3D.Systems.Interactions
                 IInteraction firstInteraction = entries.First().Interaction;
                 CmdRunInventoryInteraction(target, sourceObject, 0, firstInteraction.GetName(interactionEvent));
             }
+        }
+
+        [Client]
+        private bool TryRouteRadialInteraction(IInteraction interaction, InteractionEvent interactionEvent, out string interactionName)
+        {
+            interactionName = interaction.GetName(interactionEvent);
+            InteractionTier tier = interaction.GetInteractionTier(interactionEvent);
+
+            if (tier == InteractionTier.Instant)
+            {
+                return true;
+            }
+
+            _armedSystem.Arm(interaction, interactionEvent, tier, interactionName);
+            return false;
+        }
+
+        [Client]
+        private ArmedTargetEvaluation EvaluateArmedTarget(Selectable selectable)
+        {
+            if (!_armedSystem.IsArmed)
+            {
+                return ArmedTargetEvaluation.None;
+            }
+
+            ArmedInteractionState state = _armedSystem.CurrentState;
+            if (!TryBuildArmedTargetEvent(selectable, state.OriginEvent, out InteractionEvent targetEvent))
+            {
+                return ArmedTargetEvaluation.None;
+            }
+
+            bool isValid = ValidateArmedTarget(state, targetEvent);
+            return new ArmedTargetEvaluation(true, isValid);
+        }
+
+        [Client]
+        private bool TryResolveArmedInteraction()
+        {
+            ArmedInteractionState state = _armedSystem.CurrentState;
+            if (state == null)
+            {
+                return false;
+            }
+
+            if (!_selectionSystem.TryGetCurrentSelectable(out Selectable selectable))
+            {
+                return false;
+            }
+
+            if (!TryBuildArmedTargetEvent(selectable, state.OriginEvent, out InteractionEvent targetEvent))
+            {
+                return false;
+            }
+
+            if (!ValidateArmedTarget(state, targetEvent))
+            {
+                return false;
+            }
+
+            string interactionName = state.Interaction.GetName(state.OriginEvent);
+            if (!TryGetNetworkTarget(targetEvent, out NetworkObject networkTarget))
+            {
+                return false;
+            }
+
+            _armedSystem.Cancel();
+            CmdRunInteraction(networkTarget, targetEvent.Point, interactionName);
+            return true;
+        }
+
+        [Client]
+        private bool TryBuildArmedTargetEvent(Selectable selectable, InteractionEvent originEvent, out InteractionEvent targetEvent)
+        {
+            targetEvent = null;
+
+            if (selectable == null || originEvent == null)
+            {
+                return false;
+            }
+
+            IInteractionSource source = originEvent.Source;
+            if (!SelectionTargetUtility.TryResolveInteractionPoint(_camera, selectable, out Vector3 point, out Vector3 normal))
+            {
+                point = selectable.transform.position;
+                normal = Vector3.up;
+            }
+
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, selectable.gameObject);
+            if (targets.Count < 1)
+            {
+                return false;
+            }
+
+            targetEvent = new InteractionEvent(source, targets[0], point, normal);
+            return true;
+        }
+
+        [Client]
+        private static bool ValidateArmedTarget(ArmedInteractionState state, InteractionEvent targetEvent)
+        {
+            if (state.Interaction is ITargetedInteraction targeted)
+            {
+                return targeted.CanTarget(state.OriginEvent, targetEvent);
+            }
+
+            return state.Interaction.CanInteract(targetEvent);
         }
 
         /// <summary>

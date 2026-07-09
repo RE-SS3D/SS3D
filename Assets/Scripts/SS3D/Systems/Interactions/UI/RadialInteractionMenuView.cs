@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -175,7 +176,8 @@ namespace SS3D.Systems.Interactions.UI
                 }
 
                 RadialInteractionPetal petal = GetOrCreatePetal(i);
-                petal.SetInteraction(interaction, icon, InteractionTier.Instant);
+                InteractionTier tier = interaction.GetInteractionTier(interactionEvent);
+                petal.SetInteraction(interaction, icon, tier);
 
                 float angle = (i / (float)count) * Mathf.PI * 2f - Mathf.PI / 2f;
                 float x = Mathf.Cos(angle) * petalOrbit;

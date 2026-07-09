@@ -1,12 +1,12 @@
+using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Interactions;
 using System;
 using UnityEngine;
 
 namespace SS3D.Substances
 {
-    public class TransferSubstanceInteraction : IInteraction
+    public class TransferSubstanceInteraction : IInteraction, IInteractionTierProvider, ITargetedInteraction
     {
         public string Name;
         public Sprite Icon;
@@ -20,7 +20,15 @@ namespace SS3D.Substances
             return "Transfer";
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "Transfer";
+
+        public InteractionTier GetTier(InteractionEvent interactionEvent) => InteractionTier.Targeted;
+
+        public bool CanTarget(InteractionEvent originEvent, InteractionEvent targetEvent)
+        {
+            InteractionEvent combined = new(originEvent.Source, targetEvent.Target, targetEvent.Point, targetEvent.Normal);
+            return CanInteract(combined);
+        }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

@@ -25,6 +25,7 @@ namespace SS3D.Systems.Examine
         private bool _hasCachedContent;
         private GameObject _localPlayer;
         private bool _wasDetailedExamineHeld;
+        private bool _pinnedDetailedExamine;
         private ExamineDetailedView _textDetailedView;
         private ExamineImageDetailedView _imageDetailedView;
         private RectTransform _activeDetailedPanel;
@@ -42,6 +43,7 @@ namespace SS3D.Systems.Examine
             LocalizedTextService.LocaleChanged += HandleLocaleChanged;
             EnsureDetailedViews();
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged += UpdateHoverText;
+            SubSystems.Get<ExamineSubSystem>().OnDetailedExamineRequested += ShowDetailedExamine;
         }
 
         protected override void OnDisabled()
@@ -49,6 +51,7 @@ namespace SS3D.Systems.Examine
             base.OnDisabled();
             LocalizedTextService.LocaleChanged -= HandleLocaleChanged;
             SubSystems.Get<ExamineSubSystem>().OnExaminableChanged -= UpdateHoverText;
+            SubSystems.Get<ExamineSubSystem>().OnDetailedExamineRequested -= ShowDetailedExamine;
             SetDetailedViewVisible(false);
             InvalidateContentCache();
         }
@@ -84,11 +87,25 @@ namespace SS3D.Systems.Examine
         }
 
         /// <summary>
+        /// Shows the detailed examine panel until the hovered examinable changes.
+        /// </summary>
+        public void ShowDetailedExamine(IExaminable examinable)
+        {
+            _pinnedDetailedExamine = true;
+            UpdateHoverText(examinable);
+        }
+
+        /// <summary>
         /// Updates the hover text with the appropriate localized string.
         /// </summary>
         /// <param name="examinable">The object that is being examined</param>
         private void UpdateHoverText(IExaminable examinable)
         {
+            if (_pinnedDetailedExamine && examinable != _currentExaminable && examinable != null)
+            {
+                _pinnedDetailedExamine = false;
+            }
+
             _currentExaminable = examinable;
             _wasDetailedExamineHeld = IsDetailedExamineHeld();
 
@@ -97,6 +114,7 @@ namespace SS3D.Systems.Examine
                 HoverName.text = string.Empty;
                 SetDetailedViewVisible(false);
                 InvalidateContentCache();
+                _pinnedDetailedExamine = false;
                 return;
             }
 
@@ -323,7 +341,7 @@ namespace SS3D.Systems.Examine
 
         private bool IsDetailedExamineHeld()
         {
-            return Input.GetKey(DetailedExamineKey) || Input.GetKey(KeyCode.RightShift);
+            return _pinnedDetailedExamine || Input.GetKey(DetailedExamineKey) || Input.GetKey(KeyCode.RightShift);
         }
     }
 }
