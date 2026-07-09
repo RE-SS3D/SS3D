@@ -3,6 +3,7 @@ using Coimbra.Services.PlayerLoopEvents;
 using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Inputs;
 using SS3D.Systems.Screens;
 using System;
@@ -18,7 +19,8 @@ namespace SS3D.Systems.Entities.Humanoid
     /// as the human model uses.
     /// </summary>
     [RequireComponent(typeof(Entity))]
-    [RequireComponent(typeof(HumanoidAnimatorController))]
+    [RequireComponent(typeof(AnimationOrchestrator))]
+    [RequireComponent(typeof(HumanoidBodyStateMachine))]
     [RequireComponent(typeof(Animator))]
     public abstract class HumanoidController : NetworkActor
     {
@@ -49,6 +51,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Controls.MovementActions MovementControls;
         protected Controls.HotkeysActions HotkeysControls;
         private InputSubSystem _inputSystem;
+        private HumanoidBodyStateMachine _bodyStateMachine;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -112,6 +115,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
+            _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
 
             _inputSystem = SubSystems.Get<InputSubSystem>();
 
@@ -162,6 +166,12 @@ namespace SS3D.Systems.Entities.Humanoid
 	        }
             if (!IsOwner)
             {
+                return;
+            }
+
+            if (_bodyStateMachine != null && !_bodyStateMachine.Capabilities.CanMove)
+            {
+                OnSpeedChanged(0);
                 return;
             }
             

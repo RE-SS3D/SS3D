@@ -4,6 +4,7 @@ using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Humanoid.Body;
 using SS3D.Systems.Health;
 using SS3D.Systems.Screens;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for living biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
-    [RequireComponent(typeof(HumanoidAnimatorController))]
+    [RequireComponent(typeof(AnimationOrchestrator))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
     public class HumanoidLivingController : HumanoidController
@@ -24,6 +25,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
 		[SerializeField] private FeetController _feetController;
+        [SerializeField] private HumanoidPredictedMovement _predictedMovement;
 
         public bool IsDragging { get; set; }
 
@@ -32,6 +34,7 @@ namespace SS3D.Systems.Entities.Humanoid
 		public override void OnStartClient()
         {
             base.OnStartClient();
+            _predictedMovement ??= GetComponent<HumanoidPredictedMovement>();
             if (!IsOwner)
             {
                 return;
@@ -43,6 +46,11 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void ProcessCharacterMovement()
         {
+            if (_predictedMovement != null && _predictedMovement.enabled)
+            {
+                return;
+            }
+
             ProcessPlayerInput();
 
             _characterController.Move(Physics.gravity);

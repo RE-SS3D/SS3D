@@ -1,0 +1,80 @@
+# Player Body & Animation System
+
+Design document resolving [#1060](https://github.com/RE-SS3D/SS3D/issues/1060) and guiding implementation of [#1333](https://github.com/RE-SS3D/SS3D/issues/1333) and [#1246](https://github.com/RE-SS3D/SS3D/issues/1246).
+
+## Overview
+
+The player body system is the central authority for what a humanoid character is doing. Animation is the visual output of **body state + capabilities + intents**, not the driver of gameplay.
+
+## Design Decisions (#1060)
+
+| Question | Decision |
+|----------|----------|
+| Seat entry | Proximity gate (~0.5 m) + facing seat front (~45° cone) + snap to seat anchor. No pathfinding. |
+| Seat exit | Try exit offsets: front → left → right → back. If all blocked, snap to seat top. |
+| Seat animation | Short sit/stand clips synced to anchor snap. Programmatic snap preferred over root motion. |
+| Seat interrupt | Yes — hit or ragdoll cancels seated state and attempts unbuckle. |
+| Combat stagger | Brief flinch (0.2–0.4 s) blocks new attacks; does not block movement unless weapon specifies knockback. |
+| Knockback | Server-applied CharacterController impulse; optional per-weapon. |
+| Hit timing (v1) | Instant damage; animation starts before hit VFX. Animation-event hits in v2. |
+| Get-up blocked overhead | Crawl/get-up-low variant if headroom check fails; else remain prone. |
+| Table climbing | Deferred to Alpha 0.2; `CanClimb` capability hook only. |
+| Floating (ghost) | `Floating` animator bool driven by ghost controller. |
+| Player control | No AI locomotion for interactions. Player always initiates movement. |
+
+## Architecture
+
+```
+Input / Health / World → HumanoidBodyStateMachine → Capabilities
+                              ↓                           ↓
+                    BodyAnimationSnapshot          Movement Controller
+                              ↓
+                    AnimationOrchestrator → Animator Layer Stack
+                              ↓
+                         FishNet SyncVar
+```
+
+### Body States
+
+- **Locomotion** — idle, walk, run, limp
+- **Seated** — buckled to chair; reduced movement capabilities
+- **Crawling** — prone movement
+- **Staggered** — brief flinch after hit
+- **Ragdoll** — physics knockdown (interrupts all states)
+- **Dead / Unconscious** — no player control
+
+### Capabilities
+
+Each state exposes: `CanMove`, `CanRotate`, `CanRun`, `CanUseHands`, `CanInteract`, `CanBeInterrupted`.
+
+### Animator Layers
+
+1. **Base** (lower body mask) — locomotion blend tree
+2. **UpperBody** (arms + torso mask) — hold poses, attacks
+3. **Additive** — flinch, injured arm overlay
+4. **FullBody Override** — sit, crawl, emote, stand-up
+
+### Networking
+
+- `BodyAnimationSnapshot` replicated via SyncVar (packed uint + aim yaw float)
+- Animation intents sent via ServerRpc; server validates and updates snapshot
+- Humanoids reduce reliance on `NetworkAnimator`; props keep bool/trigger sync
+- Server-authoritative movement via FishNet prediction/reconcile (Phase 0.0.8)
+
+## Integration Points
+
+| System | Hook |
+|--------|------|
+| Movement | Reads `BodyCapabilities`; combat mode enables strafe |
+| Health | Foot damage → limp; arm damage → injured overlay; hit → stagger |
+| Inventory | Item in hand → `ArmHold` pose |
+| Interactions | Seat → `TrySit(anchor)`; throw/hit → animation triggers |
+| Combat | Combat mode toggle, aim yaw, attack overrides |
+| Ragdoll | Universal interrupt via existing `Ragdoll` SyncVar |
+
+## Phased Delivery
+
+- **Phase 0** — Rig references, body state machine, orchestrator, server movement
+- **Phase 1 (#1333)** — Layered controller, core clips, sit/throw/hit/emote
+- **Phase 2 (#1246)** — Combat mode, strafe, stagger/knockback
+- **Phase 3 (#937)** — IK, crawl polish, clothing hooks

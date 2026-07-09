@@ -1,4 +1,5 @@
 ﻿using FishNet.Component.Animating;
+using SS3D.Systems.Entities.Data;
 using FishNet.Component.Transforming;
 using FishNet.Connection;
 using FishNet.Object;
@@ -61,6 +62,8 @@ namespace SS3D.Systems.Entities.Humanoid
         [NonSerialized]
         [SyncVar(OnChange = nameof(OnSyncKnockdown))]
         public bool IsKnockedDown;
+
+        public event Action<bool> OnKnockdownChanged;
         [field: NonSerialized]
         [field: SyncVar]
         private bool IsFacingDown { get; [ServerRpc] set; }
@@ -75,6 +78,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private void OnSyncKnockdown(bool prev, bool next, bool asServer)
 		{
 			if (prev == next) return;
+            OnKnockdownChanged?.Invoke(next);
             if (next)
 			{
                 Knockdown();
@@ -369,7 +373,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             // Speed=0 prevents animator from choosing Walking animations after enabling it
             if (!enable)
-                _animator.SetFloat("Speed", 0);
+                _animator.SetFloat(Animations.Humanoid.MovementSpeed, 0);
 
             if (_animator != null)
             {
