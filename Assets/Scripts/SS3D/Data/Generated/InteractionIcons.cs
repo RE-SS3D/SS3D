@@ -4,6 +4,7 @@ namespace SS3D.Data.Generated
     public static class InteractionIcons
     {
         public const string Discard = "e4d142ab75244e24c89d0c2aec36dbed";
+        public const string Examine = "875cad4822d740c2a65e2c94bceba78b";
         public const string Honk = "88c0c549992b597489791caf4a12f18c";
         public const string Nuke = "3030468639c4d15459be5f65d30a42df";
         public const string Open = "1f97d7fac1be1b448824c85e156d9746";

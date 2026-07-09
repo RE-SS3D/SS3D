@@ -1,32 +1,30 @@
-> Status: active
-> Touches systems: interactions, selection, UI, inputs
+> Code paths: Assets/Scripts/SS3D/Systems/Interactions/
+> Entry points: InteractionController, RadialInteractionSubSystem, ArmedInteractionSubSystem
+> Status: shipped
 
-# Interactions runtime
+# Interactions (runtime)
 
-Player-facing orchestration: input, radial menu, server RPCs, cancellation, and visual feedback.
+## Overview
 
-## Components
+Client-side interaction routing: discovers available interactions from the current selection and player state, presents the three-tier radial menu, arms targeted interactions, and dispatches `InteractionIdentifier`-based requests to the server. Bridges [selection](selection.md) hover targets with the shared [interactions-framework](interactions-framework.md).
 
-| Piece | Location |
-|-------|----------|
-| `InteractionController` | Player prefab — primary click, radial menu, inventory interactions, intent sync |
-| `RadialInteractionSubSystem` | Scene — radial UI |
-| `InteractionOutlineView` | Added at runtime on hovered `Selectable` |
-| `SelectionSubSystem` | Hover pick → `InteractionController` discovery |
+## Start here
+
+- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — primary click, radial dispatch, intent sync, armed resolution, outline feedback
+- `Assets/Scripts/SS3D/Systems/Interactions/RadialInteractionSubSystem.cs` — three-tier radial menu subsystem
+- `Assets/Scripts/SS3D/Systems/Interactions/UI/RadialInteractionMenuView.cs` — radial menu UI (UI Toolkit)
+- `Assets/Scripts/SS3D/Systems/Interactions/ArmedInteractionSubSystem.cs` — armed-mode interaction overlay
+- `Assets/Scripts/SS3D/Systems/Interactions/InteractionOutlineView.cs` — hover and pending interaction outlines
+- `Assets/Scripts/SS3D/Systems/Interactions/ArmedTargetEvaluation.cs` — armed target filtering
 
 ## Player flow
 
 1. `SelectionSubSystem` resolves hovered `Selectable`.
 2. `InteractionController` builds viable list via `InteractionPipeline` + active hand/tool source.
-3. Primary click or radial choice sends `CmdRunInteraction` / `CmdRunInventoryInteraction` with `InteractionIdentifier`.
-4. Server re-validates gates (intent, stamina, ownership, permissions) then `InteractionSource.Interact`.
-5. Observers run client FX; rejections use `TargetRejectInteraction` to roll back optimistic UI.
-
-## Cancellation
-
-- **C** — `CmdCancelInteraction` for in-progress delayed interactions.
-- Movement — `DelayedInteraction` auto-cancel via `CharacterMoveCheck`.
-- Optimistic loading bars and pending outlines clear on cancel/reject/confirm.
+3. Primary click or instant radial choice sends `CmdRunInteraction` with `InteractionIdentifier`.
+4. Targeted radial choices arm the cursor; second click resolves entry on new target and dispatches RPC.
+5. Server re-validates gates (intent, stamina, ownership, permissions) then `InteractionSource.Interact`.
+6. Observers run client FX; rejections use `TargetRejectInteraction` to roll back optimistic UI.
 
 ## Outline feedback
 
@@ -39,17 +37,26 @@ Player-facing orchestration: input, radial menu, server RPCs, cancellation, and 
 
 Entities (`Human`, ghosts) are excluded from hover outlines; medical targeting will use dedicated UI.
 
-## Replication audit (Jul 2026)
+## Cancellation
 
-| Interaction | Replication path |
-|-------------|------------------|
-| `OpenInteraction` | `NetworkedOpenable.SetOpenState` when present; legacy animator fallback for non-networked props |
-| `ToggleInteraction` | `GenericToggleInteractionTarget` `SyncVar`; `[Server] Toggle()` |
-| `LockerDoorInteraction` | `Locker.IsOpen` `SyncVar` |
-| `PickupInteraction` / `DropInteraction` | Inventory/container server APIs |
-| `HitInteraction` | Server-side damage on `BodyPart` |
+- **C** — `CmdCancelInteraction` for in-progress delayed interactions.
+- Movement — `DelayedInteraction` auto-cancel via `CharacterMoveCheck`.
 
-## Tests
+## Extension points
 
-- EditMode: `InteractionPipelineTests`
-- PlayMode: `ClientGameActions.PlayerCanDropAndPickUpItem` (pickup/drop regression)
+- New world interactions: implement in domain system via framework contracts; they appear automatically when source/target resolution succeeds.
+- Radial menu tiers: implement `IInteractionTierProvider` on sources/targets.
+- Armed mode: extend `ArmedTargetEvaluation` for new armed interaction categories.
+
+## Depends on / Used by
+
+- **Depends on:** [interactions-framework](interactions-framework.md), [selection](selection.md), [player-control](player-control.md), [inputs](inputs.md)
+- **Used by:** Nearly all player-facing gameplay actions
+
+## Related docs
+
+- Effort: [2026-07_interaction-system-hardening](../2026-07_interaction-system-hardening.md)
+- Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md)
+- Plan: [interaction_system_improvements_9e14ae22.plan.md](../../plans/interaction_system_improvements_9e14ae22.plan.md)
+- Design (read-only): [Documents/design/main-hud.md](../../design/main-hud.md)
+- Tests: EditMode `InteractionPipelineTests`; PlayMode `InteractionPlayModeTests` / `ClientGameActions.PlayerCanDropAndPickUpItem`

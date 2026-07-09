@@ -1,47 +1,46 @@
-> Status: active
-> Touches systems: interactions, inventory, combat, crafting, furniture
+> Code paths: Assets/Scripts/SS3D/Interactions/
+> Entry points: IInteraction, IInteractionSource, IInteractionTarget, InteractionPipeline, InteractionIdentifier
+> Status: shipped
 
-# Interactions framework
+# Interactions (framework)
 
-Composable **source/target** discovery for SS3D gameplay. Gameplay code implements `IInteraction` on targets and sources; the framework handles discovery, filtering, server execution, and client FX.
+## Overview
 
-## Core types
+Shared interaction contracts used across all gameplay systems. Defines how interaction sources discover targets, build `InteractionEntry` lists, and route client/server execution. Domain systems implement `IInteraction` on behaviours; runtime routing lives in [interactions-runtime](interactions-runtime.md).
 
-| Type | Role |
-|------|------|
-| `IInteraction` | Single interaction contract (`CanInteract`, `Start`, stable `GetGenericName`, `Priority`) |
-| `IInteractionSource` | Executor (hands, items, machines). Server `Interact()` / `CancelInteraction()` |
-| `IInteractionTarget` | Produces target-side interactions via `CreateTargetInteractions` |
-| `InteractionEntry` | Target + interaction + `InteractionIdentifier` |
-| `InteractionIdentifier` | Wire ID: `genericName` + `targetComponentIndex` |
-| `InteractionPipeline` | Shared discover → filter → sort used by client UI and server RPC re-validation |
-| `DelayedInteraction` | Timed interactions with movement/stamina cancel |
-| `Requirement` | Decorator wrapping another interaction |
-| `IIntentRestrictedInteraction` | Optional Help/Harm gate |
+RPCs identify interactions with `InteractionIdentifier` (`genericName` + `targetComponentIndex`), never display `GetName()`.
 
-## Discovery flow
+## Start here
 
-1. Collect `IInteractionTarget` components on the clicked object (or synthesize `InteractionTargetGameObject`).
-2. `CreateTargetInteractions` on each target; `CreateSourceInteractions` on source/extensions.
-3. `InteractionPipeline.FilterAndSort` applies `CanInteract`, intent, `CanExecuteInteraction`, then sorts by `Priority` descending.
+- `Assets/Scripts/SS3D/Interactions/Interfaces/IInteraction.cs` — core contract (`GetGenericName`, `Priority`, server-only `Start`)
+- `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionSource.cs` — objects that offer interactions (hands, items)
+- `Assets/Scripts/SS3D/Interactions/Interfaces/IInteractionTarget.cs` — objects that receive interactions
+- `Assets/Scripts/SS3D/Interactions/InteractionEntry.cs` — target + interaction + wire identifier
+- `Assets/Scripts/SS3D/Interactions/InteractionIdentifier.cs` — stable RPC wire ID
+- `Assets/Scripts/SS3D/Interactions/InteractionPipeline.cs` — shared discover → filter → sort
+- `Assets/Scripts/SS3D/Interactions/InteractionTier.cs` — instant / targeted / folder tiers for radial menu
+- `Assets/Scripts/SS3D/Interactions/Interfaces/IIntentRestrictedInteraction.cs` — Help/Harm gate
+- `Assets/Scripts/SS3D/Interactions/Interfaces/ITargetedInteraction.cs` — armed-mode second-click targeting
+- `Assets/Scripts/SS3D/Interactions/DelayedInteraction.cs` — timed interaction base class
 
-## Networking rules
+## Extension points
 
-- RPCs identify interactions with `InteractionIdentifier`, never display `GetName()`.
-- Server re-runs the pipeline before `Interact()`.
-- `Start()` is server-only. Replicated state changes go through networked components (`NetworkedOpenable.SetOpenState`, `SyncVar` toggles, locker `SyncVar`s).
-- Observer client FX skip dedicated server (`IsServer` early-out in observer RPCs).
+- Implement `IInteraction` (or subclass `DelayedInteraction`) on a `NetworkBehaviour` for new interaction types.
+- Add `InteractionTargetBehaviour` (or `InteractionTargetNetworkBehaviour`) to world objects that should receive interactions.
+- Implement `IInteractionTierProvider` to control radial menu tier (instant vs armed targeted).
+- Use `Requirement` and `IInteractionRangeLimit` / `RangeLimit` for gating.
+- Register interaction icons via generated `InteractionIcons` asset refs ([data-codegen](data-codegen.md)).
+- Replicated state changes in `Start()` must go through networked components (`NetworkedOpenable.SetOpenState`, `SyncVar` toggles), not local-only animator writes.
 
-## Client feedback
+## Depends on / Used by
 
-- `InteractionOptimisticFeedback` — delayed loading bars while awaiting server confirm.
-- `InteractionOutlineView` — hover availability (green/yellow) and instant pending (blue) outlines; skipped on `Entity` targets (medical UI later).
+- **Used by:** [interactions-runtime](interactions-runtime.md), [inventory](inventory.md), [furniture](furniture.md), [tile](tile.md), [examine](examine.md), and most gameplay systems
+- **Depends on:** [core-subsystems](core-subsystems.md) (network actors)
 
-## Entry points
+## Related docs
 
-- `Assets/Scripts/SS3D/Interactions/` — framework types
-- `Assets/Scripts/SS3D/Systems/Interactions/InteractionController.cs` — player input + RPCs
-
-## Tests
-
-- `Assets/Scripts/Tests/EditMode/InteractionPipelineTests.cs` — priority, intent, identifier resolution
+- Effort: [2026-07_interaction-system-hardening](../2026-07_interaction-system-hardening.md)
+- Plan: [interaction_system_improvements_9e14ae22.plan.md](../../plans/interaction_system_improvements_9e14ae22.plan.md)
+- Plan: [radial_menu_implementation_5a83bdf9.plan.md](../../plans/radial_menu_implementation_5a83bdf9.plan.md)
+- Design (read-only): [Documents/design/main-hud.md](../../design/main-hud.md) § intent chording
+- Tests: `Assets/Scripts/Tests/EditMode/InteractionPipelineTests.cs`

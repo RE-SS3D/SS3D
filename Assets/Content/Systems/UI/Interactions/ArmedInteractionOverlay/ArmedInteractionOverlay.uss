@@ -1,0 +1,117 @@
+@import url("../../Tokens/ss3d-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
+
+.armed-interaction-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.armed-interaction-reticle {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+}
+
+.armed-interaction-reticle__ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 13px;
+    border-width: 2px;
+    border-color: var(--ss3d-accent-rust);
+}
+
+.armed-interaction-reticle__tick {
+    position: absolute;
+    background-color: var(--ss3d-accent-rust);
+}
+
+.armed-interaction-reticle__tick--top {
+    left: 50%;
+    top: -6px;
+    width: 1px;
+    height: 8px;
+    margin-left: -0.5px;
+}
+
+.armed-interaction-reticle__tick--bottom {
+    left: 50%;
+    bottom: -6px;
+    width: 1px;
+    height: 8px;
+    margin-left: -0.5px;
+}
+
+.armed-interaction-reticle__tick--left {
+    top: 50%;
+    left: -6px;
+    width: 8px;
+    height: 1px;
+    margin-top: -0.5px;
+}
+
+.armed-interaction-reticle__tick--right {
+    top: 50%;
+    right: -6px;
+    width: 8px;
+    height: 1px;
+    margin-top: -0.5px;
+}
+
+.armed-interaction-reticle--valid .armed-interaction-reticle__ring,
+.armed-interaction-reticle--valid .armed-interaction-reticle__tick {
+    border-color: var(--ss3d-ramp-green-400);
+    background-color: var(--ss3d-ramp-green-400);
+}
+
+.armed-interaction-reticle--valid .armed-interaction-reticle__ring {
+    border-color: var(--ss3d-ramp-green-400);
+}
+
+.armed-interaction-reticle--invalid .armed-interaction-reticle__ring,
+.armed-interaction-reticle--invalid .armed-interaction-reticle__tick {
+    border-color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.armed-interaction-reticle--invalid .armed-interaction-reticle__ring {
+    border-color: var(--ss3d-feedback-danger);
+}
+
+.armed-interaction-chip {
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--ss3d-space-2) var(--ss3d-space-3);
+    border-radius: var(--ss3d-radius-md);
+    background-color: var(--ss3d-surface-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+}
+
+.armed-interaction-chip__label {
+    font-size: 11px;
+    color: var(--ss3d-text-primary);
+    white-space: nowrap;
+}
+
+.armed-interaction-chip__hint {
+    font-size: 9px;
+    color: var(--ss3d-text-tertiary);
+    white-space: nowrap;
+    margin-top: 2px;
+}
+
+.armed-interaction-cant {
+    position: absolute;
+    padding: 2px 4px;
+    border-radius: var(--ss3d-radius-sm);
+    background-color: var(--ss3d-feedback-danger);
+    color: var(--ss3d-text-on-accent);
+    font-size: 9px;
+}

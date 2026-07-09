@@ -451,6 +451,51 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+
+--- !u!1001 &882210001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1506918115}
+    m_Modifications:
+    - target: {fileID: 9032741811675472012, guid: 7c75e552b8a39fc4bae8c3461baef6a5, type: 3}
+      propertyPath: m_Name
+      value: RadialInteractionMenu
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7c75e552b8a39fc4bae8c3461baef6a5, type: 3}
+--- !u!4 &882210002 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9032741811675472015, guid: 7c75e552b8a39fc4bae8c3461baef6a5, type: 3}
+  m_PrefabInstance: {fileID: 882210001}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &883310001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1506918115}
+    m_Modifications:
+    - target: {fileID: 8012741811675473012, guid: f7a8b9c0d1e24990a1b2c3d4e5f60c05, type: 3}
+      propertyPath: m_Name
+      value: ArmedInteractionOverlay
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f7a8b9c0d1e24990a1b2c3d4e5f60c05, type: 3}
+--- !u!4 &883310002 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8012741811675473015, guid: f7a8b9c0d1e24990a1b2c3d4e5f60c05, type: 3}
+  m_PrefabInstance: {fileID: 883310001}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &474682041
 GameObject:
   m_ObjectHideFlags: 0
@@ -2353,6 +2398,8 @@ Transform:
   - {fileID: 478499395}
   - {fileID: 478615867}
   - {fileID: 467607467}
+  - {fileID: 882210002}
+  - {fileID: 883310002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1506918116
