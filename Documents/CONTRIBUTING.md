@@ -9,11 +9,16 @@ Read [FORK_STATUS.md](FORK_STATUS.md) first if you are new here — it explains 
 
 This fork maintains its own docs in `Documents/`, independent of upstream's GitBook.
 
-- [SKILL.md](SKILL.md) — conventions for design and architecture docs (read before writing either)
-- [design/](design/) — gameplay design specs (what and why)
-- [architecture/](architecture/) — implementation plans (how and in what order)
+- [SKILL.md](SKILL.md) — conventions for all documentation layers (read before writing)
+- [architecture/INDEX.md](architecture/INDEX.md) — navigation hub for finding code by system
+- [architecture/systems/](architecture/systems/) — per-domain system maps (entry points, key files)
+- [design/](design/) — gameplay design specs (what and why; owner-maintained)
+- [architecture/](architecture/) — dated implementation effort docs (how and in what order)
+- [plans/](plans/) — temporary implementation plans (updated when work ships)
+- [AGENTS.md](../AGENTS.md) — instructions for AI agents (docs-first navigation)
 
 If a design doc exists for the system you are changing, align with it or state the deviation in your PR.
+After shipping, run the `update-system-docs` skill to sync system maps and plans.
 
 ## Setup
 

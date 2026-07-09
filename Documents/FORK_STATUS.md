@@ -20,7 +20,7 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Unity version | 2021.3.15f1 | **6000.3.16f1** (Unity 6) |
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
-| Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` |
+| Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps |
 | Commits ahead of upstream | — | **~98** (0 behind as of last fetch) |
 | Files changed vs upstream | — | ~2,672 files, +164k / −44k lines |
 
@@ -41,9 +41,13 @@ Independent of upstream's GitBook:
 
 | Path | Purpose |
 |---|---|
-| [SKILL.md](SKILL.md) | Conventions for writing design and architecture docs |
-| [design/](design/) | Gameplay design specs — **what** and **why** (one file per system) |
-| [architecture/](architecture/) | Implementation plans — **how** and **in what order** (one file per effort) |
+| [SKILL.md](SKILL.md) | Conventions for all documentation layers |
+| [architecture/INDEX.md](architecture/INDEX.md) | Navigation hub — find code by system |
+| [architecture/systems/](architecture/systems/) | Per-domain system maps (entry points, key files) |
+| [design/](design/) | Gameplay design specs — **what** and **why** (owner-maintained) |
+| [architecture/](architecture/) | Dated implementation efforts — **how** and **in what order** |
+| [plans/](plans/) | Temporary implementation plans (updated when work ships) |
+| [AGENTS.md](../AGENTS.md) | AI agent instructions (docs-first navigation) |
 | [FORK_STATUS.md](FORK_STATUS.md) | This divergence log |
 
 Upstream's dev guide may still help with generic Unity and FishNet concepts, but project direction,
