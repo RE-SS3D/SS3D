@@ -9,15 +9,28 @@ namespace SS3D.Systems.Electricity
 {
     /// <summary>
     /// Resolves electric device neighbours through underfloor cable runs on <see cref="TileLayer.Wire"/>.
-    /// Devices on different tile layers (for example furniture on <see cref="TileLayer.FurnitureBase"/>)
-    /// connect when they share a tile with cable or sit on a tile reached by a cable network.
+    /// Only grid backbone devices (generators, SMES, APC) participate in HV cable links;
+    /// area consumers such as lights and vending machines are powered through their APC.
     /// </summary>
     public static class ElectricCableConnectivity
     {
+        /// <summary>
+        /// Whether the device may join the station HV cable graph.
+        /// </summary>
+        public static bool ParticipatesInCableGrid(IElectricDevice device) =>
+            device is IPowerProducer or IPowerStorage;
+
+        public static bool ParticipatesInCableGrid(PlacedTileObject tileObject) =>
+            tileObject != null
+            && tileObject.TryGetComponent(out IElectricDevice device)
+            && ParticipatesInCableGrid(device);
+
         public static List<PlacedTileObject> GetCableLinkedDevices(PlacedTileObject deviceTile)
         {
             var linked = new List<PlacedTileObject>();
-            if (deviceTile == null || !SubSystems.TryGet(out TileSubSystem tileSubSystem))
+            if (deviceTile == null
+                || !ParticipatesInCableGrid(deviceTile)
+                || !SubSystems.TryGet(out TileSubSystem tileSubSystem))
             {
                 return linked;
             }
@@ -36,7 +49,10 @@ namespace SS3D.Systems.Electricity
             {
                 foreach (PlacedTileObject tileObject in GetElectricDevicesOnTile(map, grid))
                 {
-                    if (tileObject == null || tileObject == deviceTile || !seen.Add(tileObject))
+                    if (tileObject == null
+                        || tileObject == deviceTile
+                        || !ParticipatesInCableGrid(tileObject)
+                        || !seen.Add(tileObject))
                     {
                         continue;
                     }

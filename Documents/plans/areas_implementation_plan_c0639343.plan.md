@@ -443,8 +443,19 @@ Phases are sequential; Phase 0 can overlap with Phase 1 type definitions.
 - Full flood-fill pipeline, save/load, APC overlap diagnostic, edit-mode tests, and dev Scene-view gizmos (`AreaDevSettings`, `AreaDebugGizmoDrawer`).
 - Wall-mounted APCs seed BFS from the walkable tile in front of `IAreaApcOrigin.FacingDirection` (from `PlacedTileObject.Direction`), not from all cardinal neighbors — prevents leaking into the room on the far side of the wall.
 
-**Still pending:** live tile-mutation recompute; editor merge/split UI; area-scoped APC battery drain.
+**Still pending:** live tile-mutation recompute; editor merge/split UI.
 
-**Phase 3 shipped:** per-consumer APC channel gating via `AreaSubSystem.TryGetEffectiveApcForDevice`, `AreaLightingState` derivation + `OnAreaLightingStateChanged` event.
+**Phase 3 shipped:** per-consumer APC channel gating via `AreaSubSystem.TryGetEffectiveApcForDevice`, `AreaLightingState` derivation + `OnAreaLightingStateChanged` event, area-scoped APC cell drain via `AreaApcPowerDistribution`.
 
 **Phase 4 shipped (fork deviation):** plan originally scoped lighting as data-only; shipped `LightPower` tri-state wiring, `LightFixtureCapability`, `AreaLightFixturePolicy`, departmental tint fields on `AreaRecord`/`SavedAreaRecord`, `TryGetLightingStateForTile`, and client lighting state sync via `RpcAreaLightingStateChanged`.
+
+**Electricity follow-ups shipped on `areas-foundation`:**
+
+- kWh storage model with tick-integrated charge/discharge (`ElectricityUnits`, `IPowerStorage` refactor).
+- Priority channel shedding via `PowerConsumerAllocation` (Equipment → Environment → Lighting).
+- Area-scoped APC power distribution with per-APC cell drain (`AreaApcPowerDistribution`).
+- HV cable graph restricted to generators, SMES, and APC (`ElectricCableConnectivity.ParticipatesInCableGrid`).
+- Light fixture visual sync fixes (APC channel toggles, emergency policy, electricity tick refresh).
+- APC machine interface grid-in uses cached per-tick draw; SMES UI-only input/output (world toggle removed).
+
+See [electricity_kwh_foundation_917ccdbc.plan.md](electricity_kwh_foundation_917ccdbc.plan.md) for the kWh/HV-cable plan.

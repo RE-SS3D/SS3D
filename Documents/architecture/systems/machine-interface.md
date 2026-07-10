@@ -6,7 +6,7 @@
 
 ## Overview
 
-Diegetic UI Toolkit panels for station machines (APC, SMES), networked via FishNet snapshots. Shared component library, view-model/binder pattern, and registry-driven machine type registration. `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the [selection](selection.md) pick pass.
+Diegetic UI Toolkit panels for station machines (APC, SMES), networked via FishNet snapshots. Shared component library, view-model/binder pattern, and registry-driven machine type registration. `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the [selection](selection.md) pick pass. SMES input/output is controlled only through the machine interface (no world toggle interaction). APC grid-in display uses per-tick cached draw from the electricity subsystem.
 
 ## Start here
 
@@ -16,6 +16,8 @@ Diegetic UI Toolkit panels for station machines (APC, SMES), networked via FishN
 - `Assets/Scripts/SS3D/UI/MachineInterface/IMachineInterfaceBinder.cs` — binds snapshot to UI Toolkit tree
 - `Assets/Scripts/SS3D/UI/MachineInterface/NetworkSnapshotHandler.cs` — FishNet snapshot sync
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcInterfaceSnapshot.cs` — APC snapshot fields (includes `MultipleApcsInArea` overlap flag)
+- `Assets/Scripts/SS3D/UI/MachineInterface/ApcStatusDeriver.cs` — APC nominal/overload/critical derivation from circuit stats
+- `Assets/Scripts/SS3D/UI/MachineInterface/SmesController.cs` — SMES panel; input/output enable and rate limits
 - `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/ApcPowerControllerBinder.cs` — APC panel binder
 - `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/SmesUnitBinder.cs` — SMES panel binder
 - `Assets/Scripts/SS3D/UI/MachineInterface/OpenMachineInterfaceInteraction.cs` — interaction to open panel

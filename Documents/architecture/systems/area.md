@@ -8,7 +8,7 @@
 
 APC-seeded area flood-fill: each APC owns one `AreaRecord` and claims reachable floor tiles with a per-chunk `ushort[]` area-id layer. Walls and doors block expansion; unclaimed tiles stay `AreaId.None`. Live boundary recompute on tile mutation is deferred — rebuild runs on map load and APC place/remove only.
 
-Per-consumer power gating: devices in an assigned area use **their area APC's channels** instead of circuit-wide channel OR. `AreaLightingState` (Normal/Emergency/Dark) is derived each electricity tick from the area APC's circuit stats; transitions fire `OnAreaLightingStateChanged` and sync to clients via ObserversRpc. `LightPower` consumes area state for fixture on/off/emergency visuals; optional `DepartmentalLightTint` on `AreaRecord` tints normal-mode emission.
+Per-consumer power gating and **area-scoped APC cell drain** via [electricity](electricity.md) `AreaApcPowerDistribution`: devices in an assigned area use their area APC's channels and cell, not circuit-wide OR or equal battery split. `AreaLightingState` (Normal/Emergency/Dark) is derived each electricity tick from the area APC's circuit stats; a disabled lighting channel forces Dark regardless of cell charge. Transitions fire `OnAreaLightingStateChanged` and sync to clients via ObserversRpc. `LightPower` consumes area state for fixture on/off/emergency visuals; optional `DepartmentalLightTint` on `AreaRecord` tints normal-mode emission.
 
 **Fork deviations from** [area.md](../../design/area.md): areas are APC-seeded (not generic auto-detection); unclaimed tiles have no fallback area; all doors block expansion regardless of open/closed state. Wall-mounted APCs seed flood fill from the walkable tile **in front of** `FacingDirection`, not from every cardinal neighbor.
 
@@ -39,8 +39,8 @@ Per-consumer power gating: devices in an assigned area use **their area APC's ch
 - Subscribe to area lighting transitions: `AreaSubSystem.OnAreaLightingStateChanged`.
 - Departmental tint API: `SetDepartmentalLightTint` / `ClearDepartmentalLightTint` (server).
 - Fixture visuals: `LightPower` + `AreaLightFixturePolicy` + `LightFixtureCapability` on prefabs.
-- Dev bypass (`SS3D → Dev → Lighting → Always Power Light Fixtures`) treats fixtures as powered but still applies area Normal/Emergency/Dark.
-- **Not yet wired:** area-scoped APC battery drain; fixture subset authoring on `AreaRecord`.
+- Dev bypass (`SS3D → Dev → Lighting → Always Power Light Fixtures`) treats fixtures as powered but still respects APC channel toggles and area Normal/Emergency/Dark policy.
+- **Not yet wired:** fixture subset authoring on `AreaRecord`.
 
 ## Depends on / Used by
 

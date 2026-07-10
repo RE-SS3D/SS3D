@@ -24,6 +24,7 @@ Server-authoritative tilemap with adjacency-driven mesh visuals, construction pl
 
 - New tile objects: create `TileObjectSo` assets and adjacency connectors implementing `IAdjacencyConnector`.
 - React to placement: implement `ITileMutationObserver` (see [electricity](electricity.md), [area](area.md)).
+- HV cables (`CablesAdjacencyConnector`): underfloor Wire-layer runs link grid backbone devices only; see [electricity](electricity.md) `ElectricCableConnectivity`.
 - TileMap Creator: `TileMapMenuSubSystem` (admin-gated RPCs).
 
 ## Depends on / Used by

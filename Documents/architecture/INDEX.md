@@ -27,8 +27,8 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking for interaction targeting |
 | Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
 | Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction |
-| Area | [area](systems/area.md) | partial | APC-seeded flood-fill, per-tile area ids, save/load (power gating pending) |
-| Electricity | [electricity](systems/electricity.md) | partial | Power circuits, APC, SMES, generators |
+| Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power distribution, lighting state and fixture visuals |
+| Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, area-scoped distribution |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | stub | Items, containers, ID cards |
 | Entities | [entities](systems/entities.md) | stub | Humanoids, minds, entity spawning |
@@ -52,9 +52,9 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 |--------|--------|
 | [2026-07_machine-interface-phase1-foundation](2026-07_machine-interface-phase1-foundation.md) | shipped |
 | [2026-07_machine-interface-phase2-apc-networking](2026-07_machine-interface-phase2-apc-networking.md) | shipped |
-| [2026-07_machine-interface-phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md) | shipped (minor cleanup remaining) |
+| [2026-07_machine-interface-phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md) | shipped |
 | [2026-07_interaction-system-hardening](2026-07_interaction-system-hardening.md) | shipped |
-| [2026-07_area-foundation](2026-07_area-foundation.md) | in-progress (phases 0–2 shipped) |
+| [2026-07_area-foundation](2026-07_area-foundation.md) | shipped (deferred: live mutation recompute, editor merge/split) |
 
 ## Implementation plans
 
@@ -66,6 +66,7 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 | [radial_menu_implementation_5a83bdf9.plan.md](../plans/radial_menu_implementation_5a83bdf9.plan.md) | Three-tier radial interaction menu |
 | [interaction_system_improvements_9e14ae22.plan.md](../plans/interaction_system_improvements_9e14ae22.plan.md) | Interaction system hardening |
 | [areas_implementation_plan_c0639343.plan.md](../plans/areas_implementation_plan_c0639343.plan.md) | APC-seeded areas, flood-fill, power/lighting follow-ups |
+| [electricity_kwh_foundation_917ccdbc.plan.md](../plans/electricity_kwh_foundation_917ccdbc.plan.md) | kWh storage, priority shedding, HV cable grid rules |
 
 ## Design specs (read-only)
 

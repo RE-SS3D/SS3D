@@ -23,6 +23,8 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 
 **Load shedding:** `PowerConsumerAllocation.AllocateUnderBudget` — under insufficient supply, Equipment sheds first, then Environment, then Lighting (restore order is reverse). Applies to both cable and area distribution.
 
+**HV cables:** underfloor Wire-layer runs connect generators, SMES units, and APCs only. Lights, vending machines, and other area consumers are not cable-linked; they draw from their area APC.
+
 **Balancing defaults (prefabs):** APC cell 5 kWh / 10 kW charge & discharge; SMES 100 kWh / 50 kW, starts charged with output enabled.
 
 ## Start here
@@ -31,7 +33,8 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - `Assets/Scripts/SS3D/Systems/Electricity/PowerConsumerAllocation.cs` — channel-priority consumer budgeting
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricitySubSystem.cs` — subsystem entry point
 - `Assets/Scripts/SS3D/Systems/Electricity/AreaApcPowerDistribution.cs` — area APC powers local consumers without per-device cables
-- `Assets/Scripts/SS3D/Systems/Electricity/ElectricCableConnectivity.cs` — cable-bridged device connectivity across Wire-layer runs
+- `Assets/Scripts/SS3D/Systems/Electricity/ElectricCableConnectivity.cs` — HV cable links only grid backbone devices (`ParticipatesInCableGrid`: producers + storage)
+- `Assets/Scripts/Tests/EditMode/ElectricityTests/ElectricCableConnectivityTests.cs` — HV cable eligibility tests
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricityDebugGizmoDrawer.cs` — Scene-view circuit/device diagnostics (`SS3D → Dev → Electricity → Show Grid Gizmos`)
 - `Assets/Scripts/SS3D/Systems/Electricity/Circuit.cs` — cable-grid power distribution; per-consumer channel resolver
 - `Assets/Scripts/SS3D/Systems/Electricity/LightPower.cs` — fixture visuals from power + area lighting state
@@ -41,6 +44,7 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 ## Extension points
 
 - New powered devices: extend electric device connectors in `Systems/Tile/Connections/`.
+- HV cable graph: only `IPowerProducer` and `IPowerStorage` participate via `ElectricCableConnectivity.ParticipatesInCableGrid`; consumers draw from area APCs.
 - Machine panels: register via [machine-interface](machine-interface.md).
 - Area-scoped APC channels: resolved in `ElectricitySubSystem` via [area](area.md) `TryGetEffectiveApcForDevice` (circuit-wide OR fallback for unassigned tiles).
 - Area-scoped power: `AreaApcPowerDistribution` — APC cell + grid supply powers all consumers in the APC's area; cables only needed for grid backbone to the APC.
@@ -53,5 +57,5 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 ## Related docs
 
 - Architecture efforts: [machine-interface phase 2](../2026-07_machine-interface-phase2-apc-networking.md), [phase 3](../2026-07_machine-interface-phase3-smes-generalization.md), [area foundation](../2026-07_area-foundation.md)
-- Plan: [areas_implementation_plan_c0639343.plan.md](../../plans/areas_implementation_plan_c0639343.plan.md)
+- Plan: [areas_implementation_plan_c0639343.plan.md](../../plans/areas_implementation_plan_c0639343.plan.md), [electricity_kwh_foundation_917ccdbc.plan.md](../../plans/electricity_kwh_foundation_917ccdbc.plan.md)
 - Design (read-only): [Documents/design/area.md](../../design/area.md)
