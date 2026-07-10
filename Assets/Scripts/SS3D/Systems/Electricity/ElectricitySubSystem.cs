@@ -40,6 +40,8 @@ namespace System.Electricity
         private List<Circuit> _circuits;
         private readonly List<IPowerConsumer> _registeredConsumers = new();
         private readonly List<IElectricDevice> _registeredDevices = new();
+        private readonly Dictionary<IApcChannelSource, float> _lastApcGridInputKw = new();
+        private readonly Dictionary<IApcChannelSource, float> _lastApcGridAvailableKw = new();
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
 
         [SerializeField]
@@ -97,8 +99,17 @@ namespace System.Electricity
 
             List<IPowerConsumer> areaConsumers = AreaApcPowerDistribution.GetConsumersForApc(apc, _registeredConsumers);
             List<IPowerConsumer> activeConsumers = AreaApcPowerDistribution.GetActiveConsumers(areaConsumers, apc.Channels);
-            float gridAvailableKw = apc is IElectricDevice apcDevice ? GetAvailableGridSupplyForApc(apcDevice) : 0f;
-            stats = AreaApcPowerDistribution.BuildApcStats(gridAvailableKw, apcCell, activeConsumers);
+            float gridInputKw = GetApcGridInputKw(apc);
+            stats = AreaApcPowerDistribution.BuildApcStats(gridInputKw, apcCell, activeConsumers);
+            if (_lastApcGridAvailableKw.TryGetValue(apc, out float gridAvailableKw))
+            {
+                stats.GridAvailableKw = gridAvailableKw;
+            }
+            else if (apc is IElectricDevice apcDevice)
+            {
+                stats.GridAvailableKw = GetAvailableGridSupplyForApc(apcDevice);
+            }
+
             return true;
         }
 
@@ -160,9 +171,22 @@ namespace System.Electricity
                 float demandKw = activeConsumers.Sum(consumer => consumer.PowerNeeded);
                 float gridAvailableKw = GetAvailableGridSupplyForApc(apcDevice);
                 float gridDrawKw = Math.Min(demandKw, gridAvailableKw);
+                _lastApcGridAvailableKw[apc] = gridAvailableKw;
+                _lastApcGridInputKw[apc] = gridDrawKw;
                 TryGetCircuitForDevice(apcDevice)?.DrawGridPowerForArea(gridDrawKw, _tickRate);
                 AreaApcPowerDistribution.PowerAreaConsumers(apc, apcStorage, gridDrawKw, areaConsumers, activeConsumers, _tickRate);
             }
+        }
+
+        [Server]
+        private float GetApcGridInputKw(IApcChannelSource apc)
+        {
+            if (_lastApcGridInputKw.TryGetValue(apc, out float lastGridInputKw))
+            {
+                return lastGridInputKw;
+            }
+
+            return apc is IElectricDevice apcDevice ? GetAvailableGridSupplyForApc(apcDevice) : 0f;
         }
 
         [Server]
@@ -224,6 +248,12 @@ namespace System.Electricity
             if (device is IPowerConsumer consumer)
             {
                 _registeredConsumers.Remove(consumer);
+            }
+
+            if (device is IApcChannelSource apc)
+            {
+                _lastApcGridInputKw.Remove(apc);
+                _lastApcGridAvailableKw.Remove(apc);
             }
 
             _graphIsDirty = true;

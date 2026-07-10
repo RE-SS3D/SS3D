@@ -203,7 +203,7 @@ namespace SS3D.UI.MachineInterface
         {
             List<ApcDiagnosticSnapshot> diagnostics = new();
 
-            if (stats.TotalSupplyKw <= 0f)
+            if (stats.GridAvailableKw <= 0f && stats.TotalDemandKw > 0f)
             {
                 diagnostics.Add(new ApcDiagnosticSnapshot
                 {
@@ -212,7 +212,7 @@ namespace SS3D.UI.MachineInterface
                     Tone = (byte)StatusTone.Danger,
                 });
             }
-            else if (!stats.GridMeetsLoad)
+            else if (stats.TotalDemandKw > 0f && !stats.GridMeetsLoad)
             {
                 diagnostics.Add(new ApcDiagnosticSnapshot
                 {
@@ -221,7 +221,7 @@ namespace SS3D.UI.MachineInterface
                     Tone = (byte)StatusTone.Warning,
                 });
             }
-            else
+            else if (stats.TotalDemandKw > 0f || stats.GridAvailableKw > 0f)
             {
                 diagnostics.Add(new ApcDiagnosticSnapshot
                 {
