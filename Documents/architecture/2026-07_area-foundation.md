@@ -2,7 +2,7 @@
 > Touches systems: area, tile, machine-interface (APC), electricity (hooks only)
 > Status: in-progress
 
-# Area Foundation (Phases 0–2)
+# Area Foundation (Phases 0–4)
 
 ## Goal
 
@@ -17,14 +17,15 @@ Ship APC-seeded area flood-fill with per-tile storage, save/load, overlap diagno
 5. **APC UI** — overlap warning in APC machine interface when multiple APCs share a flood-filled region.
 6. **Dev tooling** — Scene-view area gizmos (`SS3D → Dev → Areas → Show Area Gizmos`).
 7. **Power gating** — per-consumer APC channel resolution in `Circuit`.
-8. **Lighting data** — `AreaLightingState` derivation + transition event (no fixture wiring).
-9. **Tests** — `AreaFloodFillTests`, `AreaBoundaryEvaluatorTests`, `CircuitAreaChannelTests`, `AreaLightingStateDeriverTests`.
+8. **Lighting data** — `AreaLightingState` derivation + transition event + client sync.
+9. **Fixture visuals** — `LightPower` + `AreaLightFixturePolicy` + `LightFixtureCapability`; optional departmental tint on `AreaRecord`.
+10. **Tests** — `AreaFloodFillTests`, `AreaBoundaryEvaluatorTests`, `CircuitAreaChannelTests`, `AreaLightingStateDeriverTests`, `AreaLightFixturePolicyTests`, `AreaLightingStateQueryTests`.
 
 ## Deferred
 
-- Phase 4 visuals: `LightPower` tri-state, fixture subsets
-- Phase 5: live tile-mutation boundary recompute; editor merge/split UI
+- Live tile-mutation boundary recompute; editor merge/split UI
 - Area-scoped APC cell backup (battery drain remains circuit-wide equal split)
+- Fixture subset authoring on `AreaRecord` (`NormalFixtures[]`, `EmergencyFixtures[]`)
 
 ## Documented fork deviations
 

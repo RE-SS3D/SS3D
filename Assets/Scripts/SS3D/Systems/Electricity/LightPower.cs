@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using SS3D.Core;
+using SS3D.Systems.Area;
+using SS3D.Systems.Tile;
 using UnityEngine;
 
 namespace System.Electricity
 {
     /// <summary>
-    /// Toggles a fixture's realtime light and emissive mesh visuals based on power status.
+    /// Toggles a fixture's realtime light and emissive mesh visuals based on power and area lighting state.
     /// </summary>
     public class LightPower : MonoBehaviour
     {
@@ -19,11 +22,21 @@ namespace System.Electricity
         private Renderer[] _emissiveRenderers;
         [SerializeField]
         private bool _respectDevBypass = true;
+        [SerializeField]
+        private LightFixtureCapability _fixtureCapability = LightFixtureCapability.NormalOnly;
+        [SerializeField]
+        private float _emergencyIntensityMultiplier = 0.35f;
+        [SerializeField]
+        private Color _emergencyTint = new Color(1f, 0.25f, 0.2f);
 
         private float _poweredIntensity;
+        private Color _poweredLightColor = Color.white;
         private float _poweredLumin;
         private Color _poweredEmission;
         private readonly List<Material> _emissiveMaterials = new();
+        private AreaId _areaId;
+        private bool _hasArea;
+        private bool _areaLightingSubscribed;
 
         private void Start()
         {
@@ -35,9 +48,12 @@ namespace System.Electricity
             if (_light != null)
             {
                 _poweredIntensity = _light.intensity;
+                _poweredLightColor = _light.color;
             }
 
             CacheEmissiveMaterials();
+            CacheAreaId();
+            TrySubscribeAreaLighting();
             RefreshVisuals();
         }
 
@@ -47,6 +63,8 @@ namespace System.Electricity
             {
                 _consumer.OnPowerStatusUpdated -= HandlePowerStatusUpdated;
             }
+
+            UnsubscribeAreaLighting();
         }
 
         private void CacheEmissiveMaterials()
@@ -55,7 +73,7 @@ namespace System.Electricity
 
             if (_emissiveRenderers == null || _emissiveRenderers.Length == 0)
             {
-                foreach (var renderer in GetComponentsInChildren<Renderer>(true))
+                foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
                 {
                     if (renderer.gameObject.name is "LightBulb" or "LightTube")
                     {
@@ -65,7 +83,7 @@ namespace System.Electricity
             }
             else
             {
-                foreach (var renderer in _emissiveRenderers)
+                foreach (Renderer renderer in _emissiveRenderers)
                 {
                     if (renderer != null)
                     {
@@ -79,7 +97,7 @@ namespace System.Electricity
                 return;
             }
 
-            var referenceMaterial = _emissiveMaterials[0];
+            Material referenceMaterial = _emissiveMaterials[0];
             if (referenceMaterial.HasProperty(LuminId))
             {
                 _poweredLumin = referenceMaterial.GetFloat(LuminId);
@@ -91,16 +109,100 @@ namespace System.Electricity
             }
         }
 
+        private void CacheAreaId()
+        {
+            _hasArea = false;
+            if (_consumer?.TileObject == null || !SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                return;
+            }
+
+            PlacedTileObject tileObject = _consumer.TileObject;
+            var coord = new TileCoord(tileObject.MapId, tileObject.WorldOrigin.x, tileObject.WorldOrigin.y);
+            if (!areaSubSystem.TryGetAreaForTile(coord, out AreaRecord record))
+            {
+                return;
+            }
+
+            _hasArea = true;
+            _areaId = record.Id;
+        }
+
+        private void TrySubscribeAreaLighting()
+        {
+            if (_areaLightingSubscribed || !SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                return;
+            }
+
+            if (areaSubSystem.IsSetUp)
+            {
+                areaSubSystem.OnAreaLightingStateChanged += HandleAreaLightingStateChanged;
+                _areaLightingSubscribed = true;
+                return;
+            }
+
+            areaSubSystem.OnSystemSetUp += HandleAreaSystemSetup;
+        }
+
+        private void HandleAreaSystemSetup()
+        {
+            if (!SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                return;
+            }
+
+            areaSubSystem.OnSystemSetUp -= HandleAreaSystemSetup;
+            if (!_areaLightingSubscribed)
+            {
+                areaSubSystem.OnAreaLightingStateChanged += HandleAreaLightingStateChanged;
+                _areaLightingSubscribed = true;
+            }
+
+            CacheAreaId();
+            RefreshVisuals();
+        }
+
+        private void UnsubscribeAreaLighting()
+        {
+            if (!SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                return;
+            }
+
+            areaSubSystem.OnSystemSetUp -= HandleAreaSystemSetup;
+            if (_areaLightingSubscribed)
+            {
+                areaSubSystem.OnAreaLightingStateChanged -= HandleAreaLightingStateChanged;
+                _areaLightingSubscribed = false;
+            }
+        }
+
         private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)
         {
             RefreshVisuals();
         }
 
+        private void HandleAreaLightingStateChanged(AreaId areaId, AreaLightingState state)
+        {
+            if (_hasArea && _areaId == areaId)
+            {
+                RefreshVisuals();
+            }
+        }
+
         public void RefreshVisuals()
         {
-            if (ShouldBeLit())
+            if (ShouldBeLit(out bool useEmergencyVisuals))
             {
-                TurnLightOn();
+                if (useEmergencyVisuals)
+                {
+                    TurnLightOnEmergency();
+                }
+                else
+                {
+                    TurnLightOnNormal();
+                }
             }
             else
             {
@@ -108,25 +210,62 @@ namespace System.Electricity
             }
         }
 
-        private bool ShouldBeLit()
+        private bool ShouldBeLit(out bool useEmergencyVisuals)
         {
+            useEmergencyVisuals = false;
+
             if (_respectDevBypass && LightingDevBypass.IsActive)
             {
                 return true;
             }
 
-            return _consumer != null && _consumer.PowerStatus == PowerStatus.Powered;
+            PowerStatus consumerStatus = _consumer != null ? _consumer.PowerStatus : PowerStatus.Inactive;
+            AreaLightingState areaState = AreaLightingState.Dark;
+            if (_hasArea && SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                areaSubSystem.TryGetLightingState(_areaId, out areaState);
+            }
+
+            return AreaLightFixturePolicy.ShouldEmitLight(
+                _hasArea,
+                areaState,
+                _fixtureCapability,
+                consumerStatus,
+                out useEmergencyVisuals);
         }
 
-        private void TurnLightOn()
+        private void TurnLightOnNormal()
         {
+            Color emission = _poweredEmission;
+            if (_hasArea
+                && SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                && TryGetTileCoord(out TileCoord coord)
+                && areaSubSystem.TryGetAreaForTile(coord, out AreaRecord record)
+                && record.HasDepartmentalLightTint)
+            {
+                emission = MultiplyColor(_poweredEmission, record.DepartmentalLightTint);
+            }
+
             if (_light != null)
             {
                 _light.intensity = _poweredIntensity;
+                _light.color = _poweredLightColor;
                 _light.enabled = true;
             }
 
-            SetEmissiveState(_poweredLumin, _poweredEmission);
+            SetEmissiveState(_poweredLumin, emission);
+        }
+
+        private void TurnLightOnEmergency()
+        {
+            if (_light != null)
+            {
+                _light.intensity = _poweredIntensity * _emergencyIntensityMultiplier;
+                _light.color = _emergencyTint;
+                _light.enabled = true;
+            }
+
+            SetEmissiveState(_poweredLumin * _emergencyIntensityMultiplier, MultiplyColor(_poweredEmission, _emergencyTint));
         }
 
         private void TurnLightOff()
@@ -139,9 +278,27 @@ namespace System.Electricity
             SetEmissiveState(0f, Color.black);
         }
 
+        private bool TryGetTileCoord(out TileCoord coord)
+        {
+            coord = default;
+            if (_consumer?.TileObject == null)
+            {
+                return false;
+            }
+
+            PlacedTileObject tileObject = _consumer.TileObject;
+            coord = new TileCoord(tileObject.MapId, tileObject.WorldOrigin.x, tileObject.WorldOrigin.y);
+            return true;
+        }
+
+        private static Color MultiplyColor(Color left, Color right)
+        {
+            return new Color(left.r * right.r, left.g * right.g, left.b * right.b, left.a * right.a);
+        }
+
         private void SetEmissiveState(float lumin, Color emissionColor)
         {
-            foreach (var material in _emissiveMaterials)
+            foreach (Material material in _emissiveMaterials)
             {
                 if (material.HasProperty(LuminId))
                 {

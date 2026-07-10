@@ -12,6 +12,10 @@ namespace SS3D.Systems.Area
 
         public string AmbienceTrackId;
 
+        public bool HasDepartmentalLightTint;
+
+        public UnityEngine.Color DepartmentalLightTint;
+
         // Future: NormalFixtures[], EmergencyFixtures[]
     }
 }

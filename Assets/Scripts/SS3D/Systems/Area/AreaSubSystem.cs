@@ -107,6 +107,17 @@ namespace SS3D.Systems.Area
             return _lightingStates.TryGetValue(areaId, out state);
         }
 
+        public bool TryGetLightingStateForTile(TileCoord coord, out AreaLightingState state)
+        {
+            state = default;
+            if (!TryGetAreaForTile(coord, out AreaRecord record))
+            {
+                return false;
+            }
+
+            return TryGetLightingState(record.Id, out state);
+        }
+
         public bool TryGetAreaForTile(TileCoord coord, out AreaRecord record)
         {
             record = null;
@@ -259,6 +270,26 @@ namespace SS3D.Systems.Area
             record.ParentTag = tag ?? string.Empty;
         }
 
+        [Server]
+        public void SetDepartmentalLightTint(AreaId areaId, Color tint)
+        {
+            if (!_registry.TryGet(areaId, out AreaRecord record))
+                return;
+
+            record.HasDepartmentalLightTint = true;
+            record.DepartmentalLightTint = tint;
+        }
+
+        [Server]
+        public void ClearDepartmentalLightTint(AreaId areaId)
+        {
+            if (!_registry.TryGet(areaId, out AreaRecord record))
+                return;
+
+            record.HasDepartmentalLightTint = false;
+            record.DepartmentalLightTint = default;
+        }
+
         public SavedAreaRecord[] BuildSavedAreaRecords()
         {
             var saved = new List<SavedAreaRecord>();
@@ -274,6 +305,8 @@ namespace SS3D.Systems.Area
                     displayName = record.DisplayName,
                     parentTag = record.ParentTag,
                     apcWorldPosition = world,
+                    hasDepartmentalLightTint = record.HasDepartmentalLightTint,
+                    departmentalLightTint = record.DepartmentalLightTint,
                 });
             }
 
@@ -318,6 +351,8 @@ namespace SS3D.Systems.Area
                     DisplayName = saved.displayName,
                     ParentTag = saved.parentTag,
                     Apc = null,
+                    HasDepartmentalLightTint = saved.hasDepartmentalLightTint,
+                    DepartmentalLightTint = saved.departmentalLightTint,
                 });
             }
 
@@ -435,14 +470,37 @@ namespace SS3D.Systems.Area
                 }
 
                 AreaLightingState newState = AreaLightingStateDeriver.Derive(stats, areaApc.Channels);
-                if (_lightingStates.TryGetValue(record.Id, out AreaLightingState previousState) && previousState == newState)
-                {
-                    continue;
-                }
-
-                _lightingStates[record.Id] = newState;
-                OnAreaLightingStateChanged?.Invoke(record.Id, newState);
+                ApplyLightingStateChange(record.Id, newState);
             }
+        }
+
+        private void ApplyLightingStateChange(AreaId areaId, AreaLightingState newState)
+        {
+            if (_lightingStates.TryGetValue(areaId, out AreaLightingState previousState) && previousState == newState)
+            {
+                return;
+            }
+
+            _lightingStates[areaId] = newState;
+            OnAreaLightingStateChanged?.Invoke(areaId, newState);
+
+            if (IsServer)
+            {
+                RpcAreaLightingStateChanged(areaId.Value, newState);
+            }
+        }
+
+        [ObserversRpc]
+        private void RpcAreaLightingStateChanged(ushort areaIdValue, AreaLightingState state)
+        {
+            if (IsServer)
+            {
+                return;
+            }
+
+            var areaId = new AreaId(areaIdValue);
+            _lightingStates[areaId] = state;
+            OnAreaLightingStateChanged?.Invoke(areaId, state);
         }
     }
 }

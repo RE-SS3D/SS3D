@@ -10,5 +10,7 @@ namespace SS3D.Systems.Tile
         public string displayName;
         public string parentTag;
         public Vector3 apcWorldPosition;
+        public bool hasDepartmentalLightTint;
+        public Color departmentalLightTint;
     }
 }

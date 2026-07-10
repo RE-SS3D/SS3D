@@ -6,12 +6,13 @@
 
 ## Overview
 
-Power circuit simulation, APC channel gating, SMES storage, and tile-linked electric devices. Implements `ITileMutationObserver` for [tile](tile.md) placement reactions. Machine UI in [machine-interface](machine-interface.md). Consumers in an assigned area use that area's APC channels via [area](area.md) `TryGetEffectiveApcForDevice`; others fall back to circuit-wide channel OR.
+Power circuit simulation, APC channel gating, SMES storage, and tile-linked electric devices. Implements `ITileMutationObserver` for [tile](tile.md) placement reactions. Machine UI in [machine-interface](machine-interface.md). Consumers in an assigned area use that area's APC channels via [area](area.md) `TryGetEffectiveApcForDevice`; others fall back to circuit-wide channel OR. `LightPower` drives fixture visuals from consumer power status and area lighting state.
 
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricitySubSystem.cs` — subsystem entry point
 - `Assets/Scripts/SS3D/Systems/Electricity/Circuit.cs` — power distribution; per-consumer channel resolver
+- `Assets/Scripts/SS3D/Systems/Electricity/LightPower.cs` — fixture visuals from power + area lighting state
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/BasicElectricDevice.cs` — tile-placed electric device base
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcController.cs` — APC; implements `IAreaApcOrigin` for area registration
 
@@ -23,7 +24,7 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 
 ## Depends on / Used by
 
-- **Depends on:** [tile](tile.md), [area](area.md) (partial — registration only)
+- **Depends on:** [tile](tile.md), [area](area.md) (channel gating + lighting state)
 - **Used by:** [machine-interface](machine-interface.md)
 
 ## Related docs

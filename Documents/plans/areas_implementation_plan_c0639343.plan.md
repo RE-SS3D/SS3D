@@ -26,6 +26,12 @@ todos:
   - id: lighting-foundation
     content: "Phase 3–4: AreaLightingState enum + deriver + IAreaLightingStateSource + OnAreaLightingStateChanged event (no LightPower changes)"
     status: completed
+  - id: lighting-fixtures
+    content: "Phase 4: LightFixtureCapability + AreaLightFixturePolicy + LightPower tri-state + departmental tint + client lighting sync"
+    status: completed
+  - id: lighting-tests
+    content: "Phase 4: Edit-mode tests for fixture policy and TryGetLightingStateForTile"
+    status: completed
   - id: power-tests
     content: "Phase 3: Edit-mode tests for area-scoped channel gating and lighting state transitions"
     status: completed
@@ -437,6 +443,8 @@ Phases are sequential; Phase 0 can overlap with Phase 1 type definitions.
 - Full flood-fill pipeline, save/load, APC overlap diagnostic, edit-mode tests, and dev Scene-view gizmos (`AreaDevSettings`, `AreaDebugGizmoDrawer`).
 - Wall-mounted APCs seed BFS from the walkable tile in front of `IAreaApcOrigin.FacingDirection` (from `PlacedTileObject.Direction`), not from all cardinal neighbors — prevents leaking into the room on the far side of the wall.
 
-**Still pending:** live tile-mutation recompute; editor merge/split UI; area-scoped APC battery drain; `LightPower` tri-state wiring.
+**Still pending:** live tile-mutation recompute; editor merge/split UI; area-scoped APC battery drain.
 
-**Phase 3 shipped:** per-consumer APC channel gating via `AreaSubSystem.TryGetEffectiveApcForDevice`, `AreaLightingState` derivation + `OnAreaLightingStateChanged` event (no fixture visual changes).
+**Phase 3 shipped:** per-consumer APC channel gating via `AreaSubSystem.TryGetEffectiveApcForDevice`, `AreaLightingState` derivation + `OnAreaLightingStateChanged` event.
+
+**Phase 4 shipped (fork deviation):** plan originally scoped lighting as data-only; shipped `LightPower` tri-state wiring, `LightFixtureCapability`, `AreaLightFixturePolicy`, departmental tint fields on `AreaRecord`/`SavedAreaRecord`, `TryGetLightingStateForTile`, and client lighting state sync via `RpcAreaLightingStateChanged`.
