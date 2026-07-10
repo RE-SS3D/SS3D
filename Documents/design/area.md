@@ -36,7 +36,17 @@ Deliberately not selected as an Area consumer. Gas simulation wants its own dyna
 
 **Power net.** Each area optionally owns one APC. This is the concrete simplification Area buys: the hacking interface doc already assumes devices know "which APC they draw from" — with Area in place, that's derived from physical location instead of authored per-device. Place a device on an area's tiles, it inherits that area's APC automatically.
 
-**Lighting.** Rides the same area→APC link as power rather than existing as a separate system — lighting going out when an area loses power is the same event, not two.
+**Lighting.** Rides the same area→APC link as power rather than existing as a separate system — lighting going out when an area loses power is the same event, not two. This isn't a flat on/off, though: an area's lighting sits in one of three states, driven directly by its APC's power state and backup battery charge.
+
+| State | Trigger | What it looks like |
+|---|---|---|
+| **Normal** | APC powered | Full fixture set, at the area's authored color/intensity |
+| **Emergency** | APC unpowered, backup battery available | A distinct, reduced fixture subset — dim, red-tinted, battery-backed. Not a red-tinted variant of normal lighting; a separate authored state |
+| **Dark** | APC unpowered, no backup remaining | No area-sourced light at all — only carried personal light or hazard light (fire, sparking consoles) illuminates the space |
+
+Emergency exists as its own state deliberately, not as normal-lighting-with-a-filter — it's one of the most recognizable "something is wrong" signals in the source game, and it's free diegetic information the same way a dark alert chip or a bleeding wound already are elsewhere in this project: no icon required, the room says it. Dark means genuinely dark, not dimly lit — no ambient fallback papering over a dead APC, or the state stops meaning anything.
+
+Full rendering/shading treatment (shader model, post-processing, shadow behavior) lives in `rendering-lighting.md`; this bullet is the systemic trigger the renderer reads, not the visual spec itself.
 
 **Camera network.** Cameras on an area's tiles auto-register to a network group named after the area (or its parent tag, for broader grouping on the security console — e.g. all of Engineering's sub-areas under one channel).
 
@@ -51,7 +61,7 @@ Deliberately not selected as an Area consumer. Gas simulation wants its own dyna
 | System | What Area resolves |
 |---|---|
 | Power | Owns APC-ENG-03; every device on its tiles draws from that APC without being individually wired to it |
-| Lighting | Tied to APC-ENG-03's power state — lights go dark if the APC does |
+| Lighting | Tied to APC-ENG-03's power state: Normal while powered, Emergency if the APC drops but backup battery holds, Dark once that battery depletes |
 | Cameras | All cameras on its tiles register to the "Engineering — main bay" network group, filed under the "Engineering" parent tag on the security console |
 | Access | Doors into it default to requiring Engineering access; one door (workshop) is overridden to also require an additional cert |
 | Alarms | A fire alarm here scopes locally by default; a station-wide emergency can additionally target the "Engineering" parent tag to hit every area under it |
