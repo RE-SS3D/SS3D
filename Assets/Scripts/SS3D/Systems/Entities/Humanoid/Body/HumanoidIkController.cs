@@ -49,7 +49,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void OnAnimatorIK(int layerIndex)
         {
-            if (_animator == null || _rig == null || _rig.Head == null)
+            if (_animator == null || !_animator.isHuman || _rig == null || _rig.Head == null)
             {
                 return;
             }

@@ -52,6 +52,7 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Controls.HotkeysActions HotkeysControls;
         private InputSubSystem _inputSystem;
         private HumanoidBodyStateMachine _bodyStateMachine;
+        private bool _inputSubscribed;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -61,6 +62,16 @@ namespace SS3D.Systems.Entities.Humanoid
         public virtual float RunAnimatorValue => _runAnimatorValue;
         public bool IsRunning => _isRunning;
         #endregion
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            if (IsOwner)
+            {
+                SubscribeToInput();
+            }
+        }
 
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
@@ -116,41 +127,77 @@ namespace SS3D.Systems.Entities.Humanoid
             _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingPlayerChanged;
             _bodyStateMachine = GetComponent<HumanoidBodyStateMachine>();
-
-            _inputSystem = SubSystems.Get<InputSubSystem>();
-
-            Controls controls = _inputSystem.Inputs;
-
-            MovementControls = controls.Movement;
-            HotkeysControls = controls.Hotkeys;
-
+            EnsureInputReady();
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         private void SubscribeToInput()
         {
-            if (!_inputSystem)
+            EnsureInputReady();
+            if (_inputSystem == null || _inputSubscribed)
             {
                 return;
             }
 
             MovementControls.ToggleRun.performed += HandleToggleRun;
 
-            _inputSystem.ToggleActionMap(MovementControls, true);
-            _inputSystem.ToggleActionMap(HotkeysControls, true);
+            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, true);
+            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Hotkeys, true);
+            _inputSubscribed = true;
+            EnsureMovementInputEnabled();
+        }
+
+        private void EnsureMovementInputEnabled()
+        {
+            EnsureInputReady();
+            if (_inputSystem == null)
+            {
+                return;
+            }
+
+            InputAction movementAction = _inputSystem.Inputs.Movement.Movement;
+            if (movementAction.enabled)
+            {
+                return;
+            }
+
+            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, true);
+            if (!movementAction.enabled)
+            {
+                movementAction.Enable();
+            }
+        }
+
+        private void EnsureInputReady()
+        {
+            if (_inputSystem != null)
+            {
+                return;
+            }
+
+            _inputSystem = SubSystems.Get<InputSubSystem>();
+            if (_inputSystem == null)
+            {
+                return;
+            }
+
+            Controls controls = _inputSystem.Inputs;
+            MovementControls = controls.Movement;
+            HotkeysControls = controls.Hotkeys;
         }
 
         private void UnsubscribeFromInput()
         {
-            if (!_inputSystem)
+            if (_inputSystem == null || !_inputSubscribed)
             {
                 return;
             }
 
             MovementControls.ToggleRun.performed -= HandleToggleRun;
 
-            _inputSystem.ToggleActionMap(MovementControls, false);
-            _inputSystem.ToggleActionMap(HotkeysControls, false);
+            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Movement, false);
+            _inputSystem.ToggleActionMap(_inputSystem.Inputs.Hotkeys, false);
+            _inputSubscribed = false;
         }
 
         private void HandleControllingPlayerChanged(Mind mind)
@@ -167,6 +214,12 @@ namespace SS3D.Systems.Entities.Humanoid
             if (!IsOwner)
             {
                 return;
+            }
+
+            EnsureInputReady();
+            if (IsOwner)
+            {
+                SubscribeToInput();
             }
 
             if (_bodyStateMachine != null && !_bodyStateMachine.Capabilities.CanMove)
@@ -202,10 +255,22 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <param name="movementInput"></param>
          protected void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
          {
+             if (_camera == null)
+             {
+                 _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
+             }
+
+             Vector3 forwardBasis = _camera != null
+                 ? Vector3.Cross(_camera.Right, Vector3.up).normalized
+                 : Vector3.forward;
+             Vector3 rightBasis = _camera != null
+                 ? Vector3.Cross(Vector3.up, _camera.Forward).normalized
+                 : Vector3.right;
+
              //makes the movement align to the camera view
              Vector3 newTargetMovement =
-                 movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized +
-                 movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
+                 movementInput.y * forwardBasis +
+                 movementInput.x * rightBasis;
 
              // smoothly changes the target movement
              TargetMovement = Vector3.Lerp(TargetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
@@ -236,6 +301,14 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <returns></returns>
         protected void ProcessPlayerInput()
         {
+            EnsureInputReady();
+            EnsureMovementInputEnabled();
+
+            if (_camera == null)
+            {
+                _camera = SubSystems.Get<CameraSubSystem>().PlayerCamera;
+            }
+
             float x = MovementControls.Movement.ReadValue<Vector2>().x;
             float y = MovementControls.Movement.ReadValue<Vector2>().y;
 

@@ -115,13 +115,17 @@ namespace SS3D.Systems.Entities.Humanoid.Body
 
         public void SetLocomotionSpeed(float speed)
         {
-            _movementSpeed = speed;
             if (IsServer)
             {
+                _movementSpeed = speed;
                 ApplyLocalSnapshot();
+                return;
             }
-            else if (IsOwner)
+
+            if (IsOwner)
             {
+                // SyncVar is server-authoritative; do not apply snapshot locally here.
+                // AnimationOrchestrator drives Speed immediately from input on the owner.
                 CmdSetMovementSpeed(speed);
             }
         }
@@ -344,11 +348,16 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         [Server]
         private void ApplyLocalSnapshot()
         {
+            ApplyOwnerSnapshot();
+            _packedSnapshot = _snapshot.Pack();
+        }
+
+        private void ApplyOwnerSnapshot()
+        {
             _snapshot.MovementSpeed = _movementSpeed;
             _snapshot.AimYaw = _aimYaw;
             _snapshot.InjuredArmLeft = _injuredArmLeft;
             _snapshot.InjuredArmRight = _injuredArmRight;
-            _packedSnapshot = _snapshot.Pack();
             _orchestrator?.ApplySnapshot(_snapshot);
             OnSnapshotChanged?.Invoke(_snapshot);
         }

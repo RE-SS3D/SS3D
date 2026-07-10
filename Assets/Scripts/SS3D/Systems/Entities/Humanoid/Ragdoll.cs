@@ -21,6 +21,7 @@ namespace SS3D.Systems.Entities.Humanoid
         private Transform _character;
         private Animator _animator; 
         private NetworkAnimator _networkAnimator; 
+        private bool _networkAnimatorInitiallyEnabled;
         private HumanoidLivingController _humanoidLivingController; 
         private CharacterController _characterController; 
         private Transform[] _ragdollParts;
@@ -75,6 +76,17 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField]
         private byte _ragdollPartSyncInterval;
 
+        private bool _ragdollPartsCached;
+
+        private void Awake()
+        {
+            CacheRagdollParts();
+            // Animator drives bones during locomotion. Bone NetworkTransforms default to
+            // syncing in the prefab and will overwrite muscle poses until network init runs.
+            ToggleKinematic(true);
+            ToggleSyncRagdoll(false);
+        }
+
         private void OnSyncKnockdown(bool prev, bool next, bool asServer)
 		{
 			if (prev == next) return;
@@ -96,11 +108,25 @@ namespace SS3D.Systems.Entities.Humanoid
 			_humanoidLivingController = GetComponent<HumanoidLivingController>();
 			_characterController = GetComponent<CharacterController>();
 			_networkAnimator = GetComponent<NetworkAnimator>();
+            _networkAnimatorInitiallyEnabled = _networkAnimator != null && _networkAnimator.enabled;
             _knockdownTimer = 0;
             _hips = _armatureRoot.GetChild(0);
             _character = _armatureRoot.parent;
             _currentState = RagdollState.Walking;
-            _ragdollParts = (from part in GetComponentsInChildren<RagdollPart>() select part.transform.GetComponent<Transform>()).ToArray();
+            CacheRagdollParts();
+            ToggleKinematic(true);
+            ToggleSyncRagdoll(false);
+        }
+
+        private void CacheRagdollParts()
+        {
+            if (_ragdollPartsCached)
+            {
+                return;
+            }
+
+            _ragdollParts = (from part in GetComponentsInChildren<RagdollPart>(true)
+                select part.transform).ToArray();
             _standUpBones = new BoneTransform[_ragdollParts.Length];
             _ragdollBones = new BoneTransform[_ragdollParts.Length];
 
@@ -109,14 +135,15 @@ namespace SS3D.Systems.Entities.Humanoid
                 _standUpBones[boneIndex] = new();
                 _ragdollBones[boneIndex] = new();
             }
-            // All rigid bodies are kinematic at start, only the owner should be able to change that afterwards.
-			ToggleKinematic(true);
-            ToggleSyncRagdoll(false);
+
+            _ragdollPartsCached = true;
         }
 
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
             base.OnOwnershipClient(prevOwner);
+
+            CacheRagdollParts();
 
             // Set interval need to be called by owner. This allows fast setting
             foreach (Transform part in _ragdollParts)
@@ -353,6 +380,11 @@ namespace SS3D.Systems.Entities.Humanoid
 		/// </summary>
 		private void ToggleKinematic(bool isKinematic)
 		{
+            if (_ragdollParts == null)
+            {
+                return;
+            }
+
 			foreach (Transform part in _ragdollParts)
 			{
 				part.GetComponent<Rigidbody>().isKinematic = isKinematic;
@@ -379,7 +411,7 @@ namespace SS3D.Systems.Entities.Humanoid
             {
                 _animator.enabled = enable;
             }
-            if (_networkAnimator != null)
+            if (_networkAnimator != null && _networkAnimatorInitiallyEnabled)
             {
                 _networkAnimator.enabled = enable;
             }
@@ -393,10 +425,16 @@ namespace SS3D.Systems.Entities.Humanoid
         
         private void ToggleSyncRagdoll(bool isActive)
         {
+            if (_ragdollParts == null)
+            {
+                return;
+            }
+
             foreach (Transform part in _ragdollParts)
             {
-                part.GetComponent<NetworkTransform>().SetSynchronizePosition(isActive);
-                part.GetComponent<NetworkTransform>().SetSynchronizeRotation(isActive);
+                NetworkTransform networkTransform = part.GetComponent<NetworkTransform>();
+                networkTransform.SetSynchronizePosition(isActive);
+                networkTransform.SetSynchronizeRotation(isActive);
             }
         }
     }

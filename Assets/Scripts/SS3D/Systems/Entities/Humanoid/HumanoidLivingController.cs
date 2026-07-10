@@ -49,12 +49,12 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void ProcessCharacterMovement()
         {
+            ProcessPlayerInput();
+
             if (_predictedMovement != null && _predictedMovement.enabled)
             {
                 return;
             }
-
-            ProcessPlayerInput();
 
             _characterController.Move(Physics.gravity);
 
@@ -73,7 +73,8 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected override float FilterSpeed()
         {
-            return IsRunning && _staminaController.CanContinueInteraction ? RunAnimatorValue : WalkAnimatorValue;
+            bool canRun = _staminaController == null || _staminaController.CanContinueInteraction;
+            return IsRunning && canRun ? RunAnimatorValue : WalkAnimatorValue;
         }
 
         /// <summary>
@@ -81,7 +82,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            _characterController.Move(TargetMovement * ((_feetController.FeetHealthFactor * _movementSpeed) * Time.deltaTime));
+            float feetFactor = _feetController != null ? _feetController.FeetHealthFactor : 1f;
+            _characterController.Move(TargetMovement * ((feetFactor * _movementSpeed) * Time.deltaTime));
         }
     }
 

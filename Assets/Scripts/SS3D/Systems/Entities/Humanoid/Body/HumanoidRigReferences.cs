@@ -44,7 +44,11 @@ namespace SS3D.Systems.Entities.Humanoid.Body
         {
             if (_armatureRoot == null)
             {
-                Transform found = transform.Find("Armature");
+                Transform found = transform.Find("HumanArmature");
+                if (found == null)
+                {
+                    found = transform.Find("Armature");
+                }
                 if (found == null)
                 {
                     foreach (Transform child in transform)

@@ -11,11 +11,35 @@ AvatarMask:
   m_Elements:
   - m_Path: 
     m_Weight: 0
-  - m_Path: Armature/Hips/Spine
+  - m_Path: Armature
+    m_Weight: 0
+  - m_Path: Armature/hips
+    m_Weight: 0
+  - m_Path: Armature/hips/spine
     m_Weight: 1
-  - m_Path: Armature/Hips/Spine/Chest
+  - m_Path: Armature/hips/spine/chest
     m_Weight: 1
-  - m_Path: Armature/Hips/Spine/Chest/Upper_Arm_L
+  - m_Path: Armature/hips/spine/chest/neck
     m_Weight: 1
-  - m_Path: Armature/Hips/Spine/Chest/Upper_Arm_R
+  - m_Path: Armature/hips/spine/chest/neck/head
     m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_r/upper_arm_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_r/upper_arm_r/forearm_r/hand_r
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l/upper_arm_l
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l
+    m_Weight: 1
+  - m_Path: Armature/hips/spine/chest/shoulder_l/upper_arm_l/forearm_l/hand_l
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_l
+    m_Weight: 0
+  - m_Path: Armature/hips/thigh_r
+    m_Weight: 0

@@ -1,7 +1,10 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Data;
 using SS3D.Systems.Entities.Humanoid.Body;
 using System;
+using FishNet.Object;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -22,6 +25,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private HumanoidIkController _ikController;
 
         private float _currentSpeed;
+        private float _targetSpeed;
         private BodyAnimationSnapshot _lastSnapshot = BodyAnimationSnapshot.Default;
         private AnimationTriggerId _lastConsumedTrigger = AnimationTriggerId.None;
         private byte _lastTriggerSequence;
@@ -45,12 +49,39 @@ namespace SS3D.Systems.Entities.Humanoid
             }
 
             SubscribeToEvents();
+
+            if (_bodyStateMachine != null)
+            {
+                _targetSpeed = _bodyStateMachine.Snapshot.MovementSpeed;
+                ApplySnapshot(_bodyStateMachine.Snapshot);
+            }
+            else if (_animator != null)
+            {
+                _targetSpeed = 0f;
+                _animator.SetFloat(Animations.Humanoid.MovementSpeed, 0f);
+            }
+        }
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnDestroyed()
         {
             base.OnDestroyed();
             UnsubscribeFromEvents();
+        }
+
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
+        {
+            if (_animator == null)
+            {
+                return;
+            }
+
+            ApplyMovementSpeed(_targetSpeed);
         }
 
         private void SubscribeToEvents()
@@ -79,14 +110,17 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void HandleSpeedChanged(float speed)
         {
+            _targetSpeed = speed;
             _bodyStateMachine?.SetLocomotionSpeed(speed);
-            ApplyMovementSpeed(speed);
         }
 
         public void ApplySnapshot(BodyAnimationSnapshot snapshot)
         {
             _lastSnapshot = snapshot;
-            ApplyMovementSpeed(snapshot.MovementSpeed);
+            if (!IsLocalMovementAuthority())
+            {
+                _targetSpeed = snapshot.MovementSpeed;
+            }
             ApplyLocomotion(snapshot);
             ApplyUpperBody(snapshot);
             ApplyCombat(snapshot);
@@ -125,10 +159,11 @@ namespace SS3D.Systems.Entities.Humanoid
             _animator.SetInteger(Animations.Humanoid.ArmHold, (int)snapshot.ArmHold);
             _animator.SetBool(Animations.Humanoid.IsSeated, snapshot.IsSeated);
 
-            float upperBodyWeight = snapshot.State == BodyState.Ragdoll ? 0f : 1f;
             if (_animator.layerCount > 1)
             {
-                _animator.SetLayerWeight(1, upperBodyWeight);
+                bool needsUpperBodyLayer = snapshot.State != BodyState.Ragdoll
+                    && snapshot.ArmHold != ArmHoldPose.Default;
+                _animator.SetLayerWeight(1, needsUpperBodyLayer ? 1f : 0f);
             }
         }
 
@@ -146,8 +181,9 @@ namespace SS3D.Systems.Entities.Humanoid
 
             if (_animator.layerCount > 2)
             {
-                float additiveWeight = Mathf.Max(snapshot.InjuredArmLeft, snapshot.InjuredArmRight) > 0.01f ? 1f : 0f;
-                _animator.SetLayerWeight(2, additiveWeight);
+                bool injured = Mathf.Max(snapshot.InjuredArmLeft, snapshot.InjuredArmRight) > 0.01f;
+                bool staggered = snapshot.State == BodyState.Staggered;
+                _animator.SetLayerWeight(2, injured || staggered ? 1f : 0f);
             }
         }
 
@@ -188,6 +224,16 @@ namespace SS3D.Systems.Entities.Humanoid
         public void FireLocalTrigger(AnimationTriggerId trigger)
         {
             _bodyStateMachine?.CmdFireTrigger(trigger);
+        }
+
+        private bool IsLocalMovementAuthority()
+        {
+            if (_movementController is NetworkBehaviour networkBehaviour)
+            {
+                return networkBehaviour.IsOwner;
+            }
+
+            return false;
         }
     }
 }

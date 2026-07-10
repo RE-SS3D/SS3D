@@ -10,14 +10,26 @@ AvatarMask:
   m_Mask: 0000000000000000000000000000000000000000000000000000000000000000
   m_Elements:
   - m_Path: 
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature
     m_Weight: 0
-  - m_Path: Armature/Hips
-    m_Weight: 1
-  - m_Path: Armature/Hips/Spine
+  - m_Path: Armature/hips
     m_Weight: 0
-  - m_Path: Armature/Hips/Thigh_L
+  - m_Path: Armature/hips/spine
+    m_Weight: 0
+  - m_Path: Armature/hips/thigh_l
     m_Weight: 1
-  - m_Path: Armature/Hips/Thigh_R
+  - m_Path: Armature/hips/thigh_l/lower_leg_l
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_l/lower_leg_l/foot_l
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_l/lower_leg_l/foot_l/toes_l
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_r
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_r/lower_leg_r
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_r/lower_leg_r/foot_r
+    m_Weight: 1
+  - m_Path: Armature/hips/thigh_r/lower_leg_r/foot_r/toes_r
     m_Weight: 1
