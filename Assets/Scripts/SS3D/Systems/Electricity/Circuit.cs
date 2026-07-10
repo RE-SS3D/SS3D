@@ -1,6 +1,5 @@
 ﻿using SS3D.Logging;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,8 +11,6 @@ namespace System.Electricity
     /// </summary>
     public class Circuit
     {
-        private static Random RandomGenerator = new();
-
         private List<IPowerConsumer> _consumers;
         private List<IPowerProducer> _producers;
         private List<IPowerStorage> _storages;
@@ -105,8 +102,8 @@ namespace System.Electricity
         {
             float supplyKw = _producers.Sum(x => x.PowerProduction);
             float demandKw = activeConsumers.Sum(x => x.PowerNeeded);
-            float batteryCharge = apcCell != null && apcCell.MaxCapacity > 0f
-                ? apcCell.StoredPower / apcCell.MaxCapacity
+            float batteryCharge = apcCell != null && apcCell.MaxCapacityKwh > 0f
+                ? apcCell.StoredEnergyKwh / apcCell.MaxCapacityKwh
                 : 0f;
 
             return new CircuitStats
@@ -118,34 +115,34 @@ namespace System.Electricity
                 EquipmentLoadKw = SumChannelLoad(activeConsumers, PowerChannel.Equipment),
                 EnvironmentLoadKw = SumChannelLoad(activeConsumers, PowerChannel.Environment),
                 GridMeetsLoad = supplyKw >= demandKw,
-                BatteryDraining = supplyKw < demandKw && apcCell is { StoredPower: > 0f, IsOn: true },
+                BatteryDraining = supplyKw < demandKw && apcCell is { StoredEnergyKwh: > 0f, IsOn: true },
             };
         }
 
         /// <summary>
         /// Do an update on the whole circuit power. Produce power, consume power that needs to be consumed, and charge stuff that can be charged.
         /// </summary>
-        public void UpdateCircuitPower()
+        public void UpdateCircuitPower(float tickSeconds = ElectricityUnits.DefaultTickSeconds)
         {
-            UpdateCableDistributionOnly();
-            ChargePendingProducerSurplus();
+            UpdateCableDistributionOnly(tickSeconds);
+            ChargePendingProducerSurplus(tickSeconds);
         }
 
         /// <summary>
         /// Powers cable-distributed consumers and records producer surplus for later SMES charging.
         /// Area-scoped consumers are handled separately via <see cref="DrawGridPowerForArea"/>.
         /// </summary>
-        public void UpdateCableDistributionOnly()
+        public void UpdateCableDistributionOnly(float tickSeconds = ElectricityUnits.DefaultTickSeconds)
         {
             List<IPowerConsumer> activeConsumers = GetActiveConsumers();
-            _pendingProducerSurplus = ConsumePower(activeConsumers, out List<IPowerConsumer> poweredConsumers);
+            _pendingProducerSurplus = ConsumePower(activeConsumers, tickSeconds, out List<IPowerConsumer> poweredConsumers);
             UpdateConsumerStatus(poweredConsumers);
         }
 
         /// <summary>
         /// Charge non-APC storages from producer surplus left after cable and area distribution.
         /// </summary>
-        public void ChargePendingProducerSurplus()
+        public void ChargePendingProducerSurplus(float tickSeconds = ElectricityUnits.DefaultTickSeconds)
         {
             if (_pendingProducerSurplus <= 0f)
             {
@@ -153,20 +150,19 @@ namespace System.Electricity
                 return;
             }
 
-            _pendingProducerSurplus = ChargeStorages(_pendingProducerSurplus);
+            _pendingProducerSurplus = ChargeStorages(_pendingProducerSurplus, tickSeconds);
         }
 
         /// <summary>
         /// Grid headroom available to an APC on this circuit after cable loads are served this tick.
         /// </summary>
-        public float GetAvailableGridSupplyForArea()
+        public float GetAvailableGridSupplyForArea(float tickSeconds = ElectricityUnits.DefaultTickSeconds)
         {
-            float cableDemand = GetActiveConsumers().Sum(consumer => consumer.PowerNeeded);
             float storageSupply = GetNonApcStorages()
                 .Where(storage => storage.IsOn)
-                .Sum(storage => storage.MaxRemovablePower);
+                .Sum(storage => storage.MaxDeliverableKw(tickSeconds));
 
-            return Math.Max(0f, _pendingProducerSurplus + storageSupply - cableDemand);
+            return Math.Max(0f, _pendingProducerSurplus + storageSupply);
         }
 
         public float PendingProducerSurplus => _pendingProducerSurplus;
@@ -174,7 +170,7 @@ namespace System.Electricity
         /// <summary>
         /// Draw power from producers and non-APC storages on this circuit for area-scoped consumers.
         /// </summary>
-        public float DrawGridPowerForArea(float requestedKw)
+        public float DrawGridPowerForArea(float requestedKw, float tickSeconds = ElectricityUnits.DefaultTickSeconds)
         {
             if (requestedKw <= 0f)
             {
@@ -189,10 +185,10 @@ namespace System.Electricity
             if (remaining > 0f)
             {
                 List<IPowerStorage> availableStorages = GetNonApcStorages()
-                    .Where(storage => storage.IsOn && storage.MaxRemovablePower > 0f)
-                    .OrderBy(storage => storage.MaxRemovablePower)
+                    .Where(storage => storage.IsOn && storage.MaxDeliverableKw(tickSeconds) > 0f)
+                    .OrderBy(storage => storage.MaxDeliverableKw(tickSeconds))
                     .ToList();
-                DrainBatteries(remaining, availableStorages);
+                DrainBatteries(remaining, availableStorages, tickSeconds);
             }
 
             return requestedKw - remaining;
@@ -220,116 +216,98 @@ namespace System.Electricity
         }
 
         /// <summary>
-        /// Try to satisfy all consumers with power generators and drain storages for power if needed.
+        /// Try to satisfy consumers with producer output and non-APC storage discharge.
         /// </summary>
         /// <param name="poweredConsumers">Which consumers were satisfied</param>
-        /// <returns>Power from generators, that wasn't used</returns>
-        private float ConsumePower(List<IPowerConsumer> activeConsumers, out List<IPowerConsumer> poweredConsumers)
+        /// <returns>Unused producer output in kW</returns>
+        private float ConsumePower(List<IPowerConsumer> activeConsumers, float tickSeconds, out List<IPowerConsumer> poweredConsumers)
         {
-            poweredConsumers = new();
-            poweredConsumers.AddRange(activeConsumers);
-            float powerFromProducers = _producers.Sum(x => x.PowerProduction);
-            float neededPower = activeConsumers.Sum(x => x.PowerNeeded) - powerFromProducers;
+            float producerSupply = _producers.Sum(x => x.PowerProduction);
+            List<IPowerStorage> availableStorages = GetNonApcStorages()
+                .Where(x => x.IsOn && x.MaxDeliverableKw(tickSeconds) > 0f)
+                .ToList();
+            float batterySupply = availableStorages.Sum(x => x.MaxDeliverableKw(tickSeconds));
+            float totalBudget = producerSupply + batterySupply;
 
-            if (neededPower <= 0)
+            poweredConsumers = PowerConsumerAllocation.AllocateUnderBudget(activeConsumers, totalBudget);
+            float poweredDemand = poweredConsumers.Sum(x => x.PowerNeeded);
+            float batteryDraw = Math.Max(0f, poweredDemand - producerSupply);
+
+            if (batteryDraw > 0f)
             {
-                return -neededPower;
+                DrainBatteries(batteryDraw, availableStorages, tickSeconds);
             }
 
-            List<IPowerStorage> availableStorages = _storages
-                .Where(x => x.IsOn && x.MaxRemovablePower > 0 && !IsApcCellStorage(x))
-                .OrderBy(x => x.MaxRemovablePower).ToList();
-            float maxPowerFromBatteries = availableStorages.Sum(x => x.MaxRemovablePower);
-
-            while (neededPower > maxPowerFromBatteries)
-            {
-                List<IPowerConsumer> consumersToRemove = poweredConsumers.Where(x => x.PowerNeeded >= neededPower).ToList();
-                if (!consumersToRemove.Any())
-                {
-                    consumersToRemove.AddRange(poweredConsumers);
-                }
-
-                // Random is used to make sure that unpowered consumers won't be the same each tick
-                IPowerConsumer consumer = consumersToRemove[RandomGenerator.Next(consumersToRemove.Count)];
-                neededPower -= consumer.PowerNeeded;
-                poweredConsumers.Remove(consumer);
-            }
-
-            DrainBatteries(neededPower, availableStorages);
-            return 0;
+            return Math.Max(0f, producerSupply - poweredDemand);
         }
 
         /// <summary>
-        /// Drain batteries from storages equally
+        /// Drain batteries from storages equally.
         /// </summary>
-        /// <param name="power">Power to drain in sum. Must be always lesser or equal than sum of available power from storages</param>
+        /// <param name="powerKw">Power to drain in kW. Must be less than or equal to the sum of available discharge rates.</param>
         /// <param name="storages">Storages to drain from</param>
-        private void DrainBatteries(float power, List<IPowerStorage> storages)
+        private void DrainBatteries(float powerKw, List<IPowerStorage> storages, float tickSeconds)
         {
-            if (storages.Count == 0)
+            if (storages.Count == 0 || powerKw <= 0f)
             {
                 return;
             }
 
-            if (power > storages.Sum(x => x.MaxRemovablePower))
+            if (powerKw > storages.Sum(x => x.MaxDeliverableKw(tickSeconds)))
             {
                 Log.Error(this, "Energy requested for draining batteries is greater than available energy in batteries." +
                     "This will result in creating some free energy.");
             }
 
-            float equalAmount = power / storages.Count;
+            float equalAmount = powerKw / storages.Count;
             for (int i = 0; i < storages.Count; i++)
             {
-                if (equalAmount > storages[i].MaxRemovablePower)
+                float deliverable = storages[i].MaxDeliverableKw(tickSeconds);
+                if (equalAmount > deliverable)
                 {
-                    power -= storages[i].RemovePower(storages[i].MaxRemovablePower);
-                    equalAmount = power / (storages.Count - i - 1);
+                    powerKw -= storages[i].RemovePowerKw(deliverable, tickSeconds);
+                    equalAmount = storages.Count - i - 1 > 0 ? powerKw / (storages.Count - i - 1) : 0f;
                 }
                 else
                 {
-                    power -= storages[i].RemovePower(equalAmount);
+                    powerKw -= storages[i].RemovePowerKw(equalAmount, tickSeconds);
                 }
             }
         }
 
         /// <summary>
         /// Distribute available power equally to power storages.
-        /// TODO : should limit the amount of power a storage can receive in a single update to avoid instant charge.
         /// </summary>
-        /// <param name="availablePower"> Power available after consuming.</param>
-        /// <returns> Left over power if storages are full.</returns>
-        private float ChargeStorages(float availablePower)
+        /// <param name="availablePowerKw">Producer surplus in kW after consuming.</param>
+        /// <returns>Leftover power in kW if storages are full or charge-limited.</returns>
+        private float ChargeStorages(float availablePowerKw, float tickSeconds)
         {
-            if (availablePower <= 0f)
+            if (availablePowerKw <= 0f)
             {
                 return 0f;
             }
 
-            // Order the list to make sure that storages to be fully charged come first
             List<IPowerStorage> notFullStorages = _storages
-                .Where(x => x.RemainingCapacity > 0 && x.IsOn && !IsApcCellStorage(x))
-                .OrderBy(x => x.RemainingCapacity).ToList();
+                .Where(x => x.RemainingCapacityKwh > 0f && x.IsOn && x.MaxChargeRateKw > 0f && !IsApcCellStorage(x))
+                .OrderBy(x => x.RemainingCapacityKwh)
+                .ToList();
 
             if (notFullStorages.Count == 0)
             {
-                return availablePower;
+                return availablePowerKw;
             }
 
-            float equalAmount = availablePower / notFullStorages.Count;
+            float equalAmount = availablePowerKw / notFullStorages.Count;
             for (int i = 0; i < notFullStorages.Count; i++)
             {
-                if (equalAmount > notFullStorages[i].RemainingCapacity)
-                {
-                    availablePower -= notFullStorages[i].AddPower(notFullStorages[i].RemainingCapacity);
-                    equalAmount = availablePower / (notFullStorages.Count - i - 1);
-                }
-                else
-                {
-                    availablePower -= notFullStorages[i].AddPower(equalAmount);
-                }
+                float maxChargeKw = notFullStorages[i].MaxChargeRateKw;
+                float chargeKw = Math.Min(equalAmount, maxChargeKw);
+                float absorbed = notFullStorages[i].AddPowerKw(chargeKw, tickSeconds);
+                availablePowerKw -= absorbed;
+                equalAmount = notFullStorages.Count - i - 1 > 0 ? availablePowerKw / (notFullStorages.Count - i - 1) : 0f;
             }
 
-            return availablePower;
+            return availablePowerKw;
         }
 
         private ApcControlFlags GetEnabledChannels()

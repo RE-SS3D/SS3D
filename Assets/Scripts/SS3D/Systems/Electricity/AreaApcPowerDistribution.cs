@@ -1,6 +1,5 @@
 using SS3D.Core;
 using SS3D.Systems.Area;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +11,6 @@ namespace System.Electricity
     /// </summary>
     public static class AreaApcPowerDistribution
     {
-        private static Random RandomGenerator = new();
         public static bool IsAreaScopedConsumer(IPowerConsumer consumer)
         {
             return consumer is IElectricDevice device
@@ -65,8 +63,8 @@ namespace System.Electricity
             IReadOnlyList<IPowerConsumer> activeAreaConsumers)
         {
             float demandKw = activeAreaConsumers.Sum(consumer => consumer.PowerNeeded);
-            float batteryCharge = apcCell != null && apcCell.MaxCapacity > 0f
-                ? apcCell.StoredPower / apcCell.MaxCapacity
+            float batteryCharge = apcCell != null && apcCell.MaxCapacityKwh > 0f
+                ? apcCell.StoredEnergyKwh / apcCell.MaxCapacityKwh
                 : 0f;
 
             return new CircuitStats
@@ -78,7 +76,7 @@ namespace System.Electricity
                 EquipmentLoadKw = SumChannelLoad(activeAreaConsumers, PowerChannel.Equipment),
                 EnvironmentLoadKw = SumChannelLoad(activeAreaConsumers, PowerChannel.Environment),
                 GridMeetsLoad = gridSupplyKw >= demandKw,
-                BatteryDraining = gridSupplyKw < demandKw && apcCell is { StoredPower: > 0f, IsOn: true },
+                BatteryDraining = gridSupplyKw < demandKw && apcCell is { StoredEnergyKwh: > 0f, IsOn: true },
             };
         }
 
@@ -87,29 +85,23 @@ namespace System.Electricity
             IPowerStorage apcCell,
             float gridSupplyKw,
             IReadOnlyList<IPowerConsumer> areaConsumers,
-            IReadOnlyList<IPowerConsumer> activeAreaConsumers)
+            IReadOnlyList<IPowerConsumer> activeAreaConsumers,
+            float tickSeconds = ElectricityUnits.DefaultTickSeconds)
         {
-            float demandKw = activeAreaConsumers.Sum(consumer => consumer.PowerNeeded);
-            float deficitKw = demandKw - gridSupplyKw;
-            List<IPowerConsumer> poweredConsumers = new(activeAreaConsumers);
+            float cellDeliverableKw = apcCell is { IsOn: true } ? apcCell.MaxDeliverableKw(tickSeconds) : 0f;
+            float totalBudgetKw = gridSupplyKw + cellDeliverableKw;
+            List<IPowerConsumer> poweredConsumers = PowerConsumerAllocation.AllocateUnderBudget(activeAreaConsumers, totalBudgetKw);
 
-            if (deficitKw > 0f)
+            float poweredDemandKw = poweredConsumers.Sum(consumer => consumer.PowerNeeded);
+            float cellDrawKw = poweredDemandKw - gridSupplyKw;
+
+            if (cellDrawKw > 0f && apcCell != null)
             {
-                float availableCellKw = apcCell?.MaxRemovablePower ?? 0f;
-                if (deficitKw > availableCellKw)
-                {
-                    poweredConsumers = ShedLoad(activeAreaConsumers.ToList(), deficitKw - availableCellKw);
-                    deficitKw = poweredConsumers.Sum(consumer => consumer.PowerNeeded) - gridSupplyKw;
-                }
-
-                if (deficitKw > 0f && apcCell != null)
-                {
-                    apcCell.RemovePower(Math.Min(deficitKw, apcCell.MaxRemovablePower));
-                }
+                apcCell.RemovePowerKw(cellDrawKw, tickSeconds);
             }
-            else if (deficitKw < 0f && apcCell != null)
+            else if (cellDrawKw < 0f && apcCell != null)
             {
-                apcCell.AddPower(-deficitKw);
+                apcCell.AddPowerKw(-cellDrawKw, tickSeconds);
             }
 
             HashSet<IPowerConsumer> poweredSet = poweredConsumers.ToHashSet();
@@ -117,29 +109,6 @@ namespace System.Electricity
             {
                 consumer.PowerStatus = poweredSet.Contains(consumer) ? PowerStatus.Powered : PowerStatus.Inactive;
             }
-        }
-
-        private static List<IPowerConsumer> ShedLoad(List<IPowerConsumer> activeConsumers, float deficitKw)
-        {
-            var poweredConsumers = new List<IPowerConsumer>(activeConsumers);
-            float neededReduction = deficitKw;
-
-            while (neededReduction > 0f && poweredConsumers.Count > 0)
-            {
-                List<IPowerConsumer> candidates = poweredConsumers
-                    .Where(consumer => consumer.PowerNeeded >= neededReduction)
-                    .ToList();
-                if (candidates.Count == 0)
-                {
-                    candidates.AddRange(poweredConsumers);
-                }
-
-                IPowerConsumer removed = candidates[RandomGenerator.Next(candidates.Count)];
-                neededReduction -= removed.PowerNeeded;
-                poweredConsumers.Remove(removed);
-            }
-
-            return poweredConsumers;
         }
 
         private static bool IsChannelEnabled(PowerChannel channel, ApcControlFlags enabledChannels)

@@ -8,6 +8,9 @@ namespace EditorTests
 {
     public class CircuitAreaChannelTests
     {
+        private const float TestTickSeconds = 3600f;
+        private const float Tolerance = 0.001f;
+
         [Test]
         public void AreaScopedConsumer_UsesResolverChannelsInsteadOfCircuitWideOr()
         {
@@ -18,7 +21,7 @@ namespace EditorTests
             Circuit circuit = CreateCircuit(circuitApc, generator, equipmentConsumer);
             circuit.SetConsumerChannelResolver(_ => ApcControlFlags.Equipment);
 
-            circuit.UpdateCircuitPower();
+            circuit.UpdateCircuitPower(TestTickSeconds);
 
             Assert.AreEqual(PowerStatus.Powered, equipmentConsumer.PowerStatus);
         }
@@ -32,7 +35,7 @@ namespace EditorTests
 
             Circuit circuit = CreateCircuit(circuitApc, generator, equipmentConsumer);
 
-            circuit.UpdateCircuitPower();
+            circuit.UpdateCircuitPower(TestTickSeconds);
 
             Assert.AreEqual(PowerStatus.Inactive, equipmentConsumer.PowerStatus);
         }
@@ -48,7 +51,7 @@ namespace EditorTests
             Circuit circuit = CreateCircuit(lightingOnlyApc, allChannelsApc, generator, equipmentConsumer);
             circuit.SetConsumerChannelResolver(_ => ApcControlFlags.Equipment);
 
-            circuit.UpdateCircuitPower();
+            circuit.UpdateCircuitPower(TestTickSeconds);
 
             Assert.AreEqual(PowerStatus.Powered, equipmentConsumer.PowerStatus);
         }
@@ -74,42 +77,54 @@ namespace EditorTests
         [Test]
         public void UpdateCircuitPower_DoesNotChargeApcCellStorage()
         {
-            TestApcCell apcCell = new TestApcCell(storedPower: 1f, maxCapacity: 5f, maxPowerRate: 5f);
+            TestApcCell apcCell = new TestApcCell(storedEnergyKwh: 1f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
             BasicPowerGenerator generator = CreateBasicGenerator(10f);
             BasicPowerConsumer equipmentConsumer = CreateBasicConsumer(1f, PowerChannel.Equipment);
 
             Circuit circuit = CreateCircuit(apcCell, generator, equipmentConsumer);
-            circuit.UpdateCircuitPower();
+            circuit.UpdateCircuitPower(TestTickSeconds);
 
-            Assert.AreEqual(1f, apcCell.StoredPower);
+            Assert.That(apcCell.StoredEnergyKwh, Is.EqualTo(1f).Within(Tolerance));
         }
 
         [Test]
         public void GetAvailableGridSupplyForArea_IncludesStorageWhenCableDemandIsZero()
         {
-            TestApcCell apcCell = new TestApcCell(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 5f);
+            TestApcCell apcCell = new TestApcCell(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
             BasicBattery smes = CreateBasicBattery(5f, 50f, 50f);
 
             Circuit circuit = CreateCircuit(apcCell, smes);
             circuit.SetCableDistributionFilter(_ => false);
-            circuit.UpdateCableDistributionOnly();
+            circuit.UpdateCableDistributionOnly(TestTickSeconds);
 
-            Assert.AreEqual(5f, circuit.GetAvailableGridSupplyForArea(), 0.001f);
+            Assert.That(circuit.GetAvailableGridSupplyForArea(TestTickSeconds), Is.EqualTo(5f).Within(Tolerance));
+        }
+
+        [Test]
+        public void GetAvailableGridSupplyForArea_IncludesProducerSurplusAfterCableDemand()
+        {
+            BasicPowerGenerator generator = CreateBasicGenerator(10f);
+            BasicPowerConsumer cableConsumer = CreateBasicConsumer(3f, PowerChannel.Equipment);
+
+            Circuit circuit = CreateCircuit(generator, cableConsumer);
+            circuit.UpdateCableDistributionOnly(TestTickSeconds);
+
+            Assert.That(circuit.GetAvailableGridSupplyForArea(TestTickSeconds), Is.EqualTo(7f).Within(Tolerance));
         }
 
         [Test]
         public void DrawGridPowerForArea_DrainsNonApcStorageBeforeApcCellWouldBeUsed()
         {
-            TestApcCell apcCell = new TestApcCell(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 5f);
+            TestApcCell apcCell = new TestApcCell(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
             BasicBattery smes = CreateBasicBattery(5f, 50f, 50f);
 
             Circuit circuit = CreateCircuit(apcCell, smes);
             circuit.SetCableDistributionFilter(_ => false);
-            circuit.UpdateCableDistributionOnly();
-            circuit.DrawGridPowerForArea(2f);
+            circuit.UpdateCableDistributionOnly(TestTickSeconds);
+            circuit.DrawGridPowerForArea(2f, TestTickSeconds);
 
-            Assert.AreEqual(48f, smes.StoredPower, 0.001f);
-            Assert.AreEqual(5f, apcCell.StoredPower, 0.001f);
+            Assert.That(smes.StoredEnergyKwh, Is.EqualTo(48f).Within(Tolerance));
+            Assert.That(apcCell.StoredEnergyKwh, Is.EqualTo(5f).Within(Tolerance));
         }
 
         private static Circuit CreateCircuit(params IElectricDevice[] electricDevices)
@@ -143,13 +158,14 @@ namespace EditorTests
             return generator;
         }
 
-        private static BasicBattery CreateBasicBattery(float maxPowerRate, float maxCapacity, float storedPower)
+        private static BasicBattery CreateBasicBattery(float maxDischargeRateKw, float maxCapacityKwh, float storedEnergyKwh)
         {
             GameObject batteryGo = new GameObject();
             batteryGo.AddComponent<BasicBattery>();
             batteryGo.AddComponent<PlacedTileObject>();
             BasicBattery battery = batteryGo.GetComponent<BasicBattery>();
-            battery.Init(maxPowerRate, maxCapacity, storedPower);
+            battery.Init(maxDischargeRateKw, maxCapacityKwh, storedEnergyKwh);
+            battery.IsOn = true;
             return battery;
         }
 
@@ -171,44 +187,48 @@ namespace EditorTests
 
         private sealed class TestApcCell : IApcChannelSource, IPowerStorage
         {
-            public TestApcCell(float storedPower, float maxCapacity, float maxPowerRate)
+            public TestApcCell(float storedEnergyKwh, float maxCapacityKwh, float maxDischargeRateKw)
             {
-                StoredPower = storedPower;
-                _maxCapacity = maxCapacity;
-                _maxPowerRate = maxPowerRate;
+                StoredEnergyKwh = storedEnergyKwh;
+                _maxCapacityKwh = maxCapacityKwh;
+                _maxDischargeRateKw = maxDischargeRateKw;
             }
 
-            private readonly float _maxCapacity;
-            private readonly float _maxPowerRate;
+            private readonly float _maxCapacityKwh;
+            private readonly float _maxDischargeRateKw;
 
             public ApcControlFlags Channels => ApcControlFlags.All;
 
-            public float StoredPower { get; set; }
+            public float StoredEnergyKwh { get; set; }
 
-            public float MaxCapacity => _maxCapacity;
+            public float MaxCapacityKwh => _maxCapacityKwh;
 
-            public float RemainingCapacity => _maxCapacity - StoredPower;
+            public float RemainingCapacityKwh => _maxCapacityKwh - StoredEnergyKwh;
 
-            public float MaxPowerRate => _maxPowerRate;
+            public float MaxDischargeRateKw => _maxDischargeRateKw;
 
-            public float MaxRemovablePower => StoredPower < _maxPowerRate ? StoredPower : _maxPowerRate;
+            public float MaxChargeRateKw => _maxDischargeRateKw;
+
+            public float MaxDeliverableKw(float tickSeconds) =>
+                Mathf.Min(_maxDischargeRateKw, ElectricityUnits.KwhToKw(StoredEnergyKwh, tickSeconds));
 
             public bool IsOn => true;
 
             public PlacedTileObject TileObject => null;
 
-            public float AddPower(float amount)
+            public float AddPowerKw(float requestedKw, float tickSeconds)
             {
-                float added = amount > RemainingCapacity ? RemainingCapacity : amount;
-                StoredPower += added;
-                return added;
+                float absorbedKw = Mathf.Min(requestedKw, _maxDischargeRateKw);
+                float addedEnergy = Mathf.Min(RemainingCapacityKwh, ElectricityUnits.KwToKwh(absorbedKw, tickSeconds));
+                StoredEnergyKwh += addedEnergy;
+                return ElectricityUnits.KwhToKw(addedEnergy, tickSeconds);
             }
 
-            public float RemovePower(float amount)
+            public float RemovePowerKw(float requestedKw, float tickSeconds)
             {
-                float removed = amount > StoredPower ? StoredPower : amount;
-                StoredPower -= removed;
-                return removed;
+                float deliveredKw = Mathf.Min(requestedKw, MaxDeliverableKw(tickSeconds));
+                StoredEnergyKwh -= ElectricityUnits.KwToKwh(deliveredKw, tickSeconds);
+                return deliveredKw;
             }
         }
     }

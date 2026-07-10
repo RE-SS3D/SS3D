@@ -21,16 +21,19 @@ namespace SS3D.UI.MachineInterface
         private string _title = "APC · ENGINEERING BAY";
 
         [SerializeField]
-        private float _maxCapacity = 50f;
+        private float _maxCapacityKwh = 5f;
 
         [SerializeField]
-        private float _maxPowerRate = 10f;
+        private float _maxDischargeRateKw = 10f;
+
+        [SerializeField]
+        private float _maxChargeRateKw = 10f;
 
         [SyncVar(OnChange = nameof(OnChannelsChanged))]
         private ApcControlFlags _channels = ApcControlFlags.All;
 
         [SyncVar]
-        private float _storedPower;
+        private float _storedEnergyKwh;
 
         private bool _multipleApcsInArea;
 
@@ -55,21 +58,31 @@ namespace SS3D.UI.MachineInterface
 
         public string DisplayName => _title;
 
-        public float StoredPower
+        public float StoredEnergyKwh
         {
-            get => _storedPower;
-            set => _storedPower = Mathf.Clamp(value, 0f, MaxCapacity);
+            get => _storedEnergyKwh;
+            set => _storedEnergyKwh = Mathf.Clamp(value, 0f, MaxCapacityKwh);
         }
 
-        public float MaxCapacity => _maxCapacity;
+        public float MaxCapacityKwh => _maxCapacityKwh;
 
-        public float RemainingCapacity => Mathf.Max(0f, _maxCapacity - _storedPower);
+        public float RemainingCapacityKwh => Mathf.Max(0f, _maxCapacityKwh - _storedEnergyKwh);
 
-        public float MaxPowerRate => _maxPowerRate;
+        public float MaxDischargeRateKw => _maxDischargeRateKw;
 
-        public float MaxRemovablePower => Mathf.Min(_storedPower, _maxPowerRate);
+        public float MaxChargeRateKw => _maxChargeRateKw;
 
         public bool IsOn => true;
+
+        public float MaxDeliverableKw(float tickSeconds)
+        {
+            if (_storedEnergyKwh <= 0f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Min(_maxDischargeRateKw, ElectricityUnits.KwhToKw(_storedEnergyKwh, tickSeconds));
+        }
 
         public void SetMultipleApcsInArea(bool value)
         {
@@ -80,7 +93,7 @@ namespace SS3D.UI.MachineInterface
         {
             base.OnStartServer();
 
-            _storedPower = _maxCapacity;
+            _storedEnergyKwh = _maxCapacityKwh;
 
             ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
             if (electricitySystem.IsSetUp)
@@ -105,28 +118,32 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
-        public float AddPower(float amount)
+        public float AddPowerKw(float requestedKw, float tickSeconds)
         {
-            if (amount <= 0f)
+            if (requestedKw <= 0f || RemainingCapacityKwh <= 0f || _maxChargeRateKw <= 0f)
             {
                 return 0f;
             }
 
-            float addedAmount = Mathf.Min(RemainingCapacity, amount);
-            _storedPower += addedAmount;
-            return addedAmount;
+            float absorbedKw = Mathf.Min(requestedKw, _maxChargeRateKw);
+            float energyToAdd = ElectricityUnits.KwToKwh(absorbedKw, tickSeconds);
+            float addedEnergy = Mathf.Min(RemainingCapacityKwh, energyToAdd);
+            _storedEnergyKwh += addedEnergy;
+            return ElectricityUnits.KwhToKw(addedEnergy, tickSeconds);
         }
 
-        public float RemovePower(float amount)
+        public float RemovePowerKw(float requestedKw, float tickSeconds)
         {
-            if (amount <= 0f)
+            if (requestedKw <= 0f || _storedEnergyKwh <= 0f)
             {
                 return 0f;
             }
 
-            float removedAmount = Mathf.Min(_storedPower, amount);
-            _storedPower -= removedAmount;
-            return removedAmount;
+            float deliverableKw = MaxDeliverableKw(tickSeconds);
+            float deliveredKw = Mathf.Min(requestedKw, deliverableKw);
+            float removedEnergy = ElectricityUnits.KwToKwh(deliveredKw, tickSeconds);
+            _storedEnergyKwh -= removedEnergy;
+            return deliveredKw;
         }
 
         protected override void SendOpenToViewer(NetworkConnection conn)

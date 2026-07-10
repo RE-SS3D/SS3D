@@ -5,66 +5,89 @@ using UnityEngine;
 namespace System.Electricity
 {
     /// <summary>
-    /// A basic implementation of the IpowerStorage interface.
+    /// A basic implementation of the IPowerStorage interface.
     /// </summary>
     public class BasicBattery : BasicElectricDevice, IPowerStorage
     {
         [SerializeField][SyncVar]
-        private float _maxCapacity = 1000;
+        private float _maxCapacityKwh = 100f;
 
         [SerializeField][SyncVar]
-        private float _storedPower = 0;
+        private float _storedEnergyKwh;
 
         [SerializeField][SyncVar]
-        private float _maxPowerRate = 15f;
+        private float _maxDischargeRateKw = 50f;
+
+        [SerializeField][SyncVar]
+        private float _maxChargeRateKw = 50f;
 
         [SyncVar(OnChange = nameof(HandleSyncEnabled))]
         protected bool _isOn = true;
 
-        /// <inheritdoc> </inheritdoc>
-        public float StoredPower { get => _storedPower; set => _storedPower = value >= 0 ? MathF.Min(MaxCapacity, value) : MathF.Max(0f, value); }
+        public float StoredEnergyKwh
+        {
+            get => _storedEnergyKwh;
+            set => _storedEnergyKwh = Mathf.Clamp(value, 0f, MaxCapacityKwh);
+        }
 
-        /// <inheritdoc> </inheritdoc>
-        public float MaxCapacity => _maxCapacity;
+        public float MaxCapacityKwh => _maxCapacityKwh;
 
-        /// <inheritdoc> </inheritdoc>
-        public float RemainingCapacity => _maxCapacity - _storedPower;
+        public float RemainingCapacityKwh => Mathf.Max(0f, _maxCapacityKwh - _storedEnergyKwh);
 
-        /// <inheritdoc> </inheritdoc>
-        public float MaxPowerRate => _maxPowerRate;
+        public float MaxDischargeRateKw => _maxDischargeRateKw;
 
-        /// <inheritdoc> </inheritdoc>
-        public float MaxRemovablePower { get => Math.Min(_storedPower, _maxPowerRate); }
+        public float MaxChargeRateKw
+        {
+            get => _maxChargeRateKw;
+            set => _maxChargeRateKw = Mathf.Max(0f, value);
+        }
 
-        /// <inheritdoc> </inheritdoc>
+        public float MaxDeliverableKw(float tickSeconds)
+        {
+            if (!_isOn || _storedEnergyKwh <= 0f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Min(_maxDischargeRateKw, ElectricityUnits.KwhToKw(_storedEnergyKwh, tickSeconds));
+        }
+
         public bool IsOn { get => _isOn; set => _isOn = value; }
 
-        public void Init(float maxPowerRate, float maxCapacity, float storedPower)
+        public void Init(float maxDischargeRateKw, float maxCapacityKwh, float storedEnergyKwh, float maxChargeRateKw = -1f)
         {
-            _maxPowerRate = Mathf.Max(0, maxPowerRate);
-            _maxCapacity = Mathf.Max(0, maxCapacity);
-            StoredPower = storedPower;
+            _maxDischargeRateKw = Mathf.Max(0f, maxDischargeRateKw);
+            _maxCapacityKwh = Mathf.Max(0f, maxCapacityKwh);
+            _maxChargeRateKw = maxChargeRateKw < 0f ? _maxDischargeRateKw : Mathf.Max(0f, maxChargeRateKw);
+            StoredEnergyKwh = storedEnergyKwh;
         }
 
-
-        /// <inheritdoc> </inheritdoc>
-        public float AddPower(float amount)
+        public float AddPowerKw(float requestedKw, float tickSeconds)
         {
-            if (amount <= 0 || !_isOn) return 0;
+            if (requestedKw <= 0f || !_isOn || RemainingCapacityKwh <= 0f || _maxChargeRateKw <= 0f)
+            {
+                return 0f;
+            }
 
-            float addedAmount = Mathf.Min(RemainingCapacity, amount);
-            _storedPower += addedAmount;
-            return addedAmount;
+            float absorbedKw = Mathf.Min(requestedKw, _maxChargeRateKw);
+            float energyToAdd = ElectricityUnits.KwToKwh(absorbedKw, tickSeconds);
+            float addedEnergy = Mathf.Min(RemainingCapacityKwh, energyToAdd);
+            _storedEnergyKwh += addedEnergy;
+            return ElectricityUnits.KwhToKw(addedEnergy, tickSeconds);
         }
 
-        /// <inheritdoc> </inheritdoc>
-        public float RemovePower(float amount)
+        public float RemovePowerKw(float requestedKw, float tickSeconds)
         {
-            if (amount <= 0 || !_isOn) return 0;
+            if (requestedKw <= 0f || !_isOn || _storedEnergyKwh <= 0f)
+            {
+                return 0f;
+            }
 
-            float removedAmount = Mathf.Min(_storedPower, amount);
-            _storedPower -= removedAmount;
-            return removedAmount;
+            float deliverableKw = MaxDeliverableKw(tickSeconds);
+            float deliveredKw = Mathf.Min(requestedKw, deliverableKw);
+            float removedEnergy = ElectricityUnits.KwToKwh(deliveredKw, tickSeconds);
+            _storedEnergyKwh -= removedEnergy;
+            return deliveredKw;
         }
 
         protected virtual void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer) { }

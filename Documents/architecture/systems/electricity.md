@@ -8,8 +8,27 @@
 
 Power circuit simulation, APC channel gating, SMES storage, and tile-linked electric devices. Implements `ITileMutationObserver` for [tile](tile.md) placement reactions. Machine UI in [machine-interface](machine-interface.md). **Area-scoped power:** devices in an assigned area draw from that area's APC without a cable path to each device; the APC still connects to the station grid via cables. Channel gating and load accounting use [area](area.md) `TryGetEffectiveApcForDevice`.
 
+## Unit model
+
+- **Flow** (generators, consumers, UI): **kW** — instantaneous demand/supply per tick.
+- **Storage** (SMES, APC cell): **kWh** — energy reservoir.
+- **Tick interval:** `ElectricitySubSystem._tickRate` (default **0.2 s**). Conversions live in `ElectricityUnits.cs`.
+- Per tick: `energy_kWh = power_kW × tickSeconds / 3600`.
+
+## Power distribution
+
+1. **Cable phase** — `Circuit.UpdateCableDistributionOnly`: producers feed cable-distributed consumers; surplus stored in `_pendingProducerSurplus`; SMES discharges on deficit.
+2. **Area phase** — `AreaApcPowerDistribution.PowerAreaConsumers`: each APC draws grid headroom (`GetAvailableGridSupplyForArea`), then its cell covers remaining deficit.
+3. **Charge phase** — `Circuit.ChargePendingProducerSurplus`: leftover surplus charges non-APC storages (SMES), respecting per-device charge rate.
+
+**Load shedding:** `PowerConsumerAllocation.AllocateUnderBudget` — under insufficient supply, Equipment sheds first, then Environment, then Lighting (restore order is reverse). Applies to both cable and area distribution.
+
+**Balancing defaults (prefabs):** APC cell 5 kWh / 10 kW charge & discharge; SMES 100 kWh / 50 kW, starts charged with output enabled.
+
 ## Start here
 
+- `Assets/Scripts/SS3D/Systems/Electricity/ElectricityUnits.cs` — kW ↔ kWh conversion for tick interval
+- `Assets/Scripts/SS3D/Systems/Electricity/PowerConsumerAllocation.cs` — channel-priority consumer budgeting
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricitySubSystem.cs` — subsystem entry point
 - `Assets/Scripts/SS3D/Systems/Electricity/AreaApcPowerDistribution.cs` — area APC powers local consumers without per-device cables
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricCableConnectivity.cs` — cable-bridged device connectivity across Wire-layer runs

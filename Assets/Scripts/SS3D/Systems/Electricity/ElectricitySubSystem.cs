@@ -127,14 +127,14 @@ namespace System.Electricity
 
             foreach (Circuit circuit in _circuits)
             {
-                circuit.UpdateCableDistributionOnly();
+                circuit.UpdateCableDistributionOnly(_tickRate);
             }
 
             UpdateAreaScopedPower();
 
             foreach (Circuit circuit in _circuits)
             {
-                circuit.ChargePendingProducerSurplus();
+                circuit.ChargePendingProducerSurplus(_tickRate);
             }
         }
 
@@ -160,15 +160,15 @@ namespace System.Electricity
                 float demandKw = activeConsumers.Sum(consumer => consumer.PowerNeeded);
                 float gridAvailableKw = GetAvailableGridSupplyForApc(apcDevice);
                 float gridDrawKw = Math.Min(demandKw, gridAvailableKw);
-                TryGetCircuitForDevice(apcDevice)?.DrawGridPowerForArea(gridDrawKw);
-                AreaApcPowerDistribution.PowerAreaConsumers(apc, apcStorage, gridDrawKw, areaConsumers, activeConsumers);
+                TryGetCircuitForDevice(apcDevice)?.DrawGridPowerForArea(gridDrawKw, _tickRate);
+                AreaApcPowerDistribution.PowerAreaConsumers(apc, apcStorage, gridDrawKw, areaConsumers, activeConsumers, _tickRate);
             }
         }
 
         [Server]
         private float GetAvailableGridSupplyForApc(IElectricDevice apcDevice)
         {
-            return TryGetCircuitForDevice(apcDevice)?.GetAvailableGridSupplyForArea() ?? 0f;
+            return TryGetCircuitForDevice(apcDevice)?.GetAvailableGridSupplyForArea(_tickRate) ?? 0f;
         }
 
         [Server]

@@ -44,6 +44,7 @@ namespace SS3D.UI.MachineInterface
             _battery = GetComponent<SmesBattery>();
             base.OnStartServer();
             ApplyOutputEnabled(_outputEnabled);
+            ApplyInputSettings();
         }
 
         protected override void SendOpenToViewer(NetworkConnection conn)
@@ -95,7 +96,7 @@ namespace SS3D.UI.MachineInterface
                     _outputMaxKw = Mathf.Clamp(_outputMaxKw + delta, MinRateKw, MaxRateKw);
                     if (_battery != null)
                     {
-                        _battery.Init(_outputMaxKw, _battery.MaxCapacity, _battery.StoredPower);
+                        _battery.Init(_outputMaxKw, _battery.MaxCapacityKwh, _battery.StoredEnergyKwh, _inputEnabled ? _inputMaxKw : 0f);
                     }
 
                     return true;
@@ -277,8 +278,8 @@ namespace SS3D.UI.MachineInterface
                 electricitySubSystem.TryGetCircuitStats(_battery, _battery, out stats);
             }
 
-            float chargePct = _battery != null && _battery.MaxCapacity > 0f
-                ? _battery.StoredPower / _battery.MaxCapacity
+            float chargePct = _battery != null && _battery.MaxCapacityKwh > 0f
+                ? _battery.StoredEnergyKwh / _battery.MaxCapacityKwh
                 : 0f;
 
             float inputKw = Mathf.Min(stats.TotalSupplyKw, _inputMaxKw);
@@ -323,6 +324,7 @@ namespace SS3D.UI.MachineInterface
             if (_battery != null)
             {
                 ApplyOutputEnabled(_outputEnabled);
+                ApplyInputSettings();
             }
 
             RefreshAllViewers();
@@ -335,6 +337,11 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
+            if (_battery != null)
+            {
+                _battery.Init(_outputMaxKw, _battery.MaxCapacityKwh, _battery.StoredEnergyKwh, _inputEnabled ? _inputMaxKw : 0f);
+            }
+
             RefreshAllViewers();
         }
 
@@ -344,6 +351,16 @@ namespace SS3D.UI.MachineInterface
             {
                 _battery.IsOn = enabled;
             }
+        }
+
+        private void ApplyInputSettings()
+        {
+            if (_battery == null)
+            {
+                return;
+            }
+
+            _battery.MaxChargeRateKw = _inputEnabled ? _inputMaxKw : 0f;
         }
     }
 }

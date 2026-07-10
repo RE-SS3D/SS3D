@@ -106,10 +106,10 @@ namespace System.Electricity
             if (device is IPowerStorage storage)
             {
                 label.Append("\nCell ");
-                label.Append(storage.StoredPower.ToString("0.##"));
+                label.Append(storage.StoredEnergyKwh.ToString("0.##"));
                 label.Append('/');
-                label.Append(storage.MaxCapacity.ToString("0.##"));
-                label.Append(" kW");
+                label.Append(storage.MaxCapacityKwh.ToString("0.##"));
+                label.Append(" kWh");
                 label.Append(storage.IsOn ? " · output on" : " · output off");
             }
 
@@ -143,7 +143,7 @@ namespace System.Electricity
                 label.Append("\nCircuit surplus ");
                 label.Append(circuit.PendingProducerSurplus.ToString("0.##"));
                 label.Append(" kW · grid headroom ");
-                label.Append(circuit.GetAvailableGridSupplyForArea().ToString("0.##"));
+                label.Append(circuit.GetAvailableGridSupplyForArea(_tickRate).ToString("0.##"));
                 label.Append(" kW");
             }
 

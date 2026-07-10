@@ -7,57 +7,82 @@ namespace EditorTests
 {
     public class AreaApcPowerDistributionTests
     {
+        private const float TestTickSeconds = 3600f;
+        private const float Tolerance = 0.0001f;
+
         [Test]
         public void PowerAreaConsumers_GridCoversDemand_PowersAllConsumers()
         {
             TestConsumer consumer = new TestConsumer(5f, PowerChannel.Lighting);
-            TestApcStorage apc = new TestApcStorage(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 5f);
+            TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
 
             AreaApcPowerDistribution.PowerAreaConsumers(
                 apc,
                 apc,
                 gridSupplyKw: 10f,
                 new[] { consumer },
-                new[] { consumer });
+                new[] { consumer },
+                TestTickSeconds);
 
             Assert.AreEqual(PowerStatus.Powered, consumer.PowerStatus);
-            Assert.AreEqual(5f, apc.StoredPower);
+            Assert.That(apc.StoredEnergyKwh, Is.EqualTo(5f).Within(Tolerance));
         }
 
         [Test]
         public void PowerAreaConsumers_GridDeficit_DrainsApcCell()
         {
             TestConsumer consumer = new TestConsumer(8f, PowerChannel.Lighting);
-            TestApcStorage apc = new TestApcStorage(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 5f);
+            TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
 
             AreaApcPowerDistribution.PowerAreaConsumers(
                 apc,
                 apc,
                 gridSupplyKw: 0f,
                 new[] { consumer },
-                new[] { consumer });
+                new[] { consumer },
+                TestTickSeconds);
 
             Assert.AreEqual(PowerStatus.Powered, consumer.PowerStatus);
-            Assert.Less(apc.StoredPower, 5f);
+            Assert.That(apc.StoredEnergyKwh, Is.LessThan(5f));
         }
 
         [Test]
-        public void PowerAreaConsumers_GridDeficit_RespectsApcDischargeRate()
+        public void PowerAreaConsumers_GridDeficit_ShedsEquipmentBeforeLighting()
         {
-            TestConsumer first = new TestConsumer(2f, PowerChannel.Lighting);
-            TestConsumer second = new TestConsumer(2f, PowerChannel.Lighting);
-            TestApcStorage apc = new TestApcStorage(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 2f);
+            TestConsumer lighting = new TestConsumer(2f, PowerChannel.Lighting);
+            TestConsumer equipment = new TestConsumer(2f, PowerChannel.Equipment);
+            TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 2f);
 
             AreaApcPowerDistribution.PowerAreaConsumers(
                 apc,
                 apc,
                 gridSupplyKw: 0f,
-                new[] { first, second },
-                new[] { first, second });
+                new[] { lighting, equipment },
+                new[] { lighting, equipment },
+                TestTickSeconds);
 
-            Assert.AreEqual(PowerStatus.Powered, first.PowerStatus);
-            Assert.AreEqual(PowerStatus.Inactive, second.PowerStatus);
-            Assert.AreEqual(3f, apc.StoredPower, 0.001f);
+            Assert.AreEqual(PowerStatus.Powered, lighting.PowerStatus);
+            Assert.AreEqual(PowerStatus.Inactive, equipment.PowerStatus);
+            Assert.That(apc.StoredEnergyKwh, Is.EqualTo(3f).Within(Tolerance));
+        }
+
+        [Test]
+        public void PowerAreaConsumers_PartialBudget_RestoresLightingBeforeEquipment()
+        {
+            TestConsumer lighting = new TestConsumer(2f, PowerChannel.Lighting);
+            TestConsumer equipment = new TestConsumer(2f, PowerChannel.Equipment);
+            TestApcStorage apc = new TestApcStorage(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);
+
+            AreaApcPowerDistribution.PowerAreaConsumers(
+                apc,
+                apc,
+                gridSupplyKw: 2f,
+                new[] { lighting, equipment },
+                new[] { lighting, equipment },
+                TestTickSeconds);
+
+            Assert.AreEqual(PowerStatus.Powered, lighting.PowerStatus);
+            Assert.AreEqual(PowerStatus.Inactive, equipment.PowerStatus);
         }
 
         [Test]
@@ -93,44 +118,69 @@ namespace EditorTests
 
         private sealed class TestApcStorage : IApcChannelSource, IPowerStorage
         {
-            public TestApcStorage(float storedPower, float maxCapacity, float maxPowerRate)
+            public TestApcStorage(float storedEnergyKwh, float maxCapacityKwh, float maxDischargeRateKw, float maxChargeRateKw = -1f)
             {
-                StoredPower = storedPower;
-                _maxCapacity = maxCapacity;
-                _maxPowerRate = maxPowerRate;
+                StoredEnergyKwh = storedEnergyKwh;
+                _maxCapacityKwh = maxCapacityKwh;
+                _maxDischargeRateKw = maxDischargeRateKw;
+                _maxChargeRateKw = maxChargeRateKw < 0f ? maxDischargeRateKw : maxChargeRateKw;
             }
 
-            private readonly float _maxCapacity;
-            private readonly float _maxPowerRate;
+            private readonly float _maxCapacityKwh;
+            private readonly float _maxDischargeRateKw;
+            private readonly float _maxChargeRateKw;
 
             public ApcControlFlags Channels => ApcControlFlags.All;
 
-            public float StoredPower { get; set; }
+            public float StoredEnergyKwh { get; set; }
 
-            public float MaxCapacity => _maxCapacity;
+            public float MaxCapacityKwh => _maxCapacityKwh;
 
-            public float RemainingCapacity => _maxCapacity - StoredPower;
+            public float RemainingCapacityKwh => _maxCapacityKwh - StoredEnergyKwh;
 
-            public float MaxPowerRate => _maxPowerRate;
+            public float MaxDischargeRateKw => _maxDischargeRateKw;
 
-            public float MaxRemovablePower => StoredPower < _maxPowerRate ? StoredPower : _maxPowerRate;
+            public float MaxChargeRateKw => _maxChargeRateKw;
+
+            public float MaxDeliverableKw(float tickSeconds)
+            {
+                if (StoredEnergyKwh <= 0f)
+                {
+                    return 0f;
+                }
+
+                return UnityEngine.Mathf.Min(_maxDischargeRateKw, ElectricityUnits.KwhToKw(StoredEnergyKwh, tickSeconds));
+            }
 
             public bool IsOn => true;
 
             public PlacedTileObject TileObject => null;
 
-            public float AddPower(float amount)
+            public float AddPowerKw(float requestedKw, float tickSeconds)
             {
-                float added = amount > RemainingCapacity ? RemainingCapacity : amount;
-                StoredPower += added;
-                return added;
+                if (requestedKw <= 0f || RemainingCapacityKwh <= 0f)
+                {
+                    return 0f;
+                }
+
+                float absorbedKw = UnityEngine.Mathf.Min(requestedKw, _maxChargeRateKw);
+                float energyToAdd = ElectricityUnits.KwToKwh(absorbedKw, tickSeconds);
+                float addedEnergy = UnityEngine.Mathf.Min(RemainingCapacityKwh, energyToAdd);
+                StoredEnergyKwh += addedEnergy;
+                return ElectricityUnits.KwhToKw(addedEnergy, tickSeconds);
             }
 
-            public float RemovePower(float amount)
+            public float RemovePowerKw(float requestedKw, float tickSeconds)
             {
-                float removed = amount > StoredPower ? StoredPower : amount;
-                StoredPower -= removed;
-                return removed;
+                if (requestedKw <= 0f || StoredEnergyKwh <= 0f)
+                {
+                    return 0f;
+                }
+
+                float deliverableKw = MaxDeliverableKw(tickSeconds);
+                float deliveredKw = UnityEngine.Mathf.Min(requestedKw, deliverableKw);
+                StoredEnergyKwh -= ElectricityUnits.KwToKwh(deliveredKw, tickSeconds);
+                return deliveredKw;
             }
         }
     }

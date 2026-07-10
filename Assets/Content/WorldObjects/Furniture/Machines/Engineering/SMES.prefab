@@ -117,10 +117,11 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -5414623717715724467}
   _networkObjectCache: {fileID: -5414623717715724467}
-  _maxCapacity: 1000
-  _storedPower: 0
-  _maxPowerRate: 10
-  _isOn: 0
+  _maxCapacityKwh: 100
+  _storedEnergyKwh: 100
+  _maxDischargeRateKw: 50
+  _maxChargeRateKw: 50
+  _isOn: 1
   _smesSkinnedMesh: {fileID: 755838239801065349}
   _updateLightPeriod: 3
 --- !u!114 &-7870356800615129184
