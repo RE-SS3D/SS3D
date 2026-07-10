@@ -47,10 +47,18 @@ namespace EditorTests
             PlaceTurf(context, door, TileObjectGenericType.Door);
 
             TileCoord fromCoord = context.Query.WorldToTile(from, context.Map.MapId);
+            TileCoord doorCoord = context.Query.WorldToTile(door, context.Map.MapId);
             TileCoord toCoord = context.Query.WorldToTile(to, context.Map.MapId);
 
             Assert.IsTrue(AreaBoundaryEvaluator.BlocksAreaExpansion(
                 fromCoord,
+                doorCoord,
+                context.Query,
+                new AreaId(1),
+                AreaId.None));
+
+            Assert.IsTrue(AreaBoundaryEvaluator.BlocksAreaExpansion(
+                doorCoord,
                 toCoord,
                 context.Query,
                 new AreaId(1),
@@ -71,8 +79,15 @@ namespace EditorTests
         {
             TileObjectSo turfSo = TileMapTestUtilities.CreateTileSo(TileLayer.Turf, $"Turf_{genericType}");
             turfSo.genericType = genericType;
-            PlaceResult result = context.Construction.TryPlaceTile(turfSo, position, Direction.North, replaceExisting: false);
-            Assert.IsTrue(result.Success, $"Expected turf placement to succeed at {position}.");
+            bool success = context.Map.PlaceTileObject(
+                turfSo,
+                position,
+                Direction.North,
+                skipBuildCheck: true,
+                replaceExisting: false,
+                skipAdjacency: true,
+                out _);
+            Assert.IsTrue(success, $"Expected turf placement to succeed at {position}.");
         }
     }
 }

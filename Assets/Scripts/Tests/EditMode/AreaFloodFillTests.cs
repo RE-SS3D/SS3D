@@ -34,20 +34,20 @@ namespace EditorTests
         [Test]
         public void TwoApcsInSeparateWalledRooms_CreateDistinctAreas()
         {
-            AreaTestContext left = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 5, 5);
-            AreaTestContext right = AreaTestContext.CreateRoom(new Vector3(8, 0, 0), 5, 5, map: left.Map, query: left.Query);
+            AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 5, 5);
+            context.AddRoom(new Vector3(8, 0, 0), 5, 5);
 
-            TestApc leftApc = left.PlaceApc(new Vector3(2, 0, 2));
-            TestApc rightApc = right.PlaceApc(new Vector3(10, 0, 2));
+            TestApc leftApc = context.PlaceApc(new Vector3(2, 0, 2));
+            TestApc rightApc = context.PlaceApc(new Vector3(10, 0, 2));
 
-            left.RebuildAll();
+            context.RebuildAll();
 
-            AreaId leftArea = left.GetApcAreaId(leftApc);
-            AreaId rightArea = left.GetApcAreaId(rightApc);
+            AreaId leftArea = context.GetApcAreaId(leftApc);
+            AreaId rightArea = context.GetApcAreaId(rightApc);
 
             Assert.AreNotEqual(leftArea, rightArea);
-            Assert.AreEqual(leftArea.Value, left.GetAreaId(new TileCoord(left.Map.MapId, 2, 2)));
-            Assert.AreEqual(rightArea.Value, left.GetAreaId(new TileCoord(left.Map.MapId, 10, 2)));
+            Assert.AreEqual(leftArea.Value, context.GetAreaId(new TileCoord(context.Map.MapId, 2, 2)));
+            Assert.AreEqual(rightArea.Value, context.GetAreaId(new TileCoord(context.Map.MapId, 10, 2)));
         }
 
         [Test]
@@ -166,10 +166,11 @@ namespace EditorTests
             private readonly List<TestApc> _apcs = new();
             private readonly AreaSubSystemHarness _areaSubSystem;
 
-            private AreaTestContext(TileMap map, TileQueryService query, AreaSubSystemHarness areaSubSystem)
+            private AreaTestContext(TileMap map, TileQueryService query, ConstructionService construction, AreaSubSystemHarness areaSubSystem)
             {
                 Map = map;
                 Query = query;
+                Construction = construction;
                 _areaSubSystem = areaSubSystem;
             }
 
@@ -177,30 +178,22 @@ namespace EditorTests
 
             public TileQueryService Query { get; }
 
+            public ConstructionService Construction { get; }
+
             public AreaSubSystemHarness AreaSubSystem => _areaSubSystem;
 
-            public static AreaTestContext CreateRoom(Vector3 origin, int width, int height, TileMap map = null, TileQueryService query = null)
+            public static AreaTestContext CreateRoom(Vector3 origin, int width, int height)
             {
-                AreaTestContext context = CreateBase(map, query);
-
-                for (int x = 0; x < width; x++)
-                {
-                    for (int z = 0; z < height; z++)
-                    {
-                        Vector3 position = origin + new Vector3(x, 0, z);
-                        bool isPerimeter = x == 0 || z == 0 || x == width - 1 || z == height - 1;
-                        PlacePlenum(context, position);
-                        if (isPerimeter)
-                            PlaceTurf(context, position, TileObjectGenericType.Wall);
-                    }
-                }
-
+                AreaTestContext context = CreateBase();
+                context.FillRoom(origin, width, height);
                 return context;
             }
 
+            public void AddRoom(Vector3 origin, int width, int height) => FillRoom(origin, width, height);
+
             public static AreaTestContext CreateOpenFloor(Vector3 origin, int width, int height)
             {
-                AreaTestContext context = CreateBase(null, null);
+                AreaTestContext context = CreateBase();
 
                 for (int x = 0; x < width; x++)
                 {
@@ -213,11 +206,11 @@ namespace EditorTests
 
             public static AreaTestContext CreateTwoRoomsWithDoor(Vector3 leftOrigin, Vector3 rightOrigin, int roomSize)
             {
-                AreaTestContext context = CreateBase(null, null);
+                AreaTestContext context = CreateBase();
                 Vector3 doorPosition = new Vector3(leftOrigin.x + roomSize - 1, 0, leftOrigin.z + roomSize / 2);
 
-                BuildRoom(context, leftOrigin, roomSize, doorPosition);
-                BuildRoom(context, rightOrigin, roomSize, Vector3.positiveInfinity);
+                context.BuildRoom(leftOrigin, roomSize, doorPosition);
+                context.BuildRoom(rightOrigin, roomSize, Vector3.positiveInfinity);
 
                 PlacePlenum(context, doorPosition);
                 PlaceTurf(context, doorPosition, TileObjectGenericType.Door);
@@ -254,20 +247,32 @@ namespace EditorTests
                 return areaId;
             }
 
-            private static AreaTestContext CreateBase(TileMap map, TileQueryService query)
+            private static AreaTestContext CreateBase()
             {
                 TileMapTestUtilities.EnsureTestAssetsRegistered();
-                if (map == null)
-                {
-                    map = TileMap.Create("AreaFloodFillTests");
-                    query = new TileQueryService(map);
-                }
-
+                TileMap map = TileMap.Create("AreaFloodFillTests");
+                var query = new TileQueryService(map);
+                var construction = new ConstructionService(map, query);
                 var areaSubSystem = new AreaSubSystemHarness(map, query);
-                return new AreaTestContext(map, query, areaSubSystem);
+                return new AreaTestContext(map, query, construction, areaSubSystem);
             }
 
-            private static void BuildRoom(AreaTestContext context, Vector3 origin, int size, Vector3 doorToSkip)
+            private void FillRoom(Vector3 origin, int width, int height)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    for (int z = 0; z < height; z++)
+                    {
+                        Vector3 position = origin + new Vector3(x, 0, z);
+                        bool isPerimeter = x == 0 || z == 0 || x == width - 1 || z == height - 1;
+                        PlacePlenum(this, position);
+                        if (isPerimeter)
+                            PlaceTurf(this, position, TileObjectGenericType.Wall);
+                    }
+                }
+            }
+
+            private void BuildRoom(Vector3 origin, int size, Vector3 doorToSkip)
             {
                 for (int x = 0; x < size; x++)
                 {
@@ -281,9 +286,9 @@ namespace EditorTests
                             continue;
                         }
 
-                        PlacePlenum(context, position);
+                        PlacePlenum(this, position);
                         if (isPerimeter)
-                            PlaceTurf(context, position, TileObjectGenericType.Wall);
+                            PlaceTurf(this, position, TileObjectGenericType.Wall);
                     }
                 }
             }
@@ -291,15 +296,8 @@ namespace EditorTests
             private static void PlacePlenum(AreaTestContext context, Vector3 position)
             {
                 TileObjectSo plenumSo = TileMapTestUtilities.CreateTileSo(TileLayer.Plenum, "AreaTestPlenum");
-                bool success = context.Map.PlaceTileObject(
-                    plenumSo,
-                    position,
-                    Direction.North,
-                    skipBuildCheck: false,
-                    replaceExisting: false,
-                    skipAdjacency: true,
-                    out _);
-                Assert.IsTrue(success, $"Expected plenum placement at {position}.");
+                PlaceResult result = context.Construction.TryPlaceTile(plenumSo, position, Direction.North, replaceExisting: false);
+                Assert.IsTrue(result.Success, $"Expected plenum placement at {position}.");
             }
 
             private static void PlaceTurf(AreaTestContext context, Vector3 position, TileObjectGenericType genericType)
@@ -310,7 +308,7 @@ namespace EditorTests
                     turfSo,
                     position,
                     Direction.North,
-                    skipBuildCheck: false,
+                    skipBuildCheck: true,
                     replaceExisting: false,
                     skipAdjacency: true,
                     out _);

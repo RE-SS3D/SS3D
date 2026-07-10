@@ -312,7 +312,7 @@ namespace SS3D.Systems.Tile
         public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
             bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo)
         {
-            bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            bool canBuild = skipBuildCheck || CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
             placedObjectGo = null;
 
             if (canBuild || skipBuildCheck)
@@ -549,15 +549,19 @@ namespace SS3D.Systems.Tile
             // Then clear all items in the scene, not just those tracked by TileMap
             ClearUntrackedItems();
 
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+            SubSystems.TryGet(out TileSubSystem tileSystem);
 
-            foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
+            SavedTileChunk[] savedChunks = saveObject.savedChunkList ?? Array.Empty<SavedTileChunk>();
+            foreach (SavedTileChunk savedChunk in savedChunks)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
                 if (savedChunk.areaIds != null)
                     chunk.SetAreaIds(savedChunk.areaIds);
 
-                ISavedTileLocation[] savedTiles = savedChunk.savedTiles;
+                if (tileSystem == null)
+                    continue;
+
+                ISavedTileLocation[] savedTiles = savedChunk.savedTiles ?? Array.Empty<ISavedTileLocation>();
 
                 foreach (var savedTile in savedTiles)
                 {
@@ -575,7 +579,14 @@ namespace SS3D.Systems.Tile
             if (saveObject.savedAreas != null)
                 _loadedAreaRecords.AddRange(saveObject.savedAreas);
 
-            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+            if (tileSystem == null)
+            {
+                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
+            SavedPlacedItemObject[] savedItems = saveObject.savedItemList ?? Array.Empty<SavedPlacedItemObject>();
+            foreach (SavedPlacedItemObject savedItem in savedItems)
             {
                 ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
