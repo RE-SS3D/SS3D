@@ -29,11 +29,13 @@ namespace SS3D.Systems.Area
                 return;
 
             TileCoord origin = apc.OriginTile;
-            if (!AreaBoundaryEvaluator.IsWalkable(_query, origin))
+            IReadOnlyList<TileCoord> seeds = CollectFloodSeeds(apc);
+            if (seeds.Count == 0)
                 return;
 
             var queue = new Queue<TileCoord>();
-            queue.Enqueue(origin);
+            foreach (TileCoord seed in seeds)
+                queue.Enqueue(seed);
 
             while (queue.Count > 0)
             {
@@ -66,6 +68,8 @@ namespace SS3D.Systems.Area
                     queue.Enqueue(neighbour);
                 }
             }
+
+            AssignApcOriginTile(origin, areaId);
         }
 
         public void AssignDoorTileAreas()
@@ -107,6 +111,36 @@ namespace SS3D.Systems.Area
                     }
                 }
             }
+        }
+
+        private IReadOnlyList<TileCoord> CollectFloodSeeds(IAreaApcOrigin apc)
+        {
+            var seeds = new List<TileCoord>();
+            TileCoord origin = apc.OriginTile;
+
+            if (AreaBoundaryEvaluator.IsWalkable(_query, origin))
+            {
+                seeds.Add(origin);
+                return seeds;
+            }
+
+            Vector2Int offset = TileHelper.CoordinateDifferenceInFrontFacingDirection(apc.FacingDirection);
+            TileCoord inFront = new TileCoord(origin.MapId, origin.Grid.x + offset.x, origin.Grid.y + offset.y);
+            if (AreaBoundaryEvaluator.IsWalkable(_query, inFront))
+                seeds.Add(inFront);
+
+            return seeds;
+        }
+
+        private void AssignApcOriginTile(TileCoord origin, AreaId areaId)
+        {
+            if (!_map.TryGetAreaId(origin, out ushort originAreaId))
+                return;
+
+            if (originAreaId != AreaId.None && originAreaId != areaId.Value)
+                return;
+
+            _map.TrySetAreaId(origin, areaId.Value);
         }
 
         private bool TryGetFirstNeighbourAreaId(TileCoord coord, out ushort areaId)

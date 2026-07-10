@@ -94,6 +94,55 @@ namespace EditorTests
         }
 
         [Test]
+        public void WallMountedApcOnPerimeter_FloodsInteriorTiles()
+        {
+            AreaTestContext context = AreaTestContext.CreateRoom(origin: new Vector3(10, 0, 10), width: 5, height: 5);
+            TestApc apc = context.PlaceApc(new Vector3(10, 0, 12), Direction.East);
+
+            context.RebuildAll();
+
+            AreaId areaId = context.GetApcAreaId(apc);
+            Assert.IsFalse(areaId.IsNone);
+
+            for (int x = 11; x <= 13; x++)
+            {
+                for (int z = 11; z <= 13; z++)
+                {
+                    TileCoord coord = new TileCoord(context.Map.MapId, x, z);
+                    Assert.AreEqual(areaId.Value, context.GetAreaId(coord), $"Tile ({x},{z}) should belong to wall-mounted APC area.");
+                }
+            }
+
+            Assert.AreEqual(areaId.Value, context.GetAreaId(apc.OriginTile));
+        }
+
+        [Test]
+        public void WallMountedApcFacingIntoRoom_DoesNotFloodRoomBehindWall()
+        {
+            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
+            TestApc apc = context.PlaceApc(new Vector3(4, 0, 2), Direction.West);
+
+            context.RebuildAll();
+
+            AreaId areaId = context.GetApcAreaId(apc);
+            Assert.IsFalse(areaId.IsNone);
+            Assert.AreEqual(areaId.Value, context.GetAreaId(new TileCoord(context.Map.MapId, 2, 2)));
+            Assert.AreEqual(AreaId.None, context.GetAreaId(new TileCoord(context.Map.MapId, 7, 2)));
+        }
+
+        [Test]
+        public void WallMountedApcFacingAwayFromRoom_DoesNotFloodEitherRoom()
+        {
+            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
+            TestApc apc = context.PlaceApc(new Vector3(4, 0, 2), Direction.East);
+
+            context.RebuildAll();
+
+            Assert.AreEqual(AreaId.None, context.GetAreaId(new TileCoord(context.Map.MapId, 2, 2)));
+            Assert.AreEqual(AreaId.None, context.GetAreaId(new TileCoord(context.Map.MapId, 7, 2)));
+        }
+
+        [Test]
         public void RoomWithoutApc_RemainsUnassigned()
         {
             AreaTestContext context = AreaTestContext.CreateRoom(new Vector3(0, 0, 0), 4, 4);
@@ -153,6 +202,8 @@ namespace EditorTests
         private sealed class TestApc : IAreaApcOrigin
         {
             public TileCoord OriginTile { get; init; }
+
+            public Direction FacingDirection { get; init; } = Direction.North;
 
             public string DisplayName { get; init; } = "Test APC";
 
@@ -218,12 +269,20 @@ namespace EditorTests
                 return context;
             }
 
-            public TestApc PlaceApc(Vector3 position)
+            public static AreaTestContext CreateTwoAdjacentRooms(Vector3 leftOrigin, int roomSize)
+            {
+                AreaTestContext context = CreateRoom(leftOrigin, roomSize, roomSize);
+                context.AddRoom(leftOrigin + new Vector3(roomSize, 0, 0), roomSize, roomSize);
+                return context;
+            }
+
+            public TestApc PlaceApc(Vector3 position, Direction facingDirection = Direction.North)
             {
                 TileCoord coord = Query.WorldToTile(position, Map.MapId);
                 var apc = new TestApc
                 {
                     OriginTile = coord,
+                    FacingDirection = facingDirection,
                     DisplayName = $"APC {coord.Grid.x},{coord.Grid.y}",
                 };
                 _apcs.Add(apc);

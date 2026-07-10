@@ -9,6 +9,8 @@ namespace SS3D.Systems.Area
     {
         TileCoord OriginTile { get; }
 
+        Direction FacingDirection { get; }
+
         string DisplayName { get; }
 
         void SetMultipleApcsInArea(bool value);

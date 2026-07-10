@@ -53,6 +53,8 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
+        public Direction FacingDirection => TileObject != null ? TileObject.Direction : Direction.North;
+
         public string DisplayName => _title;
 
         public float StoredPower
