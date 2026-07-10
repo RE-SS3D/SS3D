@@ -21,16 +21,31 @@ todos:
     content: "Phase 2: round snapshot contributors (items, electricity, substances, entities) with delta-from-template format and admin commands"
     status: pending
   - id: docs
-    content: Add persistence system map, update tile.md and rounds-lobby.md, register in architecture INDEX
+    content: Add persistence system map and register in architecture INDEX; update rounds-lobby.md with persistence hooks (tile.md and area.md already synced in area-foundation commits)
     status: pending
 isProject: false
 ---
 
 # Persistence Architecture — Recommended Design
 
+## Revision note (post area-foundation commits)
+
+Recent commits (`5ebe0426`–`6fa79807`) shipped **APC-seeded area foundation (phases 0–2)** with save/load already wired into the tilemap pipeline. This validates the plan’s contributor split but does **not** change the recommended architecture — it gives us concrete extraction points and existing tests to build on.
+
+**What changed since the original draft:**
+
+- Area save/load is live: per-chunk `areaIds`, `SavedAreaRecord[]`, `AreaSubSystem.BuildSavedAreaRecords()`, restore via `TileMap.LoadedAreaRecords` + `OnMapLoaded`
+- Architecture docs landed: [`area.md`](../architecture/systems/area.md), [`2026-07_area-foundation`](../architecture/2026-07_area-foundation.md), [`tile.md`](../architecture/systems/tile.md) updated (areas no longer stale)
+- EditMode coverage exists: `AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata`
+- Area rebuild on load has a **dual path** (see load-order note below): if APCs are already registered, `AreaSubSystem` re-floods from live APCs instead of restoring saved metadata
+
+**What did not change:** no central `PersistenceSubSystem`, no envelope format, no round-config integration, no round snapshots. Core recommendations stand.
+
+---
+
 ## Current state (what exists)
 
-The only real disk persistence today is a **tilemap authoring pipeline**:
+The only real disk persistence today is a **tilemap authoring pipeline** (now including embedded area data):
 
 ```mermaid
 flowchart LR
@@ -51,7 +66,9 @@ flowchart LR
 | Generic I/O       | `[LocalStorage.cs](Assets/Scripts/SS3D/Data/Management/LocalStorage.cs)`             | `JsonUtility` read/write to `Builds/Game/Data/`                         |
 | Orchestration     | `[TileSubSystem.cs](Assets/Scripts/SS3D/Systems/Tile/TileSubSystem.cs)`              | Server-only `Save()` / `Load()`; auto-loads most recent map on boot     |
 | DTO + walk        | `[TileMap.Save/Load](Assets/Scripts/SS3D/Systems/Tile/TileMap.cs)`, `SavedObjects/*` | Chunk/tile/item/area serialization                                      |
-| Cross-system hook | `[AreaSubSystem](Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs)`                 | Area metadata bundled into `SavedTileMap` via `BuildSavedAreaRecords()` |
+| Cross-system hook | `[AreaSubSystem](Assets/Scripts/SS3D/Systems/Area/AreaSubSystem.cs)`                 | `BuildSavedAreaRecords()` on save; restore via `TileMap.LoadedAreaRecords` + `OnMapLoaded` |
+| Area storage      | `[TileChunk](Assets/Scripts/SS3D/Systems/Tile/TileChunk.cs)` area-id grid            | Per-chunk `ushort[] areaIds` serialized in `SavedTileChunk`            |
+| Tests             | `[AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata](Assets/Scripts/Tests/EditMode/AreaFloodFillTests.cs)` | Baseline for contributor extraction tests |
 
 
 **What it is:** a **station layout template** editor, not gameplay persistence. Items in containers/inventory are explicitly excluded. Adjacency, electricity, substances, machine runtime state, round state, and player meta are not saved.
@@ -61,7 +78,8 @@ flowchart LR
 - No central orchestrator — `TileSubSystem` owns save/load directly
 - `JsonUtility` + `[SerializeReference]` on `[SavedTileChunk](Assets/Scripts/SS3D/Systems/Tile/SavedObjects/SavedTileChunk.cs)` — bloated files, weak polymorphism, no schema versioning
 - Asset identity is **prefab name strings** at save time; network uses **ushort catalog IDs** — two parallel identity systems
-- Areas are coupled into tilemap DTOs (worked for Phase 1, doesn't scale)
+- Areas are coupled into tilemap DTOs (shipped in area foundation; still should be split into separate contributor chunks)
+- Area restore depends on `OnMapLoaded` firing after tiles **and** APC NetworkObjects exist — contributor load order must guarantee this (see below)
 - No integration with `[RoundSubSystem](Assets/Scripts/SS3D/Systems/Rounds/RoundSubSystem.cs)` — server boot always loads "most recent" map, not round-selected map
 - Design docs (`[lobby.md](Documents/design/lobby.md)` §11, `[round-config.md](Documents/design/round-config.md)` §5) assume a **Persistence & accounts** layer that does not exist
 
@@ -218,10 +236,12 @@ Migrate tilemap saves from raw prefab names to **catalog-backed stable keys** wi
 | Contributor                     | Layer           | Captures                                  | Notes                                                      |
 | ------------------------------- | --------------- | ----------------------------------------- | ---------------------------------------------------------- |
 | `TileMapPersistenceContributor` | StationTemplate | `SavedTileMap` minus areas                | Existing `TileMap.Save/Load` logic, extracted              |
-| `AreaPersistenceContributor`    | StationTemplate | `SavedAreaRecord[]` + per-chunk `areaIds` | Decouple from `SavedTileMap` DTO; today areas are embedded |
+| `AreaPersistenceContributor`    | StationTemplate | `SavedAreaRecord[]` + per-chunk `areaIds` | Wrap existing `AreaSubSystem.BuildSavedAreaRecords()` + restore path; decouple from `SavedTileMap` DTO |
 
 
-**Load order:** tilemap first (creates chunks + tiles), areas second (restores registry from `SavedAreaRecord[]` or re-floods from live APCs).
+**Load order:** tilemap first (creates chunks, tiles, and per-chunk `areaIds`), then APC NetworkObjects spawn/register, then areas contributor restores registry.
+
+**Important (from shipped `AreaSubSystem.HandleMapLoaded`):** if APCs are already registered when the map finishes loading, the subsystem calls `RebuildAllAreasFromApcs()` and **ignores** saved area metadata. The persistence orchestrator must either (a) restore area metadata only after tiles are placed but before APC registration, or (b) expose a explicit `RestoreFromSave()` on `AreaSubSystem` that takes precedence over live re-flood. Option (b) is cleaner for the contributor model.
 
 **Backward compatibility:** `PersistenceSubSystem` detects legacy flat `SavedTileMap` JSON (no envelope wrapper) and routes through a `LegacyTileMapMigrator` that wraps it into the new format on first save.
 
@@ -346,7 +366,7 @@ Deferred until accounts/auth exist, but design for it now:
 3. Add `LegacyTileMapMigrator` for old flat JSON files
 4. Rewire `TileSubSystem` and TileMap Creator UI to use framework
 5. Replace `OnMapLoaded` with persistence lifecycle events
-6. Add EditMode tests: envelope round-trip, legacy migration, contributor load ordering
+6. Add EditMode tests: envelope round-trip, legacy migration, contributor load ordering — extend/migrate existing `AreaFloodFillTests.SaveLoad_PreservesAreaIdsAndMetadata` rather than rewriting from scratch
 
 ### Phase 1b — Server meta
 
@@ -367,8 +387,9 @@ Deferred until accounts/auth exist, but design for it now:
 ### Ongoing — docs
 
 - Add `Documents/architecture/systems/persistence.md` system map
-- Update `[tile.md](Documents/architecture/systems/tile.md)` (stale re: areas) and `[rounds-lobby.md](Documents/architecture/systems/rounds-lobby.md)` with persistence hooks
-- Register in `[INDEX.md](Documents/architecture/INDEX.md)`
+- Update `[rounds-lobby.md](Documents/architecture/systems/rounds-lobby.md)` with persistence hooks (round-start template load, round-end history append)
+- Register persistence in `[INDEX.md](Documents/architecture/INDEX.md)`
+- Already done (area-foundation commits): `[tile.md](Documents/architecture/systems/tile.md)`, `[area.md](Documents/architecture/systems/area.md)`, `[2026-07_area-foundation.md](Documents/architecture/2026-07_area-foundation.md)`
 
 ---
 

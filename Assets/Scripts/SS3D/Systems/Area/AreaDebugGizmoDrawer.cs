@@ -87,7 +87,7 @@ namespace SS3D.Systems.Area
                     continue;
                 }
 
-                Vector3 apcPosition = query.TileToWorld(record.Apc.OriginTile) + new Vector3(0.5f, 0.35f, 0.5f);
+                Vector3 apcPosition = query.TileToWorld(record.Apc.OriginTile) + new Vector3(0f, 0.35f, 0f);
                 Color areaColor = AreaDevSettings.GetColorForArea(record.Id.Value);
                 Gizmos.color = areaColor;
                 Gizmos.DrawWireSphere(apcPosition, 0.35f);
@@ -109,7 +109,7 @@ namespace SS3D.Systems.Area
 
         private static void DrawTileOverlay(Vector3 world, ushort areaId)
         {
-            Vector3 center = world + new Vector3(0.5f, TileYOffset, 0.5f);
+            Vector3 center = world + new Vector3(0f, TileYOffset, 0f);
             Vector3 size = new Vector3(TileInset, TileThickness, TileInset);
             Color color = AreaDevSettings.GetColorForArea(areaId);
 
