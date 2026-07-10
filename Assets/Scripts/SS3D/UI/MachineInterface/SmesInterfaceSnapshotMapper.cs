@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SS3D.UI.MachineInterface
 {
     public static class SmesInterfaceSnapshotMapper
@@ -21,36 +19,10 @@ namespace SS3D.UI.MachineInterface
                 InputActive = snapshot.InputActive,
                 OutputActive = snapshot.OutputActive,
                 ConnectionStateText = snapshot.ConnectionStateText,
-                DiagnosisHint = snapshot.DiagnosisHint,
-                Warnings = BuildWarnings(snapshot),
             };
 
             ApplyStatusCopy(model);
             return model;
-        }
-
-        private static List<DiagnosticLine> BuildWarnings(SmesInterfaceSnapshot snapshot)
-        {
-            List<DiagnosticLine> lines = new(snapshot.WarningCount);
-            for (int i = 0; i < snapshot.WarningCount; i++)
-            {
-                ApcDiagnosticSnapshot warning = GetWarning(snapshot, i);
-                lines.Add(new DiagnosticLine(warning.Glyph, warning.Text, (StatusTone)warning.Tone));
-            }
-
-            return lines;
-        }
-
-        private static ApcDiagnosticSnapshot GetWarning(SmesInterfaceSnapshot snapshot, int index)
-        {
-            return index switch
-            {
-                0 => snapshot.Warning0,
-                1 => snapshot.Warning1,
-                2 => snapshot.Warning2,
-                3 => snapshot.Warning3,
-                _ => default,
-            };
         }
 
         private static void ApplyStatusCopy(SmesInterfaceViewModel model)

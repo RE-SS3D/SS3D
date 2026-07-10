@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SS3D.UI.MachineInterface
 {
     public class SmesInterfaceViewModel : IMachineInterfaceViewModel
@@ -37,10 +35,6 @@ namespace SS3D.UI.MachineInterface
         public bool InputActive { get; set; }
 
         public bool OutputActive { get; set; }
-
-        public string DiagnosisHint { get; set; } = string.Empty;
-
-        public List<DiagnosticLine> Warnings { get; set; } = new();
 
         public static SmesInterfaceViewModel CreateNominal()
         {
@@ -83,12 +77,6 @@ namespace SS3D.UI.MachineInterface
                 ExteriorInputWord = "NO SIGNAL",
                 ExteriorOutputWord = "ACTIVE",
                 ConnectionStateText = "Input link down — output still served from storage.",
-                DiagnosisHint = "The SMES is not the fault — check the upstream generator or grid cable feeding this unit.",
-                Warnings = new List<DiagnosticLine>
-                {
-                    new("!", "No grid connection detected.", StatusTone.Danger),
-                    new("!", "Battery discharge increasing.", StatusTone.Warning),
-                },
             };
         }
 
@@ -110,12 +98,6 @@ namespace SS3D.UI.MachineInterface
                 ExteriorInputWord = "AVAILABLE",
                 ExteriorOutputWord = "OVERDRAWN",
                 ConnectionStateText = "Distribution grid drawing more than input supplies.",
-                DiagnosisHint = "The grid is overloaded, not the SMES — reduce distribution demand or bring another generator online.",
-                Warnings = new List<DiagnosticLine>
-                {
-                    new("!", "Output exceeds sustainable generation.", StatusTone.Warning),
-                    new("!", "Battery discharge increasing.", StatusTone.Warning),
-                },
             };
         }
 
@@ -137,12 +119,6 @@ namespace SS3D.UI.MachineInterface
                 ExteriorInputWord = "DISABLED",
                 ExteriorOutputWord = "DISABLED (auto-cutoff)",
                 ConnectionStateText = "Both links down — unit in protective shutdown.",
-                DiagnosisHint = "The SMES itself has faulted — restore input power, then let it cool before re-enabling output.",
-                Warnings = new List<DiagnosticLine>
-                {
-                    new("X", "Cell bank overheating — output disabled.", StatusTone.Danger),
-                    new("X", "Charge critical — connect input immediately.", StatusTone.Danger),
-                },
             };
         }
     }

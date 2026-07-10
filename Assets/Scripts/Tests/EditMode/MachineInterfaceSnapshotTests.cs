@@ -67,11 +67,6 @@ namespace EditorTests
             Assert.AreEqual(original.InputActive, roundTripped.InputActive);
             Assert.AreEqual(original.OutputActive, roundTripped.OutputActive);
             Assert.AreEqual(original.ConnectionStateText, roundTripped.ConnectionStateText);
-            Assert.AreEqual(original.DiagnosisHint, roundTripped.DiagnosisHint);
-            Assert.AreEqual(original.WarningCount, roundTripped.WarningCount);
-            Assert.AreEqual(original.Warning0.Glyph, roundTripped.Warning0.Glyph);
-            Assert.AreEqual(original.Warning0.Text, roundTripped.Warning0.Text);
-            Assert.AreEqual(original.Warning0.Tone, roundTripped.Warning0.Tone);
         }
 
         [Test]
@@ -95,22 +90,12 @@ namespace EditorTests
         {
             SmesInterfaceSnapshot snapshot = CreateSmesSnapshot();
             snapshot.PowerState = (byte)SmesPowerState.Fault;
-            snapshot.WarningCount = 1;
-            snapshot.Warning0 = new ApcDiagnosticSnapshot
-            {
-                Glyph = "X",
-                Text = "Cell bank overheating — output disabled.",
-                Tone = (byte)StatusTone.Danger,
-            };
-            snapshot.DiagnosisHint = "Restore input power before re-enabling output.";
 
             SmesInterfaceViewModel model = SmesInterfaceSnapshotMapper.ToViewModel(snapshot);
 
             Assert.AreEqual(SmesPowerState.Fault, model.State);
             Assert.AreEqual("FAULT", model.StatusBadgeText);
             Assert.AreEqual("SMES Offline", model.ExteriorStatusWord);
-            Assert.AreEqual(1, model.Warnings.Count);
-            Assert.AreEqual("Restore input power before re-enabling output.", model.DiagnosisHint);
         }
 
         private static ApcInterfaceSnapshot CreateApcSnapshot()
@@ -158,14 +143,6 @@ namespace EditorTests
                 InputActive = true,
                 OutputActive = true,
                 ConnectionStateText = "Grid link nominal — both connections healthy.",
-                DiagnosisHint = string.Empty,
-                WarningCount = 1,
-                Warning0 = new ApcDiagnosticSnapshot
-                {
-                    Glyph = "!",
-                    Text = "Battery discharge increasing.",
-                    Tone = (byte)StatusTone.Warning,
-                },
             };
         }
     }

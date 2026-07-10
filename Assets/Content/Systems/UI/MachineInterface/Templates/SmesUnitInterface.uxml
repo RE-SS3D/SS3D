@@ -2,7 +2,6 @@
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesStatusBanner.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/WarningPanel.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesPowerFlowRow.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss" />
@@ -10,8 +9,6 @@
 
     <ui:VisualElement name="smes-root" class="smes-unit-interface">
         <ss3d:SmesStatusBanner name="status-banner" />
-
-        <ss3d:WarningPanel name="warning-panel" />
 
         <ui:VisualElement class="smes-metrics-row">
             <ui:VisualElement class="smes-storage-column">

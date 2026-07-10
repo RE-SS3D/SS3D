@@ -15,7 +15,6 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         private readonly MachineWindow _window;
         private readonly SmesStatusBanner _statusBanner;
-        private readonly WarningPanel _warningPanel;
         private readonly StorageCellRow _storageCells;
         private readonly Label _chargePct;
         private readonly Label _chargeTrendText;
@@ -29,7 +28,6 @@ namespace SS3D.UI.MachineInterface.Bindings
             VisualElement contentRoot = root.Q<VisualElement>("smes-root") ?? root;
 
             _statusBanner = contentRoot.Q<SmesStatusBanner>("status-banner");
-            _warningPanel = contentRoot.Q<WarningPanel>("warning-panel");
             _storageCells = contentRoot.Q<StorageCellRow>("storage-cells");
             _chargePct = contentRoot.Q<Label>("charge-pct");
             _chargeTrendText = contentRoot.Q<Label>("charge-trend-text");
@@ -79,8 +77,6 @@ namespace SS3D.UI.MachineInterface.Bindings
                 model.StatusBadgeText,
                 model.ConnectionStateText,
                 tone);
-
-            _warningPanel?.SetWarnings(model.Warnings, model.DiagnosisHint);
 
             StatusTone chargeTone = SmesUnitBinderHelpers.GetChargeTone(model.ChargePct);
             _storageCells?.SetCharge(model.ChargePct, chargeTone);

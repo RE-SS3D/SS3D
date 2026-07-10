@@ -72,10 +72,6 @@
     height: 26px;
 }
 
-.smes-unit-interface .warning-panel {
-    margin-top: 14px;
-}
-
 .tone-success {
     color: var(--ss3d-feedback-success);
 }

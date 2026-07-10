@@ -2,7 +2,6 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
-using System.Collections.Generic;
 using System.Electricity;
 using UnityEngine;
 
@@ -15,7 +14,6 @@ namespace SS3D.UI.MachineInterface
     public sealed class SmesController : MachineInterfaceBehaviour
     {
         private const float CriticalChargeThreshold = 0.05f;
-        private const float LowChargeThreshold = 0.15f;
         private const float MinRateKw = 1f;
         private const float MaxRateKw = 50f;
         private const float RateStepKw = 1f;
@@ -154,105 +152,6 @@ namespace SS3D.UI.MachineInterface
             };
         }
 
-        private static void ApplyWarnings(
-            ref SmesInterfaceSnapshot snapshot,
-            SmesPowerState powerState,
-            CircuitStats stats,
-            float chargePct,
-            bool inputActive)
-        {
-            List<ApcDiagnosticSnapshot> warnings = new();
-
-            if (!inputActive && snapshot.OutputActive)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "!",
-                    Text = "No grid connection detected.",
-                    Tone = (byte)StatusTone.Danger,
-                });
-                snapshot.DiagnosisHint = "The SMES is not the fault — check the upstream generator or grid cable feeding this unit.";
-            }
-
-            if (powerState == SmesPowerState.Overload)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "!",
-                    Text = "Output exceeds sustainable generation.",
-                    Tone = (byte)StatusTone.Warning,
-                });
-                snapshot.DiagnosisHint = "The grid is overloaded, not the SMES — reduce distribution demand or bring another generator online.";
-            }
-
-            if (stats.BatteryDraining)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "!",
-                    Text = "Battery discharge increasing.",
-                    Tone = (byte)StatusTone.Warning,
-                });
-            }
-
-            if (chargePct <= LowChargeThreshold)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "X",
-                    Text = "Charge critical — connect input immediately.",
-                    Tone = (byte)StatusTone.Danger,
-                });
-            }
-
-            if (powerState == SmesPowerState.Fault)
-            {
-                warnings.Add(new ApcDiagnosticSnapshot
-                {
-                    Glyph = "X",
-                    Text = "Cell bank overheating — output disabled.",
-                    Tone = (byte)StatusTone.Danger,
-                });
-                snapshot.DiagnosisHint = "The SMES itself has faulted — restore input power, then let it cool before re-enabling output.";
-            }
-
-            snapshot.WarningCount = Mathf.Min(warnings.Count, SmesInterfaceSnapshot.MaxWarnings);
-            for (int i = 0; i < snapshot.WarningCount; i++)
-            {
-                SetWarning(ref snapshot, i, warnings[i]);
-            }
-        }
-
-        private static void SetWarning(ref SmesInterfaceSnapshot snapshot, int index, ApcDiagnosticSnapshot warning)
-        {
-            switch (index)
-            {
-                case 0:
-                {
-                    snapshot.Warning0 = warning;
-                    break;
-                }
-
-                case 1:
-                {
-                    snapshot.Warning1 = warning;
-                    break;
-                }
-
-                case 2:
-                {
-                    snapshot.Warning2 = warning;
-                    break;
-                }
-
-                case 3:
-                {
-                    snapshot.Warning3 = warning;
-                    break;
-                }
-            }
-        }
-
         [TargetRpc(RunLocally = true)]
         private void TargetOpenInterface(NetworkConnection conn, SmesInterfaceSnapshot snapshot)
         {
@@ -307,10 +206,8 @@ namespace SS3D.UI.MachineInterface
                 InputActive = inputActive,
                 OutputActive = outputActive,
                 ConnectionStateText = BuildConnectionStateText(powerState, inputActive, outputActive),
-                DiagnosisHint = string.Empty,
             };
 
-            ApplyWarnings(ref snapshot, powerState, stats, chargePct, inputActive);
             return snapshot;
         }
 
