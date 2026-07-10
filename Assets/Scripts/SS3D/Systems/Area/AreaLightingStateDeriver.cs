@@ -4,8 +4,13 @@ namespace SS3D.Systems.Area
 {
     public static class AreaLightingStateDeriver
     {
-        public static AreaLightingState Derive(CircuitStats stats, ApcControlFlags channels)
+        public static AreaLightingState Derive(CircuitStats stats, ApcControlFlags channels, bool lightingSwitchOn = true)
         {
+            if (!lightingSwitchOn)
+            {
+                return AreaLightingState.Dark;
+            }
+
             bool lightingEnabled = (channels & ApcControlFlags.Lighting) != 0;
             if (!lightingEnabled)
             {

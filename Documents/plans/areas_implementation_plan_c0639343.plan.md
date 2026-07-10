@@ -38,6 +38,12 @@ todos:
   - id: system-docs
     content: "Phase 5: area.md system map, INDEX, tile/electricity map updates, architecture effort doc"
     status: completed
+  - id: consumer-visuals
+    content: "Phase 6: ConsumerPowerVisual + wire vendors/jukebox/air alarm/airlock prefabs as area consumers"
+    status: completed
+  - id: light-switch
+    content: "Phase 6: LightSwitchController + AreaRecord.LightingSwitchOn + area lighting toggle API"
+    status: completed
 isProject: false
 ---
 
@@ -457,5 +463,12 @@ Phases are sequential; Phase 0 can overlap with Phase 1 type definitions.
 - HV cable graph restricted to generators, SMES, and APC (`ElectricCableConnectivity.ParticipatesInCableGrid`).
 - Light fixture visual sync fixes (APC channel toggles, emergency policy, electricity tick refresh).
 - APC machine interface grid-in uses cached per-tick draw; SMES UI-only input/output (world toggle removed).
+
+**Phase 6 shipped (consumer devices + light switch):**
+
+- `ConsumerPowerVisual` dims emissive/panel materials from consumer power status and APC channel gating.
+- Prefabs wired: all vendors, jukebox (`MachinePowerConsumer` + visuals); air alarm and civilian/security airlocks (`BasicPowerConsumer`, Environment channel); airlocks close on power loss via `AirLockOpener`.
+- `LightSwitchController` toggles `AreaRecord.LightingSwitchOn` (player preference, distinct from APC lighting breaker); `AreaLightingStateDeriver` returns Dark when switch off.
+- `MachinePowerConsumer.OnStartClient` fires initial power status for client visuals.
 
 See [electricity_kwh_foundation_917ccdbc.plan.md](electricity_kwh_foundation_917ccdbc.plan.md) for the kWh/HV-cable plan.

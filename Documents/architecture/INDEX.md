@@ -27,15 +27,15 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking for interaction targeting |
 | Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
 | Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction |
-| Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power distribution, lighting state and fixture visuals |
-| Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, area-scoped distribution |
+| Area | [area](systems/area.md) | partial | APC-seeded flood-fill, area power, lighting state, wall light switches |
+| Electricity | [electricity](systems/electricity.md) | partial | kWh storage, HV cable grid, APC/SMES/generators, consumer visuals |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | stub | Items, containers, ID cards |
 | Entities | [entities](systems/entities.md) | stub | Humanoids, minds, entity spawning |
 | Health | [health](systems/health.md) | partial | Body parts, oxygen consumer (design spec not fully implemented) |
 | Combat | [combat](systems/combat.md) | stub | Hit interactions (design spec not implemented) |
 | Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting |
-| Furniture / world objects | [furniture](systems/furniture.md) | stub | Airlocks, lockers, vending, disposal |
+| Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors |
 | Rounds / lobby | [rounds-lobby](systems/rounds-lobby.md) | shipped | Round state machine and pre-round lobby UI |
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |

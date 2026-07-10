@@ -21,7 +21,9 @@ Ship APC-seeded area flood-fill with per-tile storage, save/load, overlap diagno
 9. **Lighting data** — `AreaLightingState` derivation + transition event + client sync; disabled lighting channel forces Dark.
 10. **Fixture visuals** — `LightPower` + `AreaLightFixturePolicy` + `LightFixtureCapability`; optional departmental tint on `AreaRecord`.
 11. **Electricity follow-ups on branch** — kWh storage model, priority channel shedding, HV cable grid (generators/SMES/APC only), APC grid-in UI fix, SMES UI-only controls.
-12. **Tests** — `AreaFloodFillTests`, `AreaBoundaryEvaluatorTests`, `CircuitAreaChannelTests`, `AreaApcPowerDistributionTests`, `AreaLightingStateDeriverTests`, `AreaLightFixturePolicyTests`, `AreaLightingStateQueryTests`, `ElectricCableConnectivityTests`.
+12. **Consumer device wiring** — `ConsumerPowerVisual`; vendors, jukebox, air alarms, airlocks as area consumers with emissive/panel dimming; airlocks power-gated via `AirLockOpener`.
+13. **Wall light switch** — `LightSwitchController` toggles `AreaRecord.LightingSwitchOn`; synced via `OnAreaLightingSwitchChanged`; distinct from APC lighting breaker.
+14. **Tests** — `AreaFloodFillTests`, `AreaBoundaryEvaluatorTests`, `CircuitAreaChannelTests`, `AreaApcPowerDistributionTests`, `AreaLightingStateDeriverTests`, `AreaLightFixturePolicyTests`, `AreaLightingStateQueryTests`, `ElectricCableConnectivityTests`.
 
 ## Deferred
 
@@ -35,6 +37,7 @@ Ship APC-seeded area flood-fill with per-tile storage, save/load, overlap diagno
 - All doors block expansion (open/closed irrelevant)
 - Wall-mounted APCs seed from the tile the mount faces, not all adjacent walkable tiles
 - Area consumers do not join the HV cable graph; only generators, SMES, and APCs cable-link
+- Wall light switch toggles player lighting preference (`LightingSwitchOn`), not the APC lighting breaker channel
 
 ## Validation
 

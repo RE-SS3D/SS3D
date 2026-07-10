@@ -19,12 +19,15 @@ namespace SS3D.Systems.Area
 
         public event Action<AreaId, AreaLightingState> OnAreaLightingStateChanged;
 
+        public event Action<AreaId, bool> OnAreaLightingSwitchChanged;
+
         public bool IsSetUp { get; private set; }
 
         private readonly AreaRegistry _registry = new();
         private readonly List<IAreaApcOrigin> _registeredApcs = new();
         private readonly HashSet<IAreaApcOrigin> _overlapFlaggedApcs = new();
         private readonly Dictionary<AreaId, AreaLightingState> _lightingStates = new();
+        private readonly Dictionary<AreaId, bool> _lightingSwitchOn = new();
 
         private TileMap _map;
         private ITileQueryService _query;
@@ -116,6 +119,37 @@ namespace SS3D.Systems.Area
             return TryGetLightingState(record.Id, out state);
         }
 
+        public bool TryGetAreaLightingSwitchOn(AreaId areaId, out bool on)
+        {
+            if (_lightingSwitchOn.TryGetValue(areaId, out on))
+            {
+                return true;
+            }
+
+            if (IsServer && _registry.TryGet(areaId, out AreaRecord record))
+            {
+                on = record.LightingSwitchOn;
+                return true;
+            }
+
+            on = true;
+            return false;
+        }
+
+        [Server]
+        public bool ToggleAreaLightingSwitch(AreaId areaId)
+        {
+            if (!_registry.TryGet(areaId, out AreaRecord record))
+            {
+                return false;
+            }
+
+            record.LightingSwitchOn = !record.LightingSwitchOn;
+            ApplyLightingSwitchChange(areaId, record.LightingSwitchOn);
+            UpdateAreaLightingStates();
+            return true;
+        }
+
         public bool TryGetAreaForTile(TileCoord coord, out AreaRecord record)
         {
             record = null;
@@ -183,6 +217,7 @@ namespace SS3D.Systems.Area
                 Apc = apc,
             };
             _registry.Register(record);
+            _lightingSwitchOn[areaId] = record.LightingSwitchOn;
 
             var claimedTiles = BuildClaimedTilesExcluding(areaId);
             _floodFill.FloodFromApc(apc, areaId, claimedTiles);
@@ -202,6 +237,7 @@ namespace SS3D.Systems.Area
             _floodFill.ClearAreaTiles(areaId);
             _registry.Unregister(areaId);
             _lightingStates.Remove(areaId);
+            _lightingSwitchOn.Remove(areaId);
             _overlapFlaggedApcs.Remove(apc);
             apc.SetMultipleApcsInArea(false);
             UpdateOverlapWarnings();
@@ -214,6 +250,7 @@ namespace SS3D.Systems.Area
             _registry.Clear();
             _overlapFlaggedApcs.Clear();
             _lightingStates.Clear();
+            _lightingSwitchOn.Clear();
 
             List<IAreaApcOrigin> apcs = _registeredApcs
                 .OrderBy(apc => apc.OriginTile.Grid.x)
@@ -233,6 +270,7 @@ namespace SS3D.Systems.Area
                     Apc = apc,
                 };
                 _registry.Register(record);
+                _lightingSwitchOn[areaId] = record.LightingSwitchOn;
                 _floodFill.FloodFromApc(apc, areaId, claimedTiles);
             }
 
@@ -261,6 +299,7 @@ namespace SS3D.Systems.Area
                 Apc = apc,
             };
             _registry.Register(record);
+            _lightingSwitchOn[areaId] = record.LightingSwitchOn;
 
             var claimedTiles = BuildClaimedTilesExcluding(areaId);
             _floodFill.FloodFromApc(apc, areaId, claimedTiles);
@@ -490,8 +529,19 @@ namespace SS3D.Systems.Area
                     continue;
                 }
 
-                AreaLightingState newState = AreaLightingStateDeriver.Derive(stats, areaApc.Channels);
+                AreaLightingState newState = AreaLightingStateDeriver.Derive(stats, areaApc.Channels, record.LightingSwitchOn);
                 ApplyLightingStateChange(record.Id, newState);
+            }
+        }
+
+        private void ApplyLightingSwitchChange(AreaId areaId, bool on)
+        {
+            _lightingSwitchOn[areaId] = on;
+            OnAreaLightingSwitchChanged?.Invoke(areaId, on);
+
+            if (IsServer)
+            {
+                RpcAreaLightingSwitchChanged(areaId.Value, on);
             }
         }
 
@@ -522,6 +572,19 @@ namespace SS3D.Systems.Area
             var areaId = new AreaId(areaIdValue);
             _lightingStates[areaId] = state;
             OnAreaLightingStateChanged?.Invoke(areaId, state);
+        }
+
+        [ObserversRpc]
+        private void RpcAreaLightingSwitchChanged(ushort areaIdValue, bool on)
+        {
+            if (IsServer)
+            {
+                return;
+            }
+
+            var areaId = new AreaId(areaIdValue);
+            _lightingSwitchOn[areaId] = on;
+            OnAreaLightingSwitchChanged?.Invoke(areaId, on);
         }
     }
 }

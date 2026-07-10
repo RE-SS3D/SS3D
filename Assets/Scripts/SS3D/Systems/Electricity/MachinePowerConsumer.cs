@@ -30,6 +30,12 @@ namespace System.Electricity
 
         public PowerChannel Channel => PowerChannel.Equipment;
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            OnPowerStatusUpdated?.Invoke(this, _powerStatus);
+        }
+
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
         {
             OnPowerStatusUpdated?.Invoke(this, newValue);

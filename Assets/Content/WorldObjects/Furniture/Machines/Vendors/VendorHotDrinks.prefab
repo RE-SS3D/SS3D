@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 8320483876716032414}
   - component: {fileID: -6290800912275539549}
   - component: {fileID: -6400919321394903666}
+  - component: {fileID: -7700000000000000001}
   m_Layer: 0
   m_Name: VendorHotDrinks
   m_TagString: Untagged
@@ -254,6 +255,22 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &-7700000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658310835758749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f8c2a1b9e3d7c5486f0a2b1d4e6c908, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _consumerBehaviour: {fileID: 8320483876716032414}
+  _renderers:
+  - {fileID: 2658310835758749971}
+  _panelIndicators: []
 --- !u!1 &3671711954327816294
 GameObject:
   m_ObjectHideFlags: 0

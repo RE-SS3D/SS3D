@@ -273,3 +273,4 @@ flowchart TD
 - `ElectricCableConnectivity.ParticipatesInCableGrid` limits HV cable links to `IPowerProducer` and `IPowerStorage` (generators, SMES, APC).
 - Light fixture visuals respect APC channel toggles and emergency powered-state policy.
 - SMES machine interface controls input/output; world toggle removed from SMES prefab.
+- `ConsumerPowerVisual` for vendor/jukebox/air-alarm/airlock emissive and panel indicators; `MachinePowerConsumer` client-start power sync.

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Electricity;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -21,6 +22,9 @@ namespace SS3D.Systems.Furniture
 
         [SerializeField]
         private Animator _animator;
+
+        [SerializeField]
+        private BasicPowerConsumer _powerConsumer;
 
         /// <summary>
         /// The animation's id of the animation we want to trigger
@@ -51,11 +55,36 @@ namespace SS3D.Systems.Furniture
 
         public ReadOnlyCollection<SkinnedMeshRenderer> SkinnedMeshesToColor => _skinnedMeshesToColor.AsReadOnly();
 
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            if (_powerConsumer == null)
+            {
+                TryGetComponent(out _powerConsumer);
+            }
+
+            if (_powerConsumer != null)
+            {
+                _powerConsumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
+            }
+        }
+
+        public override void OnStopServer()
+        {
+            if (_powerConsumer != null)
+            {
+                _powerConsumer.OnPowerStatusUpdated -= HandlePowerStatusUpdated;
+            }
+
+            base.OnStopServer();
+        }
 
         public void OnTriggerEnter(Collider other)
         {
             if (!IsServer) return;
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
+            if (!IsPowered()) return;
 
             if (playersInTrigger == 0)
             {
@@ -93,7 +122,34 @@ namespace SS3D.Systems.Furniture
         [Server]
         private void SetOpen(bool open)
         {
+            if (open && !IsPowered())
+            {
+                return;
+            }
+
             _animator.SetBool(OpenId, open);
+        }
+
+        private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)
+        {
+            if (!IsServer || newStatus == PowerStatus.Powered)
+            {
+                return;
+            }
+
+            if (closeTimer != null)
+            {
+                StopCoroutine(closeTimer);
+                closeTimer = null;
+            }
+
+            playersInTrigger = 0;
+            SetOpen(false);
+        }
+
+        private bool IsPowered()
+        {
+            return _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
         }
     }
 }

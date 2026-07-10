@@ -23,7 +23,9 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 
 **Load shedding:** `PowerConsumerAllocation.AllocateUnderBudget` — under insufficient supply, Equipment sheds first, then Environment, then Lighting (restore order is reverse). Applies to both cable and area distribution.
 
-**HV cables:** underfloor Wire-layer runs connect generators, SMES units, and APCs only. Lights, vending machines, and other area consumers are not cable-linked; they draw from their area APC.
+**HV cables:** underfloor Wire-layer runs connect generators, SMES units, and APCs only. Lights, vending machines, air alarms, airlocks, and other area consumers are not cable-linked; they draw from their area APC.
+
+**Consumer visuals:** `ConsumerPowerVisual` dims emissive materials (and optional panel indicators) from `BasicPowerConsumer` / `MachinePowerConsumer` power status and APC channel gating. Wired on vendor/jukebox prefabs, air alarms, and airlock panel lights.
 
 **Balancing defaults (prefabs):** APC cell 5 kWh / 10 kW charge & discharge; SMES 100 kWh / 50 kW, starts charged with output enabled.
 
@@ -38,12 +40,16 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricityDebugGizmoDrawer.cs` — Scene-view circuit/device diagnostics (`SS3D → Dev → Electricity → Show Grid Gizmos`)
 - `Assets/Scripts/SS3D/Systems/Electricity/Circuit.cs` — cable-grid power distribution; per-consumer channel resolver
 - `Assets/Scripts/SS3D/Systems/Electricity/LightPower.cs` — fixture visuals from power + area lighting state
+- `Assets/Scripts/SS3D/Systems/Electricity/ConsumerPowerVisual.cs` — emissive/panel dimming for generic consumers (vendors, jukebox, air alarms, airlocks)
+- `Assets/Scripts/SS3D/Systems/Electricity/BasicPowerConsumer.cs` — constant-load consumer (lights, switches, airlocks)
+- `Assets/Scripts/SS3D/Systems/Electricity/MachinePowerConsumer.cs` — idle/in-use load consumer (vendors, jukebox); fires initial power status on client start
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/BasicElectricDevice.cs` — tile-placed electric device base
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcController.cs` — APC; implements `IAreaApcOrigin` for area registration
 
 ## Extension points
 
-- New powered devices: extend electric device connectors in `Systems/Tile/Connections/`.
+- New powered devices: extend electric device connectors in `Systems/Tile/Connections/`; attach `BasicPowerConsumer` or `MachinePowerConsumer` plus `ConsumerPowerVisual` for emissive meshes (optional `_panelIndicators` for status-light materials).
+- Prefab examples: vendors/jukebox (`MachinePowerConsumer` + `ConsumerPowerVisual`); air alarm/airlocks (`BasicPowerConsumer`, Environment channel); light switch uses [area](area.md) `LightSwitchController` instead.
 - HV cable graph: only `IPowerProducer` and `IPowerStorage` participate via `ElectricCableConnectivity.ParticipatesInCableGrid`; consumers draw from area APCs.
 - Machine panels: register via [machine-interface](machine-interface.md).
 - Area-scoped APC channels: resolved in `ElectricitySubSystem` via [area](area.md) `TryGetEffectiveApcForDevice` (circuit-wide OR fallback for unassigned tiles).
@@ -52,7 +58,7 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 ## Depends on / Used by
 
 - **Depends on:** [tile](tile.md), [area](area.md) (channel gating + lighting state)
-- **Used by:** [machine-interface](machine-interface.md)
+- **Used by:** [machine-interface](machine-interface.md); [area](area.md) (`LightSwitchController` lighting-channel consumer)
 
 ## Related docs
 
