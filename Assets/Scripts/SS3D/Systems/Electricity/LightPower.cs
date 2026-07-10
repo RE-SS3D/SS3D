@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SS3D.Core;
 using SS3D.Systems.Area;
-using SS3D.Systems.Tile;
 using UnityEngine;
 
 namespace System.Electricity
@@ -24,6 +23,8 @@ namespace System.Electricity
         private bool _respectDevBypass = true;
         [SerializeField]
         private LightFixtureCapability _fixtureCapability = LightFixtureCapability.NormalOnly;
+
+        public LightFixtureCapability FixtureCapability => _fixtureCapability;
         [SerializeField]
         private float _emergencyIntensityMultiplier = 0.35f;
         [SerializeField]
@@ -117,9 +118,7 @@ namespace System.Electricity
                 return;
             }
 
-            PlacedTileObject tileObject = _consumer.TileObject;
-            var coord = new TileCoord(tileObject.MapId, tileObject.WorldOrigin.x, tileObject.WorldOrigin.y);
-            if (!areaSubSystem.TryGetAreaForTile(coord, out AreaRecord record))
+            if (!areaSubSystem.TryGetAreaForDevice(_consumer.TileObject, out AreaRecord record))
             {
                 return;
             }
@@ -214,16 +213,22 @@ namespace System.Electricity
         {
             useEmergencyVisuals = false;
 
+            PowerStatus consumerStatus = _consumer != null ? _consumer.PowerStatus : PowerStatus.Inactive;
             if (_respectDevBypass && LightingDevBypass.IsActive)
             {
-                return true;
+                consumerStatus = PowerStatus.Powered;
             }
 
-            PowerStatus consumerStatus = _consumer != null ? _consumer.PowerStatus : PowerStatus.Inactive;
             AreaLightingState areaState = AreaLightingState.Dark;
-            if (_hasArea && SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            if (_hasArea
+                && SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                && areaSubSystem.TryGetLightingState(_areaId, out areaState))
             {
-                areaSubSystem.TryGetLightingState(_areaId, out areaState);
+                // Use derived area lighting state.
+            }
+            else if (_hasArea)
+            {
+                areaState = AreaLightingState.Normal;
             }
 
             return AreaLightFixturePolicy.ShouldEmitLight(
@@ -239,8 +244,8 @@ namespace System.Electricity
             Color emission = _poweredEmission;
             if (_hasArea
                 && SubSystems.TryGet(out AreaSubSystem areaSubSystem)
-                && TryGetTileCoord(out TileCoord coord)
-                && areaSubSystem.TryGetAreaForTile(coord, out AreaRecord record)
+                && _consumer?.TileObject != null
+                && areaSubSystem.TryGetAreaForDevice(_consumer.TileObject, out AreaRecord record)
                 && record.HasDepartmentalLightTint)
             {
                 emission = MultiplyColor(_poweredEmission, record.DepartmentalLightTint);
@@ -276,19 +281,6 @@ namespace System.Electricity
             }
 
             SetEmissiveState(0f, Color.black);
-        }
-
-        private bool TryGetTileCoord(out TileCoord coord)
-        {
-            coord = default;
-            if (_consumer?.TileObject == null)
-            {
-                return false;
-            }
-
-            PlacedTileObject tileObject = _consumer.TileObject;
-            coord = new TileCoord(tileObject.MapId, tileObject.WorldOrigin.x, tileObject.WorldOrigin.y);
-            return true;
         }
 
         private static Color MultiplyColor(Color left, Color right)

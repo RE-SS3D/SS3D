@@ -37,7 +37,7 @@ namespace SS3D.Systems.Area
             ShowAreaGizmos = !ShowAreaGizmos;
             Debug.Log(
                 ShowAreaGizmos
-                    ? "Area gizmos enabled. Open the Scene view with Gizmos on while playing as host/server."
+                    ? "Area gizmos enabled. Scene view shows tile overlays, APC labels, linked devices, and unassigned consumers (yellow)."
                     : "Area gizmos disabled.");
         }
 

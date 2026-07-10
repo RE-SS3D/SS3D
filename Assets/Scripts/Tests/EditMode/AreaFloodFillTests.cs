@@ -117,6 +117,21 @@ namespace EditorTests
         }
 
         [Test]
+        public void WallMountedDevice_ResolvesAreaFromTileInFront()
+        {
+            AreaTestContext context = AreaTestContext.CreateRoom(origin: new Vector3(10, 0, 10), width: 5, height: 5);
+            TestApc apc = context.PlaceApc(new Vector3(10, 0, 12), Direction.East);
+            context.RebuildAll();
+
+            AreaId areaId = context.GetApcAreaId(apc);
+            PlacedTileObject wallLight = CreateWallMountedDevice(new Vector2Int(10, 12), Direction.East);
+
+            Assert.AreEqual(AreaId.None, context.GetAreaId(AreaDeviceTileResolver.GetOriginTile(wallLight)));
+            Assert.IsTrue(context.AreaSubSystem.TryGetAreaForDevice(wallLight, out AreaRecord record));
+            Assert.AreEqual(areaId, record.Id);
+        }
+
+        [Test]
         public void WallMountedApcFacingIntoRoom_DoesNotFloodRoomBehindWall()
         {
             AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
@@ -197,6 +212,24 @@ namespace EditorTests
         {
             map.TryGetAreaId(coord, out ushort areaId);
             return areaId;
+        }
+
+        private static PlacedTileObject CreateWallMountedDevice(Vector2Int worldOrigin, Direction direction)
+        {
+            var go = new GameObject("WallLightTest");
+            PlacedTileObject placed = go.AddComponent<PlacedTileObject>();
+            SetPrivateField(placed, "_worldOrigin", worldOrigin);
+            SetPrivateField(placed, "_dir", direction);
+            SetPrivateField(placed, "_mapId", 0);
+            return placed;
+        }
+
+        private static void SetPrivateField(object target, string fieldName, object value)
+        {
+            System.Reflection.FieldInfo field = target.GetType().GetField(
+                fieldName,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            field.SetValue(target, value);
         }
 
         private sealed class TestApc : IAreaApcOrigin
@@ -401,6 +434,35 @@ namespace EditorTests
 
                 if (_map.LoadedAreaRecords.Count > 0)
                     RestoreRegistryFromSave(_map.LoadedAreaRecords);
+            }
+
+            public bool TryGetAreaForDevice(PlacedTileObject tileObject, out AreaRecord record)
+            {
+                record = null;
+                if (tileObject == null)
+                {
+                    return false;
+                }
+
+                TileCoord origin = AreaDeviceTileResolver.GetOriginTile(tileObject);
+                if (TryGetAreaForTile(origin, out record))
+                {
+                    return true;
+                }
+
+                TileCoord inFront = AreaDeviceTileResolver.GetTileInFront(tileObject);
+                return TryGetAreaForTile(inFront, out record);
+            }
+
+            private bool TryGetAreaForTile(TileCoord coord, out AreaRecord record)
+            {
+                record = null;
+                if (!_map.TryGetAreaId(coord, out ushort areaId))
+                {
+                    return false;
+                }
+
+                return _registry.TryGet(new AreaId(areaId), out record);
             }
 
             public void RegisterApc(IAreaApcOrigin apc)

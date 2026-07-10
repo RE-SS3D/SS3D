@@ -82,6 +82,8 @@ namespace SS3D.UI.MachineInterface
         {
             base.OnStartServer();
 
+            _storedPower = _maxCapacity;
+
             ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
             if (electricitySystem.IsSetUp)
             {

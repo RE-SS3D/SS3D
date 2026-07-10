@@ -24,13 +24,14 @@ Per-consumer power gating: devices in an assigned area use **their area APC's ch
 - `Assets/Scripts/SS3D/Systems/Area/AreaLightFixturePolicy.cs` — fixture emit policy (Normal/Emergency/Dark)
 - `Assets/Scripts/SS3D/Systems/Area/LightFixtureCapability.cs` — `NormalOnly` / `EmergencyCapable` fixture tag
 - `Assets/Scripts/SS3D/Systems/Area/AreaDevSettings.cs` — dev toggle (`SS3D → Dev → Areas → Show Area Gizmos`)
-- `Assets/Scripts/SS3D/Systems/Area/AreaDebugGizmoDrawer.cs` — Scene-view tile overlay (host/server map only)
+- `Assets/Scripts/SS3D/Systems/Area/AreaDebugGizmoDrawer.cs` — Scene-view tile overlay, APC labels, and linked device diagnostics (host/server map only)
 - `Assets/Scripts/Tests/EditMode/AreaFloodFillTests.cs` — flood-fill and boundary edit-mode tests
 - `Assets/Scripts/Tests/EditMode/ElectricityTests/AreaLightFixturePolicyTests.cs` — fixture policy tests
 
 ## Extension points
 
 - Resolve area for a tile: `AreaSubSystem.TryGetAreaForTile` / `ITileQueryService.TryGetAreaId`.
+- Resolve area for wall-mounted devices: `AreaSubSystem.TryGetAreaForDevice` (uses tile in front of `Direction`).
 - Register APC origins: implement `IAreaApcOrigin` (see `ApcController`).
 - Server rename/tag API: `AreaSubSystem.RenameArea`, `SetParentTag` (no editor UI yet).
 - Resolve effective APC for a device: `AreaSubSystem.TryGetEffectiveApcForDevice`.
@@ -38,6 +39,7 @@ Per-consumer power gating: devices in an assigned area use **their area APC's ch
 - Subscribe to area lighting transitions: `AreaSubSystem.OnAreaLightingStateChanged`.
 - Departmental tint API: `SetDepartmentalLightTint` / `ClearDepartmentalLightTint` (server).
 - Fixture visuals: `LightPower` + `AreaLightFixturePolicy` + `LightFixtureCapability` on prefabs.
+- Dev bypass (`SS3D → Dev → Lighting → Always Power Light Fixtures`) treats fixtures as powered but still applies area Normal/Emergency/Dark.
 - **Not yet wired:** area-scoped APC battery drain; fixture subset authoring on `AreaRecord`.
 
 ## Depends on / Used by

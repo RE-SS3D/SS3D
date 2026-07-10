@@ -92,9 +92,7 @@ namespace SS3D.Systems.Area
                 return false;
             }
 
-            PlacedTileObject tileObject = device.TileObject;
-            var coord = new TileCoord(tileObject.MapId, tileObject.WorldOrigin.x, tileObject.WorldOrigin.y);
-            if (!TryGetAreaForTile(coord, out AreaRecord record))
+            if (!TryGetAreaForDevice(device.TileObject, out AreaRecord record))
             {
                 return false;
             }
@@ -125,6 +123,24 @@ namespace SS3D.Systems.Area
                 return false;
 
             return _registry.TryGet(new AreaId(areaId), out record);
+        }
+
+        public bool TryGetAreaForDevice(PlacedTileObject tileObject, out AreaRecord record)
+        {
+            record = null;
+            if (tileObject == null)
+            {
+                return false;
+            }
+
+            TileCoord origin = AreaDeviceTileResolver.GetOriginTile(tileObject);
+            if (TryGetAreaForTile(origin, out record))
+            {
+                return true;
+            }
+
+            TileCoord inFront = AreaDeviceTileResolver.GetTileInFront(tileObject);
+            return TryGetAreaForTile(inFront, out record);
         }
 
         public bool TryGetAreaApc(AreaId areaId, out IApcChannelSource apc)
@@ -415,6 +431,11 @@ namespace SS3D.Systems.Area
 
             foreach (IAreaApcOrigin apc in _registeredApcs)
                 apc.SetMultipleApcsInArea(_overlapFlaggedApcs.Contains(apc));
+
+            if (IsServer)
+            {
+                UpdateAreaLightingStates();
+            }
         }
 
         private void SubscribeElectricityTicks()
