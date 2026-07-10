@@ -27,7 +27,8 @@ namespace SS3D.Systems.Area
                     return consumerStatus == PowerStatus.Powered;
 
                 case AreaLightingState.Emergency:
-                    if (capability != LightFixtureCapability.EmergencyCapable)
+                    if (capability != LightFixtureCapability.EmergencyCapable
+                        || consumerStatus != PowerStatus.Powered)
                     {
                         return false;
                     }

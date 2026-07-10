@@ -6,13 +6,18 @@ namespace SS3D.Systems.Area
     {
         public static AreaLightingState Derive(CircuitStats stats, ApcControlFlags channels)
         {
+            bool lightingEnabled = (channels & ApcControlFlags.Lighting) != 0;
+            if (!lightingEnabled)
+            {
+                return AreaLightingState.Dark;
+            }
+
             if (stats.GridMeetsLoad)
             {
                 return AreaLightingState.Normal;
             }
 
-            bool lightingEnabled = (channels & ApcControlFlags.Lighting) != 0;
-            if (lightingEnabled && stats.TotalSupplyKw >= stats.LightingLoadKw)
+            if (stats.TotalSupplyKw >= stats.LightingLoadKw)
             {
                 return AreaLightingState.Normal;
             }

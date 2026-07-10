@@ -38,6 +38,7 @@ namespace System.Electricity
         private AreaId _areaId;
         private bool _hasArea;
         private bool _areaLightingSubscribed;
+        private bool _electricityTickSubscribed;
 
         private void Start()
         {
@@ -55,6 +56,7 @@ namespace System.Electricity
             CacheEmissiveMaterials();
             CacheAreaId();
             TrySubscribeAreaLighting();
+            TrySubscribeElectricityTick();
             RefreshVisuals();
         }
 
@@ -66,6 +68,7 @@ namespace System.Electricity
             }
 
             UnsubscribeAreaLighting();
+            UnsubscribeElectricityTick();
         }
 
         private void CacheEmissiveMaterials()
@@ -190,6 +193,60 @@ namespace System.Electricity
             }
         }
 
+        private void TrySubscribeElectricityTick()
+        {
+            if (_electricityTickSubscribed || !SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                return;
+            }
+
+            if (electricitySubSystem.IsSetUp)
+            {
+                electricitySubSystem.OnTick += HandleElectricityTick;
+                _electricityTickSubscribed = true;
+                return;
+            }
+
+            electricitySubSystem.OnSystemSetUp += HandleElectricitySystemSetup;
+        }
+
+        private void HandleElectricitySystemSetup()
+        {
+            if (!SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                return;
+            }
+
+            electricitySubSystem.OnSystemSetUp -= HandleElectricitySystemSetup;
+            if (!_electricityTickSubscribed)
+            {
+                electricitySubSystem.OnTick += HandleElectricityTick;
+                _electricityTickSubscribed = true;
+            }
+
+            RefreshVisuals();
+        }
+
+        private void UnsubscribeElectricityTick()
+        {
+            if (!SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                return;
+            }
+
+            electricitySubSystem.OnSystemSetUp -= HandleElectricitySystemSetup;
+            if (_electricityTickSubscribed)
+            {
+                electricitySubSystem.OnTick -= HandleElectricityTick;
+                _electricityTickSubscribed = false;
+            }
+        }
+
+        private void HandleElectricityTick()
+        {
+            RefreshVisuals();
+        }
+
         public void RefreshVisuals()
         {
             if (ShouldBeLit(out bool useEmergencyVisuals))
@@ -214,7 +271,11 @@ namespace System.Electricity
             useEmergencyVisuals = false;
 
             PowerStatus consumerStatus = _consumer != null ? _consumer.PowerStatus : PowerStatus.Inactive;
-            if (_respectDevBypass && LightingDevBypass.IsActive)
+            if (!IsConsumerApcChannelEnabled())
+            {
+                consumerStatus = PowerStatus.Inactive;
+            }
+            else if (_respectDevBypass && LightingDevBypass.IsActive)
             {
                 consumerStatus = PowerStatus.Powered;
             }
@@ -237,6 +298,18 @@ namespace System.Electricity
                 _fixtureCapability,
                 consumerStatus,
                 out useEmergencyVisuals);
+        }
+
+        private bool IsConsumerApcChannelEnabled()
+        {
+            if (_consumer is not IElectricDevice device
+                || !SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                || !areaSubSystem.TryGetEffectiveApcForDevice(device, out IApcChannelSource apc))
+            {
+                return true;
+            }
+
+            return AreaApcPowerDistribution.IsChannelEnabled(_consumer.Channel, apc.Channels);
         }
 
         private void TurnLightOnNormal()
@@ -278,6 +351,7 @@ namespace System.Electricity
             if (_light != null)
             {
                 _light.intensity = 0f;
+                _light.enabled = false;
             }
 
             SetEmissiveState(0f, Color.black);

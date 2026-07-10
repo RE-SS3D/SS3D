@@ -55,7 +55,6 @@ namespace System.Electricity
             SubSystems.Get<TileSubSystem>().RegisterTileMutationObserver(this);
             IsSetUp = true;
             OnSystemSetUp?.Invoke();
-            OnTick += HandleCircuitsUpdate;
         }
 
         protected override void OnDestroyed()
@@ -110,6 +109,7 @@ namespace System.Electricity
 
             if (_timeElapsed > _tickRate)
             {
+                HandleCircuitsUpdate();
                 RpcInvokeOnTick();
                 _timeElapsed = 0;
             }
@@ -365,7 +365,7 @@ namespace System.Electricity
             new((short)tileObject.WorldOrigin.x, (short)tileObject.WorldOrigin.y,
                 (byte)tileObject.Layer, (byte)tileObject.Direction);
 
-        [ObserversRpc]
+        [ObserversRpc(RunLocally = true)]
         private void RpcInvokeOnTick()
         {
             OnTick?.Invoke();

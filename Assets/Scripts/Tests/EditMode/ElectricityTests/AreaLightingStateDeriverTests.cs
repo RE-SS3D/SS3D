@@ -47,6 +47,22 @@ namespace EditorTests
         }
 
         [Test]
+        public void Derive_ReturnsDarkWhenLightingChannelIsOff()
+        {
+            var stats = new CircuitStats
+            {
+                GridMeetsLoad = false,
+                TotalSupplyKw = 10f,
+                LightingLoadKw = 0f,
+                ApcBatteryCharge = 1f,
+            };
+
+            Assert.AreEqual(
+                AreaLightingState.Dark,
+                AreaLightingStateDeriver.Derive(stats, ApcControlFlags.Equipment));
+        }
+
+        [Test]
         public void Derive_ReturnsDarkWhenGridFailsAndBatteryEmpty()
         {
             var stats = new CircuitStats

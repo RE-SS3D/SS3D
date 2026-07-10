@@ -45,16 +45,27 @@ namespace EditorTests
         }
 
         [Test]
-        public void EmergencyArea_OnlyEmergencyCapableFixturesEmit()
+        public void EmergencyArea_RequiresPoweredEmergencyCapableFixture()
         {
             Assert.IsTrue(AreaLightFixturePolicy.ShouldEmitLight(
                 hasArea: true,
                 AreaLightingState.Emergency,
                 LightFixtureCapability.EmergencyCapable,
-                PowerStatus.Inactive,
+                PowerStatus.Powered,
                 out bool emergencyVisuals));
             Assert.IsTrue(emergencyVisuals);
 
+            Assert.IsFalse(AreaLightFixturePolicy.ShouldEmitLight(
+                hasArea: true,
+                AreaLightingState.Emergency,
+                LightFixtureCapability.EmergencyCapable,
+                PowerStatus.Inactive,
+                out _));
+        }
+
+        [Test]
+        public void EmergencyArea_OnlyEmergencyCapableFixturesEmit()
+        {
             Assert.IsFalse(AreaLightFixturePolicy.ShouldEmitLight(
                 hasArea: true,
                 AreaLightingState.Emergency,

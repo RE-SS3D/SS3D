@@ -57,6 +57,18 @@ namespace System.Electricity
             return activeConsumers;
         }
 
+        public static bool IsChannelEnabled(PowerChannel channel, ApcControlFlags enabledChannels)
+        {
+            ApcControlFlags flag = channel switch
+            {
+                PowerChannel.Lighting => ApcControlFlags.Lighting,
+                PowerChannel.Environment => ApcControlFlags.Environment,
+                _ => ApcControlFlags.Equipment,
+            };
+
+            return (enabledChannels & flag) != 0;
+        }
+
         public static CircuitStats BuildApcStats(
             float gridSupplyKw,
             IPowerStorage apcCell,
@@ -109,18 +121,6 @@ namespace System.Electricity
             {
                 consumer.PowerStatus = poweredSet.Contains(consumer) ? PowerStatus.Powered : PowerStatus.Inactive;
             }
-        }
-
-        private static bool IsChannelEnabled(PowerChannel channel, ApcControlFlags enabledChannels)
-        {
-            ApcControlFlags flag = channel switch
-            {
-                PowerChannel.Lighting => ApcControlFlags.Lighting,
-                PowerChannel.Environment => ApcControlFlags.Environment,
-                _ => ApcControlFlags.Equipment,
-            };
-
-            return (enabledChannels & flag) != 0;
         }
 
         private static float SumChannelLoad(IEnumerable<IPowerConsumer> consumers, PowerChannel channel)
