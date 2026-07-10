@@ -30,6 +30,8 @@ namespace SS3D.UI.MachineInterface
 
         public float EnvironmentLoadKw;
 
+        public bool MultipleApcsInArea;
+
         public int DiagnosticCount;
 
         public ApcDiagnosticSnapshot Diagnostic0;

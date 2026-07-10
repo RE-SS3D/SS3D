@@ -18,6 +18,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteSingle(snapshot.LightingLoadKw);
             writer.WriteSingle(snapshot.EquipmentLoadKw);
             writer.WriteSingle(snapshot.EnvironmentLoadKw);
+            writer.WriteBoolean(snapshot.MultipleApcsInArea);
 
             int diagnosticCount = snapshot.DiagnosticCount;
             if (diagnosticCount > ApcInterfaceSnapshot.MaxDiagnostics)
@@ -48,6 +49,7 @@ namespace SS3D.UI.MachineInterface
                 LightingLoadKw = reader.ReadSingle(),
                 EquipmentLoadKw = reader.ReadSingle(),
                 EnvironmentLoadKw = reader.ReadSingle(),
+                MultipleApcsInArea = reader.ReadBoolean(),
                 DiagnosticCount = reader.ReadInt32(),
             };
 

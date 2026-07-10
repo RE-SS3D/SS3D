@@ -2,6 +2,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Systems.Area;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace SS3D.UI.MachineInterface
     /// Area Power Controller with machine interface, local cell storage, and circuit channel gating.
     /// </summary>
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
-    public sealed class ApcController : MachineInterfaceBehaviour, IApcChannelSource, IPowerStorage
+    public sealed class ApcController : MachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin
     {
         private const float CriticalBatteryThreshold = 0.15f;
 
@@ -33,11 +34,26 @@ namespace SS3D.UI.MachineInterface
         [SyncVar]
         private float _storedPower;
 
+        private bool _multipleApcsInArea;
+
         public override string InterfaceId => MachineInterfaceIds.Apc;
 
         public ApcControlFlags Channels => _channels;
 
         public PlacedTileObject TileObject => GetComponent<PlacedTileObject>();
+
+        public TileCoord OriginTile
+        {
+            get
+            {
+                PlacedTileObject tileObject = TileObject;
+                Vector2Int origin = tileObject != null ? tileObject.WorldOrigin : Vector2Int.zero;
+                int mapId = tileObject != null ? tileObject.MapId : 0;
+                return new TileCoord(mapId, origin);
+            }
+        }
+
+        public string DisplayName => _title;
 
         public float StoredPower
         {
@@ -55,6 +71,11 @@ namespace SS3D.UI.MachineInterface
 
         public bool IsOn => true;
 
+        public void SetMultipleApcsInArea(bool value)
+        {
+            _multipleApcsInArea = value;
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -67,6 +88,18 @@ namespace SS3D.UI.MachineInterface
             else
             {
                 electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
+            }
+
+            if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                if (areaSubSystem.IsSetUp)
+                {
+                    areaSubSystem.RegisterApc(this);
+                }
+                else
+                {
+                    areaSubSystem.OnSystemSetUp += OnAreaSystemSetup;
+                }
             }
         }
 
@@ -127,6 +160,12 @@ namespace SS3D.UI.MachineInterface
 
         protected override void OnDestroyed()
         {
+            if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                areaSubSystem.OnSystemSetUp -= OnAreaSystemSetup;
+                areaSubSystem.UnregisterApc(this);
+            }
+
             if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
             {
                 electricitySystem.RemoveElectricalElement(this);
@@ -227,6 +266,16 @@ namespace SS3D.UI.MachineInterface
                 });
             }
 
+            if (snapshot.MultipleApcsInArea)
+            {
+                diagnostics.Add(new ApcDiagnosticSnapshot
+                {
+                    Glyph = "!",
+                    Text = "Multiple APCs share this flood-filled region.",
+                    Tone = (byte)StatusTone.Warning,
+                });
+            }
+
             snapshot.DiagnosticCount = Mathf.Min(diagnostics.Count, ApcInterfaceSnapshot.MaxDiagnostics);
             for (int i = 0; i < snapshot.DiagnosticCount; i++)
             {
@@ -313,10 +362,20 @@ namespace SS3D.UI.MachineInterface
                 LightingLoadKw = stats.LightingLoadKw,
                 EquipmentLoadKw = stats.EquipmentLoadKw,
                 EnvironmentLoadKw = stats.EnvironmentLoadKw,
+                MultipleApcsInArea = _multipleApcsInArea,
             };
 
             ApplyDiagnostics(ref snapshot, stats, powerState, batteryState);
             return snapshot;
+        }
+
+        private void OnAreaSystemSetup()
+        {
+            if (SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                areaSubSystem.RegisterApc(this);
+                areaSubSystem.OnSystemSetUp -= OnAreaSystemSetup;
+            }
         }
 
         private void OnElectricitySystemSetup()

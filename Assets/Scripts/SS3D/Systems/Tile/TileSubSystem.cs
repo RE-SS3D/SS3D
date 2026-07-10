@@ -32,6 +32,8 @@ namespace SS3D.Systems.Tile
         public ITileQueryService QueryService => _queryService;
         public IConstructionService Construction => _constructionService;
 
+        public event Action OnMapCreated;
+
         public string SavePath => savePath;
 
 
@@ -84,6 +86,7 @@ namespace SS3D.Systems.Tile
 	        _currentMap = map;
 	        _queryService = new TileQueryService(map);
 	        _constructionService = new ConstructionService(map, _queryService);
+            OnMapCreated?.Invoke();
         }
 
         public void RegisterTileMutationObserver(ITileMutationObserver observer)

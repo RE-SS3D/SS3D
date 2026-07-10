@@ -4,22 +4,22 @@ overview: "Implement APC-seeded area flood-fill: each APC is the origin of its a
 todos:
   - id: door-boundary
     content: "Phase 0: AreaBoundaryEvaluator — doors always block area expansion (SS13-aligned); no door open/closed dependency"
-    status: pending
+    status: completed
   - id: area-storage
     content: "Phase 1: AreaId/AreaRecord/AreaRegistry + per-chunk ushort[] areaIds + ITileQueryService.TryGetAreaId + save/load"
-    status: pending
+    status: completed
   - id: area-subsystem
     content: "Phase 1: AreaSubSystem scaffold + AreaBoundaryEvaluator + register ITileMutationObserver"
-    status: pending
+    status: completed
   - id: flood-fill
     content: "Phase 2: APC-seeded AreaFloodFillService — flood from each APC, first-wins overlap, rebuild on load/APC place/remove + edit-mode tests"
-    status: pending
+    status: completed
   - id: apc-overlap-warn
     content: "Phase 2: APC interface diagnostic when multiple APCs share one flood-filled region"
-    status: pending
+    status: completed
   - id: manual-api
     content: "Phase 2: Server-side RenameArea / SetParentTag API (no editor UI; no generic merge/split)"
-    status: pending
+    status: completed
   - id: power-gating
     content: "Phase 3: Per-consumer APC channel gating in Circuit via AreaSubSystem resolver"
     status: pending

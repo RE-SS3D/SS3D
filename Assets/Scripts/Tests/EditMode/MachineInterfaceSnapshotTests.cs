@@ -33,6 +33,7 @@ namespace EditorTests
             Assert.AreEqual(original.LightingLoadKw, roundTripped.LightingLoadKw);
             Assert.AreEqual(original.EquipmentLoadKw, roundTripped.EquipmentLoadKw);
             Assert.AreEqual(original.EnvironmentLoadKw, roundTripped.EnvironmentLoadKw);
+            Assert.AreEqual(original.MultipleApcsInArea, roundTripped.MultipleApcsInArea);
             Assert.AreEqual(original.DiagnosticCount, roundTripped.DiagnosticCount);
             Assert.AreEqual(original.Diagnostic0.Glyph, roundTripped.Diagnostic0.Glyph);
             Assert.AreEqual(original.Diagnostic0.Text, roundTripped.Diagnostic0.Text);

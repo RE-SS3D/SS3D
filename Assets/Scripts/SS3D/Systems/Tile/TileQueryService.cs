@@ -1,3 +1,4 @@
+using SS3D.Systems.Area;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -113,6 +114,19 @@ namespace SS3D.Systems.Tile
         public Vector3 TileToWorld(TileCoord coord)
         {
             return new Vector3(coord.Grid.x, 0, coord.Grid.y);
+        }
+
+        public bool TryGetAreaId(TileCoord coord, out AreaId areaId)
+        {
+            areaId = default;
+            if (_map == null || coord.MapId != _map.MapId)
+                return false;
+
+            if (!_map.TryGetAreaId(coord, out ushort rawAreaId))
+                return false;
+
+            areaId = new AreaId(rawAreaId);
+            return true;
         }
     }
 }
