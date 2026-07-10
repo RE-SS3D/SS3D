@@ -31,7 +31,7 @@ todos:
     status: pending
   - id: system-docs
     content: "Phase 5: area.md system map, INDEX, tile/electricity map updates, architecture effort doc"
-    status: pending
+    status: completed
 isProject: false
 ---
 
@@ -427,3 +427,16 @@ Phases are sequential; Phase 0 can overlap with Phase 1 type definitions.
 - Areas are APC-seeded, not generic unnamed flood-fill regions
 - Unclaimed tiles stay `AreaId.None` (no fallback auto-areas)
 - All doors block expansion (not closed-only)
+
+---
+
+## Implementation notes
+
+**Shipped on `areas-foundation` (phases 0–2 + docs):**
+
+- Full flood-fill pipeline, save/load, APC overlap diagnostic, edit-mode tests, and dev Scene-view gizmos (`AreaDevSettings`, `AreaDebugGizmoDrawer`).
+- Wall-mounted APCs seed BFS from the walkable tile in front of `IAreaApcOrigin.FacingDirection` (from `PlacedTileObject.Direction`), not from all cardinal neighbors — prevents leaking into the room on the far side of the wall.
+
+**Still pending:** Phase 3 power gating, Phase 3–4 lighting state types/events, live tile-mutation recompute.
+
+**Docs:** [area.md](../architecture/systems/area.md), [2026-07_area-foundation.md](../architecture/2026-07_area-foundation.md), INDEX/plan/tile/electricity/machine-interface map updates.

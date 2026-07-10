@@ -27,6 +27,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Selection | [selection](systems/selection.md) | shipped | Shader-ID mesh picking for interaction targeting |
 | Examine | [examine](systems/examine.md) | shipped | Hover tooltips and shift-hold detailed examine |
 | Tile / construction | [tile](systems/tile.md) | shipped | Tilemap, adjacency engine, construction |
+| Area | [area](systems/area.md) | partial | APC-seeded flood-fill, per-tile area ids, save/load (power gating pending) |
 | Electricity | [electricity](systems/electricity.md) | partial | Power circuits, APC, SMES, generators |
 | Substances | [substances](systems/substances.md) | partial | Containers, transfer interactions, Tier 2 armed proof-of-concept |
 | Inventory | [inventory](systems/inventory.md) | stub | Items, containers, ID cards |
@@ -53,6 +54,7 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 | [2026-07_machine-interface-phase2-apc-networking](2026-07_machine-interface-phase2-apc-networking.md) | shipped |
 | [2026-07_machine-interface-phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md) | shipped (minor cleanup remaining) |
 | [2026-07_interaction-system-hardening](2026-07_interaction-system-hardening.md) | shipped |
+| [2026-07_area-foundation](2026-07_area-foundation.md) | in-progress (phases 0–2 shipped) |
 
 ## Implementation plans
 
@@ -63,6 +65,7 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 | [examine_localization_design_5ca361a6.plan.md](../plans/examine_localization_design_5ca361a6.plan.md) | Examine localization migration |
 | [radial_menu_implementation_5a83bdf9.plan.md](../plans/radial_menu_implementation_5a83bdf9.plan.md) | Three-tier radial interaction menu |
 | [interaction_system_improvements_9e14ae22.plan.md](../plans/interaction_system_improvements_9e14ae22.plan.md) | Interaction system hardening |
+| [areas_implementation_plan_c0639343.plan.md](../plans/areas_implementation_plan_c0639343.plan.md) | APC-seeded areas, flood-fill, power/lighting follow-ups |
 
 ## Design specs (read-only)
 
