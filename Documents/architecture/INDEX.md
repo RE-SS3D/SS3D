@@ -67,3 +67,10 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 ## Design specs (read-only)
 
 Gameplay specs in [Documents/design/](../design/) — owner-maintained. Agents link, never edit.
+
+## Reference (non-system)
+
+| Resource | Path | Use when |
+|----------|------|----------|
+| Art asset index | [art-asset-index.md](../art-asset-index.md) | Locating or importing art from SS3D-Art |
+| Available for import | [art-available-for-import.json](../art-available-for-import.json) | Finding game-ready art not yet in `Assets/Art/` |
