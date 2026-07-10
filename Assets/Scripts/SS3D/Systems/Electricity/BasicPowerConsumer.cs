@@ -24,9 +24,10 @@ namespace System.Electricity
         public event EventHandler<PowerStatus> OnPowerStatusUpdated;
         public PowerStatus PowerStatus { get => _powerStatus; set => _powerStatus = value; }
 
-        public void Init(float powerConsumption)
+        public void Init(float powerConsumption, PowerChannel channel = PowerChannel.Equipment)
         {
             _powerConsumption = MathF.Max(powerConsumption, 0);
+            _channel = channel;
         }
 
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)

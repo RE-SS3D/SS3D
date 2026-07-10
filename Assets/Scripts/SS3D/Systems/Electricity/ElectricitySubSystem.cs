@@ -5,6 +5,7 @@ using QuikGraph;
 using QuikGraph.Algorithms;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Area;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using System;
@@ -206,7 +207,7 @@ namespace System.Electricity
 
             foreach (List<VerticeCoordinates> component in graphs.Values)
             {
-                _circuits.Add(new());
+                Circuit circuit = new Circuit();
                 foreach (VerticeCoordinates coord in component)
                 {
                     TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
@@ -220,9 +221,24 @@ namespace System.Electricity
                     if (!placedObject.TryGetComponent(out IElectricDevice device))
                         continue;
 
-                    _circuits.Last().AddElectricDevice(device);
+                    circuit.AddElectricDevice(device);
                 }
+
+                circuit.SetConsumerChannelResolver(consumer => ResolveEnabledChannelsForConsumer(circuit, consumer));
+                _circuits.Add(circuit);
             }
+        }
+
+        private static ApcControlFlags ResolveEnabledChannelsForConsumer(Circuit circuit, IPowerConsumer consumer)
+        {
+            if (consumer is IElectricDevice device
+                && SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                && areaSubSystem.TryGetEffectiveApcForDevice(device, out IApcChannelSource areaApc))
+            {
+                return areaApc.Channels;
+            }
+
+            return circuit.GetCircuitWideEnabledChannels();
         }
 
         private static VerticeCoordinates ToCoordinates(PlacedTileObject tileObject) =>

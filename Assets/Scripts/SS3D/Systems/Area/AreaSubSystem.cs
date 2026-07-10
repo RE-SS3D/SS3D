@@ -13,19 +13,23 @@ namespace SS3D.Systems.Area
     /// <summary>
     /// APC-seeded area flood-fill and per-tile area-id registry.
     /// </summary>
-    public sealed class AreaSubSystem : NetworkSubSystem, ITileMutationObserver
+    public sealed class AreaSubSystem : NetworkSubSystem, ITileMutationObserver, IAreaLightingStateSource
     {
         public event Action OnSystemSetUp;
+
+        public event Action<AreaId, AreaLightingState> OnAreaLightingStateChanged;
 
         public bool IsSetUp { get; private set; }
 
         private readonly AreaRegistry _registry = new();
         private readonly List<IAreaApcOrigin> _registeredApcs = new();
         private readonly HashSet<IAreaApcOrigin> _overlapFlaggedApcs = new();
+        private readonly Dictionary<AreaId, AreaLightingState> _lightingStates = new();
 
         private TileMap _map;
         private ITileQueryService _query;
         private AreaFloodFillService _floodFill;
+        private bool _electricityTickSubscribed;
 
         public override void OnStartServer()
         {
@@ -46,6 +50,7 @@ namespace SS3D.Systems.Area
             if (_map != null)
                 _map.OnMapLoaded -= HandleMapLoaded;
 
+            UnsubscribeElectricityTicks();
             SubSystems.Get<TileSubSystem>()?.UnregisterTileMutationObserver(this);
             base.OnDestroyed();
         }
@@ -76,6 +81,30 @@ namespace SS3D.Systems.Area
 
             IsSetUp = true;
             OnSystemSetUp?.Invoke();
+            SubscribeElectricityTicks();
+        }
+
+        public bool TryGetEffectiveApcForDevice(IElectricDevice device, out IApcChannelSource apc)
+        {
+            apc = null;
+            if (device?.TileObject == null)
+            {
+                return false;
+            }
+
+            PlacedTileObject tileObject = device.TileObject;
+            var coord = new TileCoord(tileObject.MapId, tileObject.WorldOrigin.x, tileObject.WorldOrigin.y);
+            if (!TryGetAreaForTile(coord, out AreaRecord record))
+            {
+                return false;
+            }
+
+            return TryGetAreaApc(record.Id, out apc);
+        }
+
+        public bool TryGetLightingState(AreaId areaId, out AreaLightingState state)
+        {
+            return _lightingStates.TryGetValue(areaId, out state);
         }
 
         public bool TryGetAreaForTile(TileCoord coord, out AreaRecord record)
@@ -145,6 +174,7 @@ namespace SS3D.Systems.Area
 
             _floodFill.ClearAreaTiles(areaId);
             _registry.Unregister(areaId);
+            _lightingStates.Remove(areaId);
             _overlapFlaggedApcs.Remove(apc);
             apc.SetMultipleApcsInArea(false);
             UpdateOverlapWarnings();
@@ -156,6 +186,7 @@ namespace SS3D.Systems.Area
             _map.ClearAllAreaIds();
             _registry.Clear();
             _overlapFlaggedApcs.Clear();
+            _lightingStates.Clear();
 
             List<IAreaApcOrigin> apcs = _registeredApcs
                 .OrderBy(apc => apc.OriginTile.Grid.x)
@@ -349,6 +380,69 @@ namespace SS3D.Systems.Area
 
             foreach (IAreaApcOrigin apc in _registeredApcs)
                 apc.SetMultipleApcsInArea(_overlapFlaggedApcs.Contains(apc));
+        }
+
+        private void SubscribeElectricityTicks()
+        {
+            if (_electricityTickSubscribed || !SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                return;
+            }
+
+            electricitySubSystem.OnTick += HandleElectricityTick;
+            _electricityTickSubscribed = true;
+        }
+
+        private void UnsubscribeElectricityTicks()
+        {
+            if (!_electricityTickSubscribed || !SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                return;
+            }
+
+            electricitySubSystem.OnTick -= HandleElectricityTick;
+            _electricityTickSubscribed = false;
+        }
+
+        private void HandleElectricityTick()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            UpdateAreaLightingStates();
+        }
+
+        private void UpdateAreaLightingStates()
+        {
+            if (!SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
+            {
+                return;
+            }
+
+            foreach (AreaRecord record in _registry.GetAllAreas())
+            {
+                if (record.Apc is not IApcChannelSource areaApc || record.Apc is not IElectricDevice apcDevice)
+                {
+                    continue;
+                }
+
+                IPowerStorage apcStorage = record.Apc as IPowerStorage;
+                if (!electricitySubSystem.TryGetCircuitStats(apcDevice, apcStorage, out CircuitStats stats))
+                {
+                    continue;
+                }
+
+                AreaLightingState newState = AreaLightingStateDeriver.Derive(stats, areaApc.Channels);
+                if (_lightingStates.TryGetValue(record.Id, out AreaLightingState previousState) && previousState == newState)
+                {
+                    continue;
+                }
+
+                _lightingStates[record.Id] = newState;
+                OnAreaLightingStateChanged?.Invoke(record.Id, newState);
+            }
         }
     }
 }

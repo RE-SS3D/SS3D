@@ -22,13 +22,13 @@ todos:
     status: completed
   - id: power-gating
     content: "Phase 3: Per-consumer APC channel gating in Circuit via AreaSubSystem resolver"
-    status: pending
+    status: completed
   - id: lighting-foundation
     content: "Phase 3–4: AreaLightingState enum + deriver + IAreaLightingStateSource + OnAreaLightingStateChanged event (no LightPower changes)"
-    status: pending
+    status: completed
   - id: power-tests
     content: "Phase 3: Edit-mode tests for area-scoped channel gating and lighting state transitions"
-    status: pending
+    status: completed
   - id: system-docs
     content: "Phase 5: area.md system map, INDEX, tile/electricity map updates, architecture effort doc"
     status: completed
@@ -437,6 +437,6 @@ Phases are sequential; Phase 0 can overlap with Phase 1 type definitions.
 - Full flood-fill pipeline, save/load, APC overlap diagnostic, edit-mode tests, and dev Scene-view gizmos (`AreaDevSettings`, `AreaDebugGizmoDrawer`).
 - Wall-mounted APCs seed BFS from the walkable tile in front of `IAreaApcOrigin.FacingDirection` (from `PlacedTileObject.Direction`), not from all cardinal neighbors — prevents leaking into the room on the far side of the wall.
 
-**Still pending:** Phase 3 power gating, Phase 3–4 lighting state types/events, live tile-mutation recompute.
+**Still pending:** live tile-mutation recompute; editor merge/split UI; area-scoped APC battery drain; `LightPower` tri-state wiring.
 
-**Docs:** [area.md](../architecture/systems/area.md), [2026-07_area-foundation.md](../architecture/2026-07_area-foundation.md), INDEX/plan/tile/electricity/machine-interface map updates.
+**Phase 3 shipped:** per-consumer APC channel gating via `AreaSubSystem.TryGetEffectiveApcForDevice`, `AreaLightingState` derivation + `OnAreaLightingStateChanged` event (no fixture visual changes).

@@ -1,4 +1,5 @@
 ﻿using SS3D.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace System.Electricity
         private List<IPowerProducer> _producers;
         private List<IPowerStorage> _storages;
         private List<IApcChannelSource> _apcChannelSources;
+        private Func<IPowerConsumer, ApcControlFlags> _getEnabledChannelsForConsumer;
 
         public Circuit()
         {
@@ -25,6 +27,13 @@ namespace System.Electricity
             _storages = new();
             _apcChannelSources = new();
         }
+
+        public void SetConsumerChannelResolver(Func<IPowerConsumer, ApcControlFlags> getEnabledChannelsForConsumer)
+        {
+            _getEnabledChannelsForConsumer = getEnabledChannelsForConsumer;
+        }
+
+        internal ApcControlFlags GetCircuitWideEnabledChannels() => GetEnabledChannels();
 
         /// <summary>
         /// Add an electric device to the circuit. An electric device can be a consumer and a producer, or
@@ -67,8 +76,7 @@ namespace System.Electricity
 
         public CircuitStats GetStats(IPowerStorage apcCell)
         {
-            ApcControlFlags enabledChannels = GetEnabledChannels();
-            List<IPowerConsumer> activeConsumers = GetActiveConsumers(enabledChannels);
+            List<IPowerConsumer> activeConsumers = GetActiveConsumers();
 
             float supplyKw = _producers.Sum(x => x.PowerProduction);
             float demandKw = activeConsumers.Sum(x => x.PowerNeeded);
@@ -94,8 +102,7 @@ namespace System.Electricity
         /// </summary>
         public void UpdateCircuitPower()
         {
-            ApcControlFlags enabledChannels = GetEnabledChannels();
-            List<IPowerConsumer> activeConsumers = GetActiveConsumers(enabledChannels);
+            List<IPowerConsumer> activeConsumers = GetActiveConsumers();
             float leftOverPower = ConsumePower(activeConsumers, out List<IPowerConsumer> poweredConsumers);
             ChargeStorages(leftOverPower);
             UpdateConsumerStatus(poweredConsumers);
@@ -247,6 +254,26 @@ namespace System.Electricity
             return enabled;
         }
 
+        private List<IPowerConsumer> GetActiveConsumers()
+        {
+            if (_getEnabledChannelsForConsumer == null)
+            {
+                return GetActiveConsumers(_consumers, GetEnabledChannels());
+            }
+
+            var activeConsumers = new List<IPowerConsumer>();
+            foreach (IPowerConsumer consumer in _consumers)
+            {
+                ApcControlFlags enabledChannels = _getEnabledChannelsForConsumer(consumer);
+                if (IsChannelEnabled(consumer.Channel, enabledChannels))
+                {
+                    activeConsumers.Add(consumer);
+                }
+            }
+
+            return activeConsumers;
+        }
+
         private static List<IPowerConsumer> GetActiveConsumers(IReadOnlyList<IPowerConsumer> consumers, ApcControlFlags enabledChannels)
         {
             List<IPowerConsumer> activeConsumers = new();
@@ -259,11 +286,6 @@ namespace System.Electricity
             }
 
             return activeConsumers;
-        }
-
-        private List<IPowerConsumer> GetActiveConsumers(ApcControlFlags enabledChannels)
-        {
-            return GetActiveConsumers(_consumers, enabledChannels);
         }
 
         private static bool IsChannelEnabled(PowerChannel channel, ApcControlFlags enabledChannels)

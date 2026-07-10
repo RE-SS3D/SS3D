@@ -16,13 +16,15 @@ Ship APC-seeded area flood-fill with per-tile storage, save/load, overlap diagno
 4. **Flood fill** — `AreaFloodFillService`: first-wins APC order, door-tile post-pass, wall-mount seeding from `FacingDirection`.
 5. **APC UI** — overlap warning in APC machine interface when multiple APCs share a flood-filled region.
 6. **Dev tooling** — Scene-view area gizmos (`SS3D → Dev → Areas → Show Area Gizmos`).
-7. **Tests** — `AreaFloodFillTests`, `AreaBoundaryEvaluatorTests`.
+7. **Power gating** — per-consumer APC channel resolution in `Circuit`.
+8. **Lighting data** — `AreaLightingState` derivation + transition event (no fixture wiring).
+9. **Tests** — `AreaFloodFillTests`, `AreaBoundaryEvaluatorTests`, `CircuitAreaChannelTests`, `AreaLightingStateDeriverTests`.
 
 ## Deferred
 
-- Phase 3: per-consumer APC channel gating in `Circuit`
-- Phase 3–4: `AreaLightingState` derivation and events
+- Phase 4 visuals: `LightPower` tri-state, fixture subsets
 - Phase 5: live tile-mutation boundary recompute; editor merge/split UI
+- Area-scoped APC cell backup (battery drain remains circuit-wide equal split)
 
 ## Documented fork deviations
 

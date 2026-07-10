@@ -6,11 +6,12 @@
 
 ## Overview
 
-Power circuit simulation, APC channel gating, SMES storage, and tile-linked electric devices. Implements `ITileMutationObserver` for [tile](tile.md) placement reactions. Machine UI in [machine-interface](machine-interface.md). Per-tile area→APC derivation is planned via [area](area.md) (not yet wired into `Circuit`).
+Power circuit simulation, APC channel gating, SMES storage, and tile-linked electric devices. Implements `ITileMutationObserver` for [tile](tile.md) placement reactions. Machine UI in [machine-interface](machine-interface.md). Consumers in an assigned area use that area's APC channels via [area](area.md) `TryGetEffectiveApcForDevice`; others fall back to circuit-wide channel OR.
 
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricitySubSystem.cs` — subsystem entry point
+- `Assets/Scripts/SS3D/Systems/Electricity/Circuit.cs` — power distribution; per-consumer channel resolver
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/BasicElectricDevice.cs` — tile-placed electric device base
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcController.cs` — APC; implements `IAreaApcOrigin` for area registration
 
@@ -18,7 +19,7 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 
 - New powered devices: extend electric device connectors in `Systems/Tile/Connections/`.
 - Machine panels: register via [machine-interface](machine-interface.md).
-- Area-scoped APC channels: resolve consumer tile area via [area](area.md) `AreaSubSystem` (Phase 3 — pending).
+- Area-scoped APC channels: resolved in `ElectricitySubSystem` via [area](area.md) `TryGetEffectiveApcForDevice` (circuit-wide OR fallback).
 
 ## Depends on / Used by
 
