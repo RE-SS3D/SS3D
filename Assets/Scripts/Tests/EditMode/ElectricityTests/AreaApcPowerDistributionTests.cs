@@ -42,6 +42,25 @@ namespace EditorTests
         }
 
         [Test]
+        public void PowerAreaConsumers_GridDeficit_RespectsApcDischargeRate()
+        {
+            TestConsumer first = new TestConsumer(2f, PowerChannel.Lighting);
+            TestConsumer second = new TestConsumer(2f, PowerChannel.Lighting);
+            TestApcStorage apc = new TestApcStorage(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 2f);
+
+            AreaApcPowerDistribution.PowerAreaConsumers(
+                apc,
+                apc,
+                gridSupplyKw: 0f,
+                new[] { first, second },
+                new[] { first, second });
+
+            Assert.AreEqual(PowerStatus.Powered, first.PowerStatus);
+            Assert.AreEqual(PowerStatus.Inactive, second.PowerStatus);
+            Assert.AreEqual(3f, apc.StoredPower, 0.001f);
+        }
+
+        [Test]
         public void BuildApcStats_UsesAreaConsumerDemandOnly()
         {
             var stats = AreaApcPowerDistribution.BuildApcStats(

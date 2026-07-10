@@ -127,11 +127,78 @@ namespace System.Electricity
         /// </summary>
         public void UpdateCircuitPower()
         {
+            UpdateCableDistributionOnly();
+            ChargePendingProducerSurplus();
+        }
+
+        /// <summary>
+        /// Powers cable-distributed consumers and records producer surplus for later SMES charging.
+        /// Area-scoped consumers are handled separately via <see cref="DrawGridPowerForArea"/>.
+        /// </summary>
+        public void UpdateCableDistributionOnly()
+        {
             List<IPowerConsumer> activeConsumers = GetActiveConsumers();
-            float leftOverPower = ConsumePower(activeConsumers, out List<IPowerConsumer> poweredConsumers);
-            ChargeStorages(leftOverPower);
+            _pendingProducerSurplus = ConsumePower(activeConsumers, out List<IPowerConsumer> poweredConsumers);
             UpdateConsumerStatus(poweredConsumers);
         }
+
+        /// <summary>
+        /// Charge non-APC storages from producer surplus left after cable and area distribution.
+        /// </summary>
+        public void ChargePendingProducerSurplus()
+        {
+            if (_pendingProducerSurplus <= 0f)
+            {
+                _pendingProducerSurplus = 0f;
+                return;
+            }
+
+            _pendingProducerSurplus = ChargeStorages(_pendingProducerSurplus);
+        }
+
+        /// <summary>
+        /// Grid headroom available to an APC on this circuit after cable loads are served this tick.
+        /// </summary>
+        public float GetAvailableGridSupplyForArea()
+        {
+            float cableDemand = GetActiveConsumers().Sum(consumer => consumer.PowerNeeded);
+            float storageSupply = GetNonApcStorages()
+                .Where(storage => storage.IsOn)
+                .Sum(storage => storage.MaxRemovablePower);
+
+            return Math.Max(0f, _pendingProducerSurplus + storageSupply - cableDemand);
+        }
+
+        public float PendingProducerSurplus => _pendingProducerSurplus;
+
+        /// <summary>
+        /// Draw power from producers and non-APC storages on this circuit for area-scoped consumers.
+        /// </summary>
+        public float DrawGridPowerForArea(float requestedKw)
+        {
+            if (requestedKw <= 0f)
+            {
+                return 0f;
+            }
+
+            float remaining = requestedKw;
+            float fromSurplus = Math.Min(remaining, _pendingProducerSurplus);
+            remaining -= fromSurplus;
+            _pendingProducerSurplus -= fromSurplus;
+
+            if (remaining > 0f)
+            {
+                List<IPowerStorage> availableStorages = GetNonApcStorages()
+                    .Where(storage => storage.IsOn && storage.MaxRemovablePower > 0f)
+                    .OrderBy(storage => storage.MaxRemovablePower)
+                    .ToList();
+                DrainBatteries(remaining, availableStorages);
+            }
+
+            return requestedKw - remaining;
+        }
+
+        private float _pendingProducerSurplus;
 
         /// <summary>
         /// Turn on or off consumers, depending on whether they are powered.
@@ -169,7 +236,8 @@ namespace System.Electricity
                 return -neededPower;
             }
 
-            List<IPowerStorage> availableStorages = _storages.Where(x => x.IsOn && x.MaxRemovablePower > 0)
+            List<IPowerStorage> availableStorages = _storages
+                .Where(x => x.IsOn && x.MaxRemovablePower > 0 && !IsApcCellStorage(x))
                 .OrderBy(x => x.MaxRemovablePower).ToList();
             float maxPowerFromBatteries = availableStorages.Sum(x => x.MaxRemovablePower);
 
@@ -238,7 +306,8 @@ namespace System.Electricity
             }
 
             // Order the list to make sure that storages to be fully charged come first
-            List<IPowerStorage> notFullStorages = _storages.Where(x => x.RemainingCapacity > 0 && x.IsOn)
+            List<IPowerStorage> notFullStorages = _storages
+                .Where(x => x.RemainingCapacity > 0 && x.IsOn && !IsApcCellStorage(x))
                 .OrderBy(x => x.RemainingCapacity).ToList();
 
             if (notFullStorages.Count == 0)
@@ -334,5 +403,10 @@ namespace System.Electricity
         {
             return consumers.Where(consumer => consumer.Channel == channel).Sum(consumer => consumer.PowerNeeded);
         }
+
+        private static bool IsApcCellStorage(IPowerStorage storage) => storage is IApcChannelSource;
+
+        private IEnumerable<IPowerStorage> GetNonApcStorages() =>
+            _storages.Where(storage => !IsApcCellStorage(storage));
     }
 }

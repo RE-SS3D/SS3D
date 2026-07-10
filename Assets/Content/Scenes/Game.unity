@@ -588,6 +588,7 @@ GameObject:
   m_Component:
   - component: {fileID: 478499395}
   - component: {fileID: 478499396}
+  - component: {fileID: 478499397}
   m_Layer: 0
   m_Name: ElectricitySystem
   m_TagString: Untagged
@@ -626,6 +627,18 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1506918116}
   _networkObjectCache: {fileID: 1506918116}
   _tickRate: 0.2
+--- !u!114 &478499397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478499394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e3f0a25d7b6491c0e4f2a8b3c9d567, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2093847560
 GameObject:
   m_ObjectHideFlags: 0

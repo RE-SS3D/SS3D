@@ -21,10 +21,10 @@ namespace SS3D.UI.MachineInterface
         private string _title = "APC · ENGINEERING BAY";
 
         [SerializeField]
-        private float _maxCapacity = 5f;
+        private float _maxCapacity = 50f;
 
         [SerializeField]
-        private float _maxPowerRate = 5f;
+        private float _maxPowerRate = 10f;
 
         [SyncVar(OnChange = nameof(OnChannelsChanged))]
         private ApcControlFlags _channels = ApcControlFlags.All;

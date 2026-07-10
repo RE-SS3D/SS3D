@@ -22,7 +22,7 @@ namespace System.Electricity
     /// Graph topology is marked dirty on changes and rebuilt on the next tick.
     /// Cable placement uses <see cref="ITileMutationObserver"/> to refresh device edges.
     /// </remarks>
-    public class ElectricitySubSystem : NetworkSubSystem, ITileMutationObserver
+    public partial class ElectricitySubSystem : NetworkSubSystem, ITileMutationObserver
     {
         public event Action OnSystemSetUp;
 
@@ -39,6 +39,7 @@ namespace System.Electricity
         private bool _graphIsDirty;
         private List<Circuit> _circuits;
         private readonly List<IPowerConsumer> _registeredConsumers = new();
+        private readonly List<IElectricDevice> _registeredDevices = new();
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
 
         [SerializeField]
@@ -97,8 +98,8 @@ namespace System.Electricity
 
             List<IPowerConsumer> areaConsumers = AreaApcPowerDistribution.GetConsumersForApc(apc, _registeredConsumers);
             List<IPowerConsumer> activeConsumers = AreaApcPowerDistribution.GetActiveConsumers(areaConsumers, apc.Channels);
-            float gridSupplyKw = apc is IElectricDevice apcDevice ? GetGridSupplyForDevice(apcDevice) : 0f;
-            stats = AreaApcPowerDistribution.BuildApcStats(gridSupplyKw, apcCell, activeConsumers);
+            float gridAvailableKw = apc is IElectricDevice apcDevice ? GetAvailableGridSupplyForApc(apcDevice) : 0f;
+            stats = AreaApcPowerDistribution.BuildApcStats(gridAvailableKw, apcCell, activeConsumers);
             return true;
         }
 
@@ -119,16 +120,22 @@ namespace System.Electricity
         {
             if (_graphIsDirty)
             {
+                RebuildElectricGraph();
                 UpdateAllCircuitsTopology();
                 _graphIsDirty = false;
             }
 
             foreach (Circuit circuit in _circuits)
             {
-                circuit.UpdateCircuitPower();
+                circuit.UpdateCableDistributionOnly();
             }
 
             UpdateAreaScopedPower();
+
+            foreach (Circuit circuit in _circuits)
+            {
+                circuit.ChargePendingProducerSurplus();
+            }
         }
 
         [Server]
@@ -150,62 +157,55 @@ namespace System.Electricity
 
                 List<IPowerConsumer> areaConsumers = AreaApcPowerDistribution.GetConsumersForApc(apc, _registeredConsumers);
                 List<IPowerConsumer> activeConsumers = AreaApcPowerDistribution.GetActiveConsumers(areaConsumers, apc.Channels);
-                float gridSupplyKw = GetGridSupplyForDevice(apcDevice);
-                AreaApcPowerDistribution.PowerAreaConsumers(apc, apcStorage, gridSupplyKw, areaConsumers, activeConsumers);
+                float demandKw = activeConsumers.Sum(consumer => consumer.PowerNeeded);
+                float gridAvailableKw = GetAvailableGridSupplyForApc(apcDevice);
+                float gridDrawKw = Math.Min(demandKw, gridAvailableKw);
+                TryGetCircuitForDevice(apcDevice)?.DrawGridPowerForArea(gridDrawKw);
+                AreaApcPowerDistribution.PowerAreaConsumers(apc, apcStorage, gridDrawKw, areaConsumers, activeConsumers);
             }
         }
 
         [Server]
-        private float GetGridSupplyForDevice(IElectricDevice device)
+        private float GetAvailableGridSupplyForApc(IElectricDevice apcDevice)
         {
-            if (_circuits == null)
+            return TryGetCircuitForDevice(apcDevice)?.GetAvailableGridSupplyForArea() ?? 0f;
+        }
+
+        [Server]
+        private Circuit TryGetCircuitForDevice(IElectricDevice device)
+        {
+            if (_circuits == null || device == null)
             {
-                return 0f;
+                return null;
             }
 
             foreach (Circuit circuit in _circuits)
             {
-                if (!circuit.ContainsDevice(device))
+                if (circuit.ContainsDevice(device))
                 {
-                    continue;
+                    return circuit;
                 }
-
-                return circuit.GetProducerSupplyKw();
             }
 
-            return 0f;
+            return null;
         }
 
         [Server]
         public void AddElectricalElement(IElectricDevice device)
         {
-            if (_electricityGraph == null)
+            if (_electricityGraph == null || device?.TileObject == null)
             {
                 return;
+            }
+
+            if (!_registeredDevices.Contains(device))
+            {
+                _registeredDevices.Add(device);
             }
 
             if (device is IPowerConsumer consumer && !_registeredConsumers.Contains(consumer))
             {
                 _registeredConsumers.Add(consumer);
-            }
-
-            PlacedTileObject tileObject = device.TileObject;
-            VerticeCoordinates deviceCoordinates = ToCoordinates(tileObject);
-
-            if (!_electricityGraph.ContainsVertex(deviceCoordinates))
-                _electricityGraph.AddVertex(deviceCoordinates);
-
-            List<PlacedTileObject> neighbours = tileObject.Connector?.GetNeighbours();
-            if (neighbours == null)
-                return;
-
-            foreach (PlacedTileObject neighbour in neighbours)
-            {
-                VerticeCoordinates neighbourCoordinates = ToCoordinates(neighbour);
-                if (!_electricityGraph.ContainsVertex(neighbourCoordinates))
-                    _electricityGraph.AddVertex(neighbourCoordinates);
-
-                _electricityGraph.AddEdge(new(deviceCoordinates, neighbourCoordinates));
             }
 
             _graphIsDirty = true;
@@ -219,13 +219,56 @@ namespace System.Electricity
                 return;
             }
 
+            _registeredDevices.Remove(device);
+
             if (device is IPowerConsumer consumer)
             {
                 _registeredConsumers.Remove(consumer);
             }
 
-            _electricityGraph.RemoveVertex(ToCoordinates(device.TileObject));
             _graphIsDirty = true;
+        }
+
+        [Server]
+        private void RebuildElectricGraph()
+        {
+            _electricityGraph.Clear();
+            foreach (IElectricDevice device in _registeredDevices)
+            {
+                AddDeviceEdgesToGraph(device);
+            }
+        }
+
+        [Server]
+        private void AddDeviceEdgesToGraph(IElectricDevice device)
+        {
+            PlacedTileObject tileObject = device.TileObject;
+            VerticeCoordinates deviceCoordinates = ToCoordinates(tileObject);
+
+            if (!_electricityGraph.ContainsVertex(deviceCoordinates))
+            {
+                _electricityGraph.AddVertex(deviceCoordinates);
+            }
+
+            List<PlacedTileObject> neighbours = tileObject.Connector?.GetNeighbours();
+            if (neighbours == null)
+            {
+                return;
+            }
+
+            foreach (PlacedTileObject neighbour in neighbours)
+            {
+                VerticeCoordinates neighbourCoordinates = ToCoordinates(neighbour);
+                if (!_electricityGraph.ContainsVertex(neighbourCoordinates))
+                {
+                    _electricityGraph.AddVertex(neighbourCoordinates);
+                }
+
+                if (!_electricityGraph.TryGetEdge(deviceCoordinates, neighbourCoordinates, out _))
+                {
+                    _electricityGraph.AddEdge(new(deviceCoordinates, neighbourCoordinates));
+                }
+            }
         }
 
         [Server]

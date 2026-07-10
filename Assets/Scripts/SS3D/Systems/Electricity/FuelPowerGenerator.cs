@@ -25,11 +25,17 @@ namespace System.Electricity
         private const string OnBlendShapeName = "On";
         private const string OutputBlendShapeName = "Output";
         private const string LowFuel = "LowFuel";
-        public float PowerProduction => _powerProduction;
+        public float PowerProduction => _enabled ? _onPowerProduction : 0f;
 
         [SyncVar(OnChange = nameof(SyncGeneratorToggle))]
         private bool _enabled = false; // If the generator is working.
         private float _onPowerProduction = 10f;
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            _onPowerProduction = _powerProduction;
+        }
 
         public override void OnStartClient()
         {
@@ -43,6 +49,7 @@ namespace System.Electricity
         private void HandleGeneratorToggle(bool isEnabled)
         {
             _enabled = isEnabled;
+            _powerProduction = isEnabled ? _onPowerProduction : 0f;
         }
 
         private void SyncGeneratorToggle(bool oldValue, bool newValue, bool asServer)

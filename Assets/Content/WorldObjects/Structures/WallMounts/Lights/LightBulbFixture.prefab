@@ -289,7 +289,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -7828078595381397262}
   _networkObjectCache: {fileID: -7828078595381397262}
-  _powerConsumption: 5
+  _powerConsumption: 0.25
   _channel: 0
   _powerStatus: 0
 --- !u!114 &-7419120924986984554

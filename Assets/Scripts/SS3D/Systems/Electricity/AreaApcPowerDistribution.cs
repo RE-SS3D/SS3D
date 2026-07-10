@@ -104,7 +104,7 @@ namespace System.Electricity
 
                 if (deficitKw > 0f && apcCell != null)
                 {
-                    apcCell.RemovePower(deficitKw);
+                    apcCell.RemovePower(Math.Min(deficitKw, apcCell.MaxRemovablePower));
                 }
             }
             else if (deficitKw < 0f && apcCell != null)

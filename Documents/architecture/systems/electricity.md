@@ -12,6 +12,8 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricitySubSystem.cs` — subsystem entry point
 - `Assets/Scripts/SS3D/Systems/Electricity/AreaApcPowerDistribution.cs` — area APC powers local consumers without per-device cables
+- `Assets/Scripts/SS3D/Systems/Electricity/ElectricCableConnectivity.cs` — cable-bridged device connectivity across Wire-layer runs
+- `Assets/Scripts/SS3D/Systems/Electricity/ElectricityDebugGizmoDrawer.cs` — Scene-view circuit/device diagnostics (`SS3D → Dev → Electricity → Show Grid Gizmos`)
 - `Assets/Scripts/SS3D/Systems/Electricity/Circuit.cs` — cable-grid power distribution; per-consumer channel resolver
 - `Assets/Scripts/SS3D/Systems/Electricity/LightPower.cs` — fixture visuals from power + area lighting state
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/BasicElectricDevice.cs` — tile-placed electric device base

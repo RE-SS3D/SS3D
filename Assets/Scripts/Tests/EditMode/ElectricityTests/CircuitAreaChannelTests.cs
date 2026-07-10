@@ -71,6 +71,47 @@ namespace EditorTests
             Assert.AreEqual(5f, fullStats.TotalDemandKw);
         }
 
+        [Test]
+        public void UpdateCircuitPower_DoesNotChargeApcCellStorage()
+        {
+            TestApcCell apcCell = new TestApcCell(storedPower: 1f, maxCapacity: 5f, maxPowerRate: 5f);
+            BasicPowerGenerator generator = CreateBasicGenerator(10f);
+            BasicPowerConsumer equipmentConsumer = CreateBasicConsumer(1f, PowerChannel.Equipment);
+
+            Circuit circuit = CreateCircuit(apcCell, generator, equipmentConsumer);
+            circuit.UpdateCircuitPower();
+
+            Assert.AreEqual(1f, apcCell.StoredPower);
+        }
+
+        [Test]
+        public void GetAvailableGridSupplyForArea_IncludesStorageWhenCableDemandIsZero()
+        {
+            TestApcCell apcCell = new TestApcCell(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 5f);
+            BasicBattery smes = CreateBasicBattery(5f, 50f, 50f);
+
+            Circuit circuit = CreateCircuit(apcCell, smes);
+            circuit.SetCableDistributionFilter(_ => false);
+            circuit.UpdateCableDistributionOnly();
+
+            Assert.AreEqual(5f, circuit.GetAvailableGridSupplyForArea(), 0.001f);
+        }
+
+        [Test]
+        public void DrawGridPowerForArea_DrainsNonApcStorageBeforeApcCellWouldBeUsed()
+        {
+            TestApcCell apcCell = new TestApcCell(storedPower: 5f, maxCapacity: 5f, maxPowerRate: 5f);
+            BasicBattery smes = CreateBasicBattery(5f, 50f, 50f);
+
+            Circuit circuit = CreateCircuit(apcCell, smes);
+            circuit.SetCableDistributionFilter(_ => false);
+            circuit.UpdateCableDistributionOnly();
+            circuit.DrawGridPowerForArea(2f);
+
+            Assert.AreEqual(48f, smes.StoredPower, 0.001f);
+            Assert.AreEqual(5f, apcCell.StoredPower, 0.001f);
+        }
+
         private static Circuit CreateCircuit(params IElectricDevice[] electricDevices)
         {
             Circuit circuit = new Circuit();
@@ -102,6 +143,16 @@ namespace EditorTests
             return generator;
         }
 
+        private static BasicBattery CreateBasicBattery(float maxPowerRate, float maxCapacity, float storedPower)
+        {
+            GameObject batteryGo = new GameObject();
+            batteryGo.AddComponent<BasicBattery>();
+            batteryGo.AddComponent<PlacedTileObject>();
+            BasicBattery battery = batteryGo.GetComponent<BasicBattery>();
+            battery.Init(maxPowerRate, maxCapacity, storedPower);
+            return battery;
+        }
+
         private sealed class TestApcChannelSource : IApcChannelSource
         {
             private readonly PlacedTileObject _tileObject;
@@ -116,6 +167,49 @@ namespace EditorTests
             public ApcControlFlags Channels { get; }
 
             public PlacedTileObject TileObject => _tileObject;
+        }
+
+        private sealed class TestApcCell : IApcChannelSource, IPowerStorage
+        {
+            public TestApcCell(float storedPower, float maxCapacity, float maxPowerRate)
+            {
+                StoredPower = storedPower;
+                _maxCapacity = maxCapacity;
+                _maxPowerRate = maxPowerRate;
+            }
+
+            private readonly float _maxCapacity;
+            private readonly float _maxPowerRate;
+
+            public ApcControlFlags Channels => ApcControlFlags.All;
+
+            public float StoredPower { get; set; }
+
+            public float MaxCapacity => _maxCapacity;
+
+            public float RemainingCapacity => _maxCapacity - StoredPower;
+
+            public float MaxPowerRate => _maxPowerRate;
+
+            public float MaxRemovablePower => StoredPower < _maxPowerRate ? StoredPower : _maxPowerRate;
+
+            public bool IsOn => true;
+
+            public PlacedTileObject TileObject => null;
+
+            public float AddPower(float amount)
+            {
+                float added = amount > RemainingCapacity ? RemainingCapacity : amount;
+                StoredPower += added;
+                return added;
+            }
+
+            public float RemovePower(float amount)
+            {
+                float removed = amount > StoredPower ? StoredPower : amount;
+                StoredPower -= removed;
+                return removed;
+            }
         }
     }
 }

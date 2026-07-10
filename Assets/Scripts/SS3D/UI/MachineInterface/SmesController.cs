@@ -43,17 +43,6 @@ namespace SS3D.UI.MachineInterface
         {
             _battery = GetComponent<SmesBattery>();
             base.OnStartServer();
-
-            ElectricitySubSystem electricitySystem = SubSystems.Get<ElectricitySubSystem>();
-            if (electricitySystem.IsSetUp)
-            {
-                RegisterWithElectricity(electricitySystem);
-            }
-            else
-            {
-                electricitySystem.OnSystemSetUp += OnElectricitySystemSetup;
-            }
-
             ApplyOutputEnabled(_outputEnabled);
         }
 
@@ -117,17 +106,6 @@ namespace SS3D.UI.MachineInterface
                     return false;
                 }
             }
-        }
-
-        protected override void OnDestroyed()
-        {
-            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
-            {
-                electricitySystem.RemoveElectricalElement(_battery);
-                electricitySystem.OnSystemSetUp -= OnElectricitySystemSetup;
-            }
-
-            base.OnDestroyed();
         }
 
         private static SmesPowerState DerivePowerState(float chargePct, CircuitStats stats, bool inputActive, bool outputActive)
@@ -333,24 +311,6 @@ namespace SS3D.UI.MachineInterface
 
             ApplyWarnings(ref snapshot, powerState, stats, chargePct, inputActive);
             return snapshot;
-        }
-
-        private void OnElectricitySystemSetup()
-        {
-            if (SubSystems.TryGet(out ElectricitySubSystem electricitySystem))
-            {
-                RegisterWithElectricity(electricitySystem);
-            }
-        }
-
-        private void RegisterWithElectricity(ElectricitySubSystem electricitySystem)
-        {
-            if (_battery == null)
-            {
-                _battery = GetComponent<SmesBattery>();
-            }
-
-            electricitySystem.AddElectricalElement(_battery);
         }
 
         private void OnBoolControlChanged(bool oldValue, bool newValue, bool asServer)
