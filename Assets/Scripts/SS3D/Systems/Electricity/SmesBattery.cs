@@ -1,6 +1,5 @@
 ﻿using FishNet.Object;
 using SS3D.Core;
-using SS3D.Interactions;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -33,8 +32,7 @@ namespace System.Electricity
         public override void OnStartClient()
         {
             base.OnStartClient();
-            GetComponent<GenericToggleInteractionTarget>().OnToggle += HandleBatteryToggle;
-            HandleBatteryToggle(_isOn);
+            HandleSyncEnabled(false, _isOn, false);
 
             SubSystems.Get<ElectricitySubSystem>().OnTick += HandleTick;
         }
@@ -120,15 +118,6 @@ namespace System.Electricity
             float relativeRate = Mathf.Floor(10f * removedKw / MaxDischargeRateKw);
 
             _lightOutputTarget = (int)relativeRate; 
-        }
-
-        /// <summary>
-        /// Called when the SMES battery is toggled on or off.
-        /// </summary>
-        /// <param name="toggle"> True if the battery is on.</param>
-        private void HandleBatteryToggle(bool toggle)
-        {
-            _isOn = toggle;
         }
 
         protected override void HandleSyncEnabled(bool oldValue, bool newValue, bool asServer)
