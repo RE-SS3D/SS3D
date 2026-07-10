@@ -17,8 +17,6 @@ namespace SS3D.UI.MachineInterface
     [RequireComponent(typeof(ElectricDeviceAdjacencyConnector))]
     public sealed class ApcController : MachineInterfaceBehaviour, IApcChannelSource, IPowerStorage, IAreaApcOrigin
     {
-        private const float CriticalBatteryThreshold = 0.15f;
-
         [SerializeField]
         private string _title = "APC · ENGINEERING BAY";
 
@@ -145,20 +143,19 @@ namespace SS3D.UI.MachineInterface
         {
             ApcControlFlags flag = controlId switch
             {
-                0 => ApcControlFlags.Lighting,
-                2 => ApcControlFlags.Environment,
-                _ => ApcControlFlags.Equipment,
+                MachineInterfaceControlIds.Apc.Lighting => ApcControlFlags.Lighting,
+                MachineInterfaceControlIds.Apc.Environment => ApcControlFlags.Environment,
+                MachineInterfaceControlIds.Apc.Equipment => ApcControlFlags.Equipment,
+                _ => ApcControlFlags.None,
             };
 
-            if (value)
+            if (flag == ApcControlFlags.None)
             {
-                _channels |= flag;
-            }
-            else
-            {
-                _channels &= ~flag;
+                return false;
             }
 
+            _channels = value ? _channels | flag : _channels & ~flag;
+            RefreshAllViewers();
             return true;
         }
 
@@ -179,35 +176,11 @@ namespace SS3D.UI.MachineInterface
             base.OnDestroyed();
         }
 
-        private static ApcPowerState DerivePowerState(CircuitStats stats)
-        {
-            if (stats.ApcBatteryCharge <= CriticalBatteryThreshold && !stats.GridMeetsLoad)
-            {
-                return ApcPowerState.Critical;
-            }
+        private static ApcPowerState DerivePowerState(CircuitStats stats) =>
+            ApcStatusDeriver.DerivePowerState(stats);
 
-            if (!stats.GridMeetsLoad || stats.BatteryDraining)
-            {
-                return ApcPowerState.Overload;
-            }
-
-            return ApcPowerState.Nominal;
-        }
-
-        private static ApcBatteryState DeriveBatteryState(CircuitStats stats)
-        {
-            if (stats.ApcBatteryCharge <= CriticalBatteryThreshold)
-            {
-                return ApcBatteryState.Critical;
-            }
-
-            if (stats.BatteryDraining)
-            {
-                return ApcBatteryState.Discharging;
-            }
-
-            return ApcBatteryState.Charged;
-        }
+        private static ApcBatteryState DeriveBatteryState(CircuitStats stats) =>
+            ApcStatusDeriver.DeriveBatteryState(stats);
 
         private static void ApplyDiagnostics(ref ApcInterfaceSnapshot snapshot, CircuitStats stats, ApcPowerState powerState, ApcBatteryState batteryState)
         {
@@ -346,7 +319,7 @@ namespace SS3D.UI.MachineInterface
             CircuitStats stats = default;
             if (SubSystems.TryGet(out ElectricitySubSystem electricitySubSystem))
             {
-                electricitySubSystem.TryGetCircuitStats(this, this, out stats);
+                electricitySubSystem.TryGetApcCircuitStats(this, this, out stats);
             }
 
             ApcPowerState powerState = DerivePowerState(stats);

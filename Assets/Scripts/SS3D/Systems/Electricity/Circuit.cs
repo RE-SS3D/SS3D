@@ -19,6 +19,7 @@ namespace System.Electricity
         private List<IPowerStorage> _storages;
         private List<IApcChannelSource> _apcChannelSources;
         private Func<IPowerConsumer, ApcControlFlags> _getEnabledChannelsForConsumer;
+        private Func<IPowerConsumer, bool> _includeInCableDistribution;
 
         public Circuit()
         {
@@ -31,6 +32,11 @@ namespace System.Electricity
         public void SetConsumerChannelResolver(Func<IPowerConsumer, ApcControlFlags> getEnabledChannelsForConsumer)
         {
             _getEnabledChannelsForConsumer = getEnabledChannelsForConsumer;
+        }
+
+        public void SetCableDistributionFilter(Func<IPowerConsumer, bool> includeInCableDistribution)
+        {
+            _includeInCableDistribution = includeInCableDistribution;
         }
 
         internal ApcControlFlags GetCircuitWideEnabledChannels() => GetEnabledChannels();
@@ -76,8 +82,27 @@ namespace System.Electricity
 
         public CircuitStats GetStats(IPowerStorage apcCell)
         {
-            List<IPowerConsumer> activeConsumers = GetActiveConsumers();
+            return BuildStats(apcCell, GetActiveConsumers());
+        }
 
+        public CircuitStats GetStatsForConsumers(IPowerStorage apcCell, IReadOnlyCollection<IPowerConsumer> scopedConsumers)
+        {
+            if (scopedConsumers == null || scopedConsumers.Count == 0)
+            {
+                return BuildStats(apcCell, new List<IPowerConsumer>());
+            }
+
+            HashSet<IPowerConsumer> scope = scopedConsumers as HashSet<IPowerConsumer> ?? scopedConsumers.ToHashSet();
+            List<IPowerConsumer> activeConsumers = GetActiveConsumers().Where(consumer => scope.Contains(consumer)).ToList();
+            return BuildStats(apcCell, activeConsumers);
+        }
+
+        public IReadOnlyList<IPowerConsumer> GetConsumers() => _consumers;
+
+        public float GetProducerSupplyKw() => _producers.Sum(producer => producer.PowerProduction);
+
+        private CircuitStats BuildStats(IPowerStorage apcCell, List<IPowerConsumer> activeConsumers)
+        {
             float supplyKw = _producers.Sum(x => x.PowerProduction);
             float demandKw = activeConsumers.Sum(x => x.PowerNeeded);
             float batteryCharge = apcCell != null && apcCell.MaxCapacity > 0f
@@ -264,6 +289,11 @@ namespace System.Electricity
             var activeConsumers = new List<IPowerConsumer>();
             foreach (IPowerConsumer consumer in _consumers)
             {
+                if (_includeInCableDistribution != null && !_includeInCableDistribution(consumer))
+                {
+                    continue;
+                }
+
                 ApcControlFlags enabledChannels = _getEnabledChannelsForConsumer(consumer);
                 if (IsChannelEnabled(consumer.Channel, enabledChannels))
                 {

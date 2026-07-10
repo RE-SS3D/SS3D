@@ -38,6 +38,7 @@ namespace System.Electricity
 
         private bool _graphIsDirty;
         private List<Circuit> _circuits;
+        private readonly List<IPowerConsumer> _registeredConsumers = new();
         private UndirectedGraph<VerticeCoordinates, Edge<VerticeCoordinates>> _electricityGraph;
 
         [SerializeField]
@@ -86,6 +87,22 @@ namespace System.Electricity
         }
 
         [Server]
+        public bool TryGetApcCircuitStats(IApcChannelSource apc, IPowerStorage apcCell, out CircuitStats stats)
+        {
+            stats = default;
+            if (apc == null)
+            {
+                return false;
+            }
+
+            List<IPowerConsumer> areaConsumers = AreaApcPowerDistribution.GetConsumersForApc(apc, _registeredConsumers);
+            List<IPowerConsumer> activeConsumers = AreaApcPowerDistribution.GetActiveConsumers(areaConsumers, apc.Channels);
+            float gridSupplyKw = apc is IElectricDevice apcDevice ? GetGridSupplyForDevice(apcDevice) : 0f;
+            stats = AreaApcPowerDistribution.BuildApcStats(gridSupplyKw, apcCell, activeConsumers);
+            return true;
+        }
+
+        [Server]
         private void HandleFixedUpdate(ref EventContext context, in FixedUpdateEvent updateEvent)
         {
             _timeElapsed += Time.deltaTime;
@@ -107,7 +124,56 @@ namespace System.Electricity
             }
 
             foreach (Circuit circuit in _circuits)
+            {
                 circuit.UpdateCircuitPower();
+            }
+
+            UpdateAreaScopedPower();
+        }
+
+        [Server]
+        private void UpdateAreaScopedPower()
+        {
+            if (!SubSystems.TryGet(out AreaSubSystem areaSubSystem))
+            {
+                return;
+            }
+
+            foreach (AreaRecord record in areaSubSystem.GetAllAreas())
+            {
+                if (record.Apc is not IApcChannelSource apc
+                    || record.Apc is not IPowerStorage apcStorage
+                    || record.Apc is not IElectricDevice apcDevice)
+                {
+                    continue;
+                }
+
+                List<IPowerConsumer> areaConsumers = AreaApcPowerDistribution.GetConsumersForApc(apc, _registeredConsumers);
+                List<IPowerConsumer> activeConsumers = AreaApcPowerDistribution.GetActiveConsumers(areaConsumers, apc.Channels);
+                float gridSupplyKw = GetGridSupplyForDevice(apcDevice);
+                AreaApcPowerDistribution.PowerAreaConsumers(apc, apcStorage, gridSupplyKw, areaConsumers, activeConsumers);
+            }
+        }
+
+        [Server]
+        private float GetGridSupplyForDevice(IElectricDevice device)
+        {
+            if (_circuits == null)
+            {
+                return 0f;
+            }
+
+            foreach (Circuit circuit in _circuits)
+            {
+                if (!circuit.ContainsDevice(device))
+                {
+                    continue;
+                }
+
+                return circuit.GetProducerSupplyKw();
+            }
+
+            return 0f;
         }
 
         [Server]
@@ -116,6 +182,11 @@ namespace System.Electricity
             if (_electricityGraph == null)
             {
                 return;
+            }
+
+            if (device is IPowerConsumer consumer && !_registeredConsumers.Contains(consumer))
+            {
+                _registeredConsumers.Add(consumer);
             }
 
             PlacedTileObject tileObject = device.TileObject;
@@ -146,6 +217,11 @@ namespace System.Electricity
             if (_electricityGraph == null || device?.TileObject == null)
             {
                 return;
+            }
+
+            if (device is IPowerConsumer consumer)
+            {
+                _registeredConsumers.Remove(consumer);
             }
 
             _electricityGraph.RemoveVertex(ToCoordinates(device.TileObject));
@@ -225,6 +301,7 @@ namespace System.Electricity
                 }
 
                 circuit.SetConsumerChannelResolver(consumer => ResolveEnabledChannelsForConsumer(circuit, consumer));
+                circuit.SetCableDistributionFilter(consumer => !AreaApcPowerDistribution.IsAreaScopedConsumer(consumer));
                 _circuits.Add(circuit);
             }
         }

@@ -53,6 +53,24 @@ namespace EditorTests
             Assert.AreEqual(PowerStatus.Powered, equipmentConsumer.PowerStatus);
         }
 
+        [Test]
+        public void GetStatsForConsumers_ScopesDemandToProvidedConsumers()
+        {
+            TestApcChannelSource apc = new TestApcChannelSource(ApcControlFlags.All);
+            BasicPowerConsumer lightingConsumer = CreateBasicConsumer(2f, PowerChannel.Lighting);
+            BasicPowerConsumer equipmentConsumer = CreateBasicConsumer(3f, PowerChannel.Equipment);
+
+            Circuit circuit = CreateCircuit(apc, lightingConsumer, equipmentConsumer);
+
+            CircuitStats scopedStats = circuit.GetStatsForConsumers(null, new[] { lightingConsumer });
+            CircuitStats fullStats = circuit.GetStats(null);
+
+            Assert.AreEqual(2f, scopedStats.TotalDemandKw);
+            Assert.AreEqual(2f, scopedStats.LightingLoadKw);
+            Assert.AreEqual(0f, scopedStats.EquipmentLoadKw);
+            Assert.AreEqual(5f, fullStats.TotalDemandKw);
+        }
+
         private static Circuit CreateCircuit(params IElectricDevice[] electricDevices)
         {
             Circuit circuit = new Circuit();

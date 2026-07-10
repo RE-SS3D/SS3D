@@ -485,7 +485,7 @@ namespace SS3D.Systems.Area
                 }
 
                 IPowerStorage apcStorage = record.Apc as IPowerStorage;
-                if (!electricitySubSystem.TryGetCircuitStats(apcDevice, apcStorage, out CircuitStats stats))
+                if (!electricitySubSystem.TryGetApcCircuitStats(areaApc, apcStorage, out CircuitStats stats))
                 {
                     continue;
                 }

@@ -6,12 +6,13 @@
 
 ## Overview
 
-Power circuit simulation, APC channel gating, SMES storage, and tile-linked electric devices. Implements `ITileMutationObserver` for [tile](tile.md) placement reactions. Machine UI in [machine-interface](machine-interface.md). Consumers in an assigned area use that area's APC channels via [area](area.md) `TryGetEffectiveApcForDevice`; others fall back to circuit-wide channel OR. `LightPower` drives fixture visuals from consumer power status and area lighting state.
+Power circuit simulation, APC channel gating, SMES storage, and tile-linked electric devices. Implements `ITileMutationObserver` for [tile](tile.md) placement reactions. Machine UI in [machine-interface](machine-interface.md). **Area-scoped power:** devices in an assigned area draw from that area's APC without a cable path to each device; the APC still connects to the station grid via cables. Channel gating and load accounting use [area](area.md) `TryGetEffectiveApcForDevice`.
 
 ## Start here
 
 - `Assets/Scripts/SS3D/Systems/Electricity/ElectricitySubSystem.cs` — subsystem entry point
-- `Assets/Scripts/SS3D/Systems/Electricity/Circuit.cs` — power distribution; per-consumer channel resolver
+- `Assets/Scripts/SS3D/Systems/Electricity/AreaApcPowerDistribution.cs` — area APC powers local consumers without per-device cables
+- `Assets/Scripts/SS3D/Systems/Electricity/Circuit.cs` — cable-grid power distribution; per-consumer channel resolver
 - `Assets/Scripts/SS3D/Systems/Electricity/LightPower.cs` — fixture visuals from power + area lighting state
 - `Assets/Scripts/SS3D/Systems/Tile/Connections/BasicElectricDevice.cs` — tile-placed electric device base
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcController.cs` — APC; implements `IAreaApcOrigin` for area registration
@@ -20,7 +21,8 @@ Power circuit simulation, APC channel gating, SMES storage, and tile-linked elec
 
 - New powered devices: extend electric device connectors in `Systems/Tile/Connections/`.
 - Machine panels: register via [machine-interface](machine-interface.md).
-- Area-scoped APC channels: resolved in `ElectricitySubSystem` via [area](area.md) `TryGetEffectiveApcForDevice` (circuit-wide OR fallback).
+- Area-scoped APC channels: resolved in `ElectricitySubSystem` via [area](area.md) `TryGetEffectiveApcForDevice` (circuit-wide OR fallback for unassigned tiles).
+- Area-scoped power: `AreaApcPowerDistribution` — APC cell + grid supply powers all consumers in the APC's area; cables only needed for grid backbone to the APC.
 
 ## Depends on / Used by
 
