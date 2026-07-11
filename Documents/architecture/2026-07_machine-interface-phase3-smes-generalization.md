@@ -46,4 +46,5 @@ Expand the machine-interface stack from APC-only to multi-machine support, begin
 
 - Consolidate duplicated diagnostics behavior across APC/SMES binders.
 - Add explicit integration test coverage for multi-viewer mixed machine sessions.
-- Document final registry extension pattern for adding new machine UIs.
+
+Registry extension pattern for new machine UIs is documented in [diegetic screen UI framework](2026-07_diegetic-screen-ui-framework.md) and the updated [machine-interface](systems/machine-interface.md) system map.
