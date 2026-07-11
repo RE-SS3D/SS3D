@@ -8,7 +8,7 @@ current review capacity supports.
 This document is the plain-language divergence log. It is updated periodically — not per-commit.
 For doc authoring conventions see [SKILL.md](SKILL.md).
 
-**Last updated:** 2026-07-09
+**Last updated:** 2026-07-11
 
 ---
 
@@ -221,12 +221,26 @@ Diegetic **UI Toolkit** panels for station machines, networked via FishNet snaps
 | [Phase 1](architecture/2026-07_machine-interface-phase1-foundation.md) | Shipped | UI foundation, local APC panel preview |
 | [Phase 2](architecture/2026-07_machine-interface-phase2-apc-networking.md) | Shipped | Networked APC with power channel gating |
 | [Phase 3](architecture/2026-07_machine-interface-phase3-smes-generalization.md) | Mostly shipped | SMES interface (exterior + engineer views), registry-driven plumbing, shared binder flow |
+| [Diegetic screen UI](architecture/2026-07_diegetic-screen-ui-framework.md) | Shipped | Reusable diegetic device shell + component library; vending machine as first consumer |
+
+APC and SMES keep the existing modal `MachineWindow` shell. Newer devices use
+`DiegeticDeviceShell` (chassis/bezel/screen) with diegetic tokens and shared chrome components
+(`PanelSection`, `SteelButton`, `ActionLog`, etc.). `MachineInterfaceShellKind` registers modal vs
+diegetic layouts on the host.
+
+**Vending machines** now open a networked diegetic panel (`VendingMachineController`) with
+tray-based dispense (vend to tray, then take). Legacy per-product `DispenseProductInteraction` and
+`VendingMachine` behaviour removed. ID card reader is stubbed in v1.
 
 `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the selection
-pick pass. Pattern documented for adding new machine types on the host.
+pick pass. Diegetic panels mount the full cloned UXML `TemplateContainer` so attached style sheets
+apply at runtime.
 
-Merged from `archive/machine-ui`. Phase 3 architecture doc still lists minor cleanup (shared
-diagnostics across binders, multi-viewer integration tests).
+Merged from `archive/machine-ui` (APC/SMES) and
+`archive/feature-diegetic-screen-ui-framework` (diegetic shell + vending). Phase 3 architecture doc
+still lists minor cleanup (shared diagnostics across binders, multi-viewer integration tests).
+
+Plan: [diegetic_screen_ui_framework_643c2e6f.plan.md](plans/diegetic_screen_ui_framework_643c2e6f.plan.md).
 
 ### Structured logging
 
@@ -291,6 +305,7 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/feature-game-lifecycle-hardening` | (via develop-unity6) | Round state machine |
 | `archive/fix-selection-camera-picking` | (via develop-unity6) | Cursor picking alignment |
 | `archive/machine-ui` | 2026-07 | Machine interface UI (APC/SMES) |
+| `archive/feature-diegetic-screen-ui-framework` | 2026-07-11 | Diegetic device shell, component library, vending machine UI |
 | `archive/feature-examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
 | `archive/feature-interaction-system-hardening` | 2026-07-09 | Interaction RPC hardening, pipeline, outlines, radial menu |
 | `archive/feature-radial-menu-redesign` | (via interaction-system-hardening) | UI Toolkit three-tier radial menu + armed overlay |
