@@ -1,0 +1,38 @@
+@import url("../Tokens/diegetic-tokens.uss");
+
+.diegetic-preview__grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.diegetic-preview__grid-cell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 48%;
+    background-color: var(--ss3d-diegetic-inset);
+    padding: 10px 12px;
+    margin-bottom: 1px;
+    margin-right: 1px;
+}
+
+.diegetic-preview__cell-label {
+    font-size: 13px;
+    color: var(--ss3d-text-primary);
+}
+
+.diegetic-preview__actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.diegetic-preview__slots {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.diegetic-preview__slots .inventory-slot {
+    margin-right: 16px;
+}
