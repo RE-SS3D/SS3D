@@ -6,9 +6,9 @@ namespace SS3D.UI.MachineInterface.Components
     [UxmlElement]
     public partial class DiegeticDeviceShell : VisualElement
     {
-        public const float DefaultWidth = 664f;
-
         public event Action CloseClicked;
+
+        public const float DefaultWidth = 664f;
 
         private readonly Label _modelLabel;
         private readonly StatusDot _powerDot;
@@ -59,8 +59,8 @@ namespace SS3D.UI.MachineInterface.Components
 
             bezel.Add(_screen);
 
-            Add(chassisHeader);
-            Add(bezel);
+            hierarchy.Add(chassisHeader);
+            hierarchy.Add(bezel);
         }
 
         public override VisualElement contentContainer => _screen;

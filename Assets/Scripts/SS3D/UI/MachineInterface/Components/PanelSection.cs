@@ -19,8 +19,8 @@ namespace SS3D.UI.MachineInterface.Components
             _content = new VisualElement();
             _content.AddToClassList("panel-section__content");
 
-            Add(_header);
-            Add(_content);
+            hierarchy.Add(_header);
+            hierarchy.Add(_content);
         }
 
         public override VisualElement contentContainer => _content;
