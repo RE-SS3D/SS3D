@@ -1,11 +1,6 @@
 @import url("../Tokens/diegetic-tokens.uss");
 @import url("../../Tokens/ss3d-typography.uss");
 
-.product-grid__items {
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-
 .product-card {
     width: 31%;
     margin-right: 2%;
@@ -33,6 +28,10 @@
     font-size: 12px;
     margin-top: 3px;
     -unity-text-align: middle-center;
+}
+
+.product-card__qty--out-of-stock {
+    -unity-text-decoration: line-through;
 }
 
 .product-card--disabled {

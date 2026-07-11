@@ -64,7 +64,10 @@ namespace SS3D.UI.MachineInterface
             }
             else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
-                _subsystem?.SimulateVendingState();
+                if (_subsystem != null)
+                {
+                    _subsystem.SimulateVendingState();
+                }
             }
             else if (Input.GetKeyDown(KeyCode.Escape))
             {

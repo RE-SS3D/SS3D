@@ -1,5 +1,11 @@
-@import url("ProductCard.uss");
+@import url("../Tokens/diegetic-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
 
 .product-grid {
     flex-direction: column;
+}
+
+.product-grid__items {
+    flex-direction: row;
+    flex-wrap: wrap;
 }

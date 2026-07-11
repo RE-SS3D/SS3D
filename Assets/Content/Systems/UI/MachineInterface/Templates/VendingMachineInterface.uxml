@@ -7,6 +7,7 @@
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/IdReaderPanel.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ProductCard.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ProductGrid.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DispenseTray.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ActionLog.uss" />

@@ -1,6 +1,6 @@
+using SS3D.UI.MachineInterface;
 using System;
 using System.Collections.Generic;
-using SS3D.UI.MachineInterface;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Components

@@ -9,6 +9,7 @@ using SS3D.Systems.Selection;
 using System.Collections.Generic;
 using System.Electricity;
 using UnityEngine;
+using AudioType = SS3D.Systems.Audio.AudioType;
 using Random = UnityEngine.Random;
 
 namespace SS3D.UI.MachineInterface
@@ -17,8 +18,6 @@ namespace SS3D.UI.MachineInterface
     [RequireComponent(typeof(MachinePowerConsumer))]
     public sealed class VendingMachineController : MachineInterfaceBehaviour
     {
-        private const int MaxTrayItems = VendingInterfaceSnapshot.MaxTrayItems;
-
         private readonly struct TrayEntry
         {
             public TrayEntry(int productIndex, string name)
@@ -31,6 +30,12 @@ namespace SS3D.UI.MachineInterface
 
             public string Name { get; }
         }
+
+        private const int MaxTrayItems = VendingInterfaceSnapshot.MaxTrayItems;
+
+        private readonly List<TrayEntry> _trayItems = new();
+
+        private readonly List<string> _actionLog = new();
 
         [SerializeField]
         private MachinePowerConsumer _powerConsumer;
@@ -52,10 +57,6 @@ namespace SS3D.UI.MachineInterface
 
         [SerializeField]
         private string _connectionStatus = "WIRED · VEND BUS · PORT J1";
-
-        private readonly List<TrayEntry> _trayItems = new();
-
-        private readonly List<string> _actionLog = new();
 
         private int _logSequence;
 
@@ -100,6 +101,144 @@ namespace SS3D.UI.MachineInterface
                 default:
                 {
                     return false;
+                }
+            }
+        }
+
+        private static void SetProduct(ref VendingInterfaceSnapshot snapshot, int index, VendingProductSnapshot product)
+        {
+            switch (index)
+            {
+                case 0:
+                {
+                    snapshot.Product0 = product;
+                    break;
+                }
+
+                case 1:
+                {
+                    snapshot.Product1 = product;
+                    break;
+                }
+
+                case 2:
+                {
+                    snapshot.Product2 = product;
+                    break;
+                }
+
+                case 3:
+                {
+                    snapshot.Product3 = product;
+                    break;
+                }
+
+                case 4:
+                {
+                    snapshot.Product4 = product;
+                    break;
+                }
+
+                case 5:
+                {
+                    snapshot.Product5 = product;
+                    break;
+                }
+
+                case 6:
+                {
+                    snapshot.Product6 = product;
+                    break;
+                }
+
+                case 7:
+                {
+                    snapshot.Product7 = product;
+                    break;
+                }
+
+                case 8:
+                {
+                    snapshot.Product8 = product;
+                    break;
+                }
+
+                case 9:
+                {
+                    snapshot.Product9 = product;
+                    break;
+                }
+
+                case 10:
+                {
+                    snapshot.Product10 = product;
+                    break;
+                }
+
+                case 11:
+                {
+                    snapshot.Product11 = product;
+                    break;
+                }
+            }
+        }
+
+        private static void SetTrayItem(ref VendingInterfaceSnapshot snapshot, int index, VendingTrayItemSnapshot trayItem)
+        {
+            switch (index)
+            {
+                case 0:
+                {
+                    snapshot.Tray0 = trayItem;
+                    break;
+                }
+
+                case 1:
+                {
+                    snapshot.Tray1 = trayItem;
+                    break;
+                }
+
+                case 2:
+                {
+                    snapshot.Tray2 = trayItem;
+                    break;
+                }
+
+                case 3:
+                {
+                    snapshot.Tray3 = trayItem;
+                    break;
+                }
+            }
+        }
+
+        private static void SetLogEntry(ref VendingInterfaceSnapshot snapshot, int index, string value)
+        {
+            switch (index)
+            {
+                case 0:
+                {
+                    snapshot.Log0 = value;
+                    break;
+                }
+
+                case 1:
+                {
+                    snapshot.Log1 = value;
+                    break;
+                }
+
+                case 2:
+                {
+                    snapshot.Log2 = value;
+                    break;
+                }
+
+                case 3:
+                {
+                    snapshot.Log3 = value;
+                    break;
                 }
             }
         }
@@ -246,7 +385,7 @@ namespace SS3D.UI.MachineInterface
         private void PlayOutOfStockSound()
         {
             SubSystems.Get<AudioSubSystem>().PlayAudioSource(
-                Audio.AudioType.Sfx,
+                AudioType.Sfx,
                 Sounds.BikeHorn,
                 Position,
                 NetworkObject,
@@ -260,7 +399,7 @@ namespace SS3D.UI.MachineInterface
         private void PlayVendSound()
         {
             SubSystems.Get<AudioSubSystem>().PlayAudioSource(
-                Audio.AudioType.Sfx,
+                AudioType.Sfx,
                 Sounds.Can1,
                 Position,
                 NetworkObject,
@@ -274,7 +413,7 @@ namespace SS3D.UI.MachineInterface
         private void PushLog(string message)
         {
             _logSequence++;
-            int totalSeconds = _logSequence * 19 + 30;
+            int totalSeconds = (_logSequence * 19) + 30;
             int minutes = totalSeconds / 60;
             int seconds = totalSeconds % 60;
             string entry = $"[{minutes:00}:{seconds:00}] {message}";
@@ -283,47 +422,6 @@ namespace SS3D.UI.MachineInterface
             if (_actionLog.Count > VendingInterfaceSnapshot.MaxLogEntries)
             {
                 _actionLog.RemoveAt(_actionLog.Count - 1);
-            }
-        }
-
-        private static void SetProduct(ref VendingInterfaceSnapshot snapshot, int index, VendingProductSnapshot product)
-        {
-            switch (index)
-            {
-                case 0: snapshot.Product0 = product; break;
-                case 1: snapshot.Product1 = product; break;
-                case 2: snapshot.Product2 = product; break;
-                case 3: snapshot.Product3 = product; break;
-                case 4: snapshot.Product4 = product; break;
-                case 5: snapshot.Product5 = product; break;
-                case 6: snapshot.Product6 = product; break;
-                case 7: snapshot.Product7 = product; break;
-                case 8: snapshot.Product8 = product; break;
-                case 9: snapshot.Product9 = product; break;
-                case 10: snapshot.Product10 = product; break;
-                case 11: snapshot.Product11 = product; break;
-            }
-        }
-
-        private static void SetTrayItem(ref VendingInterfaceSnapshot snapshot, int index, VendingTrayItemSnapshot trayItem)
-        {
-            switch (index)
-            {
-                case 0: snapshot.Tray0 = trayItem; break;
-                case 1: snapshot.Tray1 = trayItem; break;
-                case 2: snapshot.Tray2 = trayItem; break;
-                case 3: snapshot.Tray3 = trayItem; break;
-            }
-        }
-
-        private static void SetLogEntry(ref VendingInterfaceSnapshot snapshot, int index, string value)
-        {
-            switch (index)
-            {
-                case 0: snapshot.Log0 = value; break;
-                case 1: snapshot.Log1 = value; break;
-                case 2: snapshot.Log2 = value; break;
-                case 3: snapshot.Log3 = value; break;
             }
         }
     }

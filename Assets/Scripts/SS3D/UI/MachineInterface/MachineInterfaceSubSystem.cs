@@ -296,6 +296,32 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
+        private static void ApplyVendingAction(VendingInterfaceViewModel model, byte controlId, int value)
+        {
+            switch (controlId)
+            {
+                case MachineInterfaceControlIds.Vending.SelectProduct:
+                {
+                    if (value >= 0 && value < model.Products.Count && model.Products[value].CanSelect)
+                    {
+                        model.VendingProductIndex = value;
+                    }
+
+                    break;
+                }
+
+                case MachineInterfaceControlIds.Vending.TakeTrayItem:
+                {
+                    if (value >= 0 && value < model.TrayItems.Count)
+                    {
+                        model.TrayItems.RemoveAt(value);
+                    }
+
+                    break;
+                }
+            }
+        }
+
         private void ApplyApcControl(ApcInterfaceViewModel model, byte controlId, bool isOn)
         {
             string channelId = controlId switch
@@ -333,32 +359,6 @@ namespace SS3D.UI.MachineInterface
             }
 
             ChannelToggled?.Invoke(channelId, isOn);
-        }
-
-        private static void ApplyVendingAction(VendingInterfaceViewModel model, byte controlId, int value)
-        {
-            switch (controlId)
-            {
-                case MachineInterfaceControlIds.Vending.SelectProduct:
-                {
-                    if (value >= 0 && value < model.Products.Count && model.Products[value].CanSelect)
-                    {
-                        model.VendingProductIndex = value;
-                    }
-
-                    break;
-                }
-
-                case MachineInterfaceControlIds.Vending.TakeTrayItem:
-                {
-                    if (value >= 0 && value < model.TrayItems.Count)
-                    {
-                        model.TrayItems.RemoveAt(value);
-                    }
-
-                    break;
-                }
-            }
         }
 
         private void SetGameplayInputBlocked(bool blocked)

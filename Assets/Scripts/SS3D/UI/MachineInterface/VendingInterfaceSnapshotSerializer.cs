@@ -163,18 +163,77 @@ namespace SS3D.UI.MachineInterface
         {
             switch (index)
             {
-                case 0: snapshot.Product0 = product; break;
-                case 1: snapshot.Product1 = product; break;
-                case 2: snapshot.Product2 = product; break;
-                case 3: snapshot.Product3 = product; break;
-                case 4: snapshot.Product4 = product; break;
-                case 5: snapshot.Product5 = product; break;
-                case 6: snapshot.Product6 = product; break;
-                case 7: snapshot.Product7 = product; break;
-                case 8: snapshot.Product8 = product; break;
-                case 9: snapshot.Product9 = product; break;
-                case 10: snapshot.Product10 = product; break;
-                case 11: snapshot.Product11 = product; break;
+                case 0:
+                {
+                    snapshot.Product0 = product;
+                    break;
+                }
+
+                case 1:
+                {
+                    snapshot.Product1 = product;
+                    break;
+                }
+
+                case 2:
+                {
+                    snapshot.Product2 = product;
+                    break;
+                }
+
+                case 3:
+                {
+                    snapshot.Product3 = product;
+                    break;
+                }
+
+                case 4:
+                {
+                    snapshot.Product4 = product;
+                    break;
+                }
+
+                case 5:
+                {
+                    snapshot.Product5 = product;
+                    break;
+                }
+
+                case 6:
+                {
+                    snapshot.Product6 = product;
+                    break;
+                }
+
+                case 7:
+                {
+                    snapshot.Product7 = product;
+                    break;
+                }
+
+                case 8:
+                {
+                    snapshot.Product8 = product;
+                    break;
+                }
+
+                case 9:
+                {
+                    snapshot.Product9 = product;
+                    break;
+                }
+
+                case 10:
+                {
+                    snapshot.Product10 = product;
+                    break;
+                }
+
+                case 11:
+                {
+                    snapshot.Product11 = product;
+                    break;
+                }
             }
         }
 
@@ -194,10 +253,29 @@ namespace SS3D.UI.MachineInterface
         {
             switch (index)
             {
-                case 0: snapshot.Tray0 = trayItem; break;
-                case 1: snapshot.Tray1 = trayItem; break;
-                case 2: snapshot.Tray2 = trayItem; break;
-                case 3: snapshot.Tray3 = trayItem; break;
+                case 0:
+                {
+                    snapshot.Tray0 = trayItem;
+                    break;
+                }
+
+                case 1:
+                {
+                    snapshot.Tray1 = trayItem;
+                    break;
+                }
+
+                case 2:
+                {
+                    snapshot.Tray2 = trayItem;
+                    break;
+                }
+
+                case 3:
+                {
+                    snapshot.Tray3 = trayItem;
+                    break;
+                }
             }
         }
 
@@ -217,10 +295,29 @@ namespace SS3D.UI.MachineInterface
         {
             switch (index)
             {
-                case 0: snapshot.Log0 = value; break;
-                case 1: snapshot.Log1 = value; break;
-                case 2: snapshot.Log2 = value; break;
-                case 3: snapshot.Log3 = value; break;
+                case 0:
+                {
+                    snapshot.Log0 = value;
+                    break;
+                }
+
+                case 1:
+                {
+                    snapshot.Log1 = value;
+                    break;
+                }
+
+                case 2:
+                {
+                    snapshot.Log2 = value;
+                    break;
+                }
+
+                case 3:
+                {
+                    snapshot.Log3 = value;
+                    break;
+                }
             }
         }
     }

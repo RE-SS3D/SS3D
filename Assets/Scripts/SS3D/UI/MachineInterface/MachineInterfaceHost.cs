@@ -93,10 +93,13 @@ namespace SS3D.UI.MachineInterface
             if (registration.ShellKind == MachineInterfaceShellKind.DiegeticDevice)
             {
                 _diegeticShell = template.Q<DiegeticDeviceShell>();
-                _panelRoot = _diegeticShell ?? template;
-                _panelRoot.style.alignSelf = Align.Center;
-                _panelRoot.style.marginTop = 24;
-                _overlayRoot.Add(_panelRoot);
+
+                // Keep the cloned TemplateContainer in the hierarchy so UXML style sheets stay attached.
+                _panelRoot = template;
+                VisualElement layoutRoot = _diegeticShell != null ? _diegeticShell : template;
+                layoutRoot.style.alignSelf = Align.Center;
+                layoutRoot.style.marginTop = 24;
+                _overlayRoot.Add(template);
             }
             else
             {

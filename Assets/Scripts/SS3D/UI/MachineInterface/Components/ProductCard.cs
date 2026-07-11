@@ -56,19 +56,19 @@ namespace SS3D.UI.MachineInterface.Components
             {
                 _qtyLabel.text = "ID REQUIRED";
                 _qtyLabel.style.color = new StyleColor(new UnityEngine.Color(0.36f, 0.35f, 0.33f));
-                _qtyLabel.style.textDecoration = TextDecoration.None;
+                _qtyLabel.EnableInClassList("product-card__qty--out-of-stock", false);
             }
             else if (stock <= 0)
             {
                 _qtyLabel.text = $"x {stock}";
                 _qtyLabel.style.color = new StyleColor(new UnityEngine.Color(0.36f, 0.35f, 0.33f));
-                _qtyLabel.style.textDecoration = TextDecoration.LineThrough;
+                _qtyLabel.EnableInClassList("product-card__qty--out-of-stock", true);
             }
             else
             {
                 _qtyLabel.text = $"x {stock}";
                 _qtyLabel.style.color = new StyleColor(new UnityEngine.Color(0.6f, 0.59f, 0.56f));
-                _qtyLabel.style.textDecoration = TextDecoration.None;
+                _qtyLabel.EnableInClassList("product-card__qty--out-of-stock", false);
             }
 
             _nameLabel.style.color = stock <= 0 || locked

@@ -1,5 +1,5 @@
-using System;
 using SS3D.UI.MachineInterface.Components;
+using System;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Bindings
