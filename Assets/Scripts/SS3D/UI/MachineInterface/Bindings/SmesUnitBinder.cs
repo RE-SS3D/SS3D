@@ -13,6 +13,8 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public event Action<byte, float> NumericControlChanged;
 
+        public event Action<byte, int> ActionControlChanged;
+
         private readonly MachineWindow _window;
         private readonly SmesStatusBanner _statusBanner;
         private readonly WarningPanel _warningPanel;

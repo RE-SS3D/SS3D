@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/IdReaderPanel.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ProductGrid.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DispenseTray.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ActionLog.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        model-label="VND-7 · ration &amp; sundries dispenser"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · VEND BUS · PORT J1"
+            readout-text="0 of 0 items stocked" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="GALLEY VENDOMAT"
+            subtitle="Crew Mess — Sundries Dispenser" />
+        <ss3d:PanelSection name="id-reader-section" title="ID Reader">
+            <ss3d:IdReaderPanel name="id-reader" />
+        </ss3d:PanelSection>
+        <ss3d:PanelSection name="products-section" title="Select Item">
+            <ss3d:ProductGrid name="product-grid" />
+        </ss3d:PanelSection>
+        <ss3d:DispenseTray name="dispense-tray" />
+        <ss3d:ActionLog name="action-log" />
+        <ss3d:DeviceFooter name="footer" text="SS3D Vending Dispenser — Model VND-7" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

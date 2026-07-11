@@ -1,0 +1,5 @@
+@import url("ProductCard.uss");
+
+.product-grid {
+    flex-direction: column;
+}

@@ -62,6 +62,10 @@ namespace SS3D.UI.MachineInterface
             {
                 SimulateCurrentInterface(ApcPowerState.Critical, SmesPowerState.Fault);
             }
+            else if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                _subsystem?.SimulateVendingState();
+            }
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
                 _subsystem.Close();
@@ -70,7 +74,11 @@ namespace SS3D.UI.MachineInterface
 
         private void SimulateCurrentInterface(ApcPowerState apcState, SmesPowerState smesState)
         {
-            if (_interfaceId == MachineInterfaceIds.Smes)
+            if (_interfaceId == MachineInterfaceIds.Vending)
+            {
+                _subsystem.SimulateVendingState();
+            }
+            else if (_interfaceId == MachineInterfaceIds.Smes)
             {
                 _subsystem.SimulateSmesState(smesState);
             }

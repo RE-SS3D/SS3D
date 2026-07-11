@@ -1,0 +1,5 @@
+@import url("../Tokens/diegetic-tokens.uss");
+
+.vending-interface .panel-section__content {
+    padding: 12px;
+}

@@ -3,6 +3,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Inputs;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -180,6 +181,22 @@ namespace SS3D.UI.MachineInterface
             _clientBridge?.SetNumericControl(controlId, delta);
         }
 
+        public void NotifyActionControl(byte controlId, int value)
+        {
+            if (_openModel == null)
+            {
+                return;
+            }
+
+            if (_openModel is VendingInterfaceViewModel vendingModel)
+            {
+                ApplyVendingAction(vendingModel, controlId, value);
+                Refresh(vendingModel);
+            }
+
+            _clientBridge?.SetActionControl(controlId, value);
+        }
+
         public void SimulateApcState(ApcPowerState state)
         {
             ApcInterfaceViewModel model = state switch
@@ -217,6 +234,30 @@ namespace SS3D.UI.MachineInterface
             {
                 Open(MachineInterfaceIds.Smes, model);
             }
+        }
+
+        public void SimulateVendingState()
+        {
+            VendingInterfaceViewModel model = VendingInterfaceViewModel.CreateSample();
+
+            if (IsOpen && _openInterfaceId == MachineInterfaceIds.Vending)
+            {
+                Refresh(model);
+            }
+            else
+            {
+                Open(MachineInterfaceIds.Vending, model);
+            }
+        }
+
+        protected void Update()
+        {
+            if (!IsOpen || !Input.GetKeyDown(KeyCode.Escape))
+            {
+                return;
+            }
+
+            RequestCloseFromUi(_openInterfaceId);
         }
 
         protected override void OnDestroyed()
@@ -292,6 +333,32 @@ namespace SS3D.UI.MachineInterface
             }
 
             ChannelToggled?.Invoke(channelId, isOn);
+        }
+
+        private static void ApplyVendingAction(VendingInterfaceViewModel model, byte controlId, int value)
+        {
+            switch (controlId)
+            {
+                case MachineInterfaceControlIds.Vending.SelectProduct:
+                {
+                    if (value >= 0 && value < model.Products.Count && model.Products[value].CanSelect)
+                    {
+                        model.VendingProductIndex = value;
+                    }
+
+                    break;
+                }
+
+                case MachineInterfaceControlIds.Vending.TakeTrayItem:
+                {
+                    if (value >= 0 && value < model.TrayItems.Count)
+                    {
+                        model.TrayItems.RemoveAt(value);
+                    }
+
+                    break;
+                }
+            }
         }
 
         private void SetGameplayInputBlocked(bool blocked)

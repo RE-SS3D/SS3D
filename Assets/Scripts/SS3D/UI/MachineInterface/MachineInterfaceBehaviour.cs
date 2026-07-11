@@ -36,6 +36,11 @@ namespace SS3D.UI.MachineInterface
             CmdSetNumericControl(controlId, delta);
         }
 
+        public void SetActionControl(byte controlId, int value)
+        {
+            CmdSetActionControl(controlId, value);
+        }
+
         public void RequestClose()
         {
             CmdCloseInterface();
@@ -115,6 +120,17 @@ namespace SS3D.UI.MachineInterface
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void CmdSetActionControl(byte controlId, int value, NetworkConnection conn = null)
+        {
+            if (conn == null || !conn.IsValid || !_viewers.Contains(conn))
+            {
+                return;
+            }
+
+            ApplyActionControl(controlId, value);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         public void CmdCloseInterface(NetworkConnection conn = null)
         {
             if (conn == null || !conn.IsValid)
@@ -134,6 +150,11 @@ namespace SS3D.UI.MachineInterface
         protected abstract bool ApplyControl(byte controlId, bool value);
 
         protected virtual bool ApplyNumericControl(byte controlId, float delta)
+        {
+            return false;
+        }
+
+        protected virtual bool ApplyActionControl(byte controlId, int value)
         {
             return false;
         }

@@ -112,6 +112,43 @@ namespace EditorTests
             Assert.AreEqual("Restore input power before re-enabling output.", model.DiagnosisHint);
         }
 
+        [Test]
+        public void VendingInterfaceSnapshotSerializer_RoundTrips()
+        {
+            VendingInterfaceSnapshot original = CreateVendingSnapshot();
+
+            using PooledWriter writer = WriterPool.Retrieve();
+            writer.WriteVendingInterfaceSnapshot(original);
+
+            ArraySegment<byte> segment = writer.GetArraySegment();
+            using PooledReader reader = ReaderPool.Retrieve(segment, null);
+            VendingInterfaceSnapshot roundTripped = reader.ReadVendingInterfaceSnapshot();
+
+            Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
+            Assert.AreEqual(original.InterfaceId, roundTripped.InterfaceId);
+            Assert.AreEqual(original.Title, roundTripped.Title);
+            Assert.AreEqual(original.ProductCount, roundTripped.ProductCount);
+            Assert.AreEqual(original.Product0.Name, roundTripped.Product0.Name);
+            Assert.AreEqual(original.Product0.Stock, roundTripped.Product0.Stock);
+            Assert.AreEqual(original.TrayItemCount, roundTripped.TrayItemCount);
+            Assert.AreEqual(original.Tray0.Name, roundTripped.Tray0.Name);
+            Assert.AreEqual(original.LogEntryCount, roundTripped.LogEntryCount);
+            Assert.AreEqual(original.Log0, roundTripped.Log0);
+        }
+
+        [Test]
+        public void VendingSnapshotMapper_MapsTrayAndStock()
+        {
+            VendingInterfaceSnapshot snapshot = CreateVendingSnapshot();
+            VendingInterfaceViewModel model = VendingInterfaceSnapshotMapper.ToViewModel(snapshot);
+
+            Assert.AreEqual(2, model.Products.Count);
+            Assert.AreEqual("Ration Bar", model.Products[0].Name);
+            Assert.AreEqual(1, model.TrayItems.Count);
+            Assert.AreEqual("Space Cola", model.TrayItems[0].Name);
+            Assert.AreEqual(1, model.ActionLog.Count);
+        }
+
         private static ApcInterfaceSnapshot CreateApcSnapshot()
         {
             return new ApcInterfaceSnapshot
@@ -165,6 +202,28 @@ namespace EditorTests
                     Text = "Battery discharge increasing.",
                     Tone = (byte)StatusTone.Warning,
                 },
+            };
+        }
+
+        private static VendingInterfaceSnapshot CreateVendingSnapshot()
+        {
+            return new VendingInterfaceSnapshot
+            {
+                MachineObjectId = 126,
+                InterfaceId = MachineInterfaceIds.Vending,
+                Title = "GALLEY VENDOMAT",
+                Subtitle = "Crew Mess — Sundries Dispenser",
+                ModelLabel = "VND-7 · ration & sundries dispenser",
+                ConnectionStatus = "WIRED · VEND BUS · PORT J1",
+                StockedReadout = "2 of 2 items stocked",
+                PowerOk = true,
+                ProductCount = 2,
+                Product0 = new VendingProductSnapshot { Name = "Ration Bar", Stock = 4, RequiresId = false },
+                Product1 = new VendingProductSnapshot { Name = "Water Pouch", Stock = 0, RequiresId = false },
+                TrayItemCount = 1,
+                Tray0 = new VendingTrayItemSnapshot { Name = "Space Cola" },
+                LogEntryCount = 1,
+                Log0 = "[07:45] Space Cola dispensed to tray",
             };
         }
     }
