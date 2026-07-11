@@ -18,6 +18,16 @@ When a feature needs models, textures, sounds, or UI art:
 
 Most game-ready source files live in [RE-SS3D/SS3D-Art](https://github.com/RE-SS3D/SS3D-Art). The index maps each source file to its expected `Assets/Art/` import path. Regenerate with `python3 Tools/generate_art_index.py` after importing new art.
 
+## Finding UI icons
+
+When building UI that needs icon sprites (buttons, HUD, panels, machine interfaces):
+
+1. Read [Documents/icon-index.md](Documents/icon-index.md).
+2. Search [Documents/icon-index.json](Documents/icon-index.json) by name, tag, or pack.
+3. Icons live in `Assets/Art/Icons/external icons/` — game-icons.net SVGs grouped by contributor.
+
+Regenerate with `python3 Tools/generate_icon_index.py` after adding icons.
+
 ## Doc layers
 
 | Layer | Path | Agent role |
@@ -27,6 +37,7 @@ Most game-ready source files live in [RE-SS3D/SS3D-Art](https://github.com/RE-SS
 | Architecture efforts | `Documents/architecture/YYYY-MM_*.md` | Set `Status` when effort ships |
 | System maps | `Documents/architecture/systems/` | Update after feature work |
 | Art asset index | `Documents/art-asset-index.md` | **Read** when importing or locating art |
+| UI icon index | `Documents/icon-index.md` | **Read** when building UI that needs game-icons |
 | Fork status | `Documents/FORK_STATUS.md` | **Read-only** unless owner asks |
 
 **Do not edit `Documents/design/` or `Documents/FORK_STATUS.md`.** If code diverges from a design spec, document the divergence in the system map, plan, or architecture effort doc — do not change the design file.

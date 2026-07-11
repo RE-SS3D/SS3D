@@ -94,4 +94,5 @@ Use `--refresh-cache` to force a new fetch from GitHub.
 ## Related
 
 - [SS3D art guide](https://ss3d.gitbook.io/art-guide/) — contribution workflow
+- [icon-index.md](icon-index.md) — external game-icons SVGs for UI work
 - [AGENTS.md](../../AGENTS.md) — agent navigation

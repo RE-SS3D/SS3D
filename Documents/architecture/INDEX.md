@@ -74,3 +74,4 @@ Gameplay specs in [Documents/design/](../design/) — owner-maintained. Agents l
 |----------|------|----------|
 | Art asset index | [art-asset-index.md](../art-asset-index.md) | Locating or importing art from SS3D-Art |
 | Available for import | [art-available-for-import.json](../art-available-for-import.json) | Finding game-ready art not yet in `Assets/Art/` |
+| UI icon index | [icon-index.md](../icon-index.md) | Finding external game-icons SVGs for UI work |
