@@ -132,6 +132,47 @@ namespace SS3D.Systems.IdAccess
                 : AccessMask.None;
         }
 
+        [Server]
+        public bool TrySetTargetAccess(
+            HumanInventory operatorInventory,
+            IDCard targetCard,
+            AccessMask newAccess,
+            IAuthLogDevice consoleDevice,
+            out string failureReason)
+        {
+            failureReason = string.Empty;
+            AccessCheckResult operatorCheck = ResolveConsoleOperatorCheck(
+                operatorInventory,
+                consoleDevice,
+                out failureReason);
+            if (!operatorCheck.Passed)
+            {
+                return false;
+            }
+
+            if (targetCard == null || targetCard.BoundRecordId.IsNone)
+            {
+                failureReason = "No target ID card inserted.";
+                return false;
+            }
+
+            if (!TryGetRecord(operatorCheck.CredentialRecordId, out CrewRecord operatorRecord)
+                || !TryGetRecord(targetCard.BoundRecordId, out CrewRecord targetRecord))
+            {
+                failureReason = "Could not resolve crew records.";
+                return false;
+            }
+
+            if (!TrySetAccess(targetCard.BoundRecordId, newAccess))
+            {
+                failureReason = "Failed to update target access.";
+                return false;
+            }
+
+            AppendConsoleEditLog(consoleDevice, operatorRecord, targetRecord, newAccess);
+            return true;
+        }
+
         public static Department DepartmentForRole(string roleName)
         {
             return roleName switch
@@ -171,6 +212,38 @@ namespace SS3D.Systems.IdAccess
             }
         }
 
+        private AccessCheckResult ResolveConsoleOperatorCheck(
+            HumanInventory operatorInventory,
+            IAuthLogDevice consoleDevice,
+            out string failureReason)
+        {
+            failureReason = string.Empty;
+
+            if (IdAccessDevSettings.AllowConsoleAccessEditing)
+            {
+                if (!AccessCredentialResolver.TryResolveBoundRecord(
+                        operatorInventory,
+                        out CrewRecordId operatorRecordId,
+                        out _))
+                {
+                    failureReason = "Operator credential not found.";
+                    return AccessCheckResult.Fail(AccessCheckFailureReason.NoCredential);
+                }
+
+                AccessMask operatorAccess = ResolveCredentialMask(operatorInventory);
+                return AccessCheckResult.Pass(operatorRecordId, operatorAccess);
+            }
+
+            AccessMask changeIdRequired = AccessMask.FromLevels(AccessLevel.ChangeId);
+            AccessCheckResult operatorCheck = CheckAccess(operatorInventory, changeIdRequired, consoleDevice);
+            if (!operatorCheck.Passed)
+            {
+                failureReason = "Operator lacks Change ID access.";
+            }
+
+            return operatorCheck;
+        }
+
         private static void AppendAuthLog(
             IAuthLogDevice device,
             AccessCheckResult result,
@@ -190,6 +263,26 @@ namespace SS3D.Systems.IdAccess
                 requesterName,
                 requiredAccess,
                 result.Passed));
+        }
+
+        private static void AppendConsoleEditLog(
+            IAuthLogDevice device,
+            CrewRecord operatorRecord,
+            CrewRecord targetRecord,
+            AccessMask newAccess)
+        {
+            if (device?.AuthLog == null)
+            {
+                return;
+            }
+
+            device.AuthLog.Append(new AuthLogEntry(
+                Time.timeAsDouble,
+                device.DeviceId,
+                operatorRecord.Id,
+                operatorRecord.Name,
+                newAccess,
+                passed: true));
         }
     }
 }

@@ -51,6 +51,12 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private StyleSheet _vendingTemplateStyle;
 
+        [SerializeField]
+        private VisualTreeAsset _idConsoleTemplate;
+
+        [SerializeField]
+        private StyleSheet _idConsoleTemplateStyle;
+
         private VisualElement _overlayRoot;
         private VisualElement _panelRoot;
         private MachineWindow _window;
@@ -232,6 +238,15 @@ namespace SS3D.UI.MachineInterface
                 TemplateStyle = _vendingTemplateStyle,
                 ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new VendingMachineBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.IdConsole,
+                Template = _idConsoleTemplate,
+                TemplateStyle = _idConsoleTemplateStyle,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new IdConsoleBinder(root),
             });
         }
 

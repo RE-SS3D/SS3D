@@ -1,5 +1,6 @@
 using FishNet.Serializing;
 using NUnit.Framework;
+using SS3D.Systems.IdAccess;
 using SS3D.Tests;
 using SS3D.UI.MachineInterface;
 using System;
@@ -133,6 +134,37 @@ namespace EditorTests
             Assert.AreEqual(1, model.TrayItems.Count);
             Assert.AreEqual("Space Cola", model.TrayItems[0].Name);
             Assert.AreEqual(1, model.ActionLog.Count);
+        }
+
+        [Test]
+        public void IdConsoleInterfaceSnapshotSerializer_RoundTrips()
+        {
+            IdConsoleInterfaceSnapshot original = new()
+            {
+                MachineObjectId = 9,
+                InterfaceId = MachineInterfaceIds.IdConsole,
+                Title = "ID CONSOLE",
+                Subtitle = "Personnel Access Management",
+                ModelLabel = "IDC-1",
+                PromptText = "Edit access levels below.",
+                EditorUnlocked = true,
+                HasTargetCard = true,
+                TargetName = "Alice",
+                TargetJob = "Engineer",
+                TargetAccessMask = (ulong)AccessLevel.Engineering,
+                LogEntryCount = 1,
+                Log0 = "Granted Engineering on Alice.",
+            };
+
+            Writer writer = new();
+            writer.WriteIdConsoleInterfaceSnapshot(original);
+
+            Reader reader = new(reader: writer.GetArraySegment());
+            IdConsoleInterfaceSnapshot roundTripped = reader.ReadIdConsoleInterfaceSnapshot();
+
+            Assert.AreEqual(original.TargetName, roundTripped.TargetName);
+            Assert.AreEqual(original.TargetAccessMask, roundTripped.TargetAccessMask);
+            Assert.AreEqual(original.Log0, roundTripped.Log0);
         }
 
         private static ApcInterfaceSnapshot CreateApcSnapshot()

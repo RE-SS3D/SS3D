@@ -26,5 +26,10 @@ namespace SS3D.UI.MachineInterface
 
             public const byte ReadId = 2;
         }
+
+        public static class IdConsole
+        {
+            public const byte ToggleAccessLevel = 0;
+        }
     }
 }

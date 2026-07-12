@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ActionLog.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/TogglePill.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/IdConsoleInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        model-label="IDC-1 · crew credential editor"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="ID CONSOLE"
+            subtitle="Personnel Access Management" />
+        <ss3d:PanelSection name="status-section" title="Console Status">
+            <ui:Label name="prompt-label" class="id-console__prompt font-terminal" text="Insert your ID to unlock editing." />
+            <ui:Label name="target-label" class="id-console__target font-terminal" text="No target card inserted." />
+        </ss3d:PanelSection>
+        <ss3d:PanelSection name="department-section" title="Department Access">
+            <ui:VisualElement name="department-levels" class="id-console__levels" />
+        </ss3d:PanelSection>
+        <ss3d:PanelSection name="cross-cutting-section" title="Cross-Cutting Access">
+            <ui:VisualElement name="cross-cutting-levels" class="id-console__levels" />
+        </ss3d:PanelSection>
+        <ss3d:ActionLog name="edit-log" />
+        <ss3d:DeviceFooter name="footer" text="SS3D ID Console — Model IDC-1" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

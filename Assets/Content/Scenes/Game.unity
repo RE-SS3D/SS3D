@@ -513,6 +513,8 @@ MonoBehaviour:
   _smesTemplateStyle: {fileID: 7433441132597879392, guid: d4e0a6b83c9f506792d3e4f5a6b7c8d9, type: 3}
   _vendingTemplate: {fileID: 0}
   _vendingTemplateStyle: {fileID: 0}
+  _idConsoleTemplate: {fileID: 9197481963319205126, guid: d1e2f3a4b5c6478990abcdef12345678, type: 3}
+  _idConsoleTemplateStyle: {fileID: 7433441132597879392, guid: e2f3a4b5c6d7488990abcdef123456789, type: 3}
 --- !u!114 &467607470
 MonoBehaviour:
   m_ObjectHideFlags: 0
