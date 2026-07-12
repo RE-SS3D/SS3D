@@ -32,7 +32,7 @@ namespace SS3D.Substances
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return null;
+            return Icon ? Icon : InteractionIconLookup.Transfer;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

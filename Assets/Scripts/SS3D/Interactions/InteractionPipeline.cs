@@ -17,7 +17,7 @@ namespace SS3D.Interactions
         {
             List<InteractionEntry> discovered = Discover(source, targets, interactionEvent);
 
-            return FilterAndSort(source, discovered, interactionEvent.Point, intent);
+            return FilterAndSort(source, discovered, interactionEvent.Point, interactionEvent.Normal, intent);
         }
 
         public static List<InteractionEntry> Discover(
@@ -31,7 +31,7 @@ namespace SS3D.Interactions
 
             foreach (IInteractionTarget target in targets)
             {
-                InteractionEvent e = new(source, target, point);
+                InteractionEvent e = new(source, target, point, interactionEvent.Normal);
                 IInteraction[] targetInteractions = target.CreateTargetInteractions(e);
 
                 foreach (IInteraction interaction in targetInteractions)
@@ -50,13 +50,14 @@ namespace SS3D.Interactions
             IInteractionSource source,
             List<InteractionEntry> entries,
             Vector3 point,
+            Vector3 normal = default,
             IntentType intent = IntentType.Help)
         {
             List<InteractionEntry> viable = new();
 
             foreach (InteractionEntry entry in entries)
             {
-                InteractionEvent e = new(source, entry.Target, point);
+                InteractionEvent e = new(source, entry.Target, point, normal);
 
                 if (!entry.Interaction.CanInteract(e))
                 {

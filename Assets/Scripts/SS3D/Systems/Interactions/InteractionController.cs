@@ -28,6 +28,8 @@ namespace SS3D.Systems.Interactions
     /// </summary>
     public sealed class InteractionController : NetworkActor, IIntentProvider
     {
+        private const string ExamineInteractionName = "Examine";
+
         private Controls.InteractionsActions _controls;
         private Controls.HotkeysActions _hotkeysControls;
         private InputAction _cancelInteractionAction;
@@ -176,7 +178,8 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            List<InteractionEntry> viableInteractions = GetViableInteractionsFromSelection(out InteractionEvent interactionEvent);
+            List<InteractionEntry> viableInteractions = FilterRadialInteractions(
+                GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
 
             if (viableInteractions.Count <= 0)
             {
@@ -184,10 +187,10 @@ namespace SS3D.Systems.Interactions
             }
 
             InteractionEntry interaction = viableInteractions[0];
-            interactionEvent.Target = interaction.Target;
+            interactionEvent.Target = interaction.Target ?? ResolveFallbackTarget(interactionEvent, interaction);
 
             Log.Information(this, "Running interaction {interactionId} on target {target}", Logs.Generic, interaction.Id.GenericName, interaction.Target);
-            if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
+            if (!TryGetNetworkTargetForDispatch(interaction, interactionEvent, out NetworkObject networkTarget))
             {
                 return;
             }
@@ -235,7 +238,8 @@ namespace SS3D.Systems.Interactions
             {
                 return;
             }
-            List<InteractionEntry> viableInteractions = GetViableInteractionsFromSelection(out InteractionEvent interactionEvent);
+            List<InteractionEntry> viableInteractions = FilterRadialInteractions(
+                GetViableInteractionsFromSelection(out InteractionEvent interactionEvent));
 
             ViewTargetInteractions(viableInteractions, interactionEvent);
         }
@@ -286,9 +290,9 @@ namespace SS3D.Systems.Interactions
                     return;
                 }
 
-                interactionEvent.Target = entry.Target;
+                interactionEvent.Target = entry.Target ?? ResolveFallbackTarget(interactionEvent, entry);
 
-                if (!TryGetNetworkTarget(interactionEvent, out NetworkObject networkTarget))
+                if (!TryGetNetworkTargetForDispatch(entry, interactionEvent, out NetworkObject networkTarget))
                 {
                     return;
                 }
@@ -544,27 +548,33 @@ namespace SS3D.Systems.Interactions
                 return;
             }
 
-            if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
+            try
             {
-                return;
+                if (!TryValidateInteractionTarget(target, out GameObject targetGameObject))
+                {
+                    return;
+                }
+
+                List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
+                InteractionIdentifier id = new(genericName, targetComponentIndex);
+
+                if (!InteractionEntry.TryResolve(viableInteractions, id, out InteractionEntry interaction))
+                {
+                    Log.Warning(this, "Observer failed to resolve interaction {genericName} at target index {targetIndex}",
+                        Logs.Generic, genericName, targetComponentIndex);
+
+                    return;
+                }
+
+                interactionEvent.Target = interaction.Target;
+                interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
+                _clientActiveSource = interactionEvent.Source;
+                _clientActiveReferenceId = referenceId;
             }
-
-            List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(targetGameObject, point, out InteractionEvent interactionEvent);
-            InteractionIdentifier id = new(genericName, targetComponentIndex);
-
-            if (!InteractionEntry.TryResolve(viableInteractions, id, out InteractionEntry interaction))
+            finally
             {
-                Log.Warning(this, "Observer failed to resolve interaction {genericName} at target index {targetIndex}",
-                    Logs.Generic, genericName, targetComponentIndex);
-
-                return;
+                InteractionOutlineView.ClearPending();
             }
-
-            interactionEvent.Target = interaction.Target;
-            interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
-            _clientActiveSource = interactionEvent.Source;
-            _clientActiveReferenceId = referenceId;
-            InteractionOutlineView.ClearPending();
         }
 
         /// <summary>
@@ -628,12 +638,51 @@ namespace SS3D.Systems.Interactions
                 return false;
             }
 
+            return TryGetNetworkObject(interactionEvent.Target, out networkObject);
+        }
+
+        [Client]
+        private bool TryGetNetworkTargetForDispatch(
+            InteractionEntry entry,
+            InteractionEvent interactionEvent,
+            out NetworkObject networkObject)
+        {
+            if (TryGetNetworkTarget(interactionEvent, out networkObject))
+            {
+                return true;
+            }
+
+            if (entry.Target != null)
+            {
+                return false;
+            }
+
+            Selectable current = _selectionSystem.GetCurrentSelectable();
+            if (current == null)
+            {
+                return false;
+            }
+
+            networkObject = current.GetComponent<NetworkObject>();
+            if (networkObject == null)
+            {
+                networkObject = current.GetComponentInParent<NetworkObject>();
+            }
+
+            return networkObject != null;
+        }
+
+        [Client]
+        private static bool TryGetNetworkObject(IInteractionTarget target, out NetworkObject networkObject)
+        {
+            networkObject = null;
+
             GameObject targetGameObject = null;
-            if (interactionEvent.Target is IGameObjectProvider targetProvider)
+            if (target is IGameObjectProvider targetProvider)
             {
                 targetGameObject = targetProvider.GameObject;
             }
-            else if (interactionEvent.Target is Component targetComponent)
+            else if (target is Component targetComponent)
             {
                 targetGameObject = targetComponent.gameObject;
             }
@@ -650,6 +699,43 @@ namespace SS3D.Systems.Interactions
             }
 
             return networkObject != null;
+        }
+
+        [Client]
+        private IInteractionTarget ResolveFallbackTarget(InteractionEvent interactionEvent, InteractionEntry entry)
+        {
+            if (entry.Target != null)
+            {
+                return entry.Target;
+            }
+
+            if (interactionEvent?.Target != null)
+            {
+                return interactionEvent.Target;
+            }
+
+            Selectable current = _selectionSystem.GetCurrentSelectable();
+            if (current == null)
+            {
+                return null;
+            }
+
+            IInteractionSource source = GetActiveInteractionSource();
+            if (source == null)
+            {
+                return null;
+            }
+
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, current.gameObject);
+            return targets.Count > 0 ? targets[0] : null;
+        }
+
+        [Client]
+        private static List<InteractionEntry> FilterRadialInteractions(List<InteractionEntry> interactions)
+        {
+            return interactions
+                .Where(entry => entry.Interaction.GetGenericName() != ExamineInteractionName)
+                .ToList();
         }
 
         [ServerOrClient]
@@ -732,11 +818,22 @@ namespace SS3D.Systems.Interactions
             }
 
             SelectionTargetUtility.TryResolveInteractionPoint(_camera, selectable, out Vector3 point, out Vector3 normal);
-            List<InteractionEntry> viableInteractions = GetViableInteractionsFromTarget(
-                selectable.gameObject,
+            IInteractionSource source = GetActiveInteractionSource();
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, selectable.gameObject);
+            InteractionEvent interactionEvent = new(source, targets.Count > 0 ? targets[0] : null, point, normal);
+
+            List<InteractionEntry> discovered = InteractionPipeline.Discover(source, targets, interactionEvent);
+            if (discovered.Count == 0)
+            {
+                return false;
+            }
+
+            List<InteractionEntry> viableInteractions = InteractionPipeline.FilterAndSort(
+                source,
+                discovered,
                 point,
                 normal,
-                out _);
+                CurrentIntent);
 
             hasViableInteractions = viableInteractions.Count > 0;
             return true;

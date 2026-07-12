@@ -59,7 +59,7 @@ namespace SS3D.Interactions
                 return toggle.GetState() ? IconOn : IconOff;
             }
 
-            return null;
+            return Icon ? Icon : InteractionIconLookup.Power;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

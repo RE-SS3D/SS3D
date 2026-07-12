@@ -40,7 +40,7 @@ public class OpenCraftingMenuInteraction : IInteraction, IClientInteractionSourc
     /// </summary>
     public Sprite GetIcon(InteractionEvent interactionEvent)
     {
-        return null;
+        return Icon ? Icon : InteractionIconLookup.Crafting;
     }
 
     /// <summary>

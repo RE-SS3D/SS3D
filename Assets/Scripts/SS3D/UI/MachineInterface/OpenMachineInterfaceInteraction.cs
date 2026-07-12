@@ -13,7 +13,7 @@ namespace SS3D.UI.MachineInterface
 
         public string GetName(InteractionEvent interactionEvent) => "Open interface";
 
-        public Sprite GetIcon(InteractionEvent interactionEvent) => null;
+        public Sprite GetIcon(InteractionEvent interactionEvent) => InteractionIconLookup.MachineInterface;
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
