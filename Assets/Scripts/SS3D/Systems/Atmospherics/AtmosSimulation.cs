@@ -1,4 +1,5 @@
 using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Tile;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -112,6 +113,76 @@ namespace SS3D.Systems.Atmospherics
         public bool TryGetCellIndex(TileCoord coord, out int cellIndex)
         {
             return _coordToIndex.TryGetValue(coord, out cellIndex);
+        }
+
+        public bool TryGetCellTemperature(TileCoord coord, out float temperature)
+        {
+            temperature = 0f;
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return false;
+
+            temperature = _cellMeta[cellIndex].Temperature;
+            return true;
+        }
+
+        public float GetCellPressure(TileCoord coord)
+        {
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return 0f;
+
+            return GetPressure(cellIndex, _cellMeta[cellIndex]);
+        }
+
+        public bool TryRemoveMoles(TileCoord coord, GasId gasId, float requestedMoles, out float removed, out float sourceTemperature)
+        {
+            removed = 0f;
+            sourceTemperature = AtmosConstants.StandardTemperature;
+
+            if (!_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return false;
+
+            int moleIndex = GasMixture.GetMoleIndex(cellIndex, gasId);
+            float available = _molesRead[moleIndex];
+            if (available <= 0f)
+                return false;
+
+            removed = Mathf.Min(requestedMoles, available);
+            _molesRead[moleIndex] -= removed;
+            _molesWrite[moleIndex] -= removed;
+            sourceTemperature = _cellMeta[cellIndex].Temperature;
+            ActivateRegion(coord, 0);
+            return removed > 0f;
+        }
+
+        public bool TryAddMolesAtTemperature(TileCoord coord, GasId gasId, float moles, float temperature)
+        {
+            if (moles <= 0f || !_coordToIndex.TryGetValue(coord, out int cellIndex))
+                return false;
+
+            int moleIndex = GasMixture.GetMoleIndex(cellIndex, gasId);
+            float specificHeat = gasId.Value < _specificHeats.Length ? _specificHeats[gasId.Value] : 1f;
+            if (specificHeat <= 0f)
+                specificHeat = 1f;
+
+            float currentCapacity = 0f;
+            int baseIndex = cellIndex * AtmosConstants.MaxGasTypes;
+            for (int id = 0; id < _gasTypeCount; id++)
+                currentCapacity += _molesRead[baseIndex + id] * _specificHeats[id];
+
+            AtmosCellMeta meta = _cellMeta[cellIndex];
+            meta.Temperature = AtmosPipeThermo.BlendTemperature(
+                meta.Temperature,
+                currentCapacity,
+                moles,
+                specificHeat,
+                temperature);
+
+            _molesRead[moleIndex] += moles;
+            _molesWrite[moleIndex] += moles;
+            _cellMeta[cellIndex] = meta;
+            _cellMetaWrite[cellIndex] = meta;
+            ActivateRegion(coord, 0);
+            return true;
         }
 
         public bool TryGetGasMoles(TileCoord coord, GasId gasId, out float moles)

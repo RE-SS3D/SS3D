@@ -3,6 +3,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Tile;
 using UnityEngine;
@@ -19,12 +20,17 @@ namespace SS3D.Systems.Atmospherics
         private AtmosWorld _atmosWorld;
         private AtmosSimulation _simulation;
         private AtmosTileObserver _tileObserver;
+        private AtmosPipeObserver _pipeObserver;
+        private AtmosPipeSimulation _pipeSimulation;
+        private GasPipeNetworkRegistry _pipeRegistry;
         private AtmosVisualizationBridge _visualizationBridge;
         private float _tickTimer;
 
         public GasRegistry GasRegistry => _gasRegistry;
         public float TickInterval => AtmosConstants.TickInterval;
         public AtmosSimulation Simulation => _simulation;
+        public AtmosPipeSimulation PipeSimulation => _pipeSimulation;
+        public GasPipeNetworkRegistry PipeRegistry => _pipeRegistry;
         public bool SimulationPaused { get; set; }
         public float LastTickMilliseconds { get; private set; }
 
@@ -84,6 +90,17 @@ namespace SS3D.Systems.Atmospherics
             _tileObserver = new AtmosTileObserver(_simulation);
             tileSubSystem.RegisterTileMutationObserver(_tileObserver);
 
+            _pipeRegistry = new GasPipeNetworkRegistry(gasTypeCount);
+            _pipeRegistry.RebuildAll(tileSubSystem.CurrentMap);
+            _pipeObserver = new AtmosPipeObserver(tileSubSystem.CurrentMap, _pipeRegistry);
+            tileSubSystem.RegisterTileMutationObserver(_pipeObserver);
+            _pipeSimulation = new AtmosPipeSimulation(
+                _pipeRegistry,
+                _simulation,
+                specificHeats,
+                gasTypeCount,
+                _pipeObserver);
+
             // Seed any chunks that were created before the observer registered.
             foreach (TileChunkRef chunkRef in tileSubSystem.CurrentMap.GetChunkRefs())
                 _simulation.CreateChunk(chunkRef);
@@ -122,10 +139,15 @@ namespace SS3D.Systems.Atmospherics
             TileSubSystem tileSubSystem = SubSystems.Get<TileSubSystem>();
             if (_tileObserver != null)
                 tileSubSystem?.UnregisterTileMutationObserver(_tileObserver);
+            if (_pipeObserver != null)
+                tileSubSystem?.UnregisterTileMutationObserver(_pipeObserver);
 
             _simulation?.Dispose();
             _simulation = null;
             _tileObserver = null;
+            _pipeObserver = null;
+            _pipeSimulation = null;
+            _pipeRegistry = null;
             _visualizationBridge = null;
             _atmosWorld?.Dispose();
             _atmosWorld = null;
@@ -181,8 +203,30 @@ namespace SS3D.Systems.Atmospherics
         {
             float started = Time.realtimeSinceStartup;
             _simulation.Tick(AtmosConstants.TickInterval);
+            _pipeSimulation?.Tick(AtmosConstants.TickInterval);
             LastTickMilliseconds = (Time.realtimeSinceStartup - started) * 1000f;
             _visualizationBridge?.PublishSnapshot();
+        }
+
+        public bool TryTransferPipeMoles(
+            GasPipeNetworkId networkId,
+            GasId gasId,
+            float requestedMoles,
+            TileCoord turfCell,
+            PipeTransferDirection direction,
+            out float actuallyMoved)
+        {
+            actuallyMoved = 0f;
+            if (_pipeSimulation == null)
+                return false;
+
+            return _pipeSimulation.TryTransferMoles(
+                networkId,
+                gasId,
+                requestedMoles,
+                turfCell,
+                direction,
+                out actuallyMoved);
         }
 
         public bool TryGetCellDebugInfo(TileCoord coord, out AtmosCellDebugInfo info)
