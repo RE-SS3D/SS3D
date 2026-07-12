@@ -18,4 +18,5 @@ MonoBehaviour:
   _permissions:
   - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
   - {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  _startingAccessBits: 110594
   _loadout: {fileID: 11400000, guid: b960cfb4622f98a41bda8879b31656f8, type: 2}

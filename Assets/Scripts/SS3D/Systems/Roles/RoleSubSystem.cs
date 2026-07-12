@@ -14,6 +14,7 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Systems.Inventory.Items.Generic;
+using SS3D.Systems.IdAccess;
 
 namespace SS3D.Systems.Roles
 {
@@ -165,6 +166,7 @@ namespace SS3D.Systems.Roles
         {
             ItemSubSystem itemSystem = SubSystems.Get<ItemSubSystem>();
             HumanInventory inventory = entity.GetComponent<HumanInventory>();
+            IdAccessSubSystem idAccess = SubSystems.Get<IdAccessSubSystem>();
 
             if (!inventory.TryGetTypeContainer(ContainerType.Identification, 0, out AttachedContainer container)) return;
 
@@ -174,14 +176,15 @@ namespace SS3D.Systems.Roles
             PDA pda = (PDA)pdaItem;
             IDCard idCard = (IDCard)idCardItem;
 
-            // Set up ID Card data
-            idCard.OwnerName = entity.Ckey;
-            idCard.RoleName = role.Name;
-            foreach (IDPermission permission in role.Permissions)
-            {
-                idCard.AddPermission(permission);
-                Log.Information(this, "Added " + permission.Name + " permission to IDCard of " + entity.Ckey);
-            }
+            CrewRecord crewRecord = idAccess.CreateCrewRecord(
+                entity.Ckey,
+                role.Name,
+                IdAccessSubSystem.DepartmentForRole(role.Name),
+                role.StartingAccess);
+
+            idAccess.BindIdCard(idCard, crewRecord.Id);
+
+            Log.Information(this, "Bound crew record " + crewRecord.Id + " to ID card of " + entity.Ckey);
 
             pda.StartingIDCard = idCardItem;
         }
