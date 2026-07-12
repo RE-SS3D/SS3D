@@ -100,7 +100,6 @@ namespace SS3D.Systems.Crafting
 
             if (!_recipeOrganiser.TryGetValue(targetAssetReference.Asset.Id, out List<CraftingRecipe> recipes))
             {
-                Log.Information(this, $"no recipes with target's name {targetAssetReference.Asset.name}");
                 return false;
             }
 
@@ -112,10 +111,28 @@ namespace SS3D.Systems.Crafting
 
             if (links.Count == 0)
             {
-                Log.Information(this, $"no recipe links matching interaction type {interactionType}, from recipe step {currentStepName} ");
+                return false;
             }
 
-            return links.Count > 0;
+            return true;
+        }
+
+        /// <summary>
+        /// Fast check used by interaction discovery to skip recipe work on non-craft targets.
+        /// </summary>
+        public bool TargetHasRecipes(GameObject target)
+        {
+            if (target == null || !target.TryGetComponent(out IWorldObjectAsset targetAssetReference))
+            {
+                return false;
+            }
+
+            if (targetAssetReference.Asset is null)
+            {
+                return false;
+            }
+
+            return _recipeOrganiser.ContainsKey(targetAssetReference.Asset.Id);
         }
 
         /// <summary>
