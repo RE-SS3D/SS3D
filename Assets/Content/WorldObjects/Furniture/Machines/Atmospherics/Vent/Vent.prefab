@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4432888557401662878}
   - component: {fileID: 8136077423948845529}
   m_Layer: 0
-  m_Name: VentFan
+  m_Name: Vent Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -158,7 +158,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
+  m_SmallMeshCulling: 0
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
@@ -319,4 +319,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: accb27484c6b4af1a243478f75e418e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
   _animator: {fileID: 7551927119831908791}
+  _enabled: 1
+  _animatorActive: 0
+  _portFlowing: 0
+  _previewAnimatorInEditor: 1

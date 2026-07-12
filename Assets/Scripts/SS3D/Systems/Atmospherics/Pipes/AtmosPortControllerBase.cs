@@ -26,6 +26,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
         [SyncVar(OnChange = nameof(HandleAnimatorActiveChanged))]
         private bool _animatorActive;
 
+        [SyncVar(OnChange = nameof(HandlePortFlowingChanged))]
+        private bool _portFlowing;
+
         private PlacedTileObject _tileObject;
         private GasPipeNetworkId _networkId = GasPipeNetworkId.None;
 
@@ -69,6 +72,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             base.OnStartClient();
             Initialize();
             ApplyAnimatorState(_animatorActive);
+            ApplyPortFlowingState(_portFlowing);
         }
 
         protected override void OnDestroyed()
@@ -89,14 +93,24 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public void ServerTick(AtmosPipeSimulation pipeSimulation, AtmosSimulation turfSimulation, float deltaTime)
         {
             ResolveConnectedNetwork();
-            if (!_enabled || _networkId.IsNone)
+
+            if (!_enabled)
             {
                 SetAnimatorActive(false);
+                SetPortFlowing(false);
+                return;
+            }
+
+            if (_networkId.IsNone)
+            {
+                SetAnimatorActive(ShouldAnimateWhileIdle());
+                SetPortFlowing(false);
                 return;
             }
 
             bool flowed = RunPortTick(pipeSimulation, turfSimulation, deltaTime);
-            SetAnimatorActive(flowed || ShouldAnimateWhileIdle());
+            SetAnimatorActive(true);
+            SetPortFlowing(flowed);
         }
 
         protected abstract bool RunPortTick(
@@ -132,15 +146,50 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 TryGetComponent(out _tileObject);
 
             if (_animator == null)
+                _animator = GetComponent<Animator>();
+
+            if (_animator == null)
                 _animator = GetComponentInChildren<Animator>(true);
         }
+
+#if UNITY_EDITOR
+        [SerializeField]
+        private bool _previewAnimatorInEditor = true;
+
+        private void OnEnable()
+        {
+            if (UnityEngine.Application.isPlaying || !_previewAnimatorInEditor)
+                return;
+
+            Initialize();
+            ApplyAnimatorState(true);
+            ApplyPortFlowingState(false);
+        }
+
+        private void Update()
+        {
+            if (UnityEngine.Application.isPlaying || !_previewAnimatorInEditor || _animator == null)
+                return;
+
+            _animator.Update(Time.deltaTime);
+        }
+#endif
 
         private void RefreshAnimatorAuthorityState()
         {
             if (!IsServer)
                 return;
 
-            SetAnimatorActive(_enabled && !_networkId.IsNone);
+            if (!_enabled)
+            {
+                SetAnimatorActive(false);
+                SetPortFlowing(false);
+                return;
+            }
+
+            SetAnimatorActive(!_networkId.IsNone || ShouldAnimateWhileIdle());
+            if (_networkId.IsNone)
+                SetPortFlowing(false);
         }
 
         private void SetAnimatorActive(bool active)
@@ -149,6 +198,20 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
 
             _animatorActive = active;
+
+            if (IsClient)
+                ApplyAnimatorState(active);
+        }
+
+        private void SetPortFlowing(bool flowing)
+        {
+            if (_portFlowing == flowing)
+                return;
+
+            _portFlowing = flowing;
+
+            if (IsClient)
+                ApplyPortFlowingState(flowing);
         }
 
         private void HandleEnabledChanged(bool _, bool __, bool asServer)
@@ -163,19 +226,43 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 ApplyAnimatorState(newValue);
         }
 
-        private void ApplyAnimatorState(bool active)
+        private void HandlePortFlowingChanged(bool _, bool newValue, bool asServer)
+        {
+            if (!asServer)
+                ApplyPortFlowingState(newValue);
+        }
+
+        private void ApplyAnimatorState(bool deviceActive)
         {
             if (_animator == null)
-                _animator = GetComponentInChildren<Animator>(true);
+            {
+                _animator = GetComponent<Animator>();
+                if (_animator == null)
+                    _animator = GetComponentInChildren<Animator>(true);
+            }
 
             if (_animator == null)
                 return;
 
-            _animator.SetBool(DeviceActiveId, active);
-            ApplyDeviceSpecificAnimatorState(active);
+            _animator.SetBool(DeviceActiveId, deviceActive);
         }
 
-        protected virtual void ApplyDeviceSpecificAnimatorState(bool active)
+        private void ApplyPortFlowingState(bool flowing)
+        {
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>();
+                if (_animator == null)
+                    _animator = GetComponentInChildren<Animator>(true);
+            }
+
+            if (_animator == null)
+                return;
+
+            ApplyDeviceSpecificAnimatorState(flowing);
+        }
+
+        protected virtual void ApplyDeviceSpecificAnimatorState(bool flowing)
         {
         }
     }

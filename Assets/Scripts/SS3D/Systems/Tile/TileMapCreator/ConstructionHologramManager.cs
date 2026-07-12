@@ -178,9 +178,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
         {
             GameObject prefab = Assets.Get<GameObject>(prefabAsset);
             GameObject tileObject = Instantiate(prefab);
-            ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection);
+            float placementYOffset = _selectedObject is TileObjectSo tileObjectSo
+                ? tileObjectSo.placementYOffset
+                : 0f;
+
+            ConstructionHologram hologram = new(tileObject, position, _lastRegisteredDirection, placementYOffset);
             tileObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(hologram.Direction), 0);
-            tileObject.transform.position = hologram.TargetPosition;
+            tileObject.transform.position = hologram.TargetPosition + new Vector3(0, placementYOffset + 0.1f, 0);
             _holograms.Add(hologram);
             RefreshHologram(hologram);
             return hologram;

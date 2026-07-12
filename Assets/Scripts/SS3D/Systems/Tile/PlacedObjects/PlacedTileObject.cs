@@ -30,7 +30,8 @@ namespace SS3D.Systems.Tile
         {
             GameObject tileObjectPrefab = Assets.Get<GameObject>(tileObjectSo.PrefabAsset);
             GameObject placedGameObject = Instantiate(tileObjectPrefab);
-            placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
+            Vector3 placedPosition = tileObjectSo.GetPlacedWorldPosition(worldPosition);
+            placedGameObject.transform.SetPositionAndRotation(placedPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
             if (placedObject == null)

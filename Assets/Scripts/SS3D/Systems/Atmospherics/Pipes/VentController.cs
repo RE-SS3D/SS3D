@@ -65,12 +65,12 @@ namespace SS3D.Systems.Atmospherics.Pipes
             return movedAny;
         }
 
-        protected override void ApplyDeviceSpecificAnimatorState(bool active)
+        protected override void ApplyDeviceSpecificAnimatorState(bool flowing)
         {
             if (_animator == null)
                 return;
 
-            _animator.SetBool(VentActiveId, active);
+            _animator.SetBool(VentActiveId, flowing);
         }
     }
 }

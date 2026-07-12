@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 118807477453521061}
   - component: {fileID: 5337321269354081326}
   - component: {fileID: 4164283902413096174}
-  - component: {fileID: 3309572359951597859}
   m_Layer: 0
-  m_Name: ScrubberFan
+  m_Name: Scrubber Fan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,28 +90,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!95 &3309572359951597859
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 803445164596243578}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0b60a6b65f27ff84d82e9ba0a4655f6b, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &9154955770433736351
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,4 +319,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d1a745b911a46b494299fd0f3068a83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 3309572359951597859}
+  _animator: {fileID: 4484013068238330198}
