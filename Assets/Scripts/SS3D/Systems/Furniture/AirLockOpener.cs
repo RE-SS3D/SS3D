@@ -106,8 +106,7 @@ namespace SS3D.Systems.Furniture
 
             if (playersInTrigger == 1)
             {
-                // Start the close timer (which may be stopped).
-                closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
+                ScheduleCloseAfterDelay();
             }
 
             playersInTrigger = Math.Max(playersInTrigger - 1, 0);
@@ -137,14 +136,23 @@ namespace SS3D.Systems.Furniture
                 return;
             }
 
+            ScheduleCloseAfterDelay();
+        }
+
+        private void ScheduleCloseAfterDelay()
+        {
             if (closeTimer != null)
             {
                 StopCoroutine(closeTimer);
-                closeTimer = null;
             }
 
-            playersInTrigger = 0;
-            SetOpen(false);
+            // Keep the door open while someone is still in the trigger; normal exit timing applies.
+            if (playersInTrigger > 0)
+            {
+                return;
+            }
+
+            closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
         }
 
         private bool IsPowered()
