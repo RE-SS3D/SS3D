@@ -6,7 +6,7 @@
 
 ## Overview
 
-URP rendering extensions for this fork. The selection pick pass ([selection](selection.md)) is gameplay-critical for interaction targeting. The atmospherics pass ([atmospherics](atmospherics.md)) composites gas scatter, plasma glow, and heat distortion from sim GPU textures. Also includes edge detection and post-effect utilities.
+URP rendering extensions for this fork. The selection pick pass ([selection](selection.md)) is gameplay-critical for interaction targeting. The atmospherics pass ([atmospherics](atmospherics.md)) composites gas scatter, plasma glow, and heat distortion from sim GPU textures via `AtmosRenderContext`. **Atmos snapshot is server-built only** — clients render when a snapshot is present; multiplayer client sync is not implemented yet.
 
 ## Start here
 
@@ -27,3 +27,4 @@ URP rendering extensions for this fork. The selection pick pass ([selection](sel
 ## Related docs
 
 - [FORK_STATUS.md](../../FORK_STATUS.md) § URP migration
+- Effort (planned): [2026-07_atmos-client-visualization-sync.md](../2026-07_atmos-client-visualization-sync.md)

@@ -6,7 +6,7 @@
 
 ## Overview
 
-Server-authoritative open-tile gas simulation on the turf grid. Each walkable cell holds a sparse gas mixture; pressure equalizes between neighbours via ideal-gas-law sharing, heat conducts per gas specific heat, and plasma burns with oxygen into CO₂. Runs in a dedicated ECS world with Burst jobs, driven by tilemap mutation notifications. GPU textures feed URP scatter/glow/distortion passes for fog, fire, and plasma visuals. Implements design §2 (open-tile diffusion); liquid/solid buffers, pipes, and pumps are not started.
+Server-authoritative open-tile gas simulation on the turf grid. Each walkable cell holds a sparse gas mixture; pressure equalizes between neighbours via ideal-gas-law sharing, heat conducts per gas specific heat, and plasma burns with oxygen into CO₂. Runs in a dedicated ECS world with Burst jobs, driven by tilemap mutation notifications. GPU textures feed URP scatter/glow/distortion passes for fog, fire, and plasma visuals. **Multiplayer gap:** VFX only publishes on server/host today — pure clients have no snapshot (see effort below). Implements design §2 (open-tile diffusion); liquid/solid buffers, pipes, and pumps are not started.
 
 ## Start here
 
@@ -19,6 +19,7 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Data/GasRegistry.cs` — core gas slot lookup (`CoreGasRegistry.asset`)
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Visualization/AtmosVisualizationBridge.cs` — post-tick GPU upload
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRendererFeature.cs` — URP scatter, glow, distortion passes
+- `Assets/Scripts/SS3D/Systems/Atmospherics/Visualization/AtmosCamera.cs` — registers player camera with render context (all clients)
 - `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosDebugController.cs` — runtime overlay (P toggle; server/host)
 - `Assets/Scripts/Tests/EditMode/Atmospherics/` — flux, combustion, neighbour, GPU, visual-metrics tests
 
@@ -28,6 +29,7 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 - Per-gas visuals: assign `GasVisualProfile` on each `GasDefinition` (scatter tint, emission, smoke).
 - React to tile changes: implement `ITileMutationObserver` or call `TileSubSystem.NotifyTileStateChanged` from dynamic occupants (see [tile](tile.md) `IDynamicTileOccupant`).
 - New render passes: extend `AtmosRendererFeature` or add sibling URP features under `Rendering/URP/`.
+- Client VFX sync: chunk dirty-patch transport to client `AtmosGpuUploader` — see [2026-07_atmos-client-visualization-sync.md](../2026-07_atmos-client-visualization-sync.md).
 
 ## Depends on / Used by
 
@@ -38,6 +40,7 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 
 - Design (read-only): [Documents/design/atmospherics.md](../../design/atmospherics.md)
 - Effort: [2026-07_atmos-ecs-foundation.md](../2026-07_atmos-ecs-foundation.md)
+- Effort (planned): [2026-07_atmos-client-visualization-sync.md](../2026-07_atmos-client-visualization-sync.md) — **client VFX sync missing**
 - [tile](tile.md) — occupancy and mutation hooks
 - [rendering](rendering.md) — URP feature wiring
 - [furniture](furniture.md) — airlock `IDynamicTileOccupant` for door passability
