@@ -1,0 +1,26 @@
+@import url("../Tokens/diegetic-tones.uss");
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    min-height: 7px;
+    border-radius: 50%;
+    background-color: var(--ss3d-feedback-info);
+}
+
+.status-dot.tone-success {
+    background-color: var(--ss3d-feedback-success);
+}
+
+.status-dot.tone-warning {
+    background-color: var(--ss3d-feedback-warning);
+}
+
+.status-dot.tone-danger {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.status-dot.tone-info {
+    background-color: var(--ss3d-feedback-info);
+}

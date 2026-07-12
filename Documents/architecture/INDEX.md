@@ -35,12 +35,12 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Health | [health](systems/health.md) | partial | Body parts, oxygen consumer (design spec not fully implemented) |
 | Combat | [combat](systems/combat.md) | stub | Hit interactions (design spec not implemented) |
 | Crafting | [crafting](systems/crafting.md) | stub | Recipe crafting |
-| Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors |
+| Furniture / world objects | [furniture](systems/furniture.md) | partial | Airlocks, vendors, jukebox; power-gated behaviors; vending via machine-interface |
 | Rounds / lobby | [rounds-lobby](systems/rounds-lobby.md) | shipped | Round state machine and pre-round lobby UI |
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
 | Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat, audio, camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic UI Toolkit panels for APC/SMES |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Modal APC/SMES panels and diegetic device shell (vending) |
 | Inputs | [inputs](systems/inputs.md) | stub | Input subsystem |
 | In-game console | [ingame-console](systems/ingame-console.md) | stub | Dev/admin console commands |
 
@@ -52,7 +52,8 @@ Implementation history — not navigation maps. Update `Status` in the header wh
 |--------|--------|
 | [2026-07_machine-interface-phase1-foundation](2026-07_machine-interface-phase1-foundation.md) | shipped |
 | [2026-07_machine-interface-phase2-apc-networking](2026-07_machine-interface-phase2-apc-networking.md) | shipped |
-| [2026-07_machine-interface-phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md) | shipped |
+| [2026-07_machine-interface-phase3-smes-generalization](2026-07_machine-interface-phase3-smes-generalization.md) | shipped (minor cleanup remaining) |
+| [2026-07_diegetic-screen-ui-framework](2026-07_diegetic-screen-ui-framework.md) | shipped |
 | [2026-07_interaction-system-hardening](2026-07_interaction-system-hardening.md) | shipped |
 | [2026-07_area-foundation](2026-07_area-foundation.md) | shipped (deferred: live mutation recompute, editor merge/split) |
 
@@ -71,3 +72,11 @@ Temporary working plans in [Documents/plans/](../plans/). Update todos when work
 ## Design specs (read-only)
 
 Gameplay specs in [Documents/design/](../design/) — owner-maintained. Agents link, never edit.
+
+## Reference (non-system)
+
+| Resource | Path | Use when |
+|----------|------|----------|
+| Art asset index | [art-asset-index.md](../art-asset-index.md) | Locating or importing art from SS3D-Art |
+| Available for import | [art-available-for-import.json](../art-available-for-import.json) | Finding game-ready art not yet in `Assets/Art/` |
+| UI icon index | [icon-index.md](../icon-index.md) | Finding external game-icons SVGs for UI work |

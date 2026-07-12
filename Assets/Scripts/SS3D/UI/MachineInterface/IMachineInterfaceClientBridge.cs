@@ -6,6 +6,8 @@ namespace SS3D.UI.MachineInterface
 
         void SetNumericControl(byte controlId, float delta);
 
+        void SetActionControl(byte controlId, int value);
+
         void RequestClose();
     }
 }

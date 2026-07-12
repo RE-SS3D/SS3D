@@ -1,0 +1,24 @@
+@import url("../Tokens/diegetic-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
+
+.panel-section {
+    flex-direction: column;
+    background-color: var(--ss3d-diegetic-panel-body);
+    border-radius: var(--ss3d-radius-md);
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+
+.panel-section__header {
+    background-color: var(--ss3d-diegetic-panel-raised);
+    padding: 8px 14px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-left;
+}
+
+.panel-section__content {
+    flex-direction: column;
+    padding: 14px;
+}

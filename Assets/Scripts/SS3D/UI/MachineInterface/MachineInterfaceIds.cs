@@ -5,5 +5,7 @@ namespace SS3D.UI.MachineInterface
         public const string Apc = "power.apc";
 
         public const string Smes = "power.smes";
+
+        public const string Vending = "furniture.vending";
     }
 }

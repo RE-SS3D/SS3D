@@ -16,6 +16,9 @@ Expand the machine-interface stack from APC-only to multi-machine support, begin
 - APC overlap diagnostic and grid-in display (cached per-tick draw from electricity subsystem).
 - SMES input/output controlled only via machine interface; world toggle interaction removed from SMES prefab.
 - SMES warnings panel removed; status conveyed via status banner and power-flow rows.
+- SMES networked interface and prefab/scene wiring were implemented and committed.
+- Follow-up fixes addressed FishNet codegen constraints (notably nested network behavior rejection and concrete RPC typing).
+- Additional generalization/refactor commits introduced registry-driven plumbing and shared binder flow.
 
 ## Validation checklist
 
@@ -26,5 +29,6 @@ Expand the machine-interface stack from APC-only to multi-machine support, begin
 
 ## Follow-ups (out of scope for this effort)
 
+- Consolidate duplicated diagnostics behavior across APC/SMES binders.
 - Explicit integration test coverage for multi-viewer mixed machine sessions.
-- Additional machine types via registry extension pattern documented in [machine-interface.md](systems/machine-interface.md).
+- Additional machine types via registry extension pattern documented in [diegetic screen UI framework](2026-07_diegetic-screen-ui-framework.md) and the updated [machine-interface](systems/machine-interface.md) system map.

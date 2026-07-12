@@ -45,13 +45,21 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private StyleSheet _smesTemplateStyle;
 
+        [SerializeField]
+        private VisualTreeAsset _vendingTemplate;
+
+        [SerializeField]
+        private StyleSheet _vendingTemplateStyle;
+
         private VisualElement _overlayRoot;
+        private VisualElement _panelRoot;
         private MachineWindow _window;
+        private DiegeticDeviceShell _diegeticShell;
         private IMachineInterfaceBinder _binder;
         private string _openInterfaceId;
         private bool _overlayReady;
 
-        public bool IsOpen => _window != null && _window.style.display != DisplayStyle.None;
+        public bool IsOpen => _panelRoot != null;
 
         public bool Open(string interfaceId, IMachineInterfaceViewModel viewModel)
         {
@@ -73,7 +81,7 @@ namespace SS3D.UI.MachineInterface
             }
 
             ClosePanelOnly();
-            if (!CreateWindow(viewModel.Title, registration.Wide))
+            if (!CreatePanel(viewModel.Title, registration))
             {
                 return false;
             }
@@ -81,14 +89,31 @@ namespace SS3D.UI.MachineInterface
             _openInterfaceId = interfaceId;
             TemplateContainer template = registration.Template.CloneTree();
             MachineInterfaceHostHelpers.ApplyTemplateStyle(template, registration.TemplateStyle);
-            _window.Content.Add(template);
-            _overlayRoot.Add(_window);
+
+            if (registration.ShellKind == MachineInterfaceShellKind.DiegeticDevice)
+            {
+                _diegeticShell = template.Q<DiegeticDeviceShell>();
+
+                // Keep the cloned TemplateContainer in the hierarchy so UXML style sheets stay attached.
+                _panelRoot = template;
+                VisualElement layoutRoot = _diegeticShell != null ? _diegeticShell : template;
+                layoutRoot.style.alignSelf = Align.Center;
+                layoutRoot.style.marginTop = 24;
+                _overlayRoot.Add(template);
+            }
+            else
+            {
+                _window.Content.Add(template);
+                _overlayRoot.Add(_window);
+                _panelRoot = _window;
+            }
+
             SetOverlayInteractive(true);
 
-            _binder = registration.CreateBinder(_window);
+            _binder = registration.CreateBinder(_panelRoot);
             WireBinder(_binder);
             _binder.Bind(viewModel);
-            _window.CloseClicked += HandleCloseRequested;
+            WireCloseHandler();
             return true;
         }
 
@@ -158,6 +183,18 @@ namespace SS3D.UI.MachineInterface
                     "Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss");
             }
 
+            if (_vendingTemplate == null)
+            {
+                _vendingTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uxml");
+            }
+
+            if (_vendingTemplateStyle == null)
+            {
+                _vendingTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uss");
+            }
+
             if (_document != null && _document.panelSettings == null)
             {
                 _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
@@ -173,8 +210,9 @@ namespace SS3D.UI.MachineInterface
                 InterfaceId = MachineInterfaceIds.Apc,
                 Template = _apcTemplate,
                 TemplateStyle = _apcTemplateStyle,
+                ShellKind = MachineInterfaceShellKind.ModalWindow,
                 Wide = false,
-                CreateBinder = window => new ApcPowerControllerBinder(window),
+                CreateBinder = root => new ApcPowerControllerBinder(root),
             });
 
             MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
@@ -182,9 +220,57 @@ namespace SS3D.UI.MachineInterface
                 InterfaceId = MachineInterfaceIds.Smes,
                 Template = _smesTemplate,
                 TemplateStyle = _smesTemplateStyle,
+                ShellKind = MachineInterfaceShellKind.ModalWindow,
                 Wide = true,
-                CreateBinder = window => new SmesUnitBinder(window),
+                CreateBinder = root => new SmesUnitBinder(root),
             });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Vending,
+                Template = _vendingTemplate,
+                TemplateStyle = _vendingTemplateStyle,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new VendingMachineBinder(root),
+            });
+        }
+
+        private bool CreatePanel(string title, MachineInterfaceUiRegistration registration)
+        {
+            if (registration.ShellKind == MachineInterfaceShellKind.DiegeticDevice)
+            {
+                _window = null;
+                _diegeticShell = null;
+                return true;
+            }
+
+            return CreateWindow(title, registration.Wide);
+        }
+
+        private void WireCloseHandler()
+        {
+            if (_window != null)
+            {
+                _window.CloseClicked += HandleCloseRequested;
+            }
+
+            if (_diegeticShell != null)
+            {
+                _diegeticShell.CloseClicked += HandleCloseRequested;
+            }
+        }
+
+        private void UnwireCloseHandler()
+        {
+            if (_window != null)
+            {
+                _window.CloseClicked -= HandleCloseRequested;
+            }
+
+            if (_diegeticShell != null)
+            {
+                _diegeticShell.CloseClicked -= HandleCloseRequested;
+            }
         }
 
         private bool CreateWindow(string title, bool wide = false)
@@ -215,17 +301,21 @@ namespace SS3D.UI.MachineInterface
                 _binder.CloseRequested -= HandleCloseRequested;
                 _binder.BoolControlChanged -= HandleBoolControlChanged;
                 _binder.NumericControlChanged -= HandleNumericControlChanged;
+                _binder.ActionControlChanged -= HandleActionControlChanged;
                 _binder.Disconnect();
                 _binder = null;
             }
 
-            if (_window != null)
+            UnwireCloseHandler();
+
+            if (_panelRoot != null)
             {
-                _window.CloseClicked -= HandleCloseRequested;
-                _window.RemoveFromHierarchy();
-                _window = null;
+                _panelRoot.RemoveFromHierarchy();
             }
 
+            _panelRoot = null;
+            _window = null;
+            _diegeticShell = null;
             _openInterfaceId = null;
             SetOverlayInteractive(false);
         }
@@ -313,6 +403,7 @@ namespace SS3D.UI.MachineInterface
             binder.CloseRequested += HandleCloseRequested;
             binder.BoolControlChanged += HandleBoolControlChanged;
             binder.NumericControlChanged += HandleNumericControlChanged;
+            binder.ActionControlChanged += HandleActionControlChanged;
         }
 
         private void HandleCloseRequested()
@@ -336,6 +427,14 @@ namespace SS3D.UI.MachineInterface
             if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
             {
                 subsystem.NotifyNumericControl(controlId, delta);
+            }
+        }
+
+        private void HandleActionControlChanged(byte controlId, int value)
+        {
+            if (SubSystems.TryGet(out MachineInterfaceSubSystem subsystem))
+            {
+                subsystem.NotifyActionControl(controlId, value);
             }
         }
     }
