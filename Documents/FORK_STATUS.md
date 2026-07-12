@@ -8,7 +8,7 @@ current review capacity supports.
 This document is the plain-language divergence log. It is updated periodically — not per-commit.
 For doc authoring conventions see [SKILL.md](SKILL.md).
 
-**Last updated:** 2026-07-11
+**Last updated:** 2026-07-12
 
 ---
 
@@ -21,8 +21,8 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps |
-| Commits ahead of upstream | — | **~119** (0 behind as of last fetch) |
-| Files changed vs upstream | — | ~2,672 files, +164k / −44k lines |
+| Commits ahead of upstream | — | **~192** (0 behind as of last fetch) |
+| Files changed vs upstream | — | ~7,523 files, +298k / −49k lines |
 
 ---
 
@@ -179,6 +179,12 @@ Architecture: [2026-07_interaction-system-hardening.md](architecture/2026-07_int
 Plans: [interaction_system_improvements_9e14ae22.plan.md](plans/interaction_system_improvements_9e14ae22.plan.md),
 [radial_menu_implementation_5a83bdf9.plan.md](plans/radial_menu_implementation_5a83bdf9.plan.md).
 
+**Post-merge polish** (2026-07-12): stuck outline cleanup, drop-on-click duplicate-spawn fix, instant-interaction
+loading-bar flash, toggle-interaction Power icon fallback, radial menu polish, crafting outline log spam.
+Removed FastScriptReload and repaired Game scene missing scripts.
+
+Merged from `archive/feature-interactions`.
+
 ### Tilemap and adjacency engine
 
 **Paths:** `SS3D.Systems.Tile`, `SS3D.Systems.Tile.Connections`
@@ -242,6 +248,55 @@ still lists minor cleanup (shared diagnostics across binders, multi-viewer integ
 
 Plan: [diegetic_screen_ui_framework_643c2e6f.plan.md](plans/diegetic_screen_ui_framework_643c2e6f.plan.md).
 
+### Area foundation
+
+**Paths:** `SS3D.Systems.Area`, `SS3D.Systems.Electricity`
+
+APC-seeded per-tile area partition with flood-fill, save/load, and area-scoped power and lighting:
+
+- **`AreaSubSystem`** + **`AreaFloodFillService`** — first-wins APC order, door-tile post-pass, wall-mount
+  seeding from `FacingDirection`; per-chunk `ushort[]` area ids; overlap diagnostic in APC machine UI
+- **Area-scoped power** — `AreaApcPowerDistribution` draws grid headroom to each APC and drains its cell
+  per area; consumers (vendors, jukebox, air alarms, airlocks) do not join the HV cable graph
+- **kWh storage model** — tick-integrated charge/discharge; priority channel shedding (Equipment →
+  Environment → Lighting)
+- **Lighting state** — `AreaLightingState` derivation + client sync; `LightPower` fixture visuals;
+  `LightSwitchController` toggles player lighting preference (distinct from APC lighting breaker)
+- **Consumer visuals** — `ConsumerPowerVisual` dims emissive/panel materials; airlocks power-gated via
+  `AirLockOpener` with delayed close on power loss
+
+EditMode tests under `Assets/Scripts/Tests/EditMode/AreaTests/` and
+`Assets/Scripts/Tests/EditMode/ElectricityTests/`.
+
+Merged from `archive/areas-foundation`. Architecture:
+[2026-07_area-foundation.md](architecture/2026-07_area-foundation.md). Plans:
+[areas_implementation_plan_c0639343.plan.md](plans/areas_implementation_plan_c0639343.plan.md),
+[electricity_kwh_foundation_917ccdbc.plan.md](plans/electricity_kwh_foundation_917ccdbc.plan.md).
+
+Deferred: live tile-mutation recompute; editor merge/split UI.
+
+### Atmospherics ECS foundation
+
+**Paths:** `SS3D.Systems.Atmospherics`, `SS3D.Rendering.URP.AtmosRendererFeature`
+
+Server-authoritative open-tile gas simulation on the turf grid:
+
+- **ECS world** — `AtmosSimulation` with native cell buffers, active-cell sleep/wake, Burst jobs
+  (`ShareGasJob`, `ConductHeatJob`, `ReactAtmosJob` for plasma combustion)
+- **Tile bridge** — `AtmosTileObserver` on `ITileMutationObserver`; dynamic airlock occupancy via
+  `IDynamicTileOccupant` reopens/closes gas paths when doors move
+- **GPU visualization** — `AtmosGpuUploader` → pressure/temperature/composition/fire textures;
+  `AtmosRendererFeature` scatter + plasma glow + heat distortion passes
+- **Debug** — `AtmosDebugController` overlay; shader debug views on renderer feature
+
+EditMode tests under `Assets/Scripts/Tests/EditMode/Atmospherics/`.
+
+Merged from `archive/feature-atmos-ecs`. Architecture:
+[2026-07_atmos-ecs-foundation.md](architecture/2026-07_atmos-ecs-foundation.md).
+
+Deferred: liquid/solid phase buffers, pipe networks, chemistry integration, **client VFX sync**
+(server/host only today — see [2026-07_atmos-client-visualization-sync.md](architecture/2026-07_atmos-client-visualization-sync.md)).
+
 ### Structured logging
 
 **Paths:** `SS3D.Logging`
@@ -271,8 +326,9 @@ Implementation should follow the specs or document explicit deviations.
 
 Machine interfaces and the radial interaction menu partially implement
 [main-hud.md](design/main-hud.md) (tiered interactions, intent chording — drag-combine Tier 3 still
-pending). Machine interfaces also touch [area.md](design/area.md) power assumptions; the rest of
-these specs remain design-only.
+pending). **Area foundation** partially implements [area.md](design/area.md) (APC-seeded flood-fill,
+area-scoped power/lighting — live mutation recompute and editor merge/split still pending). The rest
+of these specs remain design-only.
 
 ---
 
@@ -283,10 +339,12 @@ before assuming commit counts.
 
 | Branch | Ahead / behind `develop` | System | Notes |
 |---|---|---|---|
-| `feature/atmos-ecs` | 26 / 21 | ECS atmospherics + GPU gas/fire visuals | `SS3D.Systems.Atmospherics`, `AtmosRendererFeature`; EditMode tests on branch |
-| `feature/vision-urp-tilemap` | 9 / 21 | Grid-based FOV / fog-of-war on URP + tilemap | `SS3D.Systems.Vision`, `VisionRendererFeature`; supersedes older vision work |
-| `vision-system-wip` | 6 / 100 | Older vision prototype | Stale — use `feature/vision-urp-tilemap` instead |
-| `feature/animation-system` | 0 / 75 | Animation system | No unique commits; stale relative to `develop` |
+| `feature/id-access-foundation` | 2 / 30 | ID cards + door access gating | Server-side crew records; debug ID console |
+| `feature/inventory-storage` | 9 / 58 | Inventory + main HUD | Gear/hands strip, intent module, storage UI migration |
+| `feature/urp-lighting-phase1` | 2 / 69 | URP lighting visual foundation | Forward+ fixture fixes, unitless intensity handling |
+| `feature/animation-system` | 3 / 71 | Humanoid animation | Body-state-driven locomotion scaffold |
+| `feature/vision-urp-tilemap` | 9 / 120 | Grid-based FOV / fog-of-war on URP + tilemap | `SS3D.Systems.Vision`, `VisionRendererFeature`; supersedes older vision work |
+| `vision-system-wip` | 6 / 199 | Older vision prototype | Stale — use `feature/vision-urp-tilemap` instead |
 
 ---
 
@@ -309,6 +367,9 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/feature-examine-localization` | 2026-07-09 | Unified Examine localization + `LocalizedTextService` |
 | `archive/feature-interaction-system-hardening` | 2026-07-09 | Interaction RPC hardening, pipeline, outlines, radial menu |
 | `archive/feature-radial-menu-redesign` | (via interaction-system-hardening) | UI Toolkit three-tier radial menu + armed overlay |
+| `archive/areas-foundation` | 2026-07-12 | APC-seeded areas, kWh power model, area lighting + consumer visuals |
+| `archive/feature-atmos-ecs` | 2026-07-12 | ECS turf gas sim, plasma combustion, GPU fog/fire visuals |
+| `archive/feature-interactions` | 2026-07-12 | Post-hardening interaction/radial polish + FastScriptReload removal |
 
 ---
 
