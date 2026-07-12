@@ -25,6 +25,7 @@ namespace SS3D.Systems.Interactions
         }
 
         private static readonly HashSet<int> PendingSelectableIds = new();
+        private static readonly Dictionary<int, InteractionOutlineView> PendingViews = new();
 
         private static readonly int OutlineColorId = Shader.PropertyToID("_OutlineColor");
         private static readonly int OutlineWidthId = Shader.PropertyToID("_OutlineWidth");
@@ -90,6 +91,13 @@ namespace SS3D.Systems.Interactions
         {
             base.OnDestroyed();
 
+            int selectableId = GetComponent<Selectable>()?.GetInstanceID() ?? 0;
+            if (selectableId != 0)
+            {
+                PendingSelectableIds.Remove(selectableId);
+                PendingViews.Remove(selectableId);
+            }
+
             foreach (OutlineEntry entry in _entries)
             {
                 if (entry.Renderer != null)
@@ -119,22 +127,47 @@ namespace SS3D.Systems.Interactions
             }
 
             InteractionOutlineView view = GetOrCreate(selectable);
-            PendingSelectableIds.Add(selectable.GetInstanceID());
+            int selectableId = selectable.GetInstanceID();
+            PendingSelectableIds.Add(selectableId);
+            PendingViews[selectableId] = view;
             view.SetState(OutlineState.Pending);
+        }
+
+        public static void ClearPendingExcept(Selectable hovered)
+        {
+            int hoveredId = hovered != null ? hovered.GetInstanceID() : 0;
+
+            foreach (int selectableId in new List<int>(PendingSelectableIds))
+            {
+                if (selectableId == hoveredId)
+                {
+                    continue;
+                }
+
+                ClearPendingView(selectableId);
+            }
         }
 
         public static void ClearPending()
         {
-            foreach (int selectableId in PendingSelectableIds)
+            foreach (int selectableId in new List<int>(PendingSelectableIds))
             {
-                Selectable selectable = FindSelectableById(selectableId);
-                if (selectable != null && selectable.TryGetComponent(out InteractionOutlineView view))
-                {
-                    view.SetState(OutlineState.Hidden);
-                }
+                ClearPendingView(selectableId);
             }
 
             PendingSelectableIds.Clear();
+            PendingViews.Clear();
+        }
+
+        private static void ClearPendingView(int selectableId)
+        {
+            if (PendingViews.TryGetValue(selectableId, out InteractionOutlineView view) && view != null)
+            {
+                view.SetState(OutlineState.Hidden);
+            }
+
+            PendingSelectableIds.Remove(selectableId);
+            PendingViews.Remove(selectableId);
         }
 
         public static InteractionOutlineView GetOrCreate(Selectable selectable)
@@ -158,21 +191,6 @@ namespace SS3D.Systems.Interactions
 
             selectable = provider.GameObject.GetComponentInParent<Selectable>();
             return selectable != null;
-        }
-
-        private static Selectable FindSelectableById(int instanceId)
-        {
-            Selectable[] selectables = Object.FindObjectsByType<Selectable>(FindObjectsSortMode.None);
-
-            for (int i = 0; i < selectables.Length; i++)
-            {
-                if (selectables[i].GetInstanceID() == instanceId)
-                {
-                    return selectables[i];
-                }
-            }
-
-            return null;
         }
 
         private void Build()

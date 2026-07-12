@@ -49,13 +49,18 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(worldPosition, rotation, itemSo);
 
-            if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
+            NetworkObject networkObject = placedObject.GetComponent<NetworkObject>();
+            if (InstanceFinder.ServerManager != null && networkObject != null)
             {
-                if (placedObject.GetComponent<NetworkObject>() == null)
-                    Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
-                        Logs.Generic, placedObject.NameString);
-                else
+                if (!networkObject.IsSpawned)
+                {
                     InstanceFinder.ServerManager.Spawn(placedGameObject);
+                }
+            }
+            else if (networkObject == null)
+            {
+                Log.Warning(SubSystems.Get<TileSubSystem>(), "{placedObject} does not have a Network Component and will not be spawned",
+                    Logs.Generic, placedObject.NameString);
             }
 
             return placedObject;

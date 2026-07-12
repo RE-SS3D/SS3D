@@ -540,10 +540,10 @@ namespace SS3D.Systems.Interactions
         /// <summary>
         /// Confirms an interaction issued by a client
         /// </summary>
-        [ObserversRpc]
+        [ObserversRpc(RunLocally = true)]
         private void RpcExecuteClientInteraction(NetworkObject target, Vector3 point, string genericName, int targetComponentIndex, int referenceId)
         {
-            if (IsServer)
+            if (!IsOwner)
             {
                 return;
             }
@@ -762,6 +762,7 @@ namespace SS3D.Systems.Interactions
         private void RefreshInteractionOutline()
         {
             Selectable current = _selectionSystem.GetCurrentSelectable();
+            InteractionOutlineView.ClearPendingExcept(current);
 
             if (current == null || IsEntityOutlineExcluded(current))
             {
@@ -771,6 +772,14 @@ namespace SS3D.Systems.Interactions
 
             if (InteractionOutlineView.IsPending(current))
             {
+                if (current != _activeOutlineSelectable)
+                {
+                    ClearInteractionOutline();
+                    _activeOutlineSelectable = current;
+                    _activeOutlineView = InteractionOutlineView.GetOrCreate(current);
+                }
+
+                _activeOutlineView?.SetState(InteractionOutlineView.OutlineState.Pending);
                 return;
             }
 
@@ -931,33 +940,39 @@ namespace SS3D.Systems.Interactions
         /// <param name="sourceObject"></param>
         /// <param name="interactionName"></param>
         /// <param name="referenceId"></param>
-        [ObserversRpc]
+        [ObserversRpc(RunLocally = true)]
         private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, string genericName, int targetComponentIndex, int referenceId)
         {
-            if (IsServer)
+            if (!IsOwner)
             {
                 return;
             }
 
-            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
-            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
-            List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent, CurrentIntent);
-            InteractionIdentifier id = new(genericName, targetComponentIndex);
-
-            if (!InteractionEntry.TryResolve(entries, id, out InteractionEntry chosenInteraction))
+            try
             {
-                Log.Warning(this, "Observer failed to resolve inventory interaction {genericName} at target index {targetIndex}",
-                    Logs.Generic, genericName, targetComponentIndex);
+                IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
+                List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
+                InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
+                List<InteractionEntry> entries = InteractionPipeline.GetViableInteractions(source, targets, interactionEvent, CurrentIntent);
+                InteractionIdentifier id = new(genericName, targetComponentIndex);
 
-                return;
+                if (!InteractionEntry.TryResolve(entries, id, out InteractionEntry chosenInteraction))
+                {
+                    Log.Warning(this, "Observer failed to resolve inventory interaction {genericName} at target index {targetIndex}",
+                        Logs.Generic, genericName, targetComponentIndex);
+
+                    return;
+                }
+
+                interactionEvent.Target = chosenInteraction.Target;
+                interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
+                _clientActiveSource = source;
+                _clientActiveReferenceId = referenceId;
             }
-
-            interactionEvent.Target = chosenInteraction.Target;
-            interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
-            _clientActiveSource = source;
-            _clientActiveReferenceId = referenceId;
-            InteractionOutlineView.ClearPending();
+            finally
+            {
+                InteractionOutlineView.ClearPending();
+            }
         }
 
         [ServerRpc]
