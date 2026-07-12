@@ -8,7 +8,7 @@ namespace SS3D.Interactions.Interfaces
     /// <remarks>
     /// <para><see cref="GetName"/> is display-only and may change with target or toggle state.</para>
     /// <para><see cref="GetGenericName"/> is the stable wire identifier used by RPC matching. Never derive it from animator state, open/close labels, or other runtime-only values.</para>
-    /// <para><see cref="Priority"/> bands: 100+ combat, 50–99 machine UI, 10–49 inventory, 0–9 passive/fallback. Higher values win primary-click selection.</para>
+    /// <para><see cref="Priority"/> bands: 100+ combat, 50–99 machine UI, 10–49 inventory and world devices, 0–9 passive/fallback. Higher values win primary-click selection.</para>
     /// <para><see cref="Start"/> runs server-side. Mutations that must replicate should go through networked components (for example <c>NetworkedOpenable.SetOpenState</c>), not local-only animator writes.</para>
     /// <para>Tag intent-specific interactions with <see cref="IIntentRestrictedInteraction"/> so discovery and server validation stay aligned.</para>
     /// </remarks>
