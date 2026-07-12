@@ -104,12 +104,12 @@ namespace SS3D.Systems.Furniture
             if(!IsServer) return;
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
 
-            if (playersInTrigger == 1)
+            playersInTrigger = Math.Max(playersInTrigger - 1, 0);
+
+            if (playersInTrigger == 0)
             {
                 ScheduleCloseAfterDelay();
             }
-
-            playersInTrigger = Math.Max(playersInTrigger - 1, 0);
         }
 
         private IEnumerator RunCloseEventually(float time)
@@ -144,6 +144,7 @@ namespace SS3D.Systems.Furniture
             if (closeTimer != null)
             {
                 StopCoroutine(closeTimer);
+                closeTimer = null;
             }
 
             // Keep the door open while someone is still in the trigger; normal exit timing applies.

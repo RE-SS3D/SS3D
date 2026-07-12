@@ -88,6 +88,23 @@ namespace EditorTests
         }
 
         [Test]
+        public void UpdateCableDistributionOnly_DoesNotSetPowerStatusOnExcludedConsumers()
+        {
+            BasicPowerGenerator generator = CreateBasicGenerator(10f);
+            BasicPowerConsumer cableConsumer = CreateBasicConsumer(1f, PowerChannel.Equipment);
+            BasicPowerConsumer areaScopedConsumer = CreateBasicConsumer(1f, PowerChannel.Environment);
+            areaScopedConsumer.PowerStatus = PowerStatus.Powered;
+
+            Circuit circuit = CreateCircuit(generator, cableConsumer, areaScopedConsumer);
+            circuit.SetCableDistributionFilter(consumer => consumer == cableConsumer);
+
+            circuit.UpdateCableDistributionOnly(TestTickSeconds);
+
+            Assert.AreEqual(PowerStatus.Powered, cableConsumer.PowerStatus);
+            Assert.AreEqual(PowerStatus.Powered, areaScopedConsumer.PowerStatus);
+        }
+
+        [Test]
         public void GetAvailableGridSupplyForArea_IncludesStorageWhenCableDemandIsZero()
         {
             TestApcCell apcCell = new TestApcCell(storedEnergyKwh: 5f, maxCapacityKwh: 5f, maxDischargeRateKw: 5f);

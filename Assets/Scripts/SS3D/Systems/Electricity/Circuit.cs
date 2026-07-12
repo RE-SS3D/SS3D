@@ -204,6 +204,11 @@ namespace System.Electricity
         {
             foreach (IPowerConsumer consumer in _consumers)
             {
+                if (_includeInCableDistribution != null && !_includeInCableDistribution(consumer))
+                {
+                    continue;
+                }
+
                 if (poweredConsumers.Contains(consumer))
                 {
                     consumer.PowerStatus = PowerStatus.Powered;
