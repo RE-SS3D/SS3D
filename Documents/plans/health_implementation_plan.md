@@ -6,7 +6,7 @@ todos:
     content: "Phase 0a: Document Human.fbx anatomy map — body parts, colliders, organs, zone mapping, asset gaps (kidneys, groin collider)"
     status: pending
   - id: phase0-data-contract
-    content: "Phase 0b: Greenfield data contract — ZoneDamageState, OrganState, SystemicPools, HealthSnapshot, HumanHealthController; delete/replace BodyLayer stack"
+    content: "Phase 0b: Greenfield data contract — ZoneDamageState, OrganState, SystemicPools, HealthSnapshot, HumanHealthController, IHealthEffectModifier hook; delete/replace BodyLayer stack"
     status: pending
   - id: phase0-prefab-wiring
     content: "Phase 0c: Rewire Human.prefab — ZoneTargetCollider on skeleton colliders, organ prefab registration, hips groin collider"
@@ -35,6 +35,9 @@ todos:
   - id: phase8-hardening
     content: "Phase 8: Test suite, full worked-example PlayMode, update architecture docs"
     status: pending
+  - id: phase9-virology
+    content: "Phase 9 (separate effort): Virology per virology.md — exposure, disease stages writing organ/pool deltas, scanner, cure via chemistry; depends on P2+P6+P7e"
+    status: pending
 isProject: false
 ---
 
@@ -53,8 +56,9 @@ Primary spec: [Documents/design/health.md](Documents/design/health.md). Adjacent
 | [surgery.md](Documents/design/surgery.md) | Medbay-grade treatment |
 | [death-cloning-respawn.md](Documents/design/death-cloning-respawn.md) | Defib, cloning |
 | [chemistry.md](Documents/design/chemistry.md) | Reagents → systemic pools |
+| [virology.md](Documents/design/virology.md) | Disease stages as external modifiers on organ function / systemic pools (separate Phase 9) |
 
-**Out of scope** (health.md §9): disease/infection, radiation/genetic, cybernetic depth, nutrition redesign.
+**Out of scope for this plan** (health.md §9, minus disease — now spec'd in virology.md): radiation/genetic, cybernetic depth, nutrition redesign. Disease/infection is **not** built here; see Phase 9.
 
 ---
 
@@ -258,6 +262,7 @@ toxinDelta = Intake - LiverClearance(liver) /* kidney factor interim */;
 - Publishes `HealthSnapshot` via `SyncVar`.
 - **`ApplyDamage(BodyZone, brute, burn)`** — sole damage entry point for combat.
 - **`ApplyTreatment(...)`** — entry point for medical interactions.
+- **`IHealthEffectModifier` registry** — per-tick deltas on organ function and systemic pools from downstream systems ([virology.md](Documents/design/virology.md) disease stages, [chemistry.md](Documents/design/chemistry.md) reagents, stamina overdraw). No parallel infection meter; virology routes through this hook. Open surgical wounds are contact-exposure vectors for virology only — no health-specific surgical-infection mechanic.
 
 **Delete** (after new controller passes tests): `BodyLayers/`, `CirculatoryController`, `OxygenConsumerSubSystem`, `IOxygenConsumer`, `IOxygenNeeder`, old `Heart`/`Lungs`/`Brain` simulation logic, `FeetController`, `HealthConstants` molar values.
 
@@ -331,7 +336,7 @@ Bandage pattern extended to: burn dressing, splint, O2 mask, CPR, antitoxin, IV/
 
 1. Vitals cluster — worst-limb brute/burn + systemic toxin/oxy (health.md §7).
 2. Screen-space condition feedback.
-3. Examine-self hold → per-zone + organ function readout.
+3. Examine-self hold → per-zone + organ function readout. Reserve a slot for diagnosed infections (virology.md §8) — listed once scanned, not a standalone infection bar.
 4. Wound severity on character model (materials/decals/blendshapes if available on Human.fbx).
 
 ---
@@ -344,9 +349,31 @@ Bandage pattern extended to: burn dressing, splint, O2 mask, CPR, antitoxin, IV/
 | 7b Armor | Per-zone absorption before `ApplyDamage`; seal breach |
 | 7c Surgery | Incise → clamp → repair → close; unclamped-close → internal bleed |
 | 7d Death/cloning | DNA record, defib polish, cloning pod |
-| 7e Chemistry | Reagents → pools; sedation for surgery |
+| 7e Chemistry | Reagents → pools via `IHealthEffectModifier`; sedation for surgery; disease cures are ordinary recipes (virology.md §6) |
 
 Deferred organ gameplay when assets exist: eyes (vision), stomach (hunger), ears, kidneys (replace interim clearance).
+
+---
+
+## Phase 9 — Virology (separate effort, not part of health MVP)
+
+Spec: [Documents/design/virology.md](Documents/design/virology.md). Resolves items health.md §9, chemistry.md §12, surgery.md §11, and examine.md §11 previously deferred.
+
+**Why separate from Phases 0–8:** Virology is its own system (exposure tracking, disease roster, scanner UI, immunity on crew identity). It does **not** add new health pools — disease stages register as `IHealthEffectModifier` instances on `HumanHealthController`, the same pattern chemistry reagents use.
+
+**Depends on:** Phase 2 (organ function), Phase 6 (organ readout slot), Phase 7e (chemistry delivery), plus Areas (airborne interim), armor (mask coverage), crew identity (immunity flag).
+
+**Scope (virology.md §13 prompt 2 vertical slice):**
+
+1. Authored disease record (contact transmission, stages, cure recipe ref).
+2. Exposure accumulation per (character, disease id) — contact dose events + Area co-location airborne interim.
+3. Threshold → infection → incubation → symptomatic stage writing real organ/pool deltas.
+4. Medical scanner (live scan + blood sample) — diegetic device screen.
+5. Chemistry-synthesized cure → halts progression, reverses stage effects → immunity on crew record.
+
+**Explicitly not in health plan:** mutation/culture minigame, quarantine enforcement, prophylactic vaccination, gamemode antagonist diseases (virology.md §11).
+
+**Surgery note:** Unclamped surgical wounds and open incisions are contact-exposure triggers only (virology.md §11) — health/surgery phases need no special infection mechanic.
 
 ---
 
@@ -371,6 +398,7 @@ flowchart LR
     P6[Phase 6 HUD]
     P7[Phase 7 Cross-system]
     P8[Phase 8 Hardening]
+    P9[Phase 9 Virology]
 
     P0 --> P1
     P1 --> P2
@@ -383,9 +411,12 @@ flowchart LR
     P5 --> P7
     P6 --> P8
     P7 --> P8
+    P2 --> P9
+    P6 --> P9
+    P7 --> P9
 ```
 
-**Recommended ship order:** P0 → P1 → P6 (minimal) → P2 → P3 → P4 → P5 → P7 → P8.
+**Recommended ship order:** P0 → P1 → P6 (minimal) → P2 → P3 → P4 → P5 → P7 → P8 → **P9** (virology, after health MVP + chemistry).
 
 ---
 
@@ -401,6 +432,8 @@ flowchart LR
 | Groin zone | Add collider on existing `hips` bone |
 | Global tick | `HumanHealthController.TickHealth()` at 1 Hz; delete `OxygenConsumerSubSystem` |
 | Death | Brain function → 0 only; severed head keeps special mind-swap behavior |
+| Disease/infection | Separate Phase 9 per virology.md; routes through `IHealthEffectModifier`, not new health pools |
+| Surgical-site infection | Contact-exposure vector in virology; no health-plan mechanic |
 
 ---
 
