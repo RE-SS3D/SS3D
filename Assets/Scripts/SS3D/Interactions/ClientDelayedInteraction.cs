@@ -33,6 +33,11 @@ namespace SS3D.Interactions
                 _loadingBarInstance.GameObject.Dispose(true);
             }
 
+            if (Delay < 0.1f)
+            {
+                return true;
+            }
+
             if (interactionEvent.Source.GetRootSource() is not IGameObjectProvider source)
             {
                 return true;
