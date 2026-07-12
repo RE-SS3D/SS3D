@@ -13,12 +13,28 @@ MonoBehaviour:
   m_Name: PosterVertical
   m_EditorClassIdentifier: 
   Type: 1
-  LocalizationTable:
+  Name:
     m_TableReference:
-      m_TableCollectionName: GUID:c2d3dd9ea24a44444a91fe8467ebb1c1
-  NameKey: Vertical Poster
-  DescriptionKey: A poster that is taller than wide.
+      m_TableCollectionName: Examine
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: structures.wall_mounts.posters.poster_vertical.name
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  Description:
+    m_TableReference:
+      m_TableCollectionName: Examine
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: structures.wall_mounts.posters.poster_vertical.desc
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   DetailedImageSize: {x: 215, y: 320}
   DetailedImageRange:
     Horizontal: 1.5
     Vertical: 2
+  references:
+    version: 2
+    RefIds: []

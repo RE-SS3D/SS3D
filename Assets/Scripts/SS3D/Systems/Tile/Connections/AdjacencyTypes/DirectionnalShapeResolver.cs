@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Logging;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
@@ -35,7 +36,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case AdjacencyShape.LOut: return lIn;
                 case AdjacencyShape.I: return i;
                 default:
-                    Debug.LogError("adjacency shape not found, returning mesh o");
+                    Log.Error(typeof(DirectionnalShapeResolver), "adjacency shape not found, returning mesh o");
                     return o;
             }
         }

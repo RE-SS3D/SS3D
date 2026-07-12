@@ -1021,6 +1021,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Cancel Interaction",
+                    "type": "Button",
+                    "id": "f8a2c1d0-9e4b-4a7c-b3d6-1e5f8a9c0d2b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1043,6 +1052,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "View Interactions",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel Interaction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

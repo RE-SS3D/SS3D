@@ -28,7 +28,7 @@ namespace SS3D.Systems.PlayerControl
                 return;
             }
 
-            Log.Information(this, "Attempting authentication for user {ckey}", Logs.ClientOnly, ckey);
+            Log.Debug(this, "Attempting authentication for user {ckey}", Logs.ClientOnly, ckey);
 
             UserAuthorizationMessage userAuthorizationMessage = new(ckey);
             ClientManager.Broadcast(userAuthorizationMessage);

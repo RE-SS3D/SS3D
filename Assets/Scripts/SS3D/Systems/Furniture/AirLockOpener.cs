@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Electricity;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -24,6 +25,9 @@ namespace SS3D.Systems.Furniture
 
         [SerializeField]
         private Animator _animator;
+
+        [SerializeField]
+        private BasicPowerConsumer _powerConsumer;
 
         /// <summary>
         /// The animation's id of the animation we want to trigger
@@ -60,6 +64,17 @@ namespace SS3D.Systems.Furniture
         public override void OnStartServer()
         {
             base.OnStartServer();
+
+            if (_powerConsumer == null)
+            {
+                TryGetComponent(out _powerConsumer);
+            }
+
+            if (_powerConsumer != null)
+            {
+                _powerConsumer.OnPowerStatusUpdated += HandlePowerStatusUpdated;
+            }
+
             NotifyTileStateChanged();
         }
 
@@ -69,10 +84,21 @@ namespace SS3D.Systems.Furniture
             NotifyTileStateChanged();
         }
 
+        public override void OnStopServer()
+        {
+            if (_powerConsumer != null)
+            {
+                _powerConsumer.OnPowerStatusUpdated -= HandlePowerStatusUpdated;
+            }
+
+            base.OnStopServer();
+        }
+
         public void OnTriggerEnter(Collider other)
         {
             if (!IsServer) return;
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
+            if (!IsPowered()) return;
 
             if (playersInTrigger == 0)
             {
@@ -92,13 +118,12 @@ namespace SS3D.Systems.Furniture
             if(!IsServer) return;
             if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
 
-            if (playersInTrigger == 1)
-            {
-                // Start the close timer (which may be stopped).
-                closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
-            }
-
             playersInTrigger = Math.Max(playersInTrigger - 1, 0);
+
+            if (playersInTrigger == 0)
+            {
+                ScheduleCloseAfterDelay();
+            }
         }
 
         private IEnumerator RunCloseEventually(float time)
@@ -110,6 +135,11 @@ namespace SS3D.Systems.Furniture
         [Server]
         private void SetOpen(bool open)
         {
+            if (open && !IsPowered())
+            {
+                return;
+            }
+
             _isOpen = open;
             _animator.SetBool(OpenId, open);
         }
@@ -122,6 +152,38 @@ namespace SS3D.Systems.Furniture
         private void NotifyTileStateChanged()
         {
             SubSystems.Get<TileSubSystem>()?.NotifyTileStateChanged(transform.position);
+        }
+
+        private void HandlePowerStatusUpdated(object sender, PowerStatus newStatus)
+        {
+            if (!IsServer || newStatus == PowerStatus.Powered)
+            {
+                return;
+            }
+
+            ScheduleCloseAfterDelay();
+        }
+
+        private void ScheduleCloseAfterDelay()
+        {
+            if (closeTimer != null)
+            {
+                StopCoroutine(closeTimer);
+                closeTimer = null;
+            }
+
+            // Keep the door open while someone is still in the trigger; normal exit timing applies.
+            if (playersInTrigger > 0)
+            {
+                return;
+            }
+
+            closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
+        }
+
+        private bool IsPowered()
+        {
+            return _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
         }
     }
 }

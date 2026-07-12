@@ -28,6 +28,14 @@ namespace System.Electricity
         public event EventHandler<PowerStatus> OnPowerStatusUpdated;
         public PowerStatus PowerStatus { get => _powerStatus; set => _powerStatus = value; }
 
+        public PowerChannel Channel => PowerChannel.Equipment;
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            OnPowerStatusUpdated?.Invoke(this, _powerStatus);
+        }
+
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
         {
             OnPowerStatusUpdated?.Invoke(this, newValue);

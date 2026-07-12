@@ -11,9 +11,13 @@ GameObject:
   - component: {fileID: 9152662315921357567}
   - component: {fileID: 171083310264975561}
   - component: {fileID: 5864608339448331312}
+  - component: {fileID: 8822334455667788993}
   - component: {fileID: -5633820156739102180}
   - component: {fileID: 5345374821986185081}
   - component: {fileID: -1796937761032253921}
+  - component: {fileID: 8822334455667788990}
+  - component: {fileID: 8822334455667788991}
+  - component: {fileID: 8822334455667788992}
   - component: {fileID: -3535122389528252537}
   m_Layer: 0
   m_Name: APC
@@ -95,6 +99,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8822334455667788993
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.5, y: 0.8, z: 0.2}
+  m_Center: {x: 0, y: 0.4, z: 0}
 --- !u!114 &-5633820156739102180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,7 +141,10 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 8822334455667788992}
+  - {fileID: 8822334455667788991}
+  - {fileID: 8822334455667788990}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -152,6 +180,65 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 6d8c584c9501d564b87b79071e15b4f7, type: 2}
+--- !u!114 &8822334455667788990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff65a9dda1ef18f4cbc16ee4d1aee066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -5633820156739102180}
+  _networkObjectCache: {fileID: -5633820156739102180}
+  _asset: {fileID: 11400000, guid: cd7e56a30be55964da66a4dc51f532d1, type: 2}
+  _tileObjectSo: {fileID: 11400000, guid: 99c19ee319960474eadd3099a306ebed, type: 2}
+  _syncAssetName: 
+  _syncOriginX: 0
+  _syncOriginY: 0
+  _syncWorldOriginX: 0
+  _syncWorldOriginY: 0
+  _syncDirection: 0
+  _syncLayer: 6
+  _syncMapId: 0
+--- !u!114 &8822334455667788991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -5633820156739102180}
+  _networkObjectCache: {fileID: -5633820156739102180}
+--- !u!114 &8822334455667788992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287103069661579500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c4e8f21b3d5e6490a1b2c3d4e5f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: -5633820156739102180}
+  _networkObjectCache: {fileID: -5633820156739102180}
+  _title: APC · ENGINEERING BAY
+  _maxCapacityKwh: 5
+  _maxDischargeRateKw: 10
+  _maxChargeRateKw: 10
 --- !u!114 &-3535122389528252537
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Furniture;
+using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using System;
 using UnityEngine;
@@ -26,12 +27,14 @@ namespace SS3D.Systems.Inventory.Interactions
             _permissionToUnlock = permission;
         }
 
+        public int Priority => 25;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Unlock Locker";
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "UnlockLocker";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
@@ -50,6 +53,11 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
+            if (!InteractionPermission.HasPermission(interactionEvent, _permissionToUnlock))
+            {
+                return false;
+            }
+
             return _locker.IsLocked && !_locker.IsOpen;
         }
 
@@ -57,27 +65,29 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             IInteractionSource source = interactionEvent.Source;
 
-            if (source is IGameObjectProvider sourceGameObjectProvider)
+            if (source is not IGameObjectProvider sourceGameObjectProvider)
             {
-                Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+                return false;
+            }
 
-                if (hands != null)
-                {
-                    if (hands.Inventory.HasPermission(_permissionToUnlock))
-                    {
-                        Log.Information(this, "Locker has been unlocked!");
-                        _locker.IsLocked = false;
-                    }
-                    else
-                    {
-                        Log.Information(this, "No permission to unlock Locker!");
-                    }
-                }
+            Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
 
+            if (hands == null)
+            {
                 return true;
             }
 
-            return false;
+            if (!InteractionPermission.HasPermission(interactionEvent, _permissionToUnlock))
+            {
+                Log.Information(this, "No permission to unlock Locker!");
+
+                return false;
+            }
+
+            Log.Information(this, "Locker has been unlocked!");
+            _locker.IsLocked = false;
+
+            return true;
         }
     }
 }

@@ -25,7 +25,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
             return "Detonate Nuke";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Detonate";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

@@ -129,24 +129,3 @@ MonoBehaviour:
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1
---- !u!114 &8234567890123456789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: AtmosRendererFeature
-  m_EditorClassIdentifier: SS3D.Rendering.URP::SS3D.Rendering.URP.AtmosRendererFeature
-  m_Active: 1
-  _scatterShader: {fileID: 4800000, guid: 7f2a9b8c1d3e4f5061728394a5b6c7d8, type: 3}
-  _enabled: 1
-  _scatterStrength: 1
-  _scatterColor: {r: 0.65, g: 0.7, b: 0.75, a: 1}
-  _volumeHeight: 2.5
-  _referencePressure: 101.325
-  _fogPressureScale: 80
-  _slabSteps: 6

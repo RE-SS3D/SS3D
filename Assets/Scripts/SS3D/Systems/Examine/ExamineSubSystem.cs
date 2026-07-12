@@ -18,6 +18,7 @@ namespace SS3D.Systems.Examine
     public class ExamineSubSystem : NetworkSubSystem
     {
         public event ExaminableChangedHandler OnExaminableChanged;
+        public event ExaminableChangedHandler OnDetailedExamineRequested;
 
         public delegate void ExaminableChangedHandler(IExaminable examinable);
         
@@ -54,6 +55,14 @@ namespace SS3D.Systems.Examine
             // Get the examinable under the cursor
             IExaminable current = _selectionSystem.GetCurrentSelectable<IExaminable>();
             OnExaminableChanged?.Invoke(current);
+        }
+
+        /// <summary>
+        /// Opens the detailed examine panel for a target chosen from the radial menu.
+        /// </summary>
+        public void ShowDetailedExamine(IExaminable examinable)
+        {
+            OnDetailedExamineRequested?.Invoke(examinable);
         }
     }
 }

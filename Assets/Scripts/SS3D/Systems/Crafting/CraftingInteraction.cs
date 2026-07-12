@@ -57,6 +57,8 @@ namespace SS3D.Systems.Crafting
         /// </summary>
         public TaggedEdge<RecipeStep, RecipeStepLink> ChosenLink => _chosenLink;
 
+        public int Priority => 55;
+
         public CraftingInteraction(float delay, Transform characterTransform, CraftingInteractionType type, TaggedEdge<RecipeStep, RecipeStepLink> link)
         {
             _characterTransform = characterTransform;
@@ -83,6 +85,7 @@ namespace SS3D.Systems.Crafting
         [Server]
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
+            CaptureStartPosition(interactionEvent);
             StartCounter();
             _startPosition = _characterTransform.position;
             SubSystems.TryGet(out CraftingSubSystem craftingSystem);
@@ -106,7 +109,7 @@ namespace SS3D.Systems.Crafting
             return GetGenericName() + " " + interactionEvent.Target.GetGameObject().name.Split("(")[0];
         }
 
-        public override string GetGenericName() => throw new System.NotImplementedException();
+        public override string GetGenericName() => $"Craft:{_chosenLink.Tag.From}-{_chosenLink.Tag.To}";
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {

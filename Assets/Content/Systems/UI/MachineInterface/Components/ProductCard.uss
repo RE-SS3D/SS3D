@@ -1,0 +1,43 @@
+@import url("../Tokens/diegetic-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
+
+.product-card {
+    width: 31%;
+    margin-right: 2%;
+    margin-bottom: 10px;
+    align-items: center;
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: var(--ss3d-radius-sm);
+    padding: 12px 8px 10px;
+}
+
+.product-card__slot-wrap {
+    position: relative;
+    width: 48px;
+    height: 48px;
+}
+
+.product-card__name {
+    font-size: 12.5px;
+    margin-top: 8px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.product-card__qty {
+    font-size: 12px;
+    margin-top: 3px;
+    -unity-text-align: middle-center;
+}
+
+.product-card__qty--out-of-stock {
+    -unity-text-decoration: line-through;
+}
+
+.product-card--disabled {
+    opacity: 0.45;
+}
+
+.product-card--vending .product-card__slot-wrap {
+    opacity: 0.55;
+}

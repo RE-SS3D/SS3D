@@ -23,6 +23,7 @@ namespace SS3D.Systems.Tile
         private Dictionary<Vector2Int, TileChunk> _chunks;
         private List<PlacedItemObject> _items;
         private readonly List<ITileMutationObserver> _mutationObservers = new();
+        private readonly List<SavedAreaRecord> _loadedAreaRecords = new();
         private AdjacencyEngine _adjacencyEngine;
         private string _mapName;
 
@@ -31,6 +32,8 @@ namespace SS3D.Systems.Tile
         public AdjacencyEngine AdjacencyEngine => _adjacencyEngine;
 
         public int ChunkCount => _chunks.Count;
+
+        public IReadOnlyList<SavedAreaRecord> LoadedAreaRecords => _loadedAreaRecords;
 
         public event EventHandler OnMapLoaded;
 
@@ -129,6 +132,42 @@ namespace SS3D.Systems.Tile
             {
                 return null;
             }
+        }
+
+        public IEnumerable<TileChunk> GetAllChunks() => _chunks.Values;
+
+        public bool TryGetAreaId(TileCoord coord, out ushort areaId)
+        {
+            areaId = 0;
+            if (coord.MapId != MapId)
+                return false;
+
+            Vector3 world = new Vector3(coord.Grid.x, 0, coord.Grid.y);
+            TileChunk chunk = GetChunk(world);
+            if (chunk == null)
+                return false;
+
+            Vector2Int local = chunk.GetXY(world);
+            areaId = chunk.GetAreaId(local.x, local.y);
+            return true;
+        }
+
+        public bool TrySetAreaId(TileCoord coord, ushort areaId)
+        {
+            if (coord.MapId != MapId)
+                return false;
+
+            Vector3 world = new Vector3(coord.Grid.x, 0, coord.Grid.y);
+            TileChunk chunk = GetOrCreateChunk(world);
+            Vector2Int local = chunk.GetXY(world);
+            chunk.SetAreaId(local.x, local.y, areaId);
+            return true;
+        }
+
+        public void ClearAllAreaIds()
+        {
+            foreach (TileChunk chunk in _chunks.Values)
+                chunk.ClearAreaIds();
         }
 
         public ITileLocation GetTileLocation(TileLayer layer, Vector3 worldPosition)
@@ -273,7 +312,7 @@ namespace SS3D.Systems.Tile
         public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir,
             bool skipBuildCheck, bool replaceExisting, bool skipAdjacency, out GameObject placedObjectGo)
         {
-            bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
+            bool canBuild = skipBuildCheck || CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
             placedObjectGo = null;
 
             if (canBuild || skipBuildCheck)
@@ -482,8 +521,17 @@ namespace SS3D.Systems.Tile
             {
                 mapName = _mapName,
                 savedChunkList = chunkObjectSaveList.ToArray(),
-                savedItemList = itemSaveList.ToArray()
+                savedItemList = itemSaveList.ToArray(),
+                savedAreas = BuildSavedAreas(),
             };
+        }
+
+        private SavedAreaRecord[] BuildSavedAreas()
+        {
+            if (SubSystems.TryGet(out Area.AreaSubSystem areaSubSystem))
+                return areaSubSystem.BuildSavedAreaRecords();
+
+            return Array.Empty<SavedAreaRecord>();
         }
 
         public void Load([CanBeNull] SavedTileMap saveObject)
@@ -496,16 +544,24 @@ namespace SS3D.Systems.Tile
 
             // Clear TileMap data first (this clears the _items list)
             Clear();
+            _loadedAreaRecords.Clear();
             
             // Then clear all items in the scene, not just those tracked by TileMap
             ClearUntrackedItems();
 
-            TileSubSystem tileSystem = SubSystems.Get<TileSubSystem>();
+            SubSystems.TryGet(out TileSubSystem tileSystem);
 
-            foreach (SavedTileChunk savedChunk in saveObject.savedChunkList)
+            SavedTileChunk[] savedChunks = saveObject.savedChunkList ?? Array.Empty<SavedTileChunk>();
+            foreach (SavedTileChunk savedChunk in savedChunks)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
-                ISavedTileLocation[] savedTiles = savedChunk.savedTiles;
+                if (savedChunk.areaIds != null)
+                    chunk.SetAreaIds(savedChunk.areaIds);
+
+                if (tileSystem == null)
+                    continue;
+
+                ISavedTileLocation[] savedTiles = savedChunk.savedTiles ?? Array.Empty<ISavedTileLocation>();
 
                 foreach (var savedTile in savedTiles)
                 {
@@ -520,7 +576,17 @@ namespace SS3D.Systems.Tile
                 }
             }
 
-            foreach (SavedPlacedItemObject savedItem in saveObject.savedItemList)
+            if (saveObject.savedAreas != null)
+                _loadedAreaRecords.AddRange(saveObject.savedAreas);
+
+            if (tileSystem == null)
+            {
+                OnMapLoaded?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
+            SavedPlacedItemObject[] savedItems = saveObject.savedItemList ?? Array.Empty<SavedPlacedItemObject>();
+            foreach (SavedPlacedItemObject savedItem in savedItems)
             {
                 ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
@@ -632,7 +698,8 @@ namespace SS3D.Systems.Tile
                 // Destroy items that are in the world but not tracked by TileMap
                 if (item.gameObject != null)
                 {
-                    Debug.LogWarning($"Destroying untracked item: {item.gameObject.name} at position {item.gameObject.transform.position}");
+                    Log.Warning(this, "Destroying untracked item: {itemName} at position {position}",
+                        Logs.Generic, item.gameObject.name, item.gameObject.transform.position);
                     DestroyImmediate(item.gameObject);
                 }
             }

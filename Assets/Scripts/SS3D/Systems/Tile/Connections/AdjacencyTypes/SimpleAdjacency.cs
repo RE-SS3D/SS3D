@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Logging;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
@@ -54,7 +55,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     mesh = x;
                     break;
                 default:
-                    Debug.LogError($"Received unexpected shape from simple shape resolver: {shape}");
+                    Log.Error(typeof(SimpleConnector), "Received unexpected shape from simple shape resolver: {shape}", Logs.Generic, shape);
                     mesh = o;
                     break;
             }

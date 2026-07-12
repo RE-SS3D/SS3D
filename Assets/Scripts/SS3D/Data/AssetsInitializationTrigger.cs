@@ -19,7 +19,7 @@ namespace SS3D.Data
 
 		private void HandleApplicationInitializing(ref EventContext context, in ApplicationInitializing e)
         {
-            Log.Information(this, "Loading asset databases", Logs.Important);
+            Log.Debug(this, "Loading asset databases", Logs.Important);
             
 			Assets.LoadAssetDatabases();
 		}

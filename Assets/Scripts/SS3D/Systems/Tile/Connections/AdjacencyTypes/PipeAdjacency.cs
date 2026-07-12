@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Logging;
+using System;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
@@ -74,7 +75,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                     mesh = x ;
                     break;
                 default:
-                    Debug.LogError($"Received unexpected shape from simple shape resolver: {shape}");
+                    Log.Error(typeof(DisposalPipeConnector), "Received unexpected shape from simple shape resolver: {shape}", Logs.Generic, shape);
                     mesh = i ;
                     break;
             }
@@ -104,7 +105,7 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
                 case 4:
                     return AdjacencyShape.X;
                 default:
-                    Debug.LogError($"Could not resolve Simple Adjacency Shape for given Adjacency Map - {adjacencyMap}");
+                    Log.Error(typeof(DisposalPipeConnector), "Could not resolve Simple Adjacency Shape for given Adjacency Map - {adjacencyMap}", Logs.Generic, adjacencyMap);
                     return AdjacencyShape.I;
             }
         }

@@ -1,0 +1,21 @@
+@import url("../../Tokens/ss3d-tokens.uss");
+
+.apc-power-controller {
+    flex-direction: column;
+}
+
+.apc-channels-title {
+    font-size: 9px;
+    color: var(--ss3d-text-tertiary);
+    letter-spacing: 2px;
+    margin-top: var(--ss3d-space-2);
+    margin-bottom: var(--ss3d-space-2);
+}
+
+.apc-shed-hint {
+    font-size: 10px;
+    color: var(--ss3d-text-tertiary);
+    white-space: normal;
+    margin-top: var(--ss3d-space-2);
+    margin-bottom: var(--ss3d-space-2);
+}

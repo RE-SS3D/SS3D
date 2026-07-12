@@ -18,6 +18,8 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public readonly AttachedContainer AttachedContainer;
 
+        public int Priority => 25;
+
         public ViewContainerInteraction(AttachedContainer attachedContainer)
         {
             AttachedContainer = attachedContainer;
@@ -28,7 +30,7 @@ namespace SS3D.Systems.Inventory.Interactions
             return "View " + AttachedContainer.ContainerName;
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "View:" + AttachedContainer.ContainerName;
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

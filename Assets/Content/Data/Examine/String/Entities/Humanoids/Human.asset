@@ -12,8 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dadffec94eb9a649b83c858cc4aa7d0, type: 3}
   m_Name: Human
   m_EditorClassIdentifier: 
-  LocalizationTable:
+  Type: 0
+  Name:
     m_TableReference:
-      m_TableCollectionName: GUID:5efc696289c14204ea5472b3e853eea2
-  NameKey: human
-  DescriptionKey: human_desc
+      m_TableCollectionName: Examine
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: entities.humanoids.human.name
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  Description:
+    m_TableReference:
+      m_TableCollectionName: Examine
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: entities.humanoids.human.desc
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  DetailedImageSize: {x: 260, y: 175}
+  DetailedImageRange:
+    Horizontal: 1.5
+    Vertical: 2
+  references:
+    version: 2
+    RefIds: []

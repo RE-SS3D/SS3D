@@ -95,7 +95,7 @@ namespace SS3D.Permissions
         {
             ServerRoleTypes previousRole = _userPermissions.TryGetValue(ckey, out ServerRoleTypes permission) ? permission : ServerRoleTypes.None;
 
-            Log.Information(this, $"Updating user {ckey} role from {previousRole} to {role}");
+            Log.Debug(this, $"Updating user {ckey} role from {previousRole} to {role}");
 
             _userPermissions[ckey] = role;
 
@@ -123,7 +123,7 @@ namespace SS3D.Permissions
         [Server]
         private void LoadPermissions()
         {
-            Log.Information(this, "Loading permission data from file", Logs.ServerOnly);
+            Log.Debug(this, "Loading permission data from file", Logs.ServerOnly);
             
             if (!HasLoadedPermissions)
             {
@@ -146,7 +146,7 @@ namespace SS3D.Permissions
 
                 _userPermissions.Add(ckey, role);
 
-                Log.Information(this, "Found user permission {ckey} as {role}", Logs.ServerOnly, ckey, role);
+                Log.Debug(this, "Found user permission {ckey} as {role}", Logs.ServerOnly, ckey, role);
             }
 
             HasLoadedPermissions = true;
@@ -160,7 +160,7 @@ namespace SS3D.Permissions
                 return;
             }
 
-            Log.Information(this, "Permissions file not found, creating a new one", Logs.ServerOnly);
+            Log.Debug(this, "Permissions file not found, creating a new one", Logs.ServerOnly);
             File.WriteAllText(PermissionsPath, string.Empty);
         }
 

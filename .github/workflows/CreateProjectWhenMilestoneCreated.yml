@@ -1,7 +1,8 @@
+# Disabled on this fork: syncs with RE-SS3D organization Projects (see Documents/FORK_STATUS.md).
+# Manual dispatch only until fork project automation is configured.
 name: Create Project When Milestone Created
 on:
-  milestone:
-    types: [created]
+  workflow_dispatch: {}
 jobs:
   CreateProjectFromMilestone:
     runs-on: ubuntu-latest

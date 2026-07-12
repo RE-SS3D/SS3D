@@ -6,6 +6,7 @@ using SS3D.Interactions;
 using FishNet.Object;
 using SS3D.Systems.Tile;
 using SS3D.Core;
+using SS3D.Systems.Health;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -87,6 +88,25 @@ namespace SS3D.Systems.Inventory.Containers
         public RangeLimit GetInteractionRange()
         {
             return _range;
+        }
+
+        public override bool CanExecuteInteraction(IInteraction interaction)
+        {
+            StaminaController stamina = GetComponentInParent<StaminaController>();
+
+            if (stamina != null && !stamina.CanCommenceInteraction)
+            {
+                return false;
+            }
+
+            return base.CanExecuteInteraction(interaction);
+        }
+
+        public override bool CanContinueInteraction()
+        {
+            StaminaController stamina = GetComponentInParent<StaminaController>();
+
+            return stamina == null || stamina.CanContinueInteraction;
         }
 
         [Server]

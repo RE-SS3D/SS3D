@@ -21,7 +21,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
             return "Honk";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Honk";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

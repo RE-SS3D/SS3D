@@ -8,5 +8,7 @@
         public float PowerNeeded { get; }
 
         public PowerStatus PowerStatus { get; set; }
+
+        public PowerChannel Channel { get; }
     }
 }

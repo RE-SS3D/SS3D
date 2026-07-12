@@ -25,17 +25,17 @@ namespace SS3D.Application
         /// </summary>
         public void InitializeApplication()
         {
-            Log.Information(this, "Pre initializing application", Logs.Important);
+            Log.Debug(this, "Pre initializing application", Logs.Important);
             new ApplicationPreInitializing().Invoke(this);
 
-            Log.Information(this, "Initializing application", Logs.Important);
+            Log.Debug(this, "Initializing application", Logs.Important);
             new ApplicationInitializing().Invoke(this);
 
             // TODO: Remove this and the discord integration thing, there should be a better plugin.
             InitializeDiscordIntegration();
 
             new ApplicationInitialized().Invoke(this);
-            Log.Information(this, "Application initialized", Logs.Important);
+            Log.Debug(this, "Application initialized", Logs.Important);
         }
 
         /// <summary>

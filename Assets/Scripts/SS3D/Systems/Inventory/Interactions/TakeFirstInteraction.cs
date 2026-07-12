@@ -22,12 +22,14 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
+        public int Priority => 25;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Take in " + _attachedContainer.ContainerName;
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "TakeFirst:" + _attachedContainer.ContainerName;
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {

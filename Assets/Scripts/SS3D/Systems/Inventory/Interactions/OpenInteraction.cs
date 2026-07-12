@@ -27,21 +27,23 @@ namespace SS3D.Systems.Inventory.Interactions
             _attachedContainer = attachedContainer;
         }
 
+        public int Priority => 25;
+
         public string GetName(InteractionEvent interactionEvent)
         {
-            Animator animator = ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>();
+            bool isOpen = GetOpenState(interactionEvent);
 
             if (_attachedContainer == null)
             {
-                return animator.GetBool(OpenId) ? "Close" : "Open";
+                return isOpen ? "Close" : "Open";
             }
 
             string name = _attachedContainer.ContainerName;
 
-            return animator.GetBool(OpenId) ? "Close " + name : "Open " + name;
+            return isOpen ? "Close " + name : "Open " + name;
         }
 
-        public string GetGenericName() => throw new NotImplementedException();
+        public string GetGenericName() => "Open";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
@@ -69,7 +71,8 @@ namespace SS3D.Systems.Inventory.Interactions
                 // Check that the entity is actually capable of interacting with the target
                 if (entity.GetComponent<Hands>().SelectedHand.CanInteract(target.GameObject) && IsFirstContainerOpenable(target))
                 {
-                    return target.GameObject.GetComponent<Animator>() != null;
+                    return target.GameObject.GetComponent<NetworkedOpenable>() != null
+                        || target.GameObject.GetComponent<Animator>() != null;
                 }
             }
 
@@ -103,19 +106,44 @@ namespace SS3D.Systems.Inventory.Interactions
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Debug.Log("in OpenInteraction, Start");
             GameObject target = ((IGameObjectProvider)interactionEvent.Target).GameObject;
+            NetworkedOpenable networkedOpenable = target.GetComponent<NetworkedOpenable>();
+
+            if (networkedOpenable != null)
+            {
+                networkedOpenable.SetOpenState(!networkedOpenable.IsOpen());
+                return false;
+            }
+
             Animator animator = target.GetComponent<Animator>();
-            bool open = animator.GetBool(OpenId);
-            animator.SetBool(OpenId, !open);
-            OnOpenStateChange(!open);
+
+            if (animator != null)
+            {
+                bool open = animator.GetBool(OpenId);
+                animator.SetBool(OpenId, !open);
+                OnOpenStateChange(!open);
+            }
 
             return false;
         }
 
+        private static bool GetOpenState(InteractionEvent interactionEvent)
+        {
+            GameObject target = ((IGameObjectProvider)interactionEvent.Target).GameObject;
+            NetworkedOpenable networkedOpenable = target.GetComponent<NetworkedOpenable>();
+
+            if (networkedOpenable != null)
+            {
+                return networkedOpenable.IsOpen();
+            }
+
+            Animator animator = target.GetComponent<Animator>();
+
+            return animator != null && animator.GetBool(OpenId);
+        }
+
         private void OnOpenStateChange(bool e)
         {
-            Debug.Log("In OpenInteraction, OnOpenStateChange");
             OnOpenStateChanged?.Invoke(this, e);
         }
     }

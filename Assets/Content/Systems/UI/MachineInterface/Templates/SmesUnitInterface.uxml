@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesStatusBanner.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesPowerFlowRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/TogglePill.uss" />
+
+    <ui:VisualElement name="smes-root" class="smes-unit-interface">
+        <ss3d:SmesStatusBanner name="status-banner" />
+
+        <ui:VisualElement class="smes-metrics-row">
+            <ui:VisualElement class="smes-storage-column">
+                <ui:Label text="ENERGY STORAGE" class="smes-section-title font-titling" />
+                <ss3d:StorageCellRow name="storage-cells" charge-pct="0.72" />
+                <ui:VisualElement class="smes-storage-footer">
+                    <ui:Label name="charge-pct" text="72%" class="font-terminal" />
+                    <ui:Label name="charge-trend-text" text="steady" class="font-terminal smes-charge-trend" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="smes-power-flow-column">
+                <ui:Label text="POWER FLOW" class="smes-section-title font-titling" />
+                <ss3d:SmesPowerFlowRow name="power-flow" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="smes-controls-row">
+            <ss3d:RateControlSection name="input-control" />
+            <ss3d:RateControlSection name="output-control" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

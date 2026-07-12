@@ -58,7 +58,7 @@ namespace SS3D.Data.Management
             try
             {
 	            File.WriteAllText(SaveFolder + saveFileName + "." + SaveExtension, saveString);
-	            Log.Information(typeof(LocalStorage), $"Saved file {fileName}");
+	            Log.Debug(typeof(LocalStorage), $"Saved file {fileName}");
             }
             catch (Exception e)
             {
@@ -89,7 +89,7 @@ namespace SS3D.Data.Management
 
             if (!Directory.Exists(SaveFolder))
             {
-				Log.Information(nameof(LocalStorage), $"No saves found, creating new folder at {SaveFolder}");
+				Log.Debug(nameof(LocalStorage), $"No saves found, creating new folder at {SaveFolder}");
 
 				Directory.CreateDirectory(SaveFolder);
             }
@@ -123,7 +123,7 @@ namespace SS3D.Data.Management
 	            return false;
             }
 
-            Log.Information(typeof(LocalStorage), $"Loaded the the most recent file at {path}");
+            Log.Debug(typeof(LocalStorage), $"Loaded the the most recent file at {path}");
 
             file = File.ReadAllText(mostRecentFile.FullName);
             return true;

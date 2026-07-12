@@ -55,7 +55,9 @@ further defined and clarified by project maintainers.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at 'ress3d.project@gmail.com'. All
+reported by opening a [private security advisory](https://github.com/henkhooft/SS3D/security/advisories/new)
+or contacting the fork maintainer through [GitHub Discussions](https://github.com/henkhooft/SS3D/discussions).
+All complaints will be reviewed and investigated and will result in a response that
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.

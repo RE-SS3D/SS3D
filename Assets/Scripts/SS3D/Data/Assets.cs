@@ -71,7 +71,7 @@ namespace SS3D.Data
                 Databases.Add(database.DatabaseID, database);
             }
 
-            Log.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
+            Log.Debug(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
         }
 
         /// <summary>

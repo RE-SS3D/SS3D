@@ -1,0 +1,78 @@
+@import url("../Tokens/diegetic-tokens.uss");
+@import url("../Tokens/diegetic-tones.uss");
+@import url("../../Tokens/ss3d-typography.uss");
+
+.diegetic-device-shell {
+    width: var(--ss3d-diegetic-width);
+    background-color: var(--ss3d-diegetic-chassis-bg);
+    border-radius: var(--ss3d-diegetic-chassis-radius);
+    padding: var(--ss3d-diegetic-chassis-padding);
+    border-width: 1px;
+    border-color: var(--ss3d-diegetic-chassis-border);
+}
+
+.diegetic-device-shell__chassis-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--ss3d-space-3);
+}
+
+.diegetic-device-shell__model-group {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.diegetic-device-shell__model-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    -unity-text-align: middle-left;
+}
+
+.diegetic-device-shell__power-group {
+    flex-direction: row;
+    align-items: center;
+    margin-right: var(--ss3d-space-2);
+}
+
+.diegetic-device-shell__power-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-left: 6px;
+}
+
+.diegetic-device-shell__close {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 0;
+    margin: 0;
+    border-width: 0;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.diegetic-device-shell__close:hover {
+    color: var(--ss3d-feedback-danger);
+    background-color: var(--ss3d-feedback-danger-bg);
+}
+
+.diegetic-device-shell__bezel {
+    background-color: var(--ss3d-diegetic-bezel-bg);
+    border-radius: var(--ss3d-diegetic-bezel-radius);
+    padding: var(--ss3d-diegetic-bezel-padding);
+}
+
+.diegetic-device-shell__screen {
+    background-color: var(--ss3d-diegetic-screen-bg);
+    border-radius: var(--ss3d-diegetic-screen-radius);
+    padding: var(--ss3d-diegetic-screen-padding);
+    max-height: 900px;
+    overflow: hidden;
+    flex-direction: column;
+}

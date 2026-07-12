@@ -1,4 +1,5 @@
 ﻿using System;
+using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
@@ -14,11 +15,14 @@ namespace SS3D.Interactions
 
         private float _startTime;
         private float _lastCheck;
+        private Vector3 _startPosition;
         
         /// <summary>
         /// The delay in seconds before performing the interaction
         /// </summary>
         protected float Delay { get; init; }
+
+        public float ClientDelay => Delay;
 
         protected bool HasStarted { get; private set; }
 
@@ -61,6 +65,7 @@ namespace SS3D.Interactions
         /// <param name="reference">The reference to this interaction</param>
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
+            CaptureStartPosition(interactionEvent);
             StartCounter();
 
             return true;
@@ -73,9 +78,17 @@ namespace SS3D.Interactions
         /// <param name="reference">The reference to this interaction</param>
         public virtual bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
+            if (HasStarted
+                && interactionEvent.Source.GetRootSource() is IGameObjectProvider provider
+                && !InteractionExtensions.CharacterMoveCheck(_startPosition, provider.GameObject.transform.position))
+            {
+                interactionEvent.Source.CancelInteraction(reference);
+                return true;
+            }
+
             if (_lastCheck + CheckInterval < Time.time && HasStarted)
             {
-                if (!CanInteract(interactionEvent))
+                if (!CanInteract(interactionEvent) || !interactionEvent.Source.CanContinueInteraction())
                 {
                     // Cancel the interaction
                     interactionEvent.Source.CancelInteraction(reference);
@@ -114,6 +127,14 @@ namespace SS3D.Interactions
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
         protected abstract void StartDelayed(InteractionEvent interactionEvent, InteractionReference reference);
+
+        protected void CaptureStartPosition(InteractionEvent interactionEvent)
+        {
+            if (interactionEvent.Source.GetRootSource() is IGameObjectProvider provider)
+            {
+                _startPosition = provider.GameObject.transform.position;
+            }
+        }
 
         protected void StartCounter()
         {

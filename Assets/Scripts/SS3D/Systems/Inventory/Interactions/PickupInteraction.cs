@@ -1,4 +1,5 @@
 ﻿using SS3D.Data;
+using SS3D.Logging;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -18,12 +19,14 @@ namespace SS3D.Systems.Inventory.Interactions
         public string Name;
         public Sprite Icon;
 
+        public int Priority => 30;
+
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Pick up";
         }
 
-        public string GetGenericName() => throw new System.NotImplementedException();
+        public string GetGenericName() => "Pickup";
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
@@ -93,7 +96,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 }
                 catch
                 {
-                    Debug.Log("Couldn't get Player Ckey");
+                    Log.Warning(typeof(PickupInteraction), "Couldn't get player ckey");
                 }
             }
 

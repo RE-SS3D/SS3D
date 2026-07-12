@@ -1,3 +1,4 @@
 SS3D: How the hell do I run this thing?
 
-You can find all important info at: https://ss3d.gitbook.io/programming/guides/running
+This fork does not publish releases. Build from source — see Documents/CONTRIBUTING.md
+in the repository root (or README.md on GitHub).

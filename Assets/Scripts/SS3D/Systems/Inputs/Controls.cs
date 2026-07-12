@@ -1110,6 +1110,15 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel Interaction"",
+                    ""type"": ""Button"",
+                    ""id"": ""f8a2c1d0-9e4b-4a7c-b3d6-1e5f8a9c0d2b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1132,6 +1141,17 @@ namespace SS3D.Systems.Inputs
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""View Interactions"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a1b2c3d4-e5f6-7890-abcd-ef1234567890"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel Interaction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1192,6 +1212,7 @@ namespace SS3D.Systems.Inputs
             m_Interactions = asset.FindActionMap("Interactions", throwIfNotFound: true);
             m_Interactions_RunPrimary = m_Interactions.FindAction("Run Primary", throwIfNotFound: true);
             m_Interactions_ViewInteractions = m_Interactions.FindAction("View Interactions", throwIfNotFound: true);
+            m_Interactions_CancelInteraction = m_Interactions.FindAction("Cancel Interaction", throwIfNotFound: true);
         }
 
         ~@Controls()
@@ -2186,6 +2207,7 @@ namespace SS3D.Systems.Inputs
         private List<IInteractionsActions> m_InteractionsActionsCallbackInterfaces = new List<IInteractionsActions>();
         private readonly InputAction m_Interactions_RunPrimary;
         private readonly InputAction m_Interactions_ViewInteractions;
+        private readonly InputAction m_Interactions_CancelInteraction;
         /// <summary>
         /// Provides access to input actions defined in input action map "Interactions".
         /// </summary>
@@ -2205,6 +2227,10 @@ namespace SS3D.Systems.Inputs
             /// Provides access to the underlying input action "Interactions/ViewInteractions".
             /// </summary>
             public InputAction @ViewInteractions => m_Wrapper.m_Interactions_ViewInteractions;
+            /// <summary>
+            /// Provides access to the underlying input action "Interactions/CancelInteraction".
+            /// </summary>
+            public InputAction @CancelInteraction => m_Wrapper.m_Interactions_CancelInteraction;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -2237,6 +2263,9 @@ namespace SS3D.Systems.Inputs
                 @ViewInteractions.started += instance.OnViewInteractions;
                 @ViewInteractions.performed += instance.OnViewInteractions;
                 @ViewInteractions.canceled += instance.OnViewInteractions;
+                @CancelInteraction.started += instance.OnCancelInteraction;
+                @CancelInteraction.performed += instance.OnCancelInteraction;
+                @CancelInteraction.canceled += instance.OnCancelInteraction;
             }
 
             /// <summary>
@@ -2254,6 +2283,9 @@ namespace SS3D.Systems.Inputs
                 @ViewInteractions.started -= instance.OnViewInteractions;
                 @ViewInteractions.performed -= instance.OnViewInteractions;
                 @ViewInteractions.canceled -= instance.OnViewInteractions;
+                @CancelInteraction.started -= instance.OnCancelInteraction;
+                @CancelInteraction.performed -= instance.OnCancelInteraction;
+                @CancelInteraction.canceled -= instance.OnCancelInteraction;
             }
 
             /// <summary>
@@ -2608,6 +2640,13 @@ namespace SS3D.Systems.Inputs
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnViewInteractions(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Cancel Interaction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnCancelInteraction(InputAction.CallbackContext context);
         }
     }
 }

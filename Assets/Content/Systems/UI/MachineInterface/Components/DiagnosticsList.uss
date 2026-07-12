@@ -1,0 +1,56 @@
+@import url("../../Tokens/ss3d-tokens.uss");
+@import url("../../Tokens/ss3d-typography.uss");
+
+.diagnostics-list {
+    flex-direction: column;
+    background-color: var(--ss3d-surface-inset);
+    border-radius: var(--ss3d-radius-sm);
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    padding: var(--ss3d-space-2) var(--ss3d-space-3);
+    margin-top: var(--ss3d-space-2);
+}
+
+.diagnostics-list__title {
+    font-size: 9px;
+    color: var(--ss3d-text-tertiary);
+    letter-spacing: 2px;
+    margin-bottom: var(--ss3d-space-2);
+}
+
+.diagnostics-list__line {
+    flex-direction: row;
+    margin-bottom: var(--ss3d-space-1);
+}
+
+.diagnostics-list__glyph {
+    min-width: 14px;
+    font-size: 11px;
+    margin-right: var(--ss3d-space-2);
+}
+
+.diagnostics-list__text {
+    font-size: 10px;
+    white-space: normal;
+    flex-grow: 1;
+}
+
+.diagnostics-list__glyph.tone-info,
+.diagnostics-list__text.tone-info {
+    color: var(--ss3d-feedback-info);
+}
+
+.diagnostics-list__glyph.tone-success,
+.diagnostics-list__text.tone-success {
+    color: var(--ss3d-feedback-success);
+}
+
+.diagnostics-list__glyph.tone-warning,
+.diagnostics-list__text.tone-warning {
+    color: var(--ss3d-feedback-warning);
+}
+
+.diagnostics-list__glyph.tone-danger,
+.diagnostics-list__text.tone-danger {
+    color: var(--ss3d-feedback-danger);
+}
