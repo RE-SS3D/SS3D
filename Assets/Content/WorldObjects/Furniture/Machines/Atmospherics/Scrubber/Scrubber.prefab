@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 118605385810179959}
   - component: {fileID: -7485152300816284691}
   - component: {fileID: -5085990572914726944}
+  - component: {fileID: 8827364519023341188}
   m_Layer: 0
   m_Name: Scrubber
   m_TagString: Untagged
@@ -329,3 +330,16 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &8827364519023341188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1a745b911a46b494299fd0f3068a83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 3309572359951597859}

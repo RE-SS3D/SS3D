@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 1278048393882565784}
   - component: {fileID: -9109099915246017288}
   - component: {fileID: -7411637464005841016}
+  - component: {fileID: 8827364519023341187}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -306,3 +307,16 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _observerConditions:
   - {fileID: 11400000, guid: cc503f7541ebd424c94541e6a767efee, type: 2}
+--- !u!114 &8827364519023341187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: accb27484c6b4af1a243478f75e418e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 7551927119831908791}

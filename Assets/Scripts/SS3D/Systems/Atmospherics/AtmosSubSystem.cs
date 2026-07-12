@@ -23,6 +23,7 @@ namespace SS3D.Systems.Atmospherics
         private AtmosPipeObserver _pipeObserver;
         private AtmosPipeSimulation _pipeSimulation;
         private GasPipeNetworkRegistry _pipeRegistry;
+        private readonly AtmosPortRegistry _portRegistry = new();
         private AtmosVisualizationBridge _visualizationBridge;
         private float _tickTimer;
 
@@ -204,6 +205,7 @@ namespace SS3D.Systems.Atmospherics
             float started = Time.realtimeSinceStartup;
             _simulation.Tick(AtmosConstants.TickInterval);
             _pipeSimulation?.Tick(AtmosConstants.TickInterval);
+            _portRegistry.TickDevices(_pipeSimulation, _simulation, AtmosConstants.TickInterval);
             LastTickMilliseconds = (Time.realtimeSinceStartup - started) * 1000f;
             _visualizationBridge?.PublishSnapshot();
         }
@@ -228,6 +230,10 @@ namespace SS3D.Systems.Atmospherics
                 direction,
                 out actuallyMoved);
         }
+
+        public void RegisterPort(IAtmosPortDevice port) => _portRegistry.Register(port);
+
+        public void UnregisterPort(IAtmosPortDevice port) => _portRegistry.Unregister(port);
 
         public bool TryGetCellDebugInfo(TileCoord coord, out AtmosCellDebugInfo info)
         {

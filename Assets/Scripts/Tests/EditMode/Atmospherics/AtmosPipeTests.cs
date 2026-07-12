@@ -220,6 +220,61 @@ namespace EditorTests.Atmospherics
             Assert.AreEqual(0f, moved);
         }
 
+        [Test]
+        public void AtmosPortFlow_ReturnsZeroWhenPressuresEqual()
+        {
+            float flow = AtmosPortFlow.ComputeFlowMoles(
+                101f,
+                101f,
+                AtmosPortConstants.VentRatedFlowMolesPerSecond,
+                AtmosPortConstants.PortMaxDifferentialKpa,
+                AtmosConstants.TickInterval);
+
+            Assert.AreEqual(0f, flow);
+        }
+
+        [Test]
+        public void AtmosPortFlow_ScalesWithPressureDifferential()
+        {
+            float lowDelta = AtmosPortFlow.ComputeFlowMoles(
+                110f,
+                100f,
+                AtmosPortConstants.VentRatedFlowMolesPerSecond,
+                AtmosPortConstants.PortMaxDifferentialKpa,
+                AtmosConstants.TickInterval);
+
+            float highDelta = AtmosPortFlow.ComputeFlowMoles(
+                200f,
+                100f,
+                AtmosPortConstants.VentRatedFlowMolesPerSecond,
+                AtmosPortConstants.PortMaxDifferentialKpa,
+                AtmosConstants.TickInterval);
+
+            Assert.Greater(lowDelta, 0f);
+            Assert.Greater(highDelta, lowDelta);
+        }
+
+        [Test]
+        public void AtmosDevicePipeResolver_FindsNetworkUnderFurnitureTile()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            PlacedTileObject pipe = CreateGasPipeAt(new Vector2Int(5, 5), TileLayer.PipeMiddle);
+            RegisterOnMap(context.Map, pipe, TileLayer.PipeMiddle, new Vector3(5, 0, 5));
+
+            var registry = new GasPipeNetworkRegistry(AtmosConstants.DefaultGasCount);
+            registry.RebuildAll(context.Map);
+
+            TileCoord deviceCoord = new TileCoord(context.Map.MapId, 5, 5);
+            Assert.IsTrue(AtmosDevicePipeResolver.TryResolveNetwork(
+                context.Map,
+                registry,
+                deviceCoord,
+                out GasPipeNetworkId networkId,
+                out GasPipeSegmentKey segmentKey));
+            Assert.IsFalse(networkId.IsNone);
+            Assert.AreEqual(TileLayer.PipeMiddle, segmentKey.Layer);
+        }
+
         private PlacedTileObject CreateGasPipeAt(Vector2Int worldOrigin, TileLayer layer)
         {
             GameObject go = new GameObject($"GasPipe_{worldOrigin}_{layer}");
