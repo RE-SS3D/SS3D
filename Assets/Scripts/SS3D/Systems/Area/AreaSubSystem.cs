@@ -380,6 +380,11 @@ namespace SS3D.Systems.Area
 
         public void OnChunkCreated(TileChunkRef chunk) { }
 
+        public void OnTileStateChanged(TileCoord coord)
+        {
+            // Live boundary recompute deferred.
+        }
+
         private void HandleMapLoaded(object sender, EventArgs args)
         {
             if (_registeredApcs.Count > 0)

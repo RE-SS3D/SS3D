@@ -59,6 +59,64 @@ namespace EditorTests.Atmospherics
             Assert.AreEqual(AtmosCellState.Active, center.State);
         }
 
+        [Test]
+        public void WindowWalls_BlockGasFlowLikeSolidWalls()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            const int interiorSize = 3;
+            const int origin = 0;
+            int outerSize = interiorSize + 2;
+
+            for (int x = 0; x < outerSize; x++)
+            {
+                for (int z = 0; z < outerSize; z++)
+                    TileMapTestUtilities.PlacePlenum(context, new Vector3(origin + x, 0, origin + z));
+            }
+
+            for (int x = 0; x < outerSize; x++)
+            {
+                for (int z = 0; z < outerSize; z++)
+                {
+                    bool isPerimeter = x == 0 || z == 0 || x == outerSize - 1 || z == outerSize - 1;
+                    if (!isPerimeter)
+                        continue;
+
+                    Vector3 position = new Vector3(origin + x, 0, origin + z);
+                    if (x == outerSize - 1 && z == outerSize / 2)
+                        TileMapTestUtilities.PlaceWindow(context, position);
+                    else
+                        TileMapTestUtilities.PlaceAirtightWall(context, position);
+                }
+            }
+
+            Assert.IsTrue(
+                context.Query.TryGetOccupancy(new TileCoord(context.Map.MapId, origin + outerSize - 1, origin + outerSize / 2), out TileOccupancy windowOccupancy));
+            Assert.IsTrue(windowOccupancy.IsWindow);
+            Assert.IsTrue(windowOccupancy.IsAirtight);
+            Assert.IsFalse(windowOccupancy.BlocksVision);
+            Assert.AreNotEqual(0, windowOccupancy.BlockedEdges);
+
+            using var simulation = CreateSimulation(context);
+            simulation.CreateChunk(CreateChunkRef(context.Map, Vector2Int.zero));
+            for (int x = 0; x < outerSize; x++)
+            {
+                for (int z = 0; z < outerSize; z++)
+                    simulation.UpdateCell(new TileCoord(context.Map.MapId, origin + x, origin + z));
+            }
+
+            var interiorCoord = new TileCoord(context.Map.MapId, origin + outerSize - 2, origin + outerSize / 2);
+            var windowCoord = new TileCoord(context.Map.MapId, origin + outerSize - 1, origin + outerSize / 2);
+            var exteriorCoord = new TileCoord(context.Map.MapId, origin + outerSize, origin + outerSize / 2);
+
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(interiorCoord, out AtmosCellDebugInfo interior));
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(windowCoord, out AtmosCellDebugInfo window));
+            Assert.IsTrue(simulation.TryGetCellDebugInfo(exteriorCoord, out AtmosCellDebugInfo exterior));
+            Assert.AreEqual(AtmosCellState.Active, interior.State);
+            Assert.AreEqual(AtmosCellState.Blocked, window.State);
+            Assert.AreEqual(AtmosCellState.Vacuum, exterior.State);
+            Assert.AreEqual(-1, interior.Neighbours.East);
+        }
+
         private static AtmosSimulation CreateSimulation(TileMapTestUtilities.MapContext context)
         {
             return new AtmosSimulation(context.Query, context.Map.MapId, AtmosConstants.DefaultGasCount);

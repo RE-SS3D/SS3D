@@ -109,6 +109,22 @@ namespace EditorTests
             Assert.IsTrue(placed, "Expected wall placement to succeed.");
         }
 
+        internal static void PlaceWindow(MapContext context, Vector3 position)
+        {
+            TileObjectSo wallSo = CreateTileSo(TileLayer.Turf, "SteelWindow");
+            wallSo.genericType = TileObjectGenericType.Wall;
+            wallSo.specificType = TileObjectSpecificType.Steel;
+            bool placed = context.Map.PlaceTileObject(
+                wallSo,
+                position,
+                Direction.North,
+                skipBuildCheck: true,
+                replaceExisting: false,
+                skipAdjacency: false,
+                out GameObject _);
+            Assert.IsTrue(placed, "Expected window placement to succeed.");
+        }
+
         /// <summary>
         /// Interior plenum cells surrounded by an airtight wall ring so chunk vacuum slots
         /// cannot drain the room through open cardinal edges.

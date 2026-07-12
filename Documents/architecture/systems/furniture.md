@@ -10,7 +10,7 @@ Station furniture and interactable world objects — airlocks, lockers, disposal
 
 ## Start here
 
-- `Assets/Scripts/SS3D/Systems/Furniture/AirLockOpener.cs` — proximity open/close; gated on `BasicPowerConsumer`; closes on power loss
+- `Assets/Scripts/SS3D/Systems/Furniture/AirLockOpener.cs` — proximity open/close; power-gated; `IDynamicTileOccupant` notifies [atmospherics](atmospherics.md) on door state change
 - `Assets/Scripts/SS3D/Systems/Furniture/AirlockStateMachine.cs` — animator panel colors during open/close
 - `Assets/Scripts/SS3D/UI/MachineInterface/VendingMachineController.cs` — vending machines (machine-interface controller)
 - `Assets/Scripts/SS3D/Systems/Audio/Boombox.cs` — jukebox toggle; stops audio on power loss
@@ -25,7 +25,7 @@ Station furniture and interactable world objects — airlocks, lockers, disposal
 
 ## Depends on / Used by
 
-- **Depends on:** [interactions-framework](interactions-framework.md), [interactions-runtime](interactions-runtime.md), [tile](tile.md), [electricity](electricity.md), [area](area.md) (airlock/switch area resolution), [machine-interface](machine-interface.md) (vending)
+- **Depends on:** [interactions-framework](interactions-framework.md), [interactions-runtime](interactions-runtime.md), [tile](tile.md), [electricity](electricity.md), [area](area.md) (airlock/switch area resolution), [atmospherics](atmospherics.md) (airlock passability), [machine-interface](machine-interface.md) (vending)
 - **Used by:** world scenes and construction content
 
 ## Related docs
