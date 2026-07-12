@@ -1,7 +1,6 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Atmospherics.ECS;
-using SS3D.Systems.Atmospherics.Visualization;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Inputs;
 using System;
@@ -28,6 +27,7 @@ namespace SS3D.Systems.Atmospherics
     {
         private const float DrawRadius = 40f;
         private const float ReferencePressureKpa = 101.325f;
+        private const float DebugGasMoles = 50f;
 
         private InputSubSystem _inputSystem;
         private InputAction _toggleAction;
@@ -36,14 +36,12 @@ namespace SS3D.Systems.Atmospherics
         private Camera _camera;
 
         private bool _open;
-        private Rect _panelRect = new Rect(16f, 16f, 400f, 620f);
+        private Rect _panelRect = new Rect(16f, 16f, 400f, 480f);
         private AtmosDebugViewMode _viewMode = AtmosDebugViewMode.Pressure;
         private bool _drawOverlay = true;
-        private bool _showVacuum = true;
+        private bool _showVacuum;
         private bool _showInactive;
         private float _gizmoScale = 1f;
-        private int _chamberRadiusX = 4;
-        private int _chamberRadiusZ = 2;
         private TileCoord? _selectedCoord;
         private Vector2 _scroll;
 
@@ -148,10 +146,10 @@ namespace SS3D.Systems.Atmospherics
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Wake 3×3"))
                     _atmos.DebugWakeRegion(spawnCoord, 1);
-                if (GUILayout.Button("+O₂ 10 mol"))
-                    _atmos.DebugAddGas(spawnCoord, AtmosConstants.Oxygen, 10f);
-                if (GUILayout.Button("+Plasma 5 mol"))
-                    _atmos.DebugAddGas(spawnCoord, AtmosConstants.Plasma, 5f);
+                if (GUILayout.Button($"+O₂ {DebugGasMoles:F0} mol"))
+                    _atmos.DebugAddGas(spawnCoord, AtmosConstants.Oxygen, DebugGasMoles);
+                if (GUILayout.Button($"+Plasma {DebugGasMoles:F0} mol"))
+                    _atmos.DebugAddGas(spawnCoord, AtmosConstants.Plasma, DebugGasMoles);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
@@ -159,25 +157,6 @@ namespace SS3D.Systems.Atmospherics
                     _atmos.DebugAddHeat(spawnCoord, 500f);
                 if (GUILayout.Button("Ignite (1000 K)"))
                     _atmos.DebugAddHeat(spawnCoord, 1000f);
-                GUILayout.EndHorizontal();
-
-                GUILayout.Space(4f);
-                GUILayout.Label("Chamber log region (tiles from selected, ±X/±Z)");
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("±X", GUILayout.Width(24f));
-                _chamberRadiusX = Mathf.RoundToInt(GUILayout.HorizontalSlider(_chamberRadiusX, 0f, 16f));
-                GUILayout.Label(_chamberRadiusX.ToString(), GUILayout.Width(24f));
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("±Z", GUILayout.Width(24f));
-                _chamberRadiusZ = Mathf.RoundToInt(GUILayout.HorizontalSlider(_chamberRadiusZ, 0f, 16f));
-                GUILayout.Label(_chamberRadiusZ.ToString(), GUILayout.Width(24f));
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Log tile visuals"))
-                    LogSelectedVisualMetrics(spawnCoord);
-                if (GUILayout.Button("Log chamber summary"))
-                    LogChamberVisualMetrics(spawnCoord);
                 GUILayout.EndHorizontal();
             }
 
@@ -206,35 +185,9 @@ namespace SS3D.Systems.Atmospherics
                 builder.AppendLine($"  CO₂ {sim.DebugGetMoles(info.Coord, AtmosConstants.CarbonDioxide):F2}" +
                     $"  Plasma {sim.DebugGetMoles(info.Coord, AtmosConstants.Plasma):F2}");
                 builder.AppendLine($"  Burn intensity: {info.BurnIntensity:F3}");
-
-                AtmosCellVisualMetrics metrics = AtmosVisualMetrics.Compute(info, sim, _atmos.GasRegistry);
-                builder.AppendLine();
-                builder.AppendLine(AtmosVisualMetrics.FormatGpuSection(info, metrics));
             }
 
             GUILayout.TextArea(builder.ToString());
-        }
-
-        private void LogSelectedVisualMetrics(TileCoord coord)
-        {
-            if (_atmos?.Simulation == null || !_atmos.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info))
-                return;
-
-            AtmosCellVisualMetrics metrics = AtmosVisualMetrics.Compute(info, _atmos.Simulation, _atmos.GasRegistry);
-            Debug.Log($"[AtmosVisual] {AtmosVisualMetrics.FormatCellReport(info, metrics)}");
-        }
-
-        private void LogChamberVisualMetrics(TileCoord center)
-        {
-            if (_atmos?.Simulation == null)
-                return;
-
-            AtmosVisualMetrics.LogChamberSummary(
-                _atmos.Simulation,
-                _atmos.GasRegistry,
-                center,
-                _chamberRadiusX,
-                _chamberRadiusZ);
         }
 
         private void TryPickTile()
@@ -298,13 +251,13 @@ namespace SS3D.Systems.Atmospherics
 
         private bool ShouldShowCell(AtmosCellDebugInfo info)
         {
-            if (info.State == AtmosCellState.Vacuum)
-                return _showVacuum;
-
-            if (info.State == AtmosCellState.Inactive || info.State == AtmosCellState.Blocked)
-                return _showInactive || info.Occupancy.HasPlenum;
-
-            return info.Occupancy.HasPlenum || _showVacuum;
+            return info.State switch
+            {
+                AtmosCellState.Vacuum => _showVacuum,
+                AtmosCellState.Inactive => _showInactive,
+                AtmosCellState.Blocked => _showInactive,
+                _ => true,
+            };
         }
 
         private static Color GetCellColor(AtmosCellDebugInfo info, float maxPressure, AtmosDebugViewMode viewMode)
