@@ -1,5 +1,6 @@
 using SS3D.Systems.Atmospherics.Pipes;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -74,15 +75,16 @@ namespace SS3D.UI.MachineInterface
             float threshold = 0f,
             bool belowThresholdIsBad = false)
         {
-            float percent = moleFraction * 100f;
+            float percent = ToDisplayPercent(moleFraction);
+            float normalizedFraction = percent / 100f;
             StatusTone tone = StatusTone.Info;
             if (threshold > 0f)
             {
-                if (belowThresholdIsBad && moleFraction < threshold)
+                if (belowThresholdIsBad && normalizedFraction < threshold)
                 {
                     tone = StatusTone.Warning;
                 }
-                else if (!belowThresholdIsBad && moleFraction > threshold)
+                else if (!belowThresholdIsBad && normalizedFraction > threshold)
                 {
                     tone = label == "Plasma" ? StatusTone.Danger : StatusTone.Warning;
                 }
@@ -93,8 +95,18 @@ namespace SS3D.UI.MachineInterface
                 Label = label,
                 Percent = percent,
                 ValueTone = tone == StatusTone.Info ? StatusTone.Success : tone,
-                BarTone = tone,
+                BarTone = label == "O2" && tone == StatusTone.Info ? StatusTone.Success : tone,
             };
+        }
+
+        private static float ToDisplayPercent(float moleFractionOrPercent)
+        {
+            if (moleFractionOrPercent <= 1f)
+            {
+                return moleFractionOrPercent * 100f;
+            }
+
+            return Mathf.Clamp(moleFractionOrPercent, 0f, 100f);
         }
 
         private static StatusTone DerivePressureTone(float pressureKpa)

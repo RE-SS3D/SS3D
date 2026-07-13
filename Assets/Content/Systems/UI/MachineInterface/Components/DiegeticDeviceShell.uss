@@ -141,6 +141,7 @@
     --ss3d-feedback-danger-border: var(--ss3d-diegetic-feedback-danger);
     --ss3d-border-subtle: var(--ss3d-diegetic-border-subtle);
     --ss3d-border-default: var(--ss3d-diegetic-border-default);
+    --ss3d-accent-rust: #c54f30;
 }
 
 .diegetic-device-shell__screen-content .panel-section__content Label {

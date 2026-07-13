@@ -6,9 +6,9 @@ namespace SS3D.UI.MachineInterface.Components
     [UxmlElement]
     public partial class GasBarRow : VisualElement
     {
-        private readonly Label _label;
         private readonly VisualElement _trackClip;
         private readonly VisualElement _fill;
+        private readonly Label _label;
         private readonly Label _value;
         private float _fillPct;
 
@@ -40,9 +40,7 @@ namespace SS3D.UI.MachineInterface.Components
             Add(track);
             Add(_value);
 
-            _trackClip.RegisterCallback<GeometryChangedEvent>(_ => UpdateFillWidth());
             RegisterCallback<AttachToPanelEvent>(_ => schedule.Execute(UpdateFillWidth));
-            RegisterCallback<GeometryChangedEvent>(_ => UpdateFillWidth());
         }
 
         [UxmlAttribute]
@@ -73,13 +71,6 @@ namespace SS3D.UI.MachineInterface.Components
         private void UpdateFillWidth()
         {
             float percent = Mathf.Clamp(_fillPct, 0f, 100f);
-            float trackWidth = _trackClip.resolvedStyle.width;
-            if (trackWidth > 0.5f)
-            {
-                _fill.style.width = trackWidth * (percent / 100f);
-                return;
-            }
-
             _fill.style.width = new Length(percent, LengthUnit.Percent);
         }
 
