@@ -164,7 +164,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 yield return AtmosConstants.CarbonDioxide;
             }
 
-            if (_filterPlasma)
+            // "Toxins" is currently treated as an alias of plasma in the core gas set.
+            if (_filterPlasma || _filterToxins)
             {
                 yield return AtmosConstants.Plasma;
             }

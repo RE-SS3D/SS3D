@@ -132,6 +132,30 @@ namespace EditorTests
         }
 
         [Test]
+        public void WallMountedDevice_UsesTileInFrontWhenOriginHasAreaId()
+        {
+            AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
+            TestApc leftApc = context.PlaceApc(new Vector3(4, 0, 2), Direction.West);
+            TestApc rightApc = context.PlaceApc(new Vector3(5, 0, 2), Direction.East);
+            context.RebuildAll();
+
+            AreaId leftArea = context.GetApcAreaId(leftApc);
+            AreaId rightArea = context.GetApcAreaId(rightApc);
+            Assert.IsFalse(leftArea.IsNone);
+            Assert.IsFalse(rightArea.IsNone);
+            Assert.AreNotEqual(leftArea, rightArea);
+
+            // Shared wall tile between the two rooms.
+            // We'll force an area id onto the wall tile to simulate the ambiguous case.
+            var wallMounted = CreateWallMountedDevice(new Vector2Int(4, 2), Direction.East);
+            TileCoord origin = AreaDeviceTileResolver.GetOriginTile(wallMounted);
+            Assert.IsTrue(context.Map.TrySetAreaId(origin, leftArea.Value));
+
+            Assert.IsTrue(context.AreaSubSystem.TryGetAreaForDevice(wallMounted, out AreaRecord record));
+            Assert.AreEqual(rightArea, record.Id, "Wall-mounted devices must resolve area from the tile in front, not the wall tile origin.");
+        }
+
+        [Test]
         public void WallMountedApcFacingIntoRoom_DoesNotFloodRoomBehindWall()
         {
             AreaTestContext context = AreaTestContext.CreateTwoAdjacentRooms(new Vector3(0, 0, 0), roomSize: 5);
@@ -442,6 +466,12 @@ namespace EditorTests
                 if (tileObject == null)
                 {
                     return false;
+                }
+
+                if (tileObject.Layer == TileLayer.WallMountHigh || tileObject.Layer == TileLayer.WallMountLow)
+                {
+                    TileCoord inFrontTile = AreaDeviceTileResolver.GetTileInFront(tileObject);
+                    return TryGetAreaForTile(inFrontTile, out record);
                 }
 
                 TileCoord origin = AreaDeviceTileResolver.GetOriginTile(tileObject);

@@ -70,8 +70,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             base.OnStartClient();
             Initialize();
-            ApplyAnimatorState(_animatorActive);
-            ApplyPortFlowingState(_portFlowing);
+            ApplyClientVisualState();
         }
 
         protected override void OnDestroyed()
@@ -92,12 +91,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
         [Server]
         public void ServerSetEnabled(bool enabled)
         {
-            if (_enabled == enabled)
-            {
-                return;
-            }
+            if (_enabled != enabled)
+                _enabled = enabled;
 
-            _enabled = enabled;
             RefreshAnimatorAuthorityState();
         }
 
@@ -107,15 +103,15 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             if (!IsPowered())
             {
-                SetAnimatorActive(false);
-                SetPortFlowing(false);
+                SetAnimatorActive(false, force: true);
+                SetPortFlowing(false, force: true);
                 return;
             }
 
             if (!_enabled)
             {
-                SetAnimatorActive(false);
-                SetPortFlowing(false);
+                SetAnimatorActive(false, force: true);
+                SetPortFlowing(false, force: true);
                 return;
             }
 
@@ -200,21 +196,22 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             if (!IsPowered() || !_enabled)
             {
-                SetAnimatorActive(false);
-                SetPortFlowing(false);
+                SetAnimatorActive(false, force: true);
+                SetPortFlowing(false, force: true);
                 return;
             }
 
+            ResolveConnectedNetwork();
             SetAnimatorActive(!_networkId.IsNone || ShouldAnimateWhileIdle());
             if (_networkId.IsNone)
-                SetPortFlowing(false);
+                SetPortFlowing(false, force: true);
         }
 
         protected bool IsPowered() => AtmosPortPower.IsPowered(_powerConsumer);
 
-        private void SetAnimatorActive(bool active)
+        private void SetAnimatorActive(bool active, bool force = false)
         {
-            if (_animatorActive == active)
+            if (!force && _animatorActive == active)
                 return;
 
             _animatorActive = active;
@@ -223,9 +220,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 ApplyAnimatorState(active);
         }
 
-        private void SetPortFlowing(bool flowing)
+        private void SetPortFlowing(bool flowing, bool force = false)
         {
-            if (_portFlowing == flowing)
+            if (!force && _portFlowing == flowing)
                 return;
 
             _portFlowing = flowing;
@@ -237,19 +234,30 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private void HandleEnabledChanged(bool _, bool __, bool asServer)
         {
             if (!asServer)
-                RefreshAnimatorAuthorityState();
+                ApplyClientVisualState();
         }
 
-        private void HandleAnimatorActiveChanged(bool _, bool newValue, bool asServer)
+        private void HandleAnimatorActiveChanged(bool _, bool __, bool asServer)
         {
             if (!asServer)
-                ApplyAnimatorState(newValue);
+                ApplyClientVisualState();
         }
 
-        private void HandlePortFlowingChanged(bool _, bool newValue, bool asServer)
+        private void HandlePortFlowingChanged(bool _, bool __, bool asServer)
         {
             if (!asServer)
-                ApplyPortFlowingState(newValue);
+                ApplyClientVisualState();
+        }
+
+        private void ApplyClientVisualState()
+        {
+            if (!IsClient)
+                return;
+
+            bool deviceActive = _enabled && IsPowered() && _animatorActive;
+            bool flowing = _enabled && IsPowered() && _portFlowing;
+            ApplyAnimatorState(deviceActive);
+            ApplyPortFlowingState(flowing);
         }
 
         private void ApplyAnimatorState(bool deviceActive)
@@ -265,6 +273,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
 
             _animator.SetBool(DeviceActiveId, deviceActive);
+            if (!deviceActive)
+                ApplyDeviceSpecificAnimatorState(false);
         }
 
         private void ApplyPortFlowingState(bool flowing)

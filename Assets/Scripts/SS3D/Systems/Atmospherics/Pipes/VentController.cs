@@ -17,6 +17,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public int TargetPressureKpa => _targetPressureKpa;
 
+        public static bool ShouldVentToTurf(float turfPressureKpa, int targetPressureKpa) =>
+            targetPressureKpa > 0 && turfPressureKpa < targetPressureKpa;
+
         [Server]
         public void ServerSetTargetPressureKpa(int targetKpa)
         {
@@ -37,6 +40,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
             TileCoord turfCell = OriginTile;
             float networkPressure = network.GetPressure(AtmosConstants.DefaultGasCount);
             float turfPressure = turfSimulation.GetCellPressure(turfCell);
+            if (!ShouldVentToTurf(turfPressure, _targetPressureKpa))
+            {
+                return false;
+            }
+
             float budgetMoles = AtmosPortFlow.ComputeFlowMoles(
                 networkPressure,
                 turfPressure,

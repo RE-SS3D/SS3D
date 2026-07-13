@@ -143,6 +143,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
             }
 
+            if (!IsPortInAlarmArea(controller))
+            {
+                return;
+            }
+
             controller.ServerSetEnabled(enabled);
         }
 
@@ -155,6 +160,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
             }
 
+            if (!IsPortInAlarmArea(controller))
+            {
+                return;
+            }
+
             vent.ServerSetTargetPressureKpa(Mathf.RoundToInt(targetKpa));
         }
 
@@ -163,6 +173,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             if (!AtmosAreaDeviceQuery.TryResolvePort(objectId, out AtmosPortControllerBase controller, out _)
                 || controller is not ScrubberController scrubber)
+            {
+                return;
+            }
+
+            if (!IsPortInAlarmArea(controller))
             {
                 return;
             }
@@ -279,6 +294,27 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             _areaId = record.Id;
             _hasArea = true;
+        }
+
+        private bool IsPortInAlarmArea(AtmosPortControllerBase controller)
+        {
+            if (controller == null || !_hasArea)
+            {
+                return false;
+            }
+
+            if (!controller.TryGetComponent(out PlacedTileObject tileObject))
+            {
+                return false;
+            }
+
+            if (!SubSystems.TryGet(out AreaSubSystem areaSubSystem)
+                || !areaSubSystem.TryGetAreaForDevice(tileObject, out AreaRecord record))
+            {
+                return false;
+            }
+
+            return record.Id == _areaId;
         }
 
         private void SubscribePowerEvents()
