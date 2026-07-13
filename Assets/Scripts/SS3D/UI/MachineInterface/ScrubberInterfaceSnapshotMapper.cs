@@ -1,3 +1,5 @@
+using SS3D.Systems.Atmospherics.Pipes;
+
 namespace SS3D.UI.MachineInterface
 {
     public static class ScrubberInterfaceSnapshotMapper
@@ -22,6 +24,13 @@ namespace SS3D.UI.MachineInterface
             model.AccessGranted = snapshot.AccessGranted;
             model.AccessScanning = snapshot.AccessScanning;
             model.FlowRate = snapshot.FlowRate;
+            ScrubberGasFilters.CopyToDictionary(
+                snapshot.FilterO2,
+                snapshot.FilterN2,
+                snapshot.FilterCo2,
+                snapshot.FilterPlasma,
+                snapshot.FilterToxins,
+                model.Filters);
 
             if (!snapshot.Connected && scenario is ScrubberScenario.Filtering or ScrubberScenario.Overloaded)
             {

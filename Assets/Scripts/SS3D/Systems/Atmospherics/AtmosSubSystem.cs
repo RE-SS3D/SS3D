@@ -32,6 +32,7 @@ namespace SS3D.Systems.Atmospherics
         public AtmosSimulation Simulation => _simulation;
         public AtmosPipeSimulation PipeSimulation => _pipeSimulation;
         public GasPipeNetworkRegistry PipeRegistry => _pipeRegistry;
+        public AtmosPortRegistry PortRegistry => _portRegistry;
         public bool SimulationPaused { get; set; }
         public float LastTickMilliseconds { get; private set; }
 

@@ -1,5 +1,6 @@
 using FishNet.Serializing;
 using NUnit.Framework;
+using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Tests;
 using SS3D.UI.MachineInterface;
 using System;
@@ -133,6 +134,81 @@ namespace EditorTests
             Assert.AreEqual(1, model.TrayItems.Count);
             Assert.AreEqual("Space Cola", model.TrayItems[0].Name);
             Assert.AreEqual(1, model.ActionLog.Count);
+        }
+
+        [Test]
+        public void AirAlarmInterfaceSnapshotSerializer_RoundTripsVariableDeviceList()
+        {
+            AirAlarmInterfaceSnapshot original = new()
+            {
+                MachineObjectId = 12,
+                InterfaceId = MachineInterfaceIds.AirAlarm,
+                Title = "AIR ALARM",
+                ActiveMode = (byte)AirAlarmPresetMode.Panic,
+                ConnectedDevices = new System.Collections.Generic.List<AirAlarmDeviceSnapshot>
+                {
+                    new()
+                    {
+                        Id = "101",
+                        Name = "Vent — North",
+                        Kind = (byte)AirAlarmConnectedDeviceKind.Vent,
+                        Powered = true,
+                        TargetKpa = 101f,
+                    },
+                    new()
+                    {
+                        Id = "102",
+                        Name = "Scrubber — South",
+                        Kind = (byte)AirAlarmConnectedDeviceKind.Scrubber,
+                        Powered = false,
+                        FilterCo2 = true,
+                        FilterPlasma = true,
+                    },
+                },
+            };
+
+            using PooledWriter writer = WriterPool.Retrieve();
+            writer.WriteAirAlarmInterfaceSnapshot(original);
+
+            ArraySegment<byte> segment = writer.GetArraySegment();
+            using PooledReader reader = ReaderPool.Retrieve(segment, null);
+            AirAlarmInterfaceSnapshot roundTripped = reader.ReadAirAlarmInterfaceSnapshot();
+
+            Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
+            Assert.AreEqual(original.ActiveMode, roundTripped.ActiveMode);
+            Assert.AreEqual(2, roundTripped.ConnectedDevices.Count);
+            Assert.AreEqual("101", roundTripped.ConnectedDevices[0].Id);
+            Assert.AreEqual("Scrubber — South", roundTripped.ConnectedDevices[1].Name);
+            Assert.IsTrue(roundTripped.ConnectedDevices[1].FilterPlasma);
+        }
+
+        [Test]
+        public void ScrubberInterfaceSnapshotSerializer_RoundTripsFilterState()
+        {
+            ScrubberInterfaceSnapshot original = new()
+            {
+                MachineObjectId = 55,
+                InterfaceId = MachineInterfaceIds.Scrubber,
+                Title = "SCRUBBER",
+                FlowRate = 7,
+                FilterO2 = false,
+                FilterN2 = true,
+                FilterCo2 = true,
+                FilterPlasma = true,
+                FilterToxins = false,
+            };
+
+            using PooledWriter writer = WriterPool.Retrieve();
+            writer.WriteScrubberInterfaceSnapshot(original);
+
+            ArraySegment<byte> segment = writer.GetArraySegment();
+            using PooledReader reader = ReaderPool.Retrieve(segment, null);
+            ScrubberInterfaceSnapshot roundTripped = reader.ReadScrubberInterfaceSnapshot();
+
+            Assert.AreEqual(original.FilterO2, roundTripped.FilterO2);
+            Assert.AreEqual(original.FilterPlasma, roundTripped.FilterPlasma);
+            Assert.AreEqual(original.FilterToxins, roundTripped.FilterToxins);
+            Assert.AreEqual(7, roundTripped.FlowRate);
         }
 
         private static ApcInterfaceSnapshot CreateApcSnapshot()

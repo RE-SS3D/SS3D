@@ -1,3 +1,5 @@
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Systems.Tile;
 using UnityEngine;
 
@@ -9,6 +11,17 @@ namespace SS3D.Systems.Atmospherics.Pipes
     public sealed class VentController : AtmosPortControllerBase
     {
         private static readonly int VentActiveId = Animator.StringToHash("ventActive");
+
+        [SyncVar]
+        private int _targetPressureKpa = 101;
+
+        public int TargetPressureKpa => _targetPressureKpa;
+
+        [Server]
+        public void ServerSetTargetPressureKpa(int targetKpa)
+        {
+            _targetPressureKpa = Mathf.Clamp(targetKpa, 0, 200);
+        }
 
         protected override bool RunPortTick(
             AtmosPipeSimulation pipeSimulation,

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace SS3D.UI.MachineInterface
 {
     /// <summary>
-    /// Networked scrubber machine interface. UI-only controls until atmos plumbing is wired.
+    /// Networked scrubber machine interface.
     /// </summary>
     [RequireComponent(typeof(ScrubberController))]
     public sealed class ScrubberInterfaceController : AtmosMachineInterfaceBehaviour
@@ -80,6 +80,28 @@ namespace SS3D.UI.MachineInterface
             return true;
         }
 
+        protected override bool ApplyActionControl(byte controlId, int value)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+            {
+                return base.ApplyActionControl(controlId, value);
+            }
+
+            if (controlId != MachineInterfaceControlIds.Atmos.DeviceFilter || !AccessGranted)
+            {
+                return false;
+            }
+
+            if (_scrubber == null)
+            {
+                _scrubber = GetComponent<ScrubberController>();
+            }
+
+            _scrubber?.ServerToggleFilter(value);
+            RefreshAllViewers();
+            return true;
+        }
+
         protected override void SendOpenToViewer(NetworkConnection conn)
         {
             TargetOpenInterface(conn, BuildSnapshot());
@@ -132,6 +154,13 @@ namespace SS3D.UI.MachineInterface
                 scenario = ScrubberScenario.Idle;
             }
 
+            _scrubber?.GetFilterStates(
+                out bool filterO2,
+                out bool filterN2,
+                out bool filterCo2,
+                out bool filterPlasma,
+                out bool filterToxins);
+
             return new ScrubberInterfaceSnapshot
             {
                 MachineObjectId = NetworkObject != null ? NetworkObject.ObjectId : 0,
@@ -147,6 +176,11 @@ namespace SS3D.UI.MachineInterface
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
                 FlowRate = _flowRate,
+                FilterO2 = filterO2,
+                FilterN2 = filterN2,
+                FilterCo2 = filterCo2,
+                FilterPlasma = filterPlasma,
+                FilterToxins = filterToxins,
             };
         }
 

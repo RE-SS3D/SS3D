@@ -7,6 +7,8 @@ namespace SS3D.UI.MachineInterface
     {
         public static void WriteAirAlarmInterfaceSnapshot(this Writer writer, AirAlarmInterfaceSnapshot snapshot)
         {
+            List<AirAlarmDeviceSnapshot> devices = snapshot.ConnectedDevices ?? new List<AirAlarmDeviceSnapshot>();
+
             writer.WriteInt32(snapshot.MachineObjectId);
             writer.WriteString(snapshot.InterfaceId);
             writer.WriteString(snapshot.Title);
@@ -22,11 +24,11 @@ namespace SS3D.UI.MachineInterface
             writer.WriteSingle(snapshot.CarbonDioxideFraction);
             writer.WriteByte(snapshot.ActiveMode);
             writer.WriteString(snapshot.SelectedDeviceId ?? string.Empty);
-            writer.WriteByte(snapshot.ConnectedDeviceCount);
+            writer.WriteUInt16((ushort)devices.Count);
 
-            for (int i = 0; i < AirAlarmInterfaceSnapshot.MaxConnectedDevices; i++)
+            foreach (AirAlarmDeviceSnapshot device in devices)
             {
-                WriteDevice(writer, GetDevice(snapshot, i));
+                WriteDevice(writer, device);
             }
         }
 
@@ -49,13 +51,14 @@ namespace SS3D.UI.MachineInterface
                 CarbonDioxideFraction = reader.ReadSingle(),
                 ActiveMode = reader.ReadByte(),
                 SelectedDeviceId = reader.ReadString(),
-                ConnectedDeviceCount = reader.ReadByte(),
             };
 
-            snapshot.Device0 = ReadDevice(reader);
-            snapshot.Device1 = ReadDevice(reader);
-            snapshot.Device2 = ReadDevice(reader);
-            snapshot.Device3 = ReadDevice(reader);
+            ushort deviceCount = reader.ReadUInt16();
+            snapshot.ConnectedDevices = new List<AirAlarmDeviceSnapshot>(deviceCount);
+            for (int i = 0; i < deviceCount; i++)
+            {
+                snapshot.ConnectedDevices.Add(ReadDevice(reader));
+            }
 
             return snapshot;
         }
@@ -96,37 +99,6 @@ namespace SS3D.UI.MachineInterface
                     ["Plasma"] = snapshot.FilterPlasma,
                     ["Toxins"] = snapshot.FilterToxins,
                 },
-            };
-        }
-
-        public static void SetDevice(ref AirAlarmInterfaceSnapshot snapshot, int index, AirAlarmDeviceSnapshot device)
-        {
-            switch (index)
-            {
-                case 0:
-                    snapshot.Device0 = device;
-                    break;
-                case 1:
-                    snapshot.Device1 = device;
-                    break;
-                case 2:
-                    snapshot.Device2 = device;
-                    break;
-                case 3:
-                    snapshot.Device3 = device;
-                    break;
-            }
-        }
-
-        public static AirAlarmDeviceSnapshot GetDevice(AirAlarmInterfaceSnapshot snapshot, int index)
-        {
-            return index switch
-            {
-                0 => snapshot.Device0,
-                1 => snapshot.Device1,
-                2 => snapshot.Device2,
-                3 => snapshot.Device3,
-                _ => default,
             };
         }
 

@@ -72,6 +72,12 @@ namespace SS3D.UI.MachineInterface.Bindings
             {
                 _flowStepper.DeltaRequested += HandleFlowDeltaRequested;
             }
+
+            WireFilter(_o2Filter, OnO2FilterChanged);
+            WireFilter(_n2Filter, OnN2FilterChanged);
+            WireFilter(_co2Filter, OnCo2FilterChanged);
+            WireFilter(_plasmaFilter, OnPlasmaFilterChanged);
+            WireFilter(_toxinsFilter, OnToxinsFilterChanged);
         }
 
         public void Bind(IMachineInterfaceViewModel viewModel)
@@ -164,6 +170,12 @@ namespace SS3D.UI.MachineInterface.Bindings
             {
                 _flowStepper.DeltaRequested -= HandleFlowDeltaRequested;
             }
+
+            UnwireFilter(_o2Filter, OnO2FilterChanged);
+            UnwireFilter(_n2Filter, OnN2FilterChanged);
+            UnwireFilter(_co2Filter, OnCo2FilterChanged);
+            UnwireFilter(_plasmaFilter, OnPlasmaFilterChanged);
+            UnwireFilter(_toxinsFilter, OnToxinsFilterChanged);
         }
 
         private void HandleCloseRequested() => CloseRequested?.Invoke();
@@ -176,6 +188,35 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         private void HandleFlowDeltaRequested(float delta) =>
             NumericControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.FlowRate, delta);
+
+        private void HandleFilterChanged(int filterIndex) =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.DeviceFilter, filterIndex);
+
+        private void OnO2FilterChanged(bool _) => HandleFilterChanged(0);
+
+        private void OnN2FilterChanged(bool _) => HandleFilterChanged(1);
+
+        private void OnCo2FilterChanged(bool _) => HandleFilterChanged(2);
+
+        private void OnPlasmaFilterChanged(bool _) => HandleFilterChanged(3);
+
+        private void OnToxinsFilterChanged(bool _) => HandleFilterChanged(4);
+
+        private static void WireFilter(CompactFilterToggle toggle, Action<bool> handler)
+        {
+            if (toggle != null)
+            {
+                toggle.ValueChanged += handler;
+            }
+        }
+
+        private static void UnwireFilter(CompactFilterToggle toggle, Action<bool> handler)
+        {
+            if (toggle != null)
+            {
+                toggle.ValueChanged -= handler;
+            }
+        }
 
         private static void BindFilter(
             CompactFilterToggle toggle,

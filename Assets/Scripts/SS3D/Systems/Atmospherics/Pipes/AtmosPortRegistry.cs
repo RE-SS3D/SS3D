@@ -1,3 +1,5 @@
+using FishNet.Serializing;
+using System;
 using System.Collections.Generic;
 
 namespace SS3D.Systems.Atmospherics.Pipes
@@ -9,6 +11,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
     {
         private readonly List<IAtmosPortDevice> _ports = new();
 
+        public int PortCount => _ports.Count;
+
         public void Register(IAtmosPortDevice port)
         {
             if (port != null && !_ports.Contains(port))
@@ -19,6 +23,19 @@ namespace SS3D.Systems.Atmospherics.Pipes
         {
             if (port != null)
                 _ports.Remove(port);
+        }
+
+        public void ForEachPort(Action<IAtmosPortDevice> action)
+        {
+            if (action == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _ports.Count; i++)
+            {
+                action(_ports[i]);
+            }
         }
 
         public void TickDevices(AtmosPipeSimulation pipeSimulation, AtmosSimulation turfSimulation, float deltaTime)

@@ -50,6 +50,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
         [SyncVar]
         private float _sampleCarbonDioxideFraction;
 
+        [SyncVar]
+        private byte _activeMode = (byte)AirAlarmPresetMode.Filtering;
+
         private PlacedTileObject _tileObject;
         private AreaId _areaId;
         private bool _hasArea;
@@ -60,6 +63,12 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private bool _powerEventsSubscribed;
 
         public AirAlarmState AlarmState => _alarmState;
+
+        public AirAlarmPresetMode ActiveMode => (AirAlarmPresetMode)_activeMode;
+
+        public AreaId AreaId => _areaId;
+
+        public bool HasArea => _hasArea;
 
         public float SamplePressureKpa => _samplePressureKpa;
 
@@ -94,6 +103,52 @@ namespace SS3D.Systems.Atmospherics.Pipes
         }
 
         [Server]
+        public void ServerSetPresetMode(AirAlarmPresetMode mode)
+        {
+            _activeMode = (byte)mode;
+            ResolveArea();
+            if (_hasArea)
+            {
+                AirAlarmPresetDispatcher.ApplyPreset(_areaId, mode);
+            }
+        }
+
+        [Server]
+        public void ServerSetPortEnabled(int objectId, bool enabled)
+        {
+            if (!AtmosAreaDeviceQuery.TryResolvePort(objectId, out AtmosPortControllerBase controller, out _))
+            {
+                return;
+            }
+
+            controller.ServerSetEnabled(enabled);
+        }
+
+        [Server]
+        public void ServerSetVentTargetPressure(int objectId, float targetKpa)
+        {
+            if (!AtmosAreaDeviceQuery.TryResolvePort(objectId, out AtmosPortControllerBase controller, out _)
+                || controller is not VentController vent)
+            {
+                return;
+            }
+
+            vent.ServerSetTargetPressureKpa(Mathf.RoundToInt(targetKpa));
+        }
+
+        [Server]
+        public void ServerToggleScrubberFilter(int objectId, int filterIndex)
+        {
+            if (!AtmosAreaDeviceQuery.TryResolvePort(objectId, out AtmosPortControllerBase controller, out _)
+                || controller is not ScrubberController scrubber)
+            {
+                return;
+            }
+
+            scrubber.ServerToggleFilter(filterIndex);
+        }
+
+        [Server]
         private void ServerSampleTick()
         {
             ResolveArea();
@@ -105,19 +160,22 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             if (!SubSystems.TryGet(out TileSubSystem tileSubSystem)
                 || !SubSystems.TryGet(out AtmosSubSystem atmosSubSystem)
-                || tileSubSystem.CurrentMap == null
-                || atmosSubSystem.Simulation == null)
+                || atmosSubSystem.Simulation == null
+                || _tileObject == null)
             {
                 _alarmState = AirAlarmState.None;
                 return;
             }
 
-            if (!AtmosAreaSampler.TrySampleArea(
-                    tileSubSystem.CurrentMap,
-                    tileSubSystem.QueryService,
-                    _areaId,
-                    atmosSubSystem.Simulation,
-                    out AtmosAreaSample sample))
+            TileCoord sampleCoord = AreaDeviceTileResolver.GetTileInFront(_tileObject);
+            if (tileSubSystem.QueryService != null
+                && !AreaBoundaryEvaluator.IsWalkable(tileSubSystem.QueryService, sampleCoord)
+                && AreaBoundaryEvaluator.IsWalkable(tileSubSystem.QueryService, AreaDeviceTileResolver.GetOriginTile(_tileObject)))
+            {
+                sampleCoord = AreaDeviceTileResolver.GetOriginTile(_tileObject);
+            }
+
+            if (!AtmosAreaSampler.TrySampleTile(sampleCoord, atmosSubSystem.Simulation, out AtmosAreaSample sample))
             {
                 _alarmState = AirAlarmState.None;
                 return;

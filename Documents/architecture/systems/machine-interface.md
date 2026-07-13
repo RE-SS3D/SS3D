@@ -6,7 +6,7 @@
 
 ## Overview
 
-UI Toolkit panels for station machines, networked via FishNet snapshots. APC and SMES use the diegetic `DiegeticDeviceShell` (chassis/bezel/screen) with engineering ID access gates; vending and gas pump use the same shell pattern. Shared view-model/binder pattern and registry-driven registration. `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the [selection](selection.md) pick pass. SMES input/output is controlled only through the machine interface (no world toggle interaction). APC grid-in display uses per-tick cached draw from the electricity subsystem.
+UI Toolkit panels for station machines, networked via FishNet snapshots. APC and SMES use the diegetic `DiegeticDeviceShell` (chassis/bezel/screen) with engineering ID access gates; vending, gas pump, and atmospheric devices use the same shell pattern. Shared view-model/binder pattern and registry-driven registration. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state.
 
 ## Start here
 
@@ -26,6 +26,9 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 - `Assets/Scripts/SS3D/UI/MachineInterface/Components/ToggleSwitch.cs` — slider toggle for channel and rate controls
 - `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/VendingMachineBinder.cs` — vending panel binder
 - `Assets/Scripts/SS3D/UI/MachineInterface/VendingMachineController.cs` — vending networked controller
+- `Assets/Scripts/SS3D/UI/MachineInterface/AirAlarmInterfaceController.cs` — air alarm UI; live device discovery and preset dispatch
+- `Assets/Scripts/SS3D/UI/MachineInterface/ScrubberInterfaceController.cs` — scrubber UI; filter state in snapshots
+- `Assets/Scripts/SS3D/UI/MachineInterface/VentInterfaceController.cs` — vent UI; target pressure stored on `VentController`
 - `Assets/Scripts/SS3D/UI/MachineInterface/OpenMachineInterfaceInteraction.cs` — interaction to open panel
 - `Assets/Scripts/SS3D/UI/MachineInterface/Components/DiegeticDeviceShell.cs` — diegetic chassis shell
 - `Assets/Scripts/SS3D/Editor/DiegeticComponentsPreviewWindow.cs` — editor component preview
@@ -45,8 +48,8 @@ Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Mach
 
 ## Depends on / Used by
 
-- **Depends on:** [electricity](electricity.md), [area](area.md), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md) (vending dispense)
-- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`
+- **Depends on:** [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md) (air alarm sampling and port discovery), [interactions-framework](interactions-framework.md), [selection](selection.md), [inventory](inventory.md) (vending dispense)
+- **Used by:** `ApcController`, `SmesController`, `VendingMachineController`, `AirAlarmInterfaceController`, `ScrubberInterfaceController`, `VentInterfaceController`
 
 ## Related docs
 

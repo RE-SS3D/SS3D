@@ -1,5 +1,6 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Inputs;
 using System;
 using System.Collections.Generic;
@@ -233,7 +234,20 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
-                case ScrubberInterfaceViewModel:
+                case ScrubberInterfaceViewModel scrubber:
+                {
+                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+                    {
+                        ApplyAtmosReadIdAction(scrubber);
+                    }
+                    else if (controlId == MachineInterfaceControlIds.Atmos.DeviceFilter)
+                    {
+                        ApplyScrubberFilterAction(scrubber, value);
+                    }
+
+                    break;
+                }
+
                 case VentInterfaceViewModel:
                 {
                     if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
@@ -409,6 +423,21 @@ namespace SS3D.UI.MachineInterface
             {
                 model.FlowRate = Math.Clamp(model.FlowRate + (int)delta, 1, 10);
             }
+        }
+
+        private static void ApplyScrubberFilterAction(ScrubberInterfaceViewModel model, int filterIndex)
+        {
+            if (!model.AccessGranted
+                || filterIndex < 0
+                || filterIndex >= ScrubberGasFilters.KeyCount)
+            {
+                return;
+            }
+
+            string key = ScrubberGasFilters.Keys[filterIndex];
+            model.Filters ??= ScrubberGasFilters.CreateDefaultMap();
+            model.Filters.TryGetValue(key, out bool current);
+            model.Filters[key] = !current;
         }
 
         private static void ApplyVentNumericControl(VentInterfaceViewModel model, byte controlId, float delta)

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+using SS3D.Systems.Atmospherics.Pipes;
+
 namespace SS3D.UI.MachineInterface
 {
     public enum AirAlarmScenario
@@ -7,14 +9,6 @@ namespace SS3D.UI.MachineInterface
         Normal = 0,
         Warning = 1,
         Danger = 2,
-    }
-
-    public enum AirAlarmPresetMode
-    {
-        Filtering = 0,
-        Panic = 1,
-        Fill = 2,
-        Off = 3,
     }
 
     public enum AirAlarmConnectedDeviceKind

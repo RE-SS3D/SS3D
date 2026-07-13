@@ -19,6 +19,11 @@ namespace SS3D.UI.MachineInterface
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
             writer.WriteInt32(snapshot.FlowRate);
+            writer.WriteBoolean(snapshot.FilterO2);
+            writer.WriteBoolean(snapshot.FilterN2);
+            writer.WriteBoolean(snapshot.FilterCo2);
+            writer.WriteBoolean(snapshot.FilterPlasma);
+            writer.WriteBoolean(snapshot.FilterToxins);
         }
 
         public static ScrubberInterfaceSnapshot ReadScrubberInterfaceSnapshot(this Reader reader)
@@ -38,6 +43,11 @@ namespace SS3D.UI.MachineInterface
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
                 FlowRate = reader.ReadInt32(),
+                FilterO2 = reader.ReadBoolean(),
+                FilterN2 = reader.ReadBoolean(),
+                FilterCo2 = reader.ReadBoolean(),
+                FilterPlasma = reader.ReadBoolean(),
+                FilterToxins = reader.ReadBoolean(),
             };
         }
     }

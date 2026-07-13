@@ -1,9 +1,9 @@
+using System.Collections.Generic;
+
 namespace SS3D.UI.MachineInterface
 {
     public struct AirAlarmInterfaceSnapshot
     {
-        public const int MaxConnectedDevices = AirAlarmInterfaceInteractionLogic.MaxConnectedDevices;
-
         public int MachineObjectId;
 
         public string InterfaceId;
@@ -34,14 +34,6 @@ namespace SS3D.UI.MachineInterface
 
         public string SelectedDeviceId;
 
-        public byte ConnectedDeviceCount;
-
-        public AirAlarmDeviceSnapshot Device0;
-
-        public AirAlarmDeviceSnapshot Device1;
-
-        public AirAlarmDeviceSnapshot Device2;
-
-        public AirAlarmDeviceSnapshot Device3;
+        public List<AirAlarmDeviceSnapshot> ConnectedDevices;
     }
 }

@@ -1,3 +1,4 @@
+using SS3D.Systems.Atmospherics.Pipes;
 using System.Collections.Generic;
 
 namespace SS3D.UI.MachineInterface
@@ -7,8 +8,6 @@ namespace SS3D.UI.MachineInterface
     /// </summary>
     public static class AirAlarmInterfaceInteractionLogic
     {
-        public const int MaxConnectedDevices = 4;
-
         private static readonly string[] FilterKeys = { "O2", "N2", "CO2", "Plasma", "Toxins" };
 
         public static void ApplyAction(AirAlarmInterfaceViewModel model, byte controlId, int value)

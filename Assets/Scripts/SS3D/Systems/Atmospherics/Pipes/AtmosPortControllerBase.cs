@@ -97,6 +97,18 @@ namespace SS3D.Systems.Atmospherics.Pipes
             RefreshAnimatorAuthorityState();
         }
 
+        [Server]
+        public void ServerSetEnabled(bool enabled)
+        {
+            if (_enabled == enabled)
+            {
+                return;
+            }
+
+            _enabled = enabled;
+            RefreshAnimatorAuthorityState();
+        }
+
         public void ServerTick(AtmosPipeSimulation pipeSimulation, AtmosSimulation turfSimulation, float deltaTime)
         {
             ResolveConnectedNetwork();

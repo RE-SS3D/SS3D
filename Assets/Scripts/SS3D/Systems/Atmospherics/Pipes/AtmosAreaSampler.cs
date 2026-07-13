@@ -108,5 +108,35 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 carbonDioxideSum / totalMolesSum);
             return true;
         }
+
+        public static bool TrySampleTile(TileCoord coord, AtmosSimulation simulation, out AtmosAreaSample sample)
+        {
+            sample = AtmosAreaSample.Empty;
+            if (simulation == null || !simulation.TryGetCellDebugInfo(coord, out _))
+            {
+                return false;
+            }
+
+            float pressure = simulation.GetCellPressure(coord);
+            float oxygen = simulation.DebugGetMoles(coord, AtmosConstants.Oxygen);
+            float carbonDioxide = simulation.DebugGetMoles(coord, AtmosConstants.CarbonDioxide);
+            float totalMoles = 0f;
+            for (int gasId = 0; gasId < AtmosConstants.DefaultGasCount; gasId++)
+            {
+                totalMoles += simulation.DebugGetMoles(coord, new GasId((ushort)gasId));
+            }
+
+            if (totalMoles <= 0f)
+            {
+                return false;
+            }
+
+            sample = new AtmosAreaSample(
+                1,
+                pressure,
+                oxygen / totalMoles,
+                carbonDioxide / totalMoles);
+            return true;
+        }
     }
 }

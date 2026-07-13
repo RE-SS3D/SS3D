@@ -8,7 +8,7 @@ using UnityEngine;
 namespace SS3D.UI.MachineInterface
 {
     /// <summary>
-    /// Networked vent machine interface. UI-only controls until atmos plumbing is wired.
+    /// Networked vent machine interface.
     /// </summary>
     [RequireComponent(typeof(VentController))]
     public sealed class VentInterfaceController : AtmosMachineInterfaceBehaviour
@@ -28,10 +28,9 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
 
-        [SyncVar(OnChange = nameof(OnTargetPressureChanged))]
-        private int _targetPressureKpa = 101;
-
         private VentController _vent;
+
+        public int TargetPressureKpa => _vent != null ? _vent.TargetPressureKpa : 101;
 
         public override string InterfaceId => MachineInterfaceIds.Vent;
 
@@ -75,7 +74,13 @@ namespace SS3D.UI.MachineInterface
                 return false;
             }
 
-            _targetPressureKpa = Mathf.Clamp(_targetPressureKpa + Mathf.RoundToInt(delta), 0, 200);
+            if (_vent == null)
+            {
+                _vent = GetComponent<VentController>();
+            }
+
+            int next = Mathf.Clamp(TargetPressureKpa + Mathf.RoundToInt(delta), 0, 200);
+            _vent?.ServerSetTargetPressureKpa(next);
             RefreshAllViewers();
             return true;
         }
@@ -146,16 +151,8 @@ namespace SS3D.UI.MachineInterface
                 Scenario = (byte)scenario,
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
-                TargetPressureKpa = _targetPressureKpa,
+                TargetPressureKpa = TargetPressureKpa,
             };
-        }
-
-        private void OnTargetPressureChanged(int _, int __, bool asServer)
-        {
-            if (asServer)
-            {
-                RefreshAllViewers();
-            }
         }
     }
 }

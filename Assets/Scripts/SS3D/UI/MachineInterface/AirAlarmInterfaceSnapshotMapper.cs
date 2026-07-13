@@ -6,6 +6,8 @@ namespace SS3D.UI.MachineInterface
     {
         public static AirAlarmInterfaceViewModel ToViewModel(AirAlarmInterfaceSnapshot snapshot)
         {
+            List<AirAlarmDeviceSnapshot> connectedDevices = snapshot.ConnectedDevices ?? new List<AirAlarmDeviceSnapshot>();
+
             AirAlarmScenario scenario = (AirAlarmScenario)snapshot.Scenario;
             AirAlarmInterfaceViewModel model = scenario switch
             {
@@ -61,40 +63,18 @@ namespace SS3D.UI.MachineInterface
                 ? null
                 : snapshot.SelectedDeviceId;
 
-            if (snapshot.ConnectedDeviceCount > 0)
+            model.ConnectedDevices.Clear();
+            foreach (AirAlarmDeviceSnapshot deviceSnapshot in connectedDevices)
             {
-                model.ConnectedDevices.Clear();
-                for (int i = 0; i < snapshot.ConnectedDeviceCount && i < AirAlarmInterfaceSnapshot.MaxConnectedDevices; i++)
-                {
-                    AirAlarmDeviceSnapshot deviceSnapshot =
-                        AirAlarmInterfaceSnapshotSerializer.GetDevice(snapshot, i);
-                    AirAlarmConnectedDevice device =
-                        AirAlarmInterfaceSnapshotSerializer.ToConnectedDevice(deviceSnapshot);
-                    ApplyDefaultDeviceName(model, device);
-                    model.ConnectedDevices.Add(device);
-                }
+                model.ConnectedDevices.Add(AirAlarmInterfaceSnapshotSerializer.ToConnectedDevice(deviceSnapshot));
+            }
+
+            if (model.ConnectedDevices.Count > 0)
+            {
+                model.DeviceCountText = $"{model.ConnectedDevices.Count} devices linked";
             }
 
             return model;
-        }
-
-        private static void ApplyDefaultDeviceName(
-            AirAlarmInterfaceViewModel model,
-            AirAlarmConnectedDevice device)
-        {
-            if (!string.IsNullOrEmpty(device.Name) && device.Name != device.Id)
-            {
-                return;
-            }
-
-            foreach (AirAlarmConnectedDevice fallback in AirAlarmInterfaceViewModel.CreateNormal().ConnectedDevices)
-            {
-                if (fallback.Id == device.Id)
-                {
-                    device.Name = fallback.Name;
-                    break;
-                }
-            }
         }
     }
 }

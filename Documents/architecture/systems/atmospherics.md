@@ -6,7 +6,7 @@
 
 ## Overview
 
-Server-authoritative open-tile gas simulation on the turf grid. Each walkable cell holds a sparse gas mixture; pressure equalizes between neighbours via ideal-gas-law sharing, heat conducts per gas specific heat, and plasma burns with oxygen into CO₂. Runs in a dedicated ECS world with Burst jobs, driven by tilemap mutation notifications. GPU textures feed URP scatter/glow/distortion passes for fog, fire, and plasma visuals. **Multiplayer gap:** VFX only publishes on server/host today — pure clients have no snapshot (see effort below). Implements design §2 (open-tile diffusion); liquid/solid buffers, pipes, and pumps are not started.
+Server-authoritative open-tile gas simulation on the turf grid. Each walkable cell holds a sparse gas mixture; pressure equalizes between neighbours via ideal-gas-law sharing, heat conducts per gas specific heat, and plasma burns with oxygen into CO₂. Runs in a dedicated ECS world with Burst jobs, driven by tilemap mutation notifications. GPU textures feed URP scatter/glow/distortion passes for fog, fire, and plasma visuals. **Pipe layer:** vents, scrubbers, and pumps register with `AtmosPortRegistry` and exchange gas with turf cells after pipe bulk sim. **Air alarms** sample the turf cell in front of the wall mount (APC-style tile resolution), discover area vents/scrubbers, and dispatch preset modes to real port devices. **Multiplayer gap:** VFX only publishes on server/host today — pure clients have no snapshot (see effort below). Vent target-pressure regulation is UI-only for now.
 
 ## Start here
 
@@ -21,7 +21,12 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 - `Assets/Scripts/SS3D/Rendering/URP/AtmosRendererFeature.cs` — URP scatter, glow, distortion passes
 - `Assets/Scripts/SS3D/Systems/Atmospherics/Visualization/AtmosCamera.cs` — registers player camera with render context (all clients)
 - `Assets/Scripts/SS3D/Systems/Atmospherics/AtmosDebugController.cs` — runtime overlay (P toggle; server/host)
-- `Assets/Scripts/Tests/EditMode/Atmospherics/` — flux, combustion, neighbour, GPU, visual-metrics tests
+- `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AtmosPortRegistry.cs` — registered vent/scrubber/pump port tick list
+- `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AtmosAreaDeviceQuery.cs` — list vents/scrubbers in an APC area
+- `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AirAlarmController.cs` — tile-in-front sampling, preset mode dispatch
+- `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/AtmosAreaSampler.cs` — area aggregate and single-tile sampling
+- `Assets/Scripts/SS3D/Systems/Atmospherics/Pipes/ScrubberController.cs` — per-gas filter scrubbing into pipe networks
+- `Assets/Scripts/Tests/EditMode/Atmospherics/` — flux, combustion, neighbour, GPU, visual-metrics, air-alarm sampler tests
 
 ## Extension points
 
@@ -33,8 +38,8 @@ Server-authoritative open-tile gas simulation on the turf grid. Each walkable ce
 
 ## Depends on / Used by
 
-- **Depends on:** [tile](tile.md) (`ITileQueryService`, `ITileMutationObserver`, `IDynamicTileOccupant`), [rendering](rendering.md) (`AtmosRendererFeature`)
-- **Used by:** (future) [substances](substances.md), [health](health.md), explosives/chemistry integrations per design §11
+- **Depends on:** [tile](tile.md) (`ITileQueryService`, `ITileMutationObserver`, `IDynamicTileOccupant`), [rendering](rendering.md) (`AtmosRendererFeature`), [area](area.md) (air-alarm area membership and tile-in-front resolution)
+- **Used by:** [machine-interface](machine-interface.md) (air alarm / scrubber / vent panels), (future) [substances](substances.md), [health](health.md)
 
 ## Related docs
 
