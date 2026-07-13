@@ -171,6 +171,33 @@ float AtmosFireFlicker(float2 worldXZ)
     return 1.0 + _AtmosFlickerAmount * sin(_Time.y * _AtmosFlickerSpeed + phase);
 }
 
+// True when geometry at the sample's screen projection is closer than the sample point.
+// Prevents volumetric gas/glow from bleeding through walls along diagonal view rays.
+bool AtmosIsSampleOccluded(float3 worldPos)
+{
+    float4 clipPos = TransformWorldToHClip(worldPos);
+    if (clipPos.w <= 1e-5)
+        return true;
+
+    float2 uv = clipPos.xy / clipPos.w * 0.5 + 0.5;
+#if UNITY_UV_STARTS_AT_TOP
+    uv.y = 1.0 - uv.y;
+#endif
+
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
+        return true;
+
+    float sampleEyeZ = -mul(UNITY_MATRIX_V, float4(worldPos, 1.0)).z;
+    float sceneEyeZ = LinearEyeDepth(SampleSceneDepth(uv), _ZBufferParams);
+    return sampleEyeZ > sceneEyeZ + 0.02;
+}
+
+// Stop volumetric integration when the march crosses a blocked sim tile (airtight wall).
+bool AtmosIsMarchBlocked(float2 worldXZ)
+{
+    return AtmosSampleMask(worldXZ) == 3;
+}
+
 // Renders raw atlas channels for debugging. Returns -1 in alpha when the debug
 // view is off so the caller keeps the normal scatter path.
 float4 AtmosDebugColor(float3 worldPos)
@@ -518,6 +545,12 @@ void AtmosEvaluateScatter(
     {
         float t = tEnter + stepLength * (i + 0.5 + jitterPos);
         float3 samplePos = rayOrigin + rayDir * t;
+        if (AtmosIsMarchBlocked(samplePos.xz))
+            break;
+
+        if (AtmosIsSampleOccluded(samplePos))
+            continue;
+
         float2 atlasUV = AtmosWorldToAtlasUV(samplePos.xz);
         if (!AtmosIsAtlasUVValid(atlasUV))
             continue;
@@ -559,6 +592,12 @@ float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
     {
         float t = tEnter + stepLength * (i + 0.5 + jitterPos);
         float3 samplePos = rayOrigin + rayDir * t;
+        if (AtmosIsMarchBlocked(samplePos.xz))
+            break;
+
+        if (AtmosIsSampleOccluded(samplePos))
+            continue;
+
         float2 atlasUV = AtmosWorldToAtlasUV(samplePos.xz);
         if (!AtmosIsAtlasUVValid(atlasUV))
             continue;
@@ -569,23 +608,28 @@ float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
     return emission;
 }
 
-// Returns a screen-space UV offset driven by tile temperature gradients, gas density, and fire.
-float2 AtmosEvaluateDistortionOffset(float2 uvScreen)
+// Distortion drive at a single tile column; returns false when below the effect threshold.
+bool AtmosTrySampleDistortion(float2 worldXZ, float sampleY, out float weight, out float2 offset)
 {
-    float2 worldXZ = AtmosComputeWorldXZOnPlane(uvScreen, 0.0);
+    weight = 0.0;
+    offset = 0.0;
+
     if (AtmosSampleMask(worldXZ) != 1)
-        return 0.0;
+        return false;
 
     float pressure = AtmosSamplePressure(worldXZ);
     float temperature = AtmosSampleTemperature(worldXZ);
     float density = AtmosPressureFogDensity(pressure, temperature);
     if (density <= 0.001 && temperature < 293.15 + 1.0)
-        return 0.0;
+        return false;
 
     float fire = AtmosSampleFire(worldXZ);
     float tempFactor = saturate((temperature - 293.15) / max(_AtmosIgnitionTemperature - 293.15, 1.0));
     if (tempFactor <= 0.001 && fire <= 0.001)
-        return 0.0;
+        return false;
+
+    float localHeight = AtmosGetLocalVolumeHeight(worldXZ);
+    float heightFalloff = saturate(1.0 - sampleY / max(localHeight, 1e-3));
 
     float txp = AtmosSampleTemperature(worldXZ + float2(1.0, 0.0));
     float txm = AtmosSampleTemperature(worldXZ - float2(1.0, 0.0));
@@ -598,11 +642,58 @@ float2 AtmosEvaluateDistortionOffset(float2 uvScreen)
     float noise = AtmosDistortionNoise(worldXZ * _AtmosDistortionNoiseScale + _Time.y * _AtmosDistortionNoiseSpeed);
     float shimmer = (noise * 2.0 - 1.0) * gradNorm;
 
-    float weight = (density + tempFactor * 0.35) * (tempFactor + fire) * (1.0 + fire * _AtmosFireDistortionBoost);
-    float2 direction = gradMag > 1e-4 ? grad / gradMag : float2(0.0, 0.0);
-    float2 offsetXZ = direction * gradNorm + float2(shimmer, -shimmer) * 0.35;
+    weight = (density + tempFactor * 0.35) * (tempFactor + fire) * (1.0 + fire * _AtmosFireDistortionBoost);
+    weight *= heightFalloff;
+    if (weight <= 0.001)
+        return false;
 
-    return offsetXZ * _AtmosDistortionStrength * weight;
+    float2 direction = gradMag > 1e-4 ? grad / gradMag : float2(0.0, 0.0);
+    offset = (direction * gradNorm + float2(shimmer, -shimmer) * 0.35) * _AtmosDistortionStrength * weight;
+    return true;
+}
+
+// Returns a screen-space UV offset driven by tile temperature gradients, gas density, and fire.
+float2 AtmosEvaluateDistortionOffset(float2 uvScreen, float deviceDepth, bool isSky)
+{
+    float3 rayOrigin;
+    float3 rayDir;
+    float tEnter;
+    float tExit;
+    float segmentLength;
+    int steps;
+    if (!AtmosComputeSlabMarch(uvScreen, deviceDepth, isSky, rayOrigin, rayDir, tEnter, tExit, segmentLength, steps))
+        return 0.0;
+
+    float stepLength = segmentLength / steps;
+    float2 bestOffset = 0.0;
+    float bestWeight = 0.0;
+    float jitter = frac(sin(dot(uvScreen, float2(9.17, 3.41))) * 43758.5453);
+    float jitterPos = jitter - 0.5;
+
+    UNITY_LOOP
+    for (int i = 0; i < steps; i++)
+    {
+        float t = tEnter + stepLength * (i + 0.5 + jitterPos);
+        float3 samplePos = rayOrigin + rayDir * t;
+        if (AtmosIsMarchBlocked(samplePos.xz))
+            break;
+
+        if (AtmosIsSampleOccluded(samplePos))
+            continue;
+
+        float weight;
+        float2 offset;
+        if (!AtmosTrySampleDistortion(samplePos.xz, samplePos.y, weight, offset))
+            continue;
+
+        if (weight > bestWeight)
+        {
+            bestWeight = weight;
+            bestOffset = offset;
+        }
+    }
+
+    return bestOffset;
 }
 
 // Fullscreen triangle vertex shader shared by scatter, glow, and distortion passes.

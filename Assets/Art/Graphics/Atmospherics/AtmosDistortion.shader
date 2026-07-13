@@ -39,7 +39,9 @@ Shader "Custom/AtmosDistortion"
                 uvSample.y = 1.0 - uvSample.y;
 #endif
 
-                float2 distortion = AtmosEvaluateDistortionOffset(uvScreen);
+                float depth = SampleSceneDepth(uvSample);
+                bool isSky = depth <= 0.0;
+                float2 distortion = AtmosEvaluateDistortionOffset(uvScreen, depth, isSky);
                 float3 sceneColor = SAMPLE_TEXTURE2D_X(
                     _BlitTexture,
                     sampler_LinearClamp,
