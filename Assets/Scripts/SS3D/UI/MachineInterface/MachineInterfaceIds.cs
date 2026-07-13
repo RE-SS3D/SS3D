@@ -9,5 +9,11 @@ namespace SS3D.UI.MachineInterface
         public const string Vending = "furniture.vending";
 
         public const string GasPump = "atmos.gas-pump";
+
+        public const string AirAlarm = "atmos.air-alarm";
+
+        public const string Scrubber = "atmos.scrubber";
+
+        public const string Vent = "atmos.vent";
     }
 }

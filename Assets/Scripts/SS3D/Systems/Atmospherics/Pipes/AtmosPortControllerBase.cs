@@ -43,6 +43,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public bool IsEnabled => _enabled;
 
+        public bool IsPortFlowing => _portFlowing;
+
         public bool TryGetConnectedNetwork(out GasPipeNetworkId networkId)
         {
             networkId = _networkId;

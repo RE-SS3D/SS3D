@@ -61,6 +61,12 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public AirAlarmState AlarmState => _alarmState;
 
+        public float SamplePressureKpa => _samplePressureKpa;
+
+        public float SampleOxygenFraction => _sampleOxygenFraction;
+
+        public float SampleCarbonDioxideFraction => _sampleCarbonDioxideFraction;
+
         public override void OnStartServer()
         {
             base.OnStartServer();

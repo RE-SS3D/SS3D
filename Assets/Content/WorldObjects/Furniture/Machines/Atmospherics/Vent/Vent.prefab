@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: 8827364519023341187}
   - component: {fileID: 8827364519023341192}
   - component: {fileID: 8827364519023341193}
+  - component: {fileID: 8827364519023341194}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -261,6 +262,7 @@ MonoBehaviour:
   - {fileID: 8827364519023341187}
   - {fileID: 8827364519023341192}
   - {fileID: 8827364519023341193}
+  - {fileID: 8827364519023341194}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -366,3 +368,23 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: -2473204136432335067}
   _networkObjectCache: {fileID: -2473204136432335067}
+--- !u!114 &8827364519023341194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3b0d5f2c9e4157b6a3e0d9c2f5b8e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
+  _title: "VENT \xB7 ATMOSPHERICS"
+  _modelLabel: "VT-14 \xB7 atmospheric vent unit"
+  _deviceTitle: VT-14
+  _subtitle: "Engineering Bay 3 \u2014 Atmospheric Vent"
+  _powerConsumer: {fileID: 8827364519023341192}

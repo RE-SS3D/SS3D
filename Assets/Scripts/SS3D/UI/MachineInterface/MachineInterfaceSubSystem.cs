@@ -151,34 +151,59 @@ namespace SS3D.UI.MachineInterface
                     ApplySmesBoolControl(smesModel, controlId, isOn);
                     break;
                 }
+
+                case ScrubberInterfaceViewModel scrubberModel:
+                {
+                    ApplyScrubberBoolControl(scrubberModel, controlId, isOn);
+                    break;
+                }
+
+                case VentInterfaceViewModel ventModel:
+                {
+                    ApplyVentBoolControl(ventModel, controlId, isOn);
+                    break;
+                }
             }
 
             _clientBridge?.SetControl(controlId, isOn);
+            Refresh(_openModel);
         }
 
         public void NotifyNumericControl(byte controlId, float delta)
         {
-            if (_openModel is not SmesInterfaceViewModel smesModel)
+            if (_openModel == null)
             {
                 return;
             }
 
-            switch (controlId)
+            switch (_openModel)
             {
-                case MachineInterfaceControlIds.Smes.Input:
+                case SmesInterfaceViewModel smesModel:
                 {
-                    smesModel.InputMaxKw = Math.Max(1f, smesModel.InputMaxKw + delta);
+                    ApplySmesNumericControl(smesModel, controlId, delta);
                     break;
                 }
 
-                case MachineInterfaceControlIds.Smes.Output:
+                case ScrubberInterfaceViewModel scrubberModel:
                 {
-                    smesModel.OutputMaxKw = Math.Max(1f, smesModel.OutputMaxKw + delta);
+                    ApplyScrubberNumericControl(scrubberModel, controlId, delta);
                     break;
+                }
+
+                case VentInterfaceViewModel ventModel:
+                {
+                    ApplyVentNumericControl(ventModel, controlId, delta);
+                    break;
+                }
+
+                default:
+                {
+                    return;
                 }
             }
 
             _clientBridge?.SetNumericControl(controlId, delta);
+            Refresh(_openModel);
         }
 
         public void NotifyActionControl(byte controlId, int value)
@@ -188,13 +213,33 @@ namespace SS3D.UI.MachineInterface
                 return;
             }
 
-            if (_openModel is VendingInterfaceViewModel vendingModel)
+            switch (_openModel)
             {
-                ApplyVendingAction(vendingModel, controlId, value);
-                Refresh(vendingModel);
+                case VendingInterfaceViewModel vendingModel:
+                {
+                    ApplyVendingAction(vendingModel, controlId, value);
+                    break;
+                }
+
+                case ScrubberInterfaceViewModel:
+                case VentInterfaceViewModel:
+                case AirAlarmInterfaceViewModel:
+                {
+                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+                    {
+                        ApplyAtmosReadIdAction(_openModel);
+                    }
+
+                    break;
+                }
             }
 
             _clientBridge?.SetActionControl(controlId, value);
+
+            if (_openModel is VendingInterfaceViewModel or ScrubberInterfaceViewModel or VentInterfaceViewModel or AirAlarmInterfaceViewModel)
+            {
+                Refresh(_openModel);
+            }
         }
 
         public void SimulateApcState(ApcPowerState state)
@@ -291,6 +336,107 @@ namespace SS3D.UI.MachineInterface
                 case MachineInterfaceControlIds.Smes.Output:
                 {
                     model.OutputEnabled = isOn;
+                    break;
+                }
+            }
+        }
+
+        private static void ApplySmesNumericControl(SmesInterfaceViewModel model, byte controlId, float delta)
+        {
+            switch (controlId)
+            {
+                case MachineInterfaceControlIds.Smes.Input:
+                {
+                    model.InputMaxKw = Math.Max(1f, model.InputMaxKw + delta);
+                    break;
+                }
+
+                case MachineInterfaceControlIds.Smes.Output:
+                {
+                    model.OutputMaxKw = Math.Max(1f, model.OutputMaxKw + delta);
+                    break;
+                }
+            }
+        }
+
+        private static void ApplyScrubberBoolControl(ScrubberInterfaceViewModel model, byte controlId, bool isOn)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.Power && model.AccessGranted)
+            {
+                model.Powered = isOn;
+            }
+        }
+
+        private static void ApplyVentBoolControl(VentInterfaceViewModel model, byte controlId, bool isOn)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.Power && model.AccessGranted)
+            {
+                model.Powered = isOn;
+            }
+        }
+
+        private static void ApplyScrubberNumericControl(ScrubberInterfaceViewModel model, byte controlId, float delta)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.FlowRate && model.AccessGranted)
+            {
+                model.FlowRate = Math.Clamp(model.FlowRate + (int)delta, 1, 10);
+            }
+        }
+
+        private static void ApplyVentNumericControl(VentInterfaceViewModel model, byte controlId, float delta)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.TargetPressure && model.AccessGranted)
+            {
+                model.TargetPressureKpa = Math.Clamp(model.TargetPressureKpa + (int)delta, 0, 200);
+            }
+        }
+
+        private static void ApplyAtmosReadIdAction(IMachineInterfaceViewModel model)
+        {
+            switch (model)
+            {
+                case ScrubberInterfaceViewModel scrubber:
+                {
+                    if (scrubber.AccessGranted)
+                    {
+                        scrubber.AccessGranted = false;
+                        scrubber.AccessScanning = false;
+                    }
+                    else if (!scrubber.AccessScanning)
+                    {
+                        scrubber.AccessScanning = true;
+                    }
+
+                    break;
+                }
+
+                case VentInterfaceViewModel vent:
+                {
+                    if (vent.AccessGranted)
+                    {
+                        vent.AccessGranted = false;
+                        vent.AccessScanning = false;
+                    }
+                    else if (!vent.AccessScanning)
+                    {
+                        vent.AccessScanning = true;
+                    }
+
+                    break;
+                }
+
+                case AirAlarmInterfaceViewModel airAlarm:
+                {
+                    if (airAlarm.AccessGranted)
+                    {
+                        airAlarm.AccessGranted = false;
+                        airAlarm.AccessScanning = false;
+                    }
+                    else if (!airAlarm.AccessScanning)
+                    {
+                        airAlarm.AccessScanning = true;
+                    }
+
                     break;
                 }
             }

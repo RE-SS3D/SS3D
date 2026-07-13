@@ -2,6 +2,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.UI.MachineInterface.Bindings;
 using SS3D.UI.MachineInterface.Components;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -58,6 +59,24 @@ namespace SS3D.UI.MachineInterface
         private StyleSheet _gasPumpTemplateStyle;
 
         [SerializeField]
+        private VisualTreeAsset _airAlarmTemplate;
+
+        [SerializeField]
+        private StyleSheet _airAlarmTemplateStyle;
+
+        [SerializeField]
+        private VisualTreeAsset _scrubberTemplate;
+
+        [SerializeField]
+        private StyleSheet _scrubberTemplateStyle;
+
+        [SerializeField]
+        private VisualTreeAsset _ventTemplate;
+
+        [SerializeField]
+        private StyleSheet _ventTemplateStyle;
+
+        [SerializeField]
         private StyleSheet _ss3dTokensStyle;
 
         [SerializeField]
@@ -80,6 +99,15 @@ namespace SS3D.UI.MachineInterface
 
         [SerializeField]
         private StyleSheet[] _gasPumpComponentStyles;
+
+        [SerializeField]
+        private StyleSheet[] _airAlarmComponentStyles;
+
+        [SerializeField]
+        private StyleSheet[] _scrubberComponentStyles;
+
+        [SerializeField]
+        private StyleSheet[] _ventComponentStyles;
 
         private VisualElement _overlayRoot;
         private VisualElement _panelRoot;
@@ -277,6 +305,42 @@ namespace SS3D.UI.MachineInterface
                     "Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uss");
             }
 
+            if (_airAlarmTemplate == null)
+            {
+                _airAlarmTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/AirAlarmInterface.uxml");
+            }
+
+            if (_airAlarmTemplateStyle == null)
+            {
+                _airAlarmTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/AirAlarmInterface.uss");
+            }
+
+            if (_scrubberTemplate == null)
+            {
+                _scrubberTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uxml");
+            }
+
+            if (_scrubberTemplateStyle == null)
+            {
+                _scrubberTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uss");
+            }
+
+            if (_ventTemplate == null)
+            {
+                _ventTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uxml");
+            }
+
+            if (_ventTemplateStyle == null)
+            {
+                _ventTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/VentUnitInterface.uss");
+            }
+
             if (_ss3dTokensStyle == null)
             {
                 _ss3dTokensStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
@@ -367,6 +431,10 @@ namespace SS3D.UI.MachineInterface
                 "Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
 
+            _airAlarmComponentStyles = EnsureAtmosComponentStyles(_airAlarmComponentStyles, includeAirAlarm: true);
+            _scrubberComponentStyles = EnsureAtmosComponentStyles(_scrubberComponentStyles, includeAirAlarm: false);
+            _ventComponentStyles = EnsureAtmosComponentStyles(_ventComponentStyles, includeAirAlarm: false, includeVent: true);
+
             if (_document != null && _document.panelSettings == null)
             {
                 _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
@@ -374,6 +442,45 @@ namespace SS3D.UI.MachineInterface
             }
         }
 #endif
+
+        private static StyleSheet[] EnsureAtmosComponentStyles(
+            StyleSheet[] current,
+            bool includeAirAlarm,
+            bool includeVent = false)
+        {
+            List<string> paths = new()
+            {
+                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ReadoutMetricTile.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/GasBarRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/CompactFilterToggle.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
+            };
+
+            if (includeAirAlarm)
+            {
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PresetModeButton.uss");
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/ConnectedDeviceRow.uss");
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/AirAlarmDeviceDetailPanel.uss");
+            }
+
+            if (includeVent)
+            {
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PressureFlowReadout.uss");
+            }
+
+            return EnsureComponentStyles(current, paths.ToArray());
+        }
 
         private void EnsureRuntimeAssets()
         {
@@ -486,6 +593,36 @@ namespace SS3D.UI.MachineInterface
                 ComponentStyles = _gasPumpComponentStyles,
                 ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new GasPumpGaugeBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.AirAlarm,
+                Template = _airAlarmTemplate,
+                TemplateStyle = _airAlarmTemplateStyle,
+                ComponentStyles = _airAlarmComponentStyles,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new AirAlarmInterfaceBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Scrubber,
+                Template = _scrubberTemplate,
+                TemplateStyle = _scrubberTemplateStyle,
+                ComponentStyles = _scrubberComponentStyles,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new ScrubberInterfaceBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.Vent,
+                Template = _ventTemplate,
+                TemplateStyle = _ventTemplateStyle,
+                ComponentStyles = _ventComponentStyles,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new VentInterfaceBinder(root),
             });
         }
 

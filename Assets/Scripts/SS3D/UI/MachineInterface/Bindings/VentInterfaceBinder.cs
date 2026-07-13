@@ -1,10 +1,19 @@
 using SS3D.UI.MachineInterface.Components;
+using System;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Bindings
 {
-    public class VentInterfaceBinder
+    public class VentInterfaceBinder : IMachineInterfaceBinder
     {
+        public event Action CloseRequested;
+
+        public event Action<byte, bool> BoolControlChanged;
+
+        public event Action<byte, float> NumericControlChanged;
+
+        public event Action<byte, int> ActionControlChanged;
+
         private readonly DiegeticDeviceShell _shell;
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
@@ -30,10 +39,35 @@ namespace SS3D.UI.MachineInterface.Bindings
             _targetGatedHint = queryRoot.Q<Label>("target-gated-hint");
             _targetStepper = queryRoot.Q<NumericStepper>("target-stepper");
             _footer = queryRoot.Q<DeviceFooter>("footer");
+
+            if (_shell != null)
+            {
+                _shell.CloseClicked += HandleCloseRequested;
+            }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested += HandleReadRequested;
+            }
+
+            if (_powerToggle != null)
+            {
+                _powerToggle.ValueChanged += HandlePowerChanged;
+            }
+
+            if (_targetStepper != null)
+            {
+                _targetStepper.DeltaRequested += HandleTargetDeltaRequested;
+            }
         }
 
-        public void Bind(VentInterfaceViewModel model)
+        public void Bind(IMachineInterfaceViewModel viewModel)
         {
+            if (viewModel is not VentInterfaceViewModel model)
+            {
+                return;
+            }
+
             if (_shell != null)
             {
                 _shell.ModelLabel = model.ModelLabel;
@@ -93,6 +127,40 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _footer.Text = model.FooterText;
             }
         }
+
+        public void Disconnect()
+        {
+            if (_shell != null)
+            {
+                _shell.CloseClicked -= HandleCloseRequested;
+            }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested -= HandleReadRequested;
+            }
+
+            if (_powerToggle != null)
+            {
+                _powerToggle.ValueChanged -= HandlePowerChanged;
+            }
+
+            if (_targetStepper != null)
+            {
+                _targetStepper.DeltaRequested -= HandleTargetDeltaRequested;
+            }
+        }
+
+        private void HandleCloseRequested() => CloseRequested?.Invoke();
+
+        private void HandleReadRequested() =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.ReadId, 0);
+
+        private void HandlePowerChanged(bool value) =>
+            BoolControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.Power, value);
+
+        private void HandleTargetDeltaRequested(float delta) =>
+            NumericControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.TargetPressure, delta);
 
         private void BindAccess(VentInterfaceViewModel model)
         {

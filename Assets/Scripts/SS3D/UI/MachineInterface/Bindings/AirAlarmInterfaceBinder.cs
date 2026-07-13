@@ -1,11 +1,20 @@
 using SS3D.UI.MachineInterface.Components;
+using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Bindings
 {
-    public class AirAlarmInterfaceBinder
+    public class AirAlarmInterfaceBinder : IMachineInterfaceBinder
     {
+        public event Action CloseRequested;
+
+        public event Action<byte, bool> BoolControlChanged;
+
+        public event Action<byte, float> NumericControlChanged;
+
+        public event Action<byte, int> ActionControlChanged;
+
         private readonly DiegeticDeviceShell _shell;
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
@@ -43,10 +52,25 @@ namespace SS3D.UI.MachineInterface.Bindings
             _deviceList = queryRoot.Q<VisualElement>("device-list");
             _deviceDetail = queryRoot.Q<AirAlarmDeviceDetailPanel>("device-detail");
             _footer = queryRoot.Q<DeviceFooter>("footer");
+
+            if (_shell != null)
+            {
+                _shell.CloseClicked += HandleCloseRequested;
+            }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested += HandleReadRequested;
+            }
         }
 
-        public void Bind(AirAlarmInterfaceViewModel model)
+        public void Bind(IMachineInterfaceViewModel viewModel)
         {
+            if (viewModel is not AirAlarmInterfaceViewModel model)
+            {
+                return;
+            }
+
             if (_shell != null)
             {
                 _shell.ModelLabel = model.ModelLabel;
@@ -93,6 +117,24 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _footer.Text = model.FooterText;
             }
         }
+
+        public void Disconnect()
+        {
+            if (_shell != null)
+            {
+                _shell.CloseClicked -= HandleCloseRequested;
+            }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested -= HandleReadRequested;
+            }
+        }
+
+        private void HandleCloseRequested() => CloseRequested?.Invoke();
+
+        private void HandleReadRequested() =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.ReadId, 0);
 
         private void BindGasRows(IReadOnlyList<AirAlarmGasReadout> rows)
         {

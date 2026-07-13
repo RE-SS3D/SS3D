@@ -26,5 +26,16 @@ namespace SS3D.UI.MachineInterface
 
             public const byte ReadId = 2;
         }
+
+        public static class Atmos
+        {
+            public const byte ReadId = 0;
+
+            public const byte Power = 1;
+
+            public const byte FlowRate = 2;
+
+            public const byte TargetPressure = 3;
+        }
     }
 }

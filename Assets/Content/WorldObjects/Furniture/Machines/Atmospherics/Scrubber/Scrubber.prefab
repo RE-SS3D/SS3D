@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: 8827364519023341188}
   - component: {fileID: 8827364519023341194}
   - component: {fileID: 8827364519023341195}
+  - component: {fileID: 8827364519023341196}
   m_Layer: 0
   m_Name: Scrubber
   m_TagString: Untagged
@@ -261,6 +262,7 @@ MonoBehaviour:
   - {fileID: 8827364519023341188}
   - {fileID: 8827364519023341194}
   - {fileID: 8827364519023341195}
+  - {fileID: 8827364519023341196}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -366,3 +368,23 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: -1764620254179843544}
   _networkObjectCache: {fileID: -1764620254179843544}
+--- !u!114 &8827364519023341196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f2a9c4e1b8d4036a5e2f9c8b1d4e6a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: -1764620254179843544}
+  _networkObjectCache: {fileID: -1764620254179843544}
+  _title: "SCRUBBER \xB7 ATMOSPHERICS"
+  _modelLabel: "SCB-09 \xB7 atmospheric scrubber unit"
+  _deviceTitle: SCB-09
+  _subtitle: "Engineering Bay 3 \u2014 Atmospheric Scrubber"
+  _powerConsumer: {fileID: 8827364519023341194}

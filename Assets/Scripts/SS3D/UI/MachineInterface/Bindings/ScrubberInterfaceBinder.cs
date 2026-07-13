@@ -1,11 +1,20 @@
 using SS3D.UI.MachineInterface.Components;
+using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace SS3D.UI.MachineInterface.Bindings
 {
-    public class ScrubberInterfaceBinder
+    public class ScrubberInterfaceBinder : IMachineInterfaceBinder
     {
+        public event Action CloseRequested;
+
+        public event Action<byte, bool> BoolControlChanged;
+
+        public event Action<byte, float> NumericControlChanged;
+
+        public event Action<byte, int> ActionControlChanged;
+
         private readonly DiegeticDeviceShell _shell;
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
@@ -43,10 +52,35 @@ namespace SS3D.UI.MachineInterface.Bindings
             _toxinsFilter = queryRoot.Q<CompactFilterToggle>("filter-toxins");
             _flowStepper = queryRoot.Q<NumericStepper>("flow-stepper");
             _footer = queryRoot.Q<DeviceFooter>("footer");
+
+            if (_shell != null)
+            {
+                _shell.CloseClicked += HandleCloseRequested;
+            }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested += HandleReadRequested;
+            }
+
+            if (_powerToggle != null)
+            {
+                _powerToggle.ValueChanged += HandlePowerChanged;
+            }
+
+            if (_flowStepper != null)
+            {
+                _flowStepper.DeltaRequested += HandleFlowDeltaRequested;
+            }
         }
 
-        public void Bind(ScrubberInterfaceViewModel model)
+        public void Bind(IMachineInterfaceViewModel viewModel)
         {
+            if (viewModel is not ScrubberInterfaceViewModel model)
+            {
+                return;
+            }
+
             if (_shell != null)
             {
                 _shell.ModelLabel = model.ModelLabel;
@@ -108,6 +142,40 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _footer.Text = model.FooterText;
             }
         }
+
+        public void Disconnect()
+        {
+            if (_shell != null)
+            {
+                _shell.CloseClicked -= HandleCloseRequested;
+            }
+
+            if (_idReader != null)
+            {
+                _idReader.ReadRequested -= HandleReadRequested;
+            }
+
+            if (_powerToggle != null)
+            {
+                _powerToggle.ValueChanged -= HandlePowerChanged;
+            }
+
+            if (_flowStepper != null)
+            {
+                _flowStepper.DeltaRequested -= HandleFlowDeltaRequested;
+            }
+        }
+
+        private void HandleCloseRequested() => CloseRequested?.Invoke();
+
+        private void HandleReadRequested() =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.ReadId, 0);
+
+        private void HandlePowerChanged(bool value) =>
+            BoolControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.Power, value);
+
+        private void HandleFlowDeltaRequested(float delta) =>
+            NumericControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.FlowRate, delta);
 
         private static void BindFilter(
             CompactFilterToggle toggle,
