@@ -1,0 +1,126 @@
+
+.air-alarm-device-detail {
+    margin-top: 8px;
+    padding: 14px;
+    background-color: var(--ss3d-diegetic-inset);
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    border-radius: var(--ss3d-radius-md);
+}
+
+.air-alarm-device-detail__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.air-alarm-device-detail__titles {
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.air-alarm-device-detail__name {
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.air-alarm-device-detail__type {
+    font-size: 10.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    margin-top: 2px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.air-alarm-device-detail__close {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    margin: 0;
+    padding: 0;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-sm);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--ss3d-text-tertiary);
+    -unity-text-align: middle-center;
+}
+
+.air-alarm-device-detail__body {
+    flex-direction: row;
+    align-items: center;
+}
+
+.air-alarm-device-detail__power-column {
+    flex-direction: column;
+    align-items: center;
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.air-alarm-device-detail__power-column .toggle-switch__label {
+    display: none;
+}
+
+.air-alarm-device-detail__power-caption {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    margin-top: 8px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.air-alarm-device-detail--locked .toggle-switch {
+    opacity: 0.5;
+}
+
+.air-alarm-device-detail__vent-controls {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.air-alarm-device-detail__vent-hint {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    margin-right: 10px;
+    padding: 0;
+    white-space: normal;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.air-alarm-device-detail__scrubber-controls {
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.air-alarm-device-detail__scrubber-hint {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    margin-bottom: 8px;
+    padding: 0;
+    -unity-text-align: middle-right;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.air-alarm-device-detail__filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.panel-section__content .air-alarm-device-detail__name,
+.panel-section__content .air-alarm-device-detail__type,
+.panel-section__content .air-alarm-device-detail__power-caption,
+.panel-section__content .air-alarm-device-detail__vent-hint,
+.panel-section__content .air-alarm-device-detail__scrubber-hint {
+    background-color: rgba(0, 0, 0, 0);
+}

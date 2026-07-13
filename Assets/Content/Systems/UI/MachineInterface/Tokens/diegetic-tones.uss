@@ -38,3 +38,8 @@
     background-color: var(--ss3d-feedback-danger-bg);
     border-color: var(--ss3d-feedback-danger-border);
 }
+
+.tone-bg-neutral {
+    background-color: var(--ss3d-diegetic-inset);
+    border-color: var(--ss3d-border-subtle);
+}

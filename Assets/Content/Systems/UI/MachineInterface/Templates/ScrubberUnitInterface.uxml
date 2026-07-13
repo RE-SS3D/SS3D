@@ -1,0 +1,90 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GasBarRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/CompactFilterToggle.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/ScrubberUnitInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="diegetic-device-shell--scrubber"
+        model-label="SCB-09 · atmospheric scrubber unit"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · PIPE NET · PORT S2"
+            readout-text="48 L/s" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="SCB-09"
+            subtitle="Engineering Bay 3 — Atmospheric Scrubber" />
+        <ss3d:GlanceableStatusChip name="status-chip" />
+
+        <ui:VisualElement class="panel-section" name="room-gas-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Room Gas Readout" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement name="gas-list" class="scrubber-gas-list" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="id-reader-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="ID Reader" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ss3d:AtmosIdReaderRow name="id-reader" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel-section" name="controls-section">
+            <ui:VisualElement class="panel-section__clip">
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Scrubber Controls" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section__content">
+                    <ui:VisualElement class="scrubber-power-row">
+                        <ss3d:ToggleSwitch name="power-toggle" is-on="true" on-label="ON" off-label="OFF" />
+                        <ui:Label text="Pwr" class="font-arcade" style="font-size: 9px; letter-spacing: 2px; color: var(--ss3d-text-secondary);" />
+                        <ui:Label name="power-gated-hint" class="scrubber-gated-hint font-terminal" text="" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="scrubber-filter-section">
+                        <ui:VisualElement class="scrubber-filter-header">
+                            <ui:Label text="FILTERING FOR" class="scrubber-filter-title font-titling" />
+                            <ui:Label name="filter-gated-hint" class="scrubber-gated-hint font-terminal" text="" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="scrubber-filter-row">
+                            <ss3d:CompactFilterToggle name="filter-o2" filter-label="O2" is-on="true" />
+                            <ss3d:CompactFilterToggle name="filter-n2" filter-label="N2" is-on="true" />
+                            <ss3d:CompactFilterToggle name="filter-co2" filter-label="CO2" is-on="true" />
+                            <ss3d:CompactFilterToggle name="filter-plasma" filter-label="Plasma" />
+                            <ss3d:CompactFilterToggle name="filter-toxins" filter-label="Toxins" is-on="true" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ss3d:NumericStepper name="flow-stepper" hint-text="Flow rate" value-text="5 L/s" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ss3d:DeviceFooter name="footer" text="SS3D Atmospherics — Scrubber Unit Model SCB-09" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

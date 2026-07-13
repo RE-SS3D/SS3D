@@ -52,3 +52,12 @@
     background-color: var(--ss3d-feedback-danger-bg);
     border-color: var(--ss3d-feedback-danger);
 }
+
+.glanceable-status-chip.tone-bg-neutral {
+    background-color: var(--ss3d-diegetic-inset);
+    border-color: var(--ss3d-border-subtle);
+}
+
+.glanceable-status-chip.tone-bg-neutral .glanceable-status-chip__headline {
+    color: var(--ss3d-text-secondary);
+}

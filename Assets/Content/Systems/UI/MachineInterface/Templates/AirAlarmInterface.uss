@@ -1,0 +1,65 @@
+
+#identity,
+#status-chip {
+    margin-bottom: 14px;
+}
+
+.air-alarm-metrics-row {
+    flex-direction: row;
+    margin-bottom: 14px;
+}
+
+.air-alarm-metrics-row .readout-metric-tile:first-child {
+    margin-right: 8px;
+}
+
+.air-alarm-gas-section-title {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    margin-bottom: 10px;
+}
+
+.air-alarm-gas-list {
+    flex-direction: column;
+}
+
+.air-alarm-gas-list .gas-bar-row {
+    margin-bottom: 10px;
+}
+
+.air-alarm-mode-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.air-alarm-mode-grid .preset-mode-button {
+    width: 48%;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.air-alarm-mode-grid .preset-mode-button:nth-child(2n) {
+    margin-right: 0;
+}
+
+.air-alarm-mode-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.air-alarm-mode-locked-hint {
+    font-size: 10.5px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.air-alarm-device-list {
+    flex-direction: column;
+}
+
+.air-alarm-device-list .connected-device-row {
+    margin-bottom: 6px;
+}

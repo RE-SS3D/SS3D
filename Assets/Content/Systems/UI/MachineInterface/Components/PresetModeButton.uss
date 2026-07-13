@@ -1,0 +1,69 @@
+
+.preset-mode-button {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.preset-mode-button__control {
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 10px 14px;
+    border-width: 0;
+    border-radius: var(--ss3d-radius-md);
+    background-color: var(--ss3d-diegetic-panel-raised);
+    align-items: flex-start;
+    -unity-text-align: upper-left;
+}
+
+.preset-mode-button__control:hover {
+    background-color: #35373a;
+}
+
+.preset-mode-button__control:disabled {
+    opacity: 0.55;
+}
+
+.preset-mode-button__control--active {
+    background-color: var(--ss3d-accent-rust);
+}
+
+.preset-mode-button__control--active.preset-mode-button__control--accent-danger {
+    background-color: var(--ss3d-feedback-danger);
+}
+
+.preset-mode-button__control--active.preset-mode-button__control--accent-info {
+    background-color: var(--ss3d-feedback-info);
+}
+
+.preset-mode-button__control--active.preset-mode-button__control--accent-steel {
+    background-color: #8a8d92;
+}
+
+.preset-mode-button__title {
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.preset-mode-button__control--active .preset-mode-button__title,
+.preset-mode-button__control--active .preset-mode-button__description {
+    color: var(--ss3d-text-on-accent);
+}
+
+.preset-mode-button__description {
+    font-size: 10px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    margin-top: 2px;
+    white-space: normal;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.preset-mode-button__control--active .preset-mode-button__description {
+    opacity: 0.85;
+}

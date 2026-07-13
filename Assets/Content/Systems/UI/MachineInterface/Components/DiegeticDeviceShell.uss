@@ -106,3 +106,15 @@
 .diegetic-device-shell--smes {
     width: var(--ss3d-diegetic-width-smes);
 }
+
+.diegetic-device-shell--air-alarm {
+    width: var(--ss3d-diegetic-width-air-alarm);
+}
+
+.diegetic-device-shell--scrubber {
+    width: var(--ss3d-diegetic-width-scrubber);
+}
+
+.diegetic-device-shell--vent {
+    width: var(--ss3d-diegetic-width-vent);
+}
