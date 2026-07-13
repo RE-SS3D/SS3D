@@ -1,4 +1,3 @@
-@import url("../../Tokens/ss3d-tokens.uss");
 
 .apc-power-controller {
     flex-direction: column;

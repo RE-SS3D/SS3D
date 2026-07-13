@@ -14,6 +14,7 @@ namespace SS3D.UI.MachineInterface.Components
         private readonly StatusDot _powerDot;
         private readonly Label _powerLabel;
         private readonly VisualElement _screen;
+        private readonly VisualElement _screenContent;
         private readonly Button _closeButton;
 
         public DiegeticDeviceShell()
@@ -55,7 +56,16 @@ namespace SS3D.UI.MachineInterface.Components
 
             _screen = new VisualElement();
             _screen.AddToClassList("diegetic-device-shell__screen");
-            _screen.name = "screen-content";
+            _screen.name = "screen-surface";
+            _screen.style.position = Position.Relative;
+            _screen.style.flexGrow = 1;
+
+            _screenContent = new VisualElement();
+            _screenContent.AddToClassList("diegetic-device-shell__screen-content");
+            _screenContent.name = "screen-content";
+            _screenContent.style.flexGrow = 1;
+            _screenContent.style.flexDirection = FlexDirection.Column;
+            _screen.Add(_screenContent);
 
             bezel.Add(_screen);
 
@@ -63,9 +73,11 @@ namespace SS3D.UI.MachineInterface.Components
             hierarchy.Add(bezel);
         }
 
-        public override VisualElement contentContainer => _screen;
+        public override VisualElement contentContainer => _screenContent;
 
         public VisualElement Screen => _screen;
+
+        public VisualElement ScreenContent => _screenContent;
 
         [UxmlAttribute]
         public string ModelLabel

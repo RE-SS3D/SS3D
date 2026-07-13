@@ -11,6 +11,8 @@ namespace SS3D.UI.MachineInterface
 
         public StyleSheet TemplateStyle { get; init; }
 
+        public StyleSheet[] ComponentStyles { get; init; } = Array.Empty<StyleSheet>();
+
         public MachineInterfaceShellKind ShellKind { get; init; } = MachineInterfaceShellKind.ModalWindow;
 
         public bool Wide { get; init; }

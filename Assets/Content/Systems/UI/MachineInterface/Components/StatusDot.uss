@@ -1,4 +1,3 @@
-@import url("../Tokens/diegetic-tones.uss");
 
 .status-dot {
     width: 7px;

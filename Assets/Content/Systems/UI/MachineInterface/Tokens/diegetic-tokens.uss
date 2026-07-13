@@ -1,4 +1,3 @@
-@import url("../../Tokens/ss3d-tokens.uss");
 
 :root {
     /* Diegetic device chassis — values from prototype zip, isolated from APC/SMES tokens */
@@ -10,7 +9,7 @@
     --ss3d-diegetic-bezel-bg: #0a0a0a;
     --ss3d-diegetic-bezel-radius: 10px;
     --ss3d-diegetic-bezel-padding: 8px;
-    --ss3d-diegetic-screen-bg: var(--ss3d-surface-void);
+    --ss3d-diegetic-screen-bg: #0a0b0d;
     --ss3d-diegetic-screen-radius: 5px;
     --ss3d-diegetic-screen-padding: 18px;
     --ss3d-diegetic-tray-bg: #050505;

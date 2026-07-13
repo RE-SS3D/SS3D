@@ -77,8 +77,24 @@ namespace SS3D.Editor
                 "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uxml");
             StyleSheet windowStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
                 "Assets/Content/Systems/UI/MachineInterface/Components/MachineWindow.uss");
+            StyleSheet tokensStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss");
+            StyleSheet typographyStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/Tokens/ss3d-typography.uss");
             StyleSheet templateStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
                 "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss");
+            StyleSheet statusBannerStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBanner.uss");
+            StyleSheet powerFlowStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/MachineInterface/Components/PowerFlowRow.uss");
+            StyleSheet batteryBarStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/MachineInterface/Components/BatteryBar.uss");
+            StyleSheet channelRowStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss");
+            StyleSheet diagnosticsStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss");
+            StyleSheet statusBadgeStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss");
 
             _window = new MachineWindow { Title = _model.Title };
             _window.style.alignSelf = Align.Center;
@@ -89,10 +105,60 @@ namespace SS3D.Editor
                 _window.styleSheets.Add(windowStyle);
             }
 
+            if (tokensStyle != null)
+            {
+                _window.styleSheets.Add(tokensStyle);
+            }
+
+            if (typographyStyle != null)
+            {
+                _window.styleSheets.Add(typographyStyle);
+            }
+
             TemplateContainer content = template != null ? template.CloneTree() : new TemplateContainer();
+            if (tokensStyle != null)
+            {
+                content.styleSheets.Add(tokensStyle);
+            }
+
+            if (typographyStyle != null)
+            {
+                content.styleSheets.Add(typographyStyle);
+            }
+
             if (templateStyle != null)
             {
                 content.styleSheets.Add(templateStyle);
+            }
+
+            if (statusBannerStyle != null)
+            {
+                content.styleSheets.Add(statusBannerStyle);
+            }
+
+            if (powerFlowStyle != null)
+            {
+                content.styleSheets.Add(powerFlowStyle);
+            }
+
+            if (batteryBarStyle != null)
+            {
+                content.styleSheets.Add(batteryBarStyle);
+            }
+
+            if (channelRowStyle != null)
+            {
+                content.styleSheets.Add(channelRowStyle);
+            }
+
+            if (diagnosticsStyle != null)
+            {
+                content.styleSheets.Add(diagnosticsStyle);
+            }
+
+            if (statusBadgeStyle != null)
+            {
+                content.styleSheets.Add(statusBadgeStyle);
             }
 
             _window.Content.Add(content);

@@ -1,5 +1,3 @@
-@import url("../../Tokens/ss3d-tokens.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .status-badge {
     border-radius: var(--ss3d-radius-sm);

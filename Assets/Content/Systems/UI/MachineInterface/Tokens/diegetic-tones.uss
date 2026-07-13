@@ -1,4 +1,3 @@
-@import url("diegetic-tokens.uss");
 
 .tone-info {
     color: var(--ss3d-feedback-info);

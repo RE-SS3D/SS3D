@@ -1,6 +1,3 @@
-@import url("../Tokens/diegetic-tokens.uss");
-@import url("../Tokens/diegetic-tones.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .diegetic-device-shell {
     width: var(--ss3d-diegetic-width);
@@ -73,6 +70,17 @@
     border-radius: var(--ss3d-diegetic-screen-radius);
     padding: var(--ss3d-diegetic-screen-padding);
     max-height: 900px;
-    overflow: hidden;
     flex-direction: column;
+}
+
+.diegetic-device-shell__screen-content {
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.diegetic-device-shell__screen-content Label,
+.diegetic-device-shell__screen Label {
+    background-color: rgba(0, 0, 0, 0);
 }

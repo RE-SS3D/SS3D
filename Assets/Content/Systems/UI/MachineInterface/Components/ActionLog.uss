@@ -1,5 +1,3 @@
-@import url("../Tokens/diegetic-tokens.uss");
-@import url("../../Tokens/ss3d-typography.uss");
 
 .action-log {
     flex-direction: column;

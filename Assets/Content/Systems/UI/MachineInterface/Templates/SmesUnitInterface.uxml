@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/SmesUnitInterface.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesStatusBanner.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SmesPowerFlowRow.uss" />
