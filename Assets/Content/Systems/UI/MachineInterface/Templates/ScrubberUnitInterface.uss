@@ -18,6 +18,14 @@
     margin-bottom: 16px;
 }
 
+.atmos-power-caption {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-secondary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
 .scrubber-power-row .toggle-switch {
     margin-right: 12px;
 }

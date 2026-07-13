@@ -64,7 +64,7 @@
                     <ui:VisualElement class="vent-controls-row">
                         <ui:VisualElement class="vent-power-column">
                             <ss3d:ToggleSwitch name="power-toggle" is-on="true" on-label="ON" off-label="OFF" />
-                            <ui:Label text="Pwr" class="font-arcade" style="font-size: 9px; letter-spacing: 2px; color: var(--ss3d-text-secondary); margin-top: 8px;" />
+                            <ui:Label text="Pwr" class="atmos-power-caption font-arcade" />
                         </ui:VisualElement>
                         <ui:VisualElement class="vent-target-column">
                             <ui:VisualElement class="vent-target-labels">
