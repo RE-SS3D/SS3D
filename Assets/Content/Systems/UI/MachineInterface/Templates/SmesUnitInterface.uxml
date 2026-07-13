@@ -35,7 +35,9 @@
         <ss3d:GlanceableStatusChip name="status-chip" />
         <ui:VisualElement class="panel-section" name="storage-flow-section">
             <ui:VisualElement class="panel-section__clip">
-                <ui:Label class="panel-section__header font-titling" text="Storage &amp; Flow" />
+                <ui:VisualElement class="panel-section__header">
+                    <ui:Label class="panel-section__header-title font-titling" text="Storage &amp; Flow" />
+                </ui:VisualElement>
                 <ui:VisualElement class="panel-section__content">
                     <ui:VisualElement class="smes-metrics-row">
                         <ui:VisualElement class="smes-storage-column">
@@ -62,7 +64,9 @@
                 <ss3d:AccessStrip name="access-strip" authorized-text="Engineering — Authorized" />
                 <ui:VisualElement class="panel-section" name="controls-section">
                     <ui:VisualElement class="panel-section__clip">
-                        <ui:Label class="panel-section__header font-titling" text="Input / Output Controls" />
+                        <ui:VisualElement class="panel-section__header">
+                            <ui:Label class="panel-section__header-title font-titling" text="Input / Output Controls" />
+                        </ui:VisualElement>
                         <ui:VisualElement class="panel-section__content">
                             <ui:VisualElement class="smes-controls-row">
                                 <ss3d:RateControlSection name="input-control" />

@@ -7,6 +7,6 @@ Label {
     background-color: rgba(0, 0, 0, 0);
 }
 
-Button {
+Button:not(.steel-button__control) {
     background-color: rgba(0, 0, 0, 0);
 }

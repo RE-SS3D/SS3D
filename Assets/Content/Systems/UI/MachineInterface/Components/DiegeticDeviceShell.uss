@@ -82,6 +82,8 @@
     --ss3d-text-tertiary: var(--ss3d-diegetic-text-tertiary);
     --ss3d-diegetic-panel-raised: #23262b;
     --ss3d-diegetic-panel-body: #171a1e;
+    --ss3d-diegetic-inset: #0a0b0d;
+    --ss3d-surface-inset: var(--ss3d-diegetic-inset);
     --ss3d-feedback-success: var(--ss3d-diegetic-feedback-success);
     --ss3d-feedback-success-bg: var(--ss3d-diegetic-feedback-success-bg);
     --ss3d-feedback-success-border: var(--ss3d-diegetic-feedback-success-border);

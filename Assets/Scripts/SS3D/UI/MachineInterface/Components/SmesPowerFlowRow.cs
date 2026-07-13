@@ -15,6 +15,8 @@ namespace SS3D.UI.MachineInterface.Components
             Label stationGrid = CreateNode("STATION GRID", "smes-power-flow-row__node");
             _inputGlyph = CreateGlyph();
             Label smesNode = CreateNode("SMES", "smes-power-flow-row__node smes-power-flow-row__node--core");
+            smesNode.RemoveFromClassList("font-terminal");
+            smesNode.AddToClassList("font-titling");
             _outputGlyph = CreateGlyph();
             Label distributionGrid = CreateNode("DISTRIBUTION", "smes-power-flow-row__node");
 
@@ -43,6 +45,7 @@ namespace SS3D.UI.MachineInterface.Components
         {
             Label glyph = new("→");
             glyph.AddToClassList("smes-power-flow-row__glyph");
+            glyph.AddToClassList("font-arcade");
             return glyph;
         }
 

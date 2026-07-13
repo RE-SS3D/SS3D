@@ -1,10 +1,12 @@
 
 .steel-button {
     flex-shrink: 0;
+    align-items: stretch;
 }
 
 .steel-button__control {
     min-height: 36px;
+    margin: 0;
     padding: 0 14px;
     border-width: 0;
     border-radius: var(--ss3d-radius-sm);
@@ -12,6 +14,7 @@
     color: var(--ss3d-text-primary);
     font-size: 12px;
     letter-spacing: 1px;
+    -unity-text-align: middle-center;
 }
 
 .steel-button__control:hover {

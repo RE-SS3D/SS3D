@@ -1,4 +1,12 @@
 
+#identity {
+    margin-bottom: 14px;
+}
+
+#status-chip {
+    margin-bottom: 14px;
+}
+
 .smes-access-region {
     flex-direction: column;
     flex-grow: 1;
