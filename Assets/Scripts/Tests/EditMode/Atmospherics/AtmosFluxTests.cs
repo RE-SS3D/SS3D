@@ -199,6 +199,44 @@ namespace EditorTests.Atmospherics
             Assert.DoesNotThrow(() => simulation.Tick(AtmosConstants.TickInterval));
         }
 
+        [Test]
+        public void EvacuatedSealedRoom_RetainsSmallVentAmounts()
+        {
+            const int size = 2;
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            InitializeSealedRoomSimulation(context, size, out AtmosSimulation simulation);
+            using (simulation)
+            {
+                var center = new TileCoord(context.Map.MapId, AtmosTestFixtures.InteriorOrigin, AtmosTestFixtures.InteriorOrigin);
+                EvacuateInterior(context.Map.MapId, size, simulation);
+
+                simulation.TryAddMolesAtTemperature(center, AtmosConstants.Oxygen, 2f, AtmosConstants.StandardTemperature);
+                simulation.TryAddMolesAtTemperature(center, AtmosConstants.Nitrogen, 8f, AtmosConstants.StandardTemperature);
+
+                for (int tick = 0; tick < 10; tick++)
+                    simulation.Tick(AtmosConstants.TickInterval);
+
+                Assert.Greater(simulation.GetTotalMoles(), 5f);
+            }
+        }
+
+        private static void EvacuateInterior(int mapId, int interiorSize, AtmosSimulation simulation)
+        {
+            for (int x = 0; x < interiorSize; x++)
+            {
+                for (int z = 0; z < interiorSize; z++)
+                {
+                    var coord = new TileCoord(mapId, AtmosTestFixtures.InteriorOrigin + x, AtmosTestFixtures.InteriorOrigin + z);
+                    foreach (GasId gasId in new[] { AtmosConstants.Oxygen, AtmosConstants.Nitrogen, AtmosConstants.CarbonDioxide, AtmosConstants.Plasma })
+                    {
+                        while (simulation.TryRemoveMoles(coord, gasId, 1000f, out _, out _))
+                        {
+                        }
+                    }
+                }
+            }
+        }
+
         private static float SumGas(AtmosSimulation simulation, int mapId, int interiorSize, GasId gasId)
         {
             float total = 0f;

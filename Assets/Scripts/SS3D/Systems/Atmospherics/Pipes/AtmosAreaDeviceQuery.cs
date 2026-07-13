@@ -95,7 +95,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
                     return;
                 }
 
-                results.Add(BuildRecord(controller, networkBehaviour.NetworkObject.ObjectId));
+                results.Add(BuildRecord(controller, networkBehaviour.NetworkObject.ObjectId, record.DisplayName));
             });
 
             results.Sort(CompareRecords);
@@ -195,7 +195,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
             return true;
         }
 
-        private static AtmosAreaPortRecord BuildRecord(AtmosPortControllerBase controller, int objectId)
+        private static AtmosAreaPortRecord BuildRecord(
+            AtmosPortControllerBase controller,
+            int objectId,
+            string areaDisplayName)
         {
             bool isVent = controller is VentController;
             float targetKpa = 101f;
@@ -222,7 +225,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             return new AtmosAreaPortRecord(
                 objectId,
                 isVent ? AtmosAreaPortKind.Vent : AtmosAreaPortKind.Scrubber,
-                FormatDeviceName(controller, isVent),
+                FormatDeviceName(isVent, areaDisplayName),
                 controller.IsEnabled,
                 targetKpa,
                 filterO2,
@@ -232,12 +235,12 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 filterToxins);
         }
 
-        private static string FormatDeviceName(AtmosPortControllerBase controller, bool isVent)
+        private static string FormatDeviceName(bool isVent, string areaDisplayName)
         {
             string kind = isVent ? "Vent" : "Scrubber";
-            if (controller.TryGetComponent(out PlacedTileObject tileObject))
+            if (!string.IsNullOrWhiteSpace(areaDisplayName))
             {
-                return $"{kind} — {tileObject.Direction}";
+                return $"{kind} — {areaDisplayName}";
             }
 
             return kind;

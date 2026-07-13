@@ -210,8 +210,7 @@ namespace SS3D.Systems.Atmospherics.ECS
             }
         }
 
-        // True if the cell borders somewhere its remaining gas can drain to: open space, or a
-        // plenum neighbour that is itself nearly evacuated (so the empty front propagates inward).
+        // True if the cell borders open space where remaining gas can vent.
         private bool HasDrainSink(int cellIndex)
         {
             for (int direction = 0; direction < 4; direction++)
@@ -220,15 +219,7 @@ namespace SS3D.Systems.Atmospherics.ECS
                 if (neighbourIndex < 0 || neighbourIndex >= CellMeta.Length)
                     continue;
 
-                AtmosCellMeta neighbour = CellMeta[neighbourIndex];
-                if (neighbour.State == AtmosCellState.Blocked)
-                    continue;
-
-                if (neighbour.State == AtmosCellState.Vacuum)
-                    return true;
-
-                float neighbourPressure = GetPressure(neighbourIndex, neighbour.Temperature, neighbour.Volume);
-                if (neighbourPressure < AtmosFluxConstants.MinSimulationPressure)
+                if (CellMeta[neighbourIndex].State == AtmosCellState.Vacuum)
                     return true;
             }
 

@@ -246,5 +246,41 @@ namespace SS3D.Systems.Atmospherics
 
             return _simulation.TryGetCellDebugInfo(coord, out info);
         }
+
+        public bool TryGetPipeDebugInfo(GasPipeSegmentKey segment, out AtmosPipeDebugInfo info)
+        {
+            info = default;
+            if (_pipeRegistry == null
+                || !_pipeRegistry.TryGetNetworkForSegment(segment, out GasPipeNetworkId networkId, out GasPipeNetworkRecord record))
+            {
+                return false;
+            }
+
+            int gasTypeCount = _simulation?.GasTypeCount ?? AtmosConstants.DefaultGasCount;
+            info = new AtmosPipeDebugInfo
+            {
+                Exists = true,
+                Segment = segment,
+                NetworkId = networkId,
+                SegmentCount = record.Segments.Count,
+                PressureKpa = record.GetPressure(gasTypeCount),
+                Temperature = record.Temperature,
+                Volume = record.Volume,
+                TotalMoles = record.GetTotalMoles(gasTypeCount),
+            };
+            return true;
+        }
+
+        public float GetPipeNetworkMoles(GasPipeNetworkId networkId, GasId gasId)
+        {
+            if (_pipeRegistry == null
+                || !_pipeRegistry.TryGetNetwork(networkId, out GasPipeNetworkRecord record)
+                || gasId.Value >= record.Moles.Length)
+            {
+                return 0f;
+            }
+
+            return record.Moles[gasId.Value];
+        }
     }
 }

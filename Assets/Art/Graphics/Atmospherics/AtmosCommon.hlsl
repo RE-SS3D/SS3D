@@ -346,6 +346,27 @@ float AtmosPressureFogDensity(float pressure, float temperature)
     return saturate(excess / max(scale, 1e-3));
 }
 
+// O₂/N₂ have zero scatter/emission profiles; suppress pressure fog unless the mix includes
+// a gas with an authored visual response (CO₂ smoke, plasma glow, etc.).
+float AtmosCompositionVisualDrive(float4 composition)
+{
+    float drive = 0.0;
+    [unroll]
+    for (int i = 0; i < ATMOS_COMPOSITION_GAS_CHANNELS; i++)
+    {
+        float frac = composition[i];
+        if (frac <= 0.001)
+            continue;
+
+        float scatterStrength = _AtmosGasScatter[i].a;
+        float emissionIntensity = _AtmosGasEmission[i].a;
+        float distortionScale = _AtmosGasMisc[i].x;
+        drive = max(drive, frac * max(scatterStrength, max(emissionIntensity, distortionScale)));
+    }
+
+    return drive;
+}
+
 float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
 {
     int mask = AtmosSampleMask(worldXZ);
@@ -364,7 +385,8 @@ float AtmosSampleGasDensity(float2 worldXZ, float sampleY)
 
     float pressure = AtmosSamplePressure(worldXZ);
     float temperature = AtmosSampleTemperature(worldXZ);
-    float tileDensity = AtmosPressureFogDensity(pressure, temperature);
+    float4 composition = AtmosSampleComposition(worldXZ);
+    float tileDensity = AtmosPressureFogDensity(pressure, temperature) * AtmosCompositionVisualDrive(composition);
     return tileDensity * heightFalloff * edgeFade * AtmosFlowModulation(worldXZ, fire);
 }
 
@@ -632,7 +654,8 @@ bool AtmosTrySampleDistortion(float2 worldXZ, float sampleY, out float weight, o
 
     float pressure = AtmosSamplePressure(worldXZ);
     float temperature = AtmosSampleTemperature(worldXZ);
-    float density = AtmosPressureFogDensity(pressure, temperature);
+    float4 composition = AtmosSampleComposition(worldXZ);
+    float density = AtmosPressureFogDensity(pressure, temperature) * AtmosCompositionVisualDrive(composition);
     if (density <= 0.001 && temperature < 293.15 + 1.0)
         return false;
 

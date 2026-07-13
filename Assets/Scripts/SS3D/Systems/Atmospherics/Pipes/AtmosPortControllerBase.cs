@@ -53,15 +53,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[]
-            {
-                new ToggleInteraction
-                {
-                    OnName = "Turn off",
-                    OffName = "Turn on",
-                    CanInteractCallback = _ => IsPowered(),
-                },
-            };
+            return System.Array.Empty<IInteraction>();
         }
 
         public bool GetState() => _enabled;

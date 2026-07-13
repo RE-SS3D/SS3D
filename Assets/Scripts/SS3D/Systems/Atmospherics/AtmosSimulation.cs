@@ -179,10 +179,24 @@ namespace SS3D.Systems.Atmospherics
 
             _molesRead[moleIndex] += moles;
             _molesWrite[moleIndex] += moles;
+            PromoteCellForGas(ref meta);
             _cellMeta[cellIndex] = meta;
             _cellMetaWrite[cellIndex] = meta;
             ActivateRegion(coord, 0);
             return true;
+        }
+
+        private static void PromoteCellForGas(ref AtmosCellMeta meta)
+        {
+            if (meta.State is AtmosCellState.Blocked)
+                return;
+
+            if (meta.State is AtmosCellState.Vacuum
+                or AtmosCellState.Inactive
+                or AtmosCellState.Semiactive)
+            {
+                meta.State = AtmosCellState.Active;
+            }
         }
 
         public bool TryGetGasMoles(TileCoord coord, GasId gasId, out float moles)
@@ -378,6 +392,10 @@ namespace SS3D.Systems.Atmospherics
             int moleIndex = GasMixture.GetMoleIndex(cellIndex, gasId);
             _molesRead[moleIndex] += moles;
             _molesWrite[moleIndex] += moles;
+            AtmosCellMeta meta = _cellMeta[cellIndex];
+            PromoteCellForGas(ref meta);
+            _cellMeta[cellIndex] = meta;
+            _cellMetaWrite[cellIndex] = meta;
             ActivateRegion(coord, 0);
         }
 

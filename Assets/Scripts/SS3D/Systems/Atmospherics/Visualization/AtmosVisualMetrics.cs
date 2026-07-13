@@ -61,11 +61,12 @@ namespace SS3D.Systems.Atmospherics.Visualization
             float distortionTempFactor = Mathf.Clamp01(
                 (info.Temperature - 293.15f) / Mathf.Max(ignition - 293.15f, 1f));
 
-            float gasFogDensity = PressureFogDensity(info.Pressure, info.Temperature);
-
             GasVisualProfileBuilder.GpuSet profiles = registry != null
                 ? GasVisualProfileBuilder.Build(registry)
                 : GasVisualProfileBuilder.CoreDefaults;
+
+            float gasFogDensity = PressureFogDensity(info.Pressure, info.Temperature)
+                * CompositionVisualDrive(o2Frac, n2Frac, co2Frac, plasmaFrac, profiles);
 
             float co2ScatterStrength = profiles.Scatter[AtmosConstants.CarbonDioxide.Value].w;
             float plasmaEmissionIntensity = profiles.Emission[AtmosConstants.Plasma.Value].w;
@@ -184,6 +185,29 @@ namespace SS3D.Systems.Atmospherics.Visualization
             float excess = Mathf.Max(0f, NumberDensityRatio(pressureKpa, temperatureK) - 1f);
             float scale = FogPressureScale / ReferencePressureKpa;
             return Mathf.Clamp01(excess / Mathf.Max(scale, 1e-3f));
+        }
+
+        static float CompositionVisualDrive(
+            float o2Frac,
+            float n2Frac,
+            float co2Frac,
+            float plasmaFrac,
+            GasVisualProfileBuilder.GpuSet profiles)
+        {
+            float drive = 0f;
+            float[] fractions = { o2Frac, n2Frac, co2Frac, plasmaFrac };
+            for (int i = 0; i < fractions.Length; i++)
+            {
+                if (fractions[i] <= 0.001f)
+                    continue;
+
+                float scatter = profiles.Scatter[i].w;
+                float emission = profiles.Emission[i].w;
+                float distortion = profiles.Misc[i].x;
+                drive = Mathf.Max(drive, fractions[i] * Mathf.Max(scatter, Mathf.Max(emission, distortion)));
+            }
+
+            return drive;
         }
 
         static float SafeFraction(float moles, float total)

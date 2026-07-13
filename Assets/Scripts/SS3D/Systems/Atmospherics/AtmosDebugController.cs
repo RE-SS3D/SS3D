@@ -1,6 +1,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Atmospherics.ECS;
+using SS3D.Systems.Atmospherics.Pipes;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Inputs;
 using System;
@@ -11,6 +12,12 @@ using InputSubSystem = SS3D.Systems.Inputs.InputSubSystem;
 
 namespace SS3D.Systems.Atmospherics
 {
+    public enum AtmosDebugInspectMode
+    {
+        Tile,
+        Pipe,
+    }
+
     public enum AtmosDebugViewMode
     {
         Pressure,
@@ -38,11 +45,14 @@ namespace SS3D.Systems.Atmospherics
         private bool _open;
         private Rect _panelRect = new Rect(16f, 16f, 400f, 480f);
         private AtmosDebugViewMode _viewMode = AtmosDebugViewMode.Pressure;
+        private AtmosDebugInspectMode _inspectMode = AtmosDebugInspectMode.Tile;
         private bool _drawOverlay = true;
+        private bool _drawPipeOverlay = true;
         private bool _showVacuum;
         private bool _showInactive;
         private float _gizmoScale = 1f;
         private TileCoord? _selectedCoord;
+        private GasPipeSegmentKey? _selectedPipe;
         private Vector2 _scroll;
 
         protected override void OnStart()
@@ -78,7 +88,7 @@ namespace SS3D.Systems.Atmospherics
                 return;
 
             DrawWorldOverlay();
-            TryPickTile();
+            TryPickTarget();
         }
 
         private void OnGUI()
@@ -114,14 +124,21 @@ namespace SS3D.Systems.Atmospherics
 
             AtmosSimulation sim = _atmos.Simulation;
             GUILayout.Label($"Cells: {sim.CellCount}  |  Active: {sim.ActiveCellCount}");
+            if (_atmos.PipeRegistry != null)
+                GUILayout.Label($"Pipe networks: {_atmos.PipeRegistry.NetworkCount}");
             GUILayout.Label($"Total moles: {sim.GetTotalMoles():F1}  |  Last tick: {_atmos.LastTickMilliseconds:F2} ms");
             GUILayout.Label($"Paused: {_atmos.SimulationPaused}  |  Tick: {AtmosConstants.TickInterval:F1}s");
+
+            GUILayout.Space(6f);
+            GUILayout.Label("Inspect mode");
+            _inspectMode = (AtmosDebugInspectMode)GUILayout.Toolbar((int)_inspectMode, new[] { "Tile", "Pipe" });
 
             GUILayout.Space(6f);
             GUILayout.Label("View mode");
             _viewMode = (AtmosDebugViewMode)GUILayout.Toolbar((int)_viewMode, new[] { "Pressure", "Temp", "Active", "State" });
 
-            _drawOverlay = GUILayout.Toggle(_drawOverlay, "Draw world overlay");
+            _drawOverlay = GUILayout.Toggle(_drawOverlay, "Draw tile overlay");
+            _drawPipeOverlay = GUILayout.Toggle(_drawPipeOverlay, "Draw pipe overlay");
             _showVacuum = GUILayout.Toggle(_showVacuum, "Show vacuum");
             _showInactive = GUILayout.Toggle(_showInactive, "Show inactive");
             GUILayout.Label("Gizmo scale");
@@ -135,13 +152,27 @@ namespace SS3D.Systems.Atmospherics
                 _atmos.StepOnce();
             GUILayout.EndHorizontal();
 
-            if (_selectedCoord is TileCoord selected && _atmos.TryGetCellDebugInfo(selected, out AtmosCellDebugInfo info))
+            if (_inspectMode == AtmosDebugInspectMode.Pipe
+                && _selectedPipe is GasPipeSegmentKey selectedPipe
+                && _atmos.TryGetPipeDebugInfo(selectedPipe, out AtmosPipeDebugInfo pipeInfo))
+            {
+                DrawSelectedPipe(pipeInfo);
+            }
+            else if (_inspectMode == AtmosDebugInspectMode.Tile
+                && _selectedCoord is TileCoord selected
+                && _atmos.TryGetCellDebugInfo(selected, out AtmosCellDebugInfo info))
+            {
                 DrawSelectedCell(info);
+            }
             else
-                GUILayout.Label("Click a tile in the world to inspect.");
+            {
+                GUILayout.Label(_inspectMode == AtmosDebugInspectMode.Pipe
+                    ? "Click a pipe segment in the world to inspect."
+                    : "Click a tile in the world to inspect.");
+            }
 
             GUILayout.Space(6f);
-            if (_selectedCoord is TileCoord spawnCoord)
+            if (_inspectMode == AtmosDebugInspectMode.Tile && _selectedCoord is TileCoord spawnCoord)
             {
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Wake 3×3"))
@@ -190,7 +221,25 @@ namespace SS3D.Systems.Atmospherics
             GUILayout.TextArea(builder.ToString());
         }
 
-        private void TryPickTile()
+        private void DrawSelectedPipe(AtmosPipeDebugInfo info)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine($"Pipe {info.Segment.Coord.Grid.x}, {info.Segment.Coord.Grid.y}");
+            builder.AppendLine($"Layer: {info.Segment.Layer}  Type: {info.Segment.SpecificType}");
+            builder.AppendLine($"Network: {info.NetworkId.Value}  Segments: {info.SegmentCount}");
+            builder.AppendLine($"Pressure: {info.PressureKpa:F2} kPa");
+            builder.AppendLine($"Temperature: {info.Temperature:F1} K");
+            builder.AppendLine($"Volume: {info.Volume:F3} m³  Total moles: {info.TotalMoles:F2}");
+            builder.AppendLine("Gas (mol):");
+            builder.AppendLine($"  O₂ {_atmos.GetPipeNetworkMoles(info.NetworkId, AtmosConstants.Oxygen):F2}" +
+                $"  N₂ {_atmos.GetPipeNetworkMoles(info.NetworkId, AtmosConstants.Nitrogen):F2}");
+            builder.AppendLine($"  CO₂ {_atmos.GetPipeNetworkMoles(info.NetworkId, AtmosConstants.CarbonDioxide):F2}" +
+                $"  Plasma {_atmos.GetPipeNetworkMoles(info.NetworkId, AtmosConstants.Plasma):F2}");
+
+            GUILayout.TextArea(builder.ToString());
+        }
+
+        private void TryPickTarget()
         {
             if (!Mouse.current.leftButton.wasPressedThisFrame || _tileSubSystem?.QueryService == null)
                 return;
@@ -198,14 +247,58 @@ namespace SS3D.Systems.Atmospherics
             if (_panelRect.Contains(GetGuiMousePosition()))
                 return;
 
+            if (_inspectMode == AtmosDebugInspectMode.Pipe)
+            {
+                TryPickPipe();
+                return;
+            }
+
+            TryPickTile();
+        }
+
+        private void TryPickTile()
+        {
             Vector3 world = TileHelper.GetPointedPosition(isTilePosition: true);
             int mapId = _tileSubSystem.CurrentMap?.MapId ?? 0;
             var coord = new TileCoord(mapId, Mathf.RoundToInt(world.x), Mathf.RoundToInt(world.z));
             if (_atmos.TryGetCellDebugInfo(coord, out _))
+            {
                 _selectedCoord = coord;
+                _selectedPipe = null;
+            }
+        }
+
+        private void TryPickPipe()
+        {
+            if (_tileSubSystem?.CurrentMap == null || _atmos?.PipeRegistry == null)
+                return;
+
+            Vector3 world = TileHelper.GetPointedPosition(isTilePosition: true);
+            int mapId = _tileSubSystem.CurrentMap.MapId;
+            var coord = new TileCoord(mapId, Mathf.RoundToInt(world.x), Mathf.RoundToInt(world.z));
+
+            foreach (TileLayer layer in AtmosPipeConnectivity.GasPipeLayers)
+            {
+                if (!AtmosPipeConnectivity.TryGetSegment(_tileSubSystem.CurrentMap, coord, layer, out PlacedTileObject placed))
+                    continue;
+
+                GasPipeSegmentKey segment = GasPipeSegmentKey.From(placed);
+                if (_atmos.TryGetPipeDebugInfo(segment, out _))
+                {
+                    _selectedPipe = segment;
+                    _selectedCoord = null;
+                    return;
+                }
+            }
         }
 
         private void DrawWorldOverlay()
+        {
+            DrawTileOverlay();
+            DrawPipeOverlay();
+        }
+
+        private void DrawTileOverlay()
         {
             if (!_drawOverlay)
                 return;
@@ -242,6 +335,108 @@ namespace SS3D.Systems.Atmospherics
             });
         }
 
+        private void DrawPipeOverlay()
+        {
+            if (!_drawPipeOverlay || _atmos?.PipeRegistry == null)
+                return;
+
+            Vector3 cameraPosition = _camera.transform.position;
+            float maxPressure = 0f;
+
+            foreach (GasPipeNetworkRecord network in _atmos.PipeRegistry.Networks.Values)
+            {
+                foreach (GasPipeSegmentKey segment in network.Segments)
+                {
+                    if (!ShouldDrawPipe(segment, cameraPosition))
+                        continue;
+
+                    if (_atmos.TryGetPipeDebugInfo(segment, out AtmosPipeDebugInfo info))
+                        maxPressure = Mathf.Max(maxPressure, info.PressureKpa);
+                }
+            }
+
+            if (maxPressure <= 0f)
+                maxPressure = ReferencePressureKpa;
+
+            foreach (GasPipeNetworkRecord network in _atmos.PipeRegistry.Networks.Values)
+            {
+                Color networkColor = NetworkColor(network.Id);
+                foreach (GasPipeSegmentKey segment in network.Segments)
+                {
+                    if (!ShouldDrawPipe(segment, cameraPosition))
+                        continue;
+
+                    if (!_atmos.TryGetPipeDebugInfo(segment, out AtmosPipeDebugInfo info))
+                        continue;
+
+                    bool selected = _selectedPipe is GasPipeSegmentKey selectedPipe && selectedPipe.Equals(segment);
+                    Color color = selected
+                        ? new Color(1f, 0.95f, 0.2f, 1f)
+                        : GetPipeColor(info, maxPressure, networkColor);
+                    float height = GetPipeHeight(info, maxPressure);
+                    DrawPipeCube(segment, height * _gizmoScale, color);
+                }
+            }
+        }
+
+        private bool ShouldDrawPipe(GasPipeSegmentKey segment, Vector3 cameraPosition)
+        {
+            float dx = segment.Coord.Grid.x - cameraPosition.x;
+            float dz = segment.Coord.Grid.y - cameraPosition.z;
+            return dx * dx + dz * dz <= DrawRadius * DrawRadius;
+        }
+
+        private static Color NetworkColor(GasPipeNetworkId networkId)
+        {
+            float hue = (networkId.Value * 0.618033988f) % 1f;
+            return Color.HSVToRGB(hue, 0.75f, 0.95f);
+        }
+
+        private Color GetPipeColor(AtmosPipeDebugInfo info, float maxPressure, Color networkColor)
+        {
+            if (_viewMode == AtmosDebugViewMode.Temperature)
+                return TemperatureColor(info.Temperature);
+
+            if (_viewMode == AtmosDebugViewMode.State)
+                return networkColor;
+
+            if (_viewMode == AtmosDebugViewMode.Active)
+                return info.TotalMoles > 0.01f
+                    ? new Color(0.2f, 0.85f, 1f, 0.95f)
+                    : new Color(0.35f, 0.35f, 0.4f, 0.6f);
+
+            return Color.Lerp(
+                new Color(0.15f, 0.55f, 0.95f, 0.95f),
+                new Color(1f, 0.35f, 0.15f, 0.95f),
+                Mathf.Clamp01(info.PressureKpa / maxPressure));
+        }
+
+        private float GetPipeHeight(AtmosPipeDebugInfo info, float maxPressure)
+        {
+            return _viewMode switch
+            {
+                AtmosDebugViewMode.Temperature => Mathf.Lerp(0.15f, 1.5f, Mathf.InverseLerp(173f, 1000f, info.Temperature)),
+                AtmosDebugViewMode.Active => info.TotalMoles > 0.01f ? 0.8f : 0.15f,
+                AtmosDebugViewMode.State => 0.45f,
+                _ => Mathf.Lerp(0.15f, 1.5f, Mathf.Clamp01(info.PressureKpa / maxPressure)),
+            };
+        }
+
+        private static void DrawPipeCube(GasPipeSegmentKey segment, float height, Color color)
+        {
+            float layerOffset = segment.Layer switch
+            {
+                TileLayer.PipeLeft => 0.15f,
+                TileLayer.PipeMiddle => 0.35f,
+                TileLayer.PipeRight => 0.55f,
+                TileLayer.PipeSurface => 0.75f,
+                _ => 0.35f,
+            };
+
+            Vector3 center = new(segment.Coord.Grid.x, layerOffset + height * 0.5f, segment.Coord.Grid.y);
+            DrawWireCube(center, new Vector3(0.35f, height, 0.35f), color);
+        }
+
         private bool ShouldDrawCell(TileCoord coord, Vector3 cameraPosition)
         {
             float dx = coord.Grid.x - cameraPosition.x;
@@ -271,6 +466,8 @@ namespace SS3D.Systems.Atmospherics
                 {
                     AtmosCellState.Active => new Color(0.2f, 1f, 0.3f, 0.9f),
                     AtmosCellState.Semiactive => new Color(0.9f, 0.8f, 0.2f, 0.85f),
+                    AtmosCellState.Blocked => new Color(0.45f, 0.22f, 0.08f, 0.95f),
+                    AtmosCellState.Inactive => new Color(0.55f, 0.62f, 0.78f, 0.75f),
                     _ => new Color(0.4f, 0.4f, 0.4f, 0.5f),
                 };
             }
@@ -280,8 +477,8 @@ namespace SS3D.Systems.Atmospherics
                 return info.State switch
                 {
                     AtmosCellState.Vacuum => new Color(0.2f, 0.2f, 0.8f, 0.8f),
-                    AtmosCellState.Blocked => new Color(0.15f, 0.15f, 0.15f, 0.8f),
-                    AtmosCellState.Inactive => new Color(0.5f, 0.5f, 0.5f, 0.6f),
+                    AtmosCellState.Blocked => new Color(0.45f, 0.22f, 0.08f, 0.95f),
+                    AtmosCellState.Inactive => new Color(0.55f, 0.62f, 0.78f, 0.75f),
                     AtmosCellState.Semiactive => new Color(0.9f, 0.8f, 0.2f, 0.85f),
                     _ => new Color(0.2f, 1f, 0.3f, 0.9f),
                 };
@@ -290,7 +487,8 @@ namespace SS3D.Systems.Atmospherics
             return info.State switch
             {
                 AtmosCellState.Vacuum => new Color(0.2f, 0.2f, 0.8f, 0.8f),
-                AtmosCellState.Blocked => new Color(0.15f, 0.15f, 0.15f, 0.8f),
+                AtmosCellState.Blocked => new Color(0.45f, 0.22f, 0.08f, 0.95f),
+                AtmosCellState.Inactive => new Color(0.55f, 0.62f, 0.78f, 0.75f),
                 _ => Color.Lerp(new Color(0.2f, 0.6f, 1f), new Color(1f, 0.2f, 0.2f), Mathf.Clamp01(info.Pressure / maxPressure)),
             };
         }
@@ -335,7 +533,11 @@ namespace SS3D.Systems.Atmospherics
         private static void DrawCellCube(TileCoord coord, float height, Color color)
         {
             Vector3 center = new Vector3(coord.Grid.x, height * 0.5f, coord.Grid.y);
-            Vector3 size = new Vector3(0.95f, height, 0.95f);
+            DrawWireCube(center, new Vector3(0.95f, height, 0.95f), color);
+        }
+
+        private static void DrawWireCube(Vector3 center, Vector3 size, Color color)
+        {
             Vector3 half = size * 0.5f;
 
             Vector3 c000 = center + new Vector3(-half.x, -half.y, -half.z);
