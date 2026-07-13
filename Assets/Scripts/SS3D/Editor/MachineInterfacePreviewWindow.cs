@@ -11,7 +11,7 @@ namespace SS3D.Editor
     public class MachineInterfacePreviewWindow : EditorWindow
     {
         private ApcPowerControllerBinder _binder;
-        private MachineWindow _window;
+        private TemplateContainer _panel;
         private VisualElement _root;
         private ApcInterfaceViewModel _model = ApcInterfaceViewModel.CreateNominal();
 
@@ -20,7 +20,7 @@ namespace SS3D.Editor
         {
             MachineInterfacePreviewWindow window = GetWindow<MachineInterfacePreviewWindow>();
             window.titleContent = new GUIContent("APC Power Controller");
-            window.minSize = new Vector2(480, 640);
+            window.minSize = new Vector2(1040, 720);
             window.Show();
         }
 
@@ -71,101 +71,40 @@ namespace SS3D.Editor
 
         private void RebuildPanel()
         {
-            _window?.RemoveFromHierarchy();
+            _panel?.RemoveFromHierarchy();
 
             VisualTreeAsset template = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
                 "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uxml");
-            StyleSheet windowStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Components/MachineWindow.uss");
-            StyleSheet tokensStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss");
-            StyleSheet typographyStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/Tokens/ss3d-typography.uss");
-            StyleSheet templateStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss");
-            StyleSheet statusBannerStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBanner.uss");
-            StyleSheet powerFlowStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Components/PowerFlowRow.uss");
-            StyleSheet batteryBarStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Components/BatteryBar.uss");
-            StyleSheet channelRowStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss");
-            StyleSheet diagnosticsStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss");
-            StyleSheet statusBadgeStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss");
 
-            _window = new MachineWindow { Title = _model.Title };
-            _window.style.alignSelf = Align.Center;
-            _window.style.marginTop = 16;
+            _panel = template != null ? template.CloneTree() : new TemplateContainer();
+            ApplyStyles(_panel);
+            _panel.style.alignSelf = Align.Center;
+            _panel.style.marginTop = 16;
+            _root.Add(_panel);
 
-            if (windowStyle != null)
-            {
-                _window.styleSheets.Add(windowStyle);
-            }
-
-            if (tokensStyle != null)
-            {
-                _window.styleSheets.Add(tokensStyle);
-            }
-
-            if (typographyStyle != null)
-            {
-                _window.styleSheets.Add(typographyStyle);
-            }
-
-            TemplateContainer content = template != null ? template.CloneTree() : new TemplateContainer();
-            if (tokensStyle != null)
-            {
-                content.styleSheets.Add(tokensStyle);
-            }
-
-            if (typographyStyle != null)
-            {
-                content.styleSheets.Add(typographyStyle);
-            }
-
-            if (templateStyle != null)
-            {
-                content.styleSheets.Add(templateStyle);
-            }
-
-            if (statusBannerStyle != null)
-            {
-                content.styleSheets.Add(statusBannerStyle);
-            }
-
-            if (powerFlowStyle != null)
-            {
-                content.styleSheets.Add(powerFlowStyle);
-            }
-
-            if (batteryBarStyle != null)
-            {
-                content.styleSheets.Add(batteryBarStyle);
-            }
-
-            if (channelRowStyle != null)
-            {
-                content.styleSheets.Add(channelRowStyle);
-            }
-
-            if (diagnosticsStyle != null)
-            {
-                content.styleSheets.Add(diagnosticsStyle);
-            }
-
-            if (statusBadgeStyle != null)
-            {
-                content.styleSheets.Add(statusBadgeStyle);
-            }
-
-            _window.Content.Add(content);
-            _root.Add(_window);
-
-            _binder = new ApcPowerControllerBinder(_window);
+            _binder = new ApcPowerControllerBinder(_panel);
             _binder.Bind(_model);
+        }
+
+        private static void ApplyStyles(VisualElement root)
+        {
+            string[] stylePaths =
+            {
+                "Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss",
+                "Assets/Content/Systems/UI/Tokens/ss3d-typography.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss",
+            };
+
+            foreach (string path in stylePaths)
+            {
+                StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(path);
+                if (styleSheet != null)
+                {
+                    root.styleSheets.Add(styleSheet);
+                }
+            }
         }
     }
 }

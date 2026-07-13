@@ -75,3 +75,20 @@
 .battery-bar__state--success {
     color: var(--ss3d-feedback-success);
 }
+
+.battery-bar--compact {
+    margin-bottom: 0;
+}
+
+.battery-bar--compact .battery-bar__header,
+.battery-bar--compact .battery-bar__eta {
+    display: none;
+}
+
+.battery-bar--compact .battery-bar__track {
+    height: 14px;
+}
+
+.battery-bar--compact .battery-bar__footer {
+    justify-content: flex-end;
+}

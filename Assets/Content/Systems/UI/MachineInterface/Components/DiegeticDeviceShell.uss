@@ -84,3 +84,11 @@
 .diegetic-device-shell__screen Label {
     background-color: rgba(0, 0, 0, 0);
 }
+
+.diegetic-device-shell--apc {
+    width: var(--ss3d-diegetic-width-apc);
+}
+
+.diegetic-device-shell--smes {
+    width: var(--ss3d-diegetic-width-smes);
+}

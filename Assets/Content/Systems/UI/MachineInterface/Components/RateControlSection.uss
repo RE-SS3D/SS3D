@@ -19,6 +19,22 @@
     width: 100%;
 }
 
+.rate-control__header-right {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.rate-control__header-right .toggle-switch__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.rate-control__header-right .toggle-switch__label {
+    margin-bottom: 0;
+    margin-right: 8px;
+}
+
 .rate-control__title {
     flex-shrink: 1;
     font-size: 13px;

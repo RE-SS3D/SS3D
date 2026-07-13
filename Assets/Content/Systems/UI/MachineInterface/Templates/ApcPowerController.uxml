@@ -1,34 +1,71 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
     <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/Tokens/ss3d-typography.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBanner.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/PowerFlowRow.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/BatteryBar.uss" />
-    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss" />
 
-    <ui:VisualElement name="apc-root" class="apc-power-controller">
-        <ss3d:StatusBanner name="status-banner"
-            headline="POWER NOMINAL"
-            badge-text="NOMINAL"
-            explanation="Grid supply meets connected load."
-            tone="Success" />
-
-        <ss3d:PowerFlowRow name="power-flow" grid-input-kw="0" load-output-kw="0" />
-
-        <ss3d:BatteryBar name="battery-bar" value="1" state-text="CHARGED" eta-text="—" />
-
-        <ui:Label name="channels-title" text="CHANNELS" class="font-arcade apc-channels-title" />
-
-        <ss3d:ChannelRow name="channel-lighting" channel-name="LIGHTING" load-kw="0" is-on="true" />
-        <ss3d:ChannelRow name="channel-equipment" channel-name="EQUIPMENT" load-kw="0" is-on="true" />
-        <ss3d:ChannelRow name="channel-environment" channel-name="ENVIRONMENT" load-kw="0" is-on="true" />
-
-        <ui:Label name="shed-hint"
-            text="Non-critical channels may be shed automatically when cell charge is low."
-            class="font-body apc-shed-hint" />
-
-        <ss3d:DiagnosticsList name="diagnostics-list" />
-    </ui:VisualElement>
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        class="diegetic-device-shell--apc"
+        model-label="APC-7 · area power controller"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="WIRED · POWER NET · NODE E-12"
+            readout-text="GRID FEED NOMINAL" />
+        <ui:VisualElement class="apc-identity-row">
+            <ss3d:DeviceIdentityBlock name="identity"
+                title="APC-ENG-03"
+                subtitle="Engineering Bay 3" />
+            <ss3d:GlanceableStatusChip name="status-chip" />
+        </ui:VisualElement>
+        <ui:VisualElement class="apc-body-columns">
+            <ui:VisualElement class="apc-body-column">
+                <ss3d:PanelSection name="power-flow-section" title="Power Flow">
+                    <ss3d:PowerFlowRow name="power-flow" grid-input-kw="0" load-output-kw="0" />
+                </ss3d:PanelSection>
+                <ss3d:PanelSection name="battery-section" title="Battery">
+                    <ui:Label name="battery-state-header" text="CHARGED" class="apc-battery-state-header font-terminal" />
+                    <ss3d:BatteryBar name="battery-bar" value="1" state-text="CHARGED" eta-text="" class="battery-bar--compact" />
+                </ss3d:PanelSection>
+                <ss3d:PanelSection name="diagnostics-section" title="Diagnostics">
+                    <ss3d:DiagnosticsList name="diagnostics-list" />
+                </ss3d:PanelSection>
+            </ui:VisualElement>
+            <ui:VisualElement class="apc-body-column apc-body-column--controls">
+                <ui:VisualElement name="access-locked" class="apc-access-locked">
+                    <ss3d:AccessGatePanel name="access-gate" />
+                </ui:VisualElement>
+                <ui:VisualElement name="access-unlocked" class="apc-access-unlocked">
+                    <ss3d:AccessStrip name="access-strip" authorized-text="Engineering — Authorized" />
+                    <ss3d:PanelSection name="channels-section" title="Connected Systems">
+                        <ss3d:ChannelRow name="channel-lighting" channel-name="Lighting" load-kw="0" is-on="true" />
+                        <ss3d:ChannelRow name="channel-equipment" channel-name="Equipment" load-kw="0" is-on="true" />
+                        <ss3d:ChannelRow name="channel-environment" channel-name="Environment" load-kw="0" is-on="true" />
+                    </ss3d:PanelSection>
+                    <ui:Label name="shed-hint"
+                        text="Turning a system off here immediately reduces load — safe to disable Equipment or Environment during a shortage; Lighting is cheapest to keep on."
+                        class="font-body apc-shed-hint" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ss3d:DeviceFooter name="footer" text="SS3D Area Power Controller — Model APC-7" />
+    </ss3d:DiegeticDeviceShell>
 </ui:UXML>

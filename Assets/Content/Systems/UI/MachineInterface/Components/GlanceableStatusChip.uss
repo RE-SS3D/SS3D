@@ -1,0 +1,48 @@
+
+.glanceable-status-chip {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-width: 1px;
+    border-radius: var(--ss3d-radius-md);
+    flex-shrink: 0;
+}
+
+.glanceable-status-chip__left {
+    flex-direction: row;
+    align-items: baseline;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.glanceable-status-chip__headline {
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-right: var(--ss3d-space-3);
+}
+
+.glanceable-status-chip__right {
+    font-size: 12px;
+    color: var(--ss3d-text-secondary);
+    white-space: normal;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-left: var(--ss3d-space-2);
+    -unity-text-align: middle-right;
+}
+
+.glanceable-status-chip.tone-bg-success {
+    background-color: var(--ss3d-feedback-success-bg);
+    border-color: var(--ss3d-feedback-success);
+}
+
+.glanceable-status-chip.tone-bg-warning {
+    background-color: var(--ss3d-feedback-warning-bg);
+    border-color: var(--ss3d-feedback-warning);
+}
+
+.glanceable-status-chip.tone-bg-danger {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-color: var(--ss3d-feedback-danger);
+}

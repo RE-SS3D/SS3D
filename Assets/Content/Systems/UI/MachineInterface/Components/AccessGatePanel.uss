@@ -1,0 +1,64 @@
+
+.access-gate-panel {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    flex-grow: 1;
+}
+
+.access-gate-panel__slot {
+    width: 52px;
+    height: 36px;
+    border-radius: 3px;
+    background-color: var(--ss3d-surface-inset);
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.access-gate-panel__slot-line {
+    width: 34px;
+    height: 2px;
+    background-color: var(--ss3d-border-subtle);
+}
+
+.access-gate-panel__scan-overlay {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 2px;
+    background-color: var(--ss3d-feedback-info);
+    opacity: 0.35;
+}
+
+.access-gate-panel__headline {
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--ss3d-text-primary);
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.access-gate-panel__sub {
+    font-size: 11px;
+    color: var(--ss3d-text-tertiary);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 12px;
+}
+
+.access-gate-panel__button .steel-button__control {
+    min-width: 200px;
+    min-height: 40px;
+    background-color: var(--ss3d-feedback-info);
+    color: var(--ss3d-text-on-accent, #ffffff);
+}
+
+.access-gate-panel__button .steel-button__control:hover {
+    background-color: var(--ss3d-feedback-info-border);
+}

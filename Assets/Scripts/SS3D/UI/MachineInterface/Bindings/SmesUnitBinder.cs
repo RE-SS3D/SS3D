@@ -15,31 +15,56 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public event Action<byte, int> ActionControlChanged;
 
-        private readonly MachineWindow _window;
-        private readonly SmesStatusBanner _statusBanner;
+        private readonly DiegeticDeviceShell _shell;
+        private readonly ConnectionStatusRow _connectionRow;
+        private readonly DeviceIdentityBlock _identity;
+        private readonly GlanceableStatusChip _statusChip;
         private readonly StorageCellRow _storageCells;
         private readonly Label _chargePct;
         private readonly Label _chargeTrendText;
         private readonly SmesPowerFlowRow _powerFlow;
         private readonly RateControlSection _inputControl;
         private readonly RateControlSection _outputControl;
+        private readonly DeviceFooter _footer;
+        private readonly MachineInterfaceAccessGate _accessGate;
 
         public SmesUnitBinder(VisualElement root)
         {
-            _window = root.Q<MachineWindow>("machine-window");
-            VisualElement contentRoot = root.Q<VisualElement>("smes-root") ?? root;
+            _shell = root.Q<DiegeticDeviceShell>("device-shell") ?? root.Q<DiegeticDeviceShell>();
+            VisualElement contentRoot = _shell ?? root;
 
-            _statusBanner = contentRoot.Q<SmesStatusBanner>("status-banner");
+            _connectionRow = contentRoot.Q<ConnectionStatusRow>("connection-row");
+            _identity = contentRoot.Q<DeviceIdentityBlock>("identity");
+            _statusChip = contentRoot.Q<GlanceableStatusChip>("status-chip");
             _storageCells = contentRoot.Q<StorageCellRow>("storage-cells");
             _chargePct = contentRoot.Q<Label>("charge-pct");
             _chargeTrendText = contentRoot.Q<Label>("charge-trend-text");
             _powerFlow = contentRoot.Q<SmesPowerFlowRow>("power-flow");
             _inputControl = contentRoot.Q<RateControlSection>("input-control");
             _outputControl = contentRoot.Q<RateControlSection>("output-control");
+            _footer = contentRoot.Q<DeviceFooter>("footer");
 
-            if (_window != null)
+            VisualElement lockedPanel = contentRoot.Q<VisualElement>("access-locked");
+            VisualElement unlockedPanel = contentRoot.Q<VisualElement>("access-unlocked");
+            AccessGatePanel gatePanel = contentRoot.Q<AccessGatePanel>("access-gate");
+            AccessStrip accessStrip = contentRoot.Q<AccessStrip>("access-strip");
+
+            if (gatePanel != null)
             {
-                _window.CloseClicked += HandleWindowCloseClicked;
+                gatePanel.LockedSubline = "Insert ID card to access input/output controls";
+            }
+
+            _accessGate = new MachineInterfaceAccessGate(lockedPanel, unlockedPanel, gatePanel);
+            _accessGate.Reset();
+
+            if (_shell != null)
+            {
+                _shell.CloseClicked += HandleCloseRequested;
+            }
+
+            if (accessStrip != null)
+            {
+                accessStrip.LockRequested += () => _accessGate.Lock();
             }
 
             if (_inputControl != null)
@@ -68,17 +93,30 @@ namespace SS3D.UI.MachineInterface.Bindings
                 return;
             }
 
-            if (_window != null)
+            if (_shell != null)
             {
-                _window.Title = model.Title;
+                _shell.ModelLabel = model.ModelLabel;
+                _shell.PowerOk = model.ChassisPowerOk;
+            }
+
+            if (_connectionRow != null)
+            {
+                _connectionRow.StatusText = model.ConnectionStatus;
+                _connectionRow.DotTone = model.ChassisPowerOk ? StatusTone.Success : StatusTone.Danger;
+            }
+
+            if (_identity != null)
+            {
+                _identity.Title = model.DeviceTitle;
+                _identity.Subtitle = model.Subtitle;
             }
 
             StatusTone tone = SmesUnitBinderHelpers.GetStatusTone(model.State);
-            _statusBanner?.SetContent(
+            _statusChip?.SetContent(
                 model.ExteriorStatusWord,
                 model.StatusBadgeText,
-                model.ConnectionStateText,
-                tone);
+                tone,
+                model.ConnectionStateText);
 
             StatusTone chargeTone = SmesUnitBinderHelpers.GetChargeTone(model.ChargePct);
             _storageCells?.SetCharge(model.ChargePct, chargeTone);
@@ -113,17 +151,24 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _outputControl.MaxKw = model.OutputMaxKw;
                 _outputControl.SetAccentTone(outputTone);
             }
+
+            if (_footer != null)
+            {
+                _footer.Text = model.FooterText;
+            }
         }
 
         public void Disconnect()
         {
-            if (_window != null)
+            _accessGate?.Disconnect();
+
+            if (_shell != null)
             {
-                _window.CloseClicked -= HandleWindowCloseClicked;
+                _shell.CloseClicked -= HandleCloseRequested;
             }
         }
 
-        private void HandleWindowCloseClicked()
+        private void HandleCloseRequested()
         {
             CloseRequested?.Invoke();
         }

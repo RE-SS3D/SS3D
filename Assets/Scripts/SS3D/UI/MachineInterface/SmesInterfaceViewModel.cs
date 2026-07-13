@@ -4,6 +4,18 @@ namespace SS3D.UI.MachineInterface
     {
         public string Title { get; set; } = "SMES · ENERGY STORAGE";
 
+        public string ModelLabel { get; set; } = "SMES-02 · magnetic energy storage bank";
+
+        public string DeviceTitle { get; set; } = "SMES-02";
+
+        public string Subtitle { get; set; } = "Engineering — Substation Storage Bank";
+
+        public string ConnectionStatus { get; set; } = "WIRED · POWER NET · PORT J1";
+
+        public string FooterText { get; set; } = "SS3D Superconducting Magnetic Energy Storage — Model SMES-02";
+
+        public bool ChassisPowerOk { get; set; } = true;
+
         public SmesPowerState State { get; set; } = SmesPowerState.Nominal;
 
         public string StatusBadgeText { get; set; } = "ONLINE";
@@ -53,8 +65,6 @@ namespace SS3D.UI.MachineInterface
                 OutputEnabled = true,
                 InputActive = true,
                 OutputActive = true,
-                ExteriorInputWord = "AVAILABLE",
-                ExteriorOutputWord = "ACTIVE",
                 ConnectionStateText = "Grid link nominal — both connections healthy.",
             };
         }
@@ -65,7 +75,7 @@ namespace SS3D.UI.MachineInterface
             {
                 State = SmesPowerState.Degraded,
                 StatusBadgeText = "DEGRADED",
-                ExteriorStatusWord = "Running on Reserve",
+                ExteriorStatusWord = "On Reserve",
                 ChargePct = 0.54f,
                 ChargeTrend = SmesChargeTrend.Draining,
                 InputCurrentKw = 0f,
@@ -74,9 +84,7 @@ namespace SS3D.UI.MachineInterface
                 OutputEnabled = true,
                 InputActive = false,
                 OutputActive = true,
-                ExteriorInputWord = "NO SIGNAL",
-                ExteriorOutputWord = "ACTIVE",
-                ConnectionStateText = "Input link down — output still served from storage.",
+                ConnectionStateText = "Input down — serving from storage.",
             };
         }
 
@@ -95,8 +103,6 @@ namespace SS3D.UI.MachineInterface
                 OutputEnabled = true,
                 InputActive = true,
                 OutputActive = true,
-                ExteriorInputWord = "AVAILABLE",
-                ExteriorOutputWord = "OVERDRAWN",
                 ConnectionStateText = "Distribution grid drawing more than input supplies.",
             };
         }
@@ -108,6 +114,7 @@ namespace SS3D.UI.MachineInterface
                 State = SmesPowerState.Fault,
                 StatusBadgeText = "FAULT",
                 ExteriorStatusWord = "SMES Offline",
+                ChassisPowerOk = false,
                 ChargePct = 0.04f,
                 ChargeTrend = SmesChargeTrend.Critical,
                 InputCurrentKw = 0f,
@@ -116,8 +123,6 @@ namespace SS3D.UI.MachineInterface
                 OutputEnabled = false,
                 InputActive = false,
                 OutputActive = false,
-                ExteriorInputWord = "DISABLED",
-                ExteriorOutputWord = "DISABLED (auto-cutoff)",
                 ConnectionStateText = "Both links down — unit in protective shutdown.",
             };
         }

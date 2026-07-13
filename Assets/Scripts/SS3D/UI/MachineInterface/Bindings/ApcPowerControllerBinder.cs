@@ -14,39 +14,72 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public event Action<byte, int> ActionControlChanged;
 
-        private readonly MachineWindow _window;
-        private readonly StatusBanner _statusBanner;
+        private readonly DiegeticDeviceShell _shell;
+        private readonly ConnectionStatusRow _connectionRow;
+        private readonly DeviceIdentityBlock _identity;
+        private readonly GlanceableStatusChip _statusChip;
         private readonly PowerFlowRow _powerFlow;
+        private readonly Label _batteryStateHeader;
         private readonly BatteryBar _batteryBar;
+        private readonly DiagnosticsList _diagnosticsList;
         private readonly ChannelRow _lightingChannel;
         private readonly ChannelRow _equipmentChannel;
         private readonly ChannelRow _environmentChannel;
-        private readonly DiagnosticsList _diagnosticsList;
+        private readonly DeviceFooter _footer;
+        private readonly MachineInterfaceAccessGate _accessGate;
 
         public ApcPowerControllerBinder(VisualElement root)
         {
-            _window = root.Q<MachineWindow>("machine-window");
-            VisualElement contentRoot = root.Q<VisualElement>("apc-root") ?? root;
+            _shell = root.Q<DiegeticDeviceShell>("device-shell") ?? root.Q<DiegeticDeviceShell>();
+            VisualElement contentRoot = _shell ?? root;
 
-            _statusBanner = contentRoot.Q<StatusBanner>("status-banner");
+            _connectionRow = contentRoot.Q<ConnectionStatusRow>("connection-row");
+            _identity = contentRoot.Q<DeviceIdentityBlock>("identity");
+            _statusChip = contentRoot.Q<GlanceableStatusChip>("status-chip");
             _powerFlow = contentRoot.Q<PowerFlowRow>("power-flow");
+            _batteryStateHeader = contentRoot.Q<Label>("battery-state-header");
             _batteryBar = contentRoot.Q<BatteryBar>("battery-bar");
+            _diagnosticsList = contentRoot.Q<DiagnosticsList>("diagnostics-list");
             _lightingChannel = contentRoot.Q<ChannelRow>("channel-lighting");
             _equipmentChannel = contentRoot.Q<ChannelRow>("channel-equipment");
             _environmentChannel = contentRoot.Q<ChannelRow>("channel-environment");
-            _diagnosticsList = contentRoot.Q<DiagnosticsList>("diagnostics-list");
+            _footer = contentRoot.Q<DeviceFooter>("footer");
 
-            if (_window != null)
+            VisualElement lockedPanel = contentRoot.Q<VisualElement>("access-locked");
+            VisualElement unlockedPanel = contentRoot.Q<VisualElement>("access-unlocked");
+            AccessGatePanel gatePanel = contentRoot.Q<AccessGatePanel>("access-gate");
+            AccessStrip accessStrip = contentRoot.Q<AccessStrip>("access-strip");
+
+            _accessGate = new MachineInterfaceAccessGate(lockedPanel, unlockedPanel, gatePanel);
+            _accessGate.Reset();
+
+            if (_shell != null)
             {
-                _window.CloseClicked += HandleWindowCloseClicked;
+                _shell.CloseClicked += HandleCloseRequested;
             }
 
-            _lightingChannel.ValueChanged += value =>
-                BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Lighting, value);
-            _equipmentChannel.ValueChanged += value =>
-                BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Equipment, value);
-            _environmentChannel.ValueChanged += value =>
-                BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Environment, value);
+            if (accessStrip != null)
+            {
+                accessStrip.LockRequested += () => _accessGate.Lock();
+            }
+
+            if (_lightingChannel != null)
+            {
+                _lightingChannel.ValueChanged += value =>
+                    BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Lighting, value);
+            }
+
+            if (_equipmentChannel != null)
+            {
+                _equipmentChannel.ValueChanged += value =>
+                    BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Equipment, value);
+            }
+
+            if (_environmentChannel != null)
+            {
+                _environmentChannel.ValueChanged += value =>
+                    BoolControlChanged?.Invoke(MachineInterfaceControlIds.Apc.Environment, value);
+            }
         }
 
         public void Bind(IMachineInterfaceViewModel viewModel)
@@ -56,9 +89,23 @@ namespace SS3D.UI.MachineInterface.Bindings
                 return;
             }
 
-            if (_window != null)
+            if (_shell != null)
             {
-                _window.Title = model.Title;
+                _shell.ModelLabel = model.ModelLabel;
+                _shell.PowerOk = model.ChassisPowerOk;
+            }
+
+            if (_connectionRow != null)
+            {
+                _connectionRow.StatusText = model.ConnectionStatus;
+                _connectionRow.ReadoutText = model.HeaderReadout;
+                _connectionRow.DotTone = StatusTone.Info;
+            }
+
+            if (_identity != null)
+            {
+                _identity.Title = model.DeviceTitle;
+                _identity.Subtitle = model.Subtitle;
             }
 
             StatusTone tone = model.State switch
@@ -75,32 +122,79 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _ => "NOMINAL",
             };
 
-            _statusBanner.SetContent(model.StatusHeadline, badgeText, model.StatusExplanation, tone);
-            _powerFlow.GridInputKw = model.GridInputKw;
-            _powerFlow.LoadOutputKw = model.LoadOutputKw;
+            _statusChip?.SetContent(model.StatusHeadline, badgeText, tone);
+            BindPowerFlow(model, tone);
             _batteryBar.Value = model.BatteryCharge;
             _batteryBar.StateText = model.BatteryStateText;
-            _batteryBar.EtaText = model.BatteryEtaText;
+            if (_batteryStateHeader != null)
+            {
+                _batteryStateHeader.text = model.BatteryStateText;
+            }
 
-            _lightingChannel.LoadKw = model.LightingLoadKw;
-            _lightingChannel.IsOn = model.LightingOn;
-            _equipmentChannel.LoadKw = model.EquipmentLoadKw;
-            _equipmentChannel.IsOn = model.EquipmentOn;
-            _environmentChannel.LoadKw = model.EnvironmentLoadKw;
-            _environmentChannel.IsOn = model.EnvironmentOn;
+            if (_lightingChannel != null)
+            {
+                _lightingChannel.LoadKw = model.LightingLoadKw;
+                _lightingChannel.IsOn = model.LightingOn;
+            }
 
-            _diagnosticsList.SetLines(model.Diagnostics);
+            if (_equipmentChannel != null)
+            {
+                _equipmentChannel.LoadKw = model.EquipmentLoadKw;
+                _equipmentChannel.IsOn = model.EquipmentOn;
+            }
+
+            if (_environmentChannel != null)
+            {
+                _environmentChannel.LoadKw = model.EnvironmentLoadKw;
+                _environmentChannel.IsOn = model.EnvironmentOn;
+            }
+
+            _diagnosticsList?.SetLines(model.Diagnostics);
+
+            if (_footer != null)
+            {
+                _footer.Text = model.FooterText;
+            }
         }
 
         public void Disconnect()
         {
-            if (_window != null)
+            _accessGate?.Disconnect();
+
+            if (_shell != null)
             {
-                _window.CloseClicked -= HandleWindowCloseClicked;
+                _shell.CloseClicked -= HandleCloseRequested;
             }
         }
 
-        private void HandleWindowCloseClicked()
+        private void BindPowerFlow(ApcInterfaceViewModel model, StatusTone tone)
+        {
+            _powerFlow.GridInputKw = model.GridInputKw;
+            _powerFlow.LoadOutputKw = model.LoadOutputKw;
+
+            switch (model.State)
+            {
+                case ApcPowerState.Critical:
+                {
+                    _powerFlow.SetFlowDisplay("✕", StatusTone.Danger, StatusTone.Danger);
+                    break;
+                }
+
+                case ApcPowerState.Overload:
+                {
+                    _powerFlow.SetFlowDisplay("⇄", StatusTone.Warning, StatusTone.Warning);
+                    break;
+                }
+
+                default:
+                {
+                    _powerFlow.SetFlowDisplay("→", StatusTone.Success, StatusTone.Success);
+                    break;
+                }
+            }
+        }
+
+        private void HandleCloseRequested()
         {
             CloseRequested?.Invoke();
         }

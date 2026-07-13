@@ -6,7 +6,7 @@
 
 ## Overview
 
-UI Toolkit panels for station machines, networked via FishNet snapshots. APC and SMES use modal `MachineWindow` shells; newer diegetic devices use `DiegeticDeviceShell` (chassis/bezel/screen). Shared view-model/binder pattern and registry-driven registration. `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the [selection](selection.md) pick pass. SMES input/output is controlled only through the machine interface (no world toggle interaction). APC grid-in display uses per-tick cached draw from the electricity subsystem.
+UI Toolkit panels for station machines, networked via FishNet snapshots. APC and SMES use the diegetic `DiegeticDeviceShell` (chassis/bezel/screen) with engineering ID access gates; vending and gas pump use the same shell pattern. Shared view-model/binder pattern and registry-driven registration. `MachineInterfaceHost` disables `UIDocument` when closed to avoid interfering with the [selection](selection.md) pick pass. SMES input/output is controlled only through the machine interface (no world toggle interaction). APC grid-in display uses per-tick cached draw from the electricity subsystem.
 
 ## Start here
 
@@ -19,8 +19,11 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcInterfaceSnapshot.cs` — APC snapshot fields (includes `MultipleApcsInArea` overlap flag)
 - `Assets/Scripts/SS3D/UI/MachineInterface/ApcStatusDeriver.cs` — APC nominal/overload/critical derivation from circuit stats
 - `Assets/Scripts/SS3D/UI/MachineInterface/SmesController.cs` — SMES panel; input/output enable and rate limits
-- `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/ApcPowerControllerBinder.cs` — APC panel binder
-- `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/SmesUnitBinder.cs` — SMES panel binder
+- `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/ApcPowerControllerBinder.cs` — APC panel binder (diegetic shell, access gate)
+- `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/SmesUnitBinder.cs` — SMES panel binder (diegetic shell, access gate)
+- `Assets/Scripts/SS3D/UI/MachineInterface/Components/AccessGatePanel.cs` — ID swipe gate for engineering controls
+- `Assets/Scripts/SS3D/UI/MachineInterface/Components/GlanceableStatusChip.cs` — compact status headline + badge row
+- `Assets/Scripts/SS3D/UI/MachineInterface/Components/ToggleSwitch.cs` — slider toggle for channel and rate controls
 - `Assets/Scripts/SS3D/UI/MachineInterface/Bindings/VendingMachineBinder.cs` — vending panel binder
 - `Assets/Scripts/SS3D/UI/MachineInterface/VendingMachineController.cs` — vending networked controller
 - `Assets/Scripts/SS3D/UI/MachineInterface/OpenMachineInterfaceInteraction.cs` — interaction to open panel
@@ -30,9 +33,9 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 
 ## Extension points
 
-**New modal machine (APC/SMES pattern):** snapshot, serializer, mapper, view model, binder, UXML/USS; register in `MachineInterfaceHost.RegisterUiEntries` with `ShellKind = ModalWindow`; subclass `MachineInterfaceBehaviour`; register snapshot in `MachineInterfaceNetworkRegistry`.
+**New modal machine (legacy `MachineWindow` still available for simple panels):** snapshot, serializer, mapper, view model, binder, UXML/USS; register in `MachineInterfaceHost.RegisterUiEntries` with `ShellKind = ModalWindow`; subclass `MachineInterfaceBehaviour`; register snapshot in `MachineInterfaceNetworkRegistry`.
 
-**New diegetic device:** same pipeline plus diegetic components under `Components/`; set `ShellKind = DiegeticDevice`; reference component USS files in UXML `<ui:Style>` tags. Host mounts the full cloned `TemplateContainer` so styles stay attached — do not add only the inner shell to the overlay.
+**New diegetic machine (APC/SMES/vending/gas pump pattern):** same pipeline plus diegetic components under `Components/`; set `ShellKind = DiegeticDevice`; use `AccessGatePanel` + `AccessStrip` when controls require engineering ID unlock; reference component USS files in UXML `<ui:Style>` tags. Host mounts the full cloned `TemplateContainer` so styles stay attached — do not add only the inner shell to the overlay.
 
 **Action controls:** add IDs in `MachineInterfaceControlIds`, handle in binder (`ActionControlChanged`) and controller (`ApplyActionControl`).
 

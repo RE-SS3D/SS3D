@@ -41,7 +41,7 @@ Authoring conventions: [Documents/SKILL.md](../SKILL.md). Agent rules: [AGENTS.m
 | Gamemodes / roles / traits | [gamemodes-roles-traits](systems/gamemodes-roles-traits.md) | stub | Objectives, job roles, character traits |
 | Player control | [player-control](systems/player-control.md) | stub | Player subsystem and input routing |
 | Chat / audio / screens | [chat-audio-screens](systems/chat-audio-screens.md) | stub | Chat, audio, camera controllers |
-| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Modal APC/SMES panels and diegetic device shell (vending) |
+| Machine interface UI | [machine-interface](systems/machine-interface.md) | shipped | Diegetic APC/SMES panels with ID access gates; vending/gas pump diegetic shell |
 | Inputs | [inputs](systems/inputs.md) | stub | Input subsystem |
 | In-game console | [ingame-console](systems/ingame-console.md) | stub | Dev/admin console commands |
 

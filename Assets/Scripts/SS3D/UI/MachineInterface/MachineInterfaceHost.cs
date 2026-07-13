@@ -303,21 +303,42 @@ namespace SS3D.UI.MachineInterface
 
             _apcComponentStyles = EnsureComponentStyles(
                 _apcComponentStyles,
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBanner.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/PowerFlowRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/BatteryBar.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss");
+                "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
 
             _smesComponentStyles = EnsureComponentStyles(
                 _smesComponentStyles,
-                "Assets/Content/Systems/UI/MachineInterface/Components/SmesStatusBanner.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/StorageCellRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/SmesPowerFlowRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/TogglePill.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss");
+                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss");
 
             _vendingComponentStyles = EnsureComponentStyles(
                 _vendingComponentStyles,
@@ -424,8 +445,7 @@ namespace SS3D.UI.MachineInterface
                 Template = _apcTemplate,
                 TemplateStyle = _apcTemplateStyle,
                 ComponentStyles = _apcComponentStyles,
-                ShellKind = MachineInterfaceShellKind.ModalWindow,
-                Wide = false,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new ApcPowerControllerBinder(root),
             });
 
@@ -435,8 +455,7 @@ namespace SS3D.UI.MachineInterface
                 Template = _smesTemplate,
                 TemplateStyle = _smesTemplateStyle,
                 ComponentStyles = _smesComponentStyles,
-                ShellKind = MachineInterfaceShellKind.ModalWindow,
-                Wide = true,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new SmesUnitBinder(root),
             });
 
