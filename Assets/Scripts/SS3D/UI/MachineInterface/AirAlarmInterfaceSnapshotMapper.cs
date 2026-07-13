@@ -1,4 +1,5 @@
 using SS3D.Systems.Atmospherics.Pipes;
+using System.Collections.Generic;
 
 namespace SS3D.UI.MachineInterface
 {
@@ -23,39 +24,11 @@ namespace SS3D.UI.MachineInterface
             model.ChassisPowerOk = snapshot.PowerOk;
             model.AccessGranted = snapshot.AccessGranted;
             model.AccessScanning = snapshot.AccessScanning;
+            model.Scenario = scenario;
 
-            if (snapshot.PressureKpa > 0f)
+            if (snapshot.HasSample)
             {
-                model.PressureText = $"{snapshot.PressureKpa:0.0} kPa";
-            }
-
-            if (snapshot.OxygenFraction > 0f)
-            {
-                float oxygenPercent = snapshot.OxygenFraction * 100f;
-                foreach (AirAlarmGasReadout readout in model.GasReadouts)
-                {
-                    if (readout.Label == "O2")
-                    {
-                        readout.Percent = oxygenPercent;
-                    }
-                }
-            }
-
-            if (snapshot.CarbonDioxideFraction > 0f)
-            {
-                float co2Percent = snapshot.CarbonDioxideFraction * 100f;
-                foreach (AirAlarmGasReadout readout in model.GasReadouts)
-                {
-                    if (readout.Label == "CO2")
-                    {
-                        readout.Percent = co2Percent;
-                    }
-                }
-            }
-
-            if (scenario == AirAlarmScenario.Warning && snapshot.PressureKpa > 0f)
-            {
-                model.PressureText = $"{snapshot.PressureKpa:0.0} kPa";
+                ApplyLiveReadings(model, snapshot);
             }
 
             model.ActiveMode = (AirAlarmPresetMode)snapshot.ActiveMode;
@@ -75,6 +48,71 @@ namespace SS3D.UI.MachineInterface
             }
 
             return model;
+        }
+
+        private static void ApplyLiveReadings(AirAlarmInterfaceViewModel model, AirAlarmInterfaceSnapshot snapshot)
+        {
+            model.PressureText = $"{snapshot.PressureKpa:0.0} kPa";
+            model.PressureTone = DerivePressureTone(snapshot.PressureKpa);
+
+            float temperatureC = snapshot.TemperatureKelvin - 273.15f;
+            model.TemperatureText = $"{temperatureC:0.0}°C";
+            model.TemperatureTone = DeriveTemperatureTone(snapshot.TemperatureKelvin);
+
+            model.GasReadouts = new List<AirAlarmGasReadout>
+            {
+                CreateGasReadout("O2", snapshot.OxygenFraction, AirAlarmConstants.LowOxygenMoleFraction, belowThresholdIsBad: true),
+                CreateGasReadout("N2", snapshot.NitrogenFraction),
+                CreateGasReadout("CO2", snapshot.CarbonDioxideFraction, AirAlarmConstants.HighCarbonDioxideMoleFraction, belowThresholdIsBad: false),
+                CreateGasReadout("Plasma", snapshot.PlasmaFraction, AirAlarmConstants.HighPlasmaMoleFraction, belowThresholdIsBad: false),
+            };
+        }
+
+        private static AirAlarmGasReadout CreateGasReadout(
+            string label,
+            float moleFraction,
+            float threshold = 0f,
+            bool belowThresholdIsBad = false)
+        {
+            float percent = moleFraction * 100f;
+            StatusTone tone = StatusTone.Info;
+            if (threshold > 0f)
+            {
+                if (belowThresholdIsBad && moleFraction < threshold)
+                {
+                    tone = StatusTone.Warning;
+                }
+                else if (!belowThresholdIsBad && moleFraction > threshold)
+                {
+                    tone = label == "Plasma" ? StatusTone.Danger : StatusTone.Warning;
+                }
+            }
+
+            return new AirAlarmGasReadout
+            {
+                Label = label,
+                Percent = percent,
+                ValueTone = tone == StatusTone.Info ? StatusTone.Success : tone,
+                BarTone = tone,
+            };
+        }
+
+        private static StatusTone DerivePressureTone(float pressureKpa)
+        {
+            if (pressureKpa > AirAlarmConstants.HighPressureKpa
+                || pressureKpa < AirAlarmConstants.LowPressureKpa)
+            {
+                return StatusTone.Warning;
+            }
+
+            return StatusTone.Success;
+        }
+
+        private static StatusTone DeriveTemperatureTone(float temperatureKelvin)
+        {
+            return temperatureKelvin > AirAlarmConstants.HighTemperatureKelvin
+                ? StatusTone.Warning
+                : StatusTone.Success;
         }
     }
 }

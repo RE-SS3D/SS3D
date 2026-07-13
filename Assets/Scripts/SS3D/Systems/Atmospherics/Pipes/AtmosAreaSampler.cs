@@ -9,21 +9,30 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public readonly int CellCount;
         public readonly float AveragePressureKpa;
         public readonly float OxygenMoleFraction;
+        public readonly float NitrogenMoleFraction;
         public readonly float CarbonDioxideMoleFraction;
+        public readonly float PlasmaMoleFraction;
+        public readonly float TemperatureKelvin;
 
         public AtmosAreaSample(
             int cellCount,
             float averagePressureKpa,
             float oxygenMoleFraction,
-            float carbonDioxideMoleFraction)
+            float nitrogenMoleFraction,
+            float carbonDioxideMoleFraction,
+            float plasmaMoleFraction,
+            float temperatureKelvin)
         {
             CellCount = cellCount;
             AveragePressureKpa = averagePressureKpa;
             OxygenMoleFraction = oxygenMoleFraction;
+            NitrogenMoleFraction = nitrogenMoleFraction;
             CarbonDioxideMoleFraction = carbonDioxideMoleFraction;
+            PlasmaMoleFraction = plasmaMoleFraction;
+            TemperatureKelvin = temperatureKelvin;
         }
 
-        public static AtmosAreaSample Empty => new(0, 0f, 0f, 0f);
+        public static AtmosAreaSample Empty => new(0, 0f, 0f, 0f, 0f, 0f, AtmosConstants.StandardTemperature);
     }
 
     /// <summary>
@@ -47,7 +56,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
             int cellCount = 0;
             float pressureSum = 0f;
             float oxygenSum = 0f;
+            float nitrogenSum = 0f;
             float carbonDioxideSum = 0f;
+            float plasmaSum = 0f;
+            float temperatureSum = 0f;
             float totalMolesSum = 0f;
 
             foreach (TileChunk chunk in map.GetAllChunks())
@@ -68,14 +80,16 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
                         Vector3 world = chunk.GetWorldPosition(x, y);
                         TileCoord coord = query.WorldToTile(world, map.MapId);
-                        if (!simulation.TryGetCellDebugInfo(coord, out _))
+                        if (!simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info))
                         {
                             continue;
                         }
 
                         float pressure = simulation.GetCellPressure(coord);
                         float oxygen = simulation.DebugGetMoles(coord, AtmosConstants.Oxygen);
+                        float nitrogen = simulation.DebugGetMoles(coord, AtmosConstants.Nitrogen);
                         float carbonDioxide = simulation.DebugGetMoles(coord, AtmosConstants.CarbonDioxide);
+                        float plasma = simulation.DebugGetMoles(coord, AtmosConstants.Plasma);
                         float totalMoles = 0f;
                         for (int gasId = 0; gasId < AtmosConstants.DefaultGasCount; gasId++)
                         {
@@ -90,7 +104,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
                         cellCount++;
                         pressureSum += pressure;
                         oxygenSum += oxygen;
+                        nitrogenSum += nitrogen;
                         carbonDioxideSum += carbonDioxide;
+                        plasmaSum += plasma;
+                        temperatureSum += info.Temperature;
                         totalMolesSum += totalMoles;
                     }
                 }
@@ -105,21 +122,25 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 cellCount,
                 pressureSum / cellCount,
                 oxygenSum / totalMolesSum,
-                carbonDioxideSum / totalMolesSum);
+                nitrogenSum / totalMolesSum,
+                carbonDioxideSum / totalMolesSum,
+                plasmaSum / totalMolesSum,
+                temperatureSum / cellCount);
             return true;
         }
 
         public static bool TrySampleTile(TileCoord coord, AtmosSimulation simulation, out AtmosAreaSample sample)
         {
             sample = AtmosAreaSample.Empty;
-            if (simulation == null || !simulation.TryGetCellDebugInfo(coord, out _))
+            if (simulation == null || !simulation.TryGetCellDebugInfo(coord, out AtmosCellDebugInfo info))
             {
                 return false;
             }
 
-            float pressure = simulation.GetCellPressure(coord);
             float oxygen = simulation.DebugGetMoles(coord, AtmosConstants.Oxygen);
+            float nitrogen = simulation.DebugGetMoles(coord, AtmosConstants.Nitrogen);
             float carbonDioxide = simulation.DebugGetMoles(coord, AtmosConstants.CarbonDioxide);
+            float plasma = simulation.DebugGetMoles(coord, AtmosConstants.Plasma);
             float totalMoles = 0f;
             for (int gasId = 0; gasId < AtmosConstants.DefaultGasCount; gasId++)
             {
@@ -133,9 +154,12 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             sample = new AtmosAreaSample(
                 1,
-                pressure,
+                simulation.GetCellPressure(coord),
                 oxygen / totalMoles,
-                carbonDioxide / totalMoles);
+                nitrogen / totalMoles,
+                carbonDioxide / totalMoles,
+                plasma / totalMoles,
+                info.Temperature);
             return true;
         }
     }

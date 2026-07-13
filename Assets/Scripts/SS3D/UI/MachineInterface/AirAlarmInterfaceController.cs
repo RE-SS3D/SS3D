@@ -231,8 +231,13 @@ namespace SS3D.UI.MachineInterface
             {
                 scenario = AirAlarmScenario.Danger;
             }
+            else if ((alarmState & AirAlarmState.HighPlasma) != 0)
+            {
+                scenario = AirAlarmScenario.Danger;
+            }
             else if ((alarmState & AirAlarmState.LowOxygen) != 0
-                || (alarmState & AirAlarmState.HighCarbonDioxide) != 0)
+                || (alarmState & AirAlarmState.HighCarbonDioxide) != 0
+                || (alarmState & AirAlarmState.HighTemperature) != 0)
             {
                 scenario = AirAlarmScenario.Warning;
             }
@@ -264,6 +269,10 @@ namespace SS3D.UI.MachineInterface
                 PressureKpa = _airAlarm != null ? _airAlarm.SamplePressureKpa : 0f,
                 OxygenFraction = _airAlarm != null ? _airAlarm.SampleOxygenFraction : 0f,
                 CarbonDioxideFraction = _airAlarm != null ? _airAlarm.SampleCarbonDioxideFraction : 0f,
+                NitrogenFraction = _airAlarm != null ? _airAlarm.SampleNitrogenFraction : 0f,
+                PlasmaFraction = _airAlarm != null ? _airAlarm.SamplePlasmaFraction : 0f,
+                TemperatureKelvin = _airAlarm != null ? _airAlarm.SampleTemperatureKelvin : 0f,
+                HasSample = _airAlarm != null && _airAlarm.HasSample,
                 ActiveMode = (byte)(_airAlarm != null ? _airAlarm.ActiveMode : AirAlarmPresetMode.Filtering),
                 SelectedDeviceId = _selectedDeviceId ?? string.Empty,
                 ConnectedDevices = connectedDevices,

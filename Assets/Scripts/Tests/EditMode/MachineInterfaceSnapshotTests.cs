@@ -145,6 +145,13 @@ namespace EditorTests
                 InterfaceId = MachineInterfaceIds.AirAlarm,
                 Title = "AIR ALARM",
                 ActiveMode = (byte)AirAlarmPresetMode.Panic,
+                HasSample = true,
+                PressureKpa = 101.3f,
+                OxygenFraction = 0.21f,
+                NitrogenFraction = 0.78f,
+                CarbonDioxideFraction = 0.01f,
+                PlasmaFraction = 0.001f,
+                TemperatureKelvin = 294f,
                 ConnectedDevices = new System.Collections.Generic.List<AirAlarmDeviceSnapshot>
                 {
                     new()
@@ -176,10 +183,39 @@ namespace EditorTests
 
             Assert.AreEqual(original.MachineObjectId, roundTripped.MachineObjectId);
             Assert.AreEqual(original.ActiveMode, roundTripped.ActiveMode);
+            Assert.AreEqual(original.HasSample, roundTripped.HasSample);
+            Assert.AreEqual(original.PlasmaFraction, roundTripped.PlasmaFraction);
+            Assert.AreEqual(original.TemperatureKelvin, roundTripped.TemperatureKelvin);
             Assert.AreEqual(2, roundTripped.ConnectedDevices.Count);
             Assert.AreEqual("101", roundTripped.ConnectedDevices[0].Id);
             Assert.AreEqual("Scrubber — South", roundTripped.ConnectedDevices[1].Name);
             Assert.IsTrue(roundTripped.ConnectedDevices[1].FilterPlasma);
+        }
+
+        [Test]
+        public void AirAlarmSnapshotMapper_AppliesLiveGasTemperatureAndPressureReadings()
+        {
+            AirAlarmInterfaceSnapshot snapshot = new()
+            {
+                Scenario = (byte)AirAlarmScenario.Normal,
+                HasSample = true,
+                PressureKpa = 88.4f,
+                TemperatureKelvin = 330f,
+                OxygenFraction = 0.19f,
+                NitrogenFraction = 0.75f,
+                CarbonDioxideFraction = 0.04f,
+                PlasmaFraction = 0.02f,
+            };
+
+            AirAlarmInterfaceViewModel model = AirAlarmInterfaceSnapshotMapper.ToViewModel(snapshot);
+
+            Assert.AreEqual("88.4 kPa", model.PressureText);
+            Assert.AreEqual("56.9°C", model.TemperatureText);
+            Assert.AreEqual(4, model.GasReadouts.Count);
+            Assert.AreEqual(19f, model.GasReadouts[0].Percent, 0.1f);
+            Assert.AreEqual(75f, model.GasReadouts[1].Percent, 0.1f);
+            Assert.AreEqual(4f, model.GasReadouts[2].Percent, 0.1f);
+            Assert.AreEqual(2f, model.GasReadouts[3].Percent, 0.1f);
         }
 
         [Test]

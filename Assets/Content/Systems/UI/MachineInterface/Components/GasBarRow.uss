@@ -2,6 +2,7 @@
 .gas-bar-row {
     flex-direction: row;
     align-items: center;
+    width: 100%;
 }
 
 .gas-bar-row__label {

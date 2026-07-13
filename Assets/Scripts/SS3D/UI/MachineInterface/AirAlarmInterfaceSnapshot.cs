@@ -30,6 +30,14 @@ namespace SS3D.UI.MachineInterface
 
         public float CarbonDioxideFraction;
 
+        public float NitrogenFraction;
+
+        public float PlasmaFraction;
+
+        public float TemperatureKelvin;
+
+        public bool HasSample;
+
         public byte ActiveMode;
 
         public string SelectedDeviceId;

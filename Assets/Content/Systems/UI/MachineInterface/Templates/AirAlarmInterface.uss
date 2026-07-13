@@ -34,6 +34,7 @@
 
 .air-alarm-gas-list {
     flex-direction: column;
+    width: 100%;
 }
 
 .air-alarm-gas-list .gas-bar-row {

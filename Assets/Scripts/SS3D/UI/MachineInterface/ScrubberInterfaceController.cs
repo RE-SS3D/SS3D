@@ -154,12 +154,20 @@ namespace SS3D.UI.MachineInterface
                 scenario = ScrubberScenario.Idle;
             }
 
-            _scrubber?.GetFilterStates(
-                out bool filterO2,
-                out bool filterN2,
-                out bool filterCo2,
-                out bool filterPlasma,
-                out bool filterToxins);
+            bool filterO2 = true;
+            bool filterN2 = true;
+            bool filterCo2 = true;
+            bool filterPlasma = false;
+            bool filterToxins = true;
+            if (_scrubber != null)
+            {
+                _scrubber.GetFilterStates(
+                    out filterO2,
+                    out filterN2,
+                    out filterCo2,
+                    out filterPlasma,
+                    out filterToxins);
+            }
 
             return new ScrubberInterfaceSnapshot
             {

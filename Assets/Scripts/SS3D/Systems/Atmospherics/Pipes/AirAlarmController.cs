@@ -19,6 +19,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
         HighCarbonDioxide = 1 << 1,
         HighPressure = 1 << 2,
         LowPressure = 1 << 3,
+        HighPlasma = 1 << 4,
+        HighTemperature = 1 << 5,
     }
 
     /// <summary>
@@ -51,6 +53,18 @@ namespace SS3D.Systems.Atmospherics.Pipes
         private float _sampleCarbonDioxideFraction;
 
         [SyncVar]
+        private float _sampleNitrogenFraction;
+
+        [SyncVar]
+        private float _samplePlasmaFraction;
+
+        [SyncVar]
+        private float _sampleTemperatureKelvin;
+
+        [SyncVar]
+        private bool _hasSample;
+
+        [SyncVar]
         private byte _activeMode = (byte)AirAlarmPresetMode.Filtering;
 
         private PlacedTileObject _tileObject;
@@ -75,6 +89,14 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public float SampleOxygenFraction => _sampleOxygenFraction;
 
         public float SampleCarbonDioxideFraction => _sampleCarbonDioxideFraction;
+
+        public float SampleNitrogenFraction => _sampleNitrogenFraction;
+
+        public float SamplePlasmaFraction => _samplePlasmaFraction;
+
+        public float SampleTemperatureKelvin => _sampleTemperatureKelvin;
+
+        public bool HasSample => _hasSample;
 
         public override void OnStartServer()
         {
@@ -155,6 +177,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (!_hasArea || !IsPowered())
             {
                 _alarmState = AirAlarmState.None;
+                _hasSample = false;
                 return;
             }
 
@@ -164,6 +187,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 || _tileObject == null)
             {
                 _alarmState = AirAlarmState.None;
+                _hasSample = false;
                 return;
             }
 
@@ -178,12 +202,17 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (!AtmosAreaSampler.TrySampleTile(sampleCoord, atmosSubSystem.Simulation, out AtmosAreaSample sample))
             {
                 _alarmState = AirAlarmState.None;
+                _hasSample = false;
                 return;
             }
 
+            _hasSample = true;
             _samplePressureKpa = sample.AveragePressureKpa;
             _sampleOxygenFraction = sample.OxygenMoleFraction;
+            _sampleNitrogenFraction = sample.NitrogenMoleFraction;
             _sampleCarbonDioxideFraction = sample.CarbonDioxideMoleFraction;
+            _samplePlasmaFraction = sample.PlasmaMoleFraction;
+            _sampleTemperatureKelvin = sample.TemperatureKelvin;
 
             AirAlarmState next = AirAlarmState.None;
             if (sample.OxygenMoleFraction < AirAlarmConstants.LowOxygenMoleFraction)
@@ -194,6 +223,10 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 next |= AirAlarmState.HighPressure;
             if (sample.AveragePressureKpa < AirAlarmConstants.LowPressureKpa)
                 next |= AirAlarmState.LowPressure;
+            if (sample.PlasmaMoleFraction > AirAlarmConstants.HighPlasmaMoleFraction)
+                next |= AirAlarmState.HighPlasma;
+            if (sample.TemperatureKelvin > AirAlarmConstants.HighTemperatureKelvin)
+                next |= AirAlarmState.HighTemperature;
 
             _alarmState = next;
         }
@@ -216,9 +249,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
             }
 
             string status = _alarmState == AirAlarmState.None ? "Nominal" : _alarmState.ToString();
+            float temperatureC = _sampleTemperatureKelvin - 273.15f;
             sections.Add(new ExamineSection(
                 $"Air alarm: {status}. Pressure {_samplePressureKpa:F1} kPa. " +
-                $"O₂ {_sampleOxygenFraction:P1}. CO₂ {_sampleCarbonDioxideFraction:P2}."));
+                $"Temp {temperatureC:F1}°C. O₂ {_sampleOxygenFraction:P1}. " +
+                $"CO₂ {_sampleCarbonDioxideFraction:P2}. Plasma {_samplePlasmaFraction:P2}."));
         }
 
         private void Initialize()

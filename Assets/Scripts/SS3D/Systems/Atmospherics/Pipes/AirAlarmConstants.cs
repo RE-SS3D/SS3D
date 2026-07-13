@@ -13,5 +13,11 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         /// <summary>Alarm when sampled pressure drops below this (kPa).</summary>
         public const float LowPressureKpa = 80f;
+
+        /// <summary>Alarm when sampled plasma mole fraction exceeds this.</summary>
+        public const float HighPlasmaMoleFraction = 0.001f;
+
+        /// <summary>Alarm when sampled temperature exceeds this (Kelvin).</summary>
+        public const float HighTemperatureKelvin = 323.15f;
     }
 }

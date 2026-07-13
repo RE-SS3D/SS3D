@@ -40,6 +40,7 @@ namespace SS3D.UI.MachineInterface.Components
             Add(track);
             Add(_value);
 
+            _trackClip.RegisterCallback<GeometryChangedEvent>(_ => UpdateFillWidth());
             RegisterCallback<AttachToPanelEvent>(_ => schedule.Execute(UpdateFillWidth));
             RegisterCallback<GeometryChangedEvent>(_ => UpdateFillWidth());
         }
@@ -71,7 +72,15 @@ namespace SS3D.UI.MachineInterface.Components
 
         private void UpdateFillWidth()
         {
-            _fill.style.width = new Length(_fillPct, LengthUnit.Percent);
+            float percent = Mathf.Clamp(_fillPct, 0f, 100f);
+            float trackWidth = _trackClip.resolvedStyle.width;
+            if (trackWidth > 0.5f)
+            {
+                _fill.style.width = trackWidth * (percent / 100f);
+                return;
+            }
+
+            _fill.style.width = new Length(percent, LengthUnit.Percent);
         }
 
         [UxmlAttribute]

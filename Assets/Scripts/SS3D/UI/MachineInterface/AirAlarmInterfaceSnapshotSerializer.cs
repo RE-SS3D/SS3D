@@ -22,6 +22,10 @@ namespace SS3D.UI.MachineInterface
             writer.WriteSingle(snapshot.PressureKpa);
             writer.WriteSingle(snapshot.OxygenFraction);
             writer.WriteSingle(snapshot.CarbonDioxideFraction);
+            writer.WriteSingle(snapshot.NitrogenFraction);
+            writer.WriteSingle(snapshot.PlasmaFraction);
+            writer.WriteSingle(snapshot.TemperatureKelvin);
+            writer.WriteBoolean(snapshot.HasSample);
             writer.WriteByte(snapshot.ActiveMode);
             writer.WriteString(snapshot.SelectedDeviceId ?? string.Empty);
             writer.WriteUInt16((ushort)devices.Count);
@@ -49,6 +53,10 @@ namespace SS3D.UI.MachineInterface
                 PressureKpa = reader.ReadSingle(),
                 OxygenFraction = reader.ReadSingle(),
                 CarbonDioxideFraction = reader.ReadSingle(),
+                NitrogenFraction = reader.ReadSingle(),
+                PlasmaFraction = reader.ReadSingle(),
+                TemperatureKelvin = reader.ReadSingle(),
+                HasSample = reader.ReadBoolean(),
                 ActiveMode = reader.ReadByte(),
                 SelectedDeviceId = reader.ReadString(),
             };
