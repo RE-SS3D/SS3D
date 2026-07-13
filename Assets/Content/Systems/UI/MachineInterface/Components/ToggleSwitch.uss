@@ -51,3 +51,7 @@
     left: 30px;
     background-color: var(--ss3d-accent-rust);
 }
+
+.toggle-switch--locked {
+    opacity: 0.45;
+}

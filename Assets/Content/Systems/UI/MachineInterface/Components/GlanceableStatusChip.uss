@@ -38,6 +38,11 @@
     -unity-text-align: middle-right;
 }
 
+.glanceable-status-chip.tone-bg-info {
+    background-color: var(--ss3d-feedback-info-bg);
+    border-color: var(--ss3d-feedback-info);
+}
+
 .glanceable-status-chip.tone-bg-success {
     background-color: var(--ss3d-feedback-success-bg);
     border-color: var(--ss3d-feedback-success);
@@ -56,6 +61,22 @@
 .glanceable-status-chip.tone-bg-neutral {
     background-color: var(--ss3d-diegetic-inset);
     border-color: var(--ss3d-border-subtle);
+}
+
+.glanceable-status-chip.tone-bg-info .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-info);
+}
+
+.glanceable-status-chip.tone-bg-success .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-success);
+}
+
+.glanceable-status-chip.tone-bg-warning .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-warning);
+}
+
+.glanceable-status-chip.tone-bg-danger .glanceable-status-chip__headline {
+    color: var(--ss3d-feedback-danger);
 }
 
 .glanceable-status-chip.tone-bg-neutral .glanceable-status-chip__headline {

@@ -77,6 +77,7 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_powerToggle != null)
             {
                 _powerToggle.IsOn = model.Powered;
+                _powerToggle.Locked = locked;
             }
 
             if (_powerGatedHint != null)

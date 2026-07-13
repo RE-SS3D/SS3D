@@ -161,6 +161,7 @@ namespace SS3D.UI.MachineInterface.Components
             {
                 _controlsLocked = value;
                 EnableInClassList("air-alarm-device-detail--locked", value);
+                _powerToggle.Locked = value;
                 _targetStepper.Locked = value;
                 _o2Filter.Locked = value;
                 _n2Filter.Locked = value;

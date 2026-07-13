@@ -61,6 +61,17 @@ namespace SS3D.UI.MachineInterface.Components
         [UxmlAttribute]
         public string OffLabel { get; set; } = "OFF";
 
+        [UxmlAttribute]
+        public bool Locked
+        {
+            get => ClassListContains("toggle-switch--locked");
+            set
+            {
+                EnableInClassList("toggle-switch--locked", value);
+                _track.pickingMode = value ? PickingMode.Ignore : PickingMode.Position;
+            }
+        }
+
         private void Toggle()
         {
             SetOn(!_isOn, notify: true);

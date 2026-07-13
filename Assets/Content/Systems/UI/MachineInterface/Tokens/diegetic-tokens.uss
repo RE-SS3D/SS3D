@@ -31,7 +31,9 @@
     --ss3d-diegetic-feedback-success-bg: rgba(53, 160, 44, 0.14);
     --ss3d-diegetic-feedback-success-border: #35a02c;
     --ss3d-diegetic-feedback-warning: #ee9037;
+    --ss3d-diegetic-feedback-warning-bg: rgba(238, 144, 55, 0.14);
     --ss3d-diegetic-feedback-danger: #b94848;
+    --ss3d-diegetic-feedback-danger-bg: rgba(185, 72, 72, 0.14);
     --ss3d-diegetic-border-subtle: rgba(216, 216, 216, 0.1);
     --ss3d-diegetic-border-default: rgba(216, 216, 216, 0.18);
 }
