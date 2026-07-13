@@ -100,7 +100,7 @@ namespace SS3D.UI.MachineInterface
             return new ApcInterfaceViewModel
             {
                 State = ApcPowerState.Critical,
-                StatusHeadline = "Power Failure",
+                StatusHeadline = "POWER FAILURE",
                 StatusExplanation = "No grid input detected.",
                 HeaderReadout = "NO GRID INPUT",
                 ChassisPowerOk = false,

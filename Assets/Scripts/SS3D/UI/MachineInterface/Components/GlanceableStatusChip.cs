@@ -5,10 +5,14 @@ namespace SS3D.UI.MachineInterface.Components
     [UxmlElement]
     public partial class GlanceableStatusChip : VisualElement
     {
+        private const int AlarmBlinkIntervalMs = 350;
+
         private readonly Label _headline;
         private readonly StatusBadge _badge;
         private readonly Label _rightText;
         private StatusTone _tone = StatusTone.Success;
+        private IVisualElementScheduledItem _alarmBlink;
+        private bool _alarmBlinkVisible = true;
 
         public GlanceableStatusChip()
         {
@@ -34,6 +38,7 @@ namespace SS3D.UI.MachineInterface.Components
             Add(left);
             Add(_rightText);
 
+            RegisterCallback<DetachFromPanelEvent>(OnDetachedFromPanel);
             ApplyTone(_tone);
         }
 
@@ -81,6 +86,11 @@ namespace SS3D.UI.MachineInterface.Components
             Tone = tone;
         }
 
+        private void OnDetachedFromPanel(DetachFromPanelEvent _)
+        {
+            StopAlarmBlink();
+        }
+
         private void ApplyTone(StatusTone tone)
         {
             StatusToneUtility.ApplyTone(this, tone, background: true);
@@ -90,6 +100,36 @@ namespace SS3D.UI.MachineInterface.Components
             {
                 _badge.Tone = tone;
             }
+
+            if (tone == StatusTone.Danger)
+            {
+                StartAlarmBlink();
+            }
+            else
+            {
+                StopAlarmBlink();
+            }
+        }
+
+        private void StartAlarmBlink()
+        {
+            StopAlarmBlink();
+            _alarmBlinkVisible = true;
+            _headline.style.opacity = 1f;
+            _alarmBlink = _headline.schedule.Execute(ToggleAlarmBlink).Every(AlarmBlinkIntervalMs);
+        }
+
+        private void StopAlarmBlink()
+        {
+            _alarmBlink?.Pause();
+            _alarmBlink = null;
+            _headline.style.opacity = 1f;
+        }
+
+        private void ToggleAlarmBlink()
+        {
+            _alarmBlinkVisible = !_alarmBlinkVisible;
+            _headline.style.opacity = _alarmBlinkVisible ? 1f : 0.25f;
         }
     }
 }

@@ -20,6 +20,12 @@
     font-size: 20px;
     letter-spacing: 1.6px;
     margin-right: 12px;
+    padding: 0;
+    -unity-text-align: middle-left;
+}
+
+.glanceable-status-chip__left .status-badge {
+    align-self: center;
 }
 
 .glanceable-status-chip__right {

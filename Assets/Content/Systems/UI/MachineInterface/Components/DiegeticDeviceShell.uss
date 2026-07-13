@@ -80,11 +80,15 @@
     --ss3d-text-primary: var(--ss3d-diegetic-text-primary);
     --ss3d-text-secondary: var(--ss3d-diegetic-text-secondary);
     --ss3d-text-tertiary: var(--ss3d-diegetic-text-tertiary);
+    --ss3d-diegetic-panel-raised: #23262b;
+    --ss3d-diegetic-panel-body: #171a1e;
     --ss3d-feedback-success: var(--ss3d-diegetic-feedback-success);
     --ss3d-feedback-success-bg: var(--ss3d-diegetic-feedback-success-bg);
     --ss3d-feedback-success-border: var(--ss3d-diegetic-feedback-success-border);
     --ss3d-feedback-warning: var(--ss3d-diegetic-feedback-warning);
+    --ss3d-feedback-warning-border: var(--ss3d-diegetic-feedback-warning);
     --ss3d-feedback-danger: var(--ss3d-diegetic-feedback-danger);
+    --ss3d-feedback-danger-border: var(--ss3d-diegetic-feedback-danger);
     --ss3d-border-subtle: var(--ss3d-diegetic-border-subtle);
     --ss3d-border-default: var(--ss3d-diegetic-border-default);
 }

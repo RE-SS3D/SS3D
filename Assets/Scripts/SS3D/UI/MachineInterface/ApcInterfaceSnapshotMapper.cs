@@ -74,7 +74,7 @@ namespace SS3D.UI.MachineInterface
             {
                 case ApcPowerState.Critical:
                 {
-                    model.StatusHeadline = "Power Failure";
+                    model.StatusHeadline = "POWER FAILURE";
                     model.StatusExplanation = "No grid input detected.";
                     model.HeaderReadout = "NO GRID INPUT";
                     model.ChassisPowerOk = false;
