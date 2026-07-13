@@ -78,6 +78,8 @@ namespace SS3D.UI.MachineInterface.Components
             _screenContent.style.flexDirection = FlexDirection.Column;
             _screenContent.style.flexGrow = 0;
             _screenContent.style.flexShrink = 0;
+            _screenContent.style.alignSelf = Align.Stretch;
+            _screenContent.style.width = Length.Percent(100);
 
             _screen.Add(_scrollView);
 

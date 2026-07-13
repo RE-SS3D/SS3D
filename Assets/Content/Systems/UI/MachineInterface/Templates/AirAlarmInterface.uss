@@ -1,15 +1,27 @@
 
-#identity,
+#identity {
+    margin-bottom: 0;
+}
+
 #status-chip {
+    margin-top: 14px;
     margin-bottom: 14px;
 }
 
 .air-alarm-metrics-row {
     flex-direction: row;
+    align-items: stretch;
+    width: 100%;
     margin-bottom: 14px;
 }
 
-.air-alarm-metrics-row .readout-metric-tile:first-child {
+.air-alarm-metrics-row .air-alarm-metrics-tile {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+#pressure-tile {
     margin-right: 8px;
 }
 
@@ -29,30 +41,41 @@
 }
 
 .air-alarm-mode-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
 }
 
-.air-alarm-mode-grid .preset-mode-button {
-    width: 48%;
-    margin-right: 10px;
+.air-alarm-mode-row {
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
     margin-bottom: 10px;
 }
 
-.air-alarm-mode-grid .preset-mode-button:nth-child(2n) {
-    margin-right: 0;
+.air-alarm-mode-row .preset-mode-button {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-bottom: 0;
 }
 
-.air-alarm-mode-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+#mode-filtering,
+#mode-fill {
+    margin-right: 10px;
+}
+
+#mode-panic,
+#mode-off {
+    margin-right: 0;
 }
 
 .air-alarm-mode-locked-hint {
     font-size: 10.5px;
     color: var(--ss3d-text-tertiary);
     padding: 0;
+    margin-left: var(--ss3d-space-3);
+    flex-shrink: 0;
+    -unity-text-align: middle-right;
     background-color: rgba(0, 0, 0, 0);
 }
 

@@ -43,8 +43,8 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="panel-section__content">
                     <ui:VisualElement class="air-alarm-metrics-row">
-                        <ss3d:ReadoutMetricTile name="pressure-tile" label="Pressure" value="101.3 kPa" />
-                        <ss3d:ReadoutMetricTile name="temperature-tile" label="Temperature" value="20.9°C" />
+                        <ss3d:ReadoutMetricTile name="pressure-tile" class="air-alarm-metrics-tile" label="Pressure" value="101.3 kPa" />
+                        <ss3d:ReadoutMetricTile name="temperature-tile" class="air-alarm-metrics-tile" label="Temperature" value="20.9°C" />
                     </ui:VisualElement>
                     <ui:Label text="GAS COMPOSITION" class="air-alarm-gas-section-title font-titling" />
                     <ui:VisualElement name="gas-list" class="air-alarm-gas-list" />
@@ -65,16 +65,20 @@
 
         <ui:VisualElement class="panel-section" name="preset-modes-section">
             <ui:VisualElement class="panel-section__clip">
-                <ui:VisualElement class="panel-section__header air-alarm-mode-header">
+                <ui:VisualElement class="panel-section__header panel-section__header--split">
                     <ui:Label class="panel-section__header-title font-titling" text="Preset Modes" />
                     <ui:Label name="mode-locked-hint" class="air-alarm-mode-locked-hint font-terminal" text="" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel-section__content">
                     <ui:VisualElement class="air-alarm-mode-grid">
-                        <ss3d:PresetModeButton name="mode-filtering" title="Filtering" description="Normal operation" active="true" accent="Rust" />
-                        <ss3d:PresetModeButton name="mode-panic" title="Panic Siphon" description="Purge all gases" accent="Danger" />
-                        <ss3d:PresetModeButton name="mode-fill" title="Repressurize" description="Vents run full" accent="Info" />
-                        <ss3d:PresetModeButton name="mode-off" title="Off / None" description="Disable control" accent="Steel" />
+                        <ui:VisualElement class="air-alarm-mode-row">
+                            <ss3d:PresetModeButton name="mode-filtering" title="Filtering" description="Normal operation" active="true" accent="Rust" />
+                            <ss3d:PresetModeButton name="mode-panic" title="Panic Siphon" description="Purge all gases" accent="Danger" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="air-alarm-mode-row">
+                            <ss3d:PresetModeButton name="mode-fill" title="Repressurize" description="Vents run full" accent="Info" />
+                            <ss3d:PresetModeButton name="mode-off" title="Off / None" description="Disable control" accent="Steel" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

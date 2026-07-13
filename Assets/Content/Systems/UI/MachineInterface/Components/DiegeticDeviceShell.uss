@@ -90,6 +90,11 @@
     padding-right: 0;
 }
 
+.diegetic-device-shell__scroll .unity-scroll-view__content-container {
+    align-items: stretch;
+    min-width: 100%;
+}
+
 .diegetic-device-shell__scroll .unity-scroller--vertical {
     width: 8px;
     margin-left: 4px;
@@ -116,6 +121,8 @@
     flex-direction: column;
     flex-grow: 0;
     flex-shrink: 0;
+    width: 100%;
+    align-self: stretch;
     --ss3d-text-primary: var(--ss3d-diegetic-text-primary);
     --ss3d-text-secondary: var(--ss3d-diegetic-text-secondary);
     --ss3d-text-tertiary: var(--ss3d-diegetic-text-tertiary);
