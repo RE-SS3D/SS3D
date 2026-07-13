@@ -20,6 +20,7 @@ namespace SS3D.UI.MachineInterface.Components
         public AccessGatePanel()
         {
             AddToClassList("access-gate-panel");
+            pickingMode = PickingMode.Position;
 
             VisualElement slot = new();
             slot.AddToClassList("access-gate-panel__slot");
@@ -48,7 +49,7 @@ namespace SS3D.UI.MachineInterface.Components
 
             _swipeButton = new SteelButton { Text = "Swipe ID Card" };
             _swipeButton.AddToClassList("access-gate-panel__button");
-            _swipeButton.Clicked += () => SwipeRequested?.Invoke();
+            _swipeButton.Clicked += OnSwipeClicked;
 
             Add(slot);
             Add(_headline);
@@ -81,7 +82,11 @@ namespace SS3D.UI.MachineInterface.Components
         public string LockedSubline
         {
             get => _lockedSubline;
-            set => _lockedSubline = value;
+            set
+            {
+                _lockedSubline = value;
+                _subline.text = value;
+            }
         }
 
         public void SetState(bool scanning)
@@ -102,6 +107,11 @@ namespace SS3D.UI.MachineInterface.Components
                 SwipeLabel = "Swipe ID Card";
                 _swipeButton.Disabled = false;
             }
+        }
+
+        private void OnSwipeClicked()
+        {
+            SwipeRequested?.Invoke();
         }
     }
 }

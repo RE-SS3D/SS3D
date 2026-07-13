@@ -15,6 +15,7 @@
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessGatedRegion.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss" />
     <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss" />
@@ -38,32 +39,54 @@
         </ui:VisualElement>
         <ui:VisualElement class="apc-body-columns">
             <ui:VisualElement class="apc-body-column">
-                <ss3d:PanelSection name="power-flow-section" title="Power Flow">
-                    <ss3d:PowerFlowRow name="power-flow" grid-input-kw="0" load-output-kw="0" />
-                </ss3d:PanelSection>
-                <ss3d:PanelSection name="battery-section" title="Battery">
-                    <ui:Label name="battery-state-header" text="CHARGED" class="apc-battery-state-header font-terminal" />
-                    <ss3d:BatteryBar name="battery-bar" value="1" state-text="CHARGED" eta-text="" class="battery-bar--compact" />
-                </ss3d:PanelSection>
-                <ss3d:PanelSection name="diagnostics-section" title="Diagnostics">
-                    <ss3d:DiagnosticsList name="diagnostics-list" />
-                </ss3d:PanelSection>
+                <ui:VisualElement class="panel-section" name="power-flow-section">
+                    <ui:VisualElement class="panel-section__clip">
+                        <ui:Label class="panel-section__header font-titling" text="Power Flow" />
+                        <ui:VisualElement class="panel-section__content">
+                            <ss3d:PowerFlowRow name="power-flow" grid-input-kw="0" load-output-kw="0" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section" name="battery-section">
+                    <ui:VisualElement class="panel-section__clip">
+                        <ui:Label class="panel-section__header font-titling" text="Battery" />
+                        <ui:VisualElement class="panel-section__content">
+                            <ui:Label name="battery-state-header" text="CHARGED" class="apc-battery-state-header font-terminal" />
+                            <ss3d:BatteryBar name="battery-bar" value="1" state-text="CHARGED" eta-text="" class="battery-bar--compact" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="panel-section" name="diagnostics-section">
+                    <ui:VisualElement class="panel-section__clip">
+                        <ui:Label class="panel-section__header font-titling" text="Diagnostics" />
+                        <ui:VisualElement class="panel-section__content">
+                            <ss3d:DiagnosticsList name="diagnostics-list" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="apc-body-column apc-body-column--controls">
-                <ui:VisualElement name="access-locked" class="apc-access-locked">
-                    <ss3d:AccessGatePanel name="access-gate" />
-                </ui:VisualElement>
-                <ui:VisualElement name="access-unlocked" class="apc-access-unlocked">
-                    <ss3d:AccessStrip name="access-strip" authorized-text="Engineering — Authorized" />
-                    <ss3d:PanelSection name="channels-section" title="Connected Systems">
-                        <ss3d:ChannelRow name="channel-lighting" channel-name="Lighting" load-kw="0" is-on="true" />
-                        <ss3d:ChannelRow name="channel-equipment" channel-name="Equipment" load-kw="0" is-on="true" />
-                        <ss3d:ChannelRow name="channel-environment" channel-name="Environment" load-kw="0" is-on="true" />
-                    </ss3d:PanelSection>
-                    <ui:Label name="shed-hint"
-                        text="Turning a system off here immediately reduces load — safe to disable Equipment or Environment during a shortage; Lighting is cheapest to keep on."
-                        class="font-body apc-shed-hint" />
-                </ui:VisualElement>
+                <ss3d:AccessGatedRegion name="access-region" class="apc-access-region">
+                    <ss3d:AccessGatePanel name="access-gate"
+                        locked-subline="Insert ID card to control connected systems" />
+                    <ui:VisualElement name="access-controls"
+                        class="access-gated-region__controls access-gated-region__controls--hidden">
+                        <ss3d:AccessStrip name="access-strip" authorized-text="Engineering — Authorized" />
+                        <ui:VisualElement class="panel-section" name="channels-section">
+                            <ui:VisualElement class="panel-section__clip">
+                                <ui:Label class="panel-section__header font-titling" text="Connected Systems" />
+                                <ui:VisualElement class="panel-section__content">
+                                    <ss3d:ChannelRow name="channel-lighting" channel-name="Lighting" load-kw="0" is-on="true" />
+                                    <ss3d:ChannelRow name="channel-equipment" channel-name="Equipment" load-kw="0" is-on="true" />
+                                    <ss3d:ChannelRow name="channel-environment" channel-name="Environment" load-kw="0" is-on="true" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Label name="shed-hint"
+                            text="Turning a system off here immediately reduces load — safe to disable Equipment or Environment during a shortage; Lighting is cheapest to keep on."
+                            class="font-body apc-shed-hint" />
+                    </ui:VisualElement>
+                </ss3d:AccessGatedRegion>
             </ui:VisualElement>
         </ui:VisualElement>
         <ss3d:DeviceFooter name="footer" text="SS3D Area Power Controller — Model APC-7" />

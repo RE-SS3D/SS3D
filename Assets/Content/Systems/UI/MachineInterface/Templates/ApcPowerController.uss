@@ -14,6 +14,9 @@
 .apc-body-columns {
     flex-direction: row;
     align-items: stretch;
+    flex-grow: 1;
+    flex-shrink: 0;
+    min-height: 0;
 }
 
 .apc-body-column {
@@ -21,23 +24,19 @@
     flex-grow: 1;
     flex-basis: 0;
     min-width: 0;
+    flex-shrink: 0;
 }
 
 .apc-body-column--controls {
     margin-left: 14px;
 }
 
-.apc-access-locked {
-    flex-grow: 1;
-    background-color: var(--ss3d-diegetic-panel-body);
-    border-radius: var(--ss3d-radius-md);
-    margin-bottom: 0;
-}
-
-.apc-access-unlocked {
+.apc-access-region {
     flex-direction: column;
     flex-grow: 1;
-    display: none;
+    min-width: 0;
+    background-color: var(--ss3d-diegetic-panel-body);
+    border-radius: var(--ss3d-radius-md);
 }
 
 .apc-access-unlocked .panel-section__content {
@@ -74,4 +73,9 @@
     border-width: 0;
     background-color: transparent;
     padding: 0;
+}
+
+.apc-access-region .access-gated-region__controls .panel-section__content {
+    padding-top: 0;
+    padding-bottom: 0;
 }

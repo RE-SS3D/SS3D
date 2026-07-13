@@ -315,6 +315,7 @@ namespace SS3D.UI.MachineInterface
                 "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatedRegion.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
@@ -334,6 +335,7 @@ namespace SS3D.UI.MachineInterface
                 "Assets/Content/Systems/UI/MachineInterface/Components/RateControlSection.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatedRegion.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
@@ -410,6 +412,13 @@ namespace SS3D.UI.MachineInterface
             ApplyDiegeticBaseStyles(shell);
             MachineInterfaceHostHelpers.ApplyStyleSheets(shell, registration.ComponentStyles);
             MachineInterfaceHostHelpers.ApplyTemplateStyle(shell, registration.TemplateStyle);
+
+            if (shell.ScreenContent != null)
+            {
+                ApplyDiegeticBaseStyles(shell.ScreenContent);
+                MachineInterfaceHostHelpers.ApplyStyleSheets(shell.ScreenContent, registration.ComponentStyles);
+                MachineInterfaceHostHelpers.ApplyTemplateStyle(shell.ScreenContent, registration.TemplateStyle);
+            }
         }
 
         private void ApplyModalPanelStyles(

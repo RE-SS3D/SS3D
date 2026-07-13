@@ -4,6 +4,7 @@
     background-color: var(--ss3d-diegetic-panel-body);
     border-radius: var(--ss3d-radius-md);
     margin-bottom: 14px;
+    flex-shrink: 0;
 }
 
 .panel-section__clip {

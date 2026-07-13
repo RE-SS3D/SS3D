@@ -67,7 +67,6 @@
 
 .diegetic-device-shell__screen {
     background-color: var(--ss3d-diegetic-screen-bg);
-    border-radius: var(--ss3d-diegetic-screen-radius);
     padding: var(--ss3d-diegetic-screen-padding);
     max-height: 900px;
     flex-direction: column;

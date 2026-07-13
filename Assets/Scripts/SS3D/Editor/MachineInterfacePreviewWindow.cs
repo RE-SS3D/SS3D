@@ -14,6 +14,7 @@ namespace SS3D.Editor
         private TemplateContainer _panel;
         private VisualElement _root;
         private ApcInterfaceViewModel _model = ApcInterfaceViewModel.CreateNominal();
+        private bool _stylesApplied;
 
         [MenuItem("SS3D/Machine Interface/Preview APC Panel")]
         public static void OpenWindow()
@@ -30,6 +31,7 @@ namespace SS3D.Editor
             _root.style.flexGrow = 1;
             _root.style.backgroundColor = new Color(0.04f, 0.04f, 0.05f);
 
+            ApplyDocumentStyles(_root);
             BuildToolbar();
             RebuildPanel();
         }
@@ -77,7 +79,8 @@ namespace SS3D.Editor
                 "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uxml");
 
             _panel = template != null ? template.CloneTree() : new TemplateContainer();
-            ApplyStyles(_panel);
+            DiegeticDeviceShell shell = _panel.Q<DiegeticDeviceShell>("device-shell");
+            ApplyDiegeticPanelStyles(_panel, shell);
             _panel.style.alignSelf = Align.Center;
             _panel.style.marginTop = 16;
             _root.Add(_panel);
@@ -86,14 +89,28 @@ namespace SS3D.Editor
             _binder.Bind(_model);
         }
 
-        private static void ApplyStyles(VisualElement root)
+        private void ApplyDocumentStyles(VisualElement documentRoot)
         {
-            string[] stylePaths =
+            if (_stylesApplied)
             {
+                return;
+            }
+
+            AddStyleSheet(
+                documentRoot,
+                "Assets/Content/Systems/UI/MachineInterface/MachineInterfaceTheme.uss",
                 "Assets/Content/Systems/UI/Tokens/ss3d-tokens.uss",
                 "Assets/Content/Systems/UI/Tokens/ss3d-typography.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss");
+
+            _stylesApplied = true;
+        }
+
+        private static void ApplyDiegeticPanelStyles(TemplateContainer panel, DiegeticDeviceShell shell)
+        {
+            string[] stylePaths =
+            {
                 "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
@@ -107,6 +124,7 @@ namespace SS3D.Editor
                 "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatedRegion.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
@@ -114,12 +132,37 @@ namespace SS3D.Editor
                 "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
             };
 
+            AddStyleSheets(panel, stylePaths);
+
+            if (shell == null)
+            {
+                return;
+            }
+
+            AddStyleSheets(shell, stylePaths);
+
+            if (shell.ScreenContent != null)
+            {
+                AddStyleSheets(shell.ScreenContent, stylePaths);
+            }
+        }
+
+        private static void AddStyleSheets(VisualElement target, params string[] stylePaths)
+        {
+            foreach (string path in stylePaths)
+            {
+                AddStyleSheet(target, path);
+            }
+        }
+
+        private static void AddStyleSheet(VisualElement target, params string[] stylePaths)
+        {
             foreach (string path in stylePaths)
             {
                 StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(path);
-                if (styleSheet != null)
+                if (styleSheet != null && !target.styleSheets.Contains(styleSheet))
                 {
-                    root.styleSheets.Add(styleSheet);
+                    target.styleSheets.Add(styleSheet);
                 }
             }
         }

@@ -14,6 +14,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public event Action<byte, int> ActionControlChanged;
 
+        private readonly VisualElement _root;
         private readonly DiegeticDeviceShell _shell;
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
@@ -26,41 +27,39 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly ChannelRow _equipmentChannel;
         private readonly ChannelRow _environmentChannel;
         private readonly DeviceFooter _footer;
-        private readonly MachineInterfaceAccessGate _accessGate;
+        private readonly AccessGatedRegion _accessRegion;
 
         public ApcPowerControllerBinder(VisualElement root)
         {
+            _root = root;
             _shell = root.Q<DiegeticDeviceShell>("device-shell") ?? root.Q<DiegeticDeviceShell>();
-            VisualElement contentRoot = _shell ?? root;
+            VisualElement queryRoot = _shell?.ScreenContent ?? _root;
 
-            _connectionRow = contentRoot.Q<ConnectionStatusRow>("connection-row");
-            _identity = contentRoot.Q<DeviceIdentityBlock>("identity");
-            _statusChip = contentRoot.Q<GlanceableStatusChip>("status-chip");
-            _powerFlow = contentRoot.Q<PowerFlowRow>("power-flow");
-            _batteryStateHeader = contentRoot.Q<Label>("battery-state-header");
-            _batteryBar = contentRoot.Q<BatteryBar>("battery-bar");
-            _diagnosticsList = contentRoot.Q<DiagnosticsList>("diagnostics-list");
-            _lightingChannel = contentRoot.Q<ChannelRow>("channel-lighting");
-            _equipmentChannel = contentRoot.Q<ChannelRow>("channel-equipment");
-            _environmentChannel = contentRoot.Q<ChannelRow>("channel-environment");
-            _footer = contentRoot.Q<DeviceFooter>("footer");
+            _connectionRow = queryRoot.Q<ConnectionStatusRow>("connection-row");
+            _identity = queryRoot.Q<DeviceIdentityBlock>("identity");
+            _statusChip = queryRoot.Q<GlanceableStatusChip>("status-chip");
+            _powerFlow = queryRoot.Q<PowerFlowRow>("power-flow");
+            _batteryStateHeader = queryRoot.Q<Label>("battery-state-header");
+            _batteryBar = queryRoot.Q<BatteryBar>("battery-bar");
+            _diagnosticsList = queryRoot.Q<DiagnosticsList>("diagnostics-list");
+            _lightingChannel = queryRoot.Q<ChannelRow>("channel-lighting");
+            _equipmentChannel = queryRoot.Q<ChannelRow>("channel-equipment");
+            _environmentChannel = queryRoot.Q<ChannelRow>("channel-environment");
+            _footer = queryRoot.Q<DeviceFooter>("footer");
 
-            VisualElement lockedPanel = contentRoot.Q<VisualElement>("access-locked");
-            VisualElement unlockedPanel = contentRoot.Q<VisualElement>("access-unlocked");
-            AccessGatePanel gatePanel = contentRoot.Q<AccessGatePanel>("access-gate");
-            AccessStrip accessStrip = contentRoot.Q<AccessStrip>("access-strip");
+            _accessRegion = queryRoot.Q<AccessGatedRegion>("access-region");
+            AccessStrip accessStrip = queryRoot.Q<AccessStrip>("access-strip");
 
-            _accessGate = new MachineInterfaceAccessGate(lockedPanel, unlockedPanel, gatePanel);
-            _accessGate.Reset();
+            _accessRegion?.Initialize();
+
+            if (accessStrip != null && _accessRegion != null)
+            {
+                accessStrip.LockRequested += () => _accessRegion.Lock();
+            }
 
             if (_shell != null)
             {
                 _shell.CloseClicked += HandleCloseRequested;
-            }
-
-            if (accessStrip != null)
-            {
-                accessStrip.LockRequested += () => _accessGate.Lock();
             }
 
             if (_lightingChannel != null)
@@ -124,8 +123,13 @@ namespace SS3D.UI.MachineInterface.Bindings
 
             _statusChip?.SetContent(model.StatusHeadline, badgeText, tone);
             BindPowerFlow(model, tone);
-            _batteryBar.Value = model.BatteryCharge;
-            _batteryBar.StateText = model.BatteryStateText;
+
+            if (_batteryBar != null)
+            {
+                _batteryBar.Value = model.BatteryCharge;
+                _batteryBar.StateText = model.BatteryStateText;
+            }
+
             if (_batteryStateHeader != null)
             {
                 _batteryStateHeader.text = model.BatteryStateText;
@@ -159,8 +163,6 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public void Disconnect()
         {
-            _accessGate?.Disconnect();
-
             if (_shell != null)
             {
                 _shell.CloseClicked -= HandleCloseRequested;
@@ -169,6 +171,11 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         private void BindPowerFlow(ApcInterfaceViewModel model, StatusTone tone)
         {
+            if (_powerFlow == null)
+            {
+                return;
+            }
+
             _powerFlow.GridInputKw = model.GridInputKw;
             _powerFlow.LoadOutputKw = model.LoadOutputKw;
 

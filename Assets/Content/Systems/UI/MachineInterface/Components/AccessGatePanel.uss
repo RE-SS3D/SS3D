@@ -1,4 +1,8 @@
 
+.access-panel--hidden {
+    display: none;
+}
+
 .access-gate-panel {
     flex-direction: column;
     align-items: center;

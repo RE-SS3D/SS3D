@@ -1,13 +1,11 @@
 
-.smes-access-locked {
+.smes-access-region {
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
     background-color: var(--ss3d-diegetic-panel-body);
     border-radius: var(--ss3d-radius-md);
     margin-bottom: 14px;
-}
-
-.smes-access-unlocked {
-    flex-direction: column;
-    display: none;
 }
 
 .smes-section-title {

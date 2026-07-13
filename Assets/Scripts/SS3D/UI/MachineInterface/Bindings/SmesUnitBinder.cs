@@ -15,6 +15,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public event Action<byte, int> ActionControlChanged;
 
+        private readonly VisualElement _root;
         private readonly DiegeticDeviceShell _shell;
         private readonly ConnectionStatusRow _connectionRow;
         private readonly DeviceIdentityBlock _identity;
@@ -26,45 +27,38 @@ namespace SS3D.UI.MachineInterface.Bindings
         private readonly RateControlSection _inputControl;
         private readonly RateControlSection _outputControl;
         private readonly DeviceFooter _footer;
-        private readonly MachineInterfaceAccessGate _accessGate;
+        private readonly AccessGatedRegion _accessRegion;
 
         public SmesUnitBinder(VisualElement root)
         {
+            _root = root;
             _shell = root.Q<DiegeticDeviceShell>("device-shell") ?? root.Q<DiegeticDeviceShell>();
-            VisualElement contentRoot = _shell ?? root;
+            VisualElement queryRoot = _shell?.ScreenContent ?? _root;
 
-            _connectionRow = contentRoot.Q<ConnectionStatusRow>("connection-row");
-            _identity = contentRoot.Q<DeviceIdentityBlock>("identity");
-            _statusChip = contentRoot.Q<GlanceableStatusChip>("status-chip");
-            _storageCells = contentRoot.Q<StorageCellRow>("storage-cells");
-            _chargePct = contentRoot.Q<Label>("charge-pct");
-            _chargeTrendText = contentRoot.Q<Label>("charge-trend-text");
-            _powerFlow = contentRoot.Q<SmesPowerFlowRow>("power-flow");
-            _inputControl = contentRoot.Q<RateControlSection>("input-control");
-            _outputControl = contentRoot.Q<RateControlSection>("output-control");
-            _footer = contentRoot.Q<DeviceFooter>("footer");
+            _connectionRow = queryRoot.Q<ConnectionStatusRow>("connection-row");
+            _identity = queryRoot.Q<DeviceIdentityBlock>("identity");
+            _statusChip = queryRoot.Q<GlanceableStatusChip>("status-chip");
+            _storageCells = queryRoot.Q<StorageCellRow>("storage-cells");
+            _chargePct = queryRoot.Q<Label>("charge-pct");
+            _chargeTrendText = queryRoot.Q<Label>("charge-trend-text");
+            _powerFlow = queryRoot.Q<SmesPowerFlowRow>("power-flow");
+            _inputControl = queryRoot.Q<RateControlSection>("input-control");
+            _outputControl = queryRoot.Q<RateControlSection>("output-control");
+            _footer = queryRoot.Q<DeviceFooter>("footer");
 
-            VisualElement lockedPanel = contentRoot.Q<VisualElement>("access-locked");
-            VisualElement unlockedPanel = contentRoot.Q<VisualElement>("access-unlocked");
-            AccessGatePanel gatePanel = contentRoot.Q<AccessGatePanel>("access-gate");
-            AccessStrip accessStrip = contentRoot.Q<AccessStrip>("access-strip");
+            _accessRegion = queryRoot.Q<AccessGatedRegion>("access-region");
+            AccessStrip accessStrip = queryRoot.Q<AccessStrip>("access-strip");
 
-            if (gatePanel != null)
+            _accessRegion?.Initialize();
+
+            if (accessStrip != null && _accessRegion != null)
             {
-                gatePanel.LockedSubline = "Insert ID card to access input/output controls";
+                accessStrip.LockRequested += () => _accessRegion.Lock();
             }
-
-            _accessGate = new MachineInterfaceAccessGate(lockedPanel, unlockedPanel, gatePanel);
-            _accessGate.Reset();
 
             if (_shell != null)
             {
                 _shell.CloseClicked += HandleCloseRequested;
-            }
-
-            if (accessStrip != null)
-            {
-                accessStrip.LockRequested += () => _accessGate.Lock();
             }
 
             if (_inputControl != null)
@@ -160,8 +154,6 @@ namespace SS3D.UI.MachineInterface.Bindings
 
         public void Disconnect()
         {
-            _accessGate?.Disconnect();
-
             if (_shell != null)
             {
                 _shell.CloseClicked -= HandleCloseRequested;
