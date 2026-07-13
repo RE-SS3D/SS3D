@@ -253,6 +253,45 @@ namespace SS3D.UI.MachineInterface
             return trimmed;
         }
 
+        private static StyleSheet[] EnsureAtmosComponentStyles(
+            StyleSheet[] current,
+            bool includeAirAlarm,
+            bool includeVent = false)
+        {
+            List<string> paths = new()
+            {
+                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ReadoutMetricTile.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/GasBarRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/CompactFilterToggle.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
+            };
+
+            if (includeAirAlarm)
+            {
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PresetModeButton.uss");
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/ConnectedDeviceRow.uss");
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/AirAlarmDeviceDetailPanel.uss");
+            }
+
+            if (includeVent)
+            {
+                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PressureFlowReadout.uss");
+            }
+
+            return EnsureComponentStyles(current, paths.ToArray());
+        }
+
         private void EnsureEditorAssets()
         {
             if (_apcTemplate == null)
@@ -446,45 +485,6 @@ namespace SS3D.UI.MachineInterface
             }
         }
 #endif
-
-        private static StyleSheet[] EnsureAtmosComponentStyles(
-            StyleSheet[] current,
-            bool includeAirAlarm,
-            bool includeVent = false)
-        {
-            List<string> paths = new()
-            {
-                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ReadoutMetricTile.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/GasBarRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/AtmosIdReaderRow.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/CompactFilterToggle.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/NumericStepper.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
-                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
-            };
-
-            if (includeAirAlarm)
-            {
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PresetModeButton.uss");
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/ConnectedDeviceRow.uss");
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/AirAlarmDeviceDetailPanel.uss");
-            }
-
-            if (includeVent)
-            {
-                paths.Add("Assets/Content/Systems/UI/MachineInterface/Components/PressureFlowReadout.uss");
-            }
-
-            return EnsureComponentStyles(current, paths.ToArray());
-        }
 
         private void EnsureRuntimeAssets()
         {
