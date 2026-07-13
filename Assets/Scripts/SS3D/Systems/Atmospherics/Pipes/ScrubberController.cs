@@ -87,12 +87,18 @@ namespace SS3D.Systems.Atmospherics.Pipes
             TileCoord turfCell = OriginTile;
             float turfPressure = turfSimulation.GetCellPressure(turfCell);
             float networkPressure = network.GetPressure(AtmosConstants.DefaultGasCount);
-            float budgetMoles = AtmosPortFlow.ComputeFlowMoles(
-                turfPressure,
-                networkPressure,
-                AtmosPortConstants.ScrubberRatedFlowMolesPerSecond,
-                AtmosPortConstants.PortMaxDifferentialKpa,
-                deltaTime);
+            // Scrubbers actively pump gas from turf into the connected network; they are not passive valves.
+            // Allow flow at the rated rate, tapering as the connected network pressure approaches/exceeds
+            // the turf pressure within the supported differential.
+            float maxDiff = Mathf.Max(AtmosPortConstants.PortMaxDifferentialKpa, 1e-3f);
+            float differential = turfPressure - networkPressure;
+            if (differential <= -maxDiff)
+            {
+                return false;
+            }
+
+            float pressureFactor = Mathf.Clamp01((differential + maxDiff) / maxDiff);
+            float budgetMoles = AtmosPortConstants.ScrubberRatedFlowMolesPerSecond * pressureFactor * deltaTime;
 
             if (budgetMoles <= 0f)
                 return false;

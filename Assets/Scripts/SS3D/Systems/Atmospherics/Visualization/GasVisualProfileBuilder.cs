@@ -60,9 +60,25 @@ namespace SS3D.Systems.Atmospherics.Visualization
         public static GasVisualProfile CoreDefaultProfile(ushort gasId)
         {
             if (gasId == AtmosConstants.Oxygen.Value)
-                return GasVisualProfile.Invisible;
+                return new GasVisualProfile
+                {
+                    ScatterColor = new Color(0.92f, 0.95f, 1f, 1f),
+                    ScatterStrength = 0.35f,
+                    EmissionColor = Color.clear,
+                    EmissionIntensity = 0f,
+                    DistortionScale = 0f,
+                    TurbulenceScale = 0f,
+                };
             if (gasId == AtmosConstants.Nitrogen.Value)
-                return GasVisualProfile.Invisible;
+                return new GasVisualProfile
+                {
+                    ScatterColor = new Color(0.92f, 0.95f, 1f, 1f),
+                    ScatterStrength = 0.35f,
+                    EmissionColor = Color.clear,
+                    EmissionIntensity = 0f,
+                    DistortionScale = 0f,
+                    TurbulenceScale = 0f,
+                };
             if (gasId == AtmosConstants.CarbonDioxide.Value)
                 return new GasVisualProfile
                 {

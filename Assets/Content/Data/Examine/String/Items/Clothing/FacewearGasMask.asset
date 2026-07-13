@@ -31,7 +31,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-    from a tank.
   DetailedImageSize: {x: 260, y: 175}
   DetailedImageRange:
     Horizontal: 1.5

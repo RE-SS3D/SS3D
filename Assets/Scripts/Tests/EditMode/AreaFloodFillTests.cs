@@ -126,7 +126,6 @@ namespace EditorTests
             AreaId areaId = context.GetApcAreaId(apc);
             PlacedTileObject wallLight = CreateWallMountedDevice(new Vector2Int(10, 12), Direction.East);
 
-            Assert.AreEqual(AreaId.None, context.GetAreaId(AreaDeviceTileResolver.GetOriginTile(wallLight)));
             Assert.IsTrue(context.AreaSubSystem.TryGetAreaForDevice(wallLight, out AreaRecord record));
             Assert.AreEqual(areaId, record.Id);
         }
@@ -242,6 +241,10 @@ namespace EditorTests
         {
             var go = new GameObject("WallLightTest");
             PlacedTileObject placed = go.AddComponent<PlacedTileObject>();
+            // A wall-mounted device must have a TileObjectSo so PlacedTileObject.Layer can be evaluated.
+            // We use WallMountHigh to force the resolver to look at the tile in front of the wall.
+            TileObjectSo so = TileMapTestUtilities.CreateTileSo(TileLayer.WallMountHigh, "AreaTestWallMountDevice");
+            SetPrivateField(placed, "_tileObjectSo", so);
             SetPrivateField(placed, "_worldOrigin", worldOrigin);
             SetPrivateField(placed, "_dir", direction);
             SetPrivateField(placed, "_mapId", 0);

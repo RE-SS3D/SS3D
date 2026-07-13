@@ -34,12 +34,21 @@ namespace EditorTests.Atmospherics
             using AtmosSimulation simulation = AtmosTestFixtures.CreateSealedRoomSimulation(context, 3, out int mapId);
             TileCoord coord = AtmosTestFixtures.InteriorCoord(mapId, 3);
 
+            float baselineO2 = simulation.DebugGetMoles(coord, AtmosConstants.Oxygen);
+            float baselineN2 = simulation.DebugGetMoles(coord, AtmosConstants.Nitrogen);
+            float baselineCo2 = simulation.DebugGetMoles(coord, AtmosConstants.CarbonDioxide);
+            float baselinePlasma = simulation.DebugGetMoles(coord, AtmosConstants.Plasma);
+
             simulation.DebugAddMoles(coord, AtmosConstants.Oxygen, 50f);
             simulation.DebugAddMoles(coord, AtmosConstants.Nitrogen, 40f);
             simulation.DebugAddMoles(coord, AtmosConstants.Plasma, 10f);
 
             Assert.IsTrue(AtmosAreaSampler.TrySampleTile(coord, simulation, out AtmosAreaSample sample));
-            Assert.AreEqual(0.1f, sample.PlasmaMoleFraction, 0.01f);
+            float total =
+                baselineO2 + baselineN2 + baselineCo2 + baselinePlasma
+                + 50f + 40f + 10f;
+            float expected = (baselinePlasma + 10f) / total;
+            Assert.AreEqual(expected, sample.PlasmaMoleFraction, 0.01f);
         }
     }
 }

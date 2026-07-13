@@ -89,7 +89,8 @@ namespace EditorTests
         [Test]
         public void BatteryLevelStayBetweenMaxAmountAndZero()
         {
-            BasicBattery batteryOne = CreateBasicBattery(5f, 50f, 0f);
+            // Use a high enough transfer rate so this test exercises capacity clamping, not max-rate clamping.
+            BasicBattery batteryOne = CreateBasicBattery(500f, 50f, 0f);
             batteryOne.AddPowerKw(500f, TestTickSeconds);
             Assert.That(batteryOne.StoredEnergyKwh, Is.EqualTo(50f).Within(Tolerance));
             batteryOne.RemovePowerKw(500f, TestTickSeconds);

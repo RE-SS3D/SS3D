@@ -136,7 +136,6 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         protected void ResolveConnectedNetwork()
         {
-            _networkId = GasPipeNetworkId.None;
             if (_tileObject == null
                 || !SubSystems.TryGet(out TileSubSystem tileSubSystem)
                 || !SubSystems.TryGet(out AtmosSubSystem atmosSubSystem)
@@ -146,6 +145,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 return;
             }
 
+            _networkId = GasPipeNetworkId.None;
             AtmosDevicePipeResolver.TryResolveNetwork(
                 tileSubSystem.CurrentMap,
                 atmosSubSystem.PipeRegistry,
@@ -216,7 +216,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             _animatorActive = active;
 
-            if (IsClient)
+            // In edit-mode tests and some editor-only contexts, FishNet may not have a NetworkObject yet.
+            if (NetworkObject != null && IsClient)
                 ApplyAnimatorState(active);
         }
 
@@ -227,7 +228,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
             _portFlowing = flowing;
 
-            if (IsClient)
+            if (NetworkObject != null && IsClient)
                 ApplyPortFlowingState(flowing);
         }
 
@@ -251,7 +252,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         private void ApplyClientVisualState()
         {
-            if (!IsClient)
+            if (NetworkObject == null || !IsClient)
                 return;
 
             bool deviceActive = _enabled && IsPowered() && _animatorActive;

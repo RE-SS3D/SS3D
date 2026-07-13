@@ -83,7 +83,7 @@ namespace SS3D.UI.MachineInterface
 
                 case ApcPowerState.Overload:
                 {
-                    model.StatusHeadline = "Running on Battery";
+                    model.StatusHeadline = "GRID OVERLOAD";
                     model.StatusExplanation = "Grid supply below connected load.";
                     model.HeaderReadout = "LOAD EXCEEDS SUPPLY";
                     break;
