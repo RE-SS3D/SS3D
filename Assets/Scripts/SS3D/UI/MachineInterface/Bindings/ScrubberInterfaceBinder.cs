@@ -206,11 +206,11 @@ namespace SS3D.UI.MachineInterface.Bindings
                 {
                     GasLabel = row.Label,
                     ValueText = $"{row.Percent:0.0}%",
-                    FillPct = row.Percent,
                     ValueTone = row.ValueTone,
                     BarTone = row.BarTone,
                 };
                 _gasList.Add(barRow);
+                barRow.FillPct = row.Percent;
             }
         }
 

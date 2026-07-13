@@ -15,6 +15,8 @@
 
 .gas-bar-row__track {
     flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
     height: 8px;
     margin-right: 10px;
     margin-left: 0;
@@ -25,7 +27,7 @@
 }
 
 .gas-bar-row__track-clip {
-    flex-grow: 1;
+    width: 100%;
     height: 100%;
     overflow: hidden;
     border-radius: var(--ss3d-radius-sm);

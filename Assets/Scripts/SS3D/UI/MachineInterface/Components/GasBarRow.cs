@@ -7,8 +7,10 @@ namespace SS3D.UI.MachineInterface.Components
     public partial class GasBarRow : VisualElement
     {
         private readonly Label _label;
+        private readonly VisualElement _trackClip;
         private readonly VisualElement _fill;
         private readonly Label _value;
+        private float _fillPct;
 
         public GasBarRow()
         {
@@ -21,14 +23,14 @@ namespace SS3D.UI.MachineInterface.Components
             VisualElement track = new();
             track.AddToClassList("gas-bar-row__track");
 
-            VisualElement trackClip = new();
-            trackClip.AddToClassList("gas-bar-row__track-clip");
+            _trackClip = new();
+            _trackClip.AddToClassList("gas-bar-row__track-clip");
 
             _fill = new VisualElement();
             _fill.AddToClassList("gas-bar-row__fill");
 
-            trackClip.Add(_fill);
-            track.Add(trackClip);
+            _trackClip.Add(_fill);
+            track.Add(_trackClip);
 
             _value = new Label("0.0%");
             _value.AddToClassList("gas-bar-row__value");
@@ -37,6 +39,9 @@ namespace SS3D.UI.MachineInterface.Components
             Add(_label);
             Add(track);
             Add(_value);
+
+            RegisterCallback<AttachToPanelEvent>(_ => schedule.Execute(UpdateFillWidth));
+            RegisterCallback<GeometryChangedEvent>(_ => UpdateFillWidth());
         }
 
         [UxmlAttribute]
@@ -56,8 +61,17 @@ namespace SS3D.UI.MachineInterface.Components
         [UxmlAttribute]
         public float FillPct
         {
-            get => 0f;
-            set => _fill.style.width = Length.Percent(Mathf.Clamp(value, 0f, 100f));
+            get => _fillPct;
+            set
+            {
+                _fillPct = Mathf.Clamp(value, 0f, 100f);
+                UpdateFillWidth();
+            }
+        }
+
+        private void UpdateFillWidth()
+        {
+            _fill.style.width = new Length(_fillPct, LengthUnit.Percent);
         }
 
         [UxmlAttribute]

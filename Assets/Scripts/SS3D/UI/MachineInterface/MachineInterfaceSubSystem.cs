@@ -163,6 +163,12 @@ namespace SS3D.UI.MachineInterface
                     ApplyVentBoolControl(ventModel, controlId, isOn);
                     break;
                 }
+
+                case AirAlarmInterfaceViewModel airAlarmModel:
+                {
+                    AirAlarmInterfaceInteractionLogic.ApplyBool(airAlarmModel, controlId, isOn);
+                    break;
+                }
             }
 
             _clientBridge?.SetControl(controlId, isOn);
@@ -196,6 +202,12 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
+                case AirAlarmInterfaceViewModel airAlarmModel:
+                {
+                    AirAlarmInterfaceInteractionLogic.ApplyNumeric(airAlarmModel, controlId, delta);
+                    break;
+                }
+
                 default:
                 {
                     return;
@@ -223,7 +235,6 @@ namespace SS3D.UI.MachineInterface
 
                 case ScrubberInterfaceViewModel:
                 case VentInterfaceViewModel:
-                case AirAlarmInterfaceViewModel:
                 {
                     if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
                     {
@@ -232,11 +243,28 @@ namespace SS3D.UI.MachineInterface
 
                     break;
                 }
+
+                case AirAlarmInterfaceViewModel airAlarm:
+                {
+                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+                    {
+                        ApplyAtmosReadIdAction(airAlarm);
+                    }
+                    else
+                    {
+                        AirAlarmInterfaceInteractionLogic.ApplyAction(airAlarm, controlId, value);
+                    }
+
+                    break;
+                }
             }
 
             _clientBridge?.SetActionControl(controlId, value);
 
-            if (_openModel is VendingInterfaceViewModel or ScrubberInterfaceViewModel or VentInterfaceViewModel or AirAlarmInterfaceViewModel)
+            if (_openModel is VendingInterfaceViewModel
+                or ScrubberInterfaceViewModel
+                or VentInterfaceViewModel
+                or AirAlarmInterfaceViewModel)
             {
                 Refresh(_openModel);
             }
@@ -431,6 +459,7 @@ namespace SS3D.UI.MachineInterface
                     {
                         airAlarm.AccessGranted = false;
                         airAlarm.AccessScanning = false;
+                        airAlarm.SelectedDeviceId = null;
                     }
                     else if (!airAlarm.AccessScanning)
                     {

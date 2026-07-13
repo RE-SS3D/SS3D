@@ -1,6 +1,7 @@
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.Atmospherics.Pipes;
+using System.Collections.Generic;
 using System.Electricity;
 using UnityEngine;
 
@@ -27,7 +28,13 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private BasicPowerConsumer _powerConsumer;
 
+        private readonly List<AirAlarmConnectedDevice> _connectedDevices = new();
+
         private AirAlarmController _airAlarm;
+
+        private byte _activeMode = (byte)AirAlarmPresetMode.Filtering;
+
+        private string _selectedDeviceId;
 
         public override string InterfaceId => MachineInterfaceIds.AirAlarm;
 
@@ -39,7 +46,55 @@ namespace SS3D.UI.MachineInterface
                 TryGetComponent(out _powerConsumer);
             }
 
+            EnsureDefaultDevices();
             base.OnStartServer();
+        }
+
+        protected override bool ApplyControl(byte controlId, bool value)
+        {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
+            AirAlarmInterfaceViewModel scratch = BuildScratchModel();
+            AirAlarmInterfaceInteractionLogic.ApplyBool(scratch, controlId, value);
+            ApplyScratchModel(scratch);
+            RefreshAllViewers();
+            return true;
+        }
+
+        protected override bool ApplyNumericControl(byte controlId, float delta)
+        {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
+            AirAlarmInterfaceViewModel scratch = BuildScratchModel();
+            AirAlarmInterfaceInteractionLogic.ApplyNumeric(scratch, controlId, delta);
+            ApplyScratchModel(scratch);
+            RefreshAllViewers();
+            return true;
+        }
+
+        protected override bool ApplyActionControl(byte controlId, int value)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+            {
+                if (AccessGranted)
+                {
+                    _selectedDeviceId = null;
+                }
+
+                return base.ApplyActionControl(controlId, value);
+            }
+
+            AirAlarmInterfaceViewModel scratch = BuildScratchModel();
+            AirAlarmInterfaceInteractionLogic.ApplyAction(scratch, controlId, value);
+            ApplyScratchModel(scratch);
+            RefreshAllViewers();
+            return true;
         }
 
         protected override void SendOpenToViewer(NetworkConnection conn)
@@ -51,8 +106,6 @@ namespace SS3D.UI.MachineInterface
         {
             TargetRefreshInterface(conn, BuildSnapshot());
         }
-
-        protected override bool ApplyControl(byte controlId, bool value) => false;
 
         [TargetRpc(RunLocally = true)]
         private void TargetOpenInterface(NetworkConnection conn, AirAlarmInterfaceSnapshot snapshot)
@@ -66,12 +119,48 @@ namespace SS3D.UI.MachineInterface
             DispatchClientRefresh(snapshot);
         }
 
+        private void EnsureDefaultDevices()
+        {
+            if (_connectedDevices.Count > 0)
+            {
+                return;
+            }
+
+            foreach (AirAlarmConnectedDevice device in AirAlarmInterfaceViewModel.CreateNormal().ConnectedDevices)
+            {
+                _connectedDevices.Add(AirAlarmInterfaceInteractionLogic.CloneDevice(device));
+            }
+        }
+
+        private AirAlarmInterfaceViewModel BuildScratchModel()
+        {
+            AirAlarmInterfaceViewModel model = AirAlarmInterfaceViewModel.CreateNormal();
+            model.ActiveMode = (AirAlarmPresetMode)_activeMode;
+            model.SelectedDeviceId = _selectedDeviceId;
+            AirAlarmInterfaceInteractionLogic.CopyDevicesToModel(model, _connectedDevices);
+            return model;
+        }
+
+        private void ApplyScratchModel(AirAlarmInterfaceViewModel model)
+        {
+            _activeMode = (byte)model.ActiveMode;
+            _selectedDeviceId = model.SelectedDeviceId;
+            _connectedDevices.Clear();
+
+            foreach (AirAlarmConnectedDevice device in model.ConnectedDevices)
+            {
+                _connectedDevices.Add(AirAlarmInterfaceInteractionLogic.CloneDevice(device));
+            }
+        }
+
         private AirAlarmInterfaceSnapshot BuildSnapshot()
         {
             if (_airAlarm == null)
             {
                 _airAlarm = GetComponent<AirAlarmController>();
             }
+
+            EnsureDefaultDevices();
 
             bool powerOk = _powerConsumer == null || _powerConsumer.PowerStatus == PowerStatus.Powered;
             AirAlarmState alarmState = _airAlarm != null ? _airAlarm.AlarmState : AirAlarmState.None;
@@ -96,7 +185,7 @@ namespace SS3D.UI.MachineInterface
                 scenario = AirAlarmScenario.Normal;
             }
 
-            return new AirAlarmInterfaceSnapshot
+            AirAlarmInterfaceSnapshot snapshot = new()
             {
                 MachineObjectId = NetworkObject != null ? NetworkObject.ObjectId : 0,
                 InterfaceId = InterfaceId,
@@ -111,7 +200,20 @@ namespace SS3D.UI.MachineInterface
                 PressureKpa = _airAlarm != null ? _airAlarm.SamplePressureKpa : 0f,
                 OxygenFraction = _airAlarm != null ? _airAlarm.SampleOxygenFraction : 0f,
                 CarbonDioxideFraction = _airAlarm != null ? _airAlarm.SampleCarbonDioxideFraction : 0f,
+                ActiveMode = _activeMode,
+                SelectedDeviceId = _selectedDeviceId ?? string.Empty,
+                ConnectedDeviceCount = (byte)Mathf.Min(_connectedDevices.Count, AirAlarmInterfaceSnapshot.MaxConnectedDevices),
             };
+
+            for (int i = 0; i < snapshot.ConnectedDeviceCount; i++)
+            {
+                AirAlarmInterfaceSnapshotSerializer.SetDevice(
+                    ref snapshot,
+                    i,
+                    AirAlarmInterfaceSnapshotSerializer.ToDeviceSnapshot(_connectedDevices[i]));
+            }
+
+            return snapshot;
         }
     }
 }

@@ -56,7 +56,45 @@ namespace SS3D.UI.MachineInterface
                 model.PressureText = $"{snapshot.PressureKpa:0.0} kPa";
             }
 
+            model.ActiveMode = (AirAlarmPresetMode)snapshot.ActiveMode;
+            model.SelectedDeviceId = string.IsNullOrEmpty(snapshot.SelectedDeviceId)
+                ? null
+                : snapshot.SelectedDeviceId;
+
+            if (snapshot.ConnectedDeviceCount > 0)
+            {
+                model.ConnectedDevices.Clear();
+                for (int i = 0; i < snapshot.ConnectedDeviceCount && i < AirAlarmInterfaceSnapshot.MaxConnectedDevices; i++)
+                {
+                    AirAlarmDeviceSnapshot deviceSnapshot =
+                        AirAlarmInterfaceSnapshotSerializer.GetDevice(snapshot, i);
+                    AirAlarmConnectedDevice device =
+                        AirAlarmInterfaceSnapshotSerializer.ToConnectedDevice(deviceSnapshot);
+                    ApplyDefaultDeviceName(model, device);
+                    model.ConnectedDevices.Add(device);
+                }
+            }
+
             return model;
+        }
+
+        private static void ApplyDefaultDeviceName(
+            AirAlarmInterfaceViewModel model,
+            AirAlarmConnectedDevice device)
+        {
+            if (!string.IsNullOrEmpty(device.Name) && device.Name != device.Id)
+            {
+                return;
+            }
+
+            foreach (AirAlarmConnectedDevice fallback in AirAlarmInterfaceViewModel.CreateNormal().ConnectedDevices)
+            {
+                if (fallback.Id == device.Id)
+                {
+                    device.Name = fallback.Name;
+                    break;
+                }
+            }
         }
     }
 }

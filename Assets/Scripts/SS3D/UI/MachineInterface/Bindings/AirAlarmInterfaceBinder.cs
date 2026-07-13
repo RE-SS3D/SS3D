@@ -7,6 +7,8 @@ namespace SS3D.UI.MachineInterface.Bindings
 {
     public class AirAlarmInterfaceBinder : IMachineInterfaceBinder
     {
+        private static readonly string[] FilterKeys = { "O2", "N2", "CO2", "Plasma", "Toxins" };
+
         public event Action CloseRequested;
 
         public event Action<byte, bool> BoolControlChanged;
@@ -61,6 +63,36 @@ namespace SS3D.UI.MachineInterface.Bindings
             if (_idReader != null)
             {
                 _idReader.ReadRequested += HandleReadRequested;
+            }
+
+            if (_filteringMode != null)
+            {
+                _filteringMode.Clicked += OnFilteringModeClicked;
+            }
+
+            if (_panicMode != null)
+            {
+                _panicMode.Clicked += OnPanicModeClicked;
+            }
+
+            if (_fillMode != null)
+            {
+                _fillMode.Clicked += OnFillModeClicked;
+            }
+
+            if (_offMode != null)
+            {
+                _offMode.Clicked += OnOffModeClicked;
+            }
+
+            if (_deviceDetail != null)
+            {
+                _deviceDetail.CloseRequested += HandleDeviceDetailCloseRequested;
+                _deviceDetail.PowerChanged += value =>
+                    BoolControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.Power, value);
+                _deviceDetail.TargetDeltaRequested += delta =>
+                    NumericControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.TargetPressure, delta);
+                _deviceDetail.FilterChanged += HandleDeviceFilterChanged;
             }
         }
 
@@ -129,12 +161,64 @@ namespace SS3D.UI.MachineInterface.Bindings
             {
                 _idReader.ReadRequested -= HandleReadRequested;
             }
+
+            if (_filteringMode != null)
+            {
+                _filteringMode.Clicked -= OnFilteringModeClicked;
+            }
+
+            if (_panicMode != null)
+            {
+                _panicMode.Clicked -= OnPanicModeClicked;
+            }
+
+            if (_fillMode != null)
+            {
+                _fillMode.Clicked -= OnFillModeClicked;
+            }
+
+            if (_offMode != null)
+            {
+                _offMode.Clicked -= OnOffModeClicked;
+            }
+
+            if (_deviceDetail != null)
+            {
+                _deviceDetail.CloseRequested -= HandleDeviceDetailCloseRequested;
+                _deviceDetail.FilterChanged -= HandleDeviceFilterChanged;
+            }
         }
 
         private void HandleCloseRequested() => CloseRequested?.Invoke();
 
         private void HandleReadRequested() =>
             ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.ReadId, 0);
+
+        private void OnFilteringModeClicked() => HandlePresetModeSelected(AirAlarmPresetMode.Filtering);
+
+        private void OnPanicModeClicked() => HandlePresetModeSelected(AirAlarmPresetMode.Panic);
+
+        private void OnFillModeClicked() => HandlePresetModeSelected(AirAlarmPresetMode.Fill);
+
+        private void OnOffModeClicked() => HandlePresetModeSelected(AirAlarmPresetMode.Off);
+
+        private void HandlePresetModeSelected(AirAlarmPresetMode mode) =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.PresetMode, (int)mode);
+
+        private void HandleDeviceDetailCloseRequested() =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.CloseDevice, 0);
+
+        private void HandleDeviceRowClicked(int deviceIndex) =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.SelectDevice, deviceIndex);
+
+        private void HandleDeviceFilterChanged(string key, bool _)
+        {
+            int filterIndex = Array.IndexOf(FilterKeys, key);
+            if (filterIndex >= 0)
+            {
+                ActionControlChanged?.Invoke(MachineInterfaceControlIds.Atmos.DeviceFilter, filterIndex);
+            }
+        }
 
         private void BindGasRows(IReadOnlyList<AirAlarmGasReadout> rows)
         {
@@ -150,11 +234,11 @@ namespace SS3D.UI.MachineInterface.Bindings
                 {
                     GasLabel = row.Label,
                     ValueText = $"{row.Percent:0.0}%",
-                    FillPct = row.Percent,
                     ValueTone = row.ValueTone,
                     BarTone = row.BarTone,
                 };
                 _gasList.Add(barRow);
+                barRow.FillPct = row.Percent;
             }
         }
 
@@ -219,8 +303,9 @@ namespace SS3D.UI.MachineInterface.Bindings
             _deviceList.Clear();
             AirAlarmConnectedDevice selected = null;
 
-            foreach (AirAlarmConnectedDevice device in model.ConnectedDevices)
+            for (int index = 0; index < model.ConnectedDevices.Count; index++)
             {
+                AirAlarmConnectedDevice device = model.ConnectedDevices[index];
                 if (device.Id == model.SelectedDeviceId)
                 {
                     selected = device;
@@ -234,6 +319,9 @@ namespace SS3D.UI.MachineInterface.Bindings
                     Powered = device.Powered,
                     Selected = device.Id == model.SelectedDeviceId,
                 };
+
+                int deviceIndex = index;
+                row.Clicked += () => HandleDeviceRowClicked(deviceIndex);
                 _deviceList.Add(row);
             }
 

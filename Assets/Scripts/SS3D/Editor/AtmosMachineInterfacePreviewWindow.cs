@@ -188,6 +188,46 @@ namespace SS3D.Editor
             _airAlarmBinder?.Bind(_airAlarmModel);
         }
 
+        private void WireAirAlarmPreviewBinder(AirAlarmInterfaceBinder binder)
+        {
+            binder.BoolControlChanged += (controlId, isOn) =>
+            {
+                AirAlarmInterfaceInteractionLogic.ApplyBool(_airAlarmModel, controlId, isOn);
+                binder.Bind(_airAlarmModel);
+            };
+
+            binder.NumericControlChanged += (controlId, delta) =>
+            {
+                AirAlarmInterfaceInteractionLogic.ApplyNumeric(_airAlarmModel, controlId, delta);
+                binder.Bind(_airAlarmModel);
+            };
+
+            binder.ActionControlChanged += (controlId, value) =>
+            {
+                if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+                {
+                    if (_airAlarmModel.AccessGranted)
+                    {
+                        _airAlarmModel.AccessGranted = false;
+                        _airAlarmModel.AccessScanning = false;
+                        _airAlarmModel.SelectedDeviceId = null;
+                    }
+                    else if (!_airAlarmModel.AccessScanning)
+                    {
+                        _airAlarmModel.AccessScanning = true;
+                        _airAlarmModel.AccessGranted = true;
+                        _airAlarmModel.AccessScanning = false;
+                    }
+                }
+                else
+                {
+                    AirAlarmInterfaceInteractionLogic.ApplyAction(_airAlarmModel, controlId, value);
+                }
+
+                binder.Bind(_airAlarmModel);
+            };
+        }
+
         private void SetAirAlarmScenario(AirAlarmInterfaceViewModel model)
         {
             model.AccessGranted = _airAlarmModel.AccessGranted;
@@ -244,6 +284,7 @@ namespace SS3D.Editor
                     break;
                 default:
                     _airAlarmBinder = new AirAlarmInterfaceBinder(_panelRoot);
+                    WireAirAlarmPreviewBinder(_airAlarmBinder);
                     _airAlarmBinder.Bind(_airAlarmModel);
                     break;
             }

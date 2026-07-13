@@ -1,31 +1,47 @@
 namespace SS3D.UI.MachineInterface
 {
-  public struct AirAlarmInterfaceSnapshot
-  {
-    public int MachineObjectId;
+    public struct AirAlarmInterfaceSnapshot
+    {
+        public const int MaxConnectedDevices = AirAlarmInterfaceInteractionLogic.MaxConnectedDevices;
 
-    public string InterfaceId;
+        public int MachineObjectId;
 
-    public string Title;
+        public string InterfaceId;
 
-    public string ModelLabel;
+        public string Title;
 
-    public string DeviceTitle;
+        public string ModelLabel;
 
-    public string Subtitle;
+        public string DeviceTitle;
 
-    public bool PowerOk;
+        public string Subtitle;
 
-    public byte Scenario;
+        public bool PowerOk;
 
-    public bool AccessGranted;
+        public byte Scenario;
 
-    public bool AccessScanning;
+        public bool AccessGranted;
 
-    public float PressureKpa;
+        public bool AccessScanning;
 
-    public float OxygenFraction;
+        public float PressureKpa;
 
-    public float CarbonDioxideFraction;
-  }
+        public float OxygenFraction;
+
+        public float CarbonDioxideFraction;
+
+        public byte ActiveMode;
+
+        public string SelectedDeviceId;
+
+        public byte ConnectedDeviceCount;
+
+        public AirAlarmDeviceSnapshot Device0;
+
+        public AirAlarmDeviceSnapshot Device1;
+
+        public AirAlarmDeviceSnapshot Device2;
+
+        public AirAlarmDeviceSnapshot Device3;
+    }
 }

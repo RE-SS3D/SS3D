@@ -36,6 +36,14 @@ namespace SS3D.UI.MachineInterface
             public const byte FlowRate = 2;
 
             public const byte TargetPressure = 3;
+
+            public const byte PresetMode = 4;
+
+            public const byte SelectDevice = 5;
+
+            public const byte CloseDevice = 6;
+
+            public const byte DeviceFilter = 7;
         }
     }
 }

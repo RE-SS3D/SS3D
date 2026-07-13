@@ -12,6 +12,8 @@ namespace SS3D.UI.MachineInterface.Components
 
         public event Action<float> TargetDeltaRequested;
 
+        public event Action<string, bool> FilterChanged;
+
         private readonly Label _deviceName;
         private readonly Label _deviceType;
         private readonly Button _closeButton;
@@ -98,6 +100,12 @@ namespace SS3D.UI.MachineInterface.Components
             _co2Filter = CreateFilter("CO2");
             _plasmaFilter = CreateFilter("Plasma");
             _toxinsFilter = CreateFilter("Toxins");
+
+            WireFilter(_o2Filter, "O2");
+            WireFilter(_n2Filter, "N2");
+            WireFilter(_co2Filter, "CO2");
+            WireFilter(_plasmaFilter, "Plasma");
+            WireFilter(_toxinsFilter, "Toxins");
 
             filterRow.Add(_o2Filter);
             filterRow.Add(_n2Filter);
@@ -201,6 +209,11 @@ namespace SS3D.UI.MachineInterface.Components
             CompactFilterToggle toggle = new() { FilterLabel = label };
             toggle.style.marginRight = 14;
             return toggle;
+        }
+
+        private void WireFilter(CompactFilterToggle toggle, string key)
+        {
+            toggle.ValueChanged += value => FilterChanged?.Invoke(key, value);
         }
     }
 
