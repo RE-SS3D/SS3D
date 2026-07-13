@@ -32,6 +32,10 @@
     color: var(--ss3d-text-primary);
 }
 
+.power-flow-row__value--primary {
+    color: var(--ss3d-text-primary);
+}
+
 .power-flow-row__unit {
     font-size: 10px;
     color: var(--ss3d-text-secondary);

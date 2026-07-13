@@ -1,6 +1,11 @@
 
 .diagnostics-list {
     flex-direction: column;
+    flex-grow: 1;
+}
+
+.diagnostics-list__lines {
+    flex-direction: column;
 }
 
 .diagnostics-list__line {
@@ -12,12 +17,16 @@
     min-width: 14px;
     font-size: 12px;
     margin-right: 8px;
+    color: var(--ss3d-text-tertiary);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
 }
 
 .diagnostics-list__text {
     font-size: 12px;
     white-space: normal;
     flex-grow: 1;
+    color: var(--ss3d-text-tertiary);
+    -unity-font-definition: url("project://database/Assets/Content/Systems/UI/Font/Fonts/SpessmanFontSDF.asset");
 }
 
 .diagnostics-list__glyph.tone-info,
@@ -35,12 +44,12 @@
     color: var(--ss3d-feedback-warning);
 }
 
+.diagnostics-list__glyph.tone-danger,
+.diagnostics-list__text.tone-danger {
+    color: var(--ss3d-feedback-danger);
+}
+
 .diagnostics-list__glyph.tone-neutral,
 .diagnostics-list__text.tone-neutral {
     color: var(--ss3d-text-tertiary);
-}
-
-.diagnostics-list__glyph.font-terminal,
-.diagnostics-list__text.font-terminal {
-    color: inherit;
 }

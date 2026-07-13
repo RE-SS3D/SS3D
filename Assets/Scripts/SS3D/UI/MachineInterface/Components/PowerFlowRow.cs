@@ -82,15 +82,15 @@ namespace SS3D.UI.MachineInterface.Components
             _loadValue.RemoveFromClassList("tone-warning");
             _loadValue.RemoveFromClassList("tone-danger");
             _loadValue.RemoveFromClassList("tone-neutral");
+            _loadValue.RemoveFromClassList("power-flow-row__value--primary");
 
             if (loadTone == StatusTone.Neutral)
             {
-                _loadValue.style.color = StyleKeyword.Null;
+                _loadValue.AddToClassList("power-flow-row__value--primary");
             }
             else
             {
                 StatusToneUtility.ApplyTone(_loadValue, loadTone);
-                _loadValue.style.color = StyleKeyword.Null;
             }
         }
     }

@@ -41,7 +41,9 @@
             <ui:VisualElement class="apc-body-column">
                 <ui:VisualElement class="panel-section" name="power-flow-section">
                     <ui:VisualElement class="panel-section__clip">
-                        <ui:Label class="panel-section__header font-titling" text="Power Flow" />
+                        <ui:VisualElement class="panel-section__header">
+                            <ui:Label class="panel-section__header-title font-titling" text="Power Flow" />
+                        </ui:VisualElement>
                         <ui:VisualElement class="panel-section__content">
                             <ss3d:PowerFlowRow name="power-flow" grid-input-kw="0" load-output-kw="0" />
                         </ui:VisualElement>
@@ -60,7 +62,9 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="panel-section" name="diagnostics-section">
                     <ui:VisualElement class="panel-section__clip">
-                        <ui:Label class="panel-section__header font-titling" text="Diagnostics" />
+                        <ui:VisualElement class="panel-section__header">
+                            <ui:Label class="panel-section__header-title font-titling" text="Diagnostics" />
+                        </ui:VisualElement>
                         <ui:VisualElement class="panel-section__content">
                             <ss3d:DiagnosticsList name="diagnostics-list" />
                         </ui:VisualElement>
@@ -76,7 +80,9 @@
                         <ss3d:AccessStrip name="access-strip" authorized-text="Engineering — Authorized" />
                         <ui:VisualElement class="panel-section" name="channels-section">
                             <ui:VisualElement class="panel-section__clip">
-                                <ui:Label class="panel-section__header font-titling" text="Connected Systems" />
+                                <ui:VisualElement class="panel-section__header">
+                                    <ui:Label class="panel-section__header-title font-titling" text="Connected Systems" />
+                                </ui:VisualElement>
                                 <ui:VisualElement class="panel-section__content">
                                     <ss3d:ChannelRow name="channel-lighting" channel-name="Lighting" load-kw="0" is-on="true" />
                                     <ss3d:ChannelRow name="channel-equipment" channel-name="Equipment" load-kw="0" is-on="true" />

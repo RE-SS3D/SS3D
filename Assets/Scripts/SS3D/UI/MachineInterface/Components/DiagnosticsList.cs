@@ -14,6 +14,7 @@ namespace SS3D.UI.MachineInterface.Components
             AddToClassList("diagnostics-list");
 
             _linesContainer = new VisualElement();
+            _linesContainer.AddToClassList("diagnostics-list__lines");
             _linesContainer.style.flexDirection = FlexDirection.Column;
 
             Add(_linesContainer);
@@ -35,12 +36,10 @@ namespace SS3D.UI.MachineInterface.Components
 
                 Label glyph = new(line.Glyph);
                 glyph.AddToClassList("diagnostics-list__glyph");
-                glyph.AddToClassList("font-terminal");
                 StatusToneUtility.ApplyTone(glyph, line.Tone);
 
                 Label text = new(line.Text);
                 text.AddToClassList("diagnostics-list__text");
-                text.AddToClassList("font-terminal");
                 StatusToneUtility.ApplyTone(text, line.Tone);
 
                 row.Add(glyph);

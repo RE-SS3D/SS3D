@@ -89,8 +89,7 @@
     --ss3d-border-default: var(--ss3d-diegetic-border-default);
 }
 
-.diegetic-device-shell__screen-content Label,
-.diegetic-device-shell__screen Label {
+.diegetic-device-shell__screen-content .panel-section__content Label {
     background-color: rgba(0, 0, 0, 0);
 }
 

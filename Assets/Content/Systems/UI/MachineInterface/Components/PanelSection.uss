@@ -3,9 +3,10 @@
     flex-direction: column;
     background-color: var(--ss3d-diegetic-panel-body);
     border-radius: var(--ss3d-radius-md);
+    border-width: 1px;
+    border-color: var(--ss3d-diegetic-border-subtle);
     margin-bottom: 14px;
     flex-shrink: 0;
-    box-shadow: var(--ss3d-diegetic-shadow-panel);
 }
 
 .panel-section__clip {
@@ -42,6 +43,6 @@
     background-color: var(--ss3d-diegetic-panel-body);
 }
 
-.panel-section Label {
+.panel-section__content Label {
     background-color: rgba(0, 0, 0, 0);
 }

@@ -37,7 +37,8 @@
     min-width: 0;
     background-color: var(--ss3d-diegetic-panel-body);
     border-radius: var(--ss3d-radius-md);
-    box-shadow: var(--ss3d-diegetic-shadow-panel);
+    border-width: 1px;
+    border-color: var(--ss3d-diegetic-border-subtle);
 }
 
 #diagnostics-section .panel-section__content {
