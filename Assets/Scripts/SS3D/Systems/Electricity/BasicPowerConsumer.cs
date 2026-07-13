@@ -38,7 +38,7 @@ namespace System.Electricity
 
         private void SyncPowerStatus(PowerStatus oldValue, PowerStatus newValue, bool asServer)
         {
-            OnPowerStatusUpdated.Invoke(this, newValue);
+            OnPowerStatusUpdated?.Invoke(this, newValue);
         }
     }
 }

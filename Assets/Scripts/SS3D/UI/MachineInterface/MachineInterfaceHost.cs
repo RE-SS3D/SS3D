@@ -51,6 +51,12 @@ namespace SS3D.UI.MachineInterface
         [SerializeField]
         private StyleSheet _vendingTemplateStyle;
 
+        [SerializeField]
+        private VisualTreeAsset _gasPumpTemplate;
+
+        [SerializeField]
+        private StyleSheet _gasPumpTemplateStyle;
+
         private VisualElement _overlayRoot;
         private VisualElement _panelRoot;
         private MachineWindow _window;
@@ -195,6 +201,18 @@ namespace SS3D.UI.MachineInterface
                     "Assets/Content/Systems/UI/MachineInterface/Templates/VendingMachineInterface.uss");
             }
 
+            if (_gasPumpTemplate == null)
+            {
+                _gasPumpTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uxml");
+            }
+
+            if (_gasPumpTemplateStyle == null)
+            {
+                _gasPumpTemplateStyle = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uss");
+            }
+
             if (_document != null && _document.panelSettings == null)
             {
                 _document.panelSettings = UnityEditor.AssetDatabase.LoadAssetAtPath<PanelSettings>(
@@ -232,6 +250,15 @@ namespace SS3D.UI.MachineInterface
                 TemplateStyle = _vendingTemplateStyle,
                 ShellKind = MachineInterfaceShellKind.DiegeticDevice,
                 CreateBinder = root => new VendingMachineBinder(root),
+            });
+
+            MachineInterfaceRegistry.RegisterUi(new MachineInterfaceUiRegistration
+            {
+                InterfaceId = MachineInterfaceIds.GasPump,
+                Template = _gasPumpTemplate,
+                TemplateStyle = _gasPumpTemplateStyle,
+                ShellKind = MachineInterfaceShellKind.DiegeticDevice,
+                CreateBinder = root => new GasPumpGaugeBinder(root),
             });
         }
 

@@ -700,6 +700,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb3c5f7550674ca4895c24c93c9a7eb4
+    m_Address: Assets/Content/WorldObjects/Furniture/Machines/Atmospherics/GasPump/GasPump.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc1b7e8558e50594089a64af537ff781
     m_Address: Assets/Content/WorldObjects/Furniture/Machines/Vendors/VendorYouTool.prefab
     m_ReadOnly: 0

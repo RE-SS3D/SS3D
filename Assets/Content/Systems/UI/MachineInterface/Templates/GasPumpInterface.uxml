@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:ss3d="SS3D.UI.MachineInterface.Components" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Tokens/ss3d-typography.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss" />
+    <ui:Style src="project://database/Assets/Content/Systems/UI/MachineInterface/Templates/GasPumpInterface.uss" />
+
+    <ss3d:DiegeticDeviceShell name="device-shell"
+        model-label="ATP-1 · differential transfer pump"
+        power-ok="true"
+        style="align-self: center; margin-top: 24px;">
+        <ss3d:ConnectionStatusRow name="connection-row"
+            status-text="IDLE"
+            readout-text="0.0 / 100.0 mol/s" />
+        <ss3d:DeviceIdentityBlock name="identity"
+            title="GAS PUMP · FLOW MONITOR"
+            subtitle="Pipe network linked" />
+        <ss3d:DiagnosticsList name="diagnostics" />
+        <ss3d:DeviceFooter name="footer" text="SS3D Gas Pump — ATP-1 differential gauge" />
+    </ss3d:DiegeticDeviceShell>
+</ui:UXML>

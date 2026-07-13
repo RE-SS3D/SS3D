@@ -1,0 +1,3 @@
+.gas-pump-interface .diagnostics-list {
+    margin-top: 8px;
+}

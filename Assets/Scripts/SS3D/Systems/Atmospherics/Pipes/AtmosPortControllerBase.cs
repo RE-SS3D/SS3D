@@ -5,6 +5,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Atmospherics;
 using SS3D.Systems.Tile;
+using System.Electricity;
 using UnityEngine;
 
 namespace SS3D.Systems.Atmospherics.Pipes
@@ -19,6 +20,9 @@ namespace SS3D.Systems.Atmospherics.Pipes
 
         [SerializeField]
         protected Animator _animator;
+
+        [SerializeField]
+        private BasicPowerConsumer _powerConsumer;
 
         [SyncVar(OnChange = nameof(HandleEnabledChanged))]
         private bool _enabled = true;
@@ -53,6 +57,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
                 {
                     OnName = "Turn off",
                     OffName = "Turn on",
+                    CanInteractCallback = _ => IsPowered(),
                 },
             };
         }
@@ -93,6 +98,13 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public void ServerTick(AtmosPipeSimulation pipeSimulation, AtmosSimulation turfSimulation, float deltaTime)
         {
             ResolveConnectedNetwork();
+
+            if (!IsPowered())
+            {
+                SetAnimatorActive(false);
+                SetPortFlowing(false);
+                return;
+            }
 
             if (!_enabled)
             {
@@ -180,7 +192,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (!IsServer)
                 return;
 
-            if (!_enabled)
+            if (!IsPowered() || !_enabled)
             {
                 SetAnimatorActive(false);
                 SetPortFlowing(false);
@@ -191,6 +203,8 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (_networkId.IsNone)
                 SetPortFlowing(false);
         }
+
+        protected bool IsPowered() => AtmosPortPower.IsPowered(_powerConsumer);
 
         private void SetAnimatorActive(bool active)
         {

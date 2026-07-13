@@ -108,6 +108,8 @@ GameObject:
   - component: {fileID: -9109099915246017288}
   - component: {fileID: -7411637464005841016}
   - component: {fileID: 8827364519023341187}
+  - component: {fileID: 8827364519023341192}
+  - component: {fileID: 8827364519023341193}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -255,7 +257,10 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 8827364519023341187}
+  - {fileID: 8827364519023341192}
+  - {fileID: 8827364519023341193}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -323,7 +328,41 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -2473204136432335067}
   _networkObjectCache: {fileID: -2473204136432335067}
   _animator: {fileID: 7551927119831908791}
+  _powerConsumer: {fileID: 8827364519023341192}
   _enabled: 1
   _animatorActive: 0
   _portFlowing: 0
   _previewAnimatorInEditor: 1
+--- !u!114 &8827364519023341192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dc697195ff36649947ce641b391e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
+  _powerConsumption: 0.2
+  _channel: 2
+  _powerStatus: 0
+--- !u!114 &8827364519023341193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc87ddd49b01f4098910ffdf858004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: -2473204136432335067}
+  _networkObjectCache: {fileID: -2473204136432335067}
