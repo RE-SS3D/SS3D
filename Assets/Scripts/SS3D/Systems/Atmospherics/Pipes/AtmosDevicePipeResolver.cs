@@ -11,6 +11,27 @@ namespace SS3D.Systems.Atmospherics.Pipes
         public static bool TryResolveNetwork(
             TileMap map,
             GasPipeNetworkRegistry registry,
+            PlacedTileObject device,
+            out GasPipeNetworkId networkId,
+            out GasPipeSegmentKey segmentKey)
+        {
+            networkId = GasPipeNetworkId.None;
+            segmentKey = default;
+
+            if (device == null)
+                return false;
+
+            return TryResolveNetwork(
+                map,
+                registry,
+                new TileCoord(device.MapId, device.WorldOrigin),
+                out networkId,
+                out segmentKey);
+        }
+
+        public static bool TryResolveNetwork(
+            TileMap map,
+            GasPipeNetworkRegistry registry,
             TileCoord deviceCoord,
             out GasPipeNetworkId networkId,
             out GasPipeSegmentKey segmentKey)
@@ -21,9 +42,28 @@ namespace SS3D.Systems.Atmospherics.Pipes
             if (map == null || registry == null)
                 return false;
 
+            foreach (TileCoord coord in AtmosPipeConnectivity.EnumerateCoordsAround(map, deviceCoord))
+            {
+                if (TryResolveNetworkAt(map, registry, coord, out networkId, out segmentKey))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryResolveNetworkAt(
+            TileMap map,
+            GasPipeNetworkRegistry registry,
+            TileCoord coord,
+            out GasPipeNetworkId networkId,
+            out GasPipeSegmentKey segmentKey)
+        {
+            networkId = GasPipeNetworkId.None;
+            segmentKey = default;
+
             foreach (TileLayer layer in AtmosPipeConnectivity.GasPipeLayers)
             {
-                if (!AtmosPipeConnectivity.TryGetSegment(map, deviceCoord, layer, out PlacedTileObject segment))
+                if (!AtmosPipeConnectivity.TryGetSegment(map, coord, layer, out PlacedTileObject segment))
                     continue;
 
                 segmentKey = GasPipeSegmentKey.From(segment);

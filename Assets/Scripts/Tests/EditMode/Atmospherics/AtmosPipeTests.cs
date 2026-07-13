@@ -275,6 +275,42 @@ namespace EditorTests.Atmospherics
             Assert.AreEqual(TileLayer.PipeMiddle, segmentKey.Layer);
         }
 
+        [Test]
+        public void SimpleAdjacencyConnectorPipe_ParticipatesInGasNetwork()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            PlacedTileObject pipe = CreateSimpleGasPipeAt(new Vector2Int(5, 5), TileLayer.PipeMiddle);
+            RegisterOnMap(context.Map, pipe, TileLayer.PipeMiddle, new Vector3(5, 0, 5));
+
+            Assert.IsTrue(PipeConnectionRule.ParticipatesInGasNetwork(pipe));
+
+            var registry = new GasPipeNetworkRegistry(AtmosConstants.DefaultGasCount);
+            registry.RebuildAll(context.Map);
+
+            Assert.AreEqual(1, registry.NetworkCount);
+        }
+
+        [Test]
+        public void AtmosDevicePipeResolver_FindsNetworkOnAdjacentTile()
+        {
+            TileMapTestUtilities.MapContext context = TileMapTestUtilities.CreateContext(_instantiated);
+            PlacedTileObject pipe = CreateGasPipeAt(new Vector2Int(6, 5), TileLayer.PipeMiddle);
+            RegisterOnMap(context.Map, pipe, TileLayer.PipeMiddle, new Vector3(6, 0, 5));
+
+            var registry = new GasPipeNetworkRegistry(AtmosConstants.DefaultGasCount);
+            registry.RebuildAll(context.Map);
+
+            TileCoord deviceCoord = new TileCoord(context.Map.MapId, 5, 5);
+            Assert.IsTrue(AtmosDevicePipeResolver.TryResolveNetwork(
+                context.Map,
+                registry,
+                deviceCoord,
+                out GasPipeNetworkId networkId,
+                out GasPipeSegmentKey segmentKey));
+            Assert.IsFalse(networkId.IsNone);
+            Assert.AreEqual(new TileCoord(context.Map.MapId, 6, 5), segmentKey.Coord);
+        }
+
         private PlacedTileObject CreateGasPipeAt(Vector2Int worldOrigin, TileLayer layer)
         {
             GameObject go = new GameObject($"GasPipe_{worldOrigin}_{layer}");
@@ -282,6 +318,27 @@ namespace EditorTests.Atmospherics
 
             PlacedTileObject placed = go.AddComponent<PlacedTileObject>();
             go.AddComponent<PipeAdjacencyConnector>();
+
+            TileObjectSo so = ScriptableObject.CreateInstance<TileObjectSo>();
+            so.genericType = TileObjectGenericType.Pipe;
+            so.specificType = TileObjectSpecificType.None;
+            so.layer = layer;
+
+            SetPrivateField(placed, "_tileObjectSo", so);
+            SetPrivateField(placed, "_connector", placed.GetComponent<IAdjacencyConnector>());
+            SetPrivateField(placed, "_worldOrigin", worldOrigin);
+            SetPrivateField(placed, "_mapId", 0);
+            placed.transform.position = new Vector3(worldOrigin.x, 0, worldOrigin.y);
+            return placed;
+        }
+
+        private PlacedTileObject CreateSimpleGasPipeAt(Vector2Int worldOrigin, TileLayer layer)
+        {
+            GameObject go = new GameObject($"SimpleGasPipe_{worldOrigin}_{layer}");
+            _instantiated.Add(go);
+
+            PlacedTileObject placed = go.AddComponent<PlacedTileObject>();
+            go.AddComponent<SimpleAdjacencyConnector>();
 
             TileObjectSo so = ScriptableObject.CreateInstance<TileObjectSo>();
             so.genericType = TileObjectGenericType.Pipe;

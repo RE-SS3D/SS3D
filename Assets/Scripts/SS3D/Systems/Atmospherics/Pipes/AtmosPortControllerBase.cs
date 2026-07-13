@@ -153,7 +153,7 @@ namespace SS3D.Systems.Atmospherics.Pipes
             AtmosDevicePipeResolver.TryResolveNetwork(
                 tileSubSystem.CurrentMap,
                 atmosSubSystem.PipeRegistry,
-                OriginTile,
+                _tileObject,
                 out _networkId,
                 out _);
         }

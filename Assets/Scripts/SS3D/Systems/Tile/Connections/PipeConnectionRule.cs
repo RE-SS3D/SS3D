@@ -21,7 +21,7 @@ namespace SS3D.Systems.Tile.Connections
         public static bool ParticipatesInGasNetwork(PlacedTileObject segment) =>
             segment != null
             && segment.GenericType == TileObjectGenericType.Pipe
-            && segment.Connector is PipeAdjacencyConnector
+            && segment.Connector is EngineDrivenHorizontalConnector
             && GetPipeMedium(segment) == PipeMedium.Gas;
 
         public static PipeMedium GetPipeMedium(PlacedTileObject segment)
