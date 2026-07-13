@@ -1,4 +1,5 @@
 using FishNet.Connection;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Systems.Atmospherics.Pipes;
 using System.Electricity;
