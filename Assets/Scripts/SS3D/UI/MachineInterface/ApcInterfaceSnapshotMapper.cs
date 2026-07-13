@@ -91,7 +91,7 @@ namespace SS3D.UI.MachineInterface
 
                 default:
                 {
-                    model.StatusHeadline = "Room Powered";
+                    model.StatusHeadline = "ROOM POWERED";
                     model.StatusExplanation = "Grid supply meets connected load.";
                     model.HeaderReadout = "GRID FEED NOMINAL";
                     break;

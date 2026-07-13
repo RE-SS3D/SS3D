@@ -49,9 +49,11 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="panel-section" name="battery-section">
                     <ui:VisualElement class="panel-section__clip">
-                        <ui:Label class="panel-section__header font-titling" text="Battery" />
-                        <ui:VisualElement class="panel-section__content">
+                        <ui:VisualElement class="panel-section__header panel-section__header--split">
+                            <ui:Label class="panel-section__header-title font-titling" text="Battery" />
                             <ui:Label name="battery-state-header" text="CHARGED" class="apc-battery-state-header font-terminal" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="panel-section__content">
                             <ss3d:BatteryBar name="battery-bar" value="1" state-text="CHARGED" eta-text="" class="battery-bar--compact" />
                         </ui:VisualElement>
                     </ui:VisualElement>

@@ -15,6 +15,10 @@
     color: var(--ss3d-feedback-danger);
 }
 
+.tone-neutral {
+    color: var(--ss3d-text-tertiary);
+}
+
 .tone-bg-info {
     background-color: var(--ss3d-feedback-info-bg);
     border-color: var(--ss3d-feedback-info-border);

@@ -5,6 +5,7 @@
     border-radius: var(--ss3d-radius-md);
     margin-bottom: 14px;
     flex-shrink: 0;
+    box-shadow: var(--ss3d-diegetic-shadow-panel);
 }
 
 .panel-section__clip {
@@ -15,10 +16,24 @@
 .panel-section__header {
     background-color: var(--ss3d-diegetic-panel-raised);
     padding: 8px 14px;
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-size: 13px;
+    letter-spacing: 1px;
     color: var(--ss3d-text-primary);
     -unity-text-align: middle-left;
+}
+
+.panel-section__header--split {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-section__header-title {
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--ss3d-text-primary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .panel-section__content {

@@ -22,7 +22,7 @@ namespace SS3D.UI.MachineInterface
 
         public ApcPowerState State { get; set; } = ApcPowerState.Nominal;
 
-        public string StatusHeadline { get; set; } = "Room Powered";
+        public string StatusHeadline { get; set; } = "ROOM POWERED";
 
         public string StatusExplanation { get; set; } = "Grid supply meets connected load.";
 
@@ -55,7 +55,7 @@ namespace SS3D.UI.MachineInterface
             return new ApcInterfaceViewModel
             {
                 State = ApcPowerState.Nominal,
-                StatusHeadline = "Room Powered",
+                StatusHeadline = "ROOM POWERED",
                 StatusExplanation = "Grid supply meets connected load.",
                 HeaderReadout = "GRID FEED NOMINAL",
                 GridInputKw = 6.2f,
@@ -67,7 +67,7 @@ namespace SS3D.UI.MachineInterface
                 EnvironmentLoadKw = 1.3f,
                 Diagnostics = new List<DiagnosticLine>
                 {
-                    new("✓", "No faults detected.", StatusTone.Info),
+                    new("✓", "NO FAULTS DETECTED.", StatusTone.Neutral),
                 },
             };
         }

@@ -7,7 +7,7 @@
 }
 
 .status-badge__label {
-    font-size: 10px;
+    font-size: 11px;
     -unity-font-style: bold;
     letter-spacing: 1px;
 }

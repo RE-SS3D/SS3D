@@ -3,7 +3,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--ss3d-surface-inset);
+    background-color: var(--ss3d-diegetic-inset);
     border-radius: var(--ss3d-radius-sm);
     padding: 8px 12px;
     margin-bottom: 14px;

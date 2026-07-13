@@ -15,10 +15,11 @@
     width: 52px;
     height: 36px;
     border-radius: 3px;
-    background-color: var(--ss3d-surface-inset);
+    background-color: var(--ss3d-diegetic-inset);
     margin-bottom: 12px;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .access-gate-panel__slot-clip {
@@ -48,8 +49,8 @@
 }
 
 .access-gate-panel__headline {
-    font-size: 14px;
-    letter-spacing: 2px;
+    font-size: 20px;
+    letter-spacing: 1.6px;
     color: var(--ss3d-text-primary);
     -unity-text-align: middle-center;
     margin-bottom: 4px;
@@ -63,13 +64,38 @@
     margin-bottom: 12px;
 }
 
+.access-gate-panel__sub.font-terminal {
+    color: var(--ss3d-text-tertiary);
+}
+
 .access-gate-panel__button .steel-button__control {
     min-width: 200px;
     min-height: 40px;
-    background-color: var(--ss3d-feedback-info);
-    color: var(--ss3d-text-on-accent, #ffffff);
+    padding: 10px 22px;
+    font-size: 15px;
+    letter-spacing: 1.2px;
+    border-width: 1px;
+    border-color: var(--ss3d-border-default);
+    background-color: var(--ss3d-diegetic-panel-raised);
+    color: var(--ss3d-text-primary);
+    box-shadow: var(--ss3d-diegetic-shadow-button);
 }
 
 .access-gate-panel__button .steel-button__control:hover {
-    background-color: var(--ss3d-feedback-info-border);
+    background-color: #35373a;
+    border-color: var(--ss3d-border-strong);
+}
+
+.access-gate-panel__button .steel-button__control:active {
+    background-color: var(--ss3d-accent-rust-dim);
+    color: var(--ss3d-text-on-accent);
+    translate: 0 2px;
+    box-shadow: none;
+}
+
+.access-gate-panel__button .steel-button__control:disabled {
+    background-color: var(--ss3d-diegetic-panel-raised);
+    color: var(--ss3d-text-tertiary);
+    border-color: var(--ss3d-diegetic-border-subtle);
+    box-shadow: none;
 }

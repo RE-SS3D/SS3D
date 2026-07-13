@@ -195,7 +195,7 @@ namespace SS3D.UI.MachineInterface.Bindings
 
                 default:
                 {
-                    _powerFlow.SetFlowDisplay("→", StatusTone.Success, StatusTone.Success);
+                    _powerFlow.SetFlowDisplay("→", StatusTone.Success, StatusTone.Neutral);
                     break;
                 }
             }

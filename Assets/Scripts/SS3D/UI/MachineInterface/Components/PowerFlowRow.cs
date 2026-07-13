@@ -16,10 +16,12 @@ namespace SS3D.UI.MachineInterface.Components
             AddToClassList("power-flow-row");
 
             VisualElement gridMetric = CreateMetric("GRID IN", out _gridValue, alignEnd: false);
+            gridMetric.AddToClassList("power-flow-row__metric--grid-in");
             _arrow = new Label("→");
             _arrow.AddToClassList("power-flow-row__arrow");
             _arrow.AddToClassList("font-arcade");
             VisualElement loadMetric = CreateMetric("LOAD OUT", out _loadValue, alignEnd: true);
+            loadMetric.AddToClassList("power-flow-row__metric--load-out");
 
             Add(gridMetric);
             Add(_arrow);
@@ -74,7 +76,22 @@ namespace SS3D.UI.MachineInterface.Components
         {
             _arrow.text = arrowGlyph;
             StatusToneUtility.ApplyTone(_arrow, arrowTone);
-            StatusToneUtility.ApplyTone(_loadValue, loadTone);
+
+            _loadValue.RemoveFromClassList("tone-info");
+            _loadValue.RemoveFromClassList("tone-success");
+            _loadValue.RemoveFromClassList("tone-warning");
+            _loadValue.RemoveFromClassList("tone-danger");
+            _loadValue.RemoveFromClassList("tone-neutral");
+
+            if (loadTone == StatusTone.Neutral)
+            {
+                _loadValue.style.color = StyleKeyword.Null;
+            }
+            else
+            {
+                StatusToneUtility.ApplyTone(_loadValue, loadTone);
+                _loadValue.style.color = StyleKeyword.Null;
+            }
         }
     }
 }

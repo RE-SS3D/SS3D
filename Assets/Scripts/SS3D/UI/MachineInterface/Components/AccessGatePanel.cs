@@ -13,7 +13,7 @@ namespace SS3D.UI.MachineInterface.Components
         private readonly Label _subline;
         private readonly SteelButton _swipeButton;
 
-        private string _lockedHeadline = "No ID Inserted";
+        private string _lockedHeadline = "NO ID INSERTED";
         private string _lockedSubline = "Insert ID card to control connected systems";
         private string _scanningSubline = "Verifying engineering clearance";
 
@@ -39,7 +39,7 @@ namespace SS3D.UI.MachineInterface.Components
 
             slot.Add(slotClip);
 
-            _headline = new Label("No ID Inserted");
+            _headline = new Label("NO ID INSERTED");
             _headline.AddToClassList("access-gate-panel__headline");
             _headline.AddToClassList("font-titling");
 
@@ -47,7 +47,7 @@ namespace SS3D.UI.MachineInterface.Components
             _subline.AddToClassList("access-gate-panel__sub");
             _subline.AddToClassList("font-terminal");
 
-            _swipeButton = new SteelButton { Text = "Swipe ID Card" };
+            _swipeButton = new SteelButton { Text = "SWIPE ID CARD" };
             _swipeButton.AddToClassList("access-gate-panel__button");
             _swipeButton.Clicked += OnSwipeClicked;
 
@@ -104,7 +104,7 @@ namespace SS3D.UI.MachineInterface.Components
             {
                 GateHeadline = _lockedHeadline;
                 GateSubline = _lockedSubline;
-                SwipeLabel = "Swipe ID Card";
+                SwipeLabel = "SWIPE ID CARD";
                 _swipeButton.Disabled = false;
             }
         }

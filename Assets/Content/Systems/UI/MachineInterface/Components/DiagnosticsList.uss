@@ -1,34 +1,21 @@
 
 .diagnostics-list {
     flex-direction: column;
-    background-color: var(--ss3d-surface-inset);
-    border-radius: var(--ss3d-radius-sm);
-    border-width: 1px;
-    border-color: var(--ss3d-border-subtle);
-    padding: var(--ss3d-space-2) var(--ss3d-space-3);
-    margin-top: var(--ss3d-space-2);
-}
-
-.diagnostics-list__title {
-    font-size: 9px;
-    color: var(--ss3d-text-tertiary);
-    letter-spacing: 2px;
-    margin-bottom: var(--ss3d-space-2);
 }
 
 .diagnostics-list__line {
     flex-direction: row;
-    margin-bottom: var(--ss3d-space-1);
+    margin-bottom: 4px;
 }
 
 .diagnostics-list__glyph {
     min-width: 14px;
-    font-size: 11px;
-    margin-right: var(--ss3d-space-2);
+    font-size: 12px;
+    margin-right: 8px;
 }
 
 .diagnostics-list__text {
-    font-size: 10px;
+    font-size: 12px;
     white-space: normal;
     flex-grow: 1;
 }
@@ -48,7 +35,12 @@
     color: var(--ss3d-feedback-warning);
 }
 
-.diagnostics-list__glyph.tone-danger,
-.diagnostics-list__text.tone-danger {
-    color: var(--ss3d-feedback-danger);
+.diagnostics-list__glyph.tone-neutral,
+.diagnostics-list__text.tone-neutral {
+    color: var(--ss3d-text-tertiary);
+}
+
+.diagnostics-list__glyph.font-terminal,
+.diagnostics-list__text.font-terminal {
+    color: inherit;
 }

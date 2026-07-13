@@ -13,14 +13,9 @@ namespace SS3D.UI.MachineInterface.Components
         {
             AddToClassList("diagnostics-list");
 
-            Label title = new("DIAGNOSTICS");
-            title.AddToClassList("diagnostics-list__title");
-            title.AddToClassList("font-arcade");
-
             _linesContainer = new VisualElement();
             _linesContainer.style.flexDirection = FlexDirection.Column;
 
-            Add(title);
             Add(_linesContainer);
         }
 

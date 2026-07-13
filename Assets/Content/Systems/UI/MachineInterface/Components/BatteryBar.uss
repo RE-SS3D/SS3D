@@ -91,8 +91,19 @@
 
 .battery-bar--compact .battery-bar__track {
     height: 14px;
+    background-color: var(--ss3d-diegetic-inset);
 }
 
 .battery-bar--compact .battery-bar__footer {
     justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.battery-bar--compact .battery-bar__percent {
+    font-size: 12px;
+    color: var(--ss3d-text-tertiary);
+}
+
+.battery-bar--compact .battery-bar__percent.font-terminal {
+    color: var(--ss3d-text-tertiary);
 }

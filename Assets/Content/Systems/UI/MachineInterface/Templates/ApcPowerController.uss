@@ -37,6 +37,12 @@
     min-width: 0;
     background-color: var(--ss3d-diegetic-panel-body);
     border-radius: var(--ss3d-radius-md);
+    box-shadow: var(--ss3d-diegetic-shadow-panel);
+}
+
+#diagnostics-section .panel-section__content {
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
 .apc-access-unlocked .panel-section__content {
@@ -45,15 +51,43 @@
 }
 
 .apc-battery-state-header {
-    position: absolute;
-    right: 14px;
-    top: 8px;
     font-size: 12px;
+    color: var(--ss3d-text-tertiary);
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.apc-battery-state-header.font-terminal {
     color: var(--ss3d-text-tertiary);
 }
 
-#battery-section {
-    position: relative;
+.apc-body-column .power-flow-row {
+    margin-bottom: 0;
+    border-width: 0;
+    background-color: transparent;
+    padding: 0;
+    align-items: stretch;
+}
+
+.apc-body-column .power-flow-row__metric {
+    flex-grow: 1;
+    flex-basis: 0;
+    background-color: var(--ss3d-diegetic-inset);
+    padding: 10px 12px;
+}
+
+.apc-body-column .power-flow-row__metric--grid-in {
+    border-top-left-radius: var(--ss3d-radius-sm);
+    border-bottom-left-radius: var(--ss3d-radius-sm);
+}
+
+.apc-body-column .power-flow-row__metric--load-out {
+    border-top-right-radius: var(--ss3d-radius-sm);
+    border-bottom-right-radius: var(--ss3d-radius-sm);
+}
+
+.apc-body-column .power-flow-row__arrow {
+    align-self: center;
 }
 
 .apc-shed-hint {
@@ -66,13 +100,6 @@
 
 .apc-body-column .panel-section {
     margin-bottom: 14px;
-}
-
-.apc-body-column .power-flow-row {
-    margin-bottom: 0;
-    border-width: 0;
-    background-color: transparent;
-    padding: 0;
 }
 
 .apc-access-region .access-gated-region__controls .panel-section__content {

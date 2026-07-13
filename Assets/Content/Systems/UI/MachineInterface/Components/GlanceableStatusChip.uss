@@ -11,15 +11,15 @@
 
 .glanceable-status-chip__left {
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     flex-shrink: 1;
     min-width: 0;
 }
 
 .glanceable-status-chip__headline {
-    font-size: 14px;
-    letter-spacing: 2px;
-    margin-right: var(--ss3d-space-3);
+    font-size: 20px;
+    letter-spacing: 1.6px;
+    margin-right: 12px;
 }
 
 .glanceable-status-chip__right {
