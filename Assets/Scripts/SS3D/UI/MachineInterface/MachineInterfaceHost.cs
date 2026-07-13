@@ -155,8 +155,12 @@ namespace SS3D.UI.MachineInterface
 
                 // Keep the cloned TemplateContainer in the hierarchy so UXML style sheets stay attached.
                 _panelRoot = template;
+                template.style.flexShrink = 1;
+                template.style.maxHeight = Length.Percent(100);
                 VisualElement layoutRoot = _diegeticShell != null ? _diegeticShell : template;
                 layoutRoot.style.alignSelf = Align.Center;
+                layoutRoot.style.flexShrink = 1;
+                layoutRoot.style.maxHeight = Length.Percent(100);
                 layoutRoot.style.marginTop = 24;
                 _overlayRoot.Add(template);
 
@@ -765,6 +769,8 @@ namespace SS3D.UI.MachineInterface
 
             _overlayRoot = root;
             _overlayRoot.style.flexGrow = 0;
+            _overlayRoot.style.flexShrink = 1;
+            _overlayRoot.style.minHeight = 0;
             _overlayRoot.style.backgroundColor = Color.clear;
             _overlayReady = true;
             SetOverlayInteractive(false);
@@ -781,13 +787,18 @@ namespace SS3D.UI.MachineInterface
             if (interactive)
             {
                 _overlayRoot.style.display = DisplayStyle.Flex;
+                _overlayRoot.style.flexDirection = FlexDirection.Column;
+                _overlayRoot.style.justifyContent = Justify.Center;
                 _overlayRoot.style.flexGrow = 1;
+                _overlayRoot.style.flexShrink = 1;
+                _overlayRoot.style.minHeight = 0;
                 _overlayRoot.pickingMode = PickingMode.Position;
             }
             else
             {
                 _overlayRoot.style.display = DisplayStyle.None;
                 _overlayRoot.style.flexGrow = 0;
+                _overlayRoot.style.flexShrink = 1;
                 _overlayRoot.pickingMode = PickingMode.Ignore;
             }
         }

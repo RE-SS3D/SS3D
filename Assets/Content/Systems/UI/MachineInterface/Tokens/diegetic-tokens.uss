@@ -15,6 +15,7 @@
     --ss3d-diegetic-bezel-radius: 10px;
     --ss3d-diegetic-bezel-padding: 8px;
     --ss3d-diegetic-screen-bg: #0f1114;
+    --ss3d-diegetic-screen-max-height: 900px;
     --ss3d-diegetic-screen-radius: 5px;
     --ss3d-diegetic-screen-padding: 18px;
     --ss3d-diegetic-tray-bg: #050505;

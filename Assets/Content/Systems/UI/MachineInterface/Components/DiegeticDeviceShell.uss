@@ -6,6 +6,8 @@
     padding: var(--ss3d-diegetic-chassis-padding);
     border-width: 1px;
     border-color: var(--ss3d-diegetic-chassis-border);
+    flex-shrink: 1;
+    max-height: 100%;
 }
 
 .diegetic-device-shell__chassis-header {
@@ -63,20 +65,57 @@
     background-color: var(--ss3d-diegetic-bezel-bg);
     border-radius: var(--ss3d-diegetic-bezel-radius);
     padding: var(--ss3d-diegetic-bezel-padding);
+    flex-shrink: 1;
+    min-height: 0;
 }
 
 .diegetic-device-shell__screen {
     background-color: var(--ss3d-diegetic-screen-bg);
     padding: var(--ss3d-diegetic-screen-padding);
-    max-height: 900px;
+    max-height: var(--ss3d-diegetic-screen-max-height);
     flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.diegetic-device-shell__scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.diegetic-device-shell__scroll .unity-scroll-view__content-viewport {
+    padding-right: 0;
+}
+
+.diegetic-device-shell__scroll .unity-scroller--vertical {
+    width: 8px;
+    margin-left: 4px;
+}
+
+.diegetic-device-shell__scroll .unity-base-slider__tracker {
+    background-color: var(--ss3d-diegetic-inset);
+    border-radius: 4px;
+    border-width: 0;
+}
+
+.diegetic-device-shell__scroll .unity-base-slider__dragger {
+    background-color: var(--ss3d-diegetic-border-default);
+    border-radius: 4px;
+    border-width: 0;
+    min-height: 24px;
+}
+
+.diegetic-device-shell__scroll .unity-base-slider__dragger:hover {
+    background-color: var(--ss3d-diegetic-text-tertiary);
 }
 
 .diegetic-device-shell__screen-content {
     flex-direction: column;
-    flex-grow: 1;
-    min-height: 0;
-    overflow: hidden;
+    flex-grow: 0;
+    flex-shrink: 0;
     --ss3d-text-primary: var(--ss3d-diegetic-text-primary);
     --ss3d-text-secondary: var(--ss3d-diegetic-text-secondary);
     --ss3d-text-tertiary: var(--ss3d-diegetic-text-tertiary);

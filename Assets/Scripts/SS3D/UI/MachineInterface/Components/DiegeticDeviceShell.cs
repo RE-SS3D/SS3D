@@ -14,6 +14,7 @@ namespace SS3D.UI.MachineInterface.Components
         private readonly StatusDot _powerDot;
         private readonly Label _powerLabel;
         private readonly VisualElement _screen;
+        private readonly ScrollView _scrollView;
         private readonly VisualElement _screenContent;
         private readonly Button _closeButton;
 
@@ -59,13 +60,26 @@ namespace SS3D.UI.MachineInterface.Components
             _screen.name = "screen-surface";
             _screen.style.position = Position.Relative;
             _screen.style.flexGrow = 1;
+            _screen.style.flexShrink = 1;
+            _screen.style.minHeight = 0;
 
-            _screenContent = new VisualElement();
+            _scrollView = new ScrollView(ScrollViewMode.Vertical);
+            _scrollView.AddToClassList("diegetic-device-shell__scroll");
+            _scrollView.name = "screen-scroll";
+            _scrollView.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            _scrollView.verticalScrollerVisibility = ScrollerVisibility.Auto;
+            _scrollView.style.flexGrow = 1;
+            _scrollView.style.flexShrink = 1;
+            _scrollView.style.minHeight = 0;
+
+            _screenContent = _scrollView.contentContainer;
             _screenContent.AddToClassList("diegetic-device-shell__screen-content");
             _screenContent.name = "screen-content";
-            _screenContent.style.flexGrow = 1;
             _screenContent.style.flexDirection = FlexDirection.Column;
-            _screen.Add(_screenContent);
+            _screenContent.style.flexGrow = 0;
+            _screenContent.style.flexShrink = 0;
+
+            _screen.Add(_scrollView);
 
             bezel.Add(_screen);
 
@@ -76,6 +90,8 @@ namespace SS3D.UI.MachineInterface.Components
         public override VisualElement contentContainer => _screenContent;
 
         public VisualElement Screen => _screen;
+
+        public ScrollView ScreenScroll => _scrollView;
 
         public VisualElement ScreenContent => _screenContent;
 

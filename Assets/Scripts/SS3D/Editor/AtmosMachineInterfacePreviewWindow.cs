@@ -227,6 +227,8 @@ namespace SS3D.Editor
             DiegeticDeviceShell shell = _panelRoot.Q<DiegeticDeviceShell>("device-shell");
             ApplyPanelStyles(_panelRoot, shell, templatePath);
             _panelRoot.style.alignSelf = Align.Center;
+            _panelRoot.style.flexShrink = 1;
+            _panelRoot.style.maxHeight = Length.Percent(100);
             _panelRoot.style.marginTop = 16;
             _root.Add(_panelRoot);
 
