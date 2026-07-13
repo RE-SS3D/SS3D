@@ -24,14 +24,19 @@ namespace SS3D.UI.MachineInterface.Components
             VisualElement slot = new();
             slot.AddToClassList("access-gate-panel__slot");
 
+            VisualElement slotClip = new();
+            slotClip.AddToClassList("access-gate-panel__slot-clip");
+
             VisualElement slotLine = new();
             slotLine.AddToClassList("access-gate-panel__slot-line");
-            slot.Add(slotLine);
+            slotClip.Add(slotLine);
 
             _scanOverlay = new VisualElement();
             _scanOverlay.AddToClassList("access-gate-panel__scan-overlay");
             _scanOverlay.style.display = DisplayStyle.None;
-            slot.Add(_scanOverlay);
+            slotClip.Add(_scanOverlay);
+
+            slot.Add(slotClip);
 
             _headline = new Label("No ID Inserted");
             _headline.AddToClassList("access-gate-panel__headline");

@@ -29,6 +29,10 @@
     border-radius: var(--ss3d-radius-sm);
     border-width: 1px;
     border-color: var(--ss3d-border-subtle);
+}
+
+.battery-bar__track-clip {
+    height: 100%;
     overflow: hidden;
 }
 

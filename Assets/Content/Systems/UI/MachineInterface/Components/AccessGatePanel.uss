@@ -15,6 +15,13 @@
     margin-bottom: 12px;
     align-items: center;
     justify-content: center;
+}
+
+.access-gate-panel__slot-clip {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
     position: relative;
 }

@@ -37,6 +37,8 @@ UI Toolkit panels for station machines, networked via FishNet snapshots. APC and
 
 **New diegetic machine (APC/SMES/vending/gas pump pattern):** same pipeline plus diegetic components under `Components/`; set `ShellKind = DiegeticDevice`; use `AccessGatePanel` + `AccessStrip` when controls require engineering ID unlock; reference component USS files in UXML `<ui:Style>` tags. Host mounts the full cloned `TemplateContainer` so styles stay attached — do not add only the inner shell to the overlay.
 
+**UI Toolkit masking:** never combine `border-radius` and `overflow: hidden` on the same `VisualElement` (renders as a flat white block). Split painted and clipping layers — see `DiegeticDeviceShell` (`_screen` vs `_screenContent`) and `PanelSection` (`panel-section` vs `panel-section__clip`).
+
 **Action controls:** add IDs in `MachineInterfaceControlIds`, handle in binder (`ActionControlChanged`) and controller (`ApplyActionControl`).
 
 Dev harness: `MachineInterfaceDevHarness.cs`; editor previews via `SS3D → Machine Interface` menu.

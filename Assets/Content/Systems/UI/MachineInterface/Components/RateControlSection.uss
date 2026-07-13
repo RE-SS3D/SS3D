@@ -57,6 +57,10 @@
     border-width: 1px;
     border-color: var(--ss3d-border-subtle);
     border-radius: var(--ss3d-radius-sm);
+}
+
+.rate-control__track-clip {
+    height: 100%;
     overflow: hidden;
 }
 

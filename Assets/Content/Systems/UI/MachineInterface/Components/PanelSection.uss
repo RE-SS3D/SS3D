@@ -4,6 +4,10 @@
     background-color: var(--ss3d-diegetic-panel-body);
     border-radius: var(--ss3d-radius-md);
     margin-bottom: 14px;
+}
+
+.panel-section__clip {
+    flex-direction: column;
     overflow: hidden;
 }
 
@@ -20,4 +24,8 @@
     flex-direction: column;
     padding: 14px;
     background-color: var(--ss3d-diegetic-panel-body);
+}
+
+.panel-section Label {
+    background-color: rgba(0, 0, 0, 0);
 }

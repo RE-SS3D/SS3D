@@ -95,6 +95,23 @@ namespace SS3D.Editor
                 "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tokens.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Tokens/diegetic-tones.uss",
                 "Assets/Content/Systems/UI/MachineInterface/Templates/ApcPowerController.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DiegeticDeviceShell.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusDot.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ConnectionStatusRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceIdentityBlock.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/GlanceableStatusChip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/PanelSection.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/PowerFlowRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/BatteryBar.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DiagnosticsList.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ChannelRow.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/ToggleSwitch.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessGatePanel.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/AccessStrip.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/SteelButton.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/Badge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/StatusBadge.uss",
+                "Assets/Content/Systems/UI/MachineInterface/Components/DeviceFooter.uss",
             };
 
             foreach (string path in stylePaths)

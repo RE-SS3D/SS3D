@@ -43,9 +43,14 @@ namespace SS3D.UI.MachineInterface.Components
 
             VisualElement track = new();
             track.AddToClassList("rate-control__track");
+
+            VisualElement trackClip = new();
+            trackClip.AddToClassList("rate-control__track-clip");
+
             _fill = new VisualElement();
             _fill.AddToClassList("rate-control__fill");
-            track.Add(_fill);
+            trackClip.Add(_fill);
+            track.Add(trackClip);
 
             _currentLabel = new Label("0.0 kW");
             _currentLabel.AddToClassList("rate-control__current");
