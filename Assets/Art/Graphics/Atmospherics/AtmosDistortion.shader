@@ -41,11 +41,21 @@ Shader "Custom/AtmosDistortion"
 
                 float depth = SampleSceneDepth(uvSample);
                 bool isSky = depth <= 0.0;
+                float3 centerColor = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uvSample).rgb;
                 float2 distortion = AtmosEvaluateDistortionOffset(uvScreen, depth, isSky);
-                float3 sceneColor = SAMPLE_TEXTURE2D_X(
+                if (length(distortion) <= 1e-5)
+                    return half4(centerColor, 1.0);
+
+                float2 distortedUV = clamp(uvSample + distortion, 0.0, 1.0);
+                float3 distortedColor = SAMPLE_TEXTURE2D_X(
                     _BlitTexture,
                     sampler_LinearClamp,
-                    uvSample + distortion).rgb;
+                    distortedUV).rgb;
+
+                // Heat shimmer should warp bright fire, not pull in black border/background pixels.
+                float centerLum = dot(centerColor, float3(0.299, 0.587, 0.114));
+                float distortedLum = dot(distortedColor, float3(0.299, 0.587, 0.114));
+                float3 sceneColor = distortedLum < centerLum * 0.82 ? centerColor : distortedColor;
 
                 return half4(sceneColor, 1.0);
             }

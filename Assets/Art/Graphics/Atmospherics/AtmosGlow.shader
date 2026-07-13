@@ -43,7 +43,8 @@ Shader "Custom/AtmosGlow"
                 bool isSky = depth <= 0.0;
 
                 float3 glow = AtmosEvaluateGlow(uvScreen, depth, isSky);
-                return half4(sceneColor + glow, 1.0);
+                float3 color = sceneColor + glow;
+                return half4(color, 1.0);
             }
             ENDHLSL
         }

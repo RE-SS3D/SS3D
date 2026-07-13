@@ -511,6 +511,11 @@ float3 AtmosSamplePointEmission(float2 worldXZ, float sampleY)
     return emission * _AtmosGlowStrength * AtmosFlowModulation(worldXZ, fire);
 }
 
+float AtmosMarchJitter(float2 uvScreen)
+{
+    return frac(sin(dot(uvScreen, float2(12.9898, 78.233))) * 43758.5453);
+}
+
 void AtmosEvaluateScatter(
     float2 uvScreen,
     float deviceDepth,
@@ -537,8 +542,8 @@ void AtmosEvaluateScatter(
     float compOpticalDepth = 0.0;
     float3 compTintAccum = 0.0;
     float compWeightAccum = 0.0;
-    float jitter = frac(sin(dot(uvScreen, float2(12.9898, 78.233))) * 43758.5453);
-    float jitterPos = jitter - 0.5;
+    float maxFire = 0.0;
+    float jitterPos = AtmosMarchJitter(uvScreen) - 0.5;
 
     UNITY_LOOP
     for (int i = 0; i < steps; i++)
@@ -555,6 +560,7 @@ void AtmosEvaluateScatter(
         if (!AtmosIsAtlasUVValid(atlasUV))
             continue;
 
+        maxFire = max(maxFire, AtmosSampleFire(samplePos.xz));
         gasOpticalDepth += AtmosSampleGasDensity(samplePos.xz, samplePos.y) * stepLength;
 
         float sampleDensity;
@@ -569,6 +575,14 @@ void AtmosEvaluateScatter(
     gasFog = saturate((1.0 - exp(-gasOpticalDepth)) * _AtmosScatterStrength * _AtmosScatterColor.a);
     compFog = saturate(1.0 - exp(-compOpticalDepth));
     compTint = compTintAccum / max(compWeightAccum, 1e-4);
+
+    // CO₂ smoke scatter is dark; plasma only glows. Suppress fog replacement inside active fire
+    // so scatter does not crush luminance before the glow pass adds emission back.
+    float firePresence = saturate(maxFire * 1.25);
+    gasFog *= 1.0 - firePresence * 0.85;
+    compFog *= 1.0 - firePresence * 0.9;
+    if (maxFire > 0.01)
+        compTint = lerp(compTint, _AtmosFireCoreColor.rgb, firePresence);
 }
 
 float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
@@ -584,8 +598,7 @@ float3 AtmosEvaluateGlow(float2 uvScreen, float deviceDepth, bool isSky)
 
     float stepLength = segmentLength / steps;
     float3 emission = 0.0;
-    float jitter = frac(sin(dot(uvScreen, float2(4.898, 7.23))) * 43758.5453);
-    float jitterPos = jitter - 0.5;
+    float jitterPos = AtmosMarchJitter(uvScreen) - 0.5;
 
     UNITY_LOOP
     for (int i = 0; i < steps; i++)
@@ -667,8 +680,7 @@ float2 AtmosEvaluateDistortionOffset(float2 uvScreen, float deviceDepth, bool is
     float stepLength = segmentLength / steps;
     float2 bestOffset = 0.0;
     float bestWeight = 0.0;
-    float jitter = frac(sin(dot(uvScreen, float2(9.17, 3.41))) * 43758.5453);
-    float jitterPos = jitter - 0.5;
+    float jitterPos = AtmosMarchJitter(uvScreen) - 0.5;
 
     UNITY_LOOP
     for (int i = 0; i < steps; i++)
@@ -692,6 +704,11 @@ float2 AtmosEvaluateDistortionOffset(float2 uvScreen, float deviceDepth, bool is
             bestOffset = offset;
         }
     }
+
+    float maxUvOffset = 0.035;
+    float offsetMag = length(bestOffset);
+    if (offsetMag > maxUvOffset)
+        bestOffset *= maxUvOffset / offsetMag;
 
     return bestOffset;
 }
