@@ -6,7 +6,7 @@
 
 ## Overview
 
-UI Toolkit panels for station machines, networked via FishNet snapshots. APC and SMES use the diegetic `DiegeticDeviceShell` (chassis/bezel/screen) with engineering ID access gates; vending, gas pump, and atmospheric devices use the same shell pattern. Shared view-model/binder pattern and registry-driven registration. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state.
+UI Toolkit panels for station machines, networked via FishNet snapshots. APC and SMES use the diegetic `DiegeticDeviceShell` (chassis/bezel/screen) with engineering ID access gates; vending, gas pump, and atmospheric devices use the same shell pattern. Shared view-model/binder pattern and registry-driven registration. Air alarm panels discover real area vents/scrubbers, apply preset modes server-side, and read the turf cell in front of the wall mount. Scrubber panels persist per-gas filter toggles into `ScrubberController` simulation state. Vent target pressure is enforced in `VentController` (vents stop filling once the turf reaches the configured target).
 
 ## Start here
 

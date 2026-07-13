@@ -33,7 +33,7 @@ Per-consumer power gating and **area-scoped APC cell drain** via [electricity](e
 ## Extension points
 
 - Resolve area for a tile: `AreaSubSystem.TryGetAreaForTile` / `ITileQueryService.TryGetAreaId`.
-- Resolve area for wall-mounted devices: `AreaSubSystem.TryGetAreaForDevice` (uses tile in front of `Direction`).
+- Resolve area for wall-mounted devices: `AreaSubSystem.TryGetAreaForDevice` (always uses the tile in front of `Direction`, even if the wall tile has an area id).
 - Register APC origins: implement `IAreaApcOrigin` (see `ApcController`).
 - Server rename/tag API: `AreaSubSystem.RenameArea`, `SetParentTag` (no editor UI yet).
 - Resolve effective APC for a device: `AreaSubSystem.TryGetEffectiveApcForDevice`.
