@@ -30,3 +30,25 @@
     background-color: var(--ss3d-diegetic-inset);
     color: var(--ss3d-text-tertiary);
 }
+
+.steel-button--blue .steel-button__control {
+    background-color: rgba(58, 120, 190, 0.18);
+    border-width: 1px;
+    border-color: #3a78be;
+    color: #8ec0ff;
+}
+
+.steel-button--blue .steel-button__control:hover {
+    background-color: rgba(58, 120, 190, 0.28);
+}
+
+.steel-button--danger .steel-button__control {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-width: 1px;
+    border-color: var(--ss3d-feedback-danger-border);
+    color: var(--ss3d-feedback-danger);
+}
+
+.steel-button--danger .steel-button__control:hover {
+    background-color: rgba(185, 72, 72, 0.22);
+}

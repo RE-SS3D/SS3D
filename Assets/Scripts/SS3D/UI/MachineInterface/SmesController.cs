@@ -222,6 +222,7 @@ namespace SS3D.UI.MachineInterface
                 ConnectionStateText = BuildConnectionStateText(powerState, inputActive, outputActive),
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
             };
 
             return snapshot;

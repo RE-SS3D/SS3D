@@ -21,6 +21,7 @@ namespace SS3D.UI.MachineInterface
                 ConnectionStateText = snapshot.ConnectionStateText,
                 AccessGranted = snapshot.AccessGranted,
                 AccessScanning = snapshot.AccessScanning,
+                AccessDenied = snapshot.AccessDenied,
             };
 
             ApplyStatusCopy(model);

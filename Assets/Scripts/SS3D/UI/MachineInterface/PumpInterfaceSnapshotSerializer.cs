@@ -18,6 +18,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteByte(snapshot.Scenario);
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
+            writer.WriteBoolean(snapshot.AccessDenied);
             writer.WriteInt32(snapshot.TargetOutletPressureKpa);
             writer.WriteSingle(snapshot.InletPressureKpa);
             writer.WriteSingle(snapshot.OutletPressureKpa);
@@ -40,6 +41,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = reader.ReadByte(),
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
+                AccessDenied = reader.ReadBoolean(),
                 TargetOutletPressureKpa = reader.ReadInt32(),
                 InletPressureKpa = reader.ReadSingle(),
                 OutletPressureKpa = reader.ReadSingle(),

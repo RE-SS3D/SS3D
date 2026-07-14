@@ -159,7 +159,7 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _environmentChannel.IsOn = model.EnvironmentOn;
             }
 
-            _accessRegion?.ApplyAccessState(model.AccessGranted, model.AccessScanning);
+            _accessRegion?.ApplyAccessState(model.AccessGranted, model.AccessScanning, model.AccessDenied);
 
             _diagnosticsList?.SetLines(model.Diagnostics);
 

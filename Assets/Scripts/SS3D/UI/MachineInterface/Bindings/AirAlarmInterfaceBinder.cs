@@ -250,12 +250,9 @@ namespace SS3D.UI.MachineInterface.Bindings
                 return;
             }
 
-            _idReader.SubText = model.IdReaderSubline;
-            _idReader.SetAccessState(!model.AccessGranted, model.AccessScanning, model.AccessGranted);
-            if (model.AccessGranted)
-            {
-                _idReader.SubText = "Preset modes and device control unlocked for this session";
-            }
+            _idReader.SetIdleSubline(model.IdReaderSubline);
+            _idReader.SetGrantedSubline("Preset modes and device control unlocked for this session");
+            _idReader.SetAccessState(model.AccessScanning, model.AccessGranted, model.AccessDenied);
         }
 
         private void BindModes(AirAlarmInterfaceViewModel model)

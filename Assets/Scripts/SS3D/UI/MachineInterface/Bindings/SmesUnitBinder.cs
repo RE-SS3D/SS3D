@@ -157,7 +157,7 @@ namespace SS3D.UI.MachineInterface.Bindings
                 _footer.Text = model.FooterText;
             }
 
-            _accessRegion?.ApplyAccessState(model.AccessGranted, model.AccessScanning);
+            _accessRegion?.ApplyAccessState(model.AccessGranted, model.AccessScanning, model.AccessDenied);
         }
 
         public void Disconnect()

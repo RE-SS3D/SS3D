@@ -23,6 +23,9 @@ namespace SS3D.UI.MachineInterface
         [SyncVar(OnChange = nameof(OnAccessStateChanged))]
         private bool _accessScanning;
 
+        [SyncVar(OnChange = nameof(OnAccessStateChanged))]
+        private bool _accessDenied;
+
         private Coroutine _scanCoroutine;
         private NetworkConnection _scanConnection;
         private AuthLogDeviceBehaviour _authLogDevice;
@@ -30,6 +33,8 @@ namespace SS3D.UI.MachineInterface
         protected bool AccessGranted => _accessGranted;
 
         protected bool AccessScanning => _accessScanning;
+
+        protected bool AccessDenied => _accessDenied;
 
         protected virtual AccessMask RequiredAccess =>
             AccessMask.FromLevels(AccessLevel.Engineering);
@@ -69,11 +74,13 @@ namespace SS3D.UI.MachineInterface
             if (_accessGranted)
             {
                 _accessGranted = false;
+                _accessDenied = false;
                 RefreshAllViewers();
                 return;
             }
 
             _accessScanning = true;
+            _accessDenied = false;
             _scanConnection = conn;
             RefreshAllViewers();
 
@@ -107,6 +114,7 @@ namespace SS3D.UI.MachineInterface
                 _accessGranted = false;
             }
 
+            _accessDenied = !_accessGranted;
             _scanConnection = null;
             RefreshAllViewers();
         }

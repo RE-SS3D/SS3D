@@ -242,13 +242,16 @@ namespace SS3D.Editor
                     {
                         _airAlarmModel.AccessGranted = false;
                         _airAlarmModel.AccessScanning = false;
+                        _airAlarmModel.AccessDenied = false;
                         _airAlarmModel.SelectedDeviceId = null;
                     }
                     else if (!_airAlarmModel.AccessScanning)
                     {
                         _airAlarmModel.AccessScanning = true;
+                        _airAlarmModel.AccessDenied = false;
                         _airAlarmModel.AccessGranted = true;
                         _airAlarmModel.AccessScanning = false;
+                        _airAlarmModel.AccessDenied = false;
                     }
                 }
                 else

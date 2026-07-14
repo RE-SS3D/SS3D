@@ -26,6 +26,8 @@ namespace SS3D.UI.MachineInterface
 
         public bool AccessScanning;
 
+        public bool AccessDenied;
+
         public int TargetOutletPressureKpa;
 
         public float InletPressureKpa;

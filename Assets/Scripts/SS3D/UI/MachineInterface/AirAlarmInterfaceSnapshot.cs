@@ -24,6 +24,8 @@ namespace SS3D.UI.MachineInterface
 
         public bool AccessScanning;
 
+        public bool AccessDenied;
+
         public float PressureKpa;
 
         public float OxygenFraction;

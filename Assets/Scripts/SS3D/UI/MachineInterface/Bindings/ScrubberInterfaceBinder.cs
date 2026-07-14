@@ -262,12 +262,9 @@ namespace SS3D.UI.MachineInterface.Bindings
                 return;
             }
 
-            _idReader.SubText = model.IdReaderSubline;
-            _idReader.SetAccessState(!model.AccessGranted, model.AccessScanning, model.AccessGranted);
-            if (model.AccessGranted)
-            {
-                _idReader.SubText = "Gas filter selection and flow rate unlocked for this session";
-            }
+            _idReader.SetIdleSubline(model.IdReaderSubline);
+            _idReader.SetGrantedSubline("Gas filter selection and flow rate unlocked for this session");
+            _idReader.SetAccessState(model.AccessScanning, model.AccessGranted, model.AccessDenied);
         }
 
         private static StatusTone GetScenarioTone(ScrubberScenario scenario)

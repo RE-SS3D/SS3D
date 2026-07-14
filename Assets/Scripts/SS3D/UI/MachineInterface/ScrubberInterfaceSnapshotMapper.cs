@@ -23,6 +23,7 @@ namespace SS3D.UI.MachineInterface
             model.Powered = snapshot.Powered;
             model.AccessGranted = snapshot.AccessGranted;
             model.AccessScanning = snapshot.AccessScanning;
+            model.AccessDenied = snapshot.AccessDenied;
             model.FlowRate = snapshot.FlowRate;
             ScrubberGasFilters.CopyToDictionary(
                 snapshot.FilterO2,

@@ -368,6 +368,7 @@ namespace SS3D.UI.MachineInterface
                 MultipleApcsInArea = _multipleApcsInArea,
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
             };
 
             ApplyDiagnostics(ref snapshot, stats, powerState, batteryState);

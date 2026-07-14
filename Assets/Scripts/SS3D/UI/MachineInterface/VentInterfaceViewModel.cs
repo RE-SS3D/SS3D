@@ -46,6 +46,8 @@ namespace SS3D.UI.MachineInterface
 
         public bool AccessScanning { get; set; }
 
+        public bool AccessDenied { get; set; }
+
         public string IdReaderSubline { get; set; } =
             "Read an ID to unlock power and target pressure control";
 

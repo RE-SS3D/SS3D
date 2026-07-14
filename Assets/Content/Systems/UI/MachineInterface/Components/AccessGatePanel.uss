@@ -9,6 +9,13 @@
     justify-content: center;
     padding: 24px 20px;
     flex-grow: 1;
+    border-width: 1px;
+    border-color: var(--ss3d-border-subtle);
+    border-radius: var(--ss3d-radius-md);
+}
+
+.access-gate-panel.tone-danger {
+    border-color: var(--ss3d-feedback-danger);
 }
 
 .access-gate-panel__slot {
@@ -49,12 +56,27 @@
     opacity: 0.35;
 }
 
+.access-gate-panel__denied-overlay {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 2px;
+    background-color: var(--ss3d-feedback-danger);
+    opacity: 0.5;
+}
+
 .access-gate-panel__headline {
     font-size: 20px;
     letter-spacing: 1.6px;
     color: var(--ss3d-text-primary);
     -unity-text-align: middle-center;
     margin-bottom: 4px;
+}
+
+.access-gate-panel__headline.tone-danger {
+    color: var(--ss3d-feedback-danger);
 }
 
 .access-gate-panel__sub {
@@ -94,6 +116,32 @@
     border-bottom-color: rgba(0, 0, 0, 0.55);
     background-color: var(--ss3d-diegetic-panel-raised);
     color: var(--ss3d-text-primary);
+}
+
+.access-gate-panel__button.steel-button--blue .steel-button__control {
+    background-color: rgba(58, 120, 190, 0.18);
+    border-top-color: #3a78be;
+    border-right-color: #3a78be;
+    border-left-color: #3a78be;
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+    color: #8ec0ff;
+}
+
+.access-gate-panel__button.steel-button--blue .steel-button__control:hover {
+    background-color: rgba(58, 120, 190, 0.28);
+}
+
+.access-gate-panel__button.steel-button--danger .steel-button__control {
+    background-color: var(--ss3d-feedback-danger-bg);
+    border-top-color: var(--ss3d-feedback-danger-border);
+    border-right-color: var(--ss3d-feedback-danger-border);
+    border-left-color: var(--ss3d-feedback-danger-border);
+    border-bottom-color: rgba(0, 0, 0, 0.55);
+    color: var(--ss3d-feedback-danger);
+}
+
+.access-gate-panel__button.steel-button--danger .steel-button__control:hover {
+    background-color: rgba(185, 72, 72, 0.22);
 }
 
 .access-gate-panel__button .steel-button__control:hover {

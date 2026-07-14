@@ -151,6 +151,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = (byte)scenario,
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
                 TargetPressureKpa = TargetPressureKpa,
             };
         }

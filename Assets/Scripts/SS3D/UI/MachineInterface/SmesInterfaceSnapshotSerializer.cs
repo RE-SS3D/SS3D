@@ -23,6 +23,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteString(snapshot.ConnectionStateText);
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
+            writer.WriteBoolean(snapshot.AccessDenied);
         }
 
         public static SmesInterfaceSnapshot ReadSmesInterfaceSnapshot(this Reader reader)
@@ -46,6 +47,7 @@ namespace SS3D.UI.MachineInterface
                 ConnectionStateText = reader.ReadString(),
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
+                AccessDenied = reader.ReadBoolean(),
             };
         }
     }

@@ -25,6 +25,7 @@ namespace SS3D.UI.MachineInterface
                 Diagnostics = BuildDiagnostics(snapshot),
                 AccessGranted = snapshot.AccessGranted,
                 AccessScanning = snapshot.AccessScanning,
+                AccessDenied = snapshot.AccessDenied,
             };
 
             ApplyStatusCopy(model);

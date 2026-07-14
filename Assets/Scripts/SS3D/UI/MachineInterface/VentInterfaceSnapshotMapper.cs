@@ -21,6 +21,7 @@ namespace SS3D.UI.MachineInterface
             model.Powered = snapshot.Powered;
             model.AccessGranted = snapshot.AccessGranted;
             model.AccessScanning = snapshot.AccessScanning;
+            model.AccessDenied = snapshot.AccessDenied;
             model.TargetPressureKpa = snapshot.TargetPressureKpa;
 
             if (!snapshot.Connected && scenario is VentScenario.Pressurizing or VentScenario.Depressurizing)

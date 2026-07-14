@@ -187,6 +187,7 @@ namespace SS3D.UI.MachineInterface
                 Scenario = (byte)scenario,
                 AccessGranted = AccessGranted,
                 AccessScanning = AccessScanning,
+                AccessDenied = AccessDenied,
                 FlowRate = _scrubber != null ? _scrubber.FlowRate : 5,
                 FilterO2 = filterO2,
                 FilterN2 = filterN2,

@@ -21,6 +21,7 @@ namespace SS3D.UI.MachineInterface
             writer.WriteBoolean(snapshot.MultipleApcsInArea);
             writer.WriteBoolean(snapshot.AccessGranted);
             writer.WriteBoolean(snapshot.AccessScanning);
+            writer.WriteBoolean(snapshot.AccessDenied);
 
             int diagnosticCount = snapshot.DiagnosticCount;
             if (diagnosticCount > ApcInterfaceSnapshot.MaxDiagnostics)
@@ -54,6 +55,7 @@ namespace SS3D.UI.MachineInterface
                 MultipleApcsInArea = reader.ReadBoolean(),
                 AccessGranted = reader.ReadBoolean(),
                 AccessScanning = reader.ReadBoolean(),
+                AccessDenied = reader.ReadBoolean(),
                 DiagnosticCount = reader.ReadInt32(),
             };
 

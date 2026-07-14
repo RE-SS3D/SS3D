@@ -36,6 +36,8 @@ namespace SS3D.UI.MachineInterface
 
         public bool AccessScanning;
 
+        public bool AccessDenied;
+
         public int DiagnosticCount;
 
         public ApcDiagnosticSnapshot Diagnostic0;

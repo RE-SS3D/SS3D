@@ -46,7 +46,7 @@ namespace SS3D.UI.MachineInterface.Components
             ShowGate();
         }
 
-        public void ApplyAccessState(bool granted, bool scanning)
+        public void ApplyAccessState(bool granted, bool scanning, bool denied = false)
         {
             EnsureWired();
             _scanSchedule?.Pause();
@@ -72,10 +72,7 @@ namespace SS3D.UI.MachineInterface.Components
             }
 
             ShowGate();
-            if (_scanning && _gate != null)
-            {
-                _gate.SetState(scanning: true);
-            }
+            _gate?.SetState(scanning, denied);
         }
 
         private void OnAttachedToPanel(AttachToPanelEvent _)
@@ -140,7 +137,7 @@ namespace SS3D.UI.MachineInterface.Components
             }
 
             _gate.style.display = DisplayStyle.Flex;
-            _gate.SetState(scanning: false);
+            _gate.SetState(scanning: false, denied: false);
 
             _controls.style.display = DisplayStyle.None;
             _controls.AddToClassList(ControlsHiddenClass);

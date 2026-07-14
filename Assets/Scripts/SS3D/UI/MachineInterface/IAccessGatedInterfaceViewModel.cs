@@ -5,5 +5,7 @@ namespace SS3D.UI.MachineInterface
         bool AccessGranted { get; set; }
 
         bool AccessScanning { get; set; }
+
+        bool AccessDenied { get; set; }
     }
 }

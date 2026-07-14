@@ -38,6 +38,7 @@ namespace EditorTests
             Assert.AreEqual(original.MultipleApcsInArea, roundTripped.MultipleApcsInArea);
             Assert.AreEqual(original.AccessGranted, roundTripped.AccessGranted);
             Assert.AreEqual(original.AccessScanning, roundTripped.AccessScanning);
+            Assert.AreEqual(original.AccessDenied, roundTripped.AccessDenied);
             Assert.AreEqual(original.DiagnosticCount, roundTripped.DiagnosticCount);
             Assert.AreEqual(original.Diagnostic0.Glyph, roundTripped.Diagnostic0.Glyph);
             Assert.AreEqual(original.Diagnostic0.Text, roundTripped.Diagnostic0.Text);
@@ -73,6 +74,7 @@ namespace EditorTests
             Assert.AreEqual(original.ConnectionStateText, roundTripped.ConnectionStateText);
             Assert.AreEqual(original.AccessGranted, roundTripped.AccessGranted);
             Assert.AreEqual(original.AccessScanning, roundTripped.AccessScanning);
+            Assert.AreEqual(original.AccessDenied, roundTripped.AccessDenied);
         }
 
         [Test]
@@ -303,6 +305,7 @@ namespace EditorTests
                 MultipleApcsInArea = false,
                 AccessGranted = true,
                 AccessScanning = false,
+                AccessDenied = false,
                 DiagnosticCount = 1,
                 Diagnostic0 = new ApcDiagnosticSnapshot
                 {
@@ -334,6 +337,7 @@ namespace EditorTests
                 ConnectionStateText = "Grid link nominal — both connections healthy.",
                 AccessGranted = false,
                 AccessScanning = true,
+                AccessDenied = true,
             };
         }
 
@@ -357,6 +361,8 @@ namespace EditorTests
             Assert.AreEqual(original.FlowMolesPerSecond, roundTripped.FlowMolesPerSecond);
             Assert.AreEqual(original.Scenario, roundTripped.Scenario);
             Assert.AreEqual(original.AccessGranted, roundTripped.AccessGranted);
+            Assert.AreEqual(original.AccessScanning, roundTripped.AccessScanning);
+            Assert.AreEqual(original.AccessDenied, roundTripped.AccessDenied);
         }
 
         [Test]
@@ -389,6 +395,7 @@ namespace EditorTests
                 Scenario = (byte)PumpScenario.Idle,
                 AccessGranted = true,
                 AccessScanning = false,
+                AccessDenied = false,
                 TargetOutletPressureKpa = 4500,
                 InletPressureKpa = 101.3f,
                 OutletPressureKpa = 4487.6f,

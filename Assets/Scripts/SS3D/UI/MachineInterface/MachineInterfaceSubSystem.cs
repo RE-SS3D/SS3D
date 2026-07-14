@@ -550,11 +550,13 @@ namespace SS3D.UI.MachineInterface
                     {
                         airAlarm.AccessGranted = false;
                         airAlarm.AccessScanning = false;
+                        airAlarm.AccessDenied = false;
                         airAlarm.SelectedDeviceId = null;
                     }
                     else if (!airAlarm.AccessScanning)
                     {
                         airAlarm.AccessScanning = true;
+                        airAlarm.AccessDenied = false;
                     }
 
                     break;
@@ -586,10 +588,12 @@ namespace SS3D.UI.MachineInterface
             {
                 model.AccessGranted = false;
                 model.AccessScanning = false;
+                model.AccessDenied = false;
             }
             else if (!model.AccessScanning)
             {
                 model.AccessScanning = true;
+                model.AccessDenied = false;
             }
         }
 
