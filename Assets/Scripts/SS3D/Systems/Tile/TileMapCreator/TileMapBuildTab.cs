@@ -51,6 +51,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private Button _buildOrDelete;
 
+        [SerializeField]
+        private RectTransform _layerVisibilityContainer;
+
+        private TileLayerVisibilityPanel _layerVisibilityPanel;
+
         /// <summary>
         /// true if the construction mode is deleting the tile objects.
         /// </summary>
@@ -69,6 +74,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
         /// </summary>
         public void Clear()
         {
+            TileLayerVisibilityService.Deactivate();
+            _layerVisibilityPanel?.Hide();
+
             _buildRoot.gameObject.SetActive(false);
             _tileObjectSearchBar.gameObject.SetActive(false);
             _layerPlacementDropdown.gameObject.SetActive(false);
@@ -93,6 +101,11 @@ namespace SS3D.Systems.Tile.TileMapCreator
             _tileObjectSearchBar.gameObject.SetActive(true);
             _layerPlacementDropdown.gameObject.SetActive(true);
             _buildOrDelete.gameObject.SetActive(true);
+
+            EnsureLayerVisibilityPanel();
+            _layerVisibilityPanel.ResetToDefaults();
+            _layerVisibilityPanel.Show();
+            TileLayerVisibilityService.Activate();
         }
 
         /// <summary>
@@ -129,6 +142,28 @@ namespace SS3D.Systems.Tile.TileMapCreator
                 tmpComponent.text = "Build";
                 tmpComponent.color = _buildColor;
             }
+        }
+
+        private void EnsureLayerVisibilityPanel()
+        {
+            if (_layerVisibilityPanel != null)
+                return;
+
+            RectTransform container = _layerVisibilityContainer != null
+                ? _layerVisibilityContainer
+                : _layerPlacementDropdown.GetComponent<RectTransform>().parent as RectTransform;
+
+            GameObject panelObject = new GameObject("LayerVisibilityPanel", typeof(RectTransform));
+            panelObject.transform.SetParent(container, false);
+
+            RectTransform panelRect = panelObject.GetComponent<RectTransform>();
+            panelRect.anchorMin = new Vector2(0f, 1f);
+            panelRect.anchorMax = new Vector2(1f, 1f);
+            panelRect.pivot = new Vector2(0.5f, 1f);
+            panelRect.anchoredPosition = Vector2.zero;
+            panelRect.sizeDelta = new Vector2(0f, 220f);
+
+            _layerVisibilityPanel = panelObject.AddComponent<TileLayerVisibilityPanel>();
         }
     }
 }

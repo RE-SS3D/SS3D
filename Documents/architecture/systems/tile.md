@@ -28,7 +28,7 @@ Server-authoritative tilemap with adjacency-driven mesh visuals, construction pl
 - React to placement: implement `ITileMutationObserver` (see [electricity](electricity.md), [area](area.md), [atmospherics](atmospherics.md)).
 - Dynamic passability: implement `IDynamicTileOccupant` and call `TileSubSystem.NotifyTileStateChanged` when state changes (see [furniture](furniture.md) airlocks).
 - HV cables (`CablesAdjacencyConnector`): underfloor Wire-layer runs link grid backbone devices only; see [electricity](electricity.md) `ElectricCableConnectivity`.
-- TileMap Creator: `TileMapMenuSubSystem` (admin-gated RPCs).
+- TileMap Creator: `TileMapMenuSubSystem` (admin-gated RPCs). Client-only layer visibility toggles in the build tab dim layer groups locally (~5% opacity) without affecting other players.
 
 ## Depends on / Used by
 

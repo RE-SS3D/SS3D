@@ -33,6 +33,8 @@ namespace SS3D.Systems.Tile
 
         public int ChunkCount => _chunks.Count;
 
+        public IReadOnlyList<PlacedItemObject> PlacedItems => _items;
+
         public IReadOnlyList<SavedAreaRecord> LoadedAreaRecords => _loadedAreaRecords;
 
         public event EventHandler OnMapLoaded;

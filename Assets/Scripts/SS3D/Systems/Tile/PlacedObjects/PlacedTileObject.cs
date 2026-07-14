@@ -9,6 +9,7 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Tile.TileMapCreator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -181,6 +182,7 @@ namespace SS3D.Systems.Tile
                 return;
 
             NetworkObject.SetRenderersVisible(NetworkObject.Observers.Contains(localConnection), force: true);
+            TileLayerVisibilityService.TryApplyPlacedTileObject(this);
         }
 
         private void PublishIdentityToNetwork()
@@ -251,6 +253,8 @@ namespace SS3D.Systems.Tile
 
             if (TryGetComponent(out DoorAdjacencyConnector doorConnector))
                 doorConnector.RefreshWallCapsFromSyncedAdjacencies();
+
+            TileLayerVisibilityService.TryApplyPlacedTileObject(this);
         }
 
         /// <summary>
