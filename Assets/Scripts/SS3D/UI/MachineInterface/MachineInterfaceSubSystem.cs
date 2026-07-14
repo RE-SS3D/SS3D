@@ -165,6 +165,12 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
+                case GasPumpInterfaceViewModel pumpModel:
+                {
+                    ApplyPumpBoolControl(pumpModel, controlId, isOn);
+                    break;
+                }
+
                 case AirAlarmInterfaceViewModel airAlarmModel:
                 {
                     AirAlarmInterfaceInteractionLogic.ApplyBool(airAlarmModel, controlId, isOn);
@@ -200,6 +206,12 @@ namespace SS3D.UI.MachineInterface
                 case VentInterfaceViewModel ventModel:
                 {
                     ApplyVentNumericControl(ventModel, controlId, delta);
+                    break;
+                }
+
+                case GasPumpInterfaceViewModel pumpModel:
+                {
+                    ApplyPumpNumericControl(pumpModel, controlId, delta);
                     break;
                 }
 
@@ -258,6 +270,16 @@ namespace SS3D.UI.MachineInterface
                     break;
                 }
 
+                case GasPumpInterfaceViewModel:
+                {
+                    if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
+                    {
+                        ApplyAtmosReadIdAction(_openModel);
+                    }
+
+                    break;
+                }
+
                 case AirAlarmInterfaceViewModel airAlarm:
                 {
                     if (controlId == MachineInterfaceControlIds.Atmos.ReadId)
@@ -278,6 +300,7 @@ namespace SS3D.UI.MachineInterface
             if (_openModel is VendingInterfaceViewModel
                 or ScrubberInterfaceViewModel
                 or VentInterfaceViewModel
+                or GasPumpInterfaceViewModel
                 or AirAlarmInterfaceViewModel)
             {
                 Refresh(_openModel);
@@ -417,6 +440,14 @@ namespace SS3D.UI.MachineInterface
             }
         }
 
+        private static void ApplyPumpBoolControl(GasPumpInterfaceViewModel model, byte controlId, bool isOn)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.Power && model.AccessGranted)
+            {
+                model.Powered = isOn;
+            }
+        }
+
         private static void ApplyScrubberNumericControl(ScrubberInterfaceViewModel model, byte controlId, float delta)
         {
             if (controlId == MachineInterfaceControlIds.Atmos.FlowRate && model.AccessGranted)
@@ -445,6 +476,17 @@ namespace SS3D.UI.MachineInterface
             if (controlId == MachineInterfaceControlIds.Atmos.TargetPressure && model.AccessGranted)
             {
                 model.TargetPressureKpa = Math.Clamp(model.TargetPressureKpa + (int)delta, 0, 200);
+            }
+        }
+
+        private static void ApplyPumpNumericControl(GasPumpInterfaceViewModel model, byte controlId, float delta)
+        {
+            if (controlId == MachineInterfaceControlIds.Atmos.TargetPressure && model.AccessGranted)
+            {
+                model.TargetOutletPressureKpa = Math.Clamp(
+                    model.TargetOutletPressureKpa + (int)MathF.Round(delta * 100f),
+                    0,
+                    9000);
             }
         }
 
@@ -477,6 +519,21 @@ namespace SS3D.UI.MachineInterface
                     else if (!vent.AccessScanning)
                     {
                         vent.AccessScanning = true;
+                    }
+
+                    break;
+                }
+
+                case GasPumpInterfaceViewModel pump:
+                {
+                    if (pump.AccessGranted)
+                    {
+                        pump.AccessGranted = false;
+                        pump.AccessScanning = false;
+                    }
+                    else if (!pump.AccessScanning)
+                    {
+                        pump.AccessScanning = true;
                     }
 
                     break;
