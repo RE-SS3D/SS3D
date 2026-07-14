@@ -11,6 +11,8 @@ namespace SS3D.Systems.Health
     public class HealthAlertsView : View
     {
         [SerializeField] private GameObject _bleedingChip;
+        [SerializeField] private GameObject _criticalChip;
+        [SerializeField] private GameObject _cardiacArrestChip;
 
         private HumanHealthController _controller;
 
@@ -39,13 +41,23 @@ namespace SS3D.Systems.Health
 
         public void Refresh()
         {
-            if (_bleedingChip == null)
+            if (_bleedingChip != null)
             {
-                return;
+                bool bleeding = _controller != null && _controller.Snapshot.IsBleeding;
+                _bleedingChip.SetActive(bleeding);
             }
 
-            bool bleeding = _controller != null && _controller.Snapshot.IsBleeding;
-            _bleedingChip.SetActive(bleeding);
+            if (_criticalChip != null)
+            {
+                bool critical = _controller != null && _controller.Snapshot.State == HealthState.Critical;
+                _criticalChip.SetActive(critical);
+            }
+
+            if (_cardiacArrestChip != null)
+            {
+                bool cardiacArrest = _controller != null && _controller.Snapshot.IsCardiacArrest;
+                _cardiacArrestChip.SetActive(cardiacArrest);
+            }
         }
     }
 }

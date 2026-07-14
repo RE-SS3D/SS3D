@@ -205,6 +205,22 @@ namespace SS3D.Systems.Health
         }
 
         [Server]
+        public DefibrillatorOutcome TryDefibrillate(BodyZone zone)
+        {
+            DefibrillatorOutcome outcome = HealthSimulation.ApplyDefibrillation(zone, _organs, _zones, out float burnApplied);
+            if (burnApplied > 0f)
+            {
+                int chestIndex = (int)BodyZone.Chest;
+                ZoneDamageState chest = _zones[chestIndex];
+                chest.BleedingRate = HealthSimulation.BleedingRateForSeverity(chest.Severity);
+                _zones[chestIndex] = chest;
+            }
+
+            PublishSnapshot();
+            return outcome;
+        }
+
+        [Server]
         public void TickHealth(float atmosphereO2 = 1f)
         {
             OrganSimulation.TickOrganFunction(_pools, _organs);

@@ -43,8 +43,15 @@
         // Organ tick dynamics (1 Hz).
         public const float CardiacArrestBrainDrainPerTick = 4f;
         public const float CriticalOxyBrainDrainPerTick = 2f;
+        public const float CriticalOxyHeartDrainPerTick = 1.5f;
+        public const float CriticalBloodHeartDrainPerTick = 1f;
+        public const float CriticalToxinHeartDrainPerTick = 0.5f;
         public const float OrganPerfusionBloodFloor = 0.25f;
         public const float CriticalOrganFunctionPercent = 30f;
+
+        // Defibrillator (charge/battery deferred to Phase 7d).
+        public const float DefibrillatorHeartRestorePercent = 60f;
+        public const float DefibrillatorMisshockBurnDamage = 25f;
 
         // Limb capability multipliers.
         public const float LimbDisabledMovementMultiplier = 0.35f;

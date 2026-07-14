@@ -136,6 +136,33 @@ namespace SS3D.Systems.Health
             return brainFunctionPercent > HealthConstants.ConsciousnessBrainFunctionPercent;
         }
 
+        public static HealthCriticalFlags BuildCriticalFlags(SystemicPools pools, float brainEffectiveFunctionPercent)
+        {
+            HealthCriticalFlags flags = HealthCriticalFlags.None;
+
+            if (pools.BloodVolumeRatio <= HealthConstants.CriticalBloodVolumeRatio)
+            {
+                flags |= HealthCriticalFlags.LowBlood;
+            }
+
+            if (pools.OxyDebt >= HealthConstants.CriticalOxyDebt)
+            {
+                flags |= HealthCriticalFlags.HighOxyDebt;
+            }
+
+            if (pools.ToxinConcentration >= HealthConstants.CriticalToxinConcentration)
+            {
+                flags |= HealthCriticalFlags.HighToxin;
+            }
+
+            if (IsBrainCriticallyLow(brainEffectiveFunctionPercent))
+            {
+                flags |= HealthCriticalFlags.LowBrain;
+            }
+
+            return flags;
+        }
+
         public static HealthState EvaluateHealthState(
             SystemicPools pools,
             IReadOnlyList<OrganState> organs)
@@ -184,8 +211,9 @@ namespace SS3D.Systems.Health
                 }
             }
 
-            float brainEffective = GetOrganFunction(organs, OrganType.Brain, pools.BloodVolumeRatio);
+            float brainStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
             float heartStored = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
+            float brainEffective = GetOrganFunction(organs, OrganType.Brain, pools.BloodVolumeRatio);
             HealthState state = EvaluateHealthState(pools, organs);
 
             return new HealthSnapshot
@@ -198,11 +226,48 @@ namespace SS3D.Systems.Health
                 IsConscious = IsConscious(brainEffective),
                 IsCardiacArrest = IsCardiacArrest(heartStored),
                 BleedingZoneMask = bleedingMask,
-                BrainFunctionPercent = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain),
-                HeartFunctionPercent = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart),
+                BrainFunctionPercent = brainStored,
+                HeartFunctionPercent = heartStored,
                 MovementSpeedMultiplier = OrganSimulation.ComputeMovementSpeedMultiplier(zones),
                 CanUseArms = OrganSimulation.CanUseArms(zones),
+                CriticalFlags = BuildCriticalFlags(pools, brainEffective),
+                CanDefibrillate = IsCardiacArrest(heartStored) && brainStored > 0f,
             };
+        }
+
+        public static DefibrillatorOutcome ApplyDefibrillation(
+            BodyZone zone,
+            IList<OrganState> organs,
+            ZoneDamageState[] zones,
+            out float burnApplied)
+        {
+            burnApplied = 0f;
+
+            if (zone != BodyZone.Chest)
+            {
+                return DefibrillatorOutcome.WrongZone;
+            }
+
+            float brainFunction = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Brain);
+            if (brainFunction <= 0f)
+            {
+                return DefibrillatorOutcome.NoResponse;
+            }
+
+            float heartFunction = OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart);
+            if (heartFunction <= 0f)
+            {
+                OrganSimulation.SetOrganFunction(organs, OrganType.Heart, HealthConstants.DefibrillatorHeartRestorePercent);
+                return DefibrillatorOutcome.Success;
+            }
+
+            burnApplied = HealthConstants.DefibrillatorMisshockBurnDamage;
+            int chestIndex = (int)BodyZone.Chest;
+            ZoneDamageState chest = zones[chestIndex];
+            chest.Burn += burnApplied;
+            chest.Severity = ResolveZoneSeverity(chest.Brute, chest.Burn);
+            zones[chestIndex] = chest;
+            return DefibrillatorOutcome.UnnecessaryShock;
         }
 
         private static float Clamp01(float value) => Math.Clamp(value, 0f, 1f);

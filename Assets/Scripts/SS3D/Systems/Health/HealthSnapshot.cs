@@ -17,6 +17,8 @@ namespace SS3D.Systems.Health
         public float HeartFunctionPercent;
         public float MovementSpeedMultiplier;
         public bool CanUseArms;
+        public HealthCriticalFlags CriticalFlags;
+        public bool CanDefibrillate;
 
         public bool IsZoneBleeding(BodyZone zone)
         {
@@ -37,6 +39,8 @@ namespace SS3D.Systems.Health
             HeartFunctionPercent = 100f,
             MovementSpeedMultiplier = 1f,
             CanUseArms = true,
+            CriticalFlags = HealthCriticalFlags.None,
+            CanDefibrillate = false,
         };
     }
 }

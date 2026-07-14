@@ -1,12 +1,12 @@
 > Code paths: Assets/Scripts/SS3D/Systems/Health/
 > Entry points: HumanHealthController, HealthSimulation, OrganSimulation
-> Status: partial (Phase 2 organ function shipped)
+> Status: partial (Phase 3 critical/death/defib shipped; screen-space feedback deferred to Phase 6)
 
 # Health
 
 ## Overview
 
-Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs (brain, heart, lungs, liver) into pool math, cardiac arrest, consciousness/movement debuffs, and limb capability stubs.
+Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/health_implementation_plan.md). Phase 1 shipped bleeding, bandage, VFX, and alert chip. Phase 2 wires asset-backed organs into pool math, cardiac arrest, and movement debuffs. Phase 3 adds multi-threshold critical state, cardiac arrest → defib window, and chest defibrillation (screen-space feedback moves to Phase 6).
 
 ## Start here
 
@@ -14,6 +14,8 @@ Greenfield rewrite in progress per [health_implementation_plan.md](../../plans/h
 - `Assets/Scripts/SS3D/Systems/Health/HealthSimulation.cs` — pool math, severity/bleeding, critical/death evaluation
 - `Assets/Scripts/SS3D/Systems/Health/OrganSimulation.cs` — zone→organ damage, organ tick drains, perfusion, limb multipliers
 - `Assets/Scripts/SS3D/Systems/Health/OrganInstance.cs` — organ registration on Human prefab / organ item prefabs
+- `Assets/Scripts/SS3D/Systems/Health/Interactions/DefibrillatorInteraction.cs` — chest-zone defibrillation (Phase 3)
+- `Assets/Scripts/SS3D/Systems/IngameConsoleSystem/Commands/DefibCommand.cs` — admin defib testing
 - `Assets/Scripts/SS3D/Systems/Health/HealthDebugController.cs` — IMGUI overlay (H) for full zone/organ/pool inspection
 - `Assets/Scripts/SS3D/Systems/Health/HealthDebugDetail.cs` — per-zone/per-organ SyncVar payload for debug UI
 - [health-anatomy-map.md](health-anatomy-map.md) — anatomy contract

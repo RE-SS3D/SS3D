@@ -223,5 +223,132 @@ namespace EditorTests
 
             Assert.AreEqual(HealthState.Critical, HealthSimulation.EvaluateHealthState(pools, organs));
         }
+
+        [Test]
+        public void CriticalOxyDebtDrainsHeartOverTicks()
+        {
+            var organs = new List<OrganState>
+            {
+                OrganState.Default(OrganType.Heart),
+                OrganState.Default(OrganType.Brain),
+            };
+
+            var pools = new SystemicPools
+            {
+                BloodVolumeRatio = 1f,
+                OxyDebt = HealthConstants.CriticalOxyDebt,
+                ToxinConcentration = 0f,
+            };
+
+            OrganSimulation.TickOrganFunction(pools, organs);
+
+            Assert.Less(OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart), 100f);
+        }
+
+        [Test]
+        public void BuildSnapshotSetsCriticalFlagsAndDefibrillateEligibility()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            var organs = new[]
+            {
+                new OrganState { Type = OrganType.Heart, FunctionPercent = 0f },
+                OrganState.Default(OrganType.Brain),
+            };
+
+            var pools = new SystemicPools
+            {
+                BloodVolumeRatio = 0.2f,
+                OxyDebt = HealthConstants.CriticalOxyDebt,
+                ToxinConcentration = 0f,
+            };
+
+            HealthSnapshot snapshot = HealthSimulation.BuildSnapshot(pools, zones, organs);
+
+            Assert.AreEqual(HealthState.CardiacArrest, snapshot.State);
+            Assert.IsTrue(snapshot.CanDefibrillate);
+            Assert.IsTrue((snapshot.CriticalFlags & HealthCriticalFlags.LowBlood) != 0);
+            Assert.IsTrue((snapshot.CriticalFlags & HealthCriticalFlags.HighOxyDebt) != 0);
+        }
+
+        [Test]
+        public void DefibrillationRestoresHeartBeforeBrainDeath()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            var organs = new List<OrganState>
+            {
+                new OrganState { Type = OrganType.Heart, FunctionPercent = 0f },
+                OrganState.Default(OrganType.Brain),
+            };
+
+            DefibrillatorOutcome outcome = HealthSimulation.ApplyDefibrillation(
+                BodyZone.Chest,
+                organs,
+                zones,
+                out float burnApplied);
+
+            Assert.AreEqual(DefibrillatorOutcome.Success, outcome);
+            Assert.AreEqual(0f, burnApplied);
+            Assert.AreEqual(HealthConstants.DefibrillatorHeartRestorePercent, OrganSimulation.GetStoredOrganFunction(organs, OrganType.Heart));
+        }
+
+        [Test]
+        public void DefibrillationHasNoResponseAfterBrainDeath()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            var organs = new List<OrganState>
+            {
+                new OrganState { Type = OrganType.Heart, FunctionPercent = 0f },
+                new OrganState { Type = OrganType.Brain, FunctionPercent = 0f },
+            };
+
+            DefibrillatorOutcome outcome = HealthSimulation.ApplyDefibrillation(
+                BodyZone.Chest,
+                organs,
+                zones,
+                out _);
+
+            Assert.AreEqual(DefibrillatorOutcome.NoResponse, outcome);
+        }
+
+        [Test]
+        public void DefibrillationMisshockAppliesChestBurn()
+        {
+            var zones = new ZoneDamageState[HealthConstants.ZoneCount];
+            for (int i = 0; i < zones.Length; i++)
+            {
+                zones[i] = ZoneDamageState.Default;
+            }
+
+            var organs = new List<OrganState>
+            {
+                OrganState.Default(OrganType.Heart),
+                OrganState.Default(OrganType.Brain),
+            };
+
+            DefibrillatorOutcome outcome = HealthSimulation.ApplyDefibrillation(
+                BodyZone.Chest,
+                organs,
+                zones,
+                out float burnApplied);
+
+            Assert.AreEqual(DefibrillatorOutcome.UnnecessaryShock, outcome);
+            Assert.AreEqual(HealthConstants.DefibrillatorMisshockBurnDamage, burnApplied);
+            Assert.AreEqual(HealthConstants.DefibrillatorMisshockBurnDamage, zones[(int)BodyZone.Chest].Burn);
+        }
     }
 }

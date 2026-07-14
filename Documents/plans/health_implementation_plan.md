@@ -21,8 +21,8 @@ todos:
     content: "Phase 2: Wire asset-backed organs (heart, lungs, liver, brain); kidney clearance interim until art asset; cardiac arrest"
     status: completed
   - id: phase3-critical-death
-    content: "Phase 3: Multi-threshold critical, screen-space feedback (existing custom designs), brain-function-zero death, defibrillator window"
-    status: pending
+    content: "Phase 3: Multi-threshold critical, brain-function-zero death, cardiac arrest + defibrillator window (screen-space feedback deferred to Phase 6)"
+    status: completed
   - id: phase4-combat
     content: "Phase 4: ZoneTargetResolver on BodyParts layer, replace HitInteraction, one melee weapon vertical slice"
     status: pending
@@ -30,7 +30,7 @@ todos:
     content: "Phase 5: Field treatments (burn dressing, splint, O2, CPR, antitoxin, IV/transfusion)"
     status: pending
   - id: phase6-hud
-    content: "Phase 6: Vitals cluster + screen-space feedback (existing custom designs), examine-self organ readout, wound rendering on model"
+    content: "Phase 6: Vitals cluster + screen-space condition feedback (existing custom designs), examine-self organ readout, wound rendering on model"
     status: pending
   - id: phase7-cross-system
     content: "Phase 7: Stamina↔oxy bridge, armor, surgery direct-repair slice, death/cloning, chemistry stubs"
@@ -344,11 +344,11 @@ Implements health.md §10 prompt 2 / §8 steps 1–5.
 
 ## Phase 3 — Critical, death, revival window
 
-1. Multi-threshold critical (blood, oxy, toxin, brain).
-2. Screen-space condition feedback — **wire to existing custom HUD designs** (owner-provided mockups/assets). Do not redesign from prose; drive intensity/state from `HealthSnapshot` (critical, low O2, pain, etc.).
-3. Cardiac arrest sub-state + defib window.
-4. Death only at brain function = 0; corpse persists.
-5. Defibrillator: chest zone, charge, restart heart if brain > 0.
+1. Multi-threshold critical (blood, oxy, toxin, brain) — `HealthCriticalFlags` on snapshot + Critical alert chip.
+2. ~~Screen-space condition feedback~~ — **deferred to Phase 6** (wire to existing custom HUD designs there).
+3. Cardiac arrest sub-state + defib window — systemic stress drains heart; arrest drains brain each tick.
+4. Death only at brain function = 0; corpse persists via existing `Human.Kill()`.
+5. Defibrillator: chest zone Help interaction + admin `defib` command; restarts heart if brain > 0; mis-shock burns chest. Charge/armor deferred to Phase 7d.
 
 ---
 
@@ -370,7 +370,7 @@ Bandage pattern extended to: burn dressing, splint, O2 mask, CPR, antitoxin, IV/
 ## Phase 6 — Vitals HUD
 
 1. Vitals cluster — worst-limb brute/burn + systemic toxin/oxy (health.md §7). **Follow existing custom vitals-cluster designs** — wire bars/alerts to `HealthSnapshot`, do not redesign layout.
-2. Screen-space condition feedback — same custom designs as Phase 3; shared controller driven by health state.
+2. **Screen-space condition feedback** — deferred from Phase 3; wire existing custom designs (critical, low O2, pain, etc.) to `HealthSnapshot` intensity/state.
 3. Examine-self hold → per-zone + organ function readout. Reserve a slot for diagnosed infections (virology.md §8) — listed once scanned, not a standalone infection bar.
 4. Wound severity on character model (materials/decals/blendshapes if available on Human.fbx).
 
@@ -517,3 +517,10 @@ health.md §8 + death-cloning §9 example A, end-to-end:
 - `HumanLiver.prefab` now carries `OrganInstance`; kidney clearance remains liver-derived interim.
 - Unconscious players cannot move; disabled legs slow movement; both arms disabled blocks hand interactions (stub).
 - Full `heal … all` restores organ function via `RestoreOrgans()`.
+
+### Phase 3 (shipped)
+
+- Screen-space condition feedback **deferred to Phase 6** per plan adjustment.
+- `HealthCriticalFlags` + Critical / Cardiac Arrest alert chips; defibrillation via `DefibrillatorInteraction` + admin `defib` command.
+- Untreated critical systemic pools drain heart function → cardiac arrest → brain drain → death at brain function zero.
+- Defib charge, armor block, and portable defib prefab deferred (Phase 7d / art import).

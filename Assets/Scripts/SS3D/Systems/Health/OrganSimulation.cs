@@ -27,6 +27,21 @@ namespace SS3D.Systems.Health
 
         public static void TickOrganFunction(SystemicPools pools, IList<OrganState> organs)
         {
+            if (pools.OxyDebt >= HealthConstants.CriticalOxyDebt)
+            {
+                ApplyOrganDamage(organs, OrganType.Heart, HealthConstants.CriticalOxyHeartDrainPerTick);
+            }
+
+            if (pools.BloodVolumeRatio <= HealthConstants.CriticalBloodVolumeRatio)
+            {
+                ApplyOrganDamage(organs, OrganType.Heart, HealthConstants.CriticalBloodHeartDrainPerTick);
+            }
+
+            if (pools.ToxinConcentration >= HealthConstants.CriticalToxinConcentration)
+            {
+                ApplyOrganDamage(organs, OrganType.Heart, HealthConstants.CriticalToxinHeartDrainPerTick);
+            }
+
             float heartFunction = GetStoredOrganFunction(organs, OrganType.Heart);
 
             if (heartFunction <= 0f)
@@ -40,6 +55,32 @@ namespace SS3D.Systems.Health
             }
 
             UpdateCriticalFlags(organs);
+        }
+
+        public static void SetOrganFunction(IList<OrganState> organs, OrganType type, float functionPercent)
+        {
+            functionPercent = Math.Clamp(functionPercent, 0f, 100f);
+
+            for (int i = 0; i < organs.Count; i++)
+            {
+                if (organs[i].Type != type)
+                {
+                    continue;
+                }
+
+                OrganState organ = organs[i];
+                organ.FunctionPercent = functionPercent;
+                organs[i] = organ;
+                UpdateCriticalFlags(organs);
+                return;
+            }
+
+            organs.Add(new OrganState
+            {
+                Type = type,
+                FunctionPercent = functionPercent,
+                IsCritical = functionPercent <= HealthConstants.CriticalOrganFunctionPercent,
+            });
         }
 
         public static float EffectiveOrganFunction(float storedFunctionPercent, float bloodVolumeRatio)

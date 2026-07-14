@@ -243,6 +243,7 @@ namespace SS3D.Systems.Health
             builder.AppendLine($"Target: {objectName}");
             builder.AppendLine($"State: {snapshot.State}");
             builder.AppendLine($"Conscious: {snapshot.IsConscious}  |  Cardiac arrest: {snapshot.IsCardiacArrest}  |  Bleeding: {snapshot.IsBleeding}");
+            builder.AppendLine($"Can defibrillate: {snapshot.CanDefibrillate}  |  Critical flags: {snapshot.CriticalFlags}");
             builder.AppendLine($"Move speed x{snapshot.MovementSpeedMultiplier:F2}  |  Can use arms: {snapshot.CanUseArms}");
             builder.AppendLine();
             builder.AppendLine("Systemic pools");
