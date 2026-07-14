@@ -51,9 +51,6 @@ namespace SS3D.Systems.Tile.TileMapCreator
         [SerializeField]
         private Button _buildOrDelete;
 
-        [SerializeField]
-        private RectTransform _layerVisibilityContainer;
-
         private TileLayerVisibilityPanel _layerVisibilityPanel;
 
         /// <summary>
@@ -149,21 +146,13 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (_layerVisibilityPanel != null)
                 return;
 
-            RectTransform container = _layerVisibilityContainer != null
-                ? _layerVisibilityContainer
-                : _layerPlacementDropdown.GetComponent<RectTransform>().parent as RectTransform;
+            RectTransform parent = _layerPlacementDropdown.transform.parent as RectTransform;
+            int siblingIndex = _layerPlacementDropdown.transform.GetSiblingIndex() + 1;
 
-            GameObject panelObject = new GameObject("LayerVisibilityPanel", typeof(RectTransform));
-            panelObject.transform.SetParent(container, false);
-
-            RectTransform panelRect = panelObject.GetComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(0f, 1f);
-            panelRect.anchorMax = new Vector2(1f, 1f);
-            panelRect.pivot = new Vector2(0.5f, 1f);
-            panelRect.anchoredPosition = Vector2.zero;
-            panelRect.sizeDelta = new Vector2(0f, 220f);
-
-            _layerVisibilityPanel = panelObject.AddComponent<TileLayerVisibilityPanel>();
+            _layerVisibilityPanel = TileLayerVisibilityPanel.Create(
+                _layerPlacementDropdown,
+                parent,
+                siblingIndex);
         }
     }
 }

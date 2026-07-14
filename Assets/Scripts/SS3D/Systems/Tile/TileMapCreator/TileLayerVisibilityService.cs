@@ -184,8 +184,9 @@ namespace SS3D.Systems.Tile.TileMapCreator
             if (_dimMaterial != null)
                 return _dimMaterial;
 
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit")
-                ?? Shader.Find("Sprites/Default");
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null)
+                shader = Shader.Find("Sprites/Default");
 
             _dimMaterial = new Material(shader)
             {
