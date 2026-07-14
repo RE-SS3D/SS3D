@@ -8,7 +8,7 @@ namespace SS3D.UI.MachineInterface
         Fault = 3,
     }
 
-    public class VentInterfaceViewModel : IMachineInterfaceViewModel
+    public class VentInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "VENT · ATMOSPHERICS";
 

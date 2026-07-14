@@ -1,6 +1,6 @@
 namespace SS3D.UI.MachineInterface
 {
-    public class SmesInterfaceViewModel : IMachineInterfaceViewModel
+    public class SmesInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "SMES · ENERGY STORAGE";
 
@@ -47,6 +47,10 @@ namespace SS3D.UI.MachineInterface
         public bool InputActive { get; set; }
 
         public bool OutputActive { get; set; }
+
+        public bool AccessGranted { get; set; }
+
+        public bool AccessScanning { get; set; }
 
         public static SmesInterfaceViewModel CreateNominal()
         {

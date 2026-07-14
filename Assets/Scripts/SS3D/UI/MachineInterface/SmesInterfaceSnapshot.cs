@@ -31,5 +31,9 @@ namespace SS3D.UI.MachineInterface
         public bool OutputActive;
 
         public string ConnectionStateText;
+
+        public bool AccessGranted;
+
+        public bool AccessScanning;
     }
 }

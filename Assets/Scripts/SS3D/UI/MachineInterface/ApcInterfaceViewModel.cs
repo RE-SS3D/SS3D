@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SS3D.UI.MachineInterface
 {
-    public class ApcInterfaceViewModel : IMachineInterfaceViewModel
+    public class ApcInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "APC · ENGINEERING BAY";
 
@@ -49,6 +49,10 @@ namespace SS3D.UI.MachineInterface
         public float EnvironmentLoadKw { get; set; }
 
         public List<DiagnosticLine> Diagnostics { get; set; } = new();
+
+        public bool AccessGranted { get; set; }
+
+        public bool AccessScanning { get; set; }
 
         public static ApcInterfaceViewModel CreateNominal()
         {

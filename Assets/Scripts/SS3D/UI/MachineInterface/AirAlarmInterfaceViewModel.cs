@@ -43,7 +43,7 @@ namespace SS3D.UI.MachineInterface
         public Dictionary<string, bool> Filters = new();
     }
 
-    public class AirAlarmInterfaceViewModel : IMachineInterfaceViewModel
+    public class AirAlarmInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "AIR ALARM · ATMOSPHERICS";
 

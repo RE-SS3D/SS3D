@@ -14,6 +14,7 @@ namespace SS3D.UI.MachineInterface.Components
         private VisualElement _controls;
         private bool _accessGranted;
         private bool _scanning;
+        private bool _serverDriven;
         private IVisualElementScheduledItem _scanSchedule;
         private bool _wired;
 
@@ -29,8 +30,9 @@ namespace SS3D.UI.MachineInterface.Components
 
         public bool AccessGranted => _accessGranted;
 
-        public void Initialize()
+        public void Initialize(bool serverDriven = false)
         {
+            _serverDriven = serverDriven;
             EnsureWired();
         }
 
@@ -42,6 +44,38 @@ namespace SS3D.UI.MachineInterface.Components
             _accessGranted = false;
             _scanning = false;
             ShowGate();
+        }
+
+        public void ApplyAccessState(bool granted, bool scanning)
+        {
+            EnsureWired();
+            _scanSchedule?.Pause();
+            _scanSchedule = null;
+            _accessGranted = granted;
+            _scanning = scanning;
+
+            if (_accessGranted)
+            {
+                if (_gate != null)
+                {
+                    _gate.style.display = DisplayStyle.None;
+                    _gate.SetState(scanning: false);
+                }
+
+                if (_controls != null)
+                {
+                    _controls.style.display = DisplayStyle.Flex;
+                    _controls.RemoveFromClassList(ControlsHiddenClass);
+                }
+
+                return;
+            }
+
+            ShowGate();
+            if (_scanning && _gate != null)
+            {
+                _gate.SetState(scanning: true);
+            }
         }
 
         private void OnAttachedToPanel(AttachToPanelEvent _)
@@ -73,7 +107,7 @@ namespace SS3D.UI.MachineInterface.Components
         {
             EnsureWired();
 
-            if (_accessGranted || _scanning || _gate == null)
+            if (_serverDriven || _accessGranted || _scanning || _gate == null)
             {
                 return;
             }

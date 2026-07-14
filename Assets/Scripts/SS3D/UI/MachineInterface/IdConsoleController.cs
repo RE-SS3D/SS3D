@@ -1,7 +1,6 @@
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Systems.Entities;
 using SS3D.Systems.IdAccess;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
@@ -34,21 +33,8 @@ namespace SS3D.UI.MachineInterface
 
         public override string InterfaceId => MachineInterfaceIds.IdConsole;
 
-        private static bool TryResolveOperatorInventory(NetworkConnection conn, out HumanInventory inventory)
-        {
-            inventory = null;
-            if (conn == null || !conn.IsValid || conn.FirstObject == null)
-            {
-                return false;
-            }
-
-            Entity entity = conn.FirstObject.GetComponent<Entity>();
-            inventory = entity != null
-                ? entity.GetComponent<HumanInventory>()
-                : conn.FirstObject.GetComponent<HumanInventory>();
-
-            return inventory != null;
-        }
+        private static bool TryResolveOperatorInventory(NetworkConnection conn, out HumanInventory inventory) =>
+            MachineInterfaceOperatorResolver.TryResolveInventory(conn, out inventory);
 
         private static void SetLogEntry(ref IdConsoleInterfaceSnapshot snapshot, int index, string value)
         {

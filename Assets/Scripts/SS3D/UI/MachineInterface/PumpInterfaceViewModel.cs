@@ -8,7 +8,7 @@ namespace SS3D.UI.MachineInterface
         Fault = 3,
     }
 
-    public sealed class PumpInterfaceViewModel : IMachineInterfaceViewModel
+    public sealed class PumpInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "PUMP · ATMOSPHERICS";
 

@@ -2,6 +2,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Systems.IdAccess;
 using System.Electricity;
 using UnityEngine;
 
@@ -11,7 +12,8 @@ namespace SS3D.UI.MachineInterface
     /// Networked SMES machine interface controller. Reads battery/circuit state and exposes input/output controls.
     /// </summary>
     [RequireComponent(typeof(SmesBattery))]
-    public sealed class SmesController : MachineInterfaceBehaviour
+    [RequireComponent(typeof(AuthLogDeviceBehaviour))]
+    public sealed class SmesController : AccessGatedMachineInterfaceBehaviour
     {
         private const float CriticalChargeThreshold = 0.05f;
         private const float MinRateKw = 1f;
@@ -37,6 +39,8 @@ namespace SS3D.UI.MachineInterface
 
         public override string InterfaceId => MachineInterfaceIds.Smes;
 
+        protected override byte ReadIdControlId => MachineInterfaceControlIds.Smes.ReadId;
+
         public override void OnStartServer()
         {
             _battery = GetComponent<SmesBattery>();
@@ -57,15 +61,20 @@ namespace SS3D.UI.MachineInterface
 
         protected override bool ApplyControl(byte controlId, bool value)
         {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
             switch (controlId)
             {
-                case 0:
+                case MachineInterfaceControlIds.Smes.Input:
                 {
                     _inputEnabled = value;
                     return true;
                 }
 
-                case 1:
+                case MachineInterfaceControlIds.Smes.Output:
                 {
                     _outputEnabled = value;
                     ApplyOutputEnabled(value);
@@ -81,15 +90,20 @@ namespace SS3D.UI.MachineInterface
 
         protected override bool ApplyNumericControl(byte controlId, float delta)
         {
+            if (!AccessGranted)
+            {
+                return false;
+            }
+
             switch (controlId)
             {
-                case 0:
+                case MachineInterfaceControlIds.Smes.Input:
                 {
                     _inputMaxKw = Mathf.Clamp(_inputMaxKw + delta, MinRateKw, MaxRateKw);
                     return true;
                 }
 
-                case 1:
+                case MachineInterfaceControlIds.Smes.Output:
                 {
                     _outputMaxKw = Mathf.Clamp(_outputMaxKw + delta, MinRateKw, MaxRateKw);
                     if (_battery != null)
@@ -206,6 +220,8 @@ namespace SS3D.UI.MachineInterface
                 InputActive = inputActive,
                 OutputActive = outputActive,
                 ConnectionStateText = BuildConnectionStateText(powerState, inputActive, outputActive),
+                AccessGranted = AccessGranted,
+                AccessScanning = AccessScanning,
             };
 
             return snapshot;

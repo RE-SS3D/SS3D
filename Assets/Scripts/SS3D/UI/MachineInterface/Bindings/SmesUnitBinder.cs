@@ -49,11 +49,17 @@ namespace SS3D.UI.MachineInterface.Bindings
             _accessRegion = queryRoot.Q<AccessGatedRegion>("access-region");
             AccessStrip accessStrip = queryRoot.Q<AccessStrip>("access-strip");
 
-            _accessRegion?.Initialize();
+            _accessRegion?.Initialize(serverDriven: true);
+
+            if (_accessRegion?.Gate != null)
+            {
+                _accessRegion.Gate.SwipeRequested += HandleSwipeRequested;
+            }
 
             if (accessStrip != null && _accessRegion != null)
             {
-                accessStrip.LockRequested += () => _accessRegion.Lock();
+                accessStrip.LockRequested += () =>
+                    ActionControlChanged?.Invoke(MachineInterfaceControlIds.Smes.ReadId, 0);
             }
 
             if (_shell != null)
@@ -150,10 +156,17 @@ namespace SS3D.UI.MachineInterface.Bindings
             {
                 _footer.Text = model.FooterText;
             }
+
+            _accessRegion?.ApplyAccessState(model.AccessGranted, model.AccessScanning);
         }
 
         public void Disconnect()
         {
+            if (_accessRegion?.Gate != null)
+            {
+                _accessRegion.Gate.SwipeRequested -= HandleSwipeRequested;
+            }
+
             if (_shell != null)
             {
                 _shell.CloseClicked -= HandleCloseRequested;
@@ -164,5 +177,8 @@ namespace SS3D.UI.MachineInterface.Bindings
         {
             CloseRequested?.Invoke();
         }
+
+        private void HandleSwipeRequested() =>
+            ActionControlChanged?.Invoke(MachineInterfaceControlIds.Smes.ReadId, 0);
     }
 }

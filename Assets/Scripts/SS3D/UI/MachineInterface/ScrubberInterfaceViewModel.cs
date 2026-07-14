@@ -10,7 +10,7 @@ namespace SS3D.UI.MachineInterface
         Fault = 3,
     }
 
-    public class ScrubberInterfaceViewModel : IMachineInterfaceViewModel
+    public class ScrubberInterfaceViewModel : IMachineInterfaceViewModel, IAccessGatedInterfaceViewModel
     {
         public string Title { get; set; } = "SCRUBBER · ATMOSPHERICS";
 
