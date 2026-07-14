@@ -163,6 +163,13 @@ namespace SS3D.Systems.Health
         }
 
         [Server]
+        public void RestoreSystemicPools()
+        {
+            _pools = SystemicPools.Default;
+            PublishSnapshot();
+        }
+
+        [Server]
         public void TickHealth(float atmosphereO2 = 1f)
         {
             _pools = HealthSimulation.TickPools(_pools, _zones, _organs, atmosphereO2);
