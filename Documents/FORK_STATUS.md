@@ -21,7 +21,7 @@ For doc authoring conventions see [SKILL.md](SKILL.md).
 | Render pipeline | Built-in | **URP 17** |
 | Release channel | Tagged releases on GitHub | **No releases** — build from source |
 | Documentation | GitBook ([ss3d.gitbook.io](https://ss3d.gitbook.io/dev-guide/)) | `Documents/design/` + `Documents/architecture/` + system maps |
-| Commits ahead of upstream | — | **~231** (0 behind as of last fetch) |
+| Commits ahead of upstream | — | **~248** (0 behind as of last fetch) |
 | Files changed vs upstream | — | ~12k files, +542k / −55k lines |
 
 ---
@@ -205,8 +205,11 @@ Major refactor of the construction tilemap:
 - **FishNet HashGrid AOI** — tile replication scoped by area-of-interest; fixes for tile pop-in
   when re-entering AOI
 - TileMap Creator RPCs gated behind server-side Administrator checks
+- **Build-menu layer visibility** — client-only dim/restore of non-selected tile layer groups in the
+  construction build tab (`TileLayerVisibilityService`); no network sync
 
-Merged from `archive/feature-tilemap-system-refactor`.
+Merged from `archive/feature-tilemap-system-refactor` and
+`archive/tilemap-layer-visibility` (build-menu layer toggles).
 
 ### Game lifecycle hardening
 
@@ -348,6 +351,57 @@ Merged from `atmos-pipes`. System map: [atmospherics.md](architecture/systems/at
 
 Deferred: valves, liquid pipes, pipe failures (clog/rupture), junction chemistry.
 
+### ID / access foundation
+
+**Paths:** `SS3D.Systems.IdAccess`, `SS3D.UI.MachineInterface`, `SS3D.Systems.Furniture`
+
+Server-side crew identity rail and shared access checks:
+
+- **`IdAccessSubSystem`** + **`CrewRecord`** — authoritative access bitmask per ckey; physical `IDCard`
+  tokens bind to records (no independent card state)
+- **`AccessCredentialResolver`** — finds bound ID on hands and inventory containers (direct card or
+  PDA-inserted)
+- **Machine UI gates** — `AccessGatedMachineInterfaceBehaviour` server ID scan sessions; granted,
+  scanning, and denied states on diegetic ID reader variants
+- **Door access** — `AirLockAccessGate` checks holder credential against area default or override
+- **ID console** — `IdConsoleController` for Change ID gated editing; dev console commands
+  (`accesscheck`, `accessgrant`, `accessrevoke`, `accesspreset`)
+
+EditMode tests under `Assets/Scripts/Tests/EditMode/IdAccessTests/`.
+
+Merged from `archive/feature-id-access-foundation`. System map:
+[id-access.md](architecture/systems/id-access.md).
+
+Deferred: full design-spec coverage (auth logs, comms integration, playtime/job unlocks).
+
+### Persistence foundation
+
+**Paths:** `SS3D.Data.Persistence`, `SS3D.Systems.Persistence`
+
+Layered contributor-based disk persistence replacing the monolithic tilemap JSON pipeline:
+
+- **`PersistenceSubSystem`** + **`IPersistenceContributor`** — ordered save/load orchestrator with
+  `OnBeforeCapture` / `OnAfterRestore` lifecycle events
+- **`PersistenceEnvelope`** — versioned wrapper with per-domain JSON chunks via
+  `EnvelopePersistenceStore`
+- **Station templates** — `TileMapPersistenceContributor` + `AreaPersistenceContributor`; legacy flat
+  tilemap JSON migration; template restore preserves area metadata (including `lightingSwitchOn`) when
+  APCs are already placed
+- **Server meta** — `PermissionsPersistenceContributor` with legacy `permissions.txt` fallback;
+  append-only round history JSONL on round end
+- **Wiring** — `TileSubSystem` save/load backend; server boot `LoadServerMeta`; permissions
+  auto-save on `UserPermissionsChangedEvent`
+
+EditMode tests: `PersistenceFrameworkTests`, `ServerMetaPersistenceTests`; updated
+`AreaFloodFillTests` for template restore.
+
+Merged from `archive/feature-persistence-framework`. System map:
+[persistence.md](architecture/systems/persistence.md). Plan:
+[persistence_architecture_design_2fe61864.plan.md](plans/persistence_architecture_design_2fe61864.plan.md).
+
+Deferred: round-config map pool contributor, Phase 2 round snapshots (items, electricity kWh,
+atmospherics, substances, entities), player meta.
+
 ### Structured logging
 
 **Paths:** `SS3D.Logging`
@@ -379,8 +433,10 @@ Machine interfaces and the radial interaction menu partially implement
 [main-hud.md](design/main-hud.md) (tiered interactions, intent chording, diegetic machine control
 surfaces for APC/SMES/vending/atmos devices — drag-combine Tier 3 still pending). **Area foundation**
 partially implements [area.md](design/area.md) (APC-seeded flood-fill, area-scoped power/lighting,
-air-alarm area device discovery — live mutation recompute and editor merge/split still pending). The
-rest of these specs remain design-only.
+air-alarm area device discovery — live mutation recompute and editor merge/split still pending).
+**ID / access foundation** partially implements [id-access.md](design/id-access.md) (crew records,
+door and machine UI gates, ID console — auth logs and broader design coverage still pending).
+The rest of these specs remain design-only.
 
 ---
 
@@ -391,7 +447,6 @@ before assuming commit counts.
 
 | Branch | Ahead / behind `develop` | System | Notes |
 |---|---|---|---|
-| `feature/id-access-foundation` | 2 / 30 | ID cards + door access gating | Server-side crew records; debug ID console |
 | `feature/inventory-storage` | 9 / 58 | Inventory + main HUD | Gear/hands strip, intent module, storage UI migration |
 | `feature/urp-lighting-phase1` | 2 / 69 | URP lighting visual foundation | Forward+ fixture fixes, unitless intensity handling |
 | `feature/animation-system` | 3 / 71 | Humanoid animation | Body-state-driven locomotion scaffold |
@@ -423,6 +478,9 @@ Do not develop on them — use `develop` or a new feature branch.
 | `archive/feature-atmos-ecs` | 2026-07-12 | ECS turf gas sim, plasma combustion, GPU fog/fire visuals |
 | `archive/feature-interactions` | 2026-07-12 | Post-hardening interaction/radial polish + FastScriptReload removal |
 | `atmos-pipes` | 2026-07-14 | Gas pipe networks, port devices, atmos machine UIs, APC/SMES diegetic redesign |
+| `archive/tilemap-layer-visibility` | 2026-07-14 | Client-only tilemap build-menu layer visibility toggles |
+| `archive/feature-id-access-foundation` | 2026-07-14 | Crew records, credential resolver, door/machine ID access gates |
+| `archive/feature-persistence-framework` | 2026-07-14 | Contributor-based persistence: station templates + server meta |
 
 ---
 
