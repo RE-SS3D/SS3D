@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 7884751941553947161}
   - component: {fileID: 753117864336002031}
   - component: {fileID: 83842586426936894}
-  - component: {fileID: 3396458195849632994}
   - component: {fileID: 368559856948010060}
   - component: {fileID: 8560433685005156343}
   m_Layer: 10
@@ -274,30 +273,12 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4393325184408134140}
   _networkObjectCache: {fileID: 4393325184408134140}
-  _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 753117864336002031}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 9659c4cc7bea07c4ba38b492f407ef7f, type: 3}
   _internalBodyParts: {fileID: 0}
+  _primaryZone: 2
+  _isDetachable: 1
   _bodyCollider: {fileID: 0}
-  HealthController: {fileID: 0}
-  _bodyPartVolume: 2600
---- !u!114 &3396458195849632994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888615333292121711}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: 4393325184408134140}
-  _networkObjectCache: {fileID: 4393325184408134140}
-  _bodyPart: {fileID: 83842586426936894}
-  isBleeding: 0
 --- !u!114 &368559856948010060
 MonoBehaviour:
   m_ObjectHideFlags: 0

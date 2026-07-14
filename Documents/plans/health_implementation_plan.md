@@ -4,16 +4,16 @@ overview: Clean-slate rewrite of SS3D health per Documents/design/health.md — 
 todos:
   - id: phase0-purge
     content: "Phase 0a: Purge all legacy Assets/Scripts/SS3D/Systems/Health/ simulation code + update external references; no dual-stack period"
-    status: pending
+    status: completed
   - id: phase0-asset-audit
     content: "Phase 0b: Document Human.fbx anatomy map — body parts, colliders, organs, zone mapping, asset gaps (kidneys)"
-    status: pending
+    status: completed
   - id: phase0-data-contract
     content: "Phase 0c: New clean-slate data contract — ZoneDamageState, OrganState, SystemicPools, HealthSnapshot, HumanHealthController, IHealthEffectModifier; fresh AnatomyNode/OrganInstance types"
-    status: pending
+    status: completed
   - id: phase0-prefab-wiring
     content: "Phase 0d: Rewire Human.prefab — strip legacy health components, add new controller + ZoneTargetCollider + organ registration"
-    status: pending
+    status: completed
   - id: phase1-bleeding-slice
     content: "Phase 1: Wound severity, bleeding → blood volume → oxy debt, bandage interaction, Bleeding alert chip"
     status: pending

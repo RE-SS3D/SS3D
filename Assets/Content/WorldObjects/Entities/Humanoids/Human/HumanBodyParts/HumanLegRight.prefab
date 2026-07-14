@@ -160,7 +160,6 @@ GameObject:
   - component: {fileID: -877250859192271158}
   - component: {fileID: 2869688339007017801}
   - component: {fileID: 1454556291825162564}
-  - component: {fileID: 3401562901692904195}
   - component: {fileID: 613150638240663937}
   m_Layer: 10
   m_Name: HumanLegRight
@@ -442,30 +441,12 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 1103916381626794010}
   _networkObjectCache: {fileID: 1103916381626794010}
-  _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 568686121754585084}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 983acf51173ef60479e35c5e35946162, type: 3}
   _internalBodyParts: {fileID: 0}
+  _primaryZone: 5
+  _isDetachable: 1
   _bodyCollider: {fileID: 0}
-  HealthController: {fileID: 0}
-  _bodyPartVolume: 9100
---- !u!114 &3401562901692904195
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8256619991674398311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 1103916381626794010}
-  _networkObjectCache: {fileID: 1103916381626794010}
-  _bodyPart: {fileID: 1454556291825162564}
-  isBleeding: 0
 --- !u!114 &613150638240663937
 MonoBehaviour:
   m_ObjectHideFlags: 0

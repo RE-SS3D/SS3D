@@ -6,7 +6,7 @@ using SS3D.Interactions;
 using FishNet.Object;
 using SS3D.Systems.Tile;
 using SS3D.Core;
-using SS3D.Systems.Health;
+using SS3D.Systems.Stamina;
 
 namespace SS3D.Systems.Inventory.Containers
 {

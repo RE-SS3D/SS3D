@@ -131,7 +131,6 @@ GameObject:
   - component: {fileID: 8261818893875537478}
   - component: {fileID: 583132518431860780}
   - component: {fileID: 7155506955987011765}
-  - component: {fileID: 6503579652515287345}
   - component: {fileID: 3846889472343399846}
   m_Layer: 10
   m_Name: HumanFootLeft
@@ -445,19 +444,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 6958959792659314810}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87fb11738474538428e7ab7a2732a1bb, type: 3}
+  m_Script: {fileID: 11500000, guid: d25aaf3a871b3d1438c1a27c2c6b57c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 6603268689893490928}
   _networkObjectCache: {fileID: 6603268689893490928}
-  _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 5353836970676556405}
   _bodyPartItem: {fileID: 5774385816057912484, guid: 60890cc80962a7e44b97b4ba3b0518e3, type: 3}
   _internalBodyParts: {fileID: 0}
+  _primaryZone: 4
+  _isDetachable: 0
   _bodyCollider: {fileID: 0}
-  HealthController: {fileID: 0}
-  _bodyPartVolume: 1300
 --- !u!114 &7155506955987011765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -471,23 +469,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _clothType: 0
---- !u!114 &6503579652515287345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6958959792659314810}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 4
-  _addedNetworkObject: {fileID: 6603268689893490928}
-  _networkObjectCache: {fileID: 6603268689893490928}
-  _bodyPart: {fileID: 583132518431860780}
-  isBleeding: 0
 --- !u!114 &3846889472343399846
 MonoBehaviour:
   m_ObjectHideFlags: 0

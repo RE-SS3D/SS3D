@@ -4,7 +4,6 @@ using SS3D.Core;
 using SS3D.Permissions;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
-using SS3D.Systems.Health;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {

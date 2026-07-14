@@ -1,6 +1,6 @@
 ﻿using FishNet.Object;
 using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.Health;
+using SS3D.Systems.Stamina;
 using SS3D.Systems.Interactions;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;

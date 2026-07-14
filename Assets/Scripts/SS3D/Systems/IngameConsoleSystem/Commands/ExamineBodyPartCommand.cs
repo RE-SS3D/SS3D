@@ -1,39 +1,31 @@
 ﻿using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Permissions;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using SS3D.Systems.Health;
+using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
     public class ExamineBodyPartCommand : Command
     {
-        public override string LongDescription => "Examine a detached body part, returning how damaged it is";
-        public override string ShortDescription => "Examine a detached body part";
+        public override string LongDescription => "Print HumanHealthController snapshot for a scene object";
+        public override string ShortDescription => "Examine health snapshot";
         public override string Usage => "(game object name)";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.Administrator;
         public override CommandType Type => CommandType.Server;
 
-        private record CalculatedValues(IEnumerable<BodyPart> BodyParts) : ICalculatedValues;
+        private record CalculatedValues(HumanHealthController Health) : ICalculatedValues;
 
         [Server]
         public override string Perform(string[] args, NetworkConnection conn = null)
         {
-            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values)) return response.InvalidArgs;
-
-            string answer = "";
-            foreach(BodyLayer layer in values.BodyParts.First().BodyLayers)
+            if (!ReceiveCheckResponse(args, out CheckArgsResponse response, out CalculatedValues values))
             {
-                answer += layer + ": ";
-                foreach (BodyDamageInfo damage in layer.Damages.DamagesInfo.Values)
-                {
-                    answer += damage.InjuryType + " " + damage.Quantity;
-                }
-                answer += "\n";
+                return response.InvalidArgs;
             }
-            return answer;
+
+            HealthSnapshot snapshot = values.Health.Snapshot;
+            return $"state={snapshot.State} blood={snapshot.Pools.BloodVolumeRatio:F2} oxy={snapshot.Pools.OxyDebt:F2} toxin={snapshot.Pools.ToxinConcentration:F2} bleeding={snapshot.IsBleeding}";
         }
 
         [Server]
@@ -41,19 +33,23 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         {
             CheckArgsResponse response = new();
 
-            if (args.Length != 1) return response.MakeInvalid("Invalid number of arguments");
+            if (args.Length != 1)
+            {
+                return response.MakeInvalid("Invalid number of arguments");
+            }
 
-            string gameObjectName = args[0];
-            GameObject go = GameObject.Find(gameObjectName);
-            if (go == null) return response.MakeInvalid("No bodypart with this name");
-            
-            BodyPart[] bodyParts = go.GetComponentsInChildren<BodyPart>().Where(x => x.gameObject.name == gameObjectName).ToArray();
+            GameObject go = GameObject.Find(args[0]);
+            if (go == null)
+            {
+                return response.MakeInvalid("No object with this name");
+            }
 
-            if (!bodyParts.Any()) return response.MakeInvalid("No bodypart with this name");
-            
-            if (bodyParts.Length != 1) return response.MakeInvalid("Multiple body parts with the same name, ambiguous command");
-            
-            return response.MakeValid(new CalculatedValues(bodyParts));
+            if (!go.TryGetComponent(out HumanHealthController health))
+            {
+                return response.MakeInvalid("Object has no HumanHealthController");
+            }
+
+            return response.MakeValid(new CalculatedValues(health));
         }
     }
 }

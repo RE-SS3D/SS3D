@@ -4,7 +4,7 @@ using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Health;
+using SS3D.Systems.Stamina;
 using SS3D.Systems.Screens;
 using UnityEngine;
 
@@ -23,7 +23,6 @@ namespace SS3D.Systems.Entities.Humanoid
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
-		[SerializeField] private FeetController _feetController;
 
         public bool IsDragging { get; set; }
 
@@ -70,7 +69,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            _characterController.Move(TargetMovement * ((_feetController.FeetHealthFactor * _movementSpeed) * Time.deltaTime));
+            _characterController.Move(TargetMovement * (_movementSpeed * Time.deltaTime));
         }
     }
 

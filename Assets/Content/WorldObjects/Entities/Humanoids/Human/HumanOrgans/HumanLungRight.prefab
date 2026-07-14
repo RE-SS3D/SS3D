@@ -127,7 +127,6 @@ GameObject:
   - component: {fileID: 6158070572286981653}
   - component: {fileID: 2482166521292498734}
   - component: {fileID: 8187159198088897848}
-  - component: {fileID: 8312465371777337006}
   - component: {fileID: 1088763023440096940}
   m_Layer: 10
   m_Name: HumanLungRight
@@ -292,38 +291,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 8304480218026041231}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 157870bdbb19bf744af2f60b1dfa17cc, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e0d645991b499c43ac8ca1478c49742, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 6158070572286981653}
   _networkObjectCache: {fileID: 6158070572286981653}
-  _parentBodyPart: {fileID: 0}
   _skinnedMeshRenderer: {fileID: 0}
   _bodyPartItem: {fileID: 8304480218026041231}
   _internalBodyParts: {fileID: 0}
   _bodyCollider: {fileID: 0}
-  HealthController: {fileID: 0}
-  _bodyPartVolume: 700
   breathing: 0
+  _type: 3
+  _functionPercent: 100
   OxygenConstantIntake: 0.5
---- !u!114 &8312465371777337006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8304480218026041231}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e876a9101cc6042b1b5a1fbf89b810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 6158070572286981653}
-  _networkObjectCache: {fileID: 6158070572286981653}
-  _bodyPart: {fileID: 8187159198088897848}
-  isBleeding: 0
 --- !u!114 &1088763023440096940
 MonoBehaviour:
   m_ObjectHideFlags: 0
