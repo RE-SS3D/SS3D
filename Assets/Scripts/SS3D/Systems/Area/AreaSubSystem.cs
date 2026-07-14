@@ -478,6 +478,7 @@ namespace SS3D.Systems.Area
             }
 
             record.Apc = apc;
+            _registry.Register(record);
             _lightingSwitchOn[areaId] = record.LightingSwitchOn;
             return true;
         }

@@ -46,7 +46,7 @@ namespace SS3D.Systems.Persistence
                 schemaVersion = PersistenceEnvelope.CurrentSchemaVersion,
                 envelopeType = PersistenceEnvelope.StationTemplateType,
                 createdAt = DateTime.UtcNow.ToString("o"),
-                gameVersion = Application.version,
+                gameVersion = UnityEngine.Application.version,
             };
 
             envelope.chunks.Add(new PersistenceChunk

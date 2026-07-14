@@ -251,9 +251,9 @@ namespace EditorTests
 
             var loadedQuery = new TileQueryService(loadedMap);
             var loadedAreaSubSystem = new AreaSubSystemHarness(loadedMap, loadedQuery);
-            loadedAreaSubSystem.RegisterApc(apc);
             loadedAreaSubSystem.BeginTemplateRestore(saved);
             loadedAreaSubSystem.RestoreFromSave(saved);
+            loadedAreaSubSystem.RegisterApc(apc);
 
             Assert.IsTrue(loadedAreaSubSystem.TryGetAreaForApc(apc, out AreaRecord record));
             Assert.AreEqual("Engineering", record.DisplayName);
@@ -723,6 +723,7 @@ namespace EditorTests
                 }
 
                 record.Apc = apc;
+                _registry.Register(record);
                 return true;
             }
 

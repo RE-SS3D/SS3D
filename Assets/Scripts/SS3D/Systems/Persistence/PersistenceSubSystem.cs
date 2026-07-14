@@ -106,7 +106,7 @@ namespace SS3D.Systems.Persistence
                 schemaVersion = PersistenceEnvelope.CurrentSchemaVersion,
                 envelopeType = PersistenceEnvelope.StationTemplateType,
                 createdAt = DateTime.UtcNow.ToString("o"),
-                gameVersion = Application.version,
+                gameVersion = UnityEngine.Application.version,
             };
 
             foreach (IPersistenceContributor contributor in GetContributors(PersistenceLayer.StationTemplate))

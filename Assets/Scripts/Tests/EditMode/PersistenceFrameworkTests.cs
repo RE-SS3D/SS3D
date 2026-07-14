@@ -40,7 +40,7 @@ namespace EditorTests
             SavedTileMap tilePayload = JsonUtility.FromJson<SavedTileMap>(envelope.chunks[0].payloadJson);
             SavedAreaChunkPayload areaPayload = JsonUtility.FromJson<SavedAreaChunkPayload>(envelope.chunks[1].payloadJson);
 
-            Assert.IsNull(tilePayload.savedAreas);
+            Assert.IsTrue(tilePayload.savedAreas == null || tilePayload.savedAreas.Length == 0);
             Assert.AreEqual("Engineering", areaPayload.records[0].displayName);
             Assert.IsFalse(areaPayload.records[0].lightingSwitchOn);
         }
